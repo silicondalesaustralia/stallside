@@ -2,6 +2,8 @@
 
 Give this to another agent continuing the project. Repo folder may still be named `MyFarmStand`; product name is **Stallside**, domain **`stallside.app`**.
 
+**GitHub:** [silicondalesaustralia/stallside](https://github.com/silicondalesaustralia/stallside) — remote is `origin` via SSH (`git@github.com:silicondalesaustralia/stallside.git`). Pilot checklist: `PILOT-GO-LIVE.md`.
+
 ---
 
 ## 1. What this product is
