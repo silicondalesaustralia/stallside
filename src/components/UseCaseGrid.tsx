@@ -54,11 +54,11 @@ export default function UseCaseGrid() {
         </h2>
       </div>
 
-      <ul className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+      <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
         {CASES.map(({ title, subtitle, Icon }) => (
           <li
             key={title}
-            className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-[var(--pad-md)] transition-[border-color] duration-150 ease-out hover:border-[var(--leaf)]"
+            className="flex h-full flex-col rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-[var(--pad-md)] transition-[border-color] duration-150 ease-out hover:border-[var(--leaf)]"
           >
             <Icon />
             <h3 className="mt-2.5 text-sm font-medium text-[var(--ink)]">{title}</h3>

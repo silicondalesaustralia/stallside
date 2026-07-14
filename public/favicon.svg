@@ -1,0 +1,24 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1024" height="1024" fill="#17361f"/>
+  <rect
+    x="166"
+    y="166"
+    width="692"
+    height="692"
+    rx="220"
+    fill="none"
+    stroke="#f2f6ef"
+    stroke-width="74"
+  />
+  <path
+    d="M512 335c84 56 126 142 126 213a126 126 0 1 1-252 0c0-71 42-157 126-213z"
+    fill="#f5a623"
+  />
+  <path
+    d="M512 489v141"
+    fill="none"
+    stroke="#17361f"
+    stroke-width="40"
+    stroke-linecap="round"
+  />
+</svg>

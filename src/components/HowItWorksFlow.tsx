@@ -27,15 +27,20 @@ const OWNER_RESULT: FlowBox[] = [
 const MOBILE_STEPS: FlowBox[] = [OWNER_START, ...CUSTOMER, ...OWNER_RESULT];
 
 function toneClass(tone: Tone): string {
-  if (tone === "alert") return "border-[var(--marigold)] bg-[var(--marigold)] text-[var(--field)]";
-  if (tone === "customer") return "border-[var(--line)] bg-[var(--wash)] text-[var(--ink)]";
+  if (tone === "alert") {
+    return "border-[var(--marigold)] bg-[var(--marigold)] text-[var(--field)]";
+  }
+  // Customer: dark field fill — clearly distinct from soft wash/panel
+  if (tone === "customer") {
+    return "border-[var(--field)] bg-[var(--field)] text-[var(--ink-on-dark)]";
+  }
   return "border-[var(--leaf)] bg-[var(--leaf)] text-white";
 }
 
 function Box({ title, subtitle, tone }: FlowBox) {
   return (
     <div
-      className={`flex h-14 min-w-[7.5rem] flex-col justify-center rounded-[var(--radius-sm)] border-[0.5px] px-3 py-1.5 ${toneClass(tone)}`}
+      className={`flex h-14 min-w-[7.5rem] flex-col justify-center rounded-[var(--radius-sm)] border px-3 py-1.5 ${toneClass(tone)}`}
     >
       <p className="text-xs font-semibold leading-tight">{title}</p>
       <p className="text-[10px] leading-tight opacity-80">{subtitle}</p>

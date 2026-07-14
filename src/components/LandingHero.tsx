@@ -1,6 +1,6 @@
 import Link from "next/link";
-import BrandMark from "@/components/BrandMark";
 import BrandLockup from "@/components/BrandLockup";
+import CashConfirmMock from "@/components/CashConfirmMock";
 import { APP_NAME, APP_POSITIONING, APP_TAGLINE } from "@/lib/constants";
 
 const WORDMARK = APP_NAME.toLowerCase();
@@ -38,7 +38,7 @@ export default function LandingHero() {
         </Link>
       </header>
 
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-8 px-5 pb-10 pt-2 sm:px-6 sm:pb-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-8">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-6 px-5 pb-8 pt-2 sm:px-6 sm:pb-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-8">
         <div
           aria-hidden
           className="hero-bracket pointer-events-none absolute left-5 top-0 size-12 border-l-[3px] border-t-[3px] border-[var(--ink-on-dark)]/40 sm:left-6 sm:size-16"
@@ -47,7 +47,7 @@ export default function LandingHero() {
 
         <div className="relative max-w-xl">
           <h1
-            className="font-[family-name:var(--font-display)] text-[clamp(2.75rem,10vw,5.25rem)] font-bold leading-[0.9] tracking-[-0.035em] lowercase"
+            className="font-[family-name:var(--font-display)] text-[clamp(2.5rem,11vw,5.25rem)] font-bold leading-[0.9] tracking-[-0.035em] lowercase"
             aria-label={WORDMARK}
           >
             {WORDMARK.split("").map((letter, i) => (
@@ -60,11 +60,11 @@ export default function LandingHero() {
               </span>
             ))}
           </h1>
-          <p className="mt-4 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-[var(--ink-on-dark)] sm:text-2xl">
+          <p className="mt-3 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-[var(--ink-on-dark)] sm:mt-4 sm:text-2xl">
             {APP_TAGLINE}
           </p>
           <p className="mt-3 max-w-md text-base leading-snug text-[var(--ink-on-dark)]/75">
-            {APP_POSITIONING}. Print a QR, take payment, watch stock from anywhere.
+            {APP_POSITIONING} Print a QR, take payment, watch stock from anywhere.
           </p>
 
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
@@ -74,7 +74,7 @@ export default function LandingHero() {
             </span>
             <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]/55">
               <span
-                className="size-2 rounded-full border border-[var(--muted)] bg-transparent"
+                className="size-2 rounded-full border border-[var(--ink-on-dark)]/40 bg-transparent"
                 aria-hidden
               />
               Tap &amp; Go — coming soon
@@ -95,36 +95,14 @@ export default function LandingHero() {
               See pricing
             </Link>
           </div>
+
+          <div className="lg:hidden">
+            <CashConfirmMock compact />
+          </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-[240px] lg:mx-0 lg:ml-auto lg:max-w-[260px]">
-          <div
-            aria-hidden
-            className="hero-bracket absolute -bottom-2 -right-2 size-12 border-b-[3px] border-r-[3px] border-[var(--ink-on-dark)]/45 sm:size-14"
-            style={{ borderBottomRightRadius: 10 }}
-          />
-          <div className="hero-phone relative rounded-[28px] border-[5px] border-[var(--ink-on-dark)]/90 bg-[var(--panel)] p-2.5 shadow-[0_20px_50px_rgb(0_0_0/0.4)]">
-            <div className="rounded-[20px] bg-[var(--wash)] px-3 py-4 text-[var(--ink)]">
-              <div className="flex items-center gap-2">
-                <BrandMark className="size-6" />
-                <p className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight">
-                  Gate stall
-                </p>
-              </div>
-              <p className="mt-4 text-center text-[11px] text-[var(--muted)]">
-                Place this in the cash slot
-              </p>
-              <p className="mt-1 text-center font-receipt text-3xl font-semibold text-[var(--field)]">
-                $6.00
-              </p>
-              <p className="mt-4 rounded-[var(--radius-pill)] bg-[var(--leaf)] py-2.5 text-center text-[11px] font-semibold text-white">
-                I have paid cash ✓
-              </p>
-              <p className="mt-2 text-center text-[10px] font-medium text-[var(--leaf)]">
-                Confirmed — owner alerted
-              </p>
-            </div>
-          </div>
+        <div className="hidden lg:block">
+          <CashConfirmMock />
         </div>
       </div>
     </section>
