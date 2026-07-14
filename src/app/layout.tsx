@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Bricolage_Grotesque, DM_Sans, Spline_Sans_Mono } from "next/font/google";
 import { APP_DOMAIN, APP_NAME, APP_POSITIONING } from "@/lib/constants";
 import NativeShellBootstrap from "@/components/NativeShellBootstrap";
+import NavigationBusy from "@/components/NavigationBusy";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -61,6 +63,9 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col font-sans">
         <NativeShellBootstrap />
+        <Suspense fallback={null}>
+          <NavigationBusy />
+        </Suspense>
         {children}
       </body>
     </html>

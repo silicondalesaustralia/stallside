@@ -1,30 +1,38 @@
+import { QR_PRINT_SIZE_CSS, type QrPrintSize } from "@/lib/qr-print-size-css";
+
+export type { QrPrintSize };
+export const QR_PRINT_SIZES: { id: QrPrintSize; label: string; hint: string }[] = [
+  { id: "a4", label: "A4", hint: "Full page" },
+  { id: "half", label: "Half A4", hint: "2 per page" },
+  { id: "quarter", label: "Quarter A4", hint: "4 per page" },
+];
+
+const COPIES: Record<QrPrintSize, number> = {
+  a4: 1,
+  half: 2,
+  quarter: 4,
+};
+
 /** Print only the QR sign sheet in a blank popup so browser headers/footers stay empty. */
-export function printQrSheet() {
+export function printQrSheet(size: QrPrintSize = "a4") {
   const sheet = document.querySelector(".qr-print-sheet");
   if (!sheet) {
     window.print();
     return;
   }
 
+  const tiles = Array.from({ length: COPIES[size] }, () => {
+    return `<div class="qr-print-tile">${sheet.outerHTML}</div>`;
+  }).join("");
+
   const popup = window.open("", "_blank", "noopener,noreferrer,width=900,height=1200");
   if (!popup) {
-    const previousTitle = document.title;
-    document.title = "\u200B";
-    window.addEventListener(
-      "afterprint",
-      () => {
-        document.title = previousTitle;
-      },
-      { once: true },
-    );
     window.print();
     return;
   }
 
   const rootClass = document.documentElement.className;
-  const styles = Array.from(
-    document.querySelectorAll('link[rel="stylesheet"], style'),
-  )
+  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
     .map((node) => node.outerHTML)
     .join("\n");
 
@@ -44,7 +52,6 @@ ${styles}
     color: #182c1b !important;
   }
   body {
-    padding: 14mm !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -56,15 +63,13 @@ ${styles}
     background: #fff !important;
     box-shadow: none !important;
     text-align: center;
-    padding: 8mm !important;
   }
-  .qr-print-sheet img {
-    max-width: 90mm !important;
-    height: auto !important;
-  }
+  ${QR_PRINT_SIZE_CSS[size]}
 </style>
 </head>
-<body>${sheet.outerHTML}</body>
+<body>
+  <div class="qr-print-layout">${tiles}</div>
+</body>
 </html>`);
   popup.document.close();
   popup.document.title = "\u200B";
