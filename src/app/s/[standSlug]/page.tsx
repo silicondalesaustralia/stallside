@@ -49,14 +49,16 @@ export default async function PublicStandPage({
         </h1>
       </div>
       {stand.description ? (
-        <p className="mt-3 text-[var(--muted)]">{stand.description}</p>
+        <p className="mt-3 text-base leading-relaxed text-[var(--muted)] sm:text-lg">
+          {stand.description}
+        </p>
       ) : null}
       {stand.locationLabel ? (
-        <p className="mt-2 text-sm text-[var(--muted)]">{stand.locationLabel}</p>
+        <p className="mt-2 text-base text-[var(--muted)]">{stand.locationLabel}</p>
       ) : null}
 
       {products.length === 0 ? (
-        <p className="mt-10 text-sm text-[var(--muted)]">Nothing for sale right now.</p>
+        <p className="mt-10 text-base text-[var(--muted)]">Nothing for sale right now.</p>
       ) : (
         <PublicCart
           standSlug={stand.slug}
