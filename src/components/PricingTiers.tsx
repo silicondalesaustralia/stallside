@@ -27,7 +27,7 @@ export default function PricingTiers() {
             Take cash. Track stock. Print QR posters. Sale and low-stock alerts.
           </p>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Set up in two minutes. No ABN, no bank details.
+            Set up in two minutes. No paperwork, no bank details.
           </p>
           <Link
             href="/login"
