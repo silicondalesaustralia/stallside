@@ -75,7 +75,7 @@ export default async function StandQrPage({
           <SafeSignHtml
             html={stand.description}
             allowStyles
-            className="safe-sign-html mt-6 text-lg font-semibold text-[var(--ink)]"
+            className="safe-sign-html mt-6 text-lg font-normal text-[var(--ink)]"
           />
         ) : null}
         {stand.locationLabel ? (
