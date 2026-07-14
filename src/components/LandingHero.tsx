@@ -1,6 +1,7 @@
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 import CashConfirmMock from "@/components/CashConfirmMock";
+import HeroCheckoutDemo from "@/components/HeroCheckoutDemo";
 import { APP_NAME, APP_POSITIONING, APP_TAGLINE } from "@/lib/constants";
 
 const WORDMARK = APP_NAME.toLowerCase();
@@ -38,14 +39,14 @@ export default function LandingHero() {
         </Link>
       </header>
 
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-6 px-5 pb-8 pt-2 sm:px-6 sm:pb-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-8">
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 pb-10 pt-2 sm:px-6 sm:pb-12 lg:gap-10">
         <div
           aria-hidden
           className="hero-bracket pointer-events-none absolute left-5 top-0 size-12 border-l-[3px] border-t-[3px] border-[var(--ink-on-dark)]/40 sm:left-6 sm:size-16"
           style={{ borderTopLeftRadius: 10 }}
         />
 
-        <div className="relative max-w-xl">
+        <div className="relative max-w-2xl">
           <h1
             className="font-[family-name:var(--font-display)] text-[clamp(2.5rem,11vw,5.25rem)] font-bold leading-[0.9] tracking-[-0.035em] lowercase"
             aria-label={WORDMARK}
@@ -63,7 +64,7 @@ export default function LandingHero() {
           <p className="mt-3 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-[var(--ink-on-dark)] sm:mt-4 sm:text-2xl">
             {APP_TAGLINE}
           </p>
-          <p className="mt-3 max-w-md text-base leading-snug text-[var(--ink-on-dark)]/75">
+          <p className="mt-3 max-w-xl text-base leading-snug text-[var(--ink-on-dark)]/75">
             {APP_POSITIONING} Print a QR, take payment, watch stock from anywhere.
           </p>
 
@@ -95,14 +96,13 @@ export default function LandingHero() {
               See pricing
             </Link>
           </div>
-
-          <div className="lg:hidden">
-            <CashConfirmMock compact />
-          </div>
         </div>
 
         <div className="hidden lg:block">
-          <CashConfirmMock />
+          <HeroCheckoutDemo />
+        </div>
+        <div className="lg:hidden">
+          <CashConfirmMock compact />
         </div>
       </div>
     </section>

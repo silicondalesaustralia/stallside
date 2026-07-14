@@ -11,7 +11,7 @@ export default function CashConfirmMock({ compact = false }: CashConfirmMockProp
         <BrandMark className="size-8 shrink-0" />
         <div className="min-w-0 flex-1">
           <p className="text-[11px] text-[var(--muted)]">Cash confirmed</p>
-          <p className="font-receipt text-lg font-semibold text-[var(--field)]">$6.00</p>
+          <p className="font-receipt text-lg font-semibold text-[var(--field)]">$12.00</p>
         </div>
         <p className="shrink-0 text-[10px] font-semibold text-[var(--leaf)]">Owner alerted</p>
       </div>
@@ -34,10 +34,10 @@ export default function CashConfirmMock({ compact = false }: CashConfirmMockProp
             </p>
           </div>
           <p className="mt-4 text-center text-[11px] text-[var(--muted)]">
-            Place this in the cash slot
+            Slot, cash box, or whatever is provided
           </p>
           <p className="mt-1 text-center font-receipt text-3xl font-semibold text-[var(--field)]">
-            $6.00
+            $12.00
           </p>
           <p className="mt-4 rounded-[var(--radius-pill)] bg-[var(--leaf)] py-2.5 text-center text-[11px] font-semibold text-white">
             I have paid cash ✓
