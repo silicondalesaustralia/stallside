@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { logout } from "@/app/login/actions";
-import { MONTHLY_FEE_CENTS, PLATFORM_FEE_BPS } from "@/lib/constants";
+import { MONTHLY_FEE_CENTS } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
 import { Role } from "@/generated/prisma/client";
 
@@ -44,10 +44,10 @@ export default async function SettingsPage() {
       </section>
 
       <section className="space-y-2 text-sm">
-        <h2 className="text-lg font-semibold">Billing (planned)</h2>
+        <h2 className="text-lg font-semibold">Billing</h2>
         <p>
-          SaaS: {formatMoney(MONTHLY_FEE_CENTS, "AUD")}/month · Platform fee:{" "}
-          {PLATFORM_FEE_BPS / 100}% on card sales only (tracked; not skimmed via Connect yet).
+          Cash plan: {formatMoney(MONTHLY_FEE_CENTS, "AUD")}/mo per site (collection coming). No
+          transaction fees. Card / Tap &amp; Go plan coming soon.
         </p>
       </section>
 

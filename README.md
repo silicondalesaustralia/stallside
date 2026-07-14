@@ -38,8 +38,8 @@ Point DNS for `stallside.app` at Vercel. Do not pilot QR posters on `*.vercel.ap
 
 ## Product decisions (MVP)
 
-- SaaS: $9.99/mo (not collected yet)
-- Platform fee: 2% on card orders only (tracked; no Connect application fee yet)
+- Plans: **$6.99/mo** Cash (live) · **$19.99/mo** Card (coming soon, waitlist)
+- **No transaction fees** on either plan
 - Exact public stock off by default
 - Cash sales: customer-confirmed, logged only
 - Currency: per stand
