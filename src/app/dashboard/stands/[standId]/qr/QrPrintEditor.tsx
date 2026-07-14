@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { updateStandQrPrint } from "../../actions";
+import SimpleHtmlEditor from "@/components/SimpleHtmlEditor";
 
 type PrintFields = {
   id: string;
@@ -47,16 +48,17 @@ export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      <label className="flex flex-col gap-2 text-sm">
+      <div className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Instructions</span>
-        <textarea
+        <p className="text-[var(--muted)]">
+          Use bold, lists, and Enter for new lines so steps read clearly on the printout.
+        </p>
+        <SimpleHtmlEditor
           name="description"
-          rows={3}
           defaultValue={stand.description ?? ""}
-          placeholder="Please take eggs from the fridge…"
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+          placeholder="Step 1: Scan QR code…"
         />
-      </label>
+      </div>
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Location</span>
         <input

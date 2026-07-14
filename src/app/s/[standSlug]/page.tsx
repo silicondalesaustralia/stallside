@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import BrandMark from "@/components/BrandMark";
+import SafeSignHtml from "@/components/SafeSignHtml";
 import PublicCart from "./PublicCart";
 
 function stockLabel(showExact: boolean, quantity: number, threshold: number): string {
@@ -49,9 +50,10 @@ export default async function PublicStandPage({
         </h1>
       </div>
       {stand.description ? (
-        <p className="mt-4 text-xl leading-relaxed text-[var(--ink)]">
-          {stand.description}
-        </p>
+        <SafeSignHtml
+          html={stand.description}
+          className="mt-4 text-xl leading-relaxed text-[var(--ink)] [&_li]:my-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_strong]:font-bold [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6"
+        />
       ) : null}
       {stand.locationLabel ? (
         <p className="mt-3 text-lg text-[var(--muted)]">{stand.locationLabel}</p>

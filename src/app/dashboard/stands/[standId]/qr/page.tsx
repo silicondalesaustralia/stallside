@@ -4,7 +4,8 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { APP_DOMAIN } from "@/lib/constants";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
-import BrandMark from "@/components/BrandMark";
+import BrandLockup from "@/components/BrandLockup";
+import SafeSignHtml from "@/components/SafeSignHtml";
 import QrActions from "./QrActions";
 import QrPrintEditor from "./QrPrintEditor";
 
@@ -24,6 +25,7 @@ export default async function StandQrPage({
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 640);
   const signMessage =
     stand.qrSignMessage?.trim() || "Scan to browse and pay at this stand.";
+  const siteUrl = `https://${APP_DOMAIN}`;
 
   return (
     <main className="mx-auto flex max-w-lg flex-col gap-8">
@@ -49,14 +51,17 @@ export default async function StandQrPage({
           style={{ borderBottomRightRadius: 10 }}
         />
         <div className="flex justify-center">
-          <BrandMark className="size-10" />
+          <BrandLockup link={false} size="lg" />
         </div>
-        <h1 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
+        <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
           {stand.name}
         </h1>
         <p className="mt-3 text-lg text-[var(--muted)]">{signMessage}</p>
         {stand.description ? (
-          <p className="mt-3 text-xl font-semibold text-[var(--ink)]">{stand.description}</p>
+          <SafeSignHtml
+            html={stand.description}
+            className="mt-3 text-left text-lg font-semibold leading-relaxed text-[var(--ink)] [&_li]:my-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_strong]:font-bold [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6"
+          />
         ) : null}
         {stand.locationLabel ? (
           <p className="mt-3 text-base text-[var(--muted)]">{stand.locationLabel}</p>
@@ -67,7 +72,12 @@ export default async function StandQrPage({
           alt={`QR code for ${stand.name}`}
           className="mx-auto mt-6 w-full max-w-[320px]"
         />
-        <p className="mt-4 break-all font-receipt text-xs text-[var(--muted)]">{checkoutUrl}</p>
+        <p className="mt-4 break-all font-receipt text-xs text-[var(--muted)]">
+          {checkoutUrl}
+        </p>
+        <p className="mt-3 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-[var(--field)]">
+          {siteUrl}
+        </p>
       </div>
 
       <div className="print:hidden">

@@ -7,6 +7,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { CURRENCIES } from "@/lib/constants";
 import { uniqueStandSlug } from "@/lib/slug";
+import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
 
 const standSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -114,7 +115,7 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
 
   const printSchema = z.object({
     name: z.string().trim().min(2).max(80),
-    description: z.string().trim().max(500).optional(),
+    description: z.string().trim().max(8000).optional(),
     locationLabel: z.string().trim().max(120).optional(),
     qrSignMessage: z.string().trim().max(160).optional(),
   });
@@ -127,11 +128,15 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
   });
   if (!parsed.success) return { error: "Check the print details and try again." };
 
+  const instructions = parsed.data.description
+    ? sanitizeSignHtml(parsed.data.description)
+    : "";
+
   await prisma.stand.update({
     where: { id: standId },
     data: {
       name: parsed.data.name,
-      description: parsed.data.description || null,
+      description: instructions || null,
       locationLabel: parsed.data.locationLabel || null,
       qrSignMessage: parsed.data.qrSignMessage || null,
     },
