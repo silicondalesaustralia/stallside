@@ -20,6 +20,7 @@ export async function registerOwnerPush() {
   }
 
   await PushNotifications.addListener("registration", (token) => {
+    console.info("[Stallside] push token", token.value.slice(0, 16) + "…");
     void fetch("/api/push/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -29,11 +30,16 @@ export async function registerOwnerPush() {
       }),
     }).then(async (res) => {
       if (!res.ok) console.error("Push token register failed", await res.text());
+      else console.info("[Stallside] push token registered with server");
     });
   });
 
   await PushNotifications.addListener("registrationError", (err) => {
     console.error("Push registration error", err);
+  });
+
+  await PushNotifications.addListener("pushNotificationReceived", (n) => {
+    console.info("[Stallside] push received", n.title, n.body);
   });
 
   await PushNotifications.register();

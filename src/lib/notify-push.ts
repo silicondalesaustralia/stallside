@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
+import { sendApns } from "@/lib/notify-apns";
 
 type PushPayload = {
   title: string;
@@ -11,7 +12,7 @@ async function sendFcm(token: string, payload: PushPayload) {
   const key = process.env.FCM_SERVER_KEY;
   if (!key) {
     console.log(
-      `\n[${APP_NAME} push] ${token.slice(0, 12)}…\n${payload.title}\n${payload.body}\n`,
+      `\n[${APP_NAME} FCM] ${token.slice(0, 12)}…\n${payload.title}\n${payload.body}\n`,
     );
     return;
   }
@@ -45,5 +46,17 @@ async function sendFcm(token: string, payload: PushPayload) {
 
 export async function sendOwnerPush(ownerId: string, payload: PushPayload) {
   const devices = await prisma.pushDevice.findMany({ where: { ownerId } });
-  await Promise.all(devices.map((d) => sendFcm(d.token, payload)));
+  await Promise.all(
+    devices.map(async (device) => {
+      try {
+        if (device.platform === "ios") {
+          await sendApns(device.token, payload);
+        } else {
+          await sendFcm(device.token, payload);
+        }
+      } catch (error) {
+        console.error("Push send failed", device.platform, error);
+      }
+    }),
+  );
 }
