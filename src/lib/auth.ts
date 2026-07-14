@@ -10,29 +10,48 @@ const emailProvider: Provider = {
   id: "resend",
   name: "Email",
   type: "email",
-  from: process.env.EMAIL_FROM ?? `${APP_NAME} <noreply@localhost>`,
+  from: process.env.EMAIL_FROM ?? `${APP_NAME} <hello@stallside.app>`,
   maxAge: 60 * 60,
   async sendVerificationRequest({ identifier, url }) {
-    if (process.env.RESEND_API_KEY) {
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: process.env.EMAIL_FROM ?? "Stallside <onboarding@resend.dev>",
-          to: [identifier],
-          subject: `Sign in to ${APP_NAME}`,
-          html: `<p>Click to sign in:</p><p><a href="${url}">${url}</a></p>`,
-        }),
-      });
-      if (!res.ok) {
-        throw new Error(`Failed to send email: ${await res.text()}`);
-      }
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      console.log(`\n[Stallside magic link] ${identifier}\n${url}\n`);
       return;
     }
-    console.log(`\n[Stallside magic link] ${identifier}\n${url}\n`);
+
+    const from = process.env.EMAIL_FROM ?? `${APP_NAME} <hello@stallside.app>`;
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: [identifier],
+        subject: `Sign in to ${APP_NAME}`,
+        html: `
+          <div style="font-family:system-ui,sans-serif;line-height:1.5;color:#182C1B">
+            <p style="font-size:18px;font-weight:600">Sign in to ${APP_NAME}</p>
+            <p>Tap the button below. This link works once and expires in about an hour.</p>
+            <p style="margin:24px 0">
+              <a href="${url}"
+                 style="background:#2E7D3F;color:#fff;padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:600">
+                Sign in
+              </a>
+            </p>
+            <p style="font-size:12px;color:#56684F">If the button doesn’t open the app, copy this URL into Stallside:</p>
+            <p style="font-size:12px;word-break:break-all">${url}</p>
+          </div>
+        `,
+      }),
+    });
+
+    if (!res.ok) {
+      const detail = await res.text();
+      console.error("[Stallside] Resend failed", detail);
+      throw new Error(`Resend failed: ${detail}`);
+    }
   },
 };
 
@@ -40,7 +59,6 @@ function createAdapter(): Adapter {
   const base = PrismaAdapter(prisma);
   return {
     ...base,
-    // Prisma throw if the session row is already gone — Auth.js still calls delete.
     deleteSession: async (sessionToken) => {
       await prisma.session.deleteMany({ where: { sessionToken } });
     },

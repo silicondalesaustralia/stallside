@@ -17,9 +17,22 @@ export async function requestMagicLink(formData: FormData) {
       redirectTo: "/dashboard",
     });
   } catch (error) {
-    if (error instanceof AuthError) {
-      throw new Error("Could not send sign-in link. Try again.");
+    // NextAuth uses NEXT_REDIRECT for successful verifyRequest redirects — rethrow those.
+    if (
+      error &&
+      typeof error === "object" &&
+      "digest" in error &&
+      String((error as { digest?: string }).digest).startsWith("NEXT_REDIRECT")
+    ) {
+      throw error;
     }
+    if (error instanceof AuthError) {
+      console.error("Magic link AuthError", error);
+      throw new Error(
+        "Could not send sign-in link. Check RESEND_API_KEY, EMAIL_FROM, and that stallside.app is verified in Resend.",
+      );
+    }
+    console.error("Magic link failed", error);
     throw error;
   }
 }
