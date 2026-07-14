@@ -71,7 +71,7 @@ export async function confirmCashCheckout(input: {
     return { orderNumber: order.orderNumber };
   } catch (error) {
     if (error instanceof Error && error.message === "STOCK") {
-      return { error: "Stock changed — refresh and try again." };
+      return { error: "Stock changed - refresh and try again." };
     }
     console.error("Cash checkout failed", error);
     const detail =

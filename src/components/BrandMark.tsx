@@ -3,7 +3,7 @@ type BrandMarkProps = {
   variant?: "light" | "dark";
 };
 
-/** QR-finder bracket + seed — Stallside mark */
+/** QR-finder bracket + seed - Stallside mark */
 export default function BrandMark({ className = "size-10", variant = "light" }: BrandMarkProps) {
   const bracket = variant === "dark" ? "var(--ink-on-dark)" : "var(--field)";
   const seed = variant === "dark" ? "var(--marigold)" : "var(--leaf)";

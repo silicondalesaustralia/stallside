@@ -1,4 +1,4 @@
-# Stallside — iPhone push (Capacitor) without Firebase
+# Stallside - iPhone push (Capacitor) without Firebase
 
 Capacitor on iOS gives an **APNs** device token. We send iOS pushes via **Apple Push Notification service** directly. Firebase is only needed later for Android.
 
@@ -54,7 +54,7 @@ In Xcode:
 ## 4. Register the token
 
 1. Sign in with magic link (Resend)
-2. Stay on `/dashboard` — app requests notification permission → **Allow**
+2. Stay on `/dashboard` - app requests notification permission → **Allow**
 3. Safari/Xcode console should show `[Stallside] push token registered with server`
 4. In Neon / Prisma Studio, `PushDevice` should have an `ios` row for your owner
 

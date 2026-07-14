@@ -1,28 +1,28 @@
 const OWNER_LIVE = [
   "Unlimited products, real stock counts",
-  "Printable QR poster — print, download, copy",
+  "Printable QR poster - print, download, copy",
   "Cash payments, customer-confirmed",
-  "Sale alerts — email and push",
+  "Sale alerts - email and push",
   "Low-stock alerts before you run out",
   "Restock from your phone, in the field",
-  "Orders dashboard — what sold, when, for how much",
+  "Orders dashboard - what sold, when, for how much",
   "Stock shows Available / Low / Sold out",
   "Owner app on iPhone and Android",
 ] as const;
 
 const OWNER_SOON = [
-  "Tap & Go — card, Apple Pay, Google Pay",
+  "Tap & Go - card, Apple Pay, Google Pay",
   "No terminal, no hardware, no percentage of your sales",
 ] as const;
 
 const CUSTOMER_LIVE = [
   "Scan with your phone camera. No app.",
   "See what's there and what's left.",
-  "Pay cash and confirm — the owner knows.",
+  "Pay cash and confirm - the owner knows.",
 ] as const;
 
 const CUSTOMER_SOON = [
-  "Tap & Go — card, Apple Pay, Google Pay",
+  "Tap & Go - card, Apple Pay, Google Pay",
   "Save your card once, pay in one tap",
 ] as const;
 

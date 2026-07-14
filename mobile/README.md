@@ -2,7 +2,7 @@
 
 Native Android/iOS projects wrap the hosted Next.js owner app for App Store / Play listing.
 
-Customers still use the phone browser via QR — this shell is owner-only.
+Customers still use the phone browser via QR - this shell is owner-only.
 
 ## Prerequisites
 

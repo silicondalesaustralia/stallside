@@ -43,7 +43,7 @@ export default function CashConfirmMock({ compact = false }: CashConfirmMockProp
             I have paid cash ✓
           </p>
           <p className="mt-2 text-center text-[10px] font-medium text-[var(--field)]">
-            Confirmed — owner alerted
+            Confirmed - owner alerted
           </p>
         </div>
       </div>

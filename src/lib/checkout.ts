@@ -158,7 +158,7 @@ export async function fulfillPaidCardOrder(orderId: string, paymentIntentId?: st
         where: { id: order.id },
         data: { paymentStatus: PaymentStatus.FAILED },
       });
-      return { error: "Paid but stock unavailable — contact the stand owner." as const };
+      return { error: "Paid but stock unavailable - contact the stand owner." as const };
     }
     throw error;
   }

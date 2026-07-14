@@ -55,7 +55,7 @@ export default async function StandDetailPage({
         <div className="min-w-0 flex-1">
           <h2 className="font-semibold">Stand QR code</h2>
           <p className="mt-1 text-sm text-[var(--muted)]">
-            Always available here — download or print anytime for the stall.
+            Always available here - download or print anytime for the stall.
           </p>
           <div className="mt-3 flex flex-wrap gap-3 text-sm">
             <Link

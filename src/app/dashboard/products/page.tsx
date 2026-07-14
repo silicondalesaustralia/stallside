@@ -2,11 +2,12 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
+import ProductDeleteButton from "./ProductDeleteButton";
 
 export default async function ProductsPage() {
   const { owner } = await requireOwner();
   const products = await prisma.product.findMany({
-    where: { ownerId: owner.id },
+    where: { ownerId: owner.id, isActive: true },
     include: { stand: true },
     orderBy: [{ standId: "asc" }, { sortOrder: "asc" }, { name: "asc" }],
   });
@@ -17,7 +18,7 @@ export default async function ProductsPage() {
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Products</h1>
           <p className="mt-1 text-[var(--muted)]">
-            Name products as you sell them — e.g. Dozen eggs, 500g steak.
+            Name products as you sell them - e.g. Dozen eggs, 500g steak.
           </p>
         </div>
         <Link
@@ -33,22 +34,27 @@ export default async function ProductsPage() {
       ) : (
         <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
           {products.map((product) => (
-            <li key={product.id} className="flex flex-wrap items-center justify-between gap-3 py-4 text-sm">
+            <li
+              key={product.id}
+              className="flex flex-wrap items-center justify-between gap-3 py-4 text-sm"
+            >
               <div>
                 <p className="font-medium">{product.name}</p>
                 <p className="mt-1 text-[var(--muted)]">
                   {product.stand.name} ·{" "}
                   {formatMoney(product.priceCents, product.currency)} ·{" "}
                   {product.stockQuantity} in stock
-                  {!product.isActive ? " · archived" : ""}
                 </p>
               </div>
-              <Link
-                href="/dashboard/inventory"
-                className="text-[var(--leaf-dark)] underline"
-              >
-                Adjust stock
-              </Link>
+              <div className="flex flex-wrap items-center gap-4">
+                <Link
+                  href="/dashboard/inventory"
+                  className="text-[var(--leaf-dark)] underline"
+                >
+                  Adjust stock
+                </Link>
+                <ProductDeleteButton productId={product.id} productName={product.name} />
+              </div>
             </li>
           ))}
         </ul>

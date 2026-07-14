@@ -17,7 +17,7 @@ export async function requestMagicLink(formData: FormData) {
       redirectTo: "/dashboard",
     });
   } catch (error) {
-    // NextAuth uses NEXT_REDIRECT for successful verifyRequest redirects — rethrow those.
+    // NextAuth uses NEXT_REDIRECT for successful verifyRequest redirects - rethrow those.
     if (
       error &&
       typeof error === "object" &&

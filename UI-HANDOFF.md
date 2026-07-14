@@ -1,4 +1,4 @@
-# Stallside — UI improvement handoff
+# Stallside - UI improvement handoff
 
 > **Rebrand:** Product name is **Stallside** (`stallside.app`). See `rebrand-ui-direction.md` for tokens, fonts, and layout. Flow constraints below still apply.
 
@@ -66,11 +66,11 @@ Defined in `src/app/globals.css`:
 
 | Route | File | Notes |
 |-------|------|-------|
-| `/` | `src/app/page.tsx` | Landing — brand-first hero |
+| `/` | `src/app/page.tsx` | Landing - brand-first hero |
 | `/login` | `src/app/login/page.tsx` | Owner magic-link sign-in |
 | `/login/check-email` | `src/app/login/check-email/*` | Local: paste magic link helper |
 | `/onboarding` | `src/app/onboarding/page.tsx` | Business name setup |
-| `/s/[standSlug]` | `src/app/s/[standSlug]/*` | **Customer checkout** — highest UX priority |
+| `/s/[standSlug]` | `src/app/s/[standSlug]/*` | **Customer checkout** - highest UX priority |
 | `/checkout/success` | `src/app/checkout/success/page.tsx` | After Stripe |
 | `/checkout/cancelled` | `src/app/checkout/cancelled/page.tsx` | Abandoned card |
 
@@ -84,7 +84,7 @@ Defined in `src/app/globals.css`:
 | `/dashboard/stands/[standId]` | `…/stands/[standId]/page.tsx` | Edit + QR preview |
 | `/dashboard/stands/[standId]/qr` | `…/stands/[standId]/qr/*` | Print / download QR |
 | `/dashboard/products` | `…/products/*` | Catalog |
-| `/dashboard/inventory` | `…/inventory/*` | Field restock — mobile-critical |
+| `/dashboard/inventory` | `…/inventory/*` | Field restock - mobile-critical |
 | `/dashboard/orders` | `…/orders/page.tsx` | Sales list |
 | `/dashboard/settings` | `…/settings/page.tsx` | Account |
 | `/dashboard/settings/stripe` | `…/settings/stripe/page.tsx` | Connect Stripe |
@@ -100,7 +100,7 @@ Nav: `src/components/DashboardNav.tsx`
 | `/admin/stands` | `…/stands/page.tsx` |
 | `/admin/orders` | `…/orders/page.tsx` |
 
-Nav: `src/components/AdminNav.tsx` — keep clearly “Admin”, desktop-first.
+Nav: `src/components/AdminNav.tsx` - keep clearly “Admin”, desktop-first.
 
 ---
 
@@ -114,7 +114,7 @@ Flow in `PublicCart.tsx`:
 4. Cash → confirm copy (“place $X in the cash slot” → **I have paid cash**)  
 5. Card → redirect Stripe Checkout  
 
-**Stock display:** default is not exact counts — `Available` / `Low stock` / `Sold out` (exact only if owner enables `showExactStock`).
+**Stock display:** default is not exact counts - `Available` / `Low stock` / `Sold out` (exact only if owner enables `showExactStock`).
 
 **Do not remove** payment method labels or cash confirmation step without product sign-off.
 
@@ -122,12 +122,12 @@ Flow in `PublicCart.tsx`:
 
 ## 6. Owner UX priorities for UI pass
 
-1. **Mobile-first dashboard** — thumb-friendly nav, inventory adjust, big QR actions  
-2. **QR always findable** — My stands → “QR & print”; print page already has Print / Download / Copy  
-3. **Field inventory** — `/dashboard/inventory` should feel fast at the stall  
-4. **Landing** — stronger brand composition, less generic marketing  
-5. **Checkout** — clearer hierarchy, larger tap targets, trust for unmanned payment  
-6. **Empty states** — stands/products/orders with clear next action  
+1. **Mobile-first dashboard** - thumb-friendly nav, inventory adjust, big QR actions  
+2. **QR always findable** - My stands → “QR & print”; print page already has Print / Download / Copy  
+3. **Field inventory** - `/dashboard/inventory` should feel fast at the stall  
+4. **Landing** - stronger brand composition, less generic marketing  
+5. **Checkout** - clearer hierarchy, larger tap targets, trust for unmanned payment  
+6. **Empty states** - stands/products/orders with clear next action  
 
 ---
 
@@ -139,7 +139,7 @@ Flow in `PublicCart.tsx`:
 - After UI changes: `npm run build` must pass  
 - Don’t install new packages unless asked  
 - Don’t change Stripe/auth/checkout business logic unless required for UI  
-- CSS variables in `globals.css` — extend rather than scatter one-off hex everywhere  
+- CSS variables in `globals.css` - extend rather than scatter one-off hex everywhere  
 
 ---
 
@@ -188,7 +188,7 @@ src/components/DashboardNav.tsx
 src/components/AdminNav.tsx
 src/components/DashboardStat.tsx
 src/components/FormField.tsx
-src/components/NativeShellBootstrap.tsx  # Capacitor only — leave alone unless needed
+src/components/NativeShellBootstrap.tsx  # Capacitor only - leave alone unless needed
 ```
 
 ---

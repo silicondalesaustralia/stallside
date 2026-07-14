@@ -26,7 +26,7 @@ export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
         setMessage(result.error);
         return;
       }
-      setMessage("Saved — print preview updated.");
+      setMessage("Saved - print preview updated.");
       router.refresh();
     });
   }

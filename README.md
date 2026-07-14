@@ -18,7 +18,7 @@ Repo: [silicondalesaustralia/stallside](https://github.com/silicondalesaustralia
 2. `npm install`
 3. `npx prisma migrate deploy` (or `migrate dev`)
 4. `npm run dev`
-5. Open http://localhost:3000 — without `RESEND_API_KEY`, magic links print in the server console.
+5. Open http://localhost:3000 - without `RESEND_API_KEY`, magic links print in the server console.
 
 ## Pilot / Vercel
 

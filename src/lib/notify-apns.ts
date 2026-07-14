@@ -45,7 +45,7 @@ function createApnsJwt() {
 export async function sendApns(token: string, payload: ApnsPayload) {
   if (!apnsConfigured()) {
     console.log(
-      `\n[${APP_NAME} APNs] missing APNS_* env — would send to ${token.slice(0, 12)}…\n${payload.title}\n${payload.body}\n`,
+      `\n[${APP_NAME} APNs] missing APNS_* env - would send to ${token.slice(0, 12)}…\n${payload.title}\n${payload.body}\n`,
     );
     return;
   }

@@ -10,7 +10,7 @@ export default async function CheckoutSuccessPage({
   searchParams: Promise<{ session_id?: string }>;
 }) {
   const { session_id: sessionId } = await searchParams;
-  let message = "Thanks — your payment is being confirmed.";
+  let message = "Thanks - your payment is being confirmed.";
 
   if (sessionId && isStripeConfigured()) {
     try {
@@ -41,7 +41,7 @@ export default async function CheckoutSuccessPage({
       }
     } catch (error) {
       console.error("Checkout success fulfillment failed", error);
-      message = "Payment received — stock will update shortly if not already.";
+      message = "Payment received - stock will update shortly if not already.";
     }
   }
 

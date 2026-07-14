@@ -24,7 +24,7 @@ export async function notifyTapAndGoInterest(standSlug: string) {
     <div style="font-family:system-ui,sans-serif;line-height:1.5;color:#182C1B">
       <p style="font-size:18px;font-weight:600">${title}</p>
       <p>A customer who just paid at <strong>${stand.name}</strong> said they would use
-      <strong>Tap &amp; Go</strong> (card, Apple Pay, Google Pay) if it was available —
+      <strong>Tap &amp; Go</strong> (card, Apple Pay, Google Pay) if it was available -
       at this stand and others on ${APP_NAME}.</p>
       <p style="margin-top:20px;font-weight:600">How to turn it on</p>
       <ol>

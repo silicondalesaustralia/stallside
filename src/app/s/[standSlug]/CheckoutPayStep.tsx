@@ -33,7 +33,7 @@ export default function CheckoutPayStep({
           onClick={onCard}
           className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-5 text-left text-base font-semibold disabled:opacity-50"
         >
-          {pending ? "Opening checkout…" : "Tap & Go — card, Apple Pay, Google Pay"}
+          {pending ? "Opening checkout…" : "Tap & Go - card, Apple Pay, Google Pay"}
         </button>
       ) : (
         <div className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-4 py-5">

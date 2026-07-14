@@ -137,3 +137,31 @@ export async function adjustInventory(formData: FormData) {
   revalidatePath("/dashboard/products");
   return { ok: true as const };
 }
+
+/** Remove a product from the catalog. Hard-deletes if never sold; otherwise archives. */
+export async function deleteProduct(productId: string) {
+  const { owner } = await requireOwner();
+  const product = await prisma.product.findFirst({
+    where: { id: productId, ownerId: owner.id },
+    include: { _count: { select: { orderItems: true } } },
+  });
+  if (!product) return { error: "Product not found." };
+
+  if (product._count.orderItems > 0) {
+    await prisma.product.update({
+      where: { id: product.id },
+      data: { isActive: false, stockQuantity: 0 },
+    });
+  } else {
+    await prisma.$transaction([
+      prisma.inventoryAdjustment.deleteMany({ where: { productId: product.id } }),
+      prisma.lowStockAlert.deleteMany({ where: { productId: product.id } }),
+      prisma.product.delete({ where: { id: product.id } }),
+    ]);
+  }
+
+  revalidatePath("/dashboard/products");
+  revalidatePath("/dashboard/inventory");
+  revalidatePath(`/dashboard/stands/${product.standId}`);
+  return { ok: true as const };
+}

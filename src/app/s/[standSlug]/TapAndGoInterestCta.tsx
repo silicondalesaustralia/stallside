@@ -27,7 +27,7 @@ export default function TapAndGoInterestCta({ standSlug }: { standSlug: string }
       </p>
       {sent ? (
         <p className="mt-4 text-base text-[var(--leaf)]">
-          Thanks — we&apos;ve told the stall owner.
+          Thanks - we&apos;ve told the stall owner.
         </p>
       ) : (
         <button

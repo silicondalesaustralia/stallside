@@ -1,3 +1,6 @@
+import type { ReactNode } from "react";
+import { FlowArrowDown, FlowArrowRight } from "@/components/FlowArrows";
+
 type Tone = "owner" | "customer" | "alert";
 
 type FlowBox = {
@@ -24,13 +27,10 @@ const OWNER_RESULT: FlowBox[] = [
   { title: "Low stock", subtitle: "Before you run out", tone: "alert" },
 ];
 
-const MOBILE_STEPS: FlowBox[] = [OWNER_START, ...CUSTOMER, ...OWNER_RESULT];
-
 function toneClass(tone: Tone): string {
   if (tone === "alert") {
     return "border-[var(--marigold)] bg-[var(--marigold)] text-[var(--field)]";
   }
-  // Customer: dark field fill — clearly distinct from soft wash/panel
   if (tone === "customer") {
     return "border-[var(--field)] bg-[var(--field)] text-[var(--ink-on-dark)]";
   }
@@ -48,12 +48,32 @@ function Box({ title, subtitle, tone }: FlowBox) {
   );
 }
 
-function ArrowDown() {
-  return <span className="text-[var(--muted)]" aria-hidden>↓</span>;
+function RoleLabel({ children }: { children: ReactNode }) {
+  return (
+    <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+      {children}
+    </p>
+  );
 }
 
-function ArrowRight() {
-  return <span className="text-[var(--muted)]" aria-hidden>→</span>;
+function MobileSection({
+  label,
+  steps,
+}: {
+  label: string;
+  steps: readonly FlowBox[];
+}) {
+  return (
+    <li className="flex w-full flex-col items-center gap-2">
+      <RoleLabel>{label}</RoleLabel>
+      {steps.map((step, i) => (
+        <div key={step.title} className="flex flex-col items-center gap-2">
+          {i > 0 ? <FlowArrowDown /> : null}
+          <Box {...step} />
+        </div>
+      ))}
+    </li>
+  );
 }
 
 export default function HowItWorksFlow() {
@@ -69,52 +89,51 @@ export default function HowItWorksFlow() {
           How it works
         </h2>
 
-        {/* Mobile: vertical reflow */}
-        <ol className="mt-8 flex flex-col items-center gap-2 md:hidden">
-          {MOBILE_STEPS.map((step, i) => (
-            <li key={step.title} className="flex flex-col items-center gap-2">
-              {i > 0 ? <ArrowDown /> : null}
-              <Box {...step} />
-            </li>
-          ))}
+        {/* Mobile: labelled swim sections */}
+        <ol className="mt-8 flex flex-col items-center gap-5 md:hidden">
+          <MobileSection label="Owner" steps={[OWNER_START]} />
+          <FlowArrowDown />
+          <MobileSection label="Customer" steps={CUSTOMER} />
+          <FlowArrowDown />
+          <MobileSection label="Owner, instantly" steps={OWNER_RESULT} />
         </ol>
 
         {/* Desktop: swim rows */}
-        <div className="mt-8 hidden gap-y-3 md:grid md:grid-cols-[7.5rem_1fr]">
-          <p className="self-center text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-            Owner
-          </p>
+        <div className="mt-8 hidden gap-y-2 md:grid md:grid-cols-[8rem_1fr]">
+          <div className="flex items-center">
+            <RoleLabel>Owner</RoleLabel>
+          </div>
           <div className="flex justify-center">
             <Box {...OWNER_START} />
           </div>
 
-          <div aria-hidden className="col-span-2 flex justify-center py-0.5">
-            <ArrowDown />
+          <div aria-hidden className="col-span-2 flex justify-center py-1">
+            <FlowArrowDown />
           </div>
 
-          <p className="self-center text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-            Customer
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex items-center">
+            <RoleLabel>Customer</RoleLabel>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-1">
             {CUSTOMER.map((step, i) => (
-              <div key={step.title} className="flex items-center gap-2">
-                {i > 0 ? <ArrowRight /> : null}
+              <div key={step.title} className="flex items-center gap-1">
+                {i > 0 ? <FlowArrowRight /> : null}
                 <Box {...step} />
               </div>
             ))}
           </div>
 
-          <div aria-hidden className="col-span-2 flex justify-center py-0.5">
-            <ArrowDown />
+          <div aria-hidden className="col-span-2 flex justify-center py-1">
+            <FlowArrowDown />
           </div>
 
-          <p className="self-center text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-            Owner, instantly
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex items-center">
+            <RoleLabel>Owner, instantly</RoleLabel>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-1">
             {OWNER_RESULT.map((step, i) => (
-              <div key={step.title} className="flex items-center gap-2">
-                {i > 0 ? <ArrowRight /> : null}
+              <div key={step.title} className="flex items-center gap-1">
+                {i > 0 ? <FlowArrowRight /> : null}
                 <Box {...step} />
               </div>
             ))}
@@ -122,7 +141,8 @@ export default function HowItWorksFlow() {
         </div>
 
         <p className="mt-8 text-center text-sm text-[var(--muted)]">
-          Cash today. Tap &amp; Go coming soon — same flow, one tap.
+          Customers scan free - no app, no account. Cash today. Tap &amp; Go coming soon -
+          same flow, one tap.
         </p>
       </div>
     </section>

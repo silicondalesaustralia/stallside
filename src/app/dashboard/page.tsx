@@ -91,7 +91,7 @@ export default async function DashboardPage() {
             Stripe:{" "}
             {owner.stripeChargesEnabled
               ? "Connected"
-              : "Not connected — card checkout disabled"}
+              : "Not connected - card checkout disabled"}
           </p>
           {standRows.length > 0 ? (
             <ul className="mt-4 space-y-3">

@@ -1,10 +1,10 @@
-# Stallside — Pilot go-live checklist (own stall)
+# Stallside - Pilot go-live checklist (own stall)
 
 **Goal:** Stallside running live on Vercel + Postgres, owner app on our iPhone, real QR on our own stall, real cash + real card sales end to end.
 
 **Not the goal:** App Store approval, SaaS billing collection, other owners. Ignore all of that.
 
-Supersedes nothing in the handoff doc — this is the *sequenced task list* to reach a working pilot. Repo rules in §10 of the handoff still apply.
+Supersedes nothing in the handoff doc - this is the *sequenced task list* to reach a working pilot. Repo rules in §10 of the handoff still apply.
 
 ---
 
@@ -12,9 +12,9 @@ Supersedes nothing in the handoff doc — this is the *sequenced task list* to r
 
 | Item | Decision | Why it matters |
 |---|---|---|
-| **Domain** | Point **`stallside.app`** at Vercel. Do NOT pilot on `*.vercel.app`. | Stripe live-mode Connect wants a real business URL. QR posters printed with a `vercel.app` URL look untrustworthy at a roadside stall — the whole product is *trust for unmanned payment*. |
-| **Stripe mode** | Test mode first (steps 1–7), then flip to live (step 8). | Prove the flow without moving real money. |
-| **iOS install** | Xcode direct-to-device or TestFlight **internal** testing. | **No App Store review needed.** Xcode free provisioning certs expire after 7 days; TestFlight internal lasts 90 days and needs no review — prefer TestFlight. |
+| **Domain** | Point **`stallside.app`** at Vercel. Do NOT pilot on `*.vercel.app`. | Stripe live-mode Connect wants a real business URL. QR posters printed with a `vercel.app` URL look untrustworthy at a roadside stall - the whole product is *trust for unmanned payment*. |
+| **Stripe mode** | Test mode first (steps 1-7), then flip to live (step 8). | Prove the flow without moving real money. |
+| **iOS install** | Xcode direct-to-device or TestFlight **internal** testing. | **No App Store review needed.** Xcode free provisioning certs expire after 7 days; TestFlight internal lasts 90 days and needs no review - prefer TestFlight. |
 | **Push on iOS** | Requires paid Apple Developer account ($99/yr) + APNs key + Firebase. | If not ready, pilot with **email alerts only** and add push after. Do not let push block the stall going live. |
 
 ---
@@ -25,16 +25,16 @@ Supersedes nothing in the handoff doc — this is the *sequenced task list* to r
 - [ ] Provision Postgres (Vercel Postgres or Neon/Supabase). Copy connection string.
 - [ ] Add custom domain `stallside.app` in Vercel; update DNS; wait for SSL to go green.
 - [ ] Set env vars in Vercel (Production):
-  - `DATABASE_URL` — pooled connection string
+  - `DATABASE_URL` - pooled connection string
   - `NEXT_PUBLIC_APP_URL=https://stallside.app`
-  - `AUTH_SECRET` — generate fresh (`openssl rand -base64 32`), **not** the local one
+  - `AUTH_SECRET` - generate fresh (`openssl rand -base64 32`), **not** the local one
   - `AUTH_URL=https://stallside.app`
-  - `STRIPE_SECRET_KEY` — **test key** (`sk_test_…`) for now
-  - `STRIPE_WEBHOOK_SECRET` — filled in at step 4
-  - `RESEND_API_KEY` + `EMAIL_FROM` — **required**; magic-link login won't work in prod with console logging
+  - `STRIPE_SECRET_KEY` - **test key** (`sk_test_…`) for now
+  - `STRIPE_WEBHOOK_SECRET` - filled in at step 4
+  - `RESEND_API_KEY` + `EMAIL_FROM` - **required**; magic-link login won't work in prod with console logging
 - [ ] **Run migrations against the prod DB.** Handoff §9.1 flags this: `qrSignMessage` and `PushDevice` may not be applied. Run `npx prisma migrate deploy` with prod `DATABASE_URL`, then verify all three migrations (`init`, `add_qr_sign_message`, `add_push_devices`) are in `_prisma_migrations`.
 - [ ] Confirm Prisma client generates on Vercel build (`prisma generate` in build step / `postinstall`).
-- [ ] Deploy. Hit `https://stallside.app` — landing page renders.
+- [ ] Deploy. Hit `https://stallside.app` - landing page renders.
 
 **Gate:** landing page live on the real domain over HTTPS.
 
@@ -55,7 +55,7 @@ Magic-link auth is the only way in, and in production it can't print to a consol
 
 ## 3. Wrap the owner app onto the iPhone
 
-- [ ] Set `CAPACITOR_SERVER_URL=https://stallside.app` (or remove the override so it uses the built-in prod URL — confirm which `capacitor.config.ts` expects).
+- [ ] Set `CAPACITOR_SERVER_URL=https://stallside.app` (or remove the override so it uses the built-in prod URL - confirm which `capacitor.config.ts` expects).
 - [ ] `npx cap sync ios`
 - [ ] Open in Xcode, set signing team, build to the physical iPhone.
 - [ ] **Preferred:** archive → upload to TestFlight → install via TestFlight (internal testers need no review; 90-day builds).
@@ -81,21 +81,21 @@ Magic-link auth is the only way in, and in production it can't print to a consol
 
 ## 5. Set up the real stall in the app
 
-Do all of this on the iPhone, in the field, as a real owner would. Note anything that's awkward — this is our first real UX signal.
+Do all of this on the iPhone, in the field, as a real owner would. Note anything that's awkward - this is our first real UX signal.
 
 - [ ] Onboarding: business name, contact.
 - [ ] Create stand: name, currency (AUD), `qrSignMessage`.
-- [ ] Add real products: eggs — real price, real stock count, sensible `lowStockThreshold` (set it 1–2 above current stock so we can *deliberately* trip the low-stock alert during testing).
+- [ ] Add real products: eggs - real price, real stock count, sensible `lowStockThreshold` (set it 1-2 above current stock so we can *deliberately* trip the low-stock alert during testing).
 - [ ] Confirm exact-stock display is OFF (default) → customer sees `Available` / `Low stock` / `Sold out`.
 - [ ] Generate + download the QR poster from `/dashboard/stands/[standId]/qr`.
-- [ ] **Check the printed QR resolves to `https://stallside.app/s/{slug}`** — not localhost, not vercel.app. Scan it with a phone camera before printing.
+- [ ] **Check the printed QR resolves to `https://stallside.app/s/{slug}`** - not localhost, not vercel.app. Scan it with a phone camera before printing.
 - [ ] Print, laminate (it will rain), fix to the stall.
 
 **Gate:** a stranger with a phone can scan the sign and reach our stall page.
 
 ---
 
-## 6. End-to-end test — CASH (test mode)
+## 6. End-to-end test - CASH (test mode)
 
 Do this standing at the stall, on mobile data, not wifi.
 
@@ -112,7 +112,7 @@ Do this standing at the stall, on mobile data, not wifi.
 
 ---
 
-## 7. End-to-end test — CARD (test mode)
+## 7. End-to-end test - CARD (test mode)
 
 - [ ] Scan QR → add items → Continue to payment → **Card / Tap & Go**.
 - [ ] Redirects to Stripe Checkout on the phone.
@@ -120,7 +120,7 @@ Do this standing at the stall, on mobile data, not wifi.
 - [ ] Redirects back to `/checkout/success`.
 - [ ] Verify:
   - [ ] Order is `PAID`
-  - [ ] Stock decremented **once** (not twice — webhook *and* success page both fulfil; confirm idempotency)
+  - [ ] Stock decremented **once** (not twice - webhook *and* success page both fulfil; confirm idempotency)
   - [ ] `platformFeeCents` recorded at 2%
   - [ ] Sale email + push
   - [ ] Stripe dashboard shows the payment against the **connected account**
@@ -143,7 +143,7 @@ Only after 6 and 7 pass cleanly.
 - [ ] Swap Vercel env to live keys: `sk_live_…`.
 - [ ] Create a **new webhook endpoint in live mode** (test-mode secrets don't carry over) → update `STRIPE_WEBHOOK_SECRET` → redeploy.
 - [ ] Do one **real card sale on our own stall for a real, small amount** (buy our own eggs with a real card). Confirm the money lands in the bank account.
-- [ ] Do one **real Apple Pay / Tap & Go sale** from an iPhone wallet — this is the actual feature customers will use, and it's the one thing test cards can't validate.
+- [ ] Do one **real Apple Pay / Tap & Go sale** from an iPhone wallet - this is the actual feature customers will use, and it's the one thing test cards can't validate.
 
 **Gate:** real dollars in the real bank account.
 
@@ -151,7 +151,7 @@ Only after 6 and 7 pass cleanly.
 
 ## 9. Fix-before-real-customers list (from handoff §9)
 
-- [ ] **Manual inventory adjust doesn't trigger low-stock alerts** (§9.7) — restocking is the main field action; decide whether it should. Likely yes.
+- [ ] **Manual inventory adjust doesn't trigger low-stock alerts** (§9.7) - restocking is the main field action; decide whether it should. Likely yes.
 - [ ] Offline behaviour: what happens when a customer scans with one bar of signal? Test it. A blank page at the gate = a lost sale and a dead stall.
 - [ ] What happens if stock hits 0 mid-checkout for another customer? Race condition on decrement.
 - [ ] Error state if Stripe Checkout fails / customer bails → `/checkout/cancelled` restores the cart.
@@ -160,7 +160,7 @@ Only after 6 and 7 pass cleanly.
 
 ## 10. What we're actually learning from the pilot
 
-Write these down as we go — they're worth more than the code:
+Write these down as we go - they're worth more than the code:
 
 1. **How long does the whole customer flow take, standing at a gate on 3G?** If it's over ~30 seconds, card adoption dies.
 2. **Do people actually use it, or ignore the sign and put cash in the tin?** This is the single most important number in the business.
@@ -172,4 +172,4 @@ Write these down as we go — they're worth more than the code:
 
 ## Definition of done for this stage
 
-Our own stall is live on `stallside.app`, with a laminated QR on the gate, taking **real** cash confirmations and **real** card/Apple Pay payments, with the owner app on the iPhone firing sale and low-stock alerts — and we've bought our own eggs with a real card to prove it.
+Our own stall is live on `stallside.app`, with a laminated QR on the gate, taking **real** cash confirmations and **real** card/Apple Pay payments, with the owner app on the iPhone firing sale and low-stock alerts - and we've bought our own eggs with a real card to prove it.

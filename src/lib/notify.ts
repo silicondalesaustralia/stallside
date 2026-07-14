@@ -17,7 +17,7 @@ export async function notifySale(orderId: string) {
 
   const to = order.owner.contactEmail || order.owner.user.email;
   if (!to) {
-    console.error(`[${APP_NAME}] Sale notify skipped — no owner email`, orderId);
+    console.error(`[${APP_NAME}] Sale notify skipped - no owner email`, orderId);
     return;
   }
 
@@ -27,7 +27,7 @@ export async function notifySale(orderId: string) {
     .map((i) => `${i.quantity}× ${i.productNameSnapshot}`)
     .join(", ");
   const title = `Sale · ${order.stand.name}`;
-  const body = `${method} ${total} — ${lines}`;
+  const body = `${method} ${total} - ${lines}`;
 
   await sendOwnerEmail(
     to,
@@ -81,7 +81,7 @@ async function maybeNotifyLowStock(
     if (!soldOut && product.stockQuantity > product.lowStockThreshold) continue;
 
     if (soldOut) {
-      // Sold out is its own event — a prior "low stock" alert must not suppress it.
+      // Sold out is its own event - a prior "low stock" alert must not suppress it.
       const recentSoldOut = await prisma.lowStockAlert.findFirst({
         where: {
           productId: product.id,

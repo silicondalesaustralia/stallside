@@ -56,7 +56,7 @@ export default async function SettingsPage() {
         <p>
           Status:{" "}
           {owner.stripeChargesEnabled
-            ? "Charges enabled — card & Tap & Go live"
+            ? "Charges enabled - card & Tap & Go live"
             : owner.stripeAccountId
               ? "Onboarding incomplete"
               : "Not connected"}

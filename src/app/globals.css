@@ -90,10 +90,21 @@ body {
   animation: hero-rise 0.7s ease-out 0.35s both;
 }
 
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -18;
+  }
+}
+
+.flow-dash {
+  animation: flow-dash 0.9s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-letter,
   .hero-bracket,
-  .hero-phone {
+  .hero-phone,
+  .flow-dash {
     animation: none;
   }
 }

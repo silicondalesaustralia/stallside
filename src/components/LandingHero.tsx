@@ -70,14 +70,14 @@ export default function LandingHero() {
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
             <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]">
               <span className="size-2 rounded-full bg-[var(--leaf)]" aria-hidden />
-              Cash — live today
+              Cash - live today
             </span>
             <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]/55">
               <span
                 className="size-2 rounded-full border border-[var(--ink-on-dark)]/40 bg-transparent"
                 aria-hidden
               />
-              Tap &amp; Go — coming soon
+              Tap &amp; Go - coming soon
             </span>
           </div>
 

@@ -7,7 +7,7 @@ export default function NetworkVision() {
             Coming: one card, every Stallside site.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-[var(--ink-on-dark)]/70 sm:text-base">
-            Save your card once and pay in one tap — at any stall, woodpile or car park on the
+            Save your card once and pay in one tap - at any stall, woodpile or car park on the
             network.
           </p>
         </div>

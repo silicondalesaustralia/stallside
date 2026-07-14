@@ -13,7 +13,7 @@ export default function CheckEmailPage() {
       </h1>
       {emailLive ? (
         <p className="mt-3 text-[var(--muted)]">
-          We sent a one-time sign-in link. Open it on this device — it expires in about an hour and
+          We sent a one-time sign-in link. Open it on this device - it expires in about an hour and
           only works once.
         </p>
       ) : (
@@ -25,7 +25,7 @@ export default function CheckEmailPage() {
       )}
       {emailLive ? null : <PasteMagicLink />}
       <p className="mt-4 text-sm text-[var(--muted)]">
-        Tokens only work once — if it fails, request a new link.
+        Tokens only work once - if it fails, request a new link.
       </p>
       <Link href="/login" className="mt-6 text-sm font-medium text-[var(--leaf-dark)] underline">
         Request a new link

@@ -15,11 +15,11 @@ export default function CheckoutCashConfirm({
 }: CheckoutCashConfirmProps) {
   return (
     <div className="flex flex-col gap-4 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-5">
-      <p className="text-base text-[var(--muted)]">Please place</p>
+      <p className="text-base text-[var(--muted)]">Please make your cash payment of</p>
       <p className="font-receipt text-4xl font-semibold tracking-tight">{amountLabel}</p>
       <p className="text-base leading-snug text-[var(--muted)]">
-        in the cash slot. Once you have placed the cash in the slot, tap below so we can update
-        the stand&apos;s stock.
+        in the slot, cash box or whatever is provided. Then tap below so we can update the
+        stand&apos;s stock.
       </p>
       <button
         type="button"
