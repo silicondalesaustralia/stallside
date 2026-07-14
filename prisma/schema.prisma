@@ -108,6 +108,10 @@ model Owner {
   stripeOnboardingComplete  Boolean            @default(false)
   stripeChargesEnabled      Boolean            @default(false)
   stripePayoutsEnabled      Boolean            @default(false)
+  /** Platform Billing customer (Stallside SaaS subscription) */
+  stripeCustomerId          String?
+  /** Platform Billing subscription id */
+  stripeSubscriptionId      String?
   paypalMerchantId          String?
   paypalOnboardingComplete  Boolean            @default(false)
   paypalPaymentsEnabled     Boolean            @default(false)
@@ -115,8 +119,11 @@ model Owner {
   pushAlertsEnabled         Boolean            @default(true)
   alertEmails               String[]           @default([])
   subscriptionStatus        SubscriptionStatus @default(NONE)
-  subscriptionPlan          String?            @default("starter")
-  monthlyFeeCents           Int                @default(999)
+  subscriptionPlan          String?            @default("cash")
+  monthlyFeeCents           Int                @default(699)
+  /** Sum of paid SaaS invoices (platform Billing), AUD cents */
+  lifetimePaidCents         Int                @default(0)
+  subscriptionStartedAt     DateTime?
   platformFeePercentBps     Int                @default(200)
   stands                    Stand[]
   products                  Product[]

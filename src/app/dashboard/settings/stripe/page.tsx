@@ -25,10 +25,16 @@ export default async function StripeSettingsPage({
         </Link>
       </p>
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Stripe Connect</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Stripe payments
+        </h1>
         <p className="mt-2 text-[var(--muted)]">
-          Connect your Stripe account so customers can pay by card, Apple Pay, or
-          Google Pay. Funds go to you - Stallside does not take a Connect cut in MVP.
+          Connect your Stripe account so stand customers can pay by card, Apple
+          Pay, or Google Pay. Funds go to you. This is not your Stallside{" "}
+          <Link href="/dashboard/settings/billing" className="underline">
+            app subscription
+          </Link>
+          .
         </p>
       </div>
 

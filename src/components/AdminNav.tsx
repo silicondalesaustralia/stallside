@@ -2,8 +2,9 @@ import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 
 const links = [
-  { href: "/admin", label: "Overview" },
-  { href: "/admin/owners", label: "Owners" },
+  { href: "/admin", label: "SaaS" },
+  { href: "/admin/owners", label: "Subscribers" },
+  { href: "/admin/billing", label: "Billing" },
   { href: "/admin/stands", label: "Stands" },
   { href: "/admin/orders", label: "Orders" },
 ] as const;

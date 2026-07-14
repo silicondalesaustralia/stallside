@@ -48,16 +48,25 @@ export default async function SettingsPage() {
         />
       </section>
 
-      <section className="space-y-2 text-sm">
-        <h2 className="text-lg font-semibold">Billing</h2>
+      <section className="space-y-3 text-sm">
+        <h2 className="text-lg font-semibold">Stallside subscription</h2>
         <p>
-          Cash plan: {formatMoney(MONTHLY_FEE_CENTS, "AUD")}/mo per site (collection coming). No
-          transaction fees. Card / PayPal plan coming soon.
+          Cash plan: {formatMoney(MONTHLY_FEE_CENTS, "AUD")}/mo. Status:{" "}
+          {owner.subscriptionStatus.toLowerCase()}.
         </p>
+        <p className="text-[var(--muted)]">
+          Pays Stallside for the app. Separate from accepting customer payments.
+        </p>
+        <Link
+          href="/dashboard/settings/billing"
+          className="inline-flex rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
+        >
+          Manage subscription
+        </Link>
       </section>
 
       <section className="space-y-3 text-sm">
-        <h2 className="text-lg font-semibold">Stripe Connect</h2>
+        <h2 className="text-lg font-semibold">Stripe payments (Connect)</h2>
         <p>
           Status:{" "}
           {owner.stripeChargesEnabled
@@ -66,11 +75,14 @@ export default async function SettingsPage() {
               ? "Onboarding incomplete"
               : "Not connected"}
         </p>
+        <p className="text-[var(--muted)]">
+          Connect your Stripe so stand customers can pay you by card / Tap &amp; Go.
+        </p>
         <Link
           href="/dashboard/settings/stripe"
-          className="inline-flex rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
+          className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--ink)] hover:bg-[var(--wash)]"
         >
-          Manage Stripe connection
+          Manage Stripe payments
         </Link>
       </section>
 

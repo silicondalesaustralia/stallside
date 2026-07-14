@@ -1,0 +1,2 @@
+ALTER TABLE "Owner" ADD COLUMN "lifetimePaidCents" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "Owner" ADD COLUMN "subscriptionStartedAt" TIMESTAMP(3);
