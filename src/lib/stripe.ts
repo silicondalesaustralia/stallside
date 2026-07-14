@@ -1,4 +1,7 @@
 import Stripe from "stripe";
+import { appBaseUrl } from "@/lib/app-url";
+
+export { appBaseUrl };
 
 let stripeClient: Stripe | null = null;
 
@@ -11,10 +14,6 @@ export function getStripe(): Stripe {
     stripeClient = new Stripe(key);
   }
   return stripeClient;
-}
-
-export function appBaseUrl(): string {
-  return (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
 }
 
 export function isStripeConfigured(): boolean {

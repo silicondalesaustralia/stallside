@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 
-export default function PasteMagicLink({ emailLive }: { emailLive: boolean }) {
+/** Local-only helper when Resend is not configured (magic link prints to server logs). */
+export default function PasteMagicLink() {
   const [url, setUrl] = useState("");
 
   function openLink() {
@@ -15,19 +16,15 @@ export default function PasteMagicLink({ emailLive }: { emailLive: boolean }) {
 
   return (
     <div className="mt-8 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-4">
-      <p className="text-sm font-medium text-[var(--ink)]">
-        {emailLive ? "Open in this app" : "Paste magic link"}
-      </p>
+      <p className="text-sm font-medium text-[var(--ink)]">Paste magic link</p>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        {emailLive
-          ? "If the email opened Safari instead of Stallside, copy the link from the email and paste it here."
-          : "Copy the [Stallside magic link] URL from the server logs, paste it here, then open."}
+        Copy the [Stallside magic link] URL from the server logs, paste it here, then open.
       </p>
       <textarea
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         rows={3}
-        placeholder="https://stallside.app/api/auth/callback/resend?..."
+        placeholder="http://localhost:3000/api/auth/callback/resend?..."
         className="mt-3 w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-xs"
       />
       <button

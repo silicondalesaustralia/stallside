@@ -67,10 +67,17 @@ export default async function StandQrPage({
           alt={`QR code for ${stand.name}`}
           className="mx-auto mt-6 w-full max-w-[320px]"
         />
-        <p className="mt-4 font-receipt text-xs text-[var(--muted)]">{APP_DOMAIN}</p>
+        <p className="mt-4 break-all font-receipt text-xs text-[var(--muted)]">{checkoutUrl}</p>
       </div>
 
       <div className="print:hidden">
+        {!checkoutUrl.startsWith("https://") ? (
+          <p className="mb-3 rounded-lg border border-[var(--warn)]/40 bg-[var(--panel)] px-3 py-2 text-sm text-[var(--warn)]">
+            This QR still points at a local URL. Set{" "}
+            <code className="font-receipt">NEXT_PUBLIC_APP_URL=https://{APP_DOMAIN}</code> in
+            production and regenerate before printing.
+          </p>
+        ) : null}
         <QrActions
           checkoutUrl={checkoutUrl}
           qrDataUrl={qrDataUrl}

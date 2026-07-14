@@ -16,8 +16,9 @@ export default async function PublicStandPage({
   params: Promise<{ standSlug: string }>;
 }) {
   const { standSlug } = await params;
+  const slug = decodeURIComponent(standSlug).trim().toLowerCase();
   const stand = await prisma.stand.findUnique({
-    where: { slug: standSlug },
+    where: { slug },
     include: {
       products: {
         where: { isActive: true },

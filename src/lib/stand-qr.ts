@@ -1,11 +1,9 @@
 import QRCode from "qrcode";
+import { appBaseUrl } from "@/lib/app-url";
 
 export function standCheckoutUrl(slug: string): string {
-  const base = (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000").replace(
-    /\/$/,
-    "",
-  );
-  return `${base}/s/${slug}`;
+  const safeSlug = slug.trim().toLowerCase();
+  return `${appBaseUrl()}/s/${safeSlug}`;
 }
 
 export async function standQrDataUrl(checkoutUrl: string, width = 512): Promise<string> {

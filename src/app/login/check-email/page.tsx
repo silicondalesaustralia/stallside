@@ -23,7 +23,7 @@ export default function CheckEmailPage() {
           and <code className="text-sm">EMAIL_FROM</code>.
         </p>
       )}
-      <PasteMagicLink emailLive={emailLive} />
+      {emailLive ? null : <PasteMagicLink />}
       <p className="mt-4 text-sm text-[var(--muted)]">
         Tokens only work once — if it fails, request a new link.
       </p>
