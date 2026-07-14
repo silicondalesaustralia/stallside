@@ -29,7 +29,7 @@ export async function requestMagicLink(formData: FormData) {
     if (error instanceof AuthError) {
       console.error("Magic link AuthError", error);
       throw new Error(
-        "Could not send sign-in link. Check RESEND_API_KEY, EMAIL_FROM, and that stallside.app is verified in Resend.",
+        "Could not send sign-in link. Verify stallside.app at resend.com/domains, or remove RESEND_API_KEY to print the link in the server logs.",
       );
     }
     console.error("Magic link failed", error);

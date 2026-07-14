@@ -50,6 +50,12 @@ const emailProvider: Provider = {
     if (!res.ok) {
       const detail = await res.text();
       console.error("[Stallside] Resend failed", detail);
+      // Local / misconfigured Resend: still print the link so sign-in is usable.
+      // Production must verify EMAIL_FROM's domain at https://resend.com/domains
+      if (process.env.NODE_ENV !== "production") {
+        console.log(`\n[Stallside magic link] ${identifier}\n${url}\n`);
+        return;
+      }
       throw new Error(`Resend failed: ${detail}`);
     }
   },
