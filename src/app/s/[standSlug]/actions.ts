@@ -13,6 +13,7 @@ import {
   type CartItemInput,
 } from "@/lib/checkout";
 import { notifySale } from "@/lib/notify";
+import { notifyTapAndGoInterest } from "@/lib/notify-tap-and-go";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { PLATFORM_FEE_BPS } from "@/lib/constants";
 import { platformFeeCents } from "@/lib/money";
@@ -172,5 +173,14 @@ export async function startCardCheckout(input: {
   } catch (error) {
     console.error("Card checkout failed", error);
     return { error: "Could not start card checkout." };
+  }
+}
+
+export async function requestTapAndGoInterest(standSlug: string) {
+  try {
+    return await notifyTapAndGoInterest(standSlug.trim().toLowerCase());
+  } catch (error) {
+    console.error("Tap & Go interest notify failed", error);
+    return { error: "Could not notify the stand owner. Please try again." };
   }
 }

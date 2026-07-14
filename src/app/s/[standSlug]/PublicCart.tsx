@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import CheckoutCashConfirm from "./CheckoutCashConfirm";
 import CheckoutPayStep from "./CheckoutPayStep";
+import TapAndGoInterestCta from "./TapAndGoInterestCta";
 import { confirmCashCheckout, startCardCheckout } from "./actions";
 
 type ProductRow = {
@@ -96,18 +97,21 @@ export default function PublicCart({
 
   if (done) {
     return (
-      <div className="relative mt-10 overflow-hidden rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-8">
-        <div
-          aria-hidden
-          className="absolute left-4 top-4 size-8 border-l-[3px] border-t-[3px] border-[var(--leaf)]"
-          style={{ borderTopLeftRadius: 8 }}
-        />
-        <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight sm:text-3xl">
-          Thank you
-        </h2>
-        <p className="mt-3 text-base text-[var(--muted)] sm:text-lg">
-          Cash payment confirmed. You&apos;re all set.
-        </p>
+      <div className="mt-10 flex flex-col gap-4">
+        <div className="relative overflow-hidden rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-8">
+          <div
+            aria-hidden
+            className="absolute left-4 top-4 size-8 border-l-[3px] border-t-[3px] border-[var(--leaf)]"
+            style={{ borderTopLeftRadius: 8 }}
+          />
+          <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight sm:text-3xl">
+            Thank you
+          </h2>
+          <p className="mt-3 text-base text-[var(--muted)] sm:text-lg">
+            Cash payment confirmed. You&apos;re all set.
+          </p>
+        </div>
+        {!cardEnabled ? <TapAndGoInterestCta standSlug={standSlug} /> : null}
       </div>
     );
   }
