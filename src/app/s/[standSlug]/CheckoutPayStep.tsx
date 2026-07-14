@@ -2,17 +2,21 @@
 
 type CheckoutPayStepProps = {
   cardEnabled: boolean;
+  paypalEnabled: boolean;
   pending: boolean;
   onCash: () => void;
   onCard: () => void;
+  onPayPal: () => void;
   onBack: () => void;
 };
 
 export default function CheckoutPayStep({
   cardEnabled,
+  paypalEnabled,
   pending,
   onCash,
   onCard,
+  onPayPal,
   onBack,
 }: CheckoutPayStepProps) {
   return (
@@ -40,8 +44,21 @@ export default function CheckoutPayStep({
           <p className="text-lg font-semibold text-[var(--muted)]">
             Tap &amp; Go not active at this stand
           </p>
-          <p className="mt-2 text-lg leading-snug text-[var(--muted)]">
-            Let the owner know you&apos;d use Tap &amp; Go if it was available.
+        </div>
+      )}
+      {paypalEnabled ? (
+        <button
+          type="button"
+          disabled={pending}
+          onClick={onPayPal}
+          className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-left text-xl font-semibold disabled:opacity-50"
+        >
+          {pending ? "Opening PayPal…" : "Pay with PayPal"}
+        </button>
+      ) : (
+        <div className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5">
+          <p className="text-lg font-semibold text-[var(--muted)]">
+            PayPal not active at this stand
           </p>
         </div>
       )}

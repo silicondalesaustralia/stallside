@@ -67,6 +67,9 @@ export default async function PublicStandPage({
           cardEnabled={Boolean(
             stand.owner.stripeAccountId && stand.owner.stripeChargesEnabled,
           )}
+          paypalEnabled={Boolean(
+            stand.owner.paypalMerchantId && stand.owner.paypalPaymentsEnabled,
+          )}
         />
       )}
     </main>

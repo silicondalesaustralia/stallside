@@ -15,6 +15,7 @@ enum Role {
 enum PaymentMethod {
   CASH
   CARD
+  PAYPAL
 }
 
 enum PaymentStatus {
@@ -36,6 +37,7 @@ enum InventorySource {
   OWNER_MANUAL
   ORDER_CASH
   ORDER_CARD
+  ORDER_PAYPAL
   SYSTEM
 }
 
@@ -106,6 +108,9 @@ model Owner {
   stripeOnboardingComplete  Boolean            @default(false)
   stripeChargesEnabled      Boolean            @default(false)
   stripePayoutsEnabled      Boolean            @default(false)
+  paypalMerchantId          String?
+  paypalOnboardingComplete  Boolean            @default(false)
+  paypalPaymentsEnabled     Boolean            @default(false)
   subscriptionStatus        SubscriptionStatus @default(NONE)
   subscriptionPlan          String?            @default("starter")
   monthlyFeeCents           Int                @default(999)
@@ -190,6 +195,8 @@ model Order {
   platformFeeCents        Int            @default(0)
   stripeCheckoutSessionId String?
   stripePaymentIntentId   String?
+  paypalOrderId           String?
+  paypalCaptureId         String?
   receiptEmail            String?
   receiptChannel          ReceiptChannel @default(NONE)
   items                   OrderItem[]

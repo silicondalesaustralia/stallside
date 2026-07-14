@@ -68,6 +68,24 @@ export default async function SettingsPage() {
           Manage Stripe connection
         </Link>
       </section>
+
+      <section className="space-y-2 text-sm">
+        <h2 className="text-lg font-semibold">PayPal Connect</h2>
+        <p>
+          Status:{" "}
+          {owner.paypalPaymentsEnabled
+            ? "Payments enabled - PayPal checkout live"
+            : owner.paypalMerchantId
+              ? "Onboarding incomplete"
+              : "Not connected"}
+        </p>
+        <Link
+          href="/dashboard/settings/paypal"
+          className="inline-block text-[var(--leaf-dark)] underline"
+        >
+          Manage PayPal connection
+        </Link>
+      </section>
     </main>
   );
 }

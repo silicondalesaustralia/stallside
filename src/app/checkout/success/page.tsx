@@ -1,27 +1,38 @@
 import Link from "next/link";
-import { fulfillPaidCardOrder } from "@/lib/checkout";
+import {
+  fulfillPaidCardOrder,
+  fulfillPaidPayPalOrder,
+} from "@/lib/fulfill-paid-order";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
+import { isPayPalConfigured } from "@/lib/paypal";
+import { capturePayPalOrder } from "@/lib/paypal-connect";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
+import { PaymentMethod } from "@/generated/prisma/client";
 
 export default async function CheckoutSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string }>;
+  searchParams: Promise<{
+    session_id?: string;
+    order_id?: string;
+    paypal?: string;
+    token?: string;
+  }>;
 }) {
-  const { session_id: sessionId } = await searchParams;
+  const params = await searchParams;
   let message = "Thanks - your payment is being confirmed.";
 
-  if (sessionId && isStripeConfigured()) {
+  if (params.session_id && isStripeConfigured()) {
     try {
       const order = await prisma.order.findFirst({
-        where: { stripeCheckoutSessionId: sessionId },
+        where: { stripeCheckoutSessionId: params.session_id },
         include: { owner: true },
       });
 
       if (order?.owner.stripeAccountId) {
         const session = await getStripe().checkout.sessions.retrieve(
-          sessionId,
+          params.session_id,
           undefined,
           { stripeAccount: order.owner.stripeAccountId },
         );
@@ -41,6 +52,37 @@ export default async function CheckoutSuccessPage({
       }
     } catch (error) {
       console.error("Checkout success fulfillment failed", error);
+      message = "Payment received - stock will update shortly if not already.";
+    }
+  } else if (
+    (params.paypal === "1" || params.token) &&
+    params.order_id &&
+    isPayPalConfigured()
+  ) {
+    try {
+      const order = await prisma.order.findUnique({
+        where: { id: params.order_id },
+      });
+      if (!order || order.paymentMethod !== PaymentMethod.PAYPAL) {
+        message = "PayPal order not found.";
+      } else {
+        const paypalOrderId = params.token || order.paypalOrderId;
+        if (!paypalOrderId) {
+          message = "PayPal payment token missing.";
+        } else {
+          const captured = await capturePayPalOrder(paypalOrderId);
+          const captureId =
+            captured.purchase_units?.[0]?.payments?.captures?.[0]?.id ?? null;
+          const result = await fulfillPaidPayPalOrder(order.id, captureId);
+          if ("orderNumber" in result && result.orderNumber) {
+            message = "Payment confirmed. You're all set.";
+          } else if ("error" in result && result.error) {
+            message = result.error;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("PayPal success fulfillment failed", error);
       message = "Payment received - stock will update shortly if not already.";
     }
   }

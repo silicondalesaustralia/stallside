@@ -4,7 +4,9 @@ import { useMemo, useState, useTransition } from "react";
 import CheckoutCashConfirm from "./CheckoutCashConfirm";
 import CheckoutPayStep from "./CheckoutPayStep";
 import TapAndGoInterestCta from "./TapAndGoInterestCta";
-import { confirmCashCheckout, startCardCheckout } from "./actions";
+import { confirmCashCheckout } from "./actions";
+import { startCardCheckout } from "./digital-checkout-actions";
+import { startPayPalCheckout } from "./paypal-checkout-actions";
 
 type ProductRow = {
   id: string;
@@ -34,11 +36,13 @@ export default function PublicCart({
   currency,
   products,
   cardEnabled,
+  paypalEnabled,
 }: {
   standSlug: string;
   currency: string;
   products: ProductRow[];
   cardEnabled: boolean;
+  paypalEnabled: boolean;
 }) {
   const [qty, setQty] = useState<Record<string, number>>({});
   const [step, setStep] = useState<"cart" | "pay" | "cash-confirm">("cart");
@@ -95,6 +99,20 @@ export default function PublicCart({
     });
   }
 
+  function payPayPal() {
+    setError(null);
+    startTransition(async () => {
+      const result = await startPayPalCheckout({ standSlug, items: payload });
+      if ("error" in result && result.error) {
+        setError(result.error);
+        return;
+      }
+      if ("url" in result && result.url) {
+        window.location.href = result.url;
+      }
+    });
+  }
+
   if (done) {
     return (
       <div className="mt-10 flex flex-col gap-4">
@@ -111,13 +129,15 @@ export default function PublicCart({
             Cash payment confirmed. You&apos;re all set.
           </p>
         </div>
-        {!cardEnabled ? <TapAndGoInterestCta standSlug={standSlug} /> : null}
+        {!cardEnabled && !paypalEnabled ? (
+          <TapAndGoInterestCta standSlug={standSlug} />
+        ) : null}
       </div>
     );
   }
 
   return (
-    <div className="mt-8 flex flex-col gap-4 pb-28">
+    <div className="mt-8 flex flex-col gap-4 pb-40">
       <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
         {products.map((product) => (
           <li
@@ -172,9 +192,11 @@ export default function PublicCart({
       {step === "pay" ? (
         <CheckoutPayStep
           cardEnabled={cardEnabled}
+          paypalEnabled={paypalEnabled}
           pending={pending}
           onCash={() => setStep("cash-confirm")}
           onCard={payCard}
+          onPayPal={payPayPal}
           onBack={() => setStep("cart")}
         />
       ) : null}
@@ -190,16 +212,18 @@ export default function PublicCart({
 
       {step === "cart" ? (
         <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-[var(--panel)]/95 px-4 py-4 backdrop-blur pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <div className="mx-auto flex max-w-lg items-center gap-3">
-            <div className="min-w-0 flex-1">
+          <div className="mx-auto flex max-w-lg flex-col gap-3">
+            <div className="flex items-baseline justify-between gap-3">
               <p className="text-base text-[var(--muted)]">Total</p>
-              <p className="font-receipt text-3xl font-semibold">{money(total, currency)}</p>
+              <p className="font-receipt text-3xl font-semibold tabular-nums">
+                {money(total, currency)}
+              </p>
             </div>
             <button
               type="button"
               disabled={pending || total <= 0}
               onClick={() => setStep("pay")}
-              className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-4 text-lg font-semibold text-white disabled:opacity-50"
+              className="w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-4 text-lg font-semibold text-white disabled:opacity-50"
             >
               Continue to payment
             </button>

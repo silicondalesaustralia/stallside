@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
-import { fulfillPaidCardOrder } from "@/lib/checkout";
+import { fulfillPaidCardOrder } from "@/lib/fulfill-paid-order";
 import { prisma } from "@/lib/prisma";
 import { PaymentStatus } from "@/generated/prisma/client";
 

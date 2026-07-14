@@ -1,13 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import {
-  InventorySource,
-  PaymentMethod,
-  PaymentStatus,
-  type Prisma,
-} from "@/generated/prisma/client";
-import { PLATFORM_FEE_BPS } from "@/lib/constants";
-import { platformFeeCents } from "@/lib/money";
-import { notifySale } from "@/lib/notify";
+import { InventorySource, type Prisma } from "@/generated/prisma/client";
 
 export type CartItemInput = { productId: string; quantity: number };
 
@@ -73,7 +65,10 @@ export async function decrementStockForOrder(
     ownerId: string;
     standId: string;
     orderId: string;
-    source: typeof InventorySource.ORDER_CASH | typeof InventorySource.ORDER_CARD;
+    source:
+      | typeof InventorySource.ORDER_CASH
+      | typeof InventorySource.ORDER_CARD
+      | typeof InventorySource.ORDER_PAYPAL;
     reason: string;
   },
 ) {
@@ -103,71 +98,4 @@ export async function decrementStockForOrder(
       },
     });
   }
-}
-
-export async function fulfillPaidCardOrder(orderId: string, paymentIntentId?: string | null) {
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
-    include: { items: true },
-  });
-  if (!order) return { error: "Order not found." as const };
-  if (order.paymentStatus === PaymentStatus.PAID) {
-    return { orderNumber: order.orderNumber, alreadyPaid: true as const };
-  }
-  if (order.paymentMethod !== PaymentMethod.CARD) {
-    return { error: "Not a card order." as const };
-  }
-
-  const products = await prisma.product.findMany({
-    where: { id: { in: order.items.map((i) => i.productId) } },
-  });
-  const byId = new Map(products.map((p) => [p.id, p]));
-  const items = order.items.map((i) => ({
-    productId: i.productId,
-    quantity: i.quantity,
-  }));
-
-  const fee = platformFeeCents(order.totalCents, PLATFORM_FEE_BPS);
-
-  try {
-    await prisma.$transaction(
-      async (tx) => {
-        await decrementStockForOrder(tx, {
-          items,
-          byId,
-          ownerId: order.ownerId,
-          standId: order.standId,
-          orderId: order.id,
-          source: InventorySource.ORDER_CARD,
-          reason: "Card sale",
-        });
-        await tx.order.update({
-          where: { id: order.id },
-          data: {
-            paymentStatus: PaymentStatus.PAID,
-            platformFeeCents: fee,
-            stripePaymentIntentId: paymentIntentId ?? order.stripePaymentIntentId,
-          },
-        });
-      },
-      { maxWait: 10_000, timeout: 30_000 },
-    );
-  } catch (error) {
-    if (error instanceof Error && error.message === "STOCK") {
-      await prisma.order.update({
-        where: { id: order.id },
-        data: { paymentStatus: PaymentStatus.FAILED },
-      });
-      return { error: "Paid but stock unavailable - contact the stand owner." as const };
-    }
-    throw error;
-  }
-
-  try {
-    await notifySale(orderId);
-  } catch (error) {
-    console.error("Sale notify failed", error);
-  }
-
-  return { orderNumber: order.orderNumber, alreadyPaid: false as const };
 }
