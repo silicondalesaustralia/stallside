@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { printQrSheet } from "@/lib/print-qr-sheet";
 
 export default function QrActions({
   checkoutUrl,
@@ -27,7 +28,7 @@ export default function QrActions({
     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
       <button
         type="button"
-        onClick={() => window.print()}
+        onClick={printQrSheet}
         className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
       >
         Print QR

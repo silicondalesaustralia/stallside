@@ -64,3 +64,4 @@ ios/DerivedData
 .tmp-icon/
 .tmp-app-icon.jpg
 .DS_Store
+public/tinymce/

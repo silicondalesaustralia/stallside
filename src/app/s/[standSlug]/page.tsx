@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import BrandMark from "@/components/BrandMark";
-import SafeSignHtml from "@/components/SafeSignHtml";
 import PublicCart from "./PublicCart";
 
 function stockLabel(showExact: boolean, quantity: number, threshold: number): string {
@@ -49,31 +48,23 @@ export default async function PublicStandPage({
           {stand.name}
         </h1>
       </div>
-      {stand.description ? (
-        <SafeSignHtml
-          html={stand.description}
-          allowStyles
-          className="mt-4 text-xl leading-relaxed text-[var(--ink)] [&_h2]:my-2 [&_h3]:my-1.5 [&_li]:my-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_strong]:font-bold [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6"
-        />
-      ) : null}
-      {stand.locationLabel ? (
-        <p className="mt-3 text-lg text-[var(--muted)]">{stand.locationLabel}</p>
-      ) : null}
-
       {products.length === 0 ? (
         <p className="mt-10 text-xl text-[var(--muted)]">Nothing for sale right now.</p>
       ) : (
-        <PublicCart
-          standSlug={stand.slug}
-          currency={stand.currency}
-          products={products}
-          cardEnabled={Boolean(
-            stand.owner.stripeAccountId && stand.owner.stripeChargesEnabled,
-          )}
-          paypalEnabled={Boolean(
-            stand.owner.paypalMerchantId && stand.owner.paypalPaymentsEnabled,
-          )}
-        />
+        <>
+          <p className="mt-4 text-xl text-[var(--muted)]">Please select your items below.</p>
+          <PublicCart
+            standSlug={stand.slug}
+            currency={stand.currency}
+            products={products}
+            cardEnabled={Boolean(
+              stand.owner.stripeAccountId && stand.owner.stripeChargesEnabled,
+            )}
+            paypalEnabled={Boolean(
+              stand.owner.paypalMerchantId && stand.owner.paypalPaymentsEnabled,
+            )}
+          />
+        </>
       )}
     </main>
   );

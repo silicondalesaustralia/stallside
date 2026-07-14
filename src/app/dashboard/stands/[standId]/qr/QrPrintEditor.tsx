@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { updateStandQrPrint } from "../../actions";
-import TipTapSignEditor from "@/components/TipTapSignEditor";
+import SignHtmlEditor from "@/components/SignHtmlEditor";
 
 type PrintFields = {
   id: string;
@@ -38,14 +38,15 @@ export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
       <input type="hidden" name="standId" value={stand.id} />
       <h2 className="text-lg font-semibold">Edit QR sign</h2>
       <p className="text-sm text-[var(--muted)]">
-        Formatted fields use a full HTML editor (TipTap) - colour, size, fonts, lists, and more.
+        These details appear on the printable / downloadable sign. Checkout shows the stand name
+        and products only.
       </p>
 
       <div className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Attention callout</span>
-        <TipTapSignEditor
+        <SignHtmlEditor
           name="qrCallout"
-          minHeightClass="min-h-20"
+          height={150}
           defaultValue={stand.qrCallout ?? ""}
           placeholder="ATTENTION or PLEASE NOTE"
         />
@@ -63,9 +64,9 @@ export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
 
       <div className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Sign message under the name</span>
-        <TipTapSignEditor
+        <SignHtmlEditor
           name="qrSignMessage"
-          minHeightClass="min-h-16"
+          height={140}
           defaultValue={stand.qrSignMessage ?? ""}
           placeholder="Scan to browse and pay at this stand."
         />
@@ -73,9 +74,9 @@ export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
 
       <div className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Instructions</span>
-        <TipTapSignEditor
+        <SignHtmlEditor
           name="description"
-          minHeightClass="min-h-32"
+          height={280}
           defaultValue={stand.description ?? ""}
           placeholder="Step 1: Scan QR code…"
         />
