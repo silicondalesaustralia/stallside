@@ -163,9 +163,11 @@ export async function fulfillPaidCardOrder(orderId: string, paymentIntentId?: st
     throw error;
   }
 
-  void notifySale(orderId).catch((error) => {
+  try {
+    await notifySale(orderId);
+  } catch (error) {
     console.error("Sale notify failed", error);
-  });
+  }
 
   return { orderNumber: order.orderNumber, alreadyPaid: false as const };
 }

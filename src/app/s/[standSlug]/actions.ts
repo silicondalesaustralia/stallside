@@ -61,9 +61,11 @@ export async function confirmCashCheckout(input: {
       { maxWait: 10_000, timeout: 30_000 },
     );
 
-    void notifySale(order.id).catch((error) => {
+    try {
+      await notifySale(order.id);
+    } catch (error) {
       console.error("Sale notify failed", error);
-    });
+    }
 
     return { orderNumber: order.orderNumber };
   } catch (error) {

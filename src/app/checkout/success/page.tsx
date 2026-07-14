@@ -11,7 +11,6 @@ export default async function CheckoutSuccessPage({
 }) {
   const { session_id: sessionId } = await searchParams;
   let message = "Thanks — your payment is being confirmed.";
-  let orderNumber: string | null = null;
 
   if (sessionId && isStripeConfigured()) {
     try {
@@ -34,8 +33,7 @@ export default async function CheckoutSuccessPage({
               : session.payment_intent?.id;
           const result = await fulfillPaidCardOrder(order.id, paymentIntent);
           if ("orderNumber" in result && result.orderNumber) {
-            orderNumber = result.orderNumber;
-            message = "Payment successful. Enjoy your produce.";
+            message = "Payment confirmed. You're all set.";
           } else if ("error" in result && result.error) {
             message = result.error;
           }
@@ -62,9 +60,6 @@ export default async function CheckoutSuccessPage({
           Thank you
         </h1>
         <p className="mt-3 text-[var(--muted)]">{message}</p>
-        {orderNumber ? (
-          <p className="mt-2 font-receipt text-sm text-[var(--muted)]">Order {orderNumber}</p>
-        ) : null}
       </div>
       <Link
         href="/"

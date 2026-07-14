@@ -40,7 +40,7 @@ export default function PublicCart({
   const [qty, setQty] = useState<Record<string, number>>({});
   const [step, setStep] = useState<"cart" | "pay" | "cash-confirm">("cart");
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
 
   const lines = useMemo(
@@ -72,7 +72,7 @@ export default function PublicCart({
         return;
       }
       if ("orderNumber" in result) {
-        setDone(result.orderNumber ?? "confirmed");
+        setDone(true);
         setQty({});
       }
     });
@@ -103,7 +103,9 @@ export default function PublicCart({
         <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight">
           Thank you
         </h2>
-        <p className="mt-2 text-[var(--muted)]">Sale {done} logged. Enjoy your produce.</p>
+        <p className="mt-2 text-[var(--muted)]">
+          Cash payment confirmed. You&apos;re all set.
+        </p>
       </div>
     );
   }
