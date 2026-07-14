@@ -39,14 +39,14 @@ export default function LandingHero() {
         </Link>
       </header>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 pb-10 pt-2 sm:px-6 sm:pb-12 lg:gap-10">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-8 px-5 pb-10 pt-2 sm:px-6 sm:pb-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-10">
         <div
           aria-hidden
           className="hero-bracket pointer-events-none absolute left-5 top-0 size-12 border-l-[3px] border-t-[3px] border-[var(--ink-on-dark)]/40 sm:left-6 sm:size-16"
           style={{ borderTopLeftRadius: 10 }}
         />
 
-        <div className="relative max-w-2xl">
+        <div className="relative min-w-0">
           <h1
             className="font-[family-name:var(--font-display)] text-[clamp(2.5rem,11vw,5.25rem)] font-bold leading-[0.9] tracking-[-0.035em] lowercase"
             aria-label={WORDMARK}
@@ -98,7 +98,7 @@ export default function LandingHero() {
           </div>
         </div>
 
-        <div className="hidden lg:block">
+        <div className="hidden min-w-0 lg:block">
           <HeroCheckoutDemo />
         </div>
         <div className="lg:hidden">

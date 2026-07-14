@@ -3,6 +3,8 @@ import { APP_NAME, LOW_STOCK_ALERT_COOLDOWN_HOURS } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
 import { sendOwnerEmail } from "@/lib/notify-email";
 import { sendOwnerPush } from "@/lib/notify-push";
+import { ownerAlertRecipients } from "@/lib/owner-alert-recipients";
+import { sendStockAlert } from "@/lib/notify-stock";
 
 export async function notifySale(orderId: string) {
   const order = await prisma.order.findUnique({
@@ -15,59 +17,74 @@ export async function notifySale(orderId: string) {
   });
   if (!order) return;
 
-  const to = order.owner.contactEmail || order.owner.user.email;
-  if (!to) {
+  const recipients = ownerAlertRecipients(order.owner);
+  const emailOn = order.owner.emailAlertsEnabled;
+  const pushOn = order.owner.pushAlertsEnabled;
+
+  if (emailOn && !recipients.length) {
     console.error(`[${APP_NAME}] Sale notify skipped - no owner email`, orderId);
-    return;
   }
 
   const total = formatMoney(order.totalCents, order.currency);
-  const method = order.paymentMethod === "CASH" ? "Cash" : "Card";
+  const method =
+    order.paymentMethod === "CASH"
+      ? "Cash"
+      : order.paymentMethod === "PAYPAL"
+        ? "PayPal"
+        : "Card";
   const lines = order.items
     .map((i) => `${i.quantity}× ${i.productNameSnapshot}`)
     .join(", ");
   const title = `Sale · ${order.stand.name}`;
   const body = `${method} ${total} - ${lines}`;
 
-  await sendOwnerEmail(
-    to,
-    `[${APP_NAME}] ${title}`,
-    `<p><strong>${title}</strong></p><p>${body}</p><p>Order ${order.orderNumber}</p>`,
-  );
-  await sendOwnerPush(order.ownerId, {
-    title,
-    body,
-    data: { type: "sale", orderId: order.id },
-  }).catch((error) => {
-    console.error(`[${APP_NAME}] Sale push failed`, error);
-  });
+  if (emailOn && recipients.length) {
+    await sendOwnerEmail(
+      recipients,
+      `[${APP_NAME}] ${title}`,
+      `<p><strong>${title}</strong></p><p>${body}</p><p>Order ${order.orderNumber}</p>`,
+    );
+  }
+  if (pushOn) {
+    await sendOwnerPush(order.ownerId, {
+      title,
+      body,
+      data: { type: "sale", orderId: order.id },
+    }).catch((error) => {
+      console.error(`[${APP_NAME}] Sale push failed`, error);
+    });
+  }
 
   await maybeNotifyLowStock(
     order.items.map((i) => i.productId),
     order.ownerId,
     order.standId,
-    to,
   );
 }
 
-/** Call after manual inventory changes as well as sales. */
 export async function notifyLowStockForProducts(
   productIds: string[],
   ownerId: string,
   standId: string,
-  contactEmail: string,
 ) {
-  await maybeNotifyLowStock(productIds, ownerId, standId, contactEmail);
+  await maybeNotifyLowStock(productIds, ownerId, standId);
 }
 
 async function maybeNotifyLowStock(
   productIds: string[],
   ownerId: string,
   standId: string,
-  contactEmail: string,
 ) {
   if (!productIds.length) return;
 
+  const owner = await prisma.owner.findUnique({
+    where: { id: ownerId },
+    include: { user: true },
+  });
+  if (!owner) return;
+  if (!owner.emailAlertsEnabled && !owner.pushAlertsEnabled) return;
+
+  const recipients = ownerAlertRecipients(owner);
   const products = await prisma.product.findMany({
     where: { id: { in: productIds } },
     include: { stand: true },
@@ -81,7 +98,6 @@ async function maybeNotifyLowStock(
     if (!soldOut && product.stockQuantity > product.lowStockThreshold) continue;
 
     if (soldOut) {
-      // Sold out is its own event - a prior "low stock" alert must not suppress it.
       const recentSoldOut = await prisma.lowStockAlert.findFirst({
         where: {
           productId: product.id,
@@ -91,15 +107,13 @@ async function maybeNotifyLowStock(
       });
       if (recentSoldOut) continue;
 
-      const title = `Sold out · ${product.stand.name}`;
-      const body = `${product.name} is sold out. Restock when you can.`;
       await sendStockAlert({
-        to: contactEmail,
-        ownerId,
+        owner,
+        recipients,
         standId,
         product,
-        title,
-        body,
+        title: `Sold out · ${product.stand.name}`,
+        body: `${product.name} is sold out. Restock when you can.`,
         channel: "sold_out",
         type: "sold_out",
       });
@@ -115,53 +129,15 @@ async function maybeNotifyLowStock(
     });
     if (recentLow) continue;
 
-    const title = `Low stock · ${product.stand.name}`;
-    const body = `${product.name}: ${product.stockQuantity} left (threshold ${product.lowStockThreshold})`;
     await sendStockAlert({
-      to: contactEmail,
-      ownerId,
+      owner,
+      recipients,
       standId,
       product,
-      title,
-      body,
+      title: `Low stock · ${product.stand.name}`,
+      body: `${product.name}: ${product.stockQuantity} left (threshold ${product.lowStockThreshold})`,
       channel: "low_stock",
       type: "low_stock",
     });
   }
-}
-
-async function sendStockAlert(input: {
-  to: string;
-  ownerId: string;
-  standId: string;
-  product: { id: string; stockQuantity: number; lowStockThreshold: number };
-  title: string;
-  body: string;
-  channel: string;
-  type: "sold_out" | "low_stock";
-}) {
-  await sendOwnerEmail(
-    input.to,
-    `[${APP_NAME}] ${input.title}`,
-    `<p><strong>${input.title}</strong></p><p>${input.body}</p>`,
-  );
-
-  await prisma.lowStockAlert.create({
-    data: {
-      productId: input.product.id,
-      ownerId: input.ownerId,
-      standId: input.standId,
-      stockQuantityAtAlert: input.product.stockQuantity,
-      threshold: input.product.lowStockThreshold,
-      channel: input.channel,
-    },
-  });
-
-  await sendOwnerPush(input.ownerId, {
-    title: input.title,
-    body: input.body,
-    data: { type: input.type, productId: input.product.id },
-  }).catch((error) => {
-    console.error(`[${APP_NAME}] ${input.type} push failed`, error);
-  });
 }

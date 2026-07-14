@@ -1,9 +1,20 @@
 import { APP_NAME } from "@/lib/constants";
 
-export async function sendOwnerEmail(to: string, subject: string, html: string) {
+export async function sendOwnerEmail(
+  to: string | string[],
+  subject: string,
+  html: string,
+) {
+  const recipients = (Array.isArray(to) ? to : [to])
+    .map((email) => email.trim())
+    .filter(Boolean);
+  if (!recipients.length) return;
+
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.log(`\n[${APP_NAME} notify email] ${to}\n${subject}\n${html}\n`);
+    console.log(
+      `\n[${APP_NAME} notify email] ${recipients.join(", ")}\n${subject}\n${html}\n`,
+    );
     return;
   }
 
@@ -16,7 +27,7 @@ export async function sendOwnerEmail(to: string, subject: string, html: string) 
     },
     body: JSON.stringify({
       from,
-      to: [to],
+      to: recipients,
       subject,
       html,
     }),
@@ -24,7 +35,11 @@ export async function sendOwnerEmail(to: string, subject: string, html: string) 
 
   if (!res.ok) {
     const detail = await res.text();
-    console.error(`[${APP_NAME}] notify email failed`, { to, subject, detail });
+    console.error(`[${APP_NAME}] notify email failed`, {
+      to: recipients,
+      subject,
+      detail,
+    });
     throw new Error(`Email failed: ${detail}`);
   }
 }

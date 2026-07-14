@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import { appBaseUrl } from "@/lib/app-url";
 import { sendOwnerEmail } from "@/lib/notify-email";
+import { ownerAlertRecipients } from "@/lib/owner-alert-recipients";
 
 /** Customer asked to notify the owner they’d use Tap & Go or PayPal if enabled. */
 export async function notifyTapAndGoInterest(standSlug: string) {
@@ -13,8 +14,12 @@ export async function notifyTapAndGoInterest(standSlug: string) {
     return { error: "Stand not found." as const };
   }
 
-  const to = stand.owner.contactEmail || stand.owner.user.email;
-  if (!to) {
+  if (!stand.owner.emailAlertsEnabled) {
+    return { ok: true as const };
+  }
+
+  const recipients = ownerAlertRecipients(stand.owner);
+  if (!recipients.length) {
     return { error: "Could not reach the stand owner." as const };
   }
 
@@ -53,6 +58,6 @@ export async function notifyTapAndGoInterest(standSlug: string) {
     </div>
   `;
 
-  await sendOwnerEmail(to, `[${APP_NAME}] ${title}`, html);
+  await sendOwnerEmail(recipients, `[${APP_NAME}] ${title}`, html);
   return { ok: true as const };
 }

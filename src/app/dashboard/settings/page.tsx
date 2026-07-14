@@ -4,6 +4,7 @@ import { logout } from "@/app/login/actions";
 import { MONTHLY_FEE_CENTS } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
 import { Role } from "@/generated/prisma/client";
+import AlertSettingsForm from "./AlertSettingsForm";
 
 export default async function SettingsPage() {
   const { user, owner } = await requireOwner();
@@ -33,25 +34,29 @@ export default async function SettingsPage() {
         </form>
       </section>
 
-      <section className="space-y-2 text-sm">
+      <section className="space-y-3">
         <h2 className="text-lg font-semibold">Alerts</h2>
-        <p>
-          Sales and low-stock alerts go to <strong>{owner.contactEmail}</strong>
-          {". "}
-          On the Stallside phone app, allow notifications for a ding on each sale and when stock hits
-          its threshold (6-hour cooldown per product).
+        <p className="text-sm text-[var(--muted)]">
+          Sales and low-stock alerts. Push alerts use a 6-hour cooldown per product on
+          the phone app.
         </p>
+        <AlertSettingsForm
+          contactEmail={owner.contactEmail}
+          emailAlertsEnabled={owner.emailAlertsEnabled}
+          pushAlertsEnabled={owner.pushAlertsEnabled}
+          alertEmails={owner.alertEmails}
+        />
       </section>
 
       <section className="space-y-2 text-sm">
         <h2 className="text-lg font-semibold">Billing</h2>
         <p>
           Cash plan: {formatMoney(MONTHLY_FEE_CENTS, "AUD")}/mo per site (collection coming). No
-          transaction fees. Card / Tap &amp; Go plan coming soon.
+          transaction fees. Card / PayPal plan coming soon.
         </p>
       </section>
 
-      <section className="space-y-2 text-sm">
+      <section className="space-y-3 text-sm">
         <h2 className="text-lg font-semibold">Stripe Connect</h2>
         <p>
           Status:{" "}
@@ -63,13 +68,13 @@ export default async function SettingsPage() {
         </p>
         <Link
           href="/dashboard/settings/stripe"
-          className="inline-block text-[var(--leaf-dark)] underline"
+          className="inline-flex rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
         >
           Manage Stripe connection
         </Link>
       </section>
 
-      <section className="space-y-2 text-sm">
+      <section className="space-y-3 text-sm">
         <h2 className="text-lg font-semibold">PayPal Connect</h2>
         <p>
           Status:{" "}
@@ -81,7 +86,7 @@ export default async function SettingsPage() {
         </p>
         <Link
           href="/dashboard/settings/paypal"
-          className="inline-block text-[var(--leaf-dark)] underline"
+          className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--ink)] hover:bg-[var(--wash)]"
         >
           Manage PayPal connection
         </Link>

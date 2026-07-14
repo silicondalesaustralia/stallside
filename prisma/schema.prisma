@@ -111,6 +111,9 @@ model Owner {
   paypalMerchantId          String?
   paypalOnboardingComplete  Boolean            @default(false)
   paypalPaymentsEnabled     Boolean            @default(false)
+  emailAlertsEnabled        Boolean            @default(true)
+  pushAlertsEnabled         Boolean            @default(true)
+  alertEmails               String[]           @default([])
   subscriptionStatus        SubscriptionStatus @default(NONE)
   subscriptionPlan          String?            @default("starter")
   monthlyFeeCents           Int                @default(999)

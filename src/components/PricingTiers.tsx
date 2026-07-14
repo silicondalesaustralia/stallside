@@ -43,7 +43,7 @@ export default function PricingTiers() {
 
         <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-[var(--pad-lg)]">
           <p className="text-sm font-semibold text-[var(--ink)]">
-            Card -{" "}
+            Card / PayPal -{" "}
             <span className="rounded-full border border-[var(--line)] px-2 py-0.5 text-xs font-medium text-[var(--muted)]">
               Coming soon
             </span>
@@ -53,13 +53,13 @@ export default function PricingTiers() {
             <span className="text-base font-normal text-[var(--muted)]"> /mo per site</span>
           </p>
           <p className="mt-4 text-sm text-[var(--muted)]">
-            Everything in Cash, plus Tap &amp; Go, Apple Pay and Google Pay at your gate.
+            Everything in Cash, plus Tap &amp; Go, Apple Pay, Google Pay, and PayPal at your gate.
           </p>
           <p className="mt-2 text-sm font-semibold text-[var(--marigold)]">
             No terminal. No hardware. No percentage of your sales.
           </p>
           <a
-            href="mailto:hello@stallside.app?subject=Card%20plan%20waitlist"
+            href="mailto:hello@stallside.app?subject=Card%20%2F%20PayPal%20plan%20waitlist"
             className="mt-8 inline-flex rounded-[var(--radius-pill)] border border-[var(--field)] px-5 py-3 text-sm font-semibold text-[var(--field)] transition hover:bg-[var(--wash)]"
           >
             Join the waitlist

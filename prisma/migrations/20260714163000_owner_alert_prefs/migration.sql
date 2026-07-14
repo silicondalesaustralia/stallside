@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Owner" ADD COLUMN "emailAlertsEnabled" BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE "Owner" ADD COLUMN "pushAlertsEnabled" BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE "Owner" ADD COLUMN "alertEmails" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];

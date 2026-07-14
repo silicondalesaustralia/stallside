@@ -126,7 +126,6 @@ export async function adjustInventory(formData: FormData) {
         [product.id],
         owner.id,
         product.standId,
-        owner.contactEmail,
       );
     } catch (error) {
       console.error("Low-stock notify after inventory adjust failed", error);
