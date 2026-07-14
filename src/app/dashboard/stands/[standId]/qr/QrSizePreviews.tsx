@@ -1,12 +1,19 @@
 "use client";
 
 import { QR_PRINT_SIZES, type QrPrintSize } from "@/lib/print-qr-sheet";
+import FitScale from "./FitScale";
 import QrSignSheet, { type QrSignSheetProps } from "./QrSignSheet";
 
 const TILES: Record<QrPrintSize, number> = {
   a4: 1,
   half: 2,
   quarter: 4,
+};
+
+const TILE_MM: Record<QrPrintSize, { w: number; h: number }> = {
+  a4: { w: 210, h: 297 },
+  half: { w: 210, h: 148.5 },
+  quarter: { w: 105, h: 148.5 },
 };
 
 function SizePreviewCard({
@@ -22,6 +29,7 @@ function SizePreviewCard({
 }) {
   const meta = QR_PRINT_SIZES.find((s) => s.id === size)!;
   const count = TILES[size];
+  const mm = TILE_MM[size];
   const compact = size !== "a4";
   const gridClass =
     size === "a4"
@@ -46,7 +54,7 @@ function SizePreviewCard({
         {Array.from({ length: count }, (_, i) => (
           <div
             key={i}
-            className={`min-h-0 overflow-hidden p-0.5 ${
+            className={`min-h-0 overflow-hidden ${
               size === "half" && i === 0 ? "border-b border-dashed border-[var(--line)]" : ""
             } ${
               size === "quarter"
@@ -54,17 +62,13 @@ function SizePreviewCard({
                 : ""
             }`}
           >
-            {compact ? (
+            <FitScale widthMm={mm.w} heightMm={mm.h}>
               <QrSignSheet
                 {...sheet}
-                layout="compact"
-                className="h-full rounded-none border-0 bg-white !p-1"
+                layout={compact ? "compact" : "full"}
+                className="h-full w-full rounded-none border-0 bg-white"
               />
-            ) : (
-              <div className="origin-top-left scale-[0.28] w-[357%]">
-                <QrSignSheet {...sheet} className="rounded-none border-0 bg-white px-4 pb-4 pt-6" />
-              </div>
-            )}
+            </FitScale>
           </div>
         ))}
       </div>
@@ -100,7 +104,7 @@ export default function QrSizePreviews({
         ))}
       </div>
       <p className="text-xs text-[var(--muted)]">
-        Half and quarter use a side-by-side layout so the QR stays visible
+        Scaled previews of the real print layout
         {size !== "a4" ? " · dashed lines are cut guides" : ""}.
       </p>
     </div>

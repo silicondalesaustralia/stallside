@@ -179,21 +179,25 @@ html.nav-busy * {
   margin: 0;
 }
 
-/* Half / quarter print previews — side-by-side so QR is never cropped */
+/* Half / quarter — side-by-side; clamp TinyMCE inline sizes so QR fits */
 .qr-print-sheet--compact {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1.2fr) auto;
   grid-template-areas:
     "head head"
     "body qr";
-  column-gap: 0.5rem;
-  row-gap: 0.25rem;
+  column-gap: 0.4rem;
+  row-gap: 0.2rem;
   align-items: center;
   height: 100%;
   width: 100%;
   box-sizing: border-box;
   text-align: left;
   overflow: hidden;
+  padding: 0.5rem !important;
+}
+.qr-print-sheet--compact .qr-sign-corner {
+  display: none;
 }
 .qr-print-sheet--compact .qr-sign-head {
   grid-area: head;
@@ -202,6 +206,8 @@ html.nav-busy * {
 .qr-print-sheet--compact .qr-sign-body {
   grid-area: body;
   min-width: 0;
+  max-height: 100%;
+  overflow: hidden;
 }
 .qr-print-sheet--compact .qr-sign-qr {
   grid-area: qr;
@@ -210,9 +216,34 @@ html.nav-busy * {
 }
 .qr-print-sheet--compact .qr-sign-code {
   margin: 0 auto;
-  width: min(42mm, 28vw);
-  max-width: 42mm;
+  width: 40mm;
+  max-width: 40mm;
   height: auto;
+}
+.qr-print-sheet--compact .qr-sign-head h1 {
+  margin-top: 0.15rem !important;
+  font-size: 1.2rem !important;
+  line-height: 1.15 !important;
+}
+.qr-print-sheet--compact .safe-sign-html,
+.qr-print-sheet--compact .safe-sign-html *,
+.qr-print-sheet--compact .qr-sign-body p {
+  font-size: 0.78rem !important;
+  line-height: 1.25 !important;
+  margin-top: 0.15rem !important;
+  margin-bottom: 0 !important;
+}
+.qr-print-sheet--compact .qr-sign-callout,
+.qr-print-sheet--compact .qr-sign-callout * {
+  font-size: 1rem !important;
+}
+.qr-print-sheet--compact .qr-sign-qr .font-receipt {
+  font-size: 7px !important;
+  line-height: 1.2 !important;
+}
+.qr-print-sheet--compact .qr-sign-qr p:last-child {
+  font-size: 0.75rem !important;
+  margin-top: 0.15rem !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

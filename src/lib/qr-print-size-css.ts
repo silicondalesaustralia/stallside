@@ -4,19 +4,22 @@ export type QrPrintSize = "a4" | "half" | "quarter";
 export const QR_COMPACT_SHEET_CSS = `
   .qr-print-sheet--compact {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1.2fr) auto;
     grid-template-areas:
       "head head"
       "body qr";
-    column-gap: 4mm;
-    row-gap: 2mm;
+    column-gap: 3mm;
+    row-gap: 1.5mm;
     align-items: center;
     box-sizing: border-box;
     height: 100%;
     width: 100%;
-    padding: 5mm !important;
+    padding: 4mm !important;
     text-align: left;
     overflow: hidden !important;
+  }
+  .qr-print-sheet--compact .qr-sign-corner {
+    display: none !important;
   }
   .qr-print-sheet--compact .qr-sign-head {
     grid-area: head;
@@ -25,34 +28,49 @@ export const QR_COMPACT_SHEET_CSS = `
   .qr-print-sheet--compact .qr-sign-body {
     grid-area: body;
     min-width: 0;
+    max-height: 100%;
+    overflow: hidden;
     align-self: center;
   }
   .qr-print-sheet--compact .qr-sign-qr {
     grid-area: qr;
     text-align: center;
     justify-self: end;
+    flex-shrink: 0;
   }
   .qr-print-sheet--compact .qr-sign-code {
     margin: 0 auto !important;
-    width: 42mm !important;
-    max-width: 42mm !important;
+    width: 40mm !important;
+    max-width: 40mm !important;
     height: auto !important;
   }
   .qr-print-sheet--compact .qr-sign-head h1 {
-    margin-top: 2mm !important;
-    font-size: 1.35rem !important;
+    margin-top: 1mm !important;
+    margin-bottom: 0 !important;
+    font-size: 1.2rem !important;
+    line-height: 1.15 !important;
   }
-  .qr-print-sheet--compact .safe-sign-html {
-    font-size: 0.82rem !important;
-    margin-top: 1.5mm !important;
+  .qr-print-sheet--compact .safe-sign-html,
+  .qr-print-sheet--compact .safe-sign-html *,
+  .qr-print-sheet--compact .qr-sign-body p {
+    font-size: 0.78rem !important;
+    line-height: 1.25 !important;
+    margin-top: 1mm !important;
     margin-bottom: 0 !important;
   }
-  .qr-print-sheet--compact .safe-sign-html p {
-    margin-bottom: 0.2em !important;
+  .qr-print-sheet--compact .qr-sign-callout,
+  .qr-print-sheet--compact .qr-sign-callout * {
+    font-size: 1rem !important;
+    margin-top: 1.5mm !important;
   }
-  .qr-print-sheet--compact .qr-sign-callout {
-    font-size: 1.15rem !important;
-    margin-top: 2mm !important;
+  .qr-print-sheet--compact .qr-sign-qr .font-receipt {
+    font-size: 7px !important;
+    line-height: 1.2 !important;
+    max-width: 42mm;
+  }
+  .qr-print-sheet--compact .qr-sign-qr p:last-child {
+    font-size: 0.75rem !important;
+    margin-top: 1mm !important;
   }
 `;
 
