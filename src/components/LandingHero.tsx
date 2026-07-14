@@ -14,7 +14,7 @@ export default function LandingHero() {
         style={{
           background: `
             radial-gradient(ellipse 70% 55% at 15% 20%, rgb(46 125 63 / 0.45) 0%, transparent 55%),
-            radial-gradient(ellipse 50% 45% at 88% 75%, rgb(245 166 35 / 0.18) 0%, transparent 50%),
+            radial-gradient(ellipse 50% 45% at 88% 75%, rgb(46 125 63 / 0.22) 0%, transparent 50%),
             linear-gradient(165deg, #1f4a2a 0%, var(--field) 48%, #0f2416 100%)
           `,
         }}
@@ -60,20 +60,31 @@ export default function LandingHero() {
               </span>
             ))}
           </h1>
-          <p className="mt-4 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-[var(--marigold)] sm:text-2xl">
+          <p className="mt-4 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-[var(--ink-on-dark)] sm:text-2xl">
             {APP_TAGLINE}
           </p>
           <p className="mt-3 max-w-md text-base leading-snug text-[var(--ink-on-dark)]/75">
             {APP_POSITIONING}. Print a QR, take payment, watch stock from anywhere.
           </p>
-          <p className="mt-3 text-sm font-semibold text-[var(--ink-on-dark)]">
-            Take cash today ·{" "}
-            <span className="text-[var(--marigold)]">Tap &amp; Go coming soon</span>
-          </p>
+
+          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+            <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]">
+              <span className="size-2 rounded-full bg-[var(--leaf)]" aria-hidden />
+              Cash — live today
+            </span>
+            <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]/55">
+              <span
+                className="size-2 rounded-full border border-[var(--muted)] bg-transparent"
+                aria-hidden
+              />
+              Tap &amp; Go — coming soon
+            </span>
+          </div>
+
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href="/login"
-              className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white shadow-[inset_0_0_0_2px_var(--marigold)] transition duration-150 hover:bg-[var(--leaf-dark)]"
+              className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition duration-150 hover:bg-[var(--leaf-dark)]"
             >
               Open your stand
             </Link>
@@ -89,7 +100,7 @@ export default function LandingHero() {
         <div className="relative mx-auto w-full max-w-[240px] lg:mx-0 lg:ml-auto lg:max-w-[260px]">
           <div
             aria-hidden
-            className="hero-bracket absolute -bottom-2 -right-2 size-12 border-b-[3px] border-r-[3px] border-[var(--marigold)] sm:size-14"
+            className="hero-bracket absolute -bottom-2 -right-2 size-12 border-b-[3px] border-r-[3px] border-[var(--ink-on-dark)]/45 sm:size-14"
             style={{ borderBottomRightRadius: 10 }}
           />
           <div className="hero-phone relative rounded-[28px] border-[5px] border-[var(--ink-on-dark)]/90 bg-[var(--panel)] p-2.5 shadow-[0_20px_50px_rgb(0_0_0/0.4)]">
@@ -97,7 +108,7 @@ export default function LandingHero() {
               <div className="flex items-center gap-2">
                 <BrandMark className="size-6" />
                 <p className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight">
-                  Valley Eggs
+                  Gate stall
                 </p>
               </div>
               <p className="mt-4 text-center text-[11px] text-[var(--muted)]">
@@ -107,7 +118,10 @@ export default function LandingHero() {
                 $6.00
               </p>
               <p className="mt-4 rounded-[var(--radius-pill)] bg-[var(--leaf)] py-2.5 text-center text-[11px] font-semibold text-white">
-                I have paid cash
+                I have paid cash ✓
+              </p>
+              <p className="mt-2 text-center text-[10px] font-medium text-[var(--leaf)]">
+                Confirmed — owner alerted
               </p>
             </div>
           </div>

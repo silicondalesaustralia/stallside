@@ -1,18 +1,18 @@
-import FeatureLists from "@/components/FeatureLists";
-import HowItWorks from "@/components/HowItWorks";
+import FeatureColumns from "@/components/FeatureColumns";
+import HowItWorksFlow from "@/components/HowItWorksFlow";
 import LandingFooter from "@/components/LandingFooter";
 import LandingHero from "@/components/LandingHero";
 import NetworkVision from "@/components/NetworkVision";
 import PricingTiers from "@/components/PricingTiers";
-import UseCases from "@/components/UseCases";
+import UseCaseGrid from "@/components/UseCaseGrid";
 
 export default function HomePage() {
   return (
     <main className="relative flex min-h-full flex-1 flex-col">
       <LandingHero />
-      <HowItWorks />
-      <UseCases />
-      <FeatureLists />
+      <HowItWorksFlow />
+      <UseCaseGrid />
+      <FeatureColumns />
       <PricingTiers />
       <NetworkVision />
       <LandingFooter />

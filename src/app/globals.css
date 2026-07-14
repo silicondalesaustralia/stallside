@@ -15,7 +15,10 @@
   --warn: #c77400;
   --gone: #8a2e2e;
   --radius: 20px;
+  --radius-sm: 8px;
   --radius-pill: 999px;
+  --pad-md: 16px;
+  --pad-lg: 28px;
   --background: var(--wash);
   --foreground: var(--ink);
 }

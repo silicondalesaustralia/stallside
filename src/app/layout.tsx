@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, DM_Sans, Spline_Sans_Mono } from "next/font/google";
-import { APP_DOMAIN, APP_NAME, APP_TAGLINE, APP_POSITIONING } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME, APP_POSITIONING } from "@/lib/constants";
 import NativeShellBootstrap from "@/components/NativeShellBootstrap";
 import "./globals.css";
 
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     default: APP_NAME,
     template: `%s · ${APP_NAME}`,
   },
-  description: `${APP_TAGLINE} ${APP_POSITIONING}`,
+  description: `${APP_POSITIONING} Scan, pay, sold.`,
   appleWebApp: {
     capable: true,
     title: APP_NAME,
