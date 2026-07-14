@@ -1,0 +1,252 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  OWNER
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  CUSTOMER_CONFIRMED
+  FAILED
+  CANCELLED
+  REFUNDED
+  EXPIRED
+}
+
+enum ReceiptChannel {
+  NONE
+  EMAIL
+}
+
+enum InventorySource {
+  OWNER_MANUAL
+  ORDER_CASH
+  ORDER_CARD
+  SYSTEM
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  NONE
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(OWNER)
+  accounts      Account[]
+  sessions      Session[]
+  owner         Owner?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Owner {
+  id                        String             @id @default(cuid())
+  userId                    String             @unique
+  user                      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName              String
+  contactEmail              String
+  contactPhone              String?
+  stripeAccountId           String?
+  stripeOnboardingComplete  Boolean            @default(false)
+  stripeChargesEnabled      Boolean            @default(false)
+  stripePayoutsEnabled      Boolean            @default(false)
+  subscriptionStatus        SubscriptionStatus @default(NONE)
+  subscriptionPlan          String?            @default("starter")
+  monthlyFeeCents           Int                @default(999)
+  platformFeePercentBps     Int                @default(200)
+  stands                    Stand[]
+  products                  Product[]
+  orders                    Order[]
+  inventoryAdjustments      InventoryAdjustment[]
+  lowStockAlerts            LowStockAlert[]
+  pushDevices               PushDevice[]
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+}
+
+model PushDevice {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  platform  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+}
+
+model Stand {
+  id                 String               @id @default(cuid())
+  ownerId            String
+  owner              Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name               String
+  slug               String               @unique
+  description        String?
+  locationLabel      String?
+  qrSignMessage      String?
+  currency           String               @default("AUD")
+  showExactStock     Boolean              @default(false)
+  isActive           Boolean              @default(true)
+  products           Product[]
+  orders             Order[]
+  inventoryAdjustments InventoryAdjustment[]
+  lowStockAlerts     LowStockAlert[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+}
+
+model Product {
+  id                 String               @id @default(cuid())
+  standId            String
+  stand              Stand                @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId            String
+  owner              Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name               String
+  description        String?
+  priceCents         Int
+  currency           String               @default("AUD")
+  stockQuantity      Int                  @default(0)
+  lowStockThreshold  Int                  @default(5)
+  isActive           Boolean              @default(true)
+  sortOrder          Int                  @default(0)
+  orderItems         OrderItem[]
+  inventoryAdjustments InventoryAdjustment[]
+  lowStockAlerts     LowStockAlert[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  @@index([standId, isActive])
+}
+
+model Order {
+  id                      String         @id @default(cuid())
+  standId                 String
+  stand                   Stand          @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId                 String
+  owner                   Owner          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  orderNumber             String         @unique
+  paymentMethod           PaymentMethod
+  paymentStatus           PaymentStatus
+  subtotalCents           Int
+  totalCents              Int
+  currency                String
+  platformFeeCents        Int            @default(0)
+  stripeCheckoutSessionId String?
+  stripePaymentIntentId   String?
+  receiptEmail            String?
+  receiptChannel          ReceiptChannel @default(NONE)
+  items                   OrderItem[]
+  inventoryAdjustments    InventoryAdjustment[]
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+
+  @@index([ownerId, createdAt])
+  @@index([standId, createdAt])
+}
+
+model OrderItem {
+  id                  String   @id @default(cuid())
+  orderId             String
+  order               Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId           String
+  product             Product  @relation(fields: [productId], references: [id])
+  productNameSnapshot String
+  quantity            Int
+  unitPriceCents      Int
+  lineTotalCents      Int
+  createdAt           DateTime @default(now())
+}
+
+model InventoryAdjustment {
+  id               String          @id @default(cuid())
+  productId        String
+  product          Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ownerId          String
+  owner            Owner           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  standId          String
+  stand            Stand           @relation(fields: [standId], references: [id], onDelete: Cascade)
+  changeQuantity   Int
+  previousQuantity Int
+  newQuantity      Int
+  reason           String
+  source           InventorySource
+  orderId          String?
+  order            Order?          @relation(fields: [orderId], references: [id])
+  createdAt        DateTime        @default(now())
+
+  @@index([productId, createdAt])
+}
+
+model LowStockAlert {
+  id                   String   @id @default(cuid())
+  productId            String
+  product              Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ownerId              String
+  owner                Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  standId              String
+  stand                Stand    @relation(fields: [standId], references: [id], onDelete: Cascade)
+  stockQuantityAtAlert Int
+  threshold            Int
+  channel              String   @default("email")
+  sentAt               DateTime @default(now())
+  createdAt            DateTime @default(now())
+
+  @@index([productId, sentAt])
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1" />
+    <title>Stallside</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: system-ui, sans-serif;
+        background: #f2f6ef;
+        color: #182c1b;
+        padding: 1.5rem;
+        text-align: center;
+      }
+      p { opacity: 0.75; line-height: 1.4; }
+      code { font-size: 0.85em; }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1 style="font-weight: 700; margin: 0 0 0.5rem; letter-spacing: -0.02em">stallside</h1>
+      <p>Loading owner app…</p>
+      <p style="margin-top: 1rem; font-size: 0.9rem">
+        If this stays here: run <code>npm run dev</code>, then
+        <code>CAPACITOR_SERVER_URL=http://127.0.0.1:3000 npx cap sync ios</code>
+        and press Run in Xcode again.
+      </p>
+    </div>
+  </body>
+</html>

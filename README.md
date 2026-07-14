@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stallside
 
-## Getting Started
+QR self-checkout and inventory for unmanned farm stands. Domain: **[stallside.app](https://stallside.app)**
 
-First, run the development server:
+Repo: [silicondalesaustralia/stallside](https://github.com/silicondalesaustralia/stallside)
+
+## Stack
+
+- Next.js (App Router) + TypeScript + Tailwind
+- Auth.js magic-link sign-in
+- PostgreSQL + Prisma
+- Stripe Connect + Checkout (Apple Pay / Google Pay)
+- Capacitor owner app (iOS / Android)
+
+## Local setup
+
+1. Copy `.env.example` to `.env` and set `DATABASE_URL` + `AUTH_SECRET`.
+2. `npm install`
+3. `npx prisma migrate deploy` (or `migrate dev`)
+4. `npm run dev`
+5. Open http://localhost:3000 — without `RESEND_API_KEY`, magic links print in the server console.
+
+## Pilot / Vercel
+
+See `PILOT-GO-LIVE.md` for the sequenced checklist.
+
+Import this repo into Vercel (Next.js). Production env must include at least:
+
+- `DATABASE_URL`
+- `NEXT_PUBLIC_APP_URL=https://stallside.app`
+- `AUTH_SECRET` / `AUTH_URL=https://stallside.app`
+- `RESEND_API_KEY` + `EMAIL_FROM` (required in prod)
+- Stripe test keys first, then live
+
+Build runs `prisma migrate deploy` then `next build`.
+
+Point DNS for `stallside.app` at Vercel. Do not pilot QR posters on `*.vercel.app`.
+
+## Product decisions (MVP)
+
+- SaaS: $9.99/mo (not collected yet)
+- Platform fee: 2% on card orders only (tracked; no Connect application fee yet)
+- Exact public stock off by default
+- Cash sales: customer-confirmed, logged only
+- Currency: per stand
+
+## Owner mobile shell
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+CAPACITOR_SERVER_URL=https://stallside.app npx cap sync ios
+npm run cap:ios
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Local Simulator: `CAPACITOR_SERVER_URL=http://127.0.0.1:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stripe
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Add `STRIPE_SECRET_KEY` + webhook secret
+2. Owner: **Settings → Manage Stripe connection**
+3. Prod webhook: `https://stallside.app/api/stripe/webhook` (`checkout.session.completed`)
 
-## Learn More
+## Platform admin
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run admin:promote -- you@example.com
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Then open `/admin`.

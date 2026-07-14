@@ -30,8 +30,12 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files
+.env
+.env.local
+.env.*.local
+!.env.example
+
 
 # vercel
 .vercel
@@ -39,3 +43,24 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+
+# Capacitor / native
+android/.gradle
+android/app/build
+android/build
+android/local.properties
+android/.idea
+ios/App/Pods
+ios/App/App.xcworkspace/xcuserdata
+ios/App/App.xcodeproj/xcuserdata
+ios/DerivedData
+*.xcuserstate
+.capacitor
+
+# local tool / build caches
+.tmp-derived-data/
+.tmp-icon/
+.tmp-app-icon.jpg
+.DS_Store
