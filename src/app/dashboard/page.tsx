@@ -2,59 +2,76 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
-import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
 import DashboardStat from "@/components/DashboardStat";
+import DashboardPanels from "@/components/DashboardPanels";
+import DateRangeFilter from "@/components/DateRangeFilter";
+import { resolveDateWindow } from "@/lib/date-range";
+import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
 
-function startOfToday() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ range?: string; from?: string; to?: string }>;
+}) {
   const { owner } = await requireOwner();
-  const since = startOfToday();
+  const params = await searchParams;
+  const window = resolveDateWindow(params);
 
-  const [standRows, products, todayOrders, catalog, recent] = await Promise.all([
-    prisma.stand.findMany({
-      where: { ownerId: owner.id },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true, slug: true },
-    }),
-    prisma.product.count({ where: { ownerId: owner.id, isActive: true } }),
-    prisma.order.findMany({
-      where: {
-        ownerId: owner.id,
-        createdAt: { gte: since },
-        paymentStatus: {
-          in: [PaymentStatus.PAID, PaymentStatus.CUSTOMER_CONFIRMED],
+  const [standRows, products, currentOrders, previousOrders, catalog, recent] =
+    await Promise.all([
+      prisma.stand.findMany({
+        where: { ownerId: owner.id },
+        orderBy: { name: "asc" },
+        select: { id: true, name: true, slug: true },
+      }),
+      prisma.product.count({ where: { ownerId: owner.id, isActive: true } }),
+      prisma.order.findMany({
+        where: {
+          ownerId: owner.id,
+          createdAt: { gte: window.start, lte: window.end },
+          paymentStatus: { in: COUNTED_STATUSES },
         },
-      },
-    }),
-    prisma.product.findMany({
-      where: { ownerId: owner.id, isActive: true },
-      include: { stand: true },
-      orderBy: { stockQuantity: "asc" },
-    }),
-    prisma.order.findMany({
-      where: { ownerId: owner.id },
-      orderBy: { createdAt: "desc" },
-      take: 8,
-      include: { stand: true },
-    }),
-  ]);
+        select: {
+          totalCents: true,
+          paymentMethod: true,
+          currency: true,
+          createdAt: true,
+        },
+      }),
+      prisma.order.findMany({
+        where: {
+          ownerId: owner.id,
+          createdAt: { gte: window.prevStart, lte: window.prevEnd },
+          paymentStatus: { in: COUNTED_STATUSES },
+        },
+        select: {
+          totalCents: true,
+          paymentMethod: true,
+          currency: true,
+          createdAt: true,
+        },
+      }),
+      prisma.product.findMany({
+        where: { ownerId: owner.id, isActive: true },
+        include: { stand: true },
+        orderBy: { stockQuantity: "asc" },
+      }),
+      prisma.order.findMany({
+        where: { ownerId: owner.id },
+        orderBy: { createdAt: "desc" },
+        take: 8,
+        include: { stand: true },
+      }),
+    ]);
 
-  const stands = standRows.length;
+  const current = summarizeOrders(currentOrders);
+  const previous = summarizeOrders(previousOrders);
   const lowStock = catalog
     .filter((p) => p.stockQuantity <= p.lowStockThreshold)
     .slice(0, 8);
-  const cashTotal = todayOrders
-    .filter((o) => o.paymentMethod === PaymentMethod.CASH)
-    .reduce((sum, o) => sum + o.totalCents, 0);
-  const cardTotal = todayOrders
-    .filter((o) => o.paymentMethod === PaymentMethod.CARD)
-    .reduce((sum, o) => sum + o.totalCents, 0);
-  const currency = todayOrders[0]?.currency ?? "AUD";
+  const ordersHref = `/dashboard/orders?range=${window.key}${
+    window.key === "custom" ? `&from=${window.fromParam}&to=${window.toParam}` : ""
+  }`;
 
   return (
     <main className="flex flex-col gap-10">
@@ -63,7 +80,7 @@ export default async function DashboardPage() {
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
             {owner.businessName}
           </h1>
-          <p className="mt-1 text-[var(--muted)]">Today&apos;s stand activity</p>
+          <p className="mt-1 text-[var(--muted)]">{window.label} stand activity</p>
         </div>
         <Link
           href="/dashboard/stands/new"
@@ -73,92 +90,49 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
+      <DateRangeFilter
+        pathname="/dashboard"
+        activeKey={window.key}
+        from={window.fromParam}
+        to={window.toParam}
+      />
+
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <DashboardStat label="Today sales" value={formatMoney(cashTotal + cardTotal, currency)} />
-        <DashboardStat label="Cash" value={formatMoney(cashTotal, currency)} />
-        <DashboardStat label="Card" value={formatMoney(cardTotal, currency)} />
-        <DashboardStat label="Orders" value={String(todayOrders.length)} />
+        <DashboardStat
+          label="Sales"
+          value={formatMoney(current.salesCents, current.currency)}
+          current={current.salesCents}
+          previous={previous.salesCents}
+        />
+        <DashboardStat
+          label="Cash"
+          value={formatMoney(current.cashCents, current.currency)}
+          current={current.cashCents}
+          previous={previous.cashCents}
+        />
+        <DashboardStat
+          label="Card / PayPal"
+          value={formatMoney(current.digitalCents, current.currency)}
+          current={current.digitalCents}
+          previous={previous.digitalCents}
+        />
+        <DashboardStat
+          label="Orders"
+          value={String(current.orderCount)}
+          current={current.orderCount}
+          previous={previous.orderCount}
+        />
       </section>
 
-      <section className="grid gap-8 lg:grid-cols-2">
-        <div>
-          <h2 className="text-lg font-semibold">Snapshot</h2>
-          <p className="mt-2 text-sm text-[var(--muted)]">
-            {stands} stand{stands === 1 ? "" : "s"} · {products} active product
-            {products === 1 ? "" : "s"}
-          </p>
-          <p className="mt-2 text-sm text-[var(--muted)]">
-            Stripe:{" "}
-            {owner.stripeChargesEnabled
-              ? "Connected"
-              : "Not connected - card checkout disabled"}
-          </p>
-          {standRows.length > 0 ? (
-            <ul className="mt-4 space-y-3">
-              {standRows.map((stand) => (
-                <li key={stand.id}>
-                  <Link
-                    href={`/dashboard/stands/${stand.id}/qr`}
-                    className="flex items-center justify-between gap-3 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-4 text-sm font-semibold transition hover:border-[var(--leaf)]"
-                  >
-                    <span>{stand.name}</span>
-                    <span className="text-[var(--leaf-dark)]">QR &amp; print →</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold">Low stock</h2>
-          {lowStock.length === 0 ? (
-            <p className="mt-2 text-sm text-[var(--muted)]">Nothing low right now.</p>
-          ) : (
-            <ul className="mt-3 space-y-2 text-sm">
-              {lowStock.map((p) => (
-                <li key={p.id} className="flex justify-between gap-4">
-                  <span>
-                    {p.name}{" "}
-                    <span className="text-[var(--muted)]">({p.stand.name})</span>
-                  </span>
-                  <span className="font-receipt font-medium text-[var(--warn)]">
-                    {p.stockQuantity} left
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </section>
-
-      <section>
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Recent sales</h2>
-          <Link href="/dashboard/orders" className="text-sm text-[var(--leaf-dark)] underline">
-            View all
-          </Link>
-        </div>
-        {recent.length === 0 ? (
-          <p className="mt-3 text-sm text-[var(--muted)]">No sales yet.</p>
-        ) : (
-          <ul className="mt-4 divide-y divide-[var(--line)] border-y border-[var(--line)]">
-            {recent.map((order) => (
-              <li
-                key={order.id}
-                className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm"
-              >
-                <span>
-                  {order.orderNumber} · {order.stand.name}
-                </span>
-                <span className="font-receipt text-[var(--muted)]">
-                  {order.paymentMethod.toLowerCase()} ·{" "}
-                  {formatMoney(order.totalCents, order.currency)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <DashboardPanels
+        stands={standRows.length}
+        products={products}
+        stripeConnected={owner.stripeChargesEnabled}
+        standRows={standRows}
+        lowStock={lowStock}
+        recent={recent}
+        ordersHref={ordersHref}
+      />
     </main>
   );
 }
