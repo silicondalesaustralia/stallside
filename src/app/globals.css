@@ -100,11 +100,54 @@ body {
   animation: flow-dash 0.9s linear infinite;
 }
 
+/* TipTap editor placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  color: var(--muted);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-letter,
   .hero-bracket,
   .hero-phone,
   .flow-dash {
     animation: none;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #182c1b !important;
+    height: auto !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  /* Only the QR sign should print - hide any leftover app chrome */
+  header,
+  footer,
+  nav {
+    display: none !important;
+  }
+
+  .qr-print-sheet {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+
+  .qr-print-sheet img {
+    max-width: 90mm !important;
   }
 }

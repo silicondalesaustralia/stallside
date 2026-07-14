@@ -149,6 +149,7 @@ model Stand {
   description        String?
   locationLabel      String?
   qrSignMessage      String?
+  qrCallout          String?
   currency           String               @default("AUD")
   showExactStock     Boolean              @default(false)
   isActive           Boolean              @default(true)

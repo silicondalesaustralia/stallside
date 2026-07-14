@@ -30,7 +30,7 @@ export default function DashboardNav() {
 
   return (
     <>
-      <header className="border-b border-[var(--line)] bg-[var(--panel)]/90 backdrop-blur">
+      <header className="border-b border-[var(--line)] bg-[var(--panel)]/90 backdrop-blur print:hidden">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
           <BrandLockup href="/dashboard" size="sm" />
           <nav className="hidden flex-wrap gap-x-4 gap-y-2 text-sm md:flex">
@@ -53,7 +53,7 @@ export default function DashboardNav() {
         </div>
       </header>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--field)]/20 bg-[var(--field)] pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--field)]/20 bg-[var(--field)] pb-[env(safe-area-inset-bottom)] print:hidden md:hidden">
         <ul className="mx-auto grid max-w-lg grid-cols-4 gap-1 px-2 py-2">
           {tabs.map((tab) => {
             const active = tabActive(pathname, tab.href);

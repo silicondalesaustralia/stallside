@@ -117,7 +117,8 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
     name: z.string().trim().min(2).max(80),
     description: z.string().trim().max(8000).optional(),
     locationLabel: z.string().trim().max(120).optional(),
-    qrSignMessage: z.string().trim().max(160).optional(),
+    qrSignMessage: z.string().trim().max(8000).optional(),
+    qrCallout: z.string().trim().max(8000).optional(),
   });
 
   const parsed = printSchema.safeParse({
@@ -125,11 +126,18 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
     description: formData.get("description") || undefined,
     locationLabel: formData.get("locationLabel") || undefined,
     qrSignMessage: formData.get("qrSignMessage") || undefined,
+    qrCallout: formData.get("qrCallout") || undefined,
   });
   if (!parsed.success) return { error: "Check the print details and try again." };
 
   const instructions = parsed.data.description
-    ? sanitizeSignHtml(parsed.data.description)
+    ? sanitizeSignHtml(parsed.data.description, true)
+    : "";
+  const signMessage = parsed.data.qrSignMessage
+    ? sanitizeSignHtml(parsed.data.qrSignMessage, true)
+    : "";
+  const callout = parsed.data.qrCallout
+    ? sanitizeSignHtml(parsed.data.qrCallout, true)
     : "";
 
   await prisma.stand.update({
@@ -138,7 +146,8 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
       name: parsed.data.name,
       description: instructions || null,
       locationLabel: parsed.data.locationLabel || null,
-      qrSignMessage: parsed.data.qrSignMessage || null,
+      qrSignMessage: signMessage || null,
+      qrCallout: callout || null,
     },
   });
 

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { updateStandQrPrint } from "../../actions";
-import SimpleHtmlEditor from "@/components/SimpleHtmlEditor";
+import TipTapSignEditor from "@/components/TipTapSignEditor";
 
 type PrintFields = {
   id: string;
@@ -11,6 +11,7 @@ type PrintFields = {
   description: string | null;
   locationLabel: string | null;
   qrSignMessage: string | null;
+  qrCallout: string | null;
 };
 
 export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
@@ -37,8 +38,19 @@ export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
       <input type="hidden" name="standId" value={stand.id} />
       <h2 className="text-lg font-semibold">Edit QR sign</h2>
       <p className="text-sm text-[var(--muted)]">
-        These details appear on the printable / downloadable sign and on the public checkout page.
+        Formatted fields use a full HTML editor (TipTap) - colour, size, fonts, lists, and more.
       </p>
+
+      <div className="flex flex-col gap-2 text-sm">
+        <span className="font-medium">Attention callout</span>
+        <TipTapSignEditor
+          name="qrCallout"
+          minHeightClass="min-h-20"
+          defaultValue={stand.qrCallout ?? ""}
+          placeholder="ATTENTION or PLEASE NOTE"
+        />
+      </div>
+
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Stand name</span>
         <input
@@ -48,17 +60,27 @@ export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
+
+      <div className="flex flex-col gap-2 text-sm">
+        <span className="font-medium">Sign message under the name</span>
+        <TipTapSignEditor
+          name="qrSignMessage"
+          minHeightClass="min-h-16"
+          defaultValue={stand.qrSignMessage ?? ""}
+          placeholder="Scan to browse and pay at this stand."
+        />
+      </div>
+
       <div className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Instructions</span>
-        <p className="text-[var(--muted)]">
-          Use bold, lists, and Enter for new lines so steps read clearly on the printout.
-        </p>
-        <SimpleHtmlEditor
+        <TipTapSignEditor
           name="description"
+          minHeightClass="min-h-32"
           defaultValue={stand.description ?? ""}
           placeholder="Step 1: Scan QR code…"
         />
       </div>
+
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Location</span>
         <input
@@ -68,15 +90,7 @@ export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Sign message under the name</span>
-        <input
-          name="qrSignMessage"
-          defaultValue={stand.qrSignMessage ?? ""}
-          placeholder="Scan to browse and pay at this stand."
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
+
       {message ? <p className="text-sm text-[var(--muted)]">{message}</p> : null}
       <button
         type="submit"

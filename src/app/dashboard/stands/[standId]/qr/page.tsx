@@ -23,12 +23,11 @@ export default async function StandQrPage({
 
   const checkoutUrl = standCheckoutUrl(stand.slug);
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 640);
-  const signMessage =
-    stand.qrSignMessage?.trim() || "Scan to browse and pay at this stand.";
   const siteUrl = `https://${APP_DOMAIN}`;
+  const defaultMessage = "Scan to browse and pay at this stand.";
 
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-8">
+    <main className="mx-auto flex max-w-lg flex-col gap-8 print:max-w-none print:gap-0">
       <p className="text-sm text-[var(--muted)] print:hidden">
         <Link href="/dashboard/stands" className="underline">
           My stands
@@ -39,28 +38,44 @@ export default async function StandQrPage({
         </Link>
       </p>
 
-      <div className="relative overflow-hidden rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-6 text-center print:border-0">
+      <div className="qr-print-sheet relative overflow-hidden rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-6 text-center print:overflow-visible print:rounded-none print:border-0 print:bg-white print:p-0">
         <div
           aria-hidden
-          className="absolute left-4 top-4 size-10 border-l-[4px] border-t-[4px] border-[var(--field)]"
+          className="absolute left-4 top-4 size-10 border-l-[4px] border-t-[4px] border-[var(--field)] print:hidden"
           style={{ borderTopLeftRadius: 10 }}
         />
         <div
           aria-hidden
-          className="absolute bottom-4 right-4 size-10 border-b-[4px] border-r-[4px] border-[var(--marigold)]"
+          className="absolute bottom-4 right-4 size-10 border-b-[4px] border-r-[4px] border-[var(--marigold)] print:hidden"
           style={{ borderBottomRightRadius: 10 }}
         />
         <div className="flex justify-center">
           <BrandLockup link={false} size="lg" />
         </div>
+        {stand.qrCallout ? (
+          <SafeSignHtml
+            html={stand.qrCallout}
+            allowStyles
+            className="mt-4 text-center font-[family-name:var(--font-display)] text-3xl font-bold leading-tight tracking-tight text-[var(--gone)] [&_h2]:my-1 [&_h3]:my-1 [&_p]:my-0"
+          />
+        ) : null}
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
           {stand.name}
         </h1>
-        <p className="mt-3 text-lg text-[var(--muted)]">{signMessage}</p>
+        {stand.qrSignMessage ? (
+          <SafeSignHtml
+            html={stand.qrSignMessage}
+            allowStyles
+            className="mt-3 text-lg text-[var(--muted)] [&_h2]:my-1 [&_h3]:my-1 [&_p]:my-1"
+          />
+        ) : (
+          <p className="mt-3 text-lg text-[var(--muted)]">{defaultMessage}</p>
+        )}
         {stand.description ? (
           <SafeSignHtml
             html={stand.description}
-            className="mt-3 text-left text-lg font-semibold leading-relaxed text-[var(--ink)] [&_li]:my-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_strong]:font-bold [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6"
+            allowStyles
+            className="mt-3 text-left text-lg font-semibold leading-relaxed text-[var(--ink)] [&_h2]:my-2 [&_h3]:my-1.5 [&_li]:my-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_strong]:font-bold [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6"
           />
         ) : null}
         {stand.locationLabel ? (

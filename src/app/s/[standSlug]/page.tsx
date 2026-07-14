@@ -52,7 +52,8 @@ export default async function PublicStandPage({
       {stand.description ? (
         <SafeSignHtml
           html={stand.description}
-          className="mt-4 text-xl leading-relaxed text-[var(--ink)] [&_li]:my-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_strong]:font-bold [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6"
+          allowStyles
+          className="mt-4 text-xl leading-relaxed text-[var(--ink)] [&_h2]:my-2 [&_h3]:my-1.5 [&_li]:my-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_strong]:font-bold [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6"
         />
       ) : null}
       {stand.locationLabel ? (
