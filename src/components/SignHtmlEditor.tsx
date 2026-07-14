@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import type { Editor as TinyMCEEditor } from "tinymce";
-import { normalizeSignHtml } from "@/lib/sanitize-sign-html";
+import { normalizeSignHtml, persistBlankParagraphs } from "@/lib/sanitize-sign-html";
 import { SIGN_HTML_CONTENT_STYLE } from "@/lib/sign-html-content-style";
 
 type SignHtmlEditorProps = {
@@ -13,8 +13,14 @@ type SignHtmlEditorProps = {
   height?: number;
 };
 
-function isEmptyBlock(el: Element) {
-  return !el.innerHTML.replace(/\s|&nbsp;|<br\s*\/?>/gi, "");
+function padEmptyBlocks(editor: TinyMCEEditor) {
+  const body = editor.getBody();
+  if (!body) return;
+  for (const el of Array.from(body.querySelectorAll("p, h2, h3"))) {
+    if (editor.dom.isEmpty(el)) {
+      el.innerHTML = "&nbsp;";
+    }
+  }
 }
 
 export default function SignHtmlEditor({
@@ -24,13 +30,16 @@ export default function SignHtmlEditor({
   height = 220,
 }: SignHtmlEditorProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const initial = normalizeSignHtml(defaultValue);
+  const initial = persistBlankParagraphs(normalizeSignHtml(defaultValue));
 
   function sync(editor: TinyMCEEditor) {
     if (!inputRef.current) return;
-    const html = editor.getContent({ format: "html" }).trim();
-    const text = editor.getContent({ format: "text" }).trim();
-    inputRef.current.value = text ? html : "";
+    padEmptyBlocks(editor);
+    const html = persistBlankParagraphs(editor.getContent({ format: "html" }).trim());
+    const text = editor.getContent({ format: "text" }).replace(/\u00a0/g, " ").trim();
+    const keep = Boolean(text) || html.includes("&nbsp;") || /<br\s*\/?>/i.test(html);
+    inputRef.current.value = keep ? html : "";
+
   }
 
   return (
@@ -59,8 +68,9 @@ export default function SignHtmlEditor({
           placeholder,
           content_style: SIGN_HTML_CONTENT_STYLE,
           forced_root_block: "p",
-          remove_trailing_brs: true,
+          remove_trailing_brs: false,
           convert_urls: false,
+          entity_encoding: "raw",
           formats: {
             removeformat: [
               {
@@ -81,30 +91,6 @@ export default function SignHtmlEditor({
                 deep: true,
               },
             ],
-          },
-          setup: (editor) => {
-            editor.on("NodeChange SetContent", () => {
-              const body = editor.getBody();
-              if (!body) return;
-              // Drop only leading/trailing empty paragraphs TinyMCE inserts
-              // around lists — keep blank lines in the middle for spacing.
-              while (
-                body.firstChild instanceof HTMLElement &&
-                body.firstChild.nodeName === "P" &&
-                isEmptyBlock(body.firstChild) &&
-                body.childNodes.length > 1
-              ) {
-                body.firstChild.remove();
-              }
-              while (
-                body.lastChild instanceof HTMLElement &&
-                body.lastChild.nodeName === "P" &&
-                isEmptyBlock(body.lastChild) &&
-                body.childNodes.length > 1
-              ) {
-                body.lastChild.remove();
-              }
-            });
           },
         }}
       />

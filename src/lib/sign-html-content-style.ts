@@ -5,9 +5,10 @@ export const SIGN_HTML_CONTENT_STYLE = `
     font-size: 15px;
     line-height: 1.45;
     color: #182c1b;
+    white-space: pre-wrap;
   }
   .safe-sign-html p,
-  body p { margin: 0 0 0.55em; }
+  body p { margin: 0 0 0.55em; min-height: 1.15em; }
   .safe-sign-html p:last-child,
   body p:last-child { margin-bottom: 0; }
   .safe-sign-html h2,
@@ -17,7 +18,7 @@ export const SIGN_HTML_CONTENT_STYLE = `
   .safe-sign-html ul,
   .safe-sign-html ol,
   body ul,
-  body ol { margin: 0.35em 0; padding-left: 1.4em; }
+  body ol { margin: 0.35em 0; padding-left: 1.4em; white-space: normal; }
   .safe-sign-html ul { list-style: disc; }
   .safe-sign-html ol { list-style: decimal; }
   .safe-sign-html li,
@@ -27,3 +28,4 @@ export const SIGN_HTML_CONTENT_STYLE = `
   .safe-sign-html a,
   body a { color: #2e7d3f; text-decoration: underline; }
 `.trim();
+

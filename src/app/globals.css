@@ -104,9 +104,11 @@ body {
 .safe-sign-html {
   font-size: 1em;
   line-height: 1.45;
+  white-space: pre-wrap;
 }
 .safe-sign-html p {
   margin: 0 0 0.55em;
+  min-height: 1.15em;
 }
 .safe-sign-html p:last-child {
   margin-bottom: 0;
@@ -125,6 +127,7 @@ body {
 .safe-sign-html ol {
   margin: 0.35em 0;
   padding-left: 1.4em;
+  white-space: normal;
 }
 .safe-sign-html ul {
   list-style: disc;

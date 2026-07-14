@@ -20,11 +20,6 @@ const BASE_TAGS = new Set([
   "a",
 ]);
 
-const EMPTY_BLOCK =
-  /^<(?:p)(?:\s[^>]*)?>\s*(?:&nbsp;|\u00a0|\s|<br\s*\/?>)*<\/p>/i;
-const EMPTY_BLOCK_END =
-  /<(?:p)(?:\s[^>]*)?>\s*(?:&nbsp;|\u00a0|\s|<br\s*\/?>)*<\/p>$/i;
-
 function escapeText(text: string) {
   return text
     .replaceAll("&", "&amp;")
@@ -40,16 +35,12 @@ function safeHref(href: string): string | null {
   return null;
 }
 
-/** Drop empty paragraphs only at the start/end (editor artifacts). */
-function stripEdgeEmptyParagraphs(html: string): string {
-  let out = html.trim();
-  let prev = "";
-  while (out !== prev) {
-    prev = out;
-    out = out.replace(EMPTY_BLOCK, "").trimStart();
-    out = out.replace(EMPTY_BLOCK_END, "").trimEnd();
-  }
-  return out;
+/** Keep blank lines as durable &nbsp; paragraphs so they survive save/reload. */
+export function persistBlankParagraphs(html: string): string {
+  return html.replace(
+    /<p(\s[^>]*)?>\s*(?:&nbsp;|\u00a0|\s|<br\s*\/?>)*<\/p>/gi,
+    (_full, attrs: string | undefined) => `<p${attrs ?? ""}>&nbsp;</p>`,
+  );
 }
 
 /** Convert plain text / newlines into simple paragraphs when no HTML is present. */
@@ -65,7 +56,7 @@ export function normalizeSignHtml(raw: string): string {
 
 /**
  * Allowlist sanitize for owner-authored sign HTML.
- * allowStyles keeps safe inline styles (colour, size, font, alignment, spacing).
+ * Blank paragraphs, &nbsp;, and <br> are kept so editor spacing survives reload.
  */
 export function sanitizeSignHtml(raw: string, allowStyles = false): string {
   const normalized = normalizeSignHtml(raw);
@@ -100,7 +91,7 @@ export function sanitizeSignHtml(raw: string, allowStyles = false): string {
     return parts.length ? `<${name} ${parts.join(" ")}>` : `<${name}>`;
   });
 
-  out = stripEdgeEmptyParagraphs(out);
+  out = persistBlankParagraphs(out);
   out = out.replace(/&(?!(amp|lt|gt|quot|nbsp|#\d+|#x[\da-f]+);)/gi, "&amp;");
   return out.trim().slice(0, 8000);
 }
