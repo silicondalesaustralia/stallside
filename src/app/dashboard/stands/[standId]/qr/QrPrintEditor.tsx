@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { updateStandQrPrint } from "../../actions";
 
@@ -12,27 +13,30 @@ type PrintFields = {
 };
 
 export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
+  const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const save = updateStandQrPrint.bind(null, stand.id);
 
   function onSubmit(formData: FormData) {
     setMessage(null);
     startTransition(async () => {
-      const result = await updateStandQrPrint(stand.id, formData);
+      const result = await save(formData);
       if (result && "error" in result && result.error) {
         setMessage(result.error);
         return;
       }
       setMessage("Saved — print preview updated.");
+      router.refresh();
     });
   }
 
   return (
     <form action={onSubmit} className="flex flex-col gap-4 print:hidden">
+      <input type="hidden" name="standId" value={stand.id} />
       <h2 className="text-lg font-semibold">Edit QR sign</h2>
       <p className="text-sm text-[var(--muted)]">
-        These details appear on the printable / downloadable sign and on the
-        public checkout page.
+        These details appear on the printable / downloadable sign and on the public checkout page.
       </p>
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Stand name</span>

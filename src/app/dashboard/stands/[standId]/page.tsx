@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
+import StandDeleteButton from "./StandDeleteButton";
 import StandEditForm from "./StandEditForm";
 
 export default async function StandDetailPage({
@@ -101,6 +102,8 @@ export default async function StandDetailPage({
           )}
         </div>
       </div>
+
+      <StandDeleteButton standId={stand.id} standName={stand.name} />
     </main>
   );
 }

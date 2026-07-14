@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { CURRENCIES } from "@/lib/constants";
 import { updateStand } from "../actions";
@@ -16,23 +17,27 @@ type StandFields = {
 };
 
 export default function StandEditForm({ stand }: { stand: StandFields }) {
+  const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const save = updateStand.bind(null, stand.id);
 
   function onSubmit(formData: FormData) {
     setMessage(null);
     startTransition(async () => {
-      const result = await updateStand(stand.id, formData);
+      const result = await save(formData);
       if (result && "error" in result && result.error) {
         setMessage(result.error);
         return;
       }
       setMessage("Saved.");
+      router.refresh();
     });
   }
 
   return (
     <form action={onSubmit} className="flex flex-col gap-4">
+      <input type="hidden" name="standId" value={stand.id} />
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Name</span>
         <input

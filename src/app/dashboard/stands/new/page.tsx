@@ -8,6 +8,7 @@ export default function NewStandPage() {
       <h1 className="text-3xl font-semibold tracking-tight">New stand</h1>
       <p className="mt-2 text-[var(--muted)]">Name it the way customers will recognise it.</p>
       <form action={createStand} className="mt-8 flex flex-col gap-4">
+        <input type="hidden" name="intent" value="create" />
         <FormField label="Stand name" name="name" required placeholder="Green Valley Eggs" />
         <FormField
           label="Instructions"
