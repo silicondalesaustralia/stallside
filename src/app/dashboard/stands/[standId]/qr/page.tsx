@@ -54,12 +54,12 @@ export default async function StandQrPage({
         <h1 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
           {stand.name}
         </h1>
-        <p className="mt-2 text-sm text-[var(--muted)]">{signMessage}</p>
+        <p className="mt-3 text-lg text-[var(--muted)]">{signMessage}</p>
         {stand.description ? (
-          <p className="mt-3 text-sm text-[var(--ink)]">{stand.description}</p>
+          <p className="mt-3 text-xl font-semibold text-[var(--ink)]">{stand.description}</p>
         ) : null}
         {stand.locationLabel ? (
-          <p className="mt-2 text-xs text-[var(--muted)]">{stand.locationLabel}</p>
+          <p className="mt-3 text-base text-[var(--muted)]">{stand.locationLabel}</p>
         ) : null}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

@@ -38,19 +38,22 @@ export default async function CheckoutCancelledPage({
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
           Checkout cancelled
         </h1>
-        <p className="mt-3 text-[var(--muted)]">
+        <p className="mt-3 text-xl text-[var(--muted)]">
           No charge was made. Stock was not reduced.
         </p>
       </div>
       {standSlug ? (
         <Link
           href={`/s/${standSlug}`}
-          className="mt-8 inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
+          className="mt-8 inline-flex w-full items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-4 text-lg font-semibold text-white hover:bg-[var(--leaf-dark)]"
         >
           Return to stand
         </Link>
       ) : (
-        <Link href="/" className="mt-8 text-sm font-medium text-[var(--leaf-dark)] underline">
+        <Link
+          href="/"
+          className="mt-8 inline-flex w-full items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-6 py-4 text-lg font-semibold text-[var(--ink)]"
+        >
           Home
         </Link>
       )}

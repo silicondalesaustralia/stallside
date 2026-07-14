@@ -17,12 +17,12 @@ export default function CheckoutPayStep({
 }: CheckoutPayStepProps) {
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-base font-semibold">How would you like to pay?</p>
+      <p className="text-xl font-semibold">How would you like to pay?</p>
       <button
         type="button"
         disabled={pending}
         onClick={onCash}
-        className="rounded-[var(--radius)] bg-[var(--leaf)] px-4 py-5 text-left text-base font-semibold text-white"
+        className="rounded-[var(--radius)] bg-[var(--leaf)] px-5 py-5 text-left text-xl font-semibold text-white disabled:opacity-50"
       >
         Pay cash
       </button>
@@ -31,24 +31,24 @@ export default function CheckoutPayStep({
           type="button"
           disabled={pending}
           onClick={onCard}
-          className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-5 text-left text-base font-semibold disabled:opacity-50"
+          className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-left text-xl font-semibold disabled:opacity-50"
         >
           {pending ? "Opening checkout…" : "Tap & Go - card, Apple Pay, Google Pay"}
         </button>
       ) : (
-        <div className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-4 py-5">
-          <p className="text-base font-semibold text-[var(--muted)]">
+        <div className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5">
+          <p className="text-lg font-semibold text-[var(--muted)]">
             Tap &amp; Go not active at this stand
           </p>
-          <p className="mt-2 text-base leading-snug text-[var(--muted)]">
+          <p className="mt-2 text-lg leading-snug text-[var(--muted)]">
             Let the owner know you&apos;d use Tap &amp; Go if it was available.
           </p>
         </div>
       )}
       <button
         type="button"
-        className="pt-1 text-base font-medium text-[var(--leaf-dark)] underline"
         onClick={onBack}
+        className="mt-1 w-full rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-4 text-lg font-semibold text-[var(--ink)]"
       >
         Back to cart
       </button>

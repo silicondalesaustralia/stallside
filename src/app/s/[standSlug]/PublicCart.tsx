@@ -104,10 +104,10 @@ export default function PublicCart({
             className="absolute left-4 top-4 size-8 border-l-[3px] border-t-[3px] border-[var(--leaf)]"
             style={{ borderTopLeftRadius: 8 }}
           />
-          <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight sm:text-3xl">
+          <h2 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
             Thank you
           </h2>
-          <p className="mt-3 text-base text-[var(--muted)] sm:text-lg">
+          <p className="mt-3 text-xl text-[var(--muted)]">
             Cash payment confirmed. You&apos;re all set.
           </p>
         </div>
@@ -125,29 +125,29 @@ export default function PublicCart({
             className={`flex items-center justify-between gap-4 py-5 ${product.soldOut ? "opacity-45" : ""}`}
           >
             <div className="min-w-0">
-              <p className="text-base font-semibold sm:text-lg">{product.name}</p>
+              <p className="text-xl font-semibold">{product.name}</p>
               {product.description ? (
-                <p className="mt-1 text-base leading-snug text-[var(--muted)]">
+                <p className="mt-1 text-lg leading-snug text-[var(--muted)]">
                   {product.description}
                 </p>
               ) : null}
-              <p className="mt-1.5 font-receipt text-base">
+              <p className="mt-2 font-receipt text-lg">
                 {money(product.priceCents, currency)}
               </p>
-              <p className={`mt-1 font-receipt text-sm ${stockTone(product.label)}`}>
+              <p className={`mt-1.5 font-receipt text-base ${stockTone(product.label)}`}>
                 ● {product.label}
               </p>
             </div>
-            <div className="flex items-center gap-1 rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] p-1">
+            <div className="flex items-center gap-1 rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] p-1.5">
               <button
                 type="button"
                 disabled={product.soldOut || (qty[product.id] ?? 0) <= 0 || step !== "cart"}
                 onClick={() => bump(product.id, product.stockQuantity, -1)}
-                className="flex size-12 items-center justify-center rounded-[var(--radius-pill)] text-xl disabled:opacity-40"
+                className="flex size-14 items-center justify-center rounded-[var(--radius-pill)] text-2xl disabled:opacity-40"
               >
                 −
               </button>
-              <span className="w-9 text-center font-receipt text-base">
+              <span className="w-10 text-center font-receipt text-xl">
                 {qty[product.id] ?? 0}
               </span>
               <button
@@ -158,7 +158,7 @@ export default function PublicCart({
                   step !== "cart"
                 }
                 onClick={() => bump(product.id, product.stockQuantity, 1)}
-                className="flex size-12 items-center justify-center rounded-[var(--radius-pill)] text-xl disabled:opacity-40"
+                className="flex size-14 items-center justify-center rounded-[var(--radius-pill)] text-2xl disabled:opacity-40"
               >
                 +
               </button>
@@ -167,7 +167,7 @@ export default function PublicCart({
         ))}
       </ul>
 
-      {error ? <p className="text-base text-[var(--gone)]">{error}</p> : null}
+      {error ? <p className="text-lg text-[var(--gone)]">{error}</p> : null}
 
       {step === "pay" ? (
         <CheckoutPayStep
@@ -189,17 +189,17 @@ export default function PublicCart({
       ) : null}
 
       {step === "cart" ? (
-        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-[var(--panel)]/95 px-4 py-3 backdrop-blur pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-[var(--panel)]/95 px-4 py-4 backdrop-blur pb-[max(1rem,env(safe-area-inset-bottom))]">
           <div className="mx-auto flex max-w-lg items-center gap-3">
             <div className="min-w-0 flex-1">
-              <p className="text-sm text-[var(--muted)]">Total</p>
-              <p className="font-receipt text-2xl font-semibold">{money(total, currency)}</p>
+              <p className="text-base text-[var(--muted)]">Total</p>
+              <p className="font-receipt text-3xl font-semibold">{money(total, currency)}</p>
             </div>
             <button
               type="button"
               disabled={pending || total <= 0}
               onClick={() => setStep("pay")}
-              className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3.5 text-base font-semibold text-white disabled:opacity-50"
+              className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-4 text-lg font-semibold text-white disabled:opacity-50"
             >
               Continue to payment
             </button>

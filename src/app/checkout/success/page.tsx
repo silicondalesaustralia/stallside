@@ -59,11 +59,11 @@ export default async function CheckoutSuccessPage({
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
           Thank you
         </h1>
-        <p className="mt-3 text-[var(--muted)]">{message}</p>
+        <p className="mt-3 text-xl text-[var(--muted)]">{message}</p>
       </div>
       <Link
         href="/"
-        className="mt-8 text-sm font-medium text-[var(--leaf-dark)] underline"
+        className="mt-8 inline-flex w-full items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-6 py-4 text-lg font-semibold text-[var(--ink)]"
       >
         Back to {APP_NAME}
       </Link>
