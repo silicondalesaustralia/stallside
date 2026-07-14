@@ -22,7 +22,10 @@ export function printQrSheet(size: QrPrintSize = "a4") {
   }
 
   const tiles = Array.from({ length: COPIES[size] }, () => {
-    return `<div class="qr-print-tile">${sheet.outerHTML}</div>`;
+    const clone = sheet.cloneNode(true) as HTMLElement;
+    if (size !== "a4") clone.classList.add("qr-print-sheet--compact");
+    else clone.classList.remove("qr-print-sheet--compact");
+    return `<div class="qr-print-tile">${clone.outerHTML}</div>`;
   }).join("");
 
   const popup = window.open("", "_blank", "noopener,noreferrer,width=900,height=1200");
@@ -57,12 +60,10 @@ ${styles}
   }
   .qr-print-sheet {
     position: relative !important;
-    overflow: hidden !important;
     border: none !important;
     border-radius: 0 !important;
     background: #fff !important;
     box-shadow: none !important;
-    text-align: center;
   }
   ${QR_PRINT_SIZE_CSS[size]}
 </style>

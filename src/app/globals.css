@@ -179,6 +179,42 @@ html.nav-busy * {
   margin: 0;
 }
 
+/* Half / quarter print previews — side-by-side so QR is never cropped */
+.qr-print-sheet--compact {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "head head"
+    "body qr";
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  overflow: hidden;
+}
+.qr-print-sheet--compact .qr-sign-head {
+  grid-area: head;
+  text-align: center;
+}
+.qr-print-sheet--compact .qr-sign-body {
+  grid-area: body;
+  min-width: 0;
+}
+.qr-print-sheet--compact .qr-sign-qr {
+  grid-area: qr;
+  text-align: center;
+  justify-self: end;
+}
+.qr-print-sheet--compact .qr-sign-code {
+  margin: 0 auto;
+  width: min(42mm, 28vw);
+  max-width: 42mm;
+  height: auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-letter,
   .hero-bracket,
