@@ -1,6 +1,6 @@
 export default function NetworkVision() {
   return (
-    <section className="bg-[var(--field)] px-6 py-14 text-[var(--ink-on-dark)]">
+    <section className="bg-[var(--field)] px-6 py-10 text-[var(--ink-on-dark)]">
       <div className="mx-auto max-w-2xl text-center">
         <p className="font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight sm:text-2xl">
           Coming: one card, every Stallside site.

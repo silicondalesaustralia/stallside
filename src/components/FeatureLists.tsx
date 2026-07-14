@@ -62,7 +62,7 @@ function FeatureBlock({
 
 export default function FeatureLists() {
   return (
-    <section className="mx-auto grid w-full max-w-6xl gap-14 px-6 py-16 lg:grid-cols-2">
+    <section className="mx-auto grid w-full max-w-6xl gap-12 px-6 py-12 sm:py-14 lg:grid-cols-2">
       <FeatureBlock title="For stall owners" live={OWNER_LIVE} soon={OWNER_SOON} />
       <FeatureBlock title="For customers" live={CUSTOMER_LIVE} soon={CUSTOMER_SOON} />
     </section>

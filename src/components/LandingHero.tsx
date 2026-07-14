@@ -7,7 +7,7 @@ const WORDMARK = APP_NAME.toLowerCase();
 
 export default function LandingHero() {
   return (
-    <section className="relative min-h-[min(92vh,900px)] overflow-hidden bg-[var(--field)] text-[var(--ink-on-dark)]">
+    <section className="relative overflow-hidden bg-[var(--field)] text-[var(--ink-on-dark)]">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
@@ -15,8 +15,7 @@ export default function LandingHero() {
           background: `
             radial-gradient(ellipse 70% 55% at 15% 20%, rgb(46 125 63 / 0.45) 0%, transparent 55%),
             radial-gradient(ellipse 50% 45% at 88% 75%, rgb(245 166 35 / 0.18) 0%, transparent 50%),
-            radial-gradient(ellipse 90% 60% at 50% 110%, rgb(0 0 0 / 0.35) 0%, transparent 55%),
-            linear-gradient(165deg, #1f4a2a 0%, var(--field) 42%, #0f2416 100%)
+            linear-gradient(165deg, #1f4a2a 0%, var(--field) 48%, #0f2416 100%)
           `,
         }}
       />
@@ -29,26 +28,26 @@ export default function LandingHero() {
         }}
       />
 
-      <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
-        <BrandLockup variant="dark" />
+      <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4 sm:px-6">
+        <BrandLockup variant="dark" size="sm" />
         <Link
           href="/login"
-          className="rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/30 bg-white/5 px-5 py-2.5 text-sm font-semibold backdrop-blur-sm transition duration-150 hover:bg-white/10"
+          className="rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/30 bg-white/5 px-4 py-2 text-sm font-semibold backdrop-blur-sm transition duration-150 hover:bg-white/10"
         >
           Owner login
         </Link>
       </header>
 
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-14 px-6 pb-16 pt-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:pb-24 lg:pt-6">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-8 px-5 pb-10 pt-2 sm:px-6 sm:pb-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-8">
         <div
           aria-hidden
-          className="hero-bracket absolute left-5 top-0 size-16 border-l-[4px] border-t-[4px] border-[var(--ink-on-dark)]/40 sm:size-24"
-          style={{ borderTopLeftRadius: 12 }}
+          className="hero-bracket pointer-events-none absolute left-5 top-0 size-12 border-l-[3px] border-t-[3px] border-[var(--ink-on-dark)]/40 sm:left-6 sm:size-16"
+          style={{ borderTopLeftRadius: 10 }}
         />
 
-        <div className="relative max-w-xl pt-6">
+        <div className="relative max-w-xl">
           <h1
-            className="font-[family-name:var(--font-display)] text-[clamp(3.5rem,14vw,7rem)] font-bold leading-[0.88] tracking-[-0.035em] lowercase"
+            className="font-[family-name:var(--font-display)] text-[clamp(2.75rem,10vw,5.25rem)] font-bold leading-[0.9] tracking-[-0.035em] lowercase"
             aria-label={WORDMARK}
           >
             {WORDMARK.split("").map((letter, i) => (
@@ -61,51 +60,53 @@ export default function LandingHero() {
               </span>
             ))}
           </h1>
-          <p className="mt-7 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight text-[var(--marigold)] sm:text-3xl">
+          <p className="mt-4 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-[var(--marigold)] sm:text-2xl">
             {APP_TAGLINE}
           </p>
-          <p className="mt-4 max-w-md text-base leading-relaxed text-[var(--ink-on-dark)]/75 sm:text-lg">
+          <p className="mt-3 max-w-md text-base leading-snug text-[var(--ink-on-dark)]/75">
             {APP_POSITIONING}. Print a QR, take payment, watch stock from anywhere.
           </p>
-          <p className="mt-5 text-sm font-semibold text-[var(--ink-on-dark)]">
+          <p className="mt-3 text-sm font-semibold text-[var(--ink-on-dark)]">
             Take cash today ·{" "}
             <span className="text-[var(--marigold)]">Tap &amp; Go coming soon</span>
           </p>
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href="/login"
-              className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-7 py-3.5 text-sm font-semibold text-white shadow-[inset_0_0_0_2px_var(--marigold),0_12px_40px_rgb(0_0_0/0.25)] transition duration-150 hover:bg-[var(--leaf-dark)]"
+              className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white shadow-[inset_0_0_0_2px_var(--marigold)] transition duration-150 hover:bg-[var(--leaf-dark)]"
             >
               Open your stand
             </Link>
             <Link
               href="#pricing"
-              className="inline-flex rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/35 px-7 py-3.5 text-sm font-semibold text-[var(--ink-on-dark)] transition hover:bg-white/5"
+              className="inline-flex rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/35 px-6 py-3 text-sm font-semibold text-[var(--ink-on-dark)] transition hover:bg-white/5"
             >
               See pricing
             </Link>
           </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-[280px] lg:mx-0 lg:ml-auto lg:max-w-[300px]">
+        <div className="relative mx-auto w-full max-w-[240px] lg:mx-0 lg:ml-auto lg:max-w-[260px]">
           <div
             aria-hidden
-            className="hero-bracket absolute -bottom-3 -right-3 size-16 border-b-[4px] border-r-[4px] border-[var(--marigold)] sm:size-20"
-            style={{ borderBottomRightRadius: 12 }}
+            className="hero-bracket absolute -bottom-2 -right-2 size-12 border-b-[3px] border-r-[3px] border-[var(--marigold)] sm:size-14"
+            style={{ borderBottomRightRadius: 10 }}
           />
-          <div className="hero-phone relative rounded-[32px] border-[5px] border-[var(--ink-on-dark)]/90 bg-[var(--panel)] p-3 shadow-[0_30px_80px_rgb(0_0_0/0.45)]">
-            <div className="rounded-[22px] bg-[var(--wash)] px-4 py-5 text-[var(--ink)]">
+          <div className="hero-phone relative rounded-[28px] border-[5px] border-[var(--ink-on-dark)]/90 bg-[var(--panel)] p-2.5 shadow-[0_20px_50px_rgb(0_0_0/0.4)]">
+            <div className="rounded-[20px] bg-[var(--wash)] px-3 py-4 text-[var(--ink)]">
               <div className="flex items-center gap-2">
-                <BrandMark className="size-7" />
-                <p className="font-[family-name:var(--font-display)] text-base font-semibold tracking-tight">
+                <BrandMark className="size-6" />
+                <p className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight">
                   Valley Eggs
                 </p>
               </div>
-              <p className="mt-5 text-center text-xs text-[var(--muted)]">Place this in the cash slot</p>
-              <p className="mt-2 text-center font-receipt text-4xl font-semibold text-[var(--field)]">
+              <p className="mt-4 text-center text-[11px] text-[var(--muted)]">
+                Place this in the cash slot
+              </p>
+              <p className="mt-1 text-center font-receipt text-3xl font-semibold text-[var(--field)]">
                 $6.00
               </p>
-              <p className="mt-6 rounded-[var(--radius-pill)] bg-[var(--leaf)] py-3 text-center text-xs font-semibold text-white">
+              <p className="mt-4 rounded-[var(--radius-pill)] bg-[var(--leaf)] py-2.5 text-center text-[11px] font-semibold text-white">
                 I have paid cash
               </p>
             </div>
