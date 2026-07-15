@@ -17,9 +17,10 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { owner } = await requireOwner();
-  const trialDays = trialDaysRemaining(owner);
-  const paidDays = paidAccessDaysRemaining(owner);
+  const { owner, user } = await requireOwner();
+  const access = { email: user.email, role: user.role };
+  const trialDays = trialDaysRemaining(owner, access);
+  const paidDays = paidAccessDaysRemaining(owner, access);
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-[var(--wash)] pb-20 print:bg-white print:pb-0 md:pb-0">

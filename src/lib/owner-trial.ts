@@ -1,6 +1,6 @@
-import { TRIAL_DAYS } from "@/lib/constants";
+import { COMPLIMENTARY_ACCESS_EMAILS, TRIAL_DAYS } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
-import { SubscriptionStatus } from "@/generated/prisma/client";
+import { Role, SubscriptionStatus } from "@/generated/prisma/client";
 
 export function trialEndDate(from = new Date()): Date {
   const end = new Date(from);
@@ -42,8 +42,24 @@ function hasFutureDate(value: Date | null): boolean {
   return value != null && value.getTime() > Date.now();
 }
 
+export type ComplimentaryAccessInput = {
+  email?: string | null;
+  role?: Role | string | null;
+};
+
+/** Admin users and allowlisted emails never need a paid subscription. */
+export function hasComplimentaryAccess(input: ComplimentaryAccessInput): boolean {
+  if (input.role === Role.ADMIN) return true;
+  const email = (input.email ?? "").trim().toLowerCase();
+  return (COMPLIMENTARY_ACCESS_EMAILS as readonly string[]).includes(email);
+}
+
 /** Owner may use stands/products/orders — data is always retained. */
-export function ownerHasAppAccess(owner: OwnerAccessFields): boolean {
+export function ownerHasAppAccess(
+  owner: OwnerAccessFields,
+  access?: ComplimentaryAccessInput,
+): boolean {
+  if (access && hasComplimentaryAccess(access)) return true;
   if (owner.subscriptionStatus === SubscriptionStatus.ACTIVE) return true;
   if (owner.subscriptionStatus === SubscriptionStatus.PAST_DUE) return true;
 
@@ -58,8 +74,11 @@ export function ownerHasAppAccess(owner: OwnerAccessFields): boolean {
   return false;
 }
 
-export function ownerNeedsPayment(owner: OwnerAccessFields): boolean {
-  return !ownerHasAppAccess(owner);
+export function ownerNeedsPayment(
+  owner: OwnerAccessFields,
+  access?: ComplimentaryAccessInput,
+): boolean {
+  return !ownerHasAppAccess(owner, access);
 }
 
 function daysUntil(date: Date): number {
@@ -69,7 +88,11 @@ function daysUntil(date: Date): number {
 }
 
 /** Free-trial days remaining (null if not on an active app trial). */
-export function trialDaysRemaining(owner: OwnerAccessFields): number | null {
+export function trialDaysRemaining(
+  owner: OwnerAccessFields,
+  access?: ComplimentaryAccessInput,
+): number | null {
+  if (access && hasComplimentaryAccess(access)) return null;
   if (owner.stripeSubscriptionId) return null;
   if (owner.subscriptionStatus !== SubscriptionStatus.TRIALING) return null;
   if (!owner.trialEndsAt) return null;
@@ -80,7 +103,11 @@ export function trialDaysRemaining(owner: OwnerAccessFields): number | null {
  * Days until paid access ends after cancel-at-period-end
  * (or cancelled but still inside the paid window).
  */
-export function paidAccessDaysRemaining(owner: OwnerAccessFields): number | null {
+export function paidAccessDaysRemaining(
+  owner: OwnerAccessFields,
+  access?: ComplimentaryAccessInput,
+): number | null {
+  if (access && hasComplimentaryAccess(access)) return null;
   if (!hasFutureDate(owner.currentPeriodEndsAt)) return null;
   if (owner.subscriptionStatus === SubscriptionStatus.ACTIVE && !owner.cancelAtPeriodEnd) {
     return null;

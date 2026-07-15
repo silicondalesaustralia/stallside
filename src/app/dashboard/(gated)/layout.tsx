@@ -8,8 +8,8 @@ export default async function GatedDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { owner } = await requireOwner();
-  if (ownerNeedsPayment(owner)) {
+  const { owner, user } = await requireOwner();
+  if (ownerNeedsPayment(owner, { email: user.email, role: user.role })) {
     redirect("/dashboard/settings/billing?locked=1");
   }
   return children;

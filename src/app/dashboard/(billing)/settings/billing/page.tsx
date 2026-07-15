@@ -9,7 +9,7 @@ import {
   type BillingCurrency,
 } from "@/lib/saas-pricing";
 import { listConfiguredCashPlanPrices, isStripeBillingConfigured } from "@/lib/stripe";
-import { ownerNeedsPayment } from "@/lib/owner-trial";
+import { hasComplimentaryAccess, ownerNeedsPayment } from "@/lib/owner-trial";
 import { openBillingPortal, startCashPlanCheckout } from "./actions";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -30,13 +30,15 @@ export default async function BillingSettingsPage({
     locked?: string;
   }>;
 }) {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
   const params = await searchParams;
   const configured = isStripeBillingConfigured();
+  const complimentary = { email: user.email, role: user.role };
+  const freeForever = hasComplimentaryAccess(complimentary);
   const isPaid =
     owner.subscriptionStatus === "ACTIVE" ||
     owner.subscriptionStatus === "PAST_DUE";
-  const needsPayment = ownerNeedsPayment(owner);
+  const needsPayment = ownerNeedsPayment(owner, complimentary);
   const trialActive =
     owner.subscriptionStatus === "TRIALING" &&
     owner.trialEndsAt != null &&
@@ -68,7 +70,12 @@ export default async function BillingSettingsPage({
         </p>
       </div>
 
-      {params.locked === "1" || needsPayment ? (
+      {freeForever ? (
+        <p className="rounded-xl border border-[var(--leaf)]/30 bg-[var(--leaf)]/10 px-4 py-3 text-sm">
+          Complimentary access — full dashboard forever, no subscription required.
+        </p>
+      ) : null}
+      {!freeForever && (params.locked === "1" || needsPayment) ? (
         <p className="rounded-xl border border-[var(--marigold)]/40 bg-[var(--marigold)]/10 px-4 py-3 text-sm">
           Your subscription is not active. Stands, products, inventory, and orders
           stay saved. Subscribe again to reopen the app.
@@ -127,7 +134,7 @@ export default async function BillingSettingsPage({
         ) : null}
       </section>
 
-      {!isPaid || needsPayment ? (
+      {!freeForever && (!isPaid || needsPayment) ? (
         <form action={startCashPlanCheckout} className="flex flex-wrap items-end gap-3">
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-medium text-[var(--ink)]">Currency</span>
