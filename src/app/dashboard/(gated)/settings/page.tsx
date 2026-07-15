@@ -35,6 +35,19 @@ export default async function SettingsPage() {
         </form>
       </section>
 
+      <section className="space-y-2 text-sm">
+        <h2 className="text-lg font-semibold">Owner guides</h2>
+        <p className="text-[var(--muted)]">
+          How-tos for stands, QR, stock, alerts, and billing.
+        </p>
+        <Link
+          href="/dashboard/knowledge"
+          className="inline-flex text-[var(--leaf-dark)] underline"
+        >
+          Open guides
+        </Link>
+      </section>
+
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Alerts</h2>
         <p className="text-sm text-[var(--muted)]">

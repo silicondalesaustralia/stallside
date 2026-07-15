@@ -10,6 +10,7 @@ const desktopLinks = [
   { href: "/dashboard/products", label: "Products" },
   { href: "/dashboard/inventory", label: "Inventory" },
   { href: "/dashboard/orders", label: "Orders" },
+  { href: "/dashboard/knowledge", label: "Guides" },
   { href: "/dashboard/settings", label: "Settings" },
 ] as const;
 
@@ -44,12 +45,14 @@ export default function DashboardNav() {
               </Link>
             ))}
           </nav>
-          <Link
-            href="/dashboard/settings"
-            className="text-sm text-[var(--muted)] underline md:hidden"
-          >
-            Settings
-          </Link>
+          <div className="flex gap-4 text-sm md:hidden">
+            <Link href="/dashboard/knowledge" className="text-[var(--muted)] underline">
+              Guides
+            </Link>
+            <Link href="/dashboard/settings" className="text-[var(--muted)] underline">
+              Settings
+            </Link>
+          </div>
         </div>
       </header>
 
