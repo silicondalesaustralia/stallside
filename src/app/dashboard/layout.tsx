@@ -24,7 +24,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-[var(--wash)] pb-20 print:bg-white print:pb-0 md:pb-0">
-      <OwnerPushRegister />
+      <OwnerPushRegister pushAlertsEnabled={owner.pushAlertsEnabled} />
       <DashboardNav />
       <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 print:max-w-none print:px-0 print:py-0">
         {trialDays != null ? (

@@ -43,15 +43,27 @@ export default function AlertSettingsForm({
       if (wantPush) {
         const push = await registerOwnerWebPush();
         if ("error" in push) {
-          setMessage(`Saved, but phone push: ${push.error}`);
+          setMessage(`Saved, but phone push failed: ${push.error}`);
           return;
         }
-        setMessage("Alert settings saved. Phone push enabled on this device.");
+        setMessage("Alert settings saved. This phone is registered for push.");
         return;
       }
 
       await unregisterOwnerWebPush();
       setMessage("Alert settings saved. Phone push disabled on this device.");
+    });
+  }
+
+  function enableThisPhone() {
+    setMessage(null);
+    startTransition(async () => {
+      const push = await registerOwnerWebPush();
+      if ("error" in push) {
+        setMessage(`Phone push failed: ${push.error}`);
+        return;
+      }
+      setMessage("This phone is registered for push. Run push:test to confirm.");
     });
   }
 
@@ -89,9 +101,18 @@ export default function AlertSettingsForm({
       {needsHomeScreen ? (
         <p className="rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-[var(--muted)]">
           On iPhone: tap Share → <strong>Add to Home Screen</strong>, open Stallside
-          from that icon, then turn phone push on here.
+          from that icon, then tap Enable this phone.
         </p>
       ) : null}
+
+      <button
+        type="button"
+        disabled={pending}
+        onClick={enableThisPhone}
+        className="w-fit rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold disabled:opacity-60"
+      >
+        {pending ? "Working…" : "Enable this phone"}
+      </button>
 
       <div>
         <p className="font-medium">Alert emails</p>
@@ -108,7 +129,11 @@ export default function AlertSettingsForm({
         />
       </div>
 
-      {message ? <p className="text-[var(--muted)]">{message}</p> : null}
+      {message ? (
+        <p className={message.includes("failed") ? "text-red-700" : "text-[var(--muted)]"}>
+          {message}
+        </p>
+      ) : null}
       <button
         type="submit"
         disabled={pending}

@@ -15,7 +15,8 @@
     "cap:sync": "npx cap sync",
     "cap:ios": "npx cap open ios",
     "cap:android": "npx cap open android",
-    "admin:promote": "npx tsx scripts/promote-admin.ts"
+    "admin:promote": "npx tsx scripts/promote-admin.ts",
+    "push:test": "npx tsx scripts/test-web-push.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

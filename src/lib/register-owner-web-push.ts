@@ -22,22 +22,65 @@ function webPushSupported() {
   );
 }
 
-async function getRegistration() {
-  return navigator.serviceWorker.register("/sw.js");
+export function isInstalledWebApp() {
+  if (typeof window === "undefined") return false;
+  const nav = window.navigator as Navigator & { standalone?: boolean };
+  if (nav.standalone) return true;
+  return window.matchMedia("(display-mode: standalone)").matches;
+}
+
+export function isIosSafari() {
+  if (typeof window === "undefined") return false;
+  const ua = window.navigator.userAgent;
+  const iOS = /iPad|iPhone|iPod/.test(ua);
+  const webkit = /WebKit/.test(ua);
+  const chromium = /CriOS|FxiOS|EdgiOS/.test(ua);
+  return iOS && webkit && !chromium;
+}
+
+async function fetchVapidPublicKey(): Promise<string | { error: string }> {
+  const fromEnv = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim();
+  if (fromEnv) return fromEnv;
+
+  try {
+    const res = await fetch("/api/push/vapid");
+    if (!res.ok) {
+      return { error: "Push is not configured on this server yet." };
+    }
+    const data: unknown = await res.json();
+    if (
+      !data ||
+      typeof data !== "object" ||
+      !("publicKey" in data) ||
+      typeof (data as { publicKey: unknown }).publicKey !== "string"
+    ) {
+      return { error: "Push is not configured on this server yet." };
+    }
+    return (data as { publicKey: string }).publicKey;
+  } catch {
+    return { error: "Could not load push configuration." };
+  }
 }
 
 export async function registerOwnerWebPush(): Promise<{ ok: true } | { error: string }> {
   if (Capacitor.isNativePlatform()) {
-    return { ok: true };
+    return {
+      error:
+        "Open Stallside from the Home Screen Safari icon for phone push (not the native app shell).",
+    };
   }
   if (!webPushSupported()) {
     return { error: "Push is not supported in this browser." };
   }
-
-  const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-  if (!publicKey) {
-    return { error: "Push is not configured on this server yet." };
+  if (isIosSafari() && !isInstalledWebApp()) {
+    return {
+      error:
+        "On iPhone, open Stallside from the Home Screen icon first, then enable push.",
+    };
   }
+
+  const publicKey = await fetchVapidPublicKey();
+  if (typeof publicKey !== "string") return publicKey;
 
   const permission = await Notification.requestPermission();
   if (permission !== "granted") {
@@ -45,7 +88,7 @@ export async function registerOwnerWebPush(): Promise<{ ok: true } | { error: st
   }
 
   try {
-    const registration = await getRegistration();
+    const registration = await navigator.serviceWorker.register("/sw.js");
     await navigator.serviceWorker.ready;
     let subscription = await registration.pushManager.getSubscription();
     if (!subscription) {
@@ -69,7 +112,11 @@ export async function registerOwnerWebPush(): Promise<{ ok: true } | { error: st
     return { ok: true };
   } catch (error) {
     console.error("Web push register failed", error);
-    return { error: "Could not enable phone push." };
+    const message = error instanceof Error ? error.message : "";
+    if (/denied|not allowed|user gesture/i.test(message)) {
+      return { error: "Notification permission was denied." };
+    }
+    return { error: "Could not enable phone push. Try again from the Home Screen icon." };
   }
 }
 
@@ -91,20 +138,4 @@ export async function unregisterOwnerWebPush(): Promise<void> {
   } catch (error) {
     console.error("Web push unregister failed", error);
   }
-}
-
-export function isInstalledWebApp() {
-  if (typeof window === "undefined") return false;
-  const nav = window.navigator as Navigator & { standalone?: boolean };
-  if (nav.standalone) return true;
-  return window.matchMedia("(display-mode: standalone)").matches;
-}
-
-export function isIosSafari() {
-  if (typeof window === "undefined") return false;
-  const ua = window.navigator.userAgent;
-  const iOS = /iPad|iPhone|iPod/.test(ua);
-  const webkit = /WebKit/.test(ua);
-  const chromium = /CriOS|FxiOS|EdgiOS/.test(ua);
-  return iOS && webkit && !chromium;
 }
