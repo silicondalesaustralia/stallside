@@ -1,6 +1,6 @@
 import BrandLockup from "@/components/BrandLockup";
 import { APP_NAME } from "@/lib/constants";
-import { requestMagicLink } from "./actions";
+import { requestLoginCode } from "./actions";
 
 export default function LoginPage() {
   return (
@@ -10,9 +10,9 @@ export default function LoginPage() {
         Owner sign in
       </h1>
       <p className="mt-2 text-[var(--muted)]">
-        We&apos;ll email you a one-time link. No password needed.
+        We&apos;ll email a 6-digit code. Enter it here — no passwords, no App Store.
       </p>
-      <form action={requestMagicLink} className="mt-8 flex w-full flex-col gap-4">
+      <form action={requestLoginCode} className="mt-8 flex w-full flex-col gap-4">
         <label className="flex flex-col gap-2 text-sm">
           <span className="font-medium text-[var(--ink)]">Email</span>
           <input
@@ -28,7 +28,7 @@ export default function LoginPage() {
           type="submit"
           className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]"
         >
-          Email me a sign-in link
+          Email me a code
         </button>
       </form>
       <p className="mt-6 text-sm text-[var(--muted)]">

@@ -1,13 +1,47 @@
 "use server";
 
-import { signIn, signOut } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
+import { signIn, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { issueLoginOtp } from "@/lib/login-otp";
 
-async function sendMagicLink(email: string) {
+function normalizeEmail(raw: FormDataEntryValue | null) {
+  return String(raw ?? "")
+    .trim()
+    .toLowerCase();
+}
+
+export async function requestLoginCode(formData: FormData) {
+  const email = normalizeEmail(formData.get("email"));
+  if (!email || !email.includes("@")) {
+    throw new Error("Enter a valid email address.");
+  }
+
   try {
-    await signIn("resend", {
+    await issueLoginOtp(email);
+  } catch (error) {
+    console.error("Login OTP send failed", error);
+    throw new Error("Could not send sign-in code. Try again in a moment.");
+  }
+
+  redirect(`/login/code?email=${encodeURIComponent(email)}`);
+}
+
+export async function verifyLoginCode(formData: FormData) {
+  const email = normalizeEmail(formData.get("email"));
+  const code = String(formData.get("code") ?? "").trim();
+  if (!email || !email.includes("@")) {
+    return { error: "Enter a valid email address." };
+  }
+  if (!/^\d{6}$/.test(code.replace(/\s+/g, ""))) {
+    return { error: "Enter the 6-digit code from your email." };
+  }
+
+  try {
+    await signIn("otp", {
       email,
+      code: code.replace(/\s+/g, ""),
       redirectTo: "/dashboard",
     });
   } catch (error) {
@@ -20,31 +54,18 @@ async function sendMagicLink(email: string) {
       throw error;
     }
     if (error instanceof AuthError) {
-      console.error("Magic link AuthError", error);
-      throw new Error(
-        "Could not send sign-in link. Verify stallside.app at resend.com/domains, or remove RESEND_API_KEY to print the link in the server logs.",
-      );
+      return { error: "That code is wrong or expired. Request a new one." };
     }
-    console.error("Magic link failed", error);
-    throw error;
+    console.error("Login OTP verify failed", error);
+    return { error: "Could not sign in. Try again." };
   }
+
+  return { error: "Could not sign in. Try again." };
 }
 
-export async function requestMagicLink(formData: FormData) {
-  const email = String(formData.get("email") ?? "")
-    .trim()
-    .toLowerCase();
-  if (!email || !email.includes("@")) {
-    throw new Error("Enter a valid email address.");
-  }
-  await sendMagicLink(email);
-}
-
-/** Frictionless signup: name + email → 30-day trial (no card), magic link. */
+/** Signup: name + email → trial intent, then email code. */
 export async function requestSignup(formData: FormData) {
-  const email = String(formData.get("email") ?? "")
-    .trim()
-    .toLowerCase();
+  const email = normalizeEmail(formData.get("email"));
   const name = String(formData.get("name") ?? "").trim();
   if (!email || !email.includes("@")) {
     throw new Error("Enter a valid email address.");
@@ -59,7 +80,14 @@ export async function requestSignup(formData: FormData) {
     update: { name },
   });
 
-  await sendMagicLink(email);
+  try {
+    await issueLoginOtp(email);
+  } catch (error) {
+    console.error("Signup OTP send failed", error);
+    throw new Error("Could not send sign-in code. Try again in a moment.");
+  }
+
+  redirect(`/login/code?email=${encodeURIComponent(email)}`);
 }
 
 export async function logout() {
