@@ -1,7 +1,6 @@
 "use server";
 
 import { sendOwnerEmail } from "@/lib/notify-email";
-import { LEGAL_EMAIL } from "@/lib/legal";
 import { isContactSubject } from "@/lib/contact-subjects";
 
 export type ContactState = {
@@ -48,7 +47,9 @@ export async function submitContact(
   `;
 
   try {
-    await sendOwnerEmail(LEGAL_EMAIL, `[Stallside contact] ${subjectRaw}`, html);
+    const contactTo =
+      process.env.CONTACT_EMAIL?.trim() || "jono@silicondales.com";
+    await sendOwnerEmail(contactTo, `[Stallside contact] ${subjectRaw}`, html);
     return { ok: true };
   } catch {
     return {
