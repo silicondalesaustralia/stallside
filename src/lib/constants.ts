@@ -2,9 +2,9 @@ export const APP_NAME = "Stallside";
 export const APP_DOMAIN = "stallside.app";
 export const APP_TAGLINE = "Scan, Pay, Sold.";
 export const APP_POSITIONING = "Checkout for anything nobody's minding.";
-/** Cash plan - live */
+/** Cash plan AUD list price — prefer cashPlanCents(currency) */
 export const CASH_PLAN_CENTS = 699;
-/** Card plan - coming soon (waitlist only) */
+/** Card plan AUD list price — prefer cardPlanCents(currency) */
 export const CARD_PLAN_CENTS = 1999;
 /** @deprecated use CASH_PLAN_CENTS */
 export const MONTHLY_FEE_CENTS = CASH_PLAN_CENTS;

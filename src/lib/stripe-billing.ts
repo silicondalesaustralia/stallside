@@ -1,7 +1,7 @@
 import type Stripe from "stripe";
-import { CASH_PLAN_CENTS } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { SubscriptionStatus } from "@/generated/prisma/client";
+import { cashPlanCents, isBillingCurrency, type BillingCurrency } from "@/lib/saas-pricing";
 
 export function mapStripeSubscriptionStatus(
   status: Stripe.Subscription.Status,
@@ -20,6 +20,20 @@ export function mapStripeSubscriptionStatus(
     default:
       return SubscriptionStatus.NONE;
   }
+}
+
+function billingFromSubscription(subscription: Stripe.Subscription): {
+  currency: BillingCurrency;
+  monthlyFeeCents: number;
+} {
+  const item = subscription.items.data[0];
+  const raw = (item?.price.currency ?? "aud").toUpperCase();
+  const currency: BillingCurrency = isBillingCurrency(raw) ? raw : "AUD";
+  const monthlyFeeCents =
+    typeof item?.price.unit_amount === "number"
+      ? item.price.unit_amount
+      : cashPlanCents(currency);
+  return { currency, monthlyFeeCents };
 }
 
 export async function syncOwnerFromSubscription(
@@ -51,6 +65,7 @@ export async function syncOwnerFromSubscription(
     subscription.status === "incomplete_expired";
   const live =
     subscription.status === "active" || subscription.status === "trialing";
+  const { currency, monthlyFeeCents } = billingFromSubscription(subscription);
 
   await prisma.owner.update({
     where: { id: owner.id },
@@ -59,7 +74,8 @@ export async function syncOwnerFromSubscription(
       stripeSubscriptionId: cancelled ? null : subscription.id,
       subscriptionStatus: mapStripeSubscriptionStatus(subscription.status),
       subscriptionPlan: "cash",
-      monthlyFeeCents: CASH_PLAN_CENTS,
+      monthlyFeeCents,
+      billingCurrency: currency,
       ...(live && !owner.subscriptionStartedAt
         ? { subscriptionStartedAt: new Date() }
         : {}),

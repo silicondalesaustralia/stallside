@@ -121,7 +121,9 @@ model Owner {
   subscriptionStatus        SubscriptionStatus @default(NONE)
   subscriptionPlan          String?            @default("cash")
   monthlyFeeCents           Int                @default(699)
-  /** Sum of paid SaaS invoices (platform Billing), AUD cents */
+  /** Currency of the SaaS subscription (AUD/USD/GBP/EUR) */
+  billingCurrency           String             @default("AUD")
+  /** Sum of paid SaaS invoices (platform Billing), in invoice currency units */
   lifetimePaidCents         Int                @default(0)
   subscriptionStartedAt     DateTime?
   platformFeePercentBps     Int                @default(200)

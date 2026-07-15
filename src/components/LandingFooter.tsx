@@ -3,10 +3,11 @@ import BrandLockup from "@/components/BrandLockup";
 import { APP_DOMAIN } from "@/lib/constants";
 
 const LINKS = [
-  { href: "#pricing", label: "Pricing" },
-  { href: "#use-cases", label: "Use cases" },
+  { href: "/#pricing", label: "Pricing" },
+  { href: "/#use-cases", label: "Use cases" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
   { href: "/login", label: "Owner login" },
-  { href: "mailto:hello@stallside.app", label: "Contact" },
   { href: "/terms", label: "Terms" },
   { href: "/privacy", label: "Privacy" },
 ] as const;

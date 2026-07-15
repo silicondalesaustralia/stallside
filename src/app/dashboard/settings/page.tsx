@@ -65,43 +65,35 @@ export default async function SettingsPage() {
         </Link>
       </section>
 
-      <section className="space-y-3 text-sm">
-        <h2 className="text-lg font-semibold">Stripe payments (Connect)</h2>
-        <p>
-          Status:{" "}
-          {owner.stripeChargesEnabled
-            ? "Charges enabled - card & Tap & Go live"
-            : owner.stripeAccountId
-              ? "Onboarding incomplete"
-              : "Not connected"}
-        </p>
+      <section className="space-y-3 text-sm opacity-55">
+        <h2 className="text-lg font-semibold">
+          Stripe payments (Connect){" "}
+          <span className="text-sm font-medium text-[var(--muted)]">· Coming soon!</span>
+        </h2>
+        <p>Status: Not connected</p>
         <p className="text-[var(--muted)]">
           Connect your Stripe so stand customers can pay you by card / Tap &amp; Go.
         </p>
-        <Link
-          href="/dashboard/settings/stripe"
-          className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--ink)] hover:bg-[var(--wash)]"
+        <span
+          aria-disabled
+          className="inline-flex cursor-not-allowed rounded-lg border border-[var(--line)] bg-[var(--wash)] px-4 py-2.5 text-sm font-semibold text-[var(--muted)]"
         >
-          Manage Stripe payments
-        </Link>
+          Coming soon!
+        </span>
       </section>
 
-      <section className="space-y-3 text-sm">
-        <h2 className="text-lg font-semibold">PayPal Connect</h2>
-        <p>
-          Status:{" "}
-          {owner.paypalPaymentsEnabled
-            ? "Payments enabled - PayPal checkout live"
-            : owner.paypalMerchantId
-              ? "Onboarding incomplete"
-              : "Not connected"}
-        </p>
-        <Link
-          href="/dashboard/settings/paypal"
-          className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--ink)] hover:bg-[var(--wash)]"
+      <section className="space-y-3 text-sm opacity-55">
+        <h2 className="text-lg font-semibold">
+          PayPal Connect{" "}
+          <span className="text-sm font-medium text-[var(--muted)]">· Coming soon!</span>
+        </h2>
+        <p>Status: Not connected</p>
+        <span
+          aria-disabled
+          className="inline-flex cursor-not-allowed rounded-lg border border-[var(--line)] bg-[var(--wash)] px-4 py-2.5 text-sm font-semibold text-[var(--muted)]"
         >
-          Manage PayPal connection
-        </Link>
+          Coming soon!
+        </span>
       </section>
     </main>
   );

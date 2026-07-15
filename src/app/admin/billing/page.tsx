@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/session";
-import { getCashPlanPriceId, isStripeBillingConfigured } from "@/lib/stripe";
-import { CASH_PLAN_CENTS, CARD_PLAN_CENTS, DEFAULT_CURRENCY } from "@/lib/constants";
+import { isStripeBillingConfigured, listConfiguredCashPlanPrices } from "@/lib/stripe";
+import {
+  BILLING_CURRENCIES,
+  CARD_PLAN_BY_CURRENCY,
+  CASH_PLAN_BY_CURRENCY,
+} from "@/lib/saas-pricing";
 import { formatMoney } from "@/lib/money";
 import { listPromoCodes } from "@/lib/list-promo-codes";
 import AdminCouponForm from "@/components/AdminCouponForm";
@@ -9,12 +13,7 @@ import AdminCouponForm from "@/components/AdminCouponForm";
 export default async function AdminBillingPage() {
   await requireAdmin();
   const configured = isStripeBillingConfigured();
-  let priceId = "";
-  try {
-    priceId = getCashPlanPriceId();
-  } catch {
-    priceId = "";
-  }
+  const prices = listConfiguredCashPlanPrices();
 
   let promos: Awaited<ReturnType<typeof listPromoCodes>> = [];
   if (configured) {
@@ -36,19 +35,33 @@ export default async function AdminBillingPage() {
         </p>
       </div>
 
-      <section className="space-y-2 text-sm rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4">
-        <h2 className="text-lg font-semibold">Plans</h2>
-        <p>
-          Cash: {formatMoney(CASH_PLAN_CENTS, DEFAULT_CURRENCY)}/mo · Price ID:{" "}
-          {priceId ? (
-            <code className="text-xs">{priceId}</code>
-          ) : (
-            <span className="text-red-700">missing STRIPE_PRICE_ID_CASH</span>
-          )}
-        </p>
+      <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+        <h2 className="text-lg font-semibold">Cash plan prices</h2>
+        <ul className="space-y-1">
+          {BILLING_CURRENCIES.map((currency) => {
+            const configuredPrice = prices.find((p) => p.currency === currency);
+            return (
+              <li key={currency}>
+                {currency}{" "}
+                {formatMoney(CASH_PLAN_BY_CURRENCY[currency], currency)}
+                /mo ·{" "}
+                {configuredPrice ? (
+                  <code className="text-xs">{configuredPrice.priceId}</code>
+                ) : (
+                  <span className="text-red-700">
+                    missing STRIPE_PRICE_ID_CASH_{currency}
+                    {currency === "AUD" ? " (or STRIPE_PRICE_ID_CASH)" : ""}
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
         <p className="text-[var(--muted)]">
-          Card plan: {formatMoney(CARD_PLAN_CENTS, DEFAULT_CURRENCY)}/mo
-          (coming soon — not collectable yet).
+          Card plan (coming soon):{" "}
+          {BILLING_CURRENCIES.map(
+            (c) => `${formatMoney(CARD_PLAN_BY_CURRENCY[c], c)}`,
+          ).join(" · ")}
         </p>
         <p>
           Checkout allows promotion codes on{" "}

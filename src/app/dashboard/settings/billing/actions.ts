@@ -8,7 +8,9 @@ import {
   getCashPlanPriceId,
   getStripe,
   isStripeBillingConfigured,
+  parseBillingCurrencyParam,
 } from "@/lib/stripe";
+import { cashPlanCents } from "@/lib/saas-pricing";
 
 async function ensureStripeCustomer(ownerId: string, email: string | null) {
   const owner = await prisma.owner.findUniqueOrThrow({ where: { id: ownerId } });
@@ -30,24 +32,43 @@ async function ensureStripeCustomer(ownerId: string, email: string | null) {
   return customer.id;
 }
 
-export async function startCashPlanCheckout() {
+export async function startCashPlanCheckout(formData: FormData) {
   const { owner, user } = await requireOwner();
   if (!isStripeBillingConfigured()) {
-    throw new Error("Stripe Billing is not configured (need STRIPE_PRICE_ID_CASH).");
+    throw new Error("Stripe Billing is not configured (need cash plan Price IDs).");
   }
 
+  const currency = parseBillingCurrencyParam(formData.get("currency"));
+  const priceId = getCashPlanPriceId(currency);
   const customerId = await ensureStripeCustomer(owner.id, user.email ?? null);
   const base = appBaseUrl();
+
+  await prisma.owner.update({
+    where: { id: owner.id },
+    data: {
+      billingCurrency: currency,
+      monthlyFeeCents: cashPlanCents(currency),
+    },
+  });
+
   const session = await getStripe().checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
-    line_items: [{ price: getCashPlanPriceId(), quantity: 1 }],
+    line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${base}/dashboard/settings/billing?success=1`,
     cancel_url: `${base}/dashboard/settings/billing?cancelled=1`,
     allow_promotion_codes: true,
-    metadata: { ownerId: owner.id, purpose: "saas_subscription" },
+    metadata: {
+      ownerId: owner.id,
+      purpose: "saas_subscription",
+      billingCurrency: currency,
+    },
     subscription_data: {
-      metadata: { ownerId: owner.id, purpose: "saas_subscription" },
+      metadata: {
+        ownerId: owner.id,
+        purpose: "saas_subscription",
+        billingCurrency: currency,
+      },
     },
   });
 

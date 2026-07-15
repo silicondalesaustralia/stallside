@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
-import { DEFAULT_CURRENCY } from "@/lib/constants";
 import {
   applyCouponToOwner,
   cancelOwnerSubscription,
@@ -50,8 +49,9 @@ export default async function AdminOwnerDetailPage({
         <p>Plan: {owner.subscriptionPlan ?? "—"}</p>
         <p>Status: {owner.subscriptionStatus.toLowerCase()}</p>
         <p>
-          LTV: {formatMoney(owner.lifetimePaidCents, DEFAULT_CURRENCY)} · Fee{" "}
-          {formatMoney(owner.monthlyFeeCents, DEFAULT_CURRENCY)}/mo
+          LTV: {formatMoney(owner.lifetimePaidCents, owner.billingCurrency)} · Fee{" "}
+          {formatMoney(owner.monthlyFeeCents, owner.billingCurrency)}/mo (
+          {owner.billingCurrency})
         </p>
         <p>
           Stripe customer:{" "}
