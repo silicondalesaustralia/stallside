@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import DashboardNav from "@/components/DashboardNav";
 import OwnerPushRegister from "@/components/OwnerPushRegister";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
 import { requireOwner } from "@/lib/session";
 import {
-  ownerNeedsPayment,
   paidAccessDaysRemaining,
   trialDaysRemaining,
 } from "@/lib/owner-trial";
@@ -21,13 +18,6 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { owner } = await requireOwner();
-  const pathname = (await headers()).get("x-pathname") ?? "";
-  const onBilling = pathname.startsWith("/dashboard/settings/billing");
-
-  if (ownerNeedsPayment(owner) && !onBilling) {
-    redirect("/dashboard/settings/billing?locked=1");
-  }
-
   const trialDays = trialDaysRemaining(owner);
   const paidDays = paidAccessDaysRemaining(owner);
 
