@@ -13,19 +13,21 @@ export default function CheckEmailPage() {
       </h1>
       {emailLive ? (
         <p className="mt-3 text-[var(--muted)]">
-          We sent a one-time sign-in link. Open it on this device - it expires in about an hour and
-          only works once.
+          We sent a one-time sign-in link. On iPhone Home Screen:{" "}
+          <strong>copy</strong> the link from the email and paste it below — tapping
+          it opens Safari and leaves this app signed out.
         </p>
       ) : (
         <p className="mt-3 text-[var(--muted)]">
           Email isn&apos;t configured on this server. Look in the process logs for{" "}
-          <strong>[Stallside magic link]</strong>, or set <code className="text-sm">RESEND_API_KEY</code>{" "}
-          and <code className="text-sm">EMAIL_FROM</code>.
+          <strong>[Stallside magic link]</strong>, or set{" "}
+          <code className="text-sm">RESEND_API_KEY</code> and{" "}
+          <code className="text-sm">EMAIL_FROM</code>.
         </p>
       )}
-      {emailLive ? null : <PasteMagicLink />}
+      <PasteMagicLink />
       <p className="mt-4 text-sm text-[var(--muted)]">
-        Tokens only work once - if it fails, request a new link.
+        Tokens only work once — if it fails, request a new link.
       </p>
       <Link href="/login" className="mt-6 text-sm font-medium text-[var(--leaf-dark)] underline">
         Request a new link
