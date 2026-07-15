@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Bricolage_Grotesque, DM_Sans, Spline_Sans_Mono } from "next/font/google";
 import { APP_DOMAIN, APP_NAME, APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import NativeShellBootstrap from "@/components/NativeShellBootstrap";
 import NavigationBusy from "@/components/NavigationBusy";
 import "./globals.css";
@@ -76,6 +77,7 @@ export default function RootLayout({
       className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">
+        <GoogleAnalytics />
         <NativeShellBootstrap />
         <Suspense fallback={null}>
           <NavigationBusy />
