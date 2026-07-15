@@ -71,7 +71,7 @@ export default function LandingHero() {
             {APP_HERO_SUPPORT}
           </p>
           <p className="mt-2 max-w-xl text-sm leading-snug text-[var(--ink-on-dark)]/60 sm:text-base">
-            The honesty stall, upgraded: for the customer who wants to pay but has no cash.
+            The honesty stall, upgraded — however your customers want to pay.
           </p>
 
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
