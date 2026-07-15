@@ -15,6 +15,8 @@ export const MONTHLY_FEE_CENTS = CASH_PLAN_CENTS;
 /** No transaction fees - ever */
 export const PLATFORM_FEE_BPS = 0;
 export const LOW_STOCK_ALERT_COOLDOWN_HOURS = 6;
+/** Free app trial before card is required */
+export const TRIAL_DAYS = 30;
 export const DEFAULT_CURRENCY = "AUD";
 
 export const CURRENCIES = [

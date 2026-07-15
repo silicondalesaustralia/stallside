@@ -90,7 +90,7 @@ export default function LandingHero() {
 
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
-              href="/login"
+              href="/signup"
               className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition duration-150 hover:bg-[var(--leaf-dark)]"
             >
               Open your stand

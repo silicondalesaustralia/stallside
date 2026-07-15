@@ -5,6 +5,7 @@ import type { Provider } from "next-auth/providers";
 import type { Role } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
+import { createOwnerWithTrial } from "@/lib/owner-trial";
 
 const emailProvider: Provider = {
   id: "resend",
@@ -110,12 +111,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!user.id || !user.email) return;
       const existing = await prisma.owner.findUnique({ where: { userId: user.id } });
       if (existing) return;
-      await prisma.owner.create({
-        data: {
-          userId: user.id,
-          businessName: user.name?.trim() || "My Farm Stand",
-          contactEmail: user.email,
-        },
+
+      const intent = await prisma.signupIntent.findUnique({
+        where: { email: user.email.toLowerCase() },
+      });
+      const name = (intent?.name || user.name || "My stand").trim();
+
+      if (intent) {
+        await prisma.signupIntent.delete({ where: { email: intent.email } }).catch(() => null);
+      }
+      if (name && name !== user.name) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { name },
+        });
+      }
+
+      await createOwnerWithTrial({
+        userId: user.id,
+        name,
+        email: user.email,
       });
     },
   },

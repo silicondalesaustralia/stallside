@@ -89,7 +89,7 @@ export default function PricingTiers() {
             Set up in two minutes. No paperwork, no bank details.
           </p>
           <Link
-            href="/login"
+            href="/signup"
             className="mt-8 inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
           >
             Start free - 30 days

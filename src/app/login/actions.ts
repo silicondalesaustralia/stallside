@@ -2,22 +2,15 @@
 
 import { signIn, signOut } from "@/lib/auth";
 import { AuthError } from "next-auth";
+import { prisma } from "@/lib/prisma";
 
-export async function requestMagicLink(formData: FormData) {
-  const email = String(formData.get("email") ?? "")
-    .trim()
-    .toLowerCase();
-  if (!email || !email.includes("@")) {
-    throw new Error("Enter a valid email address.");
-  }
-
+async function sendMagicLink(email: string) {
   try {
     await signIn("resend", {
       email,
       redirectTo: "/dashboard",
     });
   } catch (error) {
-    // NextAuth uses NEXT_REDIRECT for successful verifyRequest redirects - rethrow those.
     if (
       error &&
       typeof error === "object" &&
@@ -35,6 +28,38 @@ export async function requestMagicLink(formData: FormData) {
     console.error("Magic link failed", error);
     throw error;
   }
+}
+
+export async function requestMagicLink(formData: FormData) {
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
+  if (!email || !email.includes("@")) {
+    throw new Error("Enter a valid email address.");
+  }
+  await sendMagicLink(email);
+}
+
+/** Frictionless signup: name + email → 30-day trial (no card), magic link. */
+export async function requestSignup(formData: FormData) {
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
+  const name = String(formData.get("name") ?? "").trim();
+  if (!email || !email.includes("@")) {
+    throw new Error("Enter a valid email address.");
+  }
+  if (name.length < 2) {
+    throw new Error("Enter your name.");
+  }
+
+  await prisma.signupIntent.upsert({
+    where: { email },
+    create: { email, name },
+    update: { name },
+  });
+
+  await sendMagicLink(email);
 }
 
 export async function logout() {

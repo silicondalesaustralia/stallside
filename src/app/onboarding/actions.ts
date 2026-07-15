@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { createOwnerWithTrial } from "@/lib/owner-trial";
 
 export async function completeOnboarding(formData: FormData) {
   const user = await requireUser();
@@ -16,20 +17,25 @@ export async function completeOnboarding(formData: FormData) {
     redirect("/onboarding");
   }
 
-  await prisma.owner.upsert({
-    where: { userId: user.id },
-    create: {
+  const existing = await prisma.owner.findUnique({ where: { userId: user.id } });
+  if (existing) {
+    await prisma.owner.update({
+      where: { id: existing.id },
+      data: { businessName, contactEmail, contactPhone },
+    });
+  } else {
+    await createOwnerWithTrial({
       userId: user.id,
-      businessName,
-      contactEmail,
-      contactPhone,
-    },
-    update: {
-      businessName,
-      contactEmail,
-      contactPhone,
-    },
-  });
+      name: businessName,
+      email: contactEmail,
+    });
+    if (contactPhone) {
+      await prisma.owner.update({
+        where: { userId: user.id },
+        data: { contactPhone },
+      });
+    }
+  }
 
   redirect("/dashboard");
 }
