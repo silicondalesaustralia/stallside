@@ -10,15 +10,31 @@ export { appBaseUrl };
 
 let stripeClient: Stripe | null = null;
 
+/** Strip quotes/whitespace that break HTTP Authorization headers in Vercel env. */
+export function cleanEnvSecret(value: string | undefined): string | null {
+  if (!value) return null;
+  const cleaned = value
+    .trim()
+    .replace(/^["']+|["']+$/g, "")
+    .replace(/[\r\n\0]/g, "")
+    .trim();
+  return cleaned || null;
+}
+
 /**
  * Single Stripe *platform* account powers both:
  * - Billing: owners pay Stallside (subscriptions)
  * - Connect: owners receive stand customer payments
  */
 export function getStripe(): Stripe {
-  const key = process.env.STRIPE_SECRET_KEY;
+  const key = cleanEnvSecret(process.env.STRIPE_SECRET_KEY);
   if (!key) {
     throw new Error("STRIPE_SECRET_KEY is not set");
+  }
+  if (/[^\x20-\x7E]/.test(key)) {
+    throw new Error(
+      "STRIPE_SECRET_KEY has invalid characters — remove quotes/newlines in Vercel env",
+    );
   }
   if (!stripeClient) {
     stripeClient = new Stripe(key);
@@ -27,7 +43,7 @@ export function getStripe(): Stripe {
 }
 
 export function isStripeConfigured(): boolean {
-  return Boolean(process.env.STRIPE_SECRET_KEY);
+  return Boolean(cleanEnvSecret(process.env.STRIPE_SECRET_KEY));
 }
 
 const PRICE_ENV: Record<BillingCurrency, string> = {
@@ -39,12 +55,12 @@ const PRICE_ENV: Record<BillingCurrency, string> = {
 
 /** Recurring cash-plan Price ID for a billing currency. */
 export function getCashPlanPriceId(currency: BillingCurrency = "AUD"): string {
-  const specific = process.env[PRICE_ENV[currency]]?.trim();
+  const specific = cleanEnvSecret(process.env[PRICE_ENV[currency]]);
   if (specific) return specific;
 
   // Legacy fallback: STRIPE_PRICE_ID_CASH is the AUD price
   if (currency === "AUD") {
-    const legacy = process.env.STRIPE_PRICE_ID_CASH?.trim();
+    const legacy = cleanEnvSecret(process.env.STRIPE_PRICE_ID_CASH);
     if (legacy) return legacy;
   }
 
@@ -74,7 +90,8 @@ export function listConfiguredCashPlanPrices(): {
 
 export function isStripeBillingConfigured(): boolean {
   return Boolean(
-    process.env.STRIPE_SECRET_KEY && listConfiguredCashPlanPrices().length > 0,
+    cleanEnvSecret(process.env.STRIPE_SECRET_KEY) &&
+      listConfiguredCashPlanPrices().length > 0,
   );
 }
 
