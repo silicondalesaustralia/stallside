@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const bodySchema = z.object({
-  token: z.string().min(10).max(512),
+  token: z.string().min(10).max(4096),
   platform: z.enum(["ios", "android", "web"]),
 });
 

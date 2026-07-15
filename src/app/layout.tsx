@@ -30,6 +30,7 @@ export const metadata: Metadata = {
     template: `%s · ${APP_NAME}`,
   },
   description: `${APP_POSITIONING} Scan, pay, sold.`,
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     title: APP_NAME,

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
 import { sendApns } from "@/lib/notify-apns";
+import { sendWebPush } from "@/lib/notify-web-push";
 
 type PushPayload = {
   title: string;
@@ -49,7 +50,9 @@ export async function sendOwnerPush(ownerId: string, payload: PushPayload) {
   await Promise.all(
     devices.map(async (device) => {
       try {
-        if (device.platform === "ios") {
+        if (device.platform === "web") {
+          await sendWebPush(device.token, payload);
+        } else if (device.platform === "ios") {
           await sendApns(device.token, payload);
         } else {
           await sendFcm(device.token, payload);

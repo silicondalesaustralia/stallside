@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { logout } from "@/app/login/actions";
 import { requireOwner } from "@/lib/session";
 import { formatMoney } from "@/lib/money";
 import {
@@ -171,6 +172,12 @@ export default async function BillingSettingsPage({
           </button>
         </form>
       ) : null}
+
+      <form action={logout}>
+        <button type="submit" className="text-sm text-[var(--leaf-dark)] underline">
+          Sign out
+        </button>
+      </form>
     </main>
   );
 }

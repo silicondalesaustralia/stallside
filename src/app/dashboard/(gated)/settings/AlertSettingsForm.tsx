@@ -1,7 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { updateAlertSettings } from "./actions";
+import {
+  isInstalledWebApp,
+  isIosSafari,
+  registerOwnerWebPush,
+  unregisterOwnerWebPush,
+} from "@/lib/register-owner-web-push";
 
 type AlertSettingsFormProps = {
   contactEmail: string;
@@ -18,16 +24,34 @@ export default function AlertSettingsForm({
 }: AlertSettingsFormProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [needsHomeScreen, setNeedsHomeScreen] = useState(false);
+
+  useEffect(() => {
+    setNeedsHomeScreen(isIosSafari() && !isInstalledWebApp());
+  }, []);
 
   function onSubmit(formData: FormData) {
     setMessage(null);
+    const wantPush = formData.get("pushAlertsEnabled") === "on";
     startTransition(async () => {
       const result = await updateAlertSettings(formData);
       if (result && "error" in result && result.error) {
         setMessage(result.error);
         return;
       }
-      setMessage("Alert settings saved.");
+
+      if (wantPush) {
+        const push = await registerOwnerWebPush();
+        if ("error" in push) {
+          setMessage(`Saved, but phone push: ${push.error}`);
+          return;
+        }
+        setMessage("Alert settings saved. Phone push enabled on this device.");
+        return;
+      }
+
+      await unregisterOwnerWebPush();
+      setMessage("Alert settings saved. Phone push disabled on this device.");
     });
   }
 
@@ -55,12 +79,19 @@ export default function AlertSettingsForm({
           className="mt-1 size-4 accent-[var(--leaf)]"
         />
         <span>
-          <span className="font-medium">App alerts</span>
+          <span className="font-medium">Phone push alerts</span>
           <span className="mt-0.5 block text-[var(--muted)]">
-            Push notifications on the Stallside phone app. Default on.
+            Sales, low stock, and sold out on this phone. Add Stallside to your Home
+            Screen first, then allow notifications when prompted.
           </span>
         </span>
       </label>
+      {needsHomeScreen ? (
+        <p className="rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-[var(--muted)]">
+          On iPhone: tap Share → <strong>Add to Home Screen</strong>, open Stallside
+          from that icon, then turn phone push on here.
+        </p>
+      ) : null}
 
       <div>
         <p className="font-medium">Alert emails</p>

@@ -38,8 +38,8 @@ export default async function SettingsPage() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Alerts</h2>
         <p className="text-sm text-[var(--muted)]">
-          Sales and low-stock alerts. Push alerts use a 6-hour cooldown per product on
-          the phone app.
+          Sales and low-stock alerts. Low-stock phone push uses a 6-hour cooldown per
+          product. Add Stallside to your Home Screen for reliable phone push.
         </p>
         <AlertSettingsForm
           contactEmail={owner.contactEmail}

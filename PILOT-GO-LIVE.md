@@ -15,7 +15,7 @@ Supersedes nothing in the handoff doc - this is the *sequenced task list* to rea
 | **Domain** | Point **`stallside.app`** at Vercel. Do NOT pilot on `*.vercel.app`. | Stripe live-mode Connect wants a real business URL. QR posters printed with a `vercel.app` URL look untrustworthy at a roadside stall - the whole product is *trust for unmanned payment*. |
 | **Stripe mode** | Test mode first (steps 1-7), then flip to live (step 8). | Prove the flow without moving real money. |
 | **iOS install** | Xcode direct-to-device or TestFlight **internal** testing. | **No App Store review needed.** Xcode free provisioning certs expire after 7 days; TestFlight internal lasts 90 days and needs no review - prefer TestFlight. |
-| **Push on iOS** | Requires paid Apple Developer account ($99/yr) + APNs key + Firebase. | If not ready, pilot with **email alerts only** and add push after. Do not let push block the stall going live. |
+| **Push on phones** | Prefer **web push**: Add to Home Screen → Settings → Phone push. Needs `NEXT_PUBLIC_VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY`. Native Capacitor push still needs Apple/APNs if you use the store shell. | Email alone is enough if VAPID is not set yet. Do not let push block the stall going live. |
 
 ---
 
@@ -32,6 +32,7 @@ Supersedes nothing in the handoff doc - this is the *sequenced task list* to rea
   - `STRIPE_SECRET_KEY` - **test key** (`sk_test_…`) for now
   - `STRIPE_WEBHOOK_SECRET` - filled in at step 4
   - `RESEND_API_KEY` + `EMAIL_FROM` - **required**; magic-link login won't work in prod with console logging
+  - `NEXT_PUBLIC_VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY` - for owner phone web push (`npx web-push generate-vapid-keys --json`)
 - [ ] **Run migrations against the prod DB.** Handoff §9.1 flags this: `qrSignMessage` and `PushDevice` may not be applied. Run `npx prisma migrate deploy` with prod `DATABASE_URL`, then verify all three migrations (`init`, `add_qr_sign_message`, `add_push_devices`) are in `_prisma_migrations`.
 - [ ] Confirm Prisma client generates on Vercel build (`prisma generate` in build step / `postinstall`).
 - [ ] Deploy. Hit `https://stallside.app` - landing page renders.
@@ -108,7 +109,7 @@ Do this standing at the stall, on mobile data, not wifi.
   - [ ] Order appears in `/dashboard/orders` as `CUSTOMER_CONFIRMED`
   - [ ] Stock decremented by the right amount
   - [ ] **Sale email** arrives ("Sale · {stand}")
-  - [ ] **Push** arrives (if configured)
+  - [ ] **Phone push** arrives (Home Screen install + Settings → Phone push + VAPID configured)
 
 ---
 

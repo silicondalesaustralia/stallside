@@ -1,0 +1,17 @@
+{
+  "name": "Stallside",
+  "short_name": "Stallside",
+  "description": "Scan, pay, sold — farm stand checkout and alerts.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f7f4ee",
+  "theme_color": "#17361f",
+  "icons": [
+    {
+      "src": "/brand/app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
