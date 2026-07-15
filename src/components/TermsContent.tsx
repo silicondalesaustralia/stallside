@@ -1,6 +1,5 @@
 import { APP_NAME } from "@/lib/constants";
 import {
-  DRAFT_POLICY_NOTICE,
   LEGAL_ABN,
   LEGAL_ADDRESS_LINE,
   LEGAL_EMAIL,
@@ -10,10 +9,6 @@ import {
 export default function TermsContent() {
   return (
     <article className="prose-marketing space-y-8 text-[var(--ink)]">
-      <p className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-4 text-sm text-[var(--muted)]">
-        {DRAFT_POLICY_NOTICE}
-      </p>
-
       <section className="space-y-3">
         <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
           Agreement

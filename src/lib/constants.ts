@@ -1,7 +1,11 @@
 export const APP_NAME = "Stallside";
 export const APP_DOMAIN = "stallside.app";
 export const APP_TAGLINE = "Scan, Pay, Sold.";
-export const APP_POSITIONING = "Checkout for anything nobody's minding.";
+export const APP_POSITIONING =
+  "Take payment at any unattended stand: produce, firewood, flowers, car parks, and anything else you leave out to sell.";
+export const APP_HERO_SUPPORT =
+  "Print a QR, get paid, track every sale from your phone.";
+
 /** Cash plan AUD list price — prefer cashPlanCents(currency) */
 export const CASH_PLAN_CENTS = 699;
 /** Card plan AUD list price — prefer cardPlanCents(currency) */

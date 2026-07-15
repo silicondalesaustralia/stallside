@@ -113,6 +113,9 @@ export default function PricingTiers() {
           <p className="mt-2 text-sm font-semibold text-[var(--marigold)]">
             No terminal. No hardware. No percentage of your sales.
           </p>
+          <p className="mt-2 text-sm text-[var(--muted)]">
+            Paid straight to your account: nothing left at the stand overnight.
+          </p>
           <a
             href="mailto:hello@stallside.app?subject=Card%20%2F%20PayPal%20plan%20waitlist"
             className="mt-8 inline-flex rounded-[var(--radius-pill)] border border-[var(--field)] px-5 py-3 text-sm font-semibold text-[var(--field)] transition hover:bg-[var(--wash)]"

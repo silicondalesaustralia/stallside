@@ -1,41 +1,51 @@
 import type { FaqItem } from "@/lib/schema";
 import { APP_NAME } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
-import { CASH_PLAN_BY_CURRENCY } from "@/lib/saas-pricing";
+import { CARD_PLAN_BY_CURRENCY, CASH_PLAN_BY_CURRENCY } from "@/lib/saas-pricing";
 
 export const LANDING_FAQS: FaqItem[] = [
   {
+    question: "Won't customers just scan and not pay?",
+    answer:
+      "The same reason your honesty box already works: people who stop at an unattended stall are there to pay, not to dodge. Stallside doesn't replace that trust, it backs it up. Every sale is logged the moment it happens, you get an instant alert, and stock updates in real time, so you always know what left and what came in. If anything, a QR catches the sales a cash-only tin quietly loses: the customer who'd have driven off because they had nothing smaller than a fifty.",
+  },
+  {
     question: `What is ${APP_NAME}?`,
     answer:
-      "Stallside is QR self-checkout and inventory software for unmanned farm stands and honesty stalls. Customers scan a printed QR code, pick what they're taking, and pay cash or card—while you track stock and sales from your phone.",
+      "Stallside is QR self-checkout and inventory for unattended stalls of any kind: produce, firewood, flowers, car parks and more. Shoppers scan a printed QR, pick what they're taking, and pay, while you track stock and sales from your phone.",
+  },
+  {
+    question: "What's the difference between Cash and Card / PayPal?",
+    answer:
+      "Cash (live today): shoppers confirm they left cash in your slot or cash box. Every sale is logged and you get alerts. No card reader, no bank onboarding. Card / PayPal (coming soon): same QR flow, but shoppers pay by Tap & Go, Apple Pay, Google Pay, or PayPal on their phone. No Stallside transaction fees on either plan.",
   },
   {
     question: "How does QR checkout work?",
     answer:
-      "You print a QR poster for each stand. Shoppers open it on their phone, select items, and confirm payment. Cash sales are customer-confirmed and logged; card payments use Stripe Checkout when that plan is available.",
+      "You print a QR poster for each stand. Shoppers open it on their phone and select items. On the Cash plan they confirm payment at the stand and you are alerted. Card and PayPal (coming soon) will let them pay digitally in the same checkout. Stock updates either way.",
+  },
+  {
+    question: "How much does it cost?",
+    answer: `Cash (live): ${formatMoney(CASH_PLAN_BY_CURRENCY.AUD, "AUD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.USD, "USD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.GBP, "GBP")}, or ${formatMoney(CASH_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site, with a 30-day free start. Pick billing currency at signup. Card / PayPal (coming soon): ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site. Join the waitlist from pricing.`,
   },
   {
     question: "Who is Stallside for?",
     answer:
-      "Farm stand and honesty stall operators who need reliable checkout without staffing the stall—plus anyone selling from an unattended roadside or roadside produce set-up.",
-  },
-  {
-    question: "How much does it cost?",
-    answer: `The live Cash plan is ${formatMoney(CASH_PLAN_BY_CURRENCY.AUD, "AUD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.USD, "USD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.GBP, "GBP")}, or ${formatMoney(CASH_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site—pick currency at signup. 30-day free start. Card / PayPal coming soon. No Stallside fees on customer cash payments.`,
+      "Anyone running an unattended stall of any kind: produce, firewood, flowers, car parks and more, who needs checkout and stock tracking without staffing the stall all day.",
   },
   {
     question: "Can shoppers see exact stock counts?",
     answer:
-      "Public stock shows Availability bands (Available, Low stock, Sold out) by default—exact counts stay private unless you choose otherwise.",
-  },
-  {
-    question: "How do I get started?",
-    answer:
-      "Sign in with a magic link, name your business, add a stand and products, then print your QR poster. Most owners are ready in a few minutes.",
+      "Public stock shows Availability bands (Available, Low stock, Sold out) by default. Exact counts stay private unless you choose otherwise.",
   },
   {
     question: "Do I need special hardware?",
     answer:
-      "No card readers or tablets are required for the Cash plan. Customers use their own phone. A printer for QR posters is enough to go live.",
+      "Not for Cash: a printer for your QR poster is enough. Customers use their own phones. Card / PayPal (coming soon) also needs no terminal or card reader; payments happen on the shopper's phone.",
+  },
+  {
+    question: "What about cash going missing?",
+    answer:
+      "It happens: a tin by the road is easy to empty. Cash sales are still logged the moment a customer confirms, so your records stay right even if the box doesn't. And when Tap & Go and PayPal arrive, that money lands straight in your account, with nothing left at the stand to take.",
   },
 ];

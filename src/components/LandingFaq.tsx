@@ -14,7 +14,7 @@ export default function LandingFaq() {
         </h2>
       </div>
       <p className="mb-8 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        Straight answers about Stallside for farm-stand and honesty-stall owners.
+        Straight answers about Stallside for anyone running an unattended stall.
       </p>
 
       <dl className="divide-y divide-[var(--line)] border-y border-[var(--line)]">

@@ -6,6 +6,7 @@ import LandingFooter from "@/components/LandingFooter";
 import LandingHero from "@/components/LandingHero";
 import NetworkVision from "@/components/NetworkVision";
 import PricingTiers from "@/components/PricingTiers";
+import TrustSection from "@/components/TrustSection";
 import UseCaseGrid from "@/components/UseCaseGrid";
 import { LANDING_FAQS } from "@/lib/landing-faqs";
 import { homeGraphSchema } from "@/lib/schema";
@@ -17,6 +18,7 @@ export default function HomePage() {
       <LandingHero />
       <HowItWorksFlow />
       <UseCaseGrid />
+      <TrustSection />
       <FeatureColumns />
       <PricingTiers />
       <NetworkVision />

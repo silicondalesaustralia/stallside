@@ -2,7 +2,7 @@ import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 import CashConfirmMock from "@/components/CashConfirmMock";
 import HeroCheckoutDemo from "@/components/HeroCheckoutDemo";
-import { APP_NAME, APP_POSITIONING, APP_TAGLINE } from "@/lib/constants";
+import { APP_NAME, APP_HERO_SUPPORT, APP_POSITIONING, APP_TAGLINE } from "@/lib/constants";
 
 const WORDMARK = APP_NAME.toLowerCase();
 
@@ -65,7 +65,13 @@ export default function LandingHero() {
             {APP_TAGLINE}
           </p>
           <p className="mt-3 max-w-xl text-base leading-snug text-[var(--ink-on-dark)]/75">
-            {APP_POSITIONING} Print a QR, take payment, watch stock from anywhere.
+            {APP_POSITIONING}
+          </p>
+          <p className="mt-2 max-w-xl text-base leading-snug text-[var(--ink-on-dark)]/75">
+            {APP_HERO_SUPPORT}
+          </p>
+          <p className="mt-2 max-w-xl text-sm leading-snug text-[var(--ink-on-dark)]/60 sm:text-base">
+            The honesty stall, upgraded: for the customer who wants to pay but has no cash.
           </p>
 
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">

@@ -13,6 +13,7 @@ const OWNER_LIVE = [
 const OWNER_SOON = [
   "Tap & Go - card, Apple Pay, Google Pay",
   "No terminal, no hardware, no percentage of your sales",
+  "Paid straight to your account: no cash box to empty, count, or bank",
 ] as const;
 
 const CUSTOMER_LIVE = [

@@ -1,4 +1,4 @@
-import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
+import { APP_DOMAIN } from "@/lib/constants";
 
 export const LEGAL_ENTITY = "Saltbush Investment Trust";
 export const LEGAL_ABN = "21 226 814 942";
@@ -15,6 +15,3 @@ export const LEGAL_ADDRESS = {
 export const LEGAL_ADDRESS_LINE = `${LEGAL_ADDRESS.streetAddress}, ${LEGAL_ADDRESS.addressLocality}, ${LEGAL_ADDRESS.addressRegion} ${LEGAL_ADDRESS.postalCode}`;
 
 export const SITE_URL = `https://${APP_DOMAIN}`;
-
-export const DRAFT_POLICY_NOTICE =
-  `This page is an operational draft for ${APP_NAME}. It is not formal legal advice. Contact ${LEGAL_EMAIL} with questions.`;

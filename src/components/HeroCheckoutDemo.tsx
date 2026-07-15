@@ -33,6 +33,13 @@ export default function HeroCheckoutDemo() {
                   <p className="text-sm font-semibold">Dozen eggs</p>
                   <p className="mt-0.5 font-receipt text-xs text-[var(--muted)]">$6.00 each</p>
                 </div>
+                <img
+                  src="/brand/dozen-eggs.png"
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="size-10 shrink-0 object-contain"
+                />
                 <p className="rounded-full border border-[var(--line)] bg-[var(--wash)] px-3 py-1 font-receipt text-sm font-semibold">
                   ×2
                 </p>
