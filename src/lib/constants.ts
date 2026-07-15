@@ -6,7 +6,8 @@ export const APP_POSITIONING =
 export const APP_HERO_SUPPORT =
   "Print a QR, get paid, track every sale from your phone.";
 /** Browser tab + search title for the homepage */
-export const APP_SEO_TITLE = "Stallside · QR checkout for unattended stands";
+export const APP_SEO_TITLE =
+  "Stallside · Checkout For Unattended Farm Stands & Stalls";
 /** Meta description (~155 chars) */
 export const APP_SEO_DESCRIPTION =
   "QR self-checkout for farm stands, honesty stalls, firewood, flowers, and car parks. Print a QR, get paid, track every sale from your phone.";
