@@ -1,25 +1,15 @@
 import Stripe from "stripe";
 import { appBaseUrl } from "@/lib/app-url";
+import { cleanEnvSecret } from "@/lib/env";
 import {
   BILLING_CURRENCIES,
   type BillingCurrency,
   isBillingCurrency,
 } from "@/lib/saas-pricing";
 
-export { appBaseUrl };
+export { appBaseUrl, cleanEnvSecret };
 
 let stripeClient: Stripe | null = null;
-
-/** Strip quotes/whitespace that break HTTP Authorization headers in Vercel env. */
-export function cleanEnvSecret(value: string | undefined): string | null {
-  if (!value) return null;
-  const cleaned = value
-    .trim()
-    .replace(/^["']+|["']+$/g, "")
-    .replace(/[\r\n\0]/g, "")
-    .trim();
-  return cleaned || null;
-}
 
 /**
  * Single Stripe *platform* account powers both:

@@ -1,7 +1,7 @@
 "use server";
 
 import { APP_NAME } from "@/lib/constants";
-import { sendOwnerEmail } from "@/lib/notify-email";
+import { contactInbox, sendOwnerEmail } from "@/lib/notify-email";
 import { prisma } from "@/lib/prisma";
 
 export type JoinWaitlistResult =
@@ -33,6 +33,11 @@ export async function joinCardPaypalWaitlist(
         where: { email },
         data: { name },
       });
+      try {
+        await sendWaitlistEmails(email, name, true);
+      } catch (error) {
+        console.error("Waitlist emails failed on rejoin", error);
+      }
       return { ok: true, alreadyJoined: true };
     }
 
@@ -45,11 +50,10 @@ export async function joinCardPaypalWaitlist(
     });
 
     try {
-      await sendWaitlistThanks(email, name);
+      await sendWaitlistEmails(email, name, false);
     } catch (error) {
-      console.error("Waitlist confirmation email failed", error);
+      console.error("Waitlist emails failed after join", error);
     }
-
     return { ok: true };
   } catch (error) {
     console.error("Waitlist join failed", error);
@@ -57,10 +61,16 @@ export async function joinCardPaypalWaitlist(
   }
 }
 
-async function sendWaitlistThanks(to: string, name: string) {
+async function sendWaitlistEmails(
+  email: string,
+  name: string,
+  alreadyJoined: boolean,
+) {
   const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+
   await sendOwnerEmail(
-    to,
+    email,
     `Thanks for joining the Tap & Go waitlist for ${APP_NAME}`,
     `
       <div style="font-family:system-ui,sans-serif;line-height:1.5;color:#182C1B">
@@ -74,6 +84,21 @@ async function sendWaitlistThanks(to: string, name: string) {
       </div>
     `,
   );
+
+  if (alreadyJoined) return;
+
+  try {
+    await sendOwnerEmail(
+      contactInbox(),
+      `[Stallside waitlist] ${name}`,
+      `
+        <p><strong>${safeName}</strong> &lt;${safeEmail}&gt; joined the Tap &amp; Go waitlist.</p>
+      `,
+      { replyTo: email },
+    );
+  } catch (error) {
+    console.error("Waitlist owner notify failed", error);
+  }
 }
 
 function escapeHtml(value: string): string {

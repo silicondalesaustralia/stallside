@@ -1,6 +1,6 @@
 "use server";
 
-import { sendOwnerEmail } from "@/lib/notify-email";
+import { contactInbox, sendOwnerEmail } from "@/lib/notify-email";
 import { isContactSubject } from "@/lib/contact-subjects";
 
 export type ContactState = {
@@ -47,11 +47,15 @@ export async function submitContact(
   `;
 
   try {
-    const contactTo =
-      process.env.CONTACT_EMAIL?.trim() || "jono@silicondales.com";
-    await sendOwnerEmail(contactTo, `[Stallside contact] ${subjectRaw}`, html);
+    await sendOwnerEmail(
+      contactInbox(),
+      `[Stallside contact] ${subjectRaw}`,
+      html,
+      { replyTo: email },
+    );
     return { ok: true };
-  } catch {
+  } catch (error) {
+    console.error("Contact form email failed", error);
     return {
       ok: false,
       error: "Could not send your message. Please try again or email us directly.",
