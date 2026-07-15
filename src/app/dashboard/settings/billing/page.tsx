@@ -22,19 +22,29 @@ const STATUS_LABEL: Record<string, string> = {
 export default async function BillingSettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ success?: string; cancelled?: string; trial?: string }>;
+  searchParams: Promise<{
+    success?: string;
+    cancelled?: string;
+    trial?: string;
+    locked?: string;
+  }>;
 }) {
   const { owner } = await requireOwner();
   const params = await searchParams;
   const configured = isStripeBillingConfigured();
   const isPaid =
-    owner.subscriptionStatus === "ACTIVE" || Boolean(owner.stripeSubscriptionId);
+    owner.subscriptionStatus === "ACTIVE" ||
+    owner.subscriptionStatus === "PAST_DUE";
   const needsPayment = ownerNeedsPayment(owner);
   const trialActive =
     owner.subscriptionStatus === "TRIALING" &&
     owner.trialEndsAt != null &&
     owner.trialEndsAt.getTime() > Date.now() &&
     !owner.stripeSubscriptionId;
+  const cancelling =
+    owner.cancelAtPeriodEnd &&
+    owner.currentPeriodEndsAt != null &&
+    owner.currentPeriodEndsAt.getTime() > Date.now();
   const available = listConfiguredCashPlanPrices();
   const billingCurrency: BillingCurrency = isBillingCurrency(owner.billingCurrency)
     ? owner.billingCurrency
@@ -57,10 +67,15 @@ export default async function BillingSettingsPage({
         </p>
       </div>
 
-      {params.trial === "ended" || needsPayment ? (
+      {params.locked === "1" || needsPayment ? (
         <p className="rounded-xl border border-[var(--marigold)]/40 bg-[var(--marigold)]/10 px-4 py-3 text-sm">
-          Your free trial has ended. Subscribe to keep using Stallside — no card was
-          required during the trial.
+          Your subscription is not active. Stands, products, inventory, and orders
+          stay saved — subscribe again to reopen the app.
+        </p>
+      ) : null}
+      {params.trial === "ended" && needsPayment ? (
+        <p className="text-sm text-[var(--muted)]">
+          Your free trial has ended.
         </p>
       ) : null}
       {params.success === "1" ? (
@@ -80,6 +95,15 @@ export default async function BillingSettingsPage({
           . No card needed until then.
         </p>
       ) : null}
+      {cancelling && owner.currentPeriodEndsAt ? (
+        <p className="text-sm text-[var(--muted)]">
+          Cancellation scheduled. You keep full access until{" "}
+          {owner.currentPeriodEndsAt.toLocaleDateString(undefined, {
+            dateStyle: "medium",
+          })}
+          . Resubscribe anytime — your data stays.
+        </p>
+      ) : null}
 
       {!configured ? (
         <p className="text-sm text-red-700">
@@ -92,9 +116,17 @@ export default async function BillingSettingsPage({
           Plan: Cash · {formatMoney(feeCents, billingCurrency)}/mo ({billingCurrency})
         </p>
         <p>Status: {STATUS_LABEL[owner.subscriptionStatus] ?? owner.subscriptionStatus}</p>
+        {cancelling && owner.currentPeriodEndsAt ? (
+          <p>
+            Access until:{" "}
+            {owner.currentPeriodEndsAt.toLocaleDateString(undefined, {
+              dateStyle: "medium",
+            })}
+          </p>
+        ) : null}
       </section>
 
-      {!isPaid ? (
+      {!isPaid || needsPayment ? (
         <form action={startCashPlanCheckout} className="flex flex-wrap items-end gap-3">
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-medium text-[var(--ink)]">Currency</span>
@@ -122,7 +154,9 @@ export default async function BillingSettingsPage({
             disabled={!configured}
             className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
           >
-            {needsPayment ? "Subscribe to continue" : "Subscribe early"}
+            {needsPayment || owner.subscriptionStatus === "CANCELLED"
+              ? "Resubscribe"
+              : "Subscribe early"}
           </button>
         </form>
       ) : null}

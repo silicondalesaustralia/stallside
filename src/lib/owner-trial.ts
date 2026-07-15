@@ -30,38 +30,66 @@ export async function createOwnerWithTrial(input: {
   });
 }
 
-export function ownerNeedsPayment(owner: {
+export type OwnerAccessFields = {
   subscriptionStatus: SubscriptionStatus;
   trialEndsAt: Date | null;
   stripeSubscriptionId: string | null;
-}): boolean {
-  if (owner.stripeSubscriptionId) return false;
-  if (owner.subscriptionStatus === SubscriptionStatus.ACTIVE) return false;
-  if (owner.subscriptionStatus === SubscriptionStatus.PAST_DUE) return false;
+  currentPeriodEndsAt: Date | null;
+  cancelAtPeriodEnd: boolean;
+};
+
+function hasFutureDate(value: Date | null): boolean {
+  return value != null && value.getTime() > Date.now();
+}
+
+/** Owner may use stands/products/orders — data is always retained. */
+export function ownerHasAppAccess(owner: OwnerAccessFields): boolean {
+  if (owner.subscriptionStatus === SubscriptionStatus.ACTIVE) return true;
+  if (owner.subscriptionStatus === SubscriptionStatus.PAST_DUE) return true;
 
   if (owner.subscriptionStatus === SubscriptionStatus.TRIALING) {
-    if (!owner.trialEndsAt) return false;
-    return owner.trialEndsAt.getTime() <= Date.now();
+    if (!owner.trialEndsAt) return true;
+    return hasFutureDate(owner.trialEndsAt);
   }
 
-  // Legacy owners with no trial: do not hard-gate.
-  // Anyone whose app trial ended (or cancelled after trial) must subscribe.
-  if (owner.trialEndsAt && owner.trialEndsAt.getTime() <= Date.now()) {
-    return true;
-  }
+  // Cancelled (or scheduled to end): keep access until paid period finishes.
+  if (hasFutureDate(owner.currentPeriodEndsAt)) return true;
+
   return false;
 }
 
-/** Whole days left on free trial (null if not in an active app trial). */
-export function trialDaysRemaining(owner: {
-  subscriptionStatus: SubscriptionStatus;
-  trialEndsAt: Date | null;
-  stripeSubscriptionId: string | null;
-}): number | null {
+export function ownerNeedsPayment(owner: OwnerAccessFields): boolean {
+  return !ownerHasAppAccess(owner);
+}
+
+function daysUntil(date: Date): number {
+  const ms = date.getTime() - Date.now();
+  if (ms <= 0) return 0;
+  return Math.ceil(ms / (1000 * 60 * 60 * 24));
+}
+
+/** Free-trial days remaining (null if not on an active app trial). */
+export function trialDaysRemaining(owner: OwnerAccessFields): number | null {
   if (owner.stripeSubscriptionId) return null;
   if (owner.subscriptionStatus !== SubscriptionStatus.TRIALING) return null;
   if (!owner.trialEndsAt) return null;
-  const ms = owner.trialEndsAt.getTime() - Date.now();
-  if (ms <= 0) return 0;
-  return Math.ceil(ms / (1000 * 60 * 60 * 24));
+  return daysUntil(owner.trialEndsAt);
+}
+
+/**
+ * Days until paid access ends after cancel-at-period-end
+ * (or cancelled but still inside the paid window).
+ */
+export function paidAccessDaysRemaining(owner: OwnerAccessFields): number | null {
+  if (!hasFutureDate(owner.currentPeriodEndsAt)) return null;
+  if (owner.subscriptionStatus === SubscriptionStatus.ACTIVE && !owner.cancelAtPeriodEnd) {
+    return null;
+  }
+  if (
+    owner.cancelAtPeriodEnd ||
+    owner.subscriptionStatus === SubscriptionStatus.CANCELLED
+  ) {
+    return daysUntil(owner.currentPeriodEndsAt!);
+  }
+  return null;
 }

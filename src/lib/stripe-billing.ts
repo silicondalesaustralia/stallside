@@ -36,6 +36,17 @@ function billingFromSubscription(subscription: Stripe.Subscription): {
   return { currency, monthlyFeeCents };
 }
 
+function periodEndFromSubscription(subscription: Stripe.Subscription): Date | null {
+  if (subscription.cancel_at) {
+    return new Date(subscription.cancel_at * 1000);
+  }
+  const itemEnd = subscription.items.data[0]?.current_period_end;
+  if (typeof itemEnd === "number") {
+    return new Date(itemEnd * 1000);
+  }
+  return null;
+}
+
 export async function syncOwnerFromSubscription(
   subscription: Stripe.Subscription,
 ) {
@@ -66,6 +77,7 @@ export async function syncOwnerFromSubscription(
   const live =
     subscription.status === "active" || subscription.status === "trialing";
   const { currency, monthlyFeeCents } = billingFromSubscription(subscription);
+  const periodEnd = periodEndFromSubscription(subscription);
 
   await prisma.owner.update({
     where: { id: owner.id },
@@ -76,6 +88,8 @@ export async function syncOwnerFromSubscription(
       subscriptionPlan: "cash",
       monthlyFeeCents,
       billingCurrency: currency,
+      cancelAtPeriodEnd: cancelled ? false : Boolean(subscription.cancel_at_period_end),
+      currentPeriodEndsAt: periodEnd,
       ...(live && !owner.subscriptionStartedAt
         ? { subscriptionStartedAt: new Date() }
         : {}),

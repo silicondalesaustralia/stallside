@@ -136,6 +136,9 @@ model Owner {
   /** App-managed trial end (no card until they subscribe) */
   trialEndsAt               DateTime?
   trialReminderSentAt       DateTime?
+  /** Access continues until this time after cancel-at-period-end */
+  currentPeriodEndsAt       DateTime?
+  cancelAtPeriodEnd         Boolean            @default(false)
   platformFeePercentBps     Int                @default(200)
   stands                    Stand[]
   products                  Product[]

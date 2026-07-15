@@ -1,0 +1,2 @@
+ALTER TABLE "Owner" ADD COLUMN "currentPeriodEndsAt" TIMESTAMP(3);
+ALTER TABLE "Owner" ADD COLUMN "cancelAtPeriodEnd" BOOLEAN NOT NULL DEFAULT false;
