@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import WaitlistModal from "@/components/WaitlistModal";
 import { formatMoney } from "@/lib/money";
 import {
   BILLING_CURRENCIES,
@@ -14,6 +15,7 @@ import {
 
 export default function PricingTiers() {
   const [currency, setCurrency] = useState<BillingCurrency>("AUD");
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -116,12 +118,13 @@ export default function PricingTiers() {
           <p className="mt-2 text-sm text-[var(--muted)]">
             Paid straight to your account: nothing left at the stand overnight.
           </p>
-          <a
-            href="mailto:hello@stallside.app?subject=Card%20%2F%20PayPal%20plan%20waitlist"
+          <button
+            type="button"
+            onClick={() => setWaitlistOpen(true)}
             className="mt-8 inline-flex rounded-[var(--radius-pill)] border border-[var(--field)] px-5 py-3 text-sm font-semibold text-[var(--field)] transition hover:bg-[var(--wash)]"
           >
             Join the waitlist
-          </a>
+          </button>
         </div>
       </div>
 
@@ -130,6 +133,8 @@ export default function PricingTiers() {
         30 days free. Cancel any time. No transaction fees, on either plan, ever. Prices shown in{" "}
         {currency}; billed in the currency you choose at signup.
       </p>
+
+      <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
     </section>
   );
 }

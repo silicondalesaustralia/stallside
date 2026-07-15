@@ -2,6 +2,7 @@
 
 import { sendOwnerEmail } from "@/lib/notify-email";
 import { LEGAL_EMAIL } from "@/lib/legal";
+import { isContactSubject } from "@/lib/contact-subjects";
 
 export type ContactState = {
   ok: boolean;
@@ -23,7 +24,7 @@ export async function submitContact(
 
   const name = asTrimmedString(formData.get("name"));
   const email = asTrimmedString(formData.get("email"));
-  const subject = asTrimmedString(formData.get("subject")) || "Website enquiry";
+  const subjectRaw = asTrimmedString(formData.get("subject"));
   const message = asTrimmedString(formData.get("message"));
 
   if (!name || name.length > 120) {
@@ -32,19 +33,22 @@ export async function submitContact(
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
     return { ok: false, error: "Please enter a valid email address." };
   }
+  if (!isContactSubject(subjectRaw)) {
+    return { ok: false, error: "Please choose a subject." };
+  }
   if (!message || message.length < 10 || message.length > 5000) {
     return { ok: false, error: "Please enter a message (at least 10 characters)." };
   }
 
   const html = `
     <p><strong>From:</strong> ${escapeHtml(name)} &lt;${escapeHtml(email)}&gt;</p>
-    <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
+    <p><strong>Subject:</strong> ${escapeHtml(subjectRaw)}</p>
     <p><strong>Message:</strong></p>
     <p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>
   `;
 
   try {
-    await sendOwnerEmail(LEGAL_EMAIL, `[Stallside contact] ${subject}`, html);
+    await sendOwnerEmail(LEGAL_EMAIL, `[Stallside contact] ${subjectRaw}`, html);
     return { ok: true };
   } catch {
     return {

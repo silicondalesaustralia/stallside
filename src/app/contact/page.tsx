@@ -9,10 +9,11 @@ import {
   LEGAL_EMAIL,
   LEGAL_ENTITY,
 } from "@/lib/legal";
+import { contactSubjectFromParam } from "@/lib/contact-subjects";
 import { marketingPageGraphSchema } from "@/lib/schema";
 
 const title = "Contact";
-const description = `Contact ${APP_NAME} — questions about QR checkout for farm stands, pricing, or your account.`;
+const description = `Contact ${APP_NAME} with questions about QR checkout for farm stands, pricing, or your account.`;
 
 export const metadata: Metadata = {
   title,
@@ -20,7 +21,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-export default function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ subject?: string }>;
+}) {
+  const params = await searchParams;
+  const defaultSubject = contactSubjectFromParam(params.subject);
+
   return (
     <MarketingPageShell>
       <JsonLd
@@ -41,7 +49,7 @@ export default function ContactPage() {
         </p>
 
         <div className="mt-10">
-          <ContactForm />
+          <ContactForm defaultSubject={defaultSubject} />
         </div>
 
         <aside className="mt-12 space-y-2 border-t border-[var(--line)] pt-8 text-sm text-[var(--muted)]">

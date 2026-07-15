@@ -7,6 +7,7 @@ const LINKS = [
   { href: "/#use-cases", label: "Use cases" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
+  { href: "/contact?subject=feature-request", label: "Feature request" },
   { href: "/login", label: "Owner login" },
   { href: "/terms", label: "Terms" },
   { href: "/privacy", label: "Privacy" },

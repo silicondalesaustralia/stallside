@@ -70,6 +70,15 @@ model SignupIntent {
   createdAt DateTime @default(now())
 }
 
+/** Card / PayPal plan interest from landing waitlist */
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  plan      String   @default("card_paypal")
+  createdAt DateTime @default(now())
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String

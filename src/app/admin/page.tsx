@@ -29,7 +29,7 @@ export default async function AdminOverviewPage() {
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">SaaS admin</h1>
           <p className="mt-1 text-[var(--muted)]">
-            Subscriptions, owners, and Stallside revenue — not stand checkout sales.
+            Subscriptions, owners, and Stallside revenue, not stand checkout sales.
           </p>
         </div>
         <div className="flex flex-wrap gap-3 text-sm">
@@ -50,7 +50,7 @@ export default async function AdminOverviewPage() {
 
       {!billingReady ? (
         <p className="text-sm text-red-700">
-          Stripe Billing not configured — set{" "}
+          Stripe Billing not configured. Set{" "}
           <code className="rounded bg-black/5 px-1">STRIPE_PRICE_ID_CASH</code>.
         </p>
       ) : null}

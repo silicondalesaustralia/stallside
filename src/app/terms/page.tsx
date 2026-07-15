@@ -6,7 +6,7 @@ import { APP_NAME } from "@/lib/constants";
 import { marketingPageGraphSchema } from "@/lib/schema";
 
 const title = "Terms";
-const description = `Terms of use for ${APP_NAME} — SaaS agreement for stall owners, governed by South Australian and Australian law.`;
+const description = `Terms of use for ${APP_NAME}. SaaS agreement for stall owners, governed by South Australian and Australian law.`;
 
 export const metadata: Metadata = {
   title,

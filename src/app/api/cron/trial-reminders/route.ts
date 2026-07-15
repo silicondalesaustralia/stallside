@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     try {
       await sendOwnerEmail(
         to,
-        `Your ${APP_NAME} free trial has ended — subscribe to keep going`,
+        `Your ${APP_NAME} free trial has ended. Subscribe to keep going`,
         `
           <div style="font-family:system-ui,sans-serif;line-height:1.5;color:#182C1B">
             <p style="font-size:18px;font-weight:600">Your free trial has ended</p>

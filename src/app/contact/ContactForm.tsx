@@ -2,13 +2,21 @@
 
 import { useActionState } from "react";
 import { submitContact, type ContactState } from "./actions";
+import {
+  CONTACT_SUBJECTS,
+  type ContactSubject,
+} from "@/lib/contact-subjects";
 
 const initial: ContactState = { ok: false };
 
 const fieldClass =
   "mt-1.5 w-full rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-3 py-2.5 text-[var(--ink)] outline-none focus:border-[var(--leaf)]";
 
-export default function ContactForm() {
+export default function ContactForm({
+  defaultSubject = "General",
+}: {
+  defaultSubject?: ContactSubject;
+}) {
   const [state, action, pending] = useActionState(submitContact, initial);
 
   if (state.ok && !state.error) {
@@ -17,7 +25,7 @@ export default function ContactForm() {
         className="rounded-[var(--radius)] border border-[var(--leaf)]/40 bg-[var(--panel)] p-5 text-[var(--field)]"
         role="status"
       >
-        Thanks — your message was sent. We&apos;ll get back to you soon.
+        Thanks. Your message was sent. We&apos;ll get back to you soon.
       </p>
     );
   }
@@ -61,9 +69,21 @@ export default function ContactForm() {
 
       <div>
         <label htmlFor="subject" className="text-sm font-medium text-[var(--ink)]">
-          Subject <span className="font-normal text-[var(--muted)]">(optional)</span>
+          Subject
         </label>
-        <input id="subject" name="subject" type="text" maxLength={200} className={fieldClass} />
+        <select
+          id="subject"
+          name="subject"
+          required
+          defaultValue={defaultSubject}
+          className={fieldClass}
+        >
+          {CONTACT_SUBJECTS.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>

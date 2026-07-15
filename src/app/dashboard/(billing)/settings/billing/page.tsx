@@ -63,14 +63,14 @@ export default async function BillingSettingsPage({
           Stallside billing
         </h1>
         <p className="mt-2 text-[var(--muted)]">
-          This is what you pay Stallside for the app — not stand customer payments.
+          This is what you pay Stallside for the app, not stand customer payments.
         </p>
       </div>
 
       {params.locked === "1" || needsPayment ? (
         <p className="rounded-xl border border-[var(--marigold)]/40 bg-[var(--marigold)]/10 px-4 py-3 text-sm">
           Your subscription is not active. Stands, products, inventory, and orders
-          stay saved — subscribe again to reopen the app.
+          stay saved. Subscribe again to reopen the app.
         </p>
       ) : null}
       {params.trial === "ended" && needsPayment ? (
@@ -101,7 +101,7 @@ export default async function BillingSettingsPage({
           {owner.currentPeriodEndsAt.toLocaleDateString(undefined, {
             dateStyle: "medium",
           })}
-          . Resubscribe anytime — your data stays.
+          . Resubscribe anytime. Your data stays.
         </p>
       ) : null}
 

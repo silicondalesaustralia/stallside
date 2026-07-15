@@ -6,7 +6,7 @@ import { APP_NAME } from "@/lib/constants";
 import { marketingPageGraphSchema } from "@/lib/schema";
 
 const title = "Privacy";
-const description = `Privacy policy for ${APP_NAME} — how we handle account, stand, and payment-related data under Australian privacy principles.`;
+const description = `Privacy policy for ${APP_NAME}. How we handle account, stand, and payment-related data under Australian privacy principles.`;
 
 export const metadata: Metadata = {
   title,
