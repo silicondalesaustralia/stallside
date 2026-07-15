@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 
 export default function LocalTransferAliasFields({
@@ -12,6 +13,16 @@ export default function LocalTransferAliasFields({
   methodId: string | null;
 }) {
   const method = localTransferForCurrency(currency);
+  const initial =
+    method && methodId === method.id ? (alias ?? "") : "";
+  const [value, setValue] = useState(initial);
+
+  useEffect(() => {
+    const next =
+      method && methodId === method.id ? (alias ?? "") : "";
+    setValue(next);
+  }, [alias, methodId, method?.id, currency]);
+
   if (!method) return null;
 
   return (
@@ -21,7 +32,8 @@ export default function LocalTransferAliasFields({
         <span className="font-medium">{method.aliasLabel}</span>
         <input
           name="localTransferAlias"
-          defaultValue={methodId === method.id ? (alias ?? "") : ""}
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
           placeholder={method.aliasPlaceholder}
           maxLength={120}
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"

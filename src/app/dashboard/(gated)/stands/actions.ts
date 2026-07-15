@@ -12,7 +12,8 @@ import { localTransferForCurrency } from "@/lib/local-transfer";
 
 const standSchema = z.object({
   name: z.string().trim().min(2).max(80),
-  description: z.string().trim().max(500).optional(),
+  // Align with QR print editor (HTML instructions can exceed plain-text length).
+  description: z.string().trim().max(8000).optional(),
   locationLabel: z.string().trim().max(120).optional(),
   currency: z.enum(CURRENCIES),
   showExactStock: z.coerce.boolean().optional(),
@@ -75,7 +76,14 @@ export async function updateStand(standId: string, formData: FormData) {
     showExactStock: formData.get("showExactStock") === "on",
     isActive: formData.get("isActive") === "on",
   });
-  if (!parsed.success) return { error: "Check stand details and try again." };
+  if (!parsed.success) {
+    const detail = parsed.error.issues[0]?.message;
+    return {
+      error: detail
+        ? `Check stand details (${detail}).`
+        : "Check stand details and try again.",
+    };
+  }
 
   let slug = existing.slug;
   const requestedSlug = String(formData.get("slug") ?? "").trim().toLowerCase();

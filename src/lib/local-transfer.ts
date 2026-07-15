@@ -15,19 +15,21 @@ function digitsOnly(value: string) {
   return value.replace(/\D/g, "");
 }
 
-/** PayID format check only: AU mobile, email, or ABN (11 digits). */
+/** PayID format check only: AU mobile, email, ABN, or organisation ID. */
 export function isPhoneEmailOrAbn(value: string): boolean {
   const v = value.trim();
-  if (!v || v.length > 120) return false;
+  if (v.length < 3 || v.length > 120) return false;
   if (v.includes("@")) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   }
   const digits = digitsOnly(v);
   if (digits.length === 11) return true; // ABN
-  // AU mobile: 04xxxxxxxx or +614xxxxxxxx
+  // AU mobile: 04xxxxxxxx, 4xxxxxxxx, +614xxxxxxxx
+  if (digits.length === 9 && digits.startsWith("4")) return true;
   if (digits.length === 10 && digits.startsWith("04")) return true;
   if (digits.length === 11 && digits.startsWith("614")) return true;
-  return false;
+  // Organisation PayID / other alias strings
+  return /^[a-zA-Z0-9][a-zA-Z0-9 ._'&\-]{1,119}$/.test(v);
 }
 
 export function isPixKey(value: string): boolean {

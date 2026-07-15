@@ -29,13 +29,18 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
   function onSubmit(formData: FormData) {
     setMessage(null);
     startTransition(async () => {
-      const result = await save(formData);
-      if (result && "error" in result && result.error) {
-        setMessage(result.error);
-        return;
+      try {
+        const result = await save(formData);
+        if (result && "error" in result && result.error) {
+          setMessage(result.error);
+          return;
+        }
+        setMessage("Saved.");
+        router.refresh();
+      } catch (error) {
+        console.error("Stand save failed", error);
+        setMessage("Could not save stand. Try again.");
       }
-      setMessage("Saved.");
-      router.refresh();
     });
   }
 
