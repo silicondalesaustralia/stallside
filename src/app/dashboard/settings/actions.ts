@@ -45,3 +45,23 @@ export async function updateAlertSettings(formData: FormData) {
   revalidatePath("/dashboard/settings");
   return { ok: true as const };
 }
+
+export async function updateBusinessName(formData: FormData) {
+  const { owner } = await requireOwner();
+  const businessName = String(formData.get("businessName") ?? "").trim();
+  if (businessName.length < 2) {
+    return { error: "Enter a business name (at least 2 characters)." };
+  }
+  if (businessName.length > 120) {
+    return { error: "Business name is too long." };
+  }
+
+  await prisma.owner.update({
+    where: { id: owner.id },
+    data: { businessName },
+  });
+
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard");
+  return { ok: true as const };
+}

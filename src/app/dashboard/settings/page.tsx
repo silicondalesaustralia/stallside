@@ -5,6 +5,7 @@ import { MONTHLY_FEE_CENTS } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
 import { Role } from "@/generated/prisma/client";
 import AlertSettingsForm from "./AlertSettingsForm";
+import BusinessNameForm from "./BusinessNameForm";
 
 export default async function SettingsPage() {
   const { user, owner } = await requireOwner();
@@ -16,10 +17,10 @@ export default async function SettingsPage() {
         <p className="mt-1 text-[var(--muted)]">Account and billing for your farm stand business.</p>
       </div>
 
-      <section className="space-y-2 text-sm">
+      <section className="space-y-3 text-sm">
         <h2 className="text-lg font-semibold">Account</h2>
         <p>Signed in as {user.email}</p>
-        <p>Business: {owner.businessName}</p>
+        <BusinessNameForm businessName={owner.businessName} />
         {user.role === Role.ADMIN ? (
           <p>
             <Link href="/admin" className="text-[var(--leaf-dark)] underline">
