@@ -32,9 +32,17 @@ export default function ContactForm({
 
   return (
     <form action={action} className="space-y-4">
-      <div className="absolute -left-[9999px]" aria-hidden>
-        <label htmlFor="company">Company</label>
-        <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+      <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>
+        <label htmlFor="stallside_hp">Leave blank</label>
+        <input
+          id="stallside_hp"
+          name="stallside_hp"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          data-1p-ignore
+          data-lpignore="true"
+        />
       </div>
 
       <div>
