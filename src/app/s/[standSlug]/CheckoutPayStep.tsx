@@ -3,8 +3,10 @@
 type CheckoutPayStepProps = {
   cardEnabled: boolean;
   paypalEnabled: boolean;
+  localTransferLabel: string | null;
   pending: boolean;
   onCash: () => void;
+  onLocalTransfer: () => void;
   onCard: () => void;
   onPayPal: () => void;
   onBack: () => void;
@@ -13,8 +15,10 @@ type CheckoutPayStepProps = {
 export default function CheckoutPayStep({
   cardEnabled,
   paypalEnabled,
+  localTransferLabel,
   pending,
   onCash,
+  onLocalTransfer,
   onCard,
   onPayPal,
   onBack,
@@ -30,6 +34,16 @@ export default function CheckoutPayStep({
       >
         Pay cash
       </button>
+      {localTransferLabel ? (
+        <button
+          type="button"
+          disabled={pending}
+          onClick={onLocalTransfer}
+          className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-left text-xl font-semibold disabled:opacity-50"
+        >
+          {localTransferLabel}
+        </button>
+      ) : null}
       {cardEnabled ? (
         <button
           type="button"

@@ -6,6 +6,7 @@ import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesSeriesChart from "@/components/SalesSeriesChart";
 import { resolveDateWindow } from "@/lib/date-range";
 import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
+import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
 import { buildSalesSeries } from "@/lib/sales-series";
 
 export default async function OrdersPage({
@@ -65,7 +66,7 @@ export default async function OrdersPage({
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Orders</h1>
         <p className="mt-1 text-[var(--muted)]">
-          {window.label} - cash, card, and PayPal sales at your stands.
+          {window.label} - cash, PayID, card, and PayPal sales at your stands.
         </p>
       </div>
 
@@ -84,7 +85,7 @@ export default async function OrdersPage({
           previous={previous.salesCents}
         />
         <DashboardStat
-          label="Cash"
+          label="Cash / PayID"
           value={formatMoney(current.cashCents, current.currency)}
           current={current.cashCents}
           previous={previous.cashCents}
@@ -119,8 +120,8 @@ export default async function OrdersPage({
               </div>
               <p className="mt-1 text-[var(--muted)]">
                 {order.createdAt.toLocaleString()} ·{" "}
-                {order.paymentMethod.toLowerCase()} ·{" "}
-                {order.paymentStatus.toLowerCase()}
+                {orderPaymentLabel(order.paymentMethod, order.localTransferMethodId)} ·{" "}
+                {paymentStatusNote(order.paymentStatus)}
                 {order.receiptEmail ? ` · ${order.receiptEmail}` : ""}
               </p>
               <p className="mt-2 text-[var(--muted)]">

@@ -2,9 +2,13 @@
 
 import { useMemo, useState, useTransition } from "react";
 import CheckoutCashConfirm from "./CheckoutCashConfirm";
+import CheckoutLocalTransferConfirm from "./CheckoutLocalTransferConfirm";
 import CheckoutPayStep from "./CheckoutPayStep";
 import TapAndGoInterestCta from "./TapAndGoInterestCta";
-import { confirmCashCheckout } from "./actions";
+import {
+  confirmCashCheckout,
+  confirmLocalTransferCheckout,
+} from "./actions";
 import { startCardCheckout } from "./digital-checkout-actions";
 import { startPayPalCheckout } from "./paypal-checkout-actions";
 
@@ -16,6 +20,13 @@ type ProductRow = {
   stockQuantity: number;
   label: string;
   soldOut: boolean;
+};
+
+type LocalTransferInfo = {
+  methodId: string;
+  buttonLabel: string;
+  aliasLabel: string;
+  alias: string;
 };
 
 function money(cents: number, currency: string) {
@@ -37,15 +48,20 @@ export default function PublicCart({
   products,
   cardEnabled,
   paypalEnabled,
+  localTransfer,
 }: {
   standSlug: string;
   currency: string;
   products: ProductRow[];
   cardEnabled: boolean;
   paypalEnabled: boolean;
+  localTransfer: LocalTransferInfo | null;
 }) {
   const [qty, setQty] = useState<Record<string, number>>({});
-  const [step, setStep] = useState<"cart" | "pay" | "cash-confirm">("cart");
+  const [step, setStep] = useState<"cart" | "pay" | "cash-confirm" | "lt-confirm">(
+    "cart",
+  );
+  const [paidVia, setPaidVia] = useState<"cash" | "local_transfer" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -70,6 +86,12 @@ export default function PublicCart({
     });
   }
 
+  function finishOk(via: "cash" | "local_transfer") {
+    setPaidVia(via);
+    setDone(true);
+    setQty({});
+  }
+
   function payCash() {
     setError(null);
     startTransition(async () => {
@@ -78,10 +100,22 @@ export default function PublicCart({
         setError(result.error);
         return;
       }
-      if ("orderNumber" in result) {
-        setDone(true);
-        setQty({});
+      if ("orderNumber" in result) finishOk("cash");
+    });
+  }
+
+  function payLocalTransfer() {
+    setError(null);
+    startTransition(async () => {
+      const result = await confirmLocalTransferCheckout({
+        standSlug,
+        items: payload,
+      });
+      if ("error" in result && result.error) {
+        setError(result.error);
+        return;
       }
+      if ("orderNumber" in result) finishOk("local_transfer");
     });
   }
 
@@ -126,7 +160,9 @@ export default function PublicCart({
             Thank you
           </h2>
           <p className="mt-3 text-xl text-[var(--muted)]">
-            Cash payment confirmed. You&apos;re all set.
+            {paidVia === "local_transfer"
+              ? "Marked as paid. The owner will see this in their account shortly."
+              : "Cash payment confirmed. You're all set."}
           </p>
         </div>
         {!cardEnabled && !paypalEnabled ? (
@@ -193,8 +229,10 @@ export default function PublicCart({
         <CheckoutPayStep
           cardEnabled={cardEnabled}
           paypalEnabled={paypalEnabled}
+          localTransferLabel={localTransfer?.buttonLabel ?? null}
           pending={pending}
           onCash={() => setStep("cash-confirm")}
+          onLocalTransfer={() => setStep("lt-confirm")}
           onCard={payCard}
           onPayPal={payPayPal}
           onBack={() => setStep("cart")}
@@ -206,6 +244,18 @@ export default function PublicCart({
           amountLabel={money(total, currency)}
           pending={pending}
           onConfirm={payCash}
+          onBack={() => setStep("pay")}
+        />
+      ) : null}
+
+      {step === "lt-confirm" && localTransfer ? (
+        <CheckoutLocalTransferConfirm
+          amountLabel={money(total, currency)}
+          aliasLabel={localTransfer.aliasLabel}
+          alias={localTransfer.alias}
+          buttonLabel={localTransfer.buttonLabel}
+          pending={pending}
+          onConfirm={payLocalTransfer}
           onBack={() => setStep("pay")}
         />
       ) : null}

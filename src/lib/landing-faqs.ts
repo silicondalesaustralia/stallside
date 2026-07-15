@@ -17,12 +17,17 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "What's the difference between Cash and Card / PayPal?",
     answer:
-      "Cash (live today): shoppers confirm they left cash in your slot or cash box. Every sale is logged and you get alerts. No card reader, no bank onboarding. Card / PayPal (coming soon): same QR flow, but shoppers pay by Tap & Go, Apple Pay, Google Pay, or PayPal on their phone. No Stallside transaction fees on either plan.",
+      "Cash (live today): shoppers confirm they left cash in your slot or cash box, or paid you by PayID. Every sale is logged and you get alerts. No card reader, no bank onboarding for Stallside. Card / PayPal (coming soon): same QR flow, but shoppers pay by Tap & Go, Apple Pay, Google Pay, or PayPal on their phone. No Stallside transaction fees on either plan.",
+  },
+  {
+    question: "Can customers pay by bank transfer / PayID?",
+    answer:
+      "Yes on Australian (AUD) stands. Add your PayID in stand settings and shoppers can choose Pay with PayID at checkout. They pay in their own banking app, then tap I've paid. Stallside marks the sale and updates stock. The payment is customer-confirmed, not verified by us. Money goes straight to your account.",
   },
   {
     question: "How does QR checkout work?",
     answer:
-      "You print a QR poster for each stand. Shoppers open it on their phone and select items. On the Cash plan they confirm payment at the stand and you are alerted. Card and PayPal (coming soon) will let them pay digitally in the same checkout. Stock updates either way.",
+      "You print a QR poster for each stand. Shoppers open it on their phone and select items. On the Cash plan they confirm cash or PayID at the stand and you are alerted. Card and PayPal (coming soon) will let them pay digitally in the same checkout. Stock updates either way.",
   },
   {
     question: "How much does it cost?",

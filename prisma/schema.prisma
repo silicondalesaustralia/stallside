@@ -14,6 +14,7 @@ enum Role {
 
 enum PaymentMethod {
   CASH
+  LOCAL_TRANSFER
   CARD
   PAYPAL
 }
@@ -36,6 +37,7 @@ enum ReceiptChannel {
 enum InventorySource {
   OWNER_MANUAL
   ORDER_CASH
+  ORDER_LOCAL_TRANSFER
   ORDER_CARD
   ORDER_PAYPAL
   SYSTEM
@@ -182,6 +184,9 @@ model Stand {
   qrSignMessage      String?
   qrCallout          String?
   currency           String               @default("AUD")
+  /** PayID / Pix / UPI alias shown at checkout (owner-direct; not verified). */
+  localTransferAlias String?
+  localTransferMethodId String?
   showExactStock     Boolean              @default(false)
   isActive           Boolean              @default(true)
   products           Product[]
@@ -224,6 +229,8 @@ model Order {
   orderNumber             String         @unique
   paymentMethod           PaymentMethod
   paymentStatus           PaymentStatus
+  /** payid | pix | upi when paymentMethod is LOCAL_TRANSFER */
+  localTransferMethodId   String?
   subtotalCents           Int
   totalCents              Int
   currency                String

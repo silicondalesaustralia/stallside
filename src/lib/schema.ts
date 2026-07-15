@@ -1,4 +1,4 @@
-import { APP_NAME, APP_POSITIONING, APP_TAGLINE } from "@/lib/constants";
+import { APP_NAME, APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
 import {
   LEGAL_ABN,
   LEGAL_ADDRESS,
@@ -46,7 +46,7 @@ export function websiteSchema() {
     "@id": `${SITE_URL}/#website`,
     url: SITE_URL,
     name: APP_NAME,
-    description: `${APP_POSITIONING} ${APP_TAGLINE}`,
+    description: APP_SEO_DESCRIPTION,
     publisher: { "@id": `${SITE_URL}/#organization` },
     inLanguage: "en-AU",
   };
@@ -61,7 +61,7 @@ export function softwareApplicationSchema() {
     applicationSubCategory: "SaaS",
     operatingSystem: "Web, iOS, Android",
     url: SITE_URL,
-    description: `${APP_POSITIONING} QR self-checkout and inventory for unmanned farm stands.`,
+    description: APP_SEO_DESCRIPTION,
     offers: BILLING_CURRENCIES.map((currency) => ({
       "@type": "Offer",
       price: (CASH_PLAN_BY_CURRENCY[currency] / 100).toFixed(2),
@@ -116,8 +116,8 @@ export function homeGraphSchema(faqs: FaqItem[]) {
       faqPageSchema(faqs),
       webPageSchema({
         path: "/",
-        name: `${APP_NAME} · ${APP_TAGLINE}`,
-        description: `${APP_POSITIONING} ${APP_TAGLINE}`,
+        name: APP_SEO_TITLE,
+        description: APP_SEO_DESCRIPTION,
       }),
     ],
   };

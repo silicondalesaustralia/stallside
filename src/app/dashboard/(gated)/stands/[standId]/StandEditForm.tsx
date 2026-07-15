@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { CURRENCIES } from "@/lib/constants";
 import { updateStand } from "../actions";
+import LocalTransferAliasFields from "./LocalTransferAliasFields";
 
 type StandFields = {
   id: string;
@@ -12,6 +13,8 @@ type StandFields = {
   description: string | null;
   locationLabel: string | null;
   currency: string;
+  localTransferAlias: string | null;
+  localTransferMethodId: string | null;
   showExactStock: boolean;
   isActive: boolean;
 };
@@ -19,6 +22,7 @@ type StandFields = {
 export default function StandEditForm({ stand }: { stand: StandFields }) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
+  const [currency, setCurrency] = useState(stand.currency);
   const [pending, startTransition] = useTransition();
   const save = updateStand.bind(null, stand.id);
 
@@ -77,7 +81,8 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
         <span className="font-medium">Currency</span>
         <select
           name="currency"
-          defaultValue={stand.currency}
+          value={currency}
+          onChange={(event) => setCurrency(event.target.value)}
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         >
           {CURRENCIES.map((c) => (
@@ -87,6 +92,11 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
           ))}
         </select>
       </label>
+      <LocalTransferAliasFields
+        currency={currency}
+        alias={stand.localTransferAlias}
+        methodId={stand.localTransferMethodId}
+      />
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"

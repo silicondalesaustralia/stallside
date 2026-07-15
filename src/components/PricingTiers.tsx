@@ -85,10 +85,11 @@ export default function PricingTiers() {
             <span className="text-base font-normal text-[var(--muted)]"> /mo per site</span>
           </p>
           <p className="mt-4 text-sm text-[var(--muted)]">
-            Take cash. Track stock. Print QR posters. Sale and low-stock alerts.
+            Take cash and PayID bank transfers. Track stock. Print QR posters. Sale and
+            low-stock alerts.
           </p>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Set up in two minutes. No paperwork, no bank details.
+            PayID lands in your account with no fee. Set up in two minutes.
           </p>
           <Link
             href="/signup"

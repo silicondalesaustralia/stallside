@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { CURRENCIES } from "@/lib/constants";
 import { uniqueStandSlug } from "@/lib/slug";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
+import { localTransferForCurrency } from "@/lib/local-transfer";
 
 const standSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -86,6 +87,18 @@ export async function updateStand(standId: string, formData: FormData) {
     slug = requestedSlug;
   }
 
+  const method = localTransferForCurrency(parsed.data.currency);
+  const aliasRaw = String(formData.get("localTransferAlias") ?? "").trim();
+  let localTransferAlias: string | null = null;
+  let localTransferMethodId: string | null = null;
+  if (method && aliasRaw) {
+    if (!method.validate(aliasRaw)) {
+      return { error: `Check ${method.aliasLabel.toLowerCase()} and try again.` };
+    }
+    localTransferAlias = aliasRaw;
+    localTransferMethodId = method.id;
+  }
+
   await prisma.stand.update({
     where: { id: standId },
     data: {
@@ -94,6 +107,8 @@ export async function updateStand(standId: string, formData: FormData) {
       description: parsed.data.description,
       locationLabel: parsed.data.locationLabel,
       currency: parsed.data.currency,
+      localTransferAlias,
+      localTransferMethodId,
       showExactStock: parsed.data.showExactStock ?? false,
       isActive: parsed.data.isActive ?? true,
     },
@@ -102,6 +117,7 @@ export async function updateStand(standId: string, formData: FormData) {
   revalidatePath("/dashboard/stands");
   revalidatePath(`/dashboard/stands/${standId}`);
   revalidatePath(`/dashboard/stands/${standId}/qr`);
+  revalidatePath(`/s/${slug}`);
   return { ok: true as const };
 }
 

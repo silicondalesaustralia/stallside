@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import BrandMark from "@/components/BrandMark";
+import { localTransferForCurrency } from "@/lib/local-transfer";
 import PublicCart from "./PublicCart";
 
 function stockLabel(showExact: boolean, quantity: number, threshold: number): string {
@@ -29,6 +30,18 @@ export default async function PublicStandPage({
   });
 
   if (!stand || !stand.isActive) notFound();
+
+  const method = localTransferForCurrency(stand.currency);
+  const alias = stand.localTransferAlias?.trim() ?? "";
+  const localTransfer =
+    method && alias && stand.localTransferMethodId === method.id
+      ? {
+          methodId: method.id,
+          buttonLabel: method.buttonLabel,
+          aliasLabel: method.aliasLabel,
+          alias,
+        }
+      : null;
 
   const products = stand.products.map((p) => ({
     id: p.id,
@@ -63,6 +76,7 @@ export default async function PublicStandPage({
             paypalEnabled={Boolean(
               stand.owner.paypalMerchantId && stand.owner.paypalPaymentsEnabled,
             )}
+            localTransfer={localTransfer}
           />
         </>
       )}

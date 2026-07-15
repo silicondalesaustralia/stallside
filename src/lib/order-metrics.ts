@@ -21,7 +21,10 @@ export function summarizeOrders(orders: OrderMetricRow[]) {
   for (const order of orders) {
     currency = order.currency || currency;
     salesCents += order.totalCents;
-    if (order.paymentMethod === PaymentMethod.CASH) {
+    if (
+      order.paymentMethod === PaymentMethod.CASH ||
+      order.paymentMethod === PaymentMethod.LOCAL_TRANSFER
+    ) {
       cashCents += order.totalCents;
     } else {
       digitalCents += order.totalCents;

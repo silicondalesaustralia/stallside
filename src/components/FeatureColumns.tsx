@@ -1,7 +1,7 @@
 const OWNER_LIVE = [
   "Unlimited products, real stock counts",
   "Printable QR poster - print, download, copy",
-  "Cash payments, customer-confirmed",
+  "Cash and PayID payments, customer-confirmed",
   "Sale alerts - email and push",
   "Low-stock alerts before you run out",
   "Restock from your phone, in the field",
@@ -19,7 +19,7 @@ const OWNER_SOON = [
 const CUSTOMER_LIVE = [
   "Scan with your phone camera. No app.",
   "See what's there and what's left.",
-  "Pay cash and confirm - the owner knows.",
+  "Pay cash or PayID and confirm - the owner knows.",
 ] as const;
 
 const CUSTOMER_SOON = [

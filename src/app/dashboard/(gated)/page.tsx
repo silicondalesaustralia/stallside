@@ -105,7 +105,7 @@ export default async function DashboardPage({
           previous={previous.salesCents}
         />
         <DashboardStat
-          label="Cash"
+          label="Cash / PayID"
           value={formatMoney(current.cashCents, current.currency)}
           current={current.cashCents}
           previous={previous.cashCents}

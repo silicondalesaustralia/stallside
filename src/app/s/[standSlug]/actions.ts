@@ -14,10 +14,51 @@ import {
 } from "@/lib/checkout";
 import { notifySale } from "@/lib/notify";
 import { notifyTapAndGoInterest } from "@/lib/notify-tap-and-go";
+import { localTransferForCurrency } from "@/lib/local-transfer";
 
 export async function confirmCashCheckout(input: {
   standSlug: string;
   items: CartItemInput[];
+}) {
+  return confirmDeclaredCheckout({
+    ...input,
+    paymentMethod: PaymentMethod.CASH,
+    inventorySource: InventorySource.ORDER_CASH,
+    reason: "Cash sale",
+  });
+}
+
+export async function confirmLocalTransferCheckout(input: {
+  standSlug: string;
+  items: CartItemInput[];
+}) {
+  const loaded = await loadStandCart(input.standSlug, input.items);
+  if ("error" in loaded) return { error: loaded.error };
+
+  const method = localTransferForCurrency(loaded.stand.currency);
+  const alias = loaded.stand.localTransferAlias?.trim();
+  if (!method || !alias || loaded.stand.localTransferMethodId !== method.id) {
+    return { error: "Local transfer is not available at this stand." };
+  }
+
+  return confirmDeclaredCheckout({
+    ...input,
+    paymentMethod: PaymentMethod.LOCAL_TRANSFER,
+    inventorySource: InventorySource.ORDER_LOCAL_TRANSFER,
+    reason: `${method.buttonLabel} sale`,
+    localTransferMethodId: method.id,
+  });
+}
+
+async function confirmDeclaredCheckout(input: {
+  standSlug: string;
+  items: CartItemInput[];
+  paymentMethod: typeof PaymentMethod.CASH | typeof PaymentMethod.LOCAL_TRANSFER;
+  inventorySource:
+    | typeof InventorySource.ORDER_CASH
+    | typeof InventorySource.ORDER_LOCAL_TRANSFER;
+  reason: string;
+  localTransferMethodId?: string;
 }) {
   try {
     const loaded = await loadStandCart(input.standSlug, input.items);
@@ -33,8 +74,9 @@ export async function confirmCashCheckout(input: {
             standId: stand.id,
             ownerId: stand.ownerId,
             orderNumber,
-            paymentMethod: PaymentMethod.CASH,
+            paymentMethod: input.paymentMethod,
             paymentStatus: PaymentStatus.CUSTOMER_CONFIRMED,
+            localTransferMethodId: input.localTransferMethodId ?? null,
             subtotalCents: totalCents,
             totalCents,
             currency: stand.currency,
@@ -50,8 +92,8 @@ export async function confirmCashCheckout(input: {
           ownerId: stand.ownerId,
           standId: stand.id,
           orderId: created.id,
-          source: InventorySource.ORDER_CASH,
-          reason: "Cash sale",
+          source: input.inventorySource,
+          reason: input.reason,
         });
 
         return created;
@@ -70,18 +112,18 @@ export async function confirmCashCheckout(input: {
     if (error instanceof Error && error.message === "STOCK") {
       return { error: "Stock changed - refresh and try again." };
     }
-    console.error("Cash checkout failed", error);
+    console.error("Declared checkout failed", error);
     const detail =
       error instanceof Error
         ? error.message
-        : "Could not complete cash checkout.";
+        : "Could not complete checkout.";
     if (/timed out|timeout|P2028|can't reach|P1001/i.test(detail)) {
       return {
         error:
           "Checkout timed out talking to the database. Check DATABASE_URL / connection and try again.",
       };
     }
-    return { error: `Could not complete cash checkout. (${detail})` };
+    return { error: `Could not complete checkout. (${detail})` };
   }
 }
 

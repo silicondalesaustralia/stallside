@@ -67,6 +67,7 @@ export async function decrementStockForOrder(
     orderId: string;
     source:
       | typeof InventorySource.ORDER_CASH
+      | typeof InventorySource.ORDER_LOCAL_TRANSFER
       | typeof InventorySource.ORDER_CARD
       | typeof InventorySource.ORDER_PAYPAL;
     reason: string;

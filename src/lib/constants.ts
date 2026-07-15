@@ -5,6 +5,11 @@ export const APP_POSITIONING =
   "Take payment at any unattended stand: produce, firewood, flowers, car parks, and anything else you leave out to sell.";
 export const APP_HERO_SUPPORT =
   "Print a QR, get paid, track every sale from your phone.";
+/** Browser tab + search title for the homepage */
+export const APP_SEO_TITLE = "Stallside · QR checkout for unattended stands";
+/** Meta description (~155 chars) */
+export const APP_SEO_DESCRIPTION =
+  "QR self-checkout for farm stands, honesty stalls, firewood, flowers, and car parks. Print a QR, get paid, track every sale from your phone.";
 
 /** Cash plan AUD list price — prefer cashPlanCents(currency) */
 export const CASH_PLAN_CENTS = 699;

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Bricolage_Grotesque, DM_Sans, Spline_Sans_Mono } from "next/font/google";
-import { APP_DOMAIN, APP_NAME, APP_POSITIONING } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME, APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
 import NativeShellBootstrap from "@/components/NativeShellBootstrap";
 import NavigationBusy from "@/components/NavigationBusy";
 import "./globals.css";
@@ -26,10 +26,23 @@ const mono = Spline_Sans_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(`https://${APP_DOMAIN}`),
   title: {
-    default: APP_NAME,
+    default: APP_SEO_TITLE,
     template: `%s · ${APP_NAME}`,
   },
-  description: `${APP_POSITIONING} Scan, pay, sold.`,
+  description: APP_SEO_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    locale: "en_AU",
+    url: `https://${APP_DOMAIN}`,
+    siteName: APP_NAME,
+    title: APP_SEO_TITLE,
+    description: APP_SEO_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary",
+    title: APP_SEO_TITLE,
+    description: APP_SEO_DESCRIPTION,
+  },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
