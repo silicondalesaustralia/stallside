@@ -3,6 +3,7 @@ import { requireOwner } from "@/lib/session";
 import { logout } from "@/app/login/actions";
 import { MONTHLY_FEE_CENTS } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
+import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { Role } from "@/generated/prisma/client";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
@@ -16,6 +17,7 @@ export default async function SettingsPage() {
     email: user.email,
     role: user.role,
   });
+  const paypalConnectAvailable = isPayPalConnectAvailable();
 
   return (
     <main className="flex max-w-xl flex-col gap-8">
@@ -141,7 +143,7 @@ export default async function SettingsPage() {
         )}
       </section>
 
-      {cardTier ? (
+      {cardTier && paypalConnectAvailable ? (
         <section className="space-y-3 text-sm">
           <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
             <PaymentBrandIcon brand="paypal" className="size-6" />
@@ -168,6 +170,20 @@ export default async function SettingsPage() {
             <PaymentBrandIcon brand="paypal" className="size-5" />
             {owner.paypalMerchantId ? "Manage PayPal" : "Connect PayPal"}
           </Link>
+        </section>
+      ) : cardTier ? (
+        <section className="space-y-3 text-sm opacity-55">
+          <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+            <PaymentBrandIcon brand="paypal" className="size-6" />
+            PayPal Connect{" "}
+            <span className="text-sm font-medium text-[var(--muted)]">
+              · Coming soon
+            </span>
+          </h2>
+          <p className="text-[var(--muted)]">
+            PayPal checkout is not available yet. Card / Tap &amp; Go via Stripe
+            is live today.
+          </p>
         </section>
       ) : (
         <section className="space-y-3 text-sm opacity-55">

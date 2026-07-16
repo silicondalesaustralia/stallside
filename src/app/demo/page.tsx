@@ -93,10 +93,10 @@ export default async function DemoPage({
           </Link>
         </p>
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
-          Try the demo
+          Try the demo as a customer of your stall
         </h1>
         <p className="mt-3 max-w-2xl text-base leading-snug text-[var(--muted)]">
-          Pick your country to see a printable QR sign. Scan it on your phone,
+          Pick your country to see a printable QR sign. Scan it as a customer,
           or continue to the desktop phone checkout to walk through a sale.
         </p>
 
@@ -110,7 +110,7 @@ export default async function DemoPage({
         {region ? (
           <div className="mt-10">
             <p className="mb-3 text-sm font-semibold text-[var(--field)]">
-              2. Scan the QR
+              2. Scan the QR as the customer
             </p>
             {panel}
           </div>

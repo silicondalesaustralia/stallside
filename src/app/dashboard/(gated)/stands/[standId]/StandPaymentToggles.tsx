@@ -12,6 +12,7 @@ type StandPaymentTogglesProps = {
   acceptPayPal: boolean;
   cardReady: boolean;
   paypalReady: boolean;
+  paypalConnectAvailable: boolean;
   cardTier: boolean;
 };
 
@@ -24,6 +25,7 @@ export default function StandPaymentToggles({
   acceptPayPal,
   cardReady,
   paypalReady,
+  paypalConnectAvailable,
   cardTier,
 }: StandPaymentTogglesProps) {
   return (
@@ -108,20 +110,27 @@ export default function StandPaymentToggles({
           type="checkbox"
           name="acceptPayPal"
           defaultChecked={acceptPayPal}
-          disabled={!cardTier || !paypalReady}
+          disabled={!cardTier || !paypalReady || !paypalConnectAvailable}
           className="mt-1 size-4 disabled:opacity-50"
         />
         <span className="min-w-0">
           <span className="flex flex-wrap items-center gap-2 font-medium">
             <PaymentBrandIcon brand="paypal" />
             PayPal
+            {!paypalConnectAvailable && cardTier ? (
+              <span className="text-xs font-medium text-[var(--muted)]">
+                · Coming soon
+              </span>
+            ) : null}
           </span>
           <span className="mt-0.5 block text-[var(--muted)]">
             {!cardTier
               ? "Card plan feature."
-              : paypalReady
-                ? "All currencies, including USD."
-                : "Connect PayPal in Settings and turn it on first."}
+              : !paypalConnectAvailable
+                ? "PayPal checkout is coming soon."
+                : paypalReady
+                  ? "All currencies, including USD."
+                  : "Connect PayPal in Settings and turn it on first."}
           </span>
         </span>
       </label>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import DemoPhoneCheckout from "@/components/DemoPhoneCheckout";
+import DemoOwnerPhone from "@/components/DemoOwnerPhone";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import {
   DEMO_REGIONS,
@@ -10,15 +10,14 @@ import {
 } from "@/lib/demo";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
-import { standCheckoutUrl } from "@/lib/stand-qr";
 
 export const metadata: Metadata = {
-  title: "Demo checkout",
-  description: `Try ${APP_NAME} checkout in a phone frame — cash, PayID, or Stripe test cards.`,
-  alternates: { canonical: "/demo/phone" },
+  title: "Owner alert demo",
+  description: `See the sale notification stall owners get on ${APP_NAME}.`,
+  alternates: { canonical: "/demo/owner" },
 };
 
-export default async function DemoPhonePage({
+export default async function DemoOwnerPage({
   searchParams,
 }: {
   searchParams: Promise<{ region?: string }>;
@@ -41,8 +40,7 @@ export default async function DemoPhonePage({
             Pick a country first
           </h1>
           <p className="mt-3 text-[var(--muted)]">
-            Choose Australia, USA, or Rest of world on the demo page, then open
-            the phone checkout.
+            Complete a demo checkout, or choose a region on the demo page.
           </p>
           <Link
             href="/demo"
@@ -68,12 +66,12 @@ export default async function DemoPhonePage({
     <MarketingPageShell>
       <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
         <p className="text-sm text-[var(--muted)]">
-          <Link href={`/demo?region=${region}`} className="underline">
-            Back to QR sign
+          <Link href={`/demo/phone?region=${region}`} className="underline">
+            Back to customer checkout
           </Link>
         </p>
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
-          Phone checkout
+          Owner alert
         </h1>
         <p className="mt-2 text-base text-[var(--muted)]">
           {regionMeta?.standName ?? "Demo stand"} · {regionMeta?.label}
@@ -91,11 +89,10 @@ export default async function DemoPhonePage({
               body={`Create an active stand with slug “${slug}”, then refresh.`}
             />
           ) : (
-            <DemoPhoneCheckout
-              checkoutUrl={standCheckoutUrl(stand.slug)}
+            <DemoOwnerPhone
+              region={region}
               standName={stand.name}
               standSlug={stand.slug}
-              region={region}
             />
           )}
         </div>

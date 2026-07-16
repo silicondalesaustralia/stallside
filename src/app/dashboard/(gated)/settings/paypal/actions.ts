@@ -6,6 +6,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import {
   isPayPalConfigured,
+  isPayPalConnectAvailable,
   isPayPalDirectMode,
   paypalDirectMerchantId,
 } from "@/lib/paypal";
@@ -32,9 +33,16 @@ function assertCardTier(
   }
 }
 
+function assertPayPalConnectAvailable() {
+  if (!isPayPalConnectAvailable()) {
+    throw new Error("PayPal Connect is not available yet.");
+  }
+}
+
 export async function startPayPalConnect() {
   const { owner, user } = await requireOwner();
   assertCardTier(owner, user);
+  assertPayPalConnectAvailable();
   if (!isPayPalConfigured()) {
     throw new Error("PayPal is not configured on the server yet.");
   }
@@ -73,6 +81,7 @@ export async function startPayPalConnect() {
 export async function connectPayPalDirect() {
   const { owner, user } = await requireOwner();
   assertCardTier(owner, user);
+  assertPayPalConnectAvailable();
 
   const allowed =
     isPayPalDirectMode() ||
@@ -102,6 +111,7 @@ export async function connectPayPalDirect() {
 export async function refreshPayPalStatus(formData?: FormData) {
   const { owner, user } = await requireOwner();
   assertCardTier(owner, user);
+  assertPayPalConnectAvailable();
   if (!isPayPalConfigured()) {
     redirect("/dashboard/settings/paypal");
   }
@@ -140,6 +150,7 @@ export async function refreshPayPalStatus(formData?: FormData) {
 export async function setPayPalPaymentsEnabled(formData: FormData) {
   const { owner, user } = await requireOwner();
   assertCardTier(owner, user);
+  assertPayPalConnectAvailable();
   const enabled = formData.get("enabled") === "1";
 
   if (enabled && (!owner.paypalMerchantId || !owner.paypalOnboardingComplete)) {

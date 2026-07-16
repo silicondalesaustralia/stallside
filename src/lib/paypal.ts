@@ -14,6 +14,16 @@ export function isPayPalConfigured(): boolean {
   );
 }
 
+export function isPayPalLiveMode(): boolean {
+  return (process.env.PAYPAL_MODE || "sandbox").toLowerCase() === "live";
+}
+
+/** Owner Connect UI — off in live until PAYPAL_CONNECT_ENABLED=1. */
+export function isPayPalConnectAvailable(): boolean {
+  if (!isPayPalLiveMode()) return true;
+  return process.env.PAYPAL_CONNECT_ENABLED === "1";
+}
+
 export function paypalApiBase(): string {
   const mode = (process.env.PAYPAL_MODE || "sandbox").toLowerCase();
   return mode === "live"

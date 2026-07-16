@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import BrandMark from "@/components/BrandMark";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { standOffersCard } from "@/lib/stand-payment-brands";
+import { demoRegionForStandSlug, isDemoStandSlug } from "@/lib/demo";
 import PublicCart from "./PublicCart";
 
 function stockLabel(showExact: boolean, quantity: number, threshold: number): string {
@@ -31,6 +32,10 @@ export default async function PublicStandPage({
   });
 
   if (!stand || !stand.isActive) notFound();
+
+  const demoRegion = isDemoStandSlug(stand.slug)
+    ? demoRegionForStandSlug(stand.slug)
+    : null;
 
   const method = localTransferForCurrency(stand.currency);
   const alias = stand.localTransferAlias?.trim() ?? "";
@@ -92,6 +97,7 @@ export default async function PublicStandPage({
               (process.env.PAYPAL_MODE || "sandbox").toLowerCase() !== "live"
             }
             localTransfer={localTransfer}
+            demoRegion={demoRegion}
           />
         </>
       )}

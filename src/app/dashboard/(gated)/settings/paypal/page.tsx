@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import {
   isPayPalConfigured,
+  isPayPalConnectAvailable,
   isPayPalDirectMode,
   paypalDirectMerchantId,
 } from "@/lib/paypal";
@@ -61,6 +62,7 @@ export default async function PayPalSettingsPage({
   }
 
   const configured = isPayPalConfigured();
+  const connectAvailable = isPayPalConnectAvailable();
   const connected = Boolean(owner.paypalMerchantId);
   const ready = owner.paypalOnboardingComplete;
   const partnerDenied = params.partner === "denied";
@@ -75,12 +77,19 @@ export default async function PayPalSettingsPage({
           Settings
         </Link>
       </p>
-      <div>
+      <div className={connectAvailable ? undefined : "opacity-55"}>
         <h1 className="text-3xl font-semibold tracking-tight">PayPal Connect</h1>
         <p className="mt-2 text-[var(--muted)]">
           Connect PayPal so customers can pay after scanning your Stallside QR.
         </p>
       </div>
+
+      {!connectAvailable ? (
+        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
+          PayPal Connect is coming soon. Card / Tap &amp; Go via Stripe is live
+          today.
+        </p>
+      ) : null}
 
       {partnerDenied || partnerDirectHint ? (
         <p className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
@@ -113,9 +122,9 @@ export default async function PayPalSettingsPage({
         </p>
       ) : null}
 
-      {cardTier ? <PayPalWarnings billingCurrency={owner.billingCurrency} /> : null}
+      {cardTier && connectAvailable ? <PayPalWarnings billingCurrency={owner.billingCurrency} /> : null}
 
-      {!configured ? (
+      {!configured && connectAvailable ? (
         <p className="text-sm text-red-700">
           Add <code className="rounded bg-black/5 px-1">PAYPAL_CLIENT_ID</code>,{" "}
           <code className="rounded bg-black/5 px-1">PAYPAL_CLIENT_SECRET</code>,
@@ -128,7 +137,9 @@ export default async function PayPalSettingsPage({
         </p>
       ) : null}
 
-      <section className="space-y-2 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+      <section
+        className={`space-y-2 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm${connectAvailable ? "" : " opacity-55"}`}
+      >
         <p>
           Merchant ID:{" "}
           {owner.paypalMerchantId ? (
@@ -144,7 +155,7 @@ export default async function PayPalSettingsPage({
         </p>
       </section>
 
-      {cardTier ? (
+      {cardTier && connectAvailable ? (
         <div className="flex flex-wrap gap-3">
           <form action={startPayPalConnect}>
             <button
@@ -179,7 +190,7 @@ export default async function PayPalSettingsPage({
         </div>
       ) : null}
 
-      {cardTier && connected && ready ? (
+      {cardTier && connectAvailable && connected && ready ? (
         <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
           <p className="font-semibold">Show PayPal at checkout</p>
           <p className="text-[var(--muted)]">

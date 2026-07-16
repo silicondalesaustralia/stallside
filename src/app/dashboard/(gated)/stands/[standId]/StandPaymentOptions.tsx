@@ -17,6 +17,7 @@ export type StandPaymentOptionsProps = {
   acceptPayPal: boolean;
   cardReady: boolean;
   paypalReady: boolean;
+  paypalConnectAvailable: boolean;
   cardTier: boolean;
 };
 
@@ -31,6 +32,7 @@ export default function StandPaymentOptions({
   acceptPayPal,
   cardReady,
   paypalReady,
+  paypalConnectAvailable,
   cardTier,
 }: StandPaymentOptionsProps) {
   const router = useRouter();
@@ -85,6 +87,7 @@ export default function StandPaymentOptions({
           acceptPayPal={acceptPayPal}
           cardReady={cardReady}
           paypalReady={paypalReady}
+          paypalConnectAvailable={paypalConnectAvailable}
           cardTier={cardTier}
         />
         {message ? <p className="text-sm text-[var(--muted)]">{message}</p> : null}

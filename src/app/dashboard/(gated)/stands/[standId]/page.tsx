@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import PaymentIconRow from "@/components/PaymentIconRow";
@@ -37,6 +38,7 @@ export default async function StandDetailPage({
       owner.paypalOnboardingComplete &&
       owner.paypalPaymentsEnabled,
   );
+  const paypalConnectAvailable = isPayPalConnectAvailable();
   const paymentBrands = standPaymentBrands(stand, {
     ...owner,
     user: { email: user.email, role: user.role },
@@ -108,6 +110,7 @@ export default async function StandDetailPage({
         acceptPayPal={stand.acceptPayPal}
         cardReady={cardReady}
         paypalReady={paypalReady}
+        paypalConnectAvailable={paypalConnectAvailable}
         cardTier={cardTier}
       />
 

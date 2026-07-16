@@ -46,7 +46,7 @@ export default function DemoStandPanel({
           href={`/demo/phone?region=${region}`}
           className="inline-flex flex-1 items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]"
         >
-          Try checkout on phone
+          Try checkout on phone as a customer
         </Link>
         <a
           href={checkoutUrl}
@@ -54,12 +54,12 @@ export default function DemoStandPanel({
           rel="noreferrer"
           className="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] px-4 py-3 text-sm font-semibold text-[var(--field)]"
         >
-          Open checkout full screen
+          Open checkout full screen as a customer
         </a>
       </div>
       <p className="text-center text-sm text-[var(--muted)]">
-        Scan the QR on your real phone, or open the desktop phone demo to walk
-        through a sale and owner alert.
+        Scan the QR on your real phone as a customer, or open the desktop phone
+        demo — then see the sale alert on the stall owner&apos;s phone.
       </p>
     </div>
   );

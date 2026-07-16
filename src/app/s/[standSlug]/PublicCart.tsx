@@ -9,7 +9,8 @@ import {
   confirmCashCheckout,
   confirmLocalTransferCheckout,
 } from "./actions";
-import { isEmbeddedCheckout, notifyDemoSale } from "@/lib/demo-sale-message";
+import { isEmbeddedCheckout, notifyDemoSale, storePendingDemoSale } from "@/lib/demo-sale-message";
+import type { DemoRegion } from "@/lib/demo";
 import { startCardCheckout } from "./digital-checkout-actions";
 
 type ProductRow = {
@@ -53,6 +54,7 @@ export default function PublicCart({
   paypalMerchantId,
   paypalSandbox,
   localTransfer,
+  demoRegion,
 }: {
   standSlug: string;
   currency: string;
@@ -64,6 +66,7 @@ export default function PublicCart({
   paypalMerchantId: string | null;
   paypalSandbox: boolean;
   localTransfer: LocalTransferInfo | null;
+  demoRegion?: DemoRegion | null;
 }) {
   const [qty, setQty] = useState<Record<string, number>>({});
   const [step, setStep] = useState<"cart" | "pay" | "cash-confirm" | "lt-confirm">(
@@ -96,15 +99,20 @@ export default function PublicCart({
   }
 
   function finishOk(via: "cash" | "local_transfer") {
+    setQty({});
+    const sale = { standSlug, via, totalCents: total, currency };
+    if (demoRegion) {
+      storePendingDemoSale(sale);
+      if (isEmbeddedCheckout()) {
+        notifyDemoSale(sale);
+        return;
+      }
+      window.location.href = `/demo/owner?region=${demoRegion}`;
+      return;
+    }
     setPaidVia(via);
     setDone(true);
-    setQty({});
-    notifyDemoSale({
-      standSlug,
-      via,
-      totalCents: total,
-      currency,
-    });
+    notifyDemoSale(sale);
   }
 
   function payCash() {
@@ -241,7 +249,7 @@ export default function PublicCart({
         <p className="rounded-lg border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--ink)]">
           Stripe Checkout opened in a new tab. Pay with{" "}
           <span className="font-receipt">4242 4242 4242 4242</span> — when done,
-          the sale alert appears on the demo phone.
+          you&apos;ll see the alert on the stall owner&apos;s phone.
         </p>
       ) : null}
 

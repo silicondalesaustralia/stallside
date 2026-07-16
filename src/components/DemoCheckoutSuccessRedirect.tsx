@@ -24,14 +24,14 @@ export default function DemoCheckoutSuccessRedirect({
   useEffect(() => {
     storePendingDemoSale({ standSlug, via, totalCents, currency });
     const timer = setTimeout(() => {
-      router.replace(`/demo/phone?region=${region}`);
+      router.replace(`/demo/owner?region=${region}`);
     }, 1600);
     return () => clearTimeout(timer);
   }, [region, standSlug, via, totalCents, currency, router]);
 
   return (
     <p className="mt-4 text-center text-sm text-[var(--muted)]">
-      Returning to phone demo…
+      Opening stall owner&apos;s phone…
     </p>
   );
 }

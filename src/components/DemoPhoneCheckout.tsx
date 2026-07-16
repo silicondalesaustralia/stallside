@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import DemoPhoneFrame from "@/components/DemoPhoneFrame";
-import DemoSaleBanner from "@/components/DemoSaleBanner";
+import type { DemoRegion } from "@/lib/demo";
 import {
-  consumePendingDemoSale,
   DEMO_SALE_CHANNEL,
   isDemoSalePayload,
+  storePendingDemoSale,
   type DemoSalePayload,
 } from "@/lib/demo-sale-message";
 
@@ -14,43 +15,35 @@ export default function DemoPhoneCheckout({
   checkoutUrl,
   standName,
   standSlug,
+  region,
 }: {
   checkoutUrl: string;
   standName: string;
   standSlug: string;
+  region: DemoRegion;
 }) {
-  const [banner, setBanner] = useState<DemoSalePayload | null>(null);
-  const [bannerVisible, setBannerVisible] = useState(false);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const router = useRouter();
 
-  const showSale = useCallback(
+  const goToOwnerPhone = useCallback(
     (payload: DemoSalePayload) => {
       if (payload.standSlug !== standSlug) return;
-      if (revealTimer.current) clearTimeout(revealTimer.current);
-      setBanner(payload);
-      setBannerVisible(false);
-      revealTimer.current = setTimeout(() => setBannerVisible(true), 350);
+      storePendingDemoSale({
+        standSlug: payload.standSlug,
+        via: payload.via,
+        totalCents: payload.totalCents,
+        currency: payload.currency,
+        productSummary: payload.productSummary,
+      });
+      router.push(`/demo/owner?region=${region}`);
     },
-    [standSlug],
+    [standSlug, region, router],
   );
-
-  const dismissBanner = useCallback(() => {
-    setBannerVisible(false);
-  }, []);
-
-  useEffect(() => {
-    const pending = consumePendingDemoSale();
-    if (pending && pending.standSlug === standSlug) {
-      showSale({ type: "stallside:demo-sale", ...pending });
-    }
-  }, [standSlug, showSale]);
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
       if (!isDemoSalePayload(event.data)) return;
-      showSale(event.data);
+      goToOwnerPhone(event.data);
     }
     window.addEventListener("message", onMessage);
 
@@ -58,7 +51,7 @@ export default function DemoPhoneCheckout({
     try {
       channel = new BroadcastChannel(DEMO_SALE_CHANNEL);
       channel.onmessage = (event) => {
-        if (isDemoSalePayload(event.data)) showSale(event.data);
+        if (isDemoSalePayload(event.data)) goToOwnerPhone(event.data);
       };
     } catch {
       // BroadcastChannel unavailable
@@ -67,39 +60,40 @@ export default function DemoPhoneCheckout({
     return () => {
       window.removeEventListener("message", onMessage);
       channel?.close();
-      if (revealTimer.current) clearTimeout(revealTimer.current);
     };
-  }, [showSale]);
+  }, [goToOwnerPhone]);
 
   return (
-    <div className="flex w-full flex-col gap-5">
-      <p className="text-base leading-snug text-[var(--muted)]">
-        On desktop, checkout opens in this phone. Complete a sale to see the
-        owner alert.
-      </p>
-      <p className="text-base leading-snug text-[var(--muted)]">
-        Apple Pay, Link, and Google Pay work live, but we can&apos;t show them
-        in demo. Use a Stripe test card instead —{" "}
-        <span className="font-receipt text-[var(--ink)]">4242 4242 4242 4242</span>,
-        any future expiry, and any CVC — to see how card payments work. Complete
-        the full flow to see the notification sequence on completion.
-      </p>
+    <div className="flex w-full flex-col">
+      <ul className="list-disc space-y-2 pl-5 text-base leading-snug text-[var(--muted)]">
+        <li>
+          Checkout runs on the <strong className="font-semibold text-[var(--field)]">customer&apos;s phone</strong>{" "}
+          below — pick items and pay as a shopper would at the stand.
+        </li>
+        <li>
+          Apple Pay, Link, and Google Pay work live, but we can&apos;t show them
+          in this demo.
+        </li>
+        <li>
+          For card payments, use Stripe test card{" "}
+          <span className="font-receipt text-[var(--ink)]">
+            4242 4242 4242 4242
+          </span>
+          , any future expiry, and any CVC.
+        </li>
+        <li>
+          After checkout you&apos;ll be taken to a separate{" "}
+          <strong className="font-semibold text-[var(--field)]">stall owner&apos;s phone</strong>{" "}
+          to see the sale alert.
+        </li>
+      </ul>
 
-      <div className="mx-auto w-full max-w-[320px]">
-        <DemoPhoneFrame
-          notification={
-            <DemoSaleBanner
-              visible={bannerVisible}
-              via={banner?.via ?? "cash"}
-              totalCents={banner?.totalCents}
-              currency={banner?.currency}
-              standName={standName}
-              onDismiss={dismissBanner}
-            />
-          }
-        >
+      <div className="mx-auto mt-10 flex w-full max-w-[320px] flex-col items-center gap-2">
+        <p className="text-sm font-semibold tracking-tight text-[var(--field)]">
+          Customer&apos;s phone
+        </p>
+        <DemoPhoneFrame>
           <iframe
-            ref={iframeRef}
             title={`${standName} checkout`}
             src={checkoutUrl}
             className="size-full border-0 bg-[var(--wash)]"
@@ -108,7 +102,7 @@ export default function DemoPhoneCheckout({
         </DemoPhoneFrame>
       </div>
 
-      <div className="flex justify-center">
+      <div className="mt-8 flex justify-center">
         <a
           href={checkoutUrl}
           target="_blank"
