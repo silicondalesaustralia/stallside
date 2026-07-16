@@ -5,15 +5,21 @@ import { formatMoney } from "@/lib/money";
 import DashboardStat from "@/components/DashboardStat";
 import DashboardPanels from "@/components/DashboardPanels";
 import DateRangeFilter from "@/components/DateRangeFilter";
+import TapAndGoSetupCard from "@/components/TapAndGoSetupCard";
 import { resolveDateWindow } from "@/lib/date-range";
 import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 
 export default async function DashboardPage({
   searchParams,
 }: {
   searchParams: Promise<{ range?: string; from?: string; to?: string }>;
 }) {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
+  const cardTier = ownerHasCardTierAccess(owner, {
+    email: user.email,
+    role: user.role,
+  });
   const params = await searchParams;
   const window = resolveDateWindow(params);
 
@@ -95,6 +101,12 @@ export default async function DashboardPage({
         activeKey={window.key}
         from={window.fromParam}
         to={window.toParam}
+      />
+
+      <TapAndGoSetupCard
+        cardTier={cardTier}
+        stripeConnected={owner.stripeChargesEnabled}
+        stripeStarted={Boolean(owner.stripeAccountId)}
       />
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

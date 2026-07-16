@@ -74,7 +74,7 @@ export default function CheckoutPayStep({
           onClick={onCard}
           className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-left text-xl font-semibold disabled:opacity-50"
         >
-          {pending ? "Opening checkout…" : "Tap & Go - card, Apple Pay, Google Pay"}
+          {pending ? "Opening checkout…" : "Card / Tap & Go"}
         </button>
       ) : null}
       {showPayPal && paypalClientId && paypalMerchantId ? (

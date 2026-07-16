@@ -4,8 +4,15 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { isPayPalConfigured } from "@/lib/paypal";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import {
+  isPayPalConfigured,
+  isPayPalDirectMode,
+  paypalDirectMerchantId,
+} from "@/lib/paypal";
+import {
+  hasComplimentaryAccess,
+  ownerHasCardTierAccess,
+} from "@/lib/owner-trial";
 import { createPartnerReferralLink } from "@/lib/paypal-connect";
 import { syncPayPalMerchantStatus } from "@/lib/paypal-sync";
 
@@ -32,13 +39,64 @@ export async function startPayPalConnect() {
     throw new Error("PayPal is not configured on the server yet.");
   }
 
-  const url = await createPartnerReferralLink({
-    trackingId: owner.id,
-    email: owner.contactEmail || user.email,
-    businessName: owner.businessName,
+  if (isPayPalDirectMode()) {
+    redirect("/dashboard/settings/paypal?partner=direct");
+  }
+
+  try {
+    const url = await createPartnerReferralLink({
+      trackingId: owner.id,
+      email: owner.contactEmail || user.email,
+      businessName: owner.businessName,
+    });
+    redirect(url);
+  } catch (error) {
+    if (
+      String((error as { digest?: string }).digest).startsWith("NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("PayPal Partner Referrals failed", error);
+    if (
+      message.includes("403") ||
+      message.includes("NOT_AUTHORIZED") ||
+      message.includes("insufficient permissions")
+    ) {
+      redirect("/dashboard/settings/paypal?partner=denied");
+    }
+    redirect("/dashboard/settings/paypal?partner=error");
+  }
+}
+
+/** Link this owner to the platform PayPal Business account (no Partner API). */
+export async function connectPayPalDirect() {
+  const { owner, user } = await requireOwner();
+  assertCardTier(owner, user);
+
+  const allowed =
+    isPayPalDirectMode() ||
+    hasComplimentaryAccess({ email: user.email, role: user.role });
+  if (!allowed) {
+    throw new Error("Direct PayPal connect is not enabled for this account.");
+  }
+
+  const merchantId = paypalDirectMerchantId();
+  if (!merchantId || !isPayPalConfigured()) {
+    throw new Error("PayPal direct merchant id is not configured.");
+  }
+
+  await prisma.owner.update({
+    where: { id: owner.id },
+    data: {
+      paypalMerchantId: merchantId,
+      paypalOnboardingComplete: true,
+      paypalPaymentsEnabled: true,
+    },
   });
 
-  redirect(url);
+  revalidatePayPal();
+  redirect("/dashboard/settings/paypal?connected=direct");
 }
 
 export async function refreshPayPalStatus(formData?: FormData) {
@@ -53,13 +111,27 @@ export async function refreshPayPalStatus(formData?: FormData) {
       ? String(formData.get("merchantIdInPayPal") ?? "").trim()
       : "";
 
-  await syncPayPalMerchantStatus({
-    ownerId: owner.id,
-    trackingId: owner.id,
-    existingMerchantId: owner.paypalMerchantId,
-    existingPaymentsEnabled: owner.paypalPaymentsEnabled,
-    merchantIdHint: hint || null,
-  });
+  // Direct-linked accounts: partner merchant-status APIs often 403 — keep local flags.
+  if (
+    owner.paypalMerchantId &&
+    owner.paypalMerchantId === paypalDirectMerchantId()
+  ) {
+    revalidatePayPal();
+    redirect("/dashboard/settings/paypal");
+  }
+
+  try {
+    await syncPayPalMerchantStatus({
+      ownerId: owner.id,
+      trackingId: owner.id,
+      existingMerchantId: owner.paypalMerchantId,
+      existingPaymentsEnabled: owner.paypalPaymentsEnabled,
+      merchantIdHint: hint || null,
+    });
+  } catch (error) {
+    console.error("PayPal status refresh failed", error);
+    redirect("/dashboard/settings/paypal?partner=error");
+  }
 
   revalidatePayPal();
   redirect("/dashboard/settings/paypal");

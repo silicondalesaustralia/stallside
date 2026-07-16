@@ -1,4 +1,4 @@
-import { paypalFetch } from "@/lib/paypal";
+import { paypalDirectMerchantId, paypalFetch } from "@/lib/paypal";
 
 type Link = { href: string; rel: string; method?: string };
 
@@ -27,24 +27,31 @@ export async function createPayPalCheckoutOrder(input: {
   successUrl: string;
 }): Promise<{ paypalOrderId: string; approveUrl: string }> {
   const value = (input.totalCents / 100).toFixed(2);
+  // Own-account / direct mode: omit payee (platform REST app receives funds).
+  // Marketplace: set payee to the seller merchant id.
+  const platformId = paypalDirectMerchantId();
+  const useOwnAccount =
+    Boolean(platformId) && input.merchantId === platformId;
+  const purchaseUnit: Record<string, unknown> = {
+    reference_id: input.orderId,
+    custom_id: input.orderId,
+    description: input.description.slice(0, 127),
+    amount: {
+      currency_code: input.currency.toUpperCase(),
+      value,
+    },
+  };
+  if (!useOwnAccount) {
+    purchaseUnit.payee = { merchant_id: input.merchantId };
+  }
+
   const data = await paypalFetch<{ id: string; links?: Link[] }>(
     "/v2/checkout/orders",
     {
       method: "POST",
       body: JSON.stringify({
         intent: "CAPTURE",
-        purchase_units: [
-          {
-            reference_id: input.orderId,
-            custom_id: input.orderId,
-            description: input.description.slice(0, 127),
-            amount: {
-              currency_code: input.currency.toUpperCase(),
-              value,
-            },
-            payee: { merchant_id: input.merchantId },
-          },
-        ],
+        purchase_units: [purchaseUnit],
         application_context: {
           brand_name: "Stallside",
           // Prefer login in sandbox; live allows login or guest card.

@@ -6,9 +6,15 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 
 export async function startStripeConnect() {
   const { owner, user } = await requireOwner();
+  if (
+    !ownerHasCardTierAccess(owner, { email: user.email, role: user.role })
+  ) {
+    throw new Error("Stripe Connect requires the Card plan.");
+  }
   if (!isStripeConfigured()) {
     throw new Error("Stripe is not configured on the server yet.");
   }

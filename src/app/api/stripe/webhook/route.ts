@@ -2,10 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import {
+  constructStripeWebhookEvent,
+  stripeWebhookSecrets,
+} from "@/lib/stripe-webhook";
+import {
   recordSubscriptionInvoicePaid,
   syncOwnerFromSubscription,
 } from "@/lib/stripe-billing";
 import { fulfillPaidCardOrder } from "@/lib/fulfill-paid-order";
+import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { prisma } from "@/lib/prisma";
 import { PaymentStatus } from "@/generated/prisma/client";
 
@@ -34,9 +39,20 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 }
 
+async function handleConnectAccountUpdated(account: Stripe.Account) {
+  const owner = await prisma.owner.findFirst({
+    where: { stripeAccountId: account.id },
+    select: { id: true },
+  });
+  if (!owner) return;
+  await syncStripeAccountStatus({
+    ownerId: owner.id,
+    stripeAccountId: account.id,
+  });
+}
+
 export async function POST(req: NextRequest) {
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!secret) {
+  if (stripeWebhookSecrets().length === 0) {
     return NextResponse.json({ error: "Webhook secret missing" }, { status: 500 });
   }
 
@@ -48,7 +64,7 @@ export async function POST(req: NextRequest) {
 
   let event: Stripe.Event;
   try {
-    event = getStripe().webhooks.constructEvent(body, signature, secret);
+    event = constructStripeWebhookEvent(body, signature);
   } catch (error) {
     console.error("Stripe webhook signature failed", error);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
@@ -57,6 +73,21 @@ export async function POST(req: NextRequest) {
   try {
     if (event.type === "checkout.session.completed") {
       await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+    }
+
+    if (event.type === "checkout.session.async_payment_succeeded") {
+      await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+    }
+
+    if (event.type === "checkout.session.async_payment_failed") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const orderId = session.metadata?.orderId;
+      if (orderId) {
+        await prisma.order.updateMany({
+          where: { id: orderId, paymentStatus: PaymentStatus.PENDING },
+          data: { paymentStatus: PaymentStatus.EXPIRED },
+        });
+      }
     }
 
     if (event.type === "checkout.session.expired") {
@@ -68,6 +99,10 @@ export async function POST(req: NextRequest) {
           data: { paymentStatus: PaymentStatus.EXPIRED },
         });
       }
+    }
+
+    if (event.type === "account.updated") {
+      await handleConnectAccountUpdated(event.data.object as Stripe.Account);
     }
 
     if (

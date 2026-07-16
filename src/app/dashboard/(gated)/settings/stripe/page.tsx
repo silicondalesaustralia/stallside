@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { refreshStripeStatus, startStripeConnect } from "./actions";
 
 export default async function StripeSettingsPage({
@@ -10,22 +11,33 @@ export default async function StripeSettingsPage({
 }: {
   searchParams: Promise<{ return?: string; refresh?: string }>;
 }) {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
   const params = await searchParams;
+  const cardTier = ownerHasCardTierAccess(owner, {
+    email: user.email,
+    role: user.role,
+  });
 
   if (
+    cardTier &&
     (params.return === "1" || params.refresh === "1") &&
     owner.stripeAccountId &&
     isStripeConfigured()
   ) {
-    await syncStripeAccountStatus({
-      ownerId: owner.id,
-      stripeAccountId: owner.stripeAccountId,
-    });
+    try {
+      await syncStripeAccountStatus({
+        ownerId: owner.id,
+        stripeAccountId: owner.stripeAccountId,
+      });
+    } catch (error) {
+      console.error("Stripe return sync failed", error);
+    }
     redirect("/dashboard/settings/stripe");
   }
 
   const configured = isStripeConfigured();
+  const ready = owner.stripeChargesEnabled;
+  const started = Boolean(owner.stripeAccountId);
 
   return (
     <main className="flex max-w-xl flex-col gap-8">
@@ -36,17 +48,31 @@ export default async function StripeSettingsPage({
       </p>
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">
-          Stripe payments
+          Card / Tap &amp; Go
         </h1>
         <p className="mt-2 text-[var(--muted)]">
-          Connect your Stripe account so stand customers can pay by card, Apple
-          Pay, or Google Pay. Funds go to you. This is not your Stallside{" "}
+          Connect Stripe so stand customers can pay by card, Apple Pay, or Google
+          Pay. Funds go to you — not Stallside. This is separate from your{" "}
           <Link href="/dashboard/settings/billing" className="underline">
             app subscription
           </Link>
           .
         </p>
       </div>
+
+      {!cardTier ? (
+        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
+          Card / Tap &amp; Go is on the Card plan. Upgrade when Card billing is
+          available, then finish Stripe Connect here.
+        </p>
+      ) : null}
+
+      {cardTier && started && !ready ? (
+        <p className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+          Finish Stripe setup so charges are enabled. Until then, customers will
+          not see Card / Tap &amp; Go at checkout.
+        </p>
+      ) : null}
 
       {!configured ? (
         <p className="text-sm text-red-700">
@@ -55,7 +81,7 @@ export default async function StripeSettingsPage({
         </p>
       ) : null}
 
-      <section className="space-y-2 text-sm rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4">
+      <section className="space-y-2 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
         <p>
           Account:{" "}
           {owner.stripeAccountId ? (
@@ -65,31 +91,37 @@ export default async function StripeSettingsPage({
           )}
         </p>
         <p>Onboarding complete: {owner.stripeOnboardingComplete ? "Yes" : "No"}</p>
-        <p>Charges enabled: {owner.stripeChargesEnabled ? "Yes" : "No"}</p>
+        <p>Charges enabled: {ready ? "Yes" : "No"}</p>
         <p>Payouts enabled: {owner.stripePayoutsEnabled ? "Yes" : "No"}</p>
       </section>
 
-      <div className="flex flex-wrap gap-3">
-        <form action={startStripeConnect}>
-          <button
-            type="submit"
-            disabled={!configured}
-            className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
-          >
-            {owner.stripeAccountId ? "Continue Stripe setup" : "Connect Stripe"}
-          </button>
-        </form>
-        {owner.stripeAccountId ? (
-          <form action={refreshStripeStatus}>
+      {cardTier ? (
+        <div className="flex flex-wrap gap-3">
+          <form action={startStripeConnect}>
             <button
               type="submit"
-              className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold"
+              disabled={!configured}
+              className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
             >
-              Refresh status
+              {ready
+                ? "Open Stripe dashboard link"
+                : started
+                  ? "Continue Stripe setup"
+                  : "Connect Stripe"}
             </button>
           </form>
-        ) : null}
-      </div>
+          {started ? (
+            <form action={refreshStripeStatus}>
+              <button
+                type="submit"
+                className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold"
+              >
+                Refresh status
+              </button>
+            </form>
+          ) : null}
+        </div>
+      ) : null}
     </main>
   );
 }

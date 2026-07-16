@@ -100,31 +100,29 @@ export default function PricingTiers() {
         </div>
 
         <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-[var(--pad-lg)]">
-          <p className="text-sm font-semibold text-[var(--ink)]">
-            Card / PayPal -{" "}
-            <span className="rounded-full border border-[var(--line)] px-2 py-0.5 text-xs font-medium text-[var(--muted)]">
-              Coming soon
-            </span>
+          <p className="text-sm font-semibold text-[var(--leaf)]">
+            Card / Tap &amp; Go - live
           </p>
           <p className="mt-3 font-receipt text-4xl font-semibold text-[var(--marigold)]">
             {formatMoney(cardPlanCents(currency), currency)}
             <span className="text-base font-normal text-[var(--muted)]"> /mo per site</span>
           </p>
           <p className="mt-4 text-sm text-[var(--muted)]">
-            Everything in Cash, plus Tap &amp; Go, Apple Pay, Google Pay, and PayPal at your gate.
+            Everything in Cash, plus Tap &amp; Go — card, Apple Pay, and Google Pay
+            at your gate. PayPal coming soon.
           </p>
           <p className="mt-2 text-sm font-semibold text-[var(--marigold)]">
             No terminal. No hardware. No percentage of your sales.
           </p>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Paid straight to your account: nothing left at the stand overnight.
+            Paid straight to your Stripe account: nothing left at the stand overnight.
           </p>
           <button
             type="button"
             onClick={() => setWaitlistOpen(true)}
             className="mt-8 inline-flex rounded-[var(--radius-pill)] border border-[var(--field)] px-5 py-3 text-sm font-semibold text-[var(--field)] transition hover:bg-[var(--wash)]"
           >
-            Join the waitlist
+            Join the Card plan waitlist
           </button>
         </div>
       </div>

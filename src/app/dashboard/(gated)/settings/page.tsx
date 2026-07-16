@@ -84,41 +84,54 @@ export default async function SettingsPage() {
         </Link>
       </section>
 
-      {cardTier ? (
-        <section className="space-y-3 text-sm">
-          <h2 className="text-lg font-semibold">Stripe payments (Connect)</h2>
-          <p>
-            Status:{" "}
-            {owner.stripeChargesEnabled
-              ? "Connected · charges enabled"
-              : owner.stripeAccountId
-                ? "Connected · finish setup"
-                : "Not connected"}
-          </p>
-          <p className="text-[var(--muted)]">
-            Connect your Stripe so stand customers can pay you by card / Tap
-            &amp; Go.
-          </p>
-          <Link
-            href="/dashboard/settings/stripe"
-            className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
-          >
-            {owner.stripeAccountId ? "Manage Stripe" : "Connect Stripe"}
-          </Link>
-        </section>
-      ) : (
-        <section className="space-y-3 text-sm opacity-55">
-          <h2 className="text-lg font-semibold">
-            Stripe payments (Connect){" "}
-            <span className="text-sm font-medium text-[var(--muted)]">
-              · Card plan
-            </span>
-          </h2>
-          <p className="text-[var(--muted)]">
-            Tap &amp; Go is on the Card plan. Upgrade when Card billing is live.
-          </p>
-        </section>
-      )}
+      <section id="stripe" className="space-y-3 text-sm scroll-mt-8">
+        {cardTier ? (
+          <>
+            <h2 className="text-lg font-semibold">Card / Tap &amp; Go (Stripe)</h2>
+            <p>
+              Status:{" "}
+              {owner.stripeChargesEnabled
+                ? "Connected · charges enabled"
+                : owner.stripeAccountId
+                  ? "Connected · finish setup"
+                  : "Not connected"}
+            </p>
+            <p className="text-[var(--muted)]">
+              Connect Stripe so customers can pay by card, Apple Pay, or Google
+              Pay. Funds go to your account.
+            </p>
+            <Link
+              href="/dashboard/settings/stripe"
+              className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+            >
+              {owner.stripeChargesEnabled
+                ? "Manage Stripe"
+                : owner.stripeAccountId
+                  ? "Finish Stripe setup"
+                  : "Connect Stripe"}
+            </Link>
+          </>
+        ) : (
+          <>
+            <h2 className="text-lg font-semibold">
+              Accept cards / Tap &amp; Go{" "}
+              <span className="text-sm font-medium text-[var(--muted)]">
+                · Card plan
+              </span>
+            </h2>
+            <p className="text-[var(--muted)]">
+              Card, Apple Pay, and Google Pay at your gate. Join the waitlist from
+              pricing, or ask us to enable Card on your account.
+            </p>
+            <Link
+              href="/#pricing"
+              className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+            >
+              View Card plan
+            </Link>
+          </>
+        )}
+      </section>
 
       {cardTier ? (
         <section className="space-y-3 text-sm">

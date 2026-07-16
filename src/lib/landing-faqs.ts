@@ -17,7 +17,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "What's the difference between Cash and Card / PayPal?",
     answer:
-      "Cash (live today): shoppers confirm they left cash in your slot or cash box, or paid you by PayID. Every sale is logged and you get alerts. No card reader, no bank onboarding for Stallside. Card / PayPal (coming soon): same QR flow, but shoppers pay by Tap & Go, Apple Pay, Google Pay, or PayPal on their phone. No Stallside transaction fees on either plan.",
+      "Cash (live today): shoppers confirm they left cash in your slot or cash box, or paid you by PayID. Every sale is logged and you get alerts. No card reader for Cash. Card / Tap & Go (live): same QR flow, shoppers pay by card, Apple Pay, or Google Pay on their phone — money goes to your Stripe account. PayPal coming soon. No Stallside transaction fees on either plan.",
   },
   {
     question: "Can customers pay by bank transfer / PayID?",
@@ -27,11 +27,11 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "How does QR checkout work?",
     answer:
-      "You print a QR poster for each stand. Shoppers open it on their phone and select items. On the Cash plan they confirm cash or PayID at the stand and you are alerted. Card and PayPal (coming soon) will let them pay digitally in the same checkout. Stock updates either way.",
+      "You print a QR poster for each stand. Shoppers open it on their phone and select items. On Cash they confirm cash or PayID at the stand and you are alerted. On Card / Tap & Go they pay digitally in the same checkout (card, Apple Pay, Google Pay). Stock updates either way.",
   },
   {
     question: "How much does it cost?",
-    answer: `Cash (live): ${formatMoney(CASH_PLAN_BY_CURRENCY.AUD, "AUD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.USD, "USD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.GBP, "GBP")}, or ${formatMoney(CASH_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site, with a 30-day free start. Pick billing currency at signup. Card / PayPal (coming soon): ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site. Join the waitlist from pricing.`,
+    answer: `Cash (live): ${formatMoney(CASH_PLAN_BY_CURRENCY.AUD, "AUD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.USD, "USD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.GBP, "GBP")}, or ${formatMoney(CASH_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site, with a 30-day free start. Pick billing currency at signup. Card / Tap & Go: ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site — join the waitlist from pricing for Card plan billing.`,
   },
   {
     question: "Who is Stallside for?",
@@ -46,11 +46,11 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "Do I need special hardware?",
     answer:
-      "Not for Cash: a printer for your QR poster is enough. Customers use their own phones. Card / PayPal (coming soon) also needs no terminal or card reader; payments happen on the shopper's phone.",
+      "A printer for your QR poster is enough. Customers use their own phones. Card / Tap & Go needs no terminal or card reader — payments happen on the shopper's phone via Stripe Checkout.",
   },
   {
     question: "What about cash going missing?",
     answer:
-      "It happens: a tin by the road is easy to empty. Cash sales are still logged the moment a customer confirms, so your records stay right even if the box doesn't. And when Tap & Go and PayPal arrive, that money lands straight in your account, with nothing left at the stand to take.",
+      "It happens: a tin by the road is easy to empty. Cash sales are still logged the moment a customer confirms, so your records stay right even if the box doesn't. With Tap & Go, that money lands straight in your Stripe account, with nothing left at the stand to take.",
   },
 ];

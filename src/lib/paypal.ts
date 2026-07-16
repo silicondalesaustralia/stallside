@@ -27,6 +27,19 @@ export function paypalPartnerMerchantId(): string {
   return id;
 }
 
+/** Same account as REST credentials — for direct (non-marketplace) checkout. */
+export function paypalDirectMerchantId(): string | null {
+  const id =
+    process.env.PAYPAL_DIRECT_MERCHANT_ID?.trim() ||
+    process.env.PAYPAL_PARTNER_MERCHANT_ID?.trim();
+  return id || null;
+}
+
+/** True when Partner Referrals isn't available; use platform PayPal account. */
+export function isPayPalDirectMode(): boolean {
+  return (process.env.PAYPAL_CONNECT_MODE || "").toLowerCase() === "direct";
+}
+
 async function getAccessToken(): Promise<string> {
   const clientId = process.env.PAYPAL_CLIENT_ID;
   const secret = process.env.PAYPAL_CLIENT_SECRET;

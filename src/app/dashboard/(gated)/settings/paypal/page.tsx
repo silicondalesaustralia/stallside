@@ -1,10 +1,18 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
-import { isPayPalConfigured } from "@/lib/paypal";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import {
+  isPayPalConfigured,
+  isPayPalDirectMode,
+  paypalDirectMerchantId,
+} from "@/lib/paypal";
+import {
+  hasComplimentaryAccess,
+  ownerHasCardTierAccess,
+} from "@/lib/owner-trial";
 import { syncPayPalMerchantStatus } from "@/lib/paypal-sync";
 import {
+  connectPayPalDirect,
   refreshPayPalStatus,
   setPayPalPaymentsEnabled,
   startPayPalConnect,
@@ -18,6 +26,8 @@ export default async function PayPalSettingsPage({
     return?: string;
     merchantIdInPayPal?: string;
     permissionsGranted?: string;
+    partner?: string;
+    connected?: string;
   }>;
 }) {
   const { owner, user } = await requireOwner();
@@ -26,25 +36,37 @@ export default async function PayPalSettingsPage({
     email: user.email,
     role: user.role,
   });
+  const canDirect =
+    isPayPalDirectMode() ||
+    hasComplimentaryAccess({ email: user.email, role: user.role });
+  const directMerchantId = paypalDirectMerchantId();
 
   if (
     cardTier &&
     isPayPalConfigured() &&
     (params.return === "1" || params.merchantIdInPayPal)
   ) {
-    await syncPayPalMerchantStatus({
-      ownerId: owner.id,
-      trackingId: owner.id,
-      existingMerchantId: owner.paypalMerchantId,
-      existingPaymentsEnabled: owner.paypalPaymentsEnabled,
-      merchantIdHint: params.merchantIdInPayPal ?? null,
-    });
+    try {
+      await syncPayPalMerchantStatus({
+        ownerId: owner.id,
+        trackingId: owner.id,
+        existingMerchantId: owner.paypalMerchantId,
+        existingPaymentsEnabled: owner.paypalPaymentsEnabled,
+        merchantIdHint: params.merchantIdInPayPal ?? null,
+      });
+    } catch (error) {
+      console.error("PayPal return sync failed", error);
+    }
     redirect("/dashboard/settings/paypal");
   }
 
   const configured = isPayPalConfigured();
   const connected = Boolean(owner.paypalMerchantId);
   const ready = owner.paypalOnboardingComplete;
+  const partnerDenied = params.partner === "denied";
+  const partnerDirectHint = params.partner === "direct";
+  const partnerError = params.partner === "error";
+  const connectedDirect = params.connected === "direct";
 
   return (
     <main className="flex max-w-xl flex-col gap-8">
@@ -56,11 +78,33 @@ export default async function PayPalSettingsPage({
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">PayPal Connect</h1>
         <p className="mt-2 text-[var(--muted)]">
-          Connect your PayPal Business account so customers can pay with PayPal
-          after they scan your Stallside QR. Funds go to you — Stallside is not
-          in the funds flow.
+          Connect PayPal so customers can pay after scanning your Stallside QR.
         </p>
       </div>
+
+      {partnerDenied || partnerDirectHint ? (
+        <p className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+          {partnerDenied
+            ? "PayPal Partner Referrals is not enabled on this app yet (403 NOT_AUTHORIZED). Marketplace owner-onboarding needs PayPal partner approval."
+            : "Marketplace Connect is disabled (PAYPAL_CONNECT_MODE=direct)."}{" "}
+          Until Partner API is approved, use{" "}
+          <strong>Use platform PayPal (direct test)</strong> below — funds go to
+          the Stallside PayPal Business account linked in env.
+        </p>
+      ) : null}
+
+      {partnerError ? (
+        <p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">
+          PayPal Connect hit an error. Check live credentials and try again, or
+          use direct platform PayPal if Partner API is not approved.
+        </p>
+      ) : null}
+
+      {connectedDirect ? (
+        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm">
+          Linked to the platform PayPal Business account for live testing.
+        </p>
+      ) : null}
 
       {!cardTier ? (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
@@ -79,8 +123,8 @@ export default async function PayPalSettingsPage({
           <code className="rounded bg-black/5 px-1">
             PAYPAL_PARTNER_MERCHANT_ID
           </code>{" "}
-          to <code className="rounded bg-black/5 px-1">.env</code> to enable
-          Connect.
+          (live merchant id) on the server, with{" "}
+          <code className="rounded bg-black/5 px-1">PAYPAL_MODE=live</code>.
         </p>
       ) : null}
 
@@ -101,34 +145,45 @@ export default async function PayPalSettingsPage({
       </section>
 
       {cardTier ? (
-      <div className="flex flex-wrap gap-3">
-        <form action={startPayPalConnect}>
-          <button
-            type="submit"
-            disabled={!configured}
-            className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
-          >
-            {connected ? "Continue PayPal setup" : "Connect PayPal"}
-          </button>
-        </form>
-        {connected ? (
-          <form action={refreshPayPalStatus}>
+        <div className="flex flex-wrap gap-3">
+          <form action={startPayPalConnect}>
             <button
               type="submit"
-              className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold"
+              disabled={!configured}
+              className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
             >
-              Refresh status
+              {connected ? "Continue marketplace Connect" : "Connect PayPal (marketplace)"}
             </button>
           </form>
-        ) : null}
-      </div>
+          {canDirect && directMerchantId ? (
+            <form action={connectPayPalDirect}>
+              <button
+                type="submit"
+                disabled={!configured}
+                className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold disabled:opacity-50"
+              >
+                Use platform PayPal (direct test)
+              </button>
+            </form>
+          ) : null}
+          {connected ? (
+            <form action={refreshPayPalStatus}>
+              <button
+                type="submit"
+                className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold"
+              >
+                Refresh status
+              </button>
+            </form>
+          ) : null}
+        </div>
       ) : null}
 
       {cardTier && connected && ready ? (
         <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
           <p className="font-semibold">Show PayPal at checkout</p>
           <p className="text-[var(--muted)]">
-            Independent of card. Customers see PayPal only when this is on.
+            Customers see PayPal only when this is on.
           </p>
           <form action={setPayPalPaymentsEnabled}>
             <input

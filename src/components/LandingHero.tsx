@@ -79,12 +79,9 @@ export default function LandingHero() {
               <span className="size-2 rounded-full bg-[var(--leaf)]" aria-hidden />
               Cash - live today
             </span>
-            <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]/55">
-              <span
-                className="size-2 rounded-full border border-[var(--ink-on-dark)]/40 bg-transparent"
-                aria-hidden
-              />
-              Tap &amp; Go - coming soon
+            <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]">
+              <span className="size-2 rounded-full bg-[var(--leaf)]" aria-hidden />
+              Tap &amp; Go - live
             </span>
           </div>
 

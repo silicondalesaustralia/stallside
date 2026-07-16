@@ -129,10 +129,10 @@ export default function StandPaymentOptions({
             <span className="font-medium">Card / Tap &amp; Go</span>
             <span className="mt-0.5 block text-[var(--muted)]">
               {!cardTier
-                ? "Card plan feature."
+                ? "Card plan feature — join the waitlist from pricing."
                 : cardReady
-                  ? "All currencies. Requires Stripe connected."
-                  : "Connect Stripe in Settings first."}
+                  ? "Card, Apple Pay, Google Pay. Money to your Stripe."
+                  : "Finish Stripe setup in Settings before enabling."}
             </span>
           </span>
         </label>

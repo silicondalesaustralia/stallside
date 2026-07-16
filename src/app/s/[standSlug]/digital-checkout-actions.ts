@@ -10,6 +10,7 @@ import { loadStandCart, type CartItemInput } from "@/lib/checkout";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { PLATFORM_FEE_BPS } from "@/lib/constants";
 import { platformFeeCents } from "@/lib/money";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -25,9 +26,21 @@ export async function startCardCheckout(input: {
 
     const { stand, lineData, totalCents } = loaded;
     const owner = stand.owner;
+    const ownerUser = await prisma.user.findUnique({
+      where: { id: owner.userId },
+      select: { email: true, role: true },
+    });
 
     if (!stand.acceptCard) {
       return { error: "Card is not enabled at this stand." };
+    }
+    if (
+      !ownerHasCardTierAccess(owner, {
+        email: ownerUser?.email,
+        role: ownerUser?.role,
+      })
+    ) {
+      return { error: "Card / Tap & Go requires the Card plan." };
     }
     if (!owner.stripeAccountId || !owner.stripeChargesEnabled) {
       return {

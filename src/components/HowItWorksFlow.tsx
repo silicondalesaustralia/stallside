@@ -141,7 +141,7 @@ export default function HowItWorksFlow() {
         </div>
 
         <p className="mt-8 text-center text-sm text-[var(--muted)]">
-          Customers scan free - no app, no account. Cash today. Tap &amp; Go coming soon -
+          Customers scan free - no app, no account. Cash or Card / Tap &amp; Go —
           same flow, one tap.
         </p>
       </div>

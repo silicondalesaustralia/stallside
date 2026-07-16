@@ -4,17 +4,22 @@ import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { localTransferForCurrency } from "@/lib/local-transfer";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 
 export async function updateStandPayments(standId: string, formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
   const existing = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
   });
   if (!existing) return { error: "Stand not found." };
 
   const method = localTransferForCurrency(existing.currency);
+  const cardTier = ownerHasCardTierAccess(owner, {
+    email: user.email,
+    role: user.role,
+  });
   const cardReady = Boolean(
-    owner.stripeAccountId && owner.stripeChargesEnabled,
+    cardTier && owner.stripeAccountId && owner.stripeChargesEnabled,
   );
   const paypalReady = Boolean(
     owner.paypalMerchantId &&
@@ -56,8 +61,11 @@ export async function updateStandPayments(standId: string, formData: FormData) {
     }
   }
 
+  if (acceptCard && !cardTier) {
+    return { error: "Card / Tap & Go requires the Card plan." };
+  }
   if (acceptCard && !cardReady) {
-    return { error: "Connect Stripe in Settings before enabling card." };
+    return { error: "Finish Stripe setup in Settings before enabling card." };
   }
   if (acceptPayPal && !paypalReady) {
     return { error: "Connect PayPal in Settings before enabling PayPal." };
