@@ -47,7 +47,7 @@ export async function createPayPalCheckoutOrder(input: {
         ],
         application_context: {
           brand_name: "Stallside",
-          landing_page: "NO_PREFERENCE",
+          landing_page: "LOGIN",
           user_action: "PAY_NOW",
           shipping_preference: "NO_SHIPPING",
           return_url: input.successUrl,

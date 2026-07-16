@@ -83,8 +83,11 @@ export default async function PublicStandPage({
               stand.acceptPayPal &&
                 stand.owner.paypalMerchantId &&
                 stand.owner.paypalOnboardingComplete &&
-                stand.owner.paypalPaymentsEnabled,
+                stand.owner.paypalPaymentsEnabled &&
+                process.env.PAYPAL_CLIENT_ID,
             )}
+            paypalClientId={process.env.PAYPAL_CLIENT_ID ?? null}
+            paypalMerchantId={stand.owner.paypalMerchantId}
             localTransfer={localTransfer}
           />
         </>

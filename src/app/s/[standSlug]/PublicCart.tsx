@@ -10,7 +10,6 @@ import {
   confirmLocalTransferCheckout,
 } from "./actions";
 import { startCardCheckout } from "./digital-checkout-actions";
-import { startPayPalCheckout } from "./paypal-checkout-actions";
 
 type ProductRow = {
   id: string;
@@ -49,6 +48,8 @@ export default function PublicCart({
   cashEnabled,
   cardEnabled,
   paypalEnabled,
+  paypalClientId,
+  paypalMerchantId,
   localTransfer,
 }: {
   standSlug: string;
@@ -57,6 +58,8 @@ export default function PublicCart({
   cashEnabled: boolean;
   cardEnabled: boolean;
   paypalEnabled: boolean;
+  paypalClientId: string | null;
+  paypalMerchantId: string | null;
   localTransfer: LocalTransferInfo | null;
 }) {
   const [qty, setQty] = useState<Record<string, number>>({});
@@ -125,20 +128,6 @@ export default function PublicCart({
     setError(null);
     startTransition(async () => {
       const result = await startCardCheckout({ standSlug, items: payload });
-      if ("error" in result && result.error) {
-        setError(result.error);
-        return;
-      }
-      if ("url" in result && result.url) {
-        window.location.href = result.url;
-      }
-    });
-  }
-
-  function payPayPal() {
-    setError(null);
-    startTransition(async () => {
-      const result = await startPayPalCheckout({ standSlug, items: payload });
       if ("error" in result && result.error) {
         setError(result.error);
         return;
@@ -232,12 +221,17 @@ export default function PublicCart({
           cashEnabled={cashEnabled}
           cardEnabled={cardEnabled}
           paypalEnabled={paypalEnabled}
+          paypalClientId={paypalClientId}
+          paypalMerchantId={paypalMerchantId}
+          currency={currency}
+          standSlug={standSlug}
+          items={payload}
           localTransferLabel={localTransfer?.buttonLabel ?? null}
           pending={pending}
           onCash={() => setStep("cash-confirm")}
           onLocalTransfer={() => setStep("lt-confirm")}
           onCard={payCard}
-          onPayPal={payPayPal}
+          onPayPalError={setError}
           onBack={() => setStep("cart")}
         />
       ) : null}

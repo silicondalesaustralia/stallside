@@ -1,15 +1,24 @@
 "use client";
 
+import PayPalCheckoutButton from "./PayPalCheckoutButton";
+
+type CartItem = { productId: string; quantity: number };
+
 type CheckoutPayStepProps = {
   cashEnabled: boolean;
   cardEnabled: boolean;
   paypalEnabled: boolean;
+  paypalClientId: string | null;
+  paypalMerchantId: string | null;
+  currency: string;
+  standSlug: string;
+  items: CartItem[];
   localTransferLabel: string | null;
   pending: boolean;
   onCash: () => void;
   onLocalTransfer: () => void;
   onCard: () => void;
-  onPayPal: () => void;
+  onPayPalError: (message: string) => void;
   onBack: () => void;
 };
 
@@ -17,14 +26,22 @@ export default function CheckoutPayStep({
   cashEnabled,
   cardEnabled,
   paypalEnabled,
+  paypalClientId,
+  paypalMerchantId,
+  currency,
+  standSlug,
+  items,
   localTransferLabel,
   pending,
   onCash,
   onLocalTransfer,
   onCard,
-  onPayPal,
+  onPayPalError,
   onBack,
 }: CheckoutPayStepProps) {
+  const showPayPal =
+    paypalEnabled && Boolean(paypalClientId && paypalMerchantId);
+
   return (
     <div className="flex flex-col gap-3">
       <p className="text-xl font-semibold">How would you like to pay?</p>
@@ -58,17 +75,18 @@ export default function CheckoutPayStep({
           {pending ? "Opening checkout…" : "Tap & Go - card, Apple Pay, Google Pay"}
         </button>
       ) : null}
-      {paypalEnabled ? (
-        <button
-          type="button"
+      {showPayPal && paypalClientId && paypalMerchantId ? (
+        <PayPalCheckoutButton
+          clientId={paypalClientId}
+          merchantId={paypalMerchantId}
+          currency={currency}
+          standSlug={standSlug}
+          items={items}
           disabled={pending}
-          onClick={onPayPal}
-          className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-left text-xl font-semibold disabled:opacity-50"
-        >
-          {pending ? "Opening PayPal…" : "Pay with PayPal"}
-        </button>
+          onError={onPayPalError}
+        />
       ) : null}
-      {!cashEnabled && !localTransferLabel && !cardEnabled && !paypalEnabled ? (
+      {!cashEnabled && !localTransferLabel && !cardEnabled && !showPayPal ? (
         <p className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-lg text-[var(--muted)]">
           No payment methods are available at this stand right now.
         </p>

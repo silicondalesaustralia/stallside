@@ -79,7 +79,11 @@ export async function startPayPalCheckout(input: {
       data: { paypalOrderId },
     });
 
-    return { url: approveUrl };
+    return {
+      orderId: order.id,
+      paypalOrderId,
+      url: approveUrl,
+    };
   } catch (error) {
     console.error("PayPal checkout failed", error);
     return { error: "Could not start PayPal checkout." };
