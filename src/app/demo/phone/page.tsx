@@ -31,7 +31,7 @@ export default async function DemoPhonePage({
   if (!region) {
     return (
       <MarketingPageShell>
-        <main className="mx-auto w-full max-w-lg px-5 py-12 sm:px-6 sm:py-16">
+        <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
           <p className="text-sm text-[var(--muted)]">
             <Link href="/demo" className="underline">
               Back to demo
@@ -66,7 +66,7 @@ export default async function DemoPhonePage({
 
   return (
     <MarketingPageShell>
-      <main className="mx-auto w-full max-w-lg px-5 py-12 sm:px-6 sm:py-16">
+      <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
         <p className="text-sm text-[var(--muted)]">
           <Link href={`/demo?region=${region}`} className="underline">
             Back to QR sign
