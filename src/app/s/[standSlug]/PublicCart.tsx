@@ -50,6 +50,7 @@ export default function PublicCart({
   paypalEnabled,
   paypalClientId,
   paypalMerchantId,
+  paypalSandbox,
   localTransfer,
 }: {
   standSlug: string;
@@ -60,6 +61,7 @@ export default function PublicCart({
   paypalEnabled: boolean;
   paypalClientId: string | null;
   paypalMerchantId: string | null;
+  paypalSandbox: boolean;
   localTransfer: LocalTransferInfo | null;
 }) {
   const [qty, setQty] = useState<Record<string, number>>({});
@@ -223,6 +225,7 @@ export default function PublicCart({
           paypalEnabled={paypalEnabled}
           paypalClientId={paypalClientId}
           paypalMerchantId={paypalMerchantId}
+          paypalSandbox={paypalSandbox}
           currency={currency}
           standSlug={standSlug}
           items={payload}

@@ -10,6 +10,7 @@ type CheckoutPayStepProps = {
   paypalEnabled: boolean;
   paypalClientId: string | null;
   paypalMerchantId: string | null;
+  paypalSandbox: boolean;
   currency: string;
   standSlug: string;
   items: CartItem[];
@@ -28,6 +29,7 @@ export default function CheckoutPayStep({
   paypalEnabled,
   paypalClientId,
   paypalMerchantId,
+  paypalSandbox,
   currency,
   standSlug,
   items,
@@ -82,6 +84,7 @@ export default function CheckoutPayStep({
           currency={currency}
           standSlug={standSlug}
           items={items}
+          sandbox={paypalSandbox}
           disabled={pending}
           onError={onPayPalError}
         />

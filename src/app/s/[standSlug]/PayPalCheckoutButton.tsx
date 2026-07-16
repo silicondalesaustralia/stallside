@@ -24,12 +24,25 @@ declare global {
   }
 }
 
+function buildSdkSrc(clientId: string, currency: string, sandbox?: boolean) {
+  const src = new URL("https://www.paypal.com/sdk/js");
+  src.searchParams.set("client-id", clientId.trim());
+  src.searchParams.set("currency", currency.toUpperCase());
+  src.searchParams.set("intent", "capture");
+  src.searchParams.set("components", "buttons");
+  if (sandbox) {
+    src.searchParams.set("enable-funding", "paypal");
+    src.searchParams.set("disable-funding", "card,credit,paylater,venmo");
+  }
+  return src.toString();
+}
+
 export default function PayPalCheckoutButton({
   clientId,
-  merchantId,
   currency,
   standSlug,
   items,
+  sandbox,
   disabled,
   onError,
 }: {
@@ -38,36 +51,46 @@ export default function PayPalCheckoutButton({
   currency: string;
   standSlug: string;
   items: CartItem[];
+  sandbox?: boolean;
   disabled?: boolean;
   onError: (message: string) => void;
 }) {
-  const hostId = useRef(
-    `paypal-btn-${Math.random().toString(36).slice(2, 10)}`,
-  ).current;
-  const stallsideOrderId = useRef<string | null>(null);
+  const hostId = useRef(`pp-${Math.random().toString(36).slice(2, 9)}`).current;
+  const orderIdRef = useRef<string | null>(null);
   const itemsRef = useRef(items);
   itemsRef.current = items;
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
   const [sdkReady, setSdkReady] = useState(false);
+  const [fallback, setFallback] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  const sdkSrc = new URL("https://www.paypal.com/sdk/js");
-  sdkSrc.searchParams.set("client-id", clientId);
-  sdkSrc.searchParams.set("merchant-id", merchantId);
-  sdkSrc.searchParams.set("currency", currency.toUpperCase());
-  sdkSrc.searchParams.set("intent", "capture");
-  sdkSrc.searchParams.set("components", "buttons");
-  // Wallet login only — avoid guest "pay by card" taking over sandbox.
-  sdkSrc.searchParams.set("enable-funding", "paypal");
-  sdkSrc.searchParams.set("disable-funding", "card,credit,paylater,venmo");
+  useEffect(() => {
+    if (window.paypal) {
+      setSdkReady(true);
+      return;
+    }
+    const start = Date.now();
+    const id = window.setInterval(() => {
+      if (window.paypal) {
+        setSdkReady(true);
+        window.clearInterval(id);
+      } else if (Date.now() - start > 12_000) {
+        window.clearInterval(id);
+        setFallback(true);
+      }
+    }, 200);
+    return () => window.clearInterval(id);
+  }, []);
 
   useEffect(() => {
     if (!sdkReady || !window.paypal || disabled) return;
     const el = document.getElementById(hostId);
-    if (!el) return;
-    el.innerHTML = "";
+    if (!el || el.childElementCount > 0) return;
 
     void window.paypal
       .Buttons({
-        fundingSource: window.paypal.FUNDING.PAYPAL,
+        ...(sandbox ? { fundingSource: window.paypal.FUNDING.PAYPAL } : {}),
         style: {
           layout: "vertical",
           color: "gold",
@@ -82,54 +105,87 @@ export default function PayPalCheckoutButton({
             items: itemsRef.current,
           });
           if ("error" in result && result.error) {
-            onError(result.error);
+            onErrorRef.current(result.error);
             throw new Error(result.error);
           }
           if (!("paypalOrderId" in result) || !result.paypalOrderId) {
-            onError("Could not start PayPal checkout.");
-            throw new Error("missing paypal order");
+            onErrorRef.current("Could not start PayPal checkout.");
+            throw new Error("missing order");
           }
-          stallsideOrderId.current = result.orderId ?? null;
+          orderIdRef.current = result.orderId ?? null;
           return result.paypalOrderId;
         },
         onApprove: async (data) => {
-          const orderId = stallsideOrderId.current;
+          const orderId = orderIdRef.current;
           if (!orderId) {
-            onError("PayPal order missing after approval.");
+            onErrorRef.current("PayPal order missing after approval.");
             return;
           }
           window.location.href = `/checkout/success?order_id=${encodeURIComponent(orderId)}&paypal=1&token=${encodeURIComponent(data.orderID)}`;
         },
         onCancel: () => {
-          const orderId = stallsideOrderId.current;
+          const orderId = orderIdRef.current;
           if (orderId) {
             window.location.href = `/checkout/cancelled?order=${encodeURIComponent(orderId)}`;
           }
         },
-        onError: (err) => {
-          console.error("PayPal Buttons error", err);
-          onError("PayPal checkout failed. Try again.");
-        },
+        onError: () => onErrorRef.current("PayPal checkout failed. Try again."),
       })
       .render(`#${hostId}`)
-      .catch((err) => {
-        console.error("PayPal Buttons render failed", err);
-        onError("Could not load PayPal button.");
+      .catch(() => {
+        setFallback(true);
+        onErrorRef.current("Could not render PayPal — use Continue below.");
       });
-  }, [sdkReady, disabled, hostId, standSlug, onError]);
+  }, [sdkReady, disabled, hostId, standSlug, sandbox]);
+
+  async function redirectCheckout() {
+    setBusy(true);
+    try {
+      const result = await startPayPalCheckout({
+        standSlug,
+        items: itemsRef.current,
+      });
+      if ("error" in result && result.error) {
+        onErrorRef.current(result.error);
+        return;
+      }
+      if ("url" in result && result.url) {
+        window.location.href = result.url;
+        return;
+      }
+      onErrorRef.current("Could not start PayPal checkout.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className={disabled ? "pointer-events-none opacity-50" : undefined}>
       <Script
-        src={sdkSrc.toString()}
+        src={buildSdkSrc(clientId, currency, sandbox)}
         strategy="afterInteractive"
-        onReady={() => setSdkReady(true)}
-        onError={() => onError("Could not load PayPal.")}
+        onLoad={() => {
+          if (window.paypal) setSdkReady(true);
+        }}
+        onReady={() => {
+          if (window.paypal) setSdkReady(true);
+        }}
+        onError={() => setFallback(true)}
       />
       <div id={hostId} className="min-h-[55px] w-full" />
-      {sdkReady ? null : (
+      {!sdkReady && !fallback ? (
         <p className="text-center text-sm text-[var(--muted)]">Loading PayPal…</p>
-      )}
+      ) : null}
+      {fallback ? (
+        <button
+          type="button"
+          disabled={disabled || busy}
+          onClick={() => void redirectCheckout()}
+          className="mt-2 w-full rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-left text-xl font-semibold disabled:opacity-50"
+        >
+          {busy ? "Opening PayPal…" : "Continue with PayPal"}
+        </button>
+      ) : null}
     </div>
   );
 }

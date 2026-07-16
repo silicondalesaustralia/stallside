@@ -47,7 +47,11 @@ export async function createPayPalCheckoutOrder(input: {
         ],
         application_context: {
           brand_name: "Stallside",
-          landing_page: "LOGIN",
+          // Prefer login in sandbox; live allows login or guest card.
+          landing_page:
+            (process.env.PAYPAL_MODE || "sandbox").toLowerCase() === "live"
+              ? "NO_PREFERENCE"
+              : "LOGIN",
           user_action: "PAY_NOW",
           shipping_preference: "NO_SHIPPING",
           return_url: input.successUrl,

@@ -88,6 +88,9 @@ export default async function PublicStandPage({
             )}
             paypalClientId={process.env.PAYPAL_CLIENT_ID ?? null}
             paypalMerchantId={stand.owner.paypalMerchantId}
+            paypalSandbox={
+              (process.env.PAYPAL_MODE || "sandbox").toLowerCase() !== "live"
+            }
             localTransfer={localTransfer}
           />
         </>
