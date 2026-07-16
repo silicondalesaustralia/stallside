@@ -11,9 +11,12 @@ import {
   type DemoRegion,
 } from "@/lib/demo";
 import { prisma } from "@/lib/prisma";
-import { APP_NAME } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
-import { standOffersCard, standPaymentBrands } from "@/lib/stand-payment-brands";
+import {
+  demoSignPaymentBrands,
+  standOffersCard,
+} from "@/lib/stand-payment-brands";
 
 export const metadata: Metadata = {
   title: "Try Demo",
@@ -62,17 +65,22 @@ export default async function DemoPage({
     );
   } else if (stand) {
     const checkoutUrl = standCheckoutUrl(stand.slug);
-    const qrDataUrl = await standQrDataUrl(checkoutUrl, 480);
+    const qrDataUrl = await standQrDataUrl(checkoutUrl, 640);
     const owner = {
       ...stand.owner,
       user: stand.owner.user,
     };
-    const paymentBrands = standPaymentBrands(stand, owner);
+    const paymentBrands = demoSignPaymentBrands(stand, owner, region);
     panel = (
       <DemoStandPanel
         name={stand.name}
+        qrCallout={stand.qrCallout}
+        qrSignMessage={stand.qrSignMessage}
+        description={stand.description}
+        locationLabel={stand.locationLabel}
         checkoutUrl={checkoutUrl}
         qrDataUrl={qrDataUrl}
+        siteUrl={`https://${APP_DOMAIN}`}
         paymentBrands={paymentBrands}
         cardDemoReady={standOffersCard(stand, owner)}
       />
@@ -81,7 +89,7 @@ export default async function DemoPage({
 
   return (
     <MarketingPageShell>
-      <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
+      <main className="mx-auto w-full max-w-xl px-5 py-12 sm:px-6 sm:py-16">
         <p className="text-sm text-[var(--muted)]">
           <Link href="/" className="underline">
             Home

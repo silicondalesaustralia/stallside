@@ -24,7 +24,7 @@ export default function QrPaymentMethods({
       >
         Pay with
       </p>
-      <div className="flex flex-wrap items-end justify-center gap-2">
+      <div className="flex flex-wrap items-start justify-center gap-2">
         {brands.map((brand) => {
           const label = labelFor(brand);
           const showCaption = brand === "cash";

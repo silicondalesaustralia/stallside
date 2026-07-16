@@ -3,6 +3,7 @@ import BrandLockup from "@/components/BrandLockup";
 import { APP_DOMAIN } from "@/lib/constants";
 
 const LINKS = [
+  { href: "/demo", label: "Try Demo" },
   { href: "/#pricing", label: "Pricing" },
   { href: "/#use-cases", label: "Use cases" },
   { href: "/about", label: "About" },

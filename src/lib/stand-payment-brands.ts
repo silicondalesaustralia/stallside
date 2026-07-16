@@ -1,4 +1,5 @@
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
+import type { DemoRegion } from "@/lib/demo";
 import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
@@ -76,4 +77,22 @@ export function standOffersCard(
   }
   if (stand.slug && isDemoCardReady(stand.slug, owner)) return true;
   return Boolean(owner.stripeAccountId && owner.stripeChargesEnabled);
+}
+
+/**
+ * Brands for the public /demo QR sign.
+ * Always shows a full poster set for the region (not gated on Connect / PayID alias),
+ * so the demo looks like a live printable sign.
+ */
+export function demoSignPaymentBrands(
+  stand: StandPaymentFlags & { slug: string },
+  _owner: OwnerPaymentReady,
+  region?: DemoRegion | null,
+): PaymentBrand[] {
+  const brands: PaymentBrand[] = ["cash"];
+  const aud =
+    region === "au" || stand.currency.trim().toUpperCase() === "AUD";
+  if (aud) brands.push("payid");
+  brands.push("card", "apple", "google");
+  return brands;
 }

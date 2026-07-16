@@ -40,17 +40,17 @@ function toneClass(tone: Tone): string {
 function Box({ title, subtitle, tone }: FlowBox) {
   return (
     <div
-      className={`flex h-14 min-w-[7.5rem] flex-col justify-center rounded-[var(--radius-sm)] border px-3 py-1.5 ${toneClass(tone)}`}
+      className={`flex min-h-[4.5rem] min-w-[10.5rem] flex-col justify-center rounded-[var(--radius-sm)] border px-4 py-3 sm:min-h-[5.25rem] sm:min-w-[12.5rem] sm:px-5 sm:py-3.5 ${toneClass(tone)}`}
     >
-      <p className="text-xs font-semibold leading-tight">{title}</p>
-      <p className="text-[10px] leading-tight opacity-80">{subtitle}</p>
+      <p className="text-sm font-semibold leading-tight sm:text-base">{title}</p>
+      <p className="mt-0.5 text-xs leading-tight opacity-80 sm:text-sm">{subtitle}</p>
     </div>
   );
 }
 
 function RoleLabel({ children }: { children: ReactNode }) {
   return (
-    <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+    <p className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)] sm:text-base">
       {children}
     </p>
   );
@@ -64,11 +64,11 @@ function MobileSection({
   steps: readonly FlowBox[];
 }) {
   return (
-    <li className="flex w-full flex-col items-center gap-2">
+    <li className="flex w-full flex-col items-center gap-3">
       <RoleLabel>{label}</RoleLabel>
       {steps.map((step, i) => (
-        <div key={step.title} className="flex flex-col items-center gap-2">
-          {i > 0 ? <FlowArrowDown /> : null}
+        <div key={step.title} className="flex flex-col items-center gap-3">
+          {i > 0 ? <FlowArrowDown className="h-12 w-10" /> : null}
           <Box {...step} />
         </div>
       ))}
@@ -90,16 +90,16 @@ export default function HowItWorksFlow() {
         </h2>
 
         {/* Mobile: labelled swim sections */}
-        <ol className="mt-8 flex flex-col items-center gap-5 md:hidden">
+        <ol className="mt-8 flex flex-col items-center gap-6 md:hidden">
           <MobileSection label="Owner" steps={[OWNER_START]} />
-          <FlowArrowDown />
+          <FlowArrowDown className="h-12 w-10" />
           <MobileSection label="Customer" steps={CUSTOMER} />
-          <FlowArrowDown />
+          <FlowArrowDown className="h-12 w-10" />
           <MobileSection label="Owner, instantly" steps={OWNER_RESULT} />
         </ol>
 
         {/* Desktop: swim rows */}
-        <div className="mt-8 hidden gap-y-2 md:grid md:grid-cols-[8rem_1fr]">
+        <div className="mt-10 hidden gap-y-3 md:grid md:grid-cols-[10rem_1fr]">
           <div className="flex items-center">
             <RoleLabel>Owner</RoleLabel>
           </div>
@@ -107,33 +107,33 @@ export default function HowItWorksFlow() {
             <Box {...OWNER_START} />
           </div>
 
-          <div aria-hidden className="col-span-2 flex justify-center py-1">
-            <FlowArrowDown />
+          <div aria-hidden className="col-span-2 flex justify-center py-2">
+            <FlowArrowDown className="h-12 w-10" />
           </div>
 
           <div className="flex items-center">
             <RoleLabel>Customer</RoleLabel>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-1">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             {CUSTOMER.map((step, i) => (
-              <div key={step.title} className="flex items-center gap-1">
-                {i > 0 ? <FlowArrowRight /> : null}
+              <div key={step.title} className="flex items-center gap-2">
+                {i > 0 ? <FlowArrowRight className="h-8 w-12" /> : null}
                 <Box {...step} />
               </div>
             ))}
           </div>
 
-          <div aria-hidden className="col-span-2 flex justify-center py-1">
-            <FlowArrowDown />
+          <div aria-hidden className="col-span-2 flex justify-center py-2">
+            <FlowArrowDown className="h-12 w-10" />
           </div>
 
           <div className="flex items-center">
             <RoleLabel>Owner, instantly</RoleLabel>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-1">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             {OWNER_RESULT.map((step, i) => (
-              <div key={step.title} className="flex items-center gap-1">
-                {i > 0 ? <FlowArrowRight /> : null}
+              <div key={step.title} className="flex items-center gap-2">
+                {i > 0 ? <FlowArrowRight className="h-8 w-12" /> : null}
                 <Box {...step} />
               </div>
             ))}

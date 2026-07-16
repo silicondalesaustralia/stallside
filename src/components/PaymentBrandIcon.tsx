@@ -115,13 +115,14 @@ export default function PaymentBrandIcon({
     );
   }
 
-  // stripe
+  // Official Stripe mark
   return (
-    <svg {...common} viewBox="0 0 24 24" fill="currentColor">
-      <path
-        fill="#635BFF"
-        d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2Zm4.2 7.4c0 1.3-1 1.9-2.5 2.3l-.9.3c-.7.2-1 .4-1 .7 0 .4.4.6 1 .6.8 0 1.5-.2 2.1-.6v1.3c-.6.3-1.4.5-2.3.5-1.7 0-2.8-.8-2.8-2.2 0-1.3 1-1.9 2.5-2.3l.9-.3c.7-.2 1-.4 1-.7 0-.4-.4-.6-1-.6-.8 0-1.6.3-2.3.7V7.5c.7-.4 1.5-.6 2.5-.6 1.7 0 2.8.8 2.8 2.5Z"
-      />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/brand/stripe.png"
+      alt="Stripe"
+      aria-hidden
+      className={`${className} object-contain`}
+    />
   );
 }
