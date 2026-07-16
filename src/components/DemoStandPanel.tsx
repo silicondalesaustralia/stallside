@@ -1,10 +1,11 @@
-import Link from "next/link";
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
+import DemoPhoneCheckout from "@/components/DemoPhoneCheckout";
 import QrSignSheet from "@/app/dashboard/(gated)/stands/[standId]/qr/QrSignSheet";
 import { isStripeTestConfigured } from "@/lib/stripe-demo";
 
 export default function DemoStandPanel({
   name,
+  standSlug,
   qrCallout,
   qrSignMessage,
   description,
@@ -16,6 +17,7 @@ export default function DemoStandPanel({
   cardDemoReady,
 }: {
   name: string;
+  standSlug: string;
   qrCallout: string | null;
   qrSignMessage: string | null;
   description: string | null;
@@ -29,26 +31,28 @@ export default function DemoStandPanel({
   const showTestCards = cardDemoReady && isStripeTestConfigured();
 
   return (
-    <div className="flex flex-col gap-4">
-      <QrSignSheet
-        name={name}
-        qrCallout={qrCallout}
-        qrSignMessage={qrSignMessage}
-        description={description}
-        locationLabel={locationLabel}
-        checkoutUrl={checkoutUrl}
-        qrDataUrl={qrDataUrl}
-        siteUrl={siteUrl}
-        paymentBrands={paymentBrands}
-        className="rounded-[var(--radius)] border border-[var(--line)]"
-      />
-
-      <Link
-        href={checkoutUrl}
-        className="inline-flex w-full items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]"
-      >
-        Open checkout
-      </Link>
+    <div className="flex flex-col gap-6">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,320px)] lg:items-start">
+        <QrSignSheet
+          name={name}
+          qrCallout={qrCallout}
+          qrSignMessage={qrSignMessage}
+          description={description}
+          locationLabel={locationLabel}
+          checkoutUrl={checkoutUrl}
+          qrDataUrl={qrDataUrl}
+          siteUrl={siteUrl}
+          paymentBrands={paymentBrands}
+          className="rounded-[var(--radius)] border border-[var(--line)]"
+        />
+        <div className="lg:sticky lg:top-6">
+          <DemoPhoneCheckout
+            checkoutUrl={checkoutUrl}
+            standName={name}
+            standSlug={standSlug}
+          />
+        </div>
+      </div>
 
       {showTestCards ? (
         <div className="rounded-lg border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--ink)]">
@@ -60,7 +64,8 @@ export default function DemoStandPanel({
             <span className="font-receipt text-[var(--ink)]">
               4242 4242 4242 4242
             </span>
-            , any future expiry, any CVC. No real charge.
+            , any future expiry, any CVC. No real charge. After success, the
+            sale alert slides down on the phone.
           </p>
         </div>
       ) : null}

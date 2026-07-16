@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DemoSaleNotify from "@/components/DemoSaleNotify";
 import {
   fulfillPaidCardOrder,
   fulfillPaidPayPalOrder,
@@ -24,6 +25,9 @@ export default async function CheckoutSuccessPage({
 }) {
   const params = await searchParams;
   let message = "Thanks - your payment is being confirmed.";
+  let demoStandSlug: string | null = null;
+  let demoTotalCents: number | undefined;
+  let demoCurrency: string | undefined;
 
   if (params.session_id) {
     try {
@@ -31,6 +35,11 @@ export default async function CheckoutSuccessPage({
         where: { stripeCheckoutSessionId: params.session_id },
         include: { owner: true, stand: { select: { slug: true } } },
       });
+      if (order?.stand && isDemoStandSlug(order.stand.slug)) {
+        demoStandSlug = order.stand.slug;
+        demoTotalCents = order.totalCents;
+        demoCurrency = order.currency;
+      }
 
       const demo =
         order?.stand && isDemoStandSlug(order.stand.slug)
@@ -99,6 +108,12 @@ export default async function CheckoutSuccessPage({
 
   return (
     <main className="mx-auto flex min-h-full max-w-lg flex-1 flex-col justify-center px-6 py-16">
+      <DemoSaleNotify
+        standSlug={demoStandSlug}
+        via="card"
+        totalCents={demoTotalCents}
+        currency={demoCurrency}
+      />
       <div className="relative rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-8">
         <div
           aria-hidden

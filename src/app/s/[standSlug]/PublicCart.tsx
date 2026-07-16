@@ -9,6 +9,7 @@ import {
   confirmCashCheckout,
   confirmLocalTransferCheckout,
 } from "./actions";
+import { notifyDemoParentSale } from "@/lib/demo-sale-message";
 import { startCardCheckout } from "./digital-checkout-actions";
 
 type ProductRow = {
@@ -97,6 +98,12 @@ export default function PublicCart({
     setPaidVia(via);
     setDone(true);
     setQty({});
+    notifyDemoParentSale({
+      standSlug,
+      via,
+      totalCents: total,
+      currency,
+    });
   }
 
   function payCash() {
@@ -171,7 +178,7 @@ export default function PublicCart({
         {products.map((product) => (
           <li
             key={product.id}
-            className={`flex items-center justify-between gap-4 py-5 ${product.soldOut ? "opacity-45" : ""}`}
+            className={`flex flex-col gap-3 py-5 ${product.soldOut ? "opacity-45" : ""}`}
           >
             <div className="min-w-0">
               <p className="text-xl font-semibold">{product.name}</p>
@@ -187,7 +194,7 @@ export default function PublicCart({
                 ● {product.label}
               </p>
             </div>
-            <div className="flex items-center gap-1 rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] p-1.5">
+            <div className="flex w-full items-center justify-center gap-1 rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] p-1.5">
               <button
                 type="button"
                 disabled={product.soldOut || (qty[product.id] ?? 0) <= 0 || step !== "cart"}

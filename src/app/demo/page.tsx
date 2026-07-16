@@ -74,6 +74,7 @@ export default async function DemoPage({
     panel = (
       <DemoStandPanel
         name={stand.name}
+        standSlug={stand.slug}
         qrCallout={stand.qrCallout}
         qrSignMessage={stand.qrSignMessage}
         description={stand.description}
@@ -89,7 +90,7 @@ export default async function DemoPage({
 
   return (
     <MarketingPageShell>
-      <main className="mx-auto w-full max-w-xl px-5 py-12 sm:px-6 sm:py-16">
+      <main className="mx-auto w-full max-w-5xl px-5 py-12 sm:px-6 sm:py-16">
         <p className="text-sm text-[var(--muted)]">
           <Link href="/" className="underline">
             Home
@@ -98,10 +99,10 @@ export default async function DemoPage({
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
           Try the demo
         </h1>
-        <p className="mt-3 text-base leading-snug text-[var(--muted)]">
-          Pick your country, then scan the QR for Green Valley Eggs on your phone
-          or open checkout in this browser. Card payments use Stripe test mode —
-          no real money.
+        <p className="mt-3 max-w-2xl text-base leading-snug text-[var(--muted)]">
+          Pick your country, then scan the QR on your phone — or on desktop, open
+          checkout in the iPhone frame. Complete a cash sale to see the owner
+          alert slide down. Card uses Stripe test mode — no real money.
         </p>
 
         <div className="mt-8">
