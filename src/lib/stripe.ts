@@ -36,16 +36,25 @@ export function isStripeConfigured(): boolean {
   return Boolean(cleanEnvSecret(process.env.STRIPE_SECRET_KEY));
 }
 
-const PRICE_ENV: Record<BillingCurrency, string> = {
+const CASH_PRICE_ENV: Record<BillingCurrency, string> = {
   AUD: "STRIPE_PRICE_ID_CASH_AUD",
   USD: "STRIPE_PRICE_ID_CASH_USD",
   GBP: "STRIPE_PRICE_ID_CASH_GBP",
   EUR: "STRIPE_PRICE_ID_CASH_EUR",
 };
 
+const CARD_PRICE_ENV: Record<BillingCurrency, string> = {
+  AUD: "STRIPE_PRICE_ID_CARD_AUD",
+  USD: "STRIPE_PRICE_ID_CARD_USD",
+  GBP: "STRIPE_PRICE_ID_CARD_GBP",
+  EUR: "STRIPE_PRICE_ID_CARD_EUR",
+};
+
+export type SaasPlan = "cash" | "card";
+
 /** Recurring cash-plan Price ID for a billing currency. */
 export function getCashPlanPriceId(currency: BillingCurrency = "AUD"): string {
-  const specific = cleanEnvSecret(process.env[PRICE_ENV[currency]]);
+  const specific = cleanEnvSecret(process.env[CASH_PRICE_ENV[currency]]);
   if (specific) return specific;
 
   // Legacy fallback: STRIPE_PRICE_ID_CASH is the AUD price
@@ -55,14 +64,28 @@ export function getCashPlanPriceId(currency: BillingCurrency = "AUD"): string {
   }
 
   throw new Error(
-    `${PRICE_ENV[currency]} is not set` +
+    `${CASH_PRICE_ENV[currency]} is not set` +
       (currency === "AUD" ? " (or STRIPE_PRICE_ID_CASH)" : ""),
   );
+}
+
+export function getCardPlanPriceId(currency: BillingCurrency = "AUD"): string {
+  const specific = cleanEnvSecret(process.env[CARD_PRICE_ENV[currency]]);
+  if (specific) return specific;
+  throw new Error(`${CARD_PRICE_ENV[currency]} is not set`);
 }
 
 export function tryCashPlanPriceId(currency: BillingCurrency): string | null {
   try {
     return getCashPlanPriceId(currency);
+  } catch {
+    return null;
+  }
+}
+
+export function tryCardPlanPriceId(currency: BillingCurrency): string | null {
+  try {
+    return getCardPlanPriceId(currency);
   } catch {
     return null;
   }
@@ -78,6 +101,16 @@ export function listConfiguredCashPlanPrices(): {
   });
 }
 
+export function listConfiguredCardPlanPrices(): {
+  currency: BillingCurrency;
+  priceId: string;
+}[] {
+  return BILLING_CURRENCIES.flatMap((currency) => {
+    const priceId = tryCardPlanPriceId(currency);
+    return priceId ? [{ currency, priceId }] : [];
+  });
+}
+
 export function isStripeBillingConfigured(): boolean {
   return Boolean(
     cleanEnvSecret(process.env.STRIPE_SECRET_KEY) &&
@@ -85,13 +118,50 @@ export function isStripeBillingConfigured(): boolean {
   );
 }
 
+export function isStripeCardBillingConfigured(): boolean {
+  return Boolean(
+    cleanEnvSecret(process.env.STRIPE_SECRET_KEY) &&
+      listConfiguredCardPlanPrices().length > 0,
+  );
+}
+
+/** Resolve SaaS plan from subscription metadata or known Price IDs. */
+export function saasPlanFromSubscription(subscription: {
+  metadata?: Stripe.Metadata | null;
+  items: { data: Array<{ price: { id: string } }> };
+}): SaasPlan {
+  const meta = (subscription.metadata?.saasPlan ?? "").trim().toLowerCase();
+  if (meta === "card" || meta === "card_paypal") return "card";
+  if (meta === "cash") return "cash";
+
+  const priceId = subscription.items.data[0]?.price.id;
+  if (priceId) {
+    for (const currency of BILLING_CURRENCIES) {
+      if (tryCardPlanPriceId(currency) === priceId) return "card";
+      if (tryCashPlanPriceId(currency) === priceId) return "cash";
+    }
+  }
+  return "cash";
+}
+
 export function parseBillingCurrencyParam(
   value: FormDataEntryValue | null,
+  plan: SaasPlan = "cash",
 ): BillingCurrency {
   const raw = typeof value === "string" ? value.trim().toUpperCase() : "";
-  if (isBillingCurrency(raw) && tryCashPlanPriceId(raw)) return raw;
-  if (tryCashPlanPriceId("AUD")) return "AUD";
-  const first = listConfiguredCashPlanPrices()[0];
+  const tryPrice = plan === "card" ? tryCardPlanPriceId : tryCashPlanPriceId;
+  const list =
+    plan === "card"
+      ? listConfiguredCardPlanPrices
+      : listConfiguredCashPlanPrices;
+
+  if (isBillingCurrency(raw) && tryPrice(raw)) return raw;
+  if (tryPrice("AUD")) return "AUD";
+  const first = list()[0];
   if (first) return first.currency;
-  throw new Error("No Stripe cash-plan prices configured");
+  throw new Error(
+    plan === "card"
+      ? "No Stripe card-plan prices configured"
+      : "No Stripe cash-plan prices configured",
+  );
 }

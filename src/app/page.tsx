@@ -5,6 +5,7 @@ import JsonLd from "@/components/JsonLd";
 import LandingFaq from "@/components/LandingFaq";
 import LandingFooter from "@/components/LandingFooter";
 import LandingHero from "@/components/LandingHero";
+import LandingPaymentMethods from "@/components/LandingPaymentMethods";
 import NetworkVision from "@/components/NetworkVision";
 import PricingTiers from "@/components/PricingTiers";
 import TrustSection from "@/components/TrustSection";
@@ -28,6 +29,7 @@ export default function HomePage() {
       <UseCaseGrid />
       <TrustSection />
       <FeatureColumns />
+      <LandingPaymentMethods />
       <PricingTiers />
       <NetworkVision />
       <LandingFaq />

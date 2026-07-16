@@ -56,10 +56,10 @@ export default function StandPaymentToggles({
               className="mt-1 size-4"
             />
             <span className="min-w-0">
-              <span className="flex flex-wrap items-center gap-2 font-medium">
-                <PaymentBrandIcon brand="payid" />
-                PayID
-              </span>
+                <span className="flex flex-wrap items-center gap-2 font-medium">
+                  <PaymentBrandIcon brand="payid" className="size-6" />
+                  <span className="sr-only">PayID</span>
+                </span>
               <span className="mt-0.5 block text-[var(--muted)]">
                 AUD only. Customer pays your PayID, then confirms.
               </span>
@@ -95,7 +95,7 @@ export default function StandPaymentToggles({
           </span>
           <span className="mt-0.5 block text-[var(--muted)]">
             {!cardTier
-              ? "Card plan feature — join the waitlist from pricing."
+                ? "Card plan feature — subscribe under Settings → Billing."
               : cardReady
                 ? "Card, Apple Pay, Google Pay. Money to your Stripe."
                 : "Finish Stripe setup in Settings before enabling."}

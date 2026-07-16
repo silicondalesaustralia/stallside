@@ -23,10 +23,10 @@ export default function TapAndGoSetupCard({
           account. No terminal. No percentage of sales.
         </p>
         <Link
-          href="/dashboard/settings#stripe"
+          href="/dashboard/settings/billing?plan=card"
           className="mt-4 inline-flex rounded-[var(--radius-pill)] border border-[var(--field)] px-4 py-2.5 text-sm font-semibold text-[var(--field)] hover:bg-[var(--wash)]"
         >
-          Card plan details
+          Subscribe to Card plan
         </Link>
       </section>
     );

@@ -24,21 +24,44 @@ export default function QrPaymentMethods({
       >
         Pay with
       </p>
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        {brands.map((brand) => (
-          <span
-            key={brand}
-            className={`inline-flex items-center justify-center rounded-md border border-[var(--line)] bg-white text-[var(--ink)] ${
-              compact ? "size-7" : "size-10"
-            }`}
-            title={labelFor(brand)}
-          >
-            <PaymentBrandIcon
-              brand={brand}
-              className={compact ? "size-4" : "size-6"}
-            />
-          </span>
-        ))}
+      <div className="flex flex-wrap items-end justify-center gap-2">
+        {brands.map((brand) => {
+          const label = labelFor(brand);
+          const showCaption = brand === "cash";
+          return (
+            <span
+              key={brand}
+              className="inline-flex flex-col items-center gap-0.5"
+              title={label}
+            >
+              <span
+                className={`inline-flex items-center justify-center rounded-md border border-[var(--line)] bg-white text-[var(--ink)] ${
+                  brand === "payid"
+                    ? compact
+                      ? "h-7 px-1.5"
+                      : "h-10 px-2"
+                    : compact
+                      ? "size-7"
+                      : "size-10"
+                }`}
+              >
+                <PaymentBrandIcon
+                  brand={brand}
+                  className={compact ? "size-4" : "size-6"}
+                />
+              </span>
+              {showCaption ? (
+                <span
+                  className={`font-semibold leading-none text-[var(--field)] ${
+                    compact ? "text-[8px]" : "text-[10px]"
+                  }`}
+                >
+                  {label}
+                </span>
+              ) : null}
+            </span>
+          );
+        })}
       </div>
     </div>
   );

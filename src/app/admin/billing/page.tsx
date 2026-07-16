@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/session";
-import { isStripeBillingConfigured, listConfiguredCashPlanPrices } from "@/lib/stripe";
+import {
+  isStripeBillingConfigured,
+  listConfiguredCardPlanPrices,
+  listConfiguredCashPlanPrices,
+} from "@/lib/stripe";
 import {
   BILLING_CURRENCIES,
   CARD_PLAN_BY_CURRENCY,
@@ -14,6 +18,7 @@ export default async function AdminBillingPage() {
   await requireAdmin();
   const configured = isStripeBillingConfigured();
   const prices = listConfiguredCashPlanPrices();
+  const cardPrices = listConfiguredCardPlanPrices();
 
   let promos: Awaited<ReturnType<typeof listPromoCodes>> = [];
   if (configured) {
@@ -57,12 +62,26 @@ export default async function AdminBillingPage() {
             );
           })}
         </ul>
-        <p className="text-[var(--muted)]">
-          Card plan (coming soon):{" "}
-          {BILLING_CURRENCIES.map(
-            (c) => `${formatMoney(CARD_PLAN_BY_CURRENCY[c], c)}`,
-          ).join(" · ")}
-        </p>
+        <h2 className="mt-4 text-lg font-semibold">Card plan prices (no trial)</h2>
+        <ul className="space-y-1">
+          {BILLING_CURRENCIES.map((currency) => {
+            const configuredPrice = cardPrices.find((p) => p.currency === currency);
+            return (
+              <li key={`card-${currency}`}>
+                {currency}{" "}
+                {formatMoney(CARD_PLAN_BY_CURRENCY[currency], currency)}
+                /mo ·{" "}
+                {configuredPrice ? (
+                  <code className="text-xs">{configuredPrice.priceId}</code>
+                ) : (
+                  <span className="text-red-700">
+                    missing STRIPE_PRICE_ID_CARD_{currency}
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
         <p>
           Checkout allows promotion codes on{" "}
           <Link href="/dashboard/settings/billing" className="underline">

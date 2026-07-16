@@ -27,11 +27,11 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "How does QR checkout work?",
     answer:
-      "You print a QR poster for each stand. Shoppers open it on their phone and select items. On Cash they confirm cash or PayID at the stand and you are alerted. On Card / Tap & Go they pay digitally in the same checkout (card, Apple Pay, Google Pay). Stock updates either way.",
+      "You print a QR poster for each stand. Shoppers open it on their phone and select items. On Cash they confirm cash and PayID (Australia only) at the stand and you are alerted. On Card / Tap & Go they pay digitally in the same checkout (card, Apple Pay, Google Pay). Stock updates either way.",
   },
   {
     question: "How much does it cost?",
-    answer: `Cash (live): ${formatMoney(CASH_PLAN_BY_CURRENCY.AUD, "AUD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.USD, "USD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.GBP, "GBP")}, or ${formatMoney(CASH_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site, with a 30-day free start. Pick billing currency at signup. Card / Tap & Go: ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site — join the waitlist from pricing for Card plan billing.`,
+    answer: `Cash (live): ${formatMoney(CASH_PLAN_BY_CURRENCY.AUD, "AUD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.USD, "USD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.GBP, "GBP")}, or ${formatMoney(CASH_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site, with a 30-day free trial. Card / Tap & Go (live): ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site — no free trial, billed from day one. Pick billing currency at signup or in billing settings.`,
   },
   {
     question: "Who is Stallside for?",

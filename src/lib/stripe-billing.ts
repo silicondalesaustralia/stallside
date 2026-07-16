@@ -1,7 +1,13 @@
 import type Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { SubscriptionStatus } from "@/generated/prisma/client";
-import { cashPlanCents, isBillingCurrency, type BillingCurrency } from "@/lib/saas-pricing";
+import {
+  cardPlanCents,
+  cashPlanCents,
+  isBillingCurrency,
+  type BillingCurrency,
+} from "@/lib/saas-pricing";
+import { saasPlanFromSubscription } from "@/lib/stripe";
 
 export function mapStripeSubscriptionStatus(
   status: Stripe.Subscription.Status,
@@ -78,6 +84,9 @@ export async function syncOwnerFromSubscription(
     subscription.status === "active" || subscription.status === "trialing";
   const { currency, monthlyFeeCents } = billingFromSubscription(subscription);
   const periodEnd = periodEndFromSubscription(subscription);
+  const plan = saasPlanFromSubscription(subscription);
+  const feeFallback =
+    plan === "card" ? cardPlanCents(currency) : cashPlanCents(currency);
 
   await prisma.owner.update({
     where: { id: owner.id },
@@ -85,11 +94,13 @@ export async function syncOwnerFromSubscription(
       stripeCustomerId: customerId || owner.stripeCustomerId,
       stripeSubscriptionId: cancelled ? null : subscription.id,
       subscriptionStatus: mapStripeSubscriptionStatus(subscription.status),
-      subscriptionPlan: "cash",
-      monthlyFeeCents,
+      subscriptionPlan: cancelled ? owner.subscriptionPlan : plan,
+      monthlyFeeCents: monthlyFeeCents || feeFallback,
       billingCurrency: currency,
       cancelAtPeriodEnd: cancelled ? false : Boolean(subscription.cancel_at_period_end),
       currentPeriodEndsAt: periodEnd,
+      // Paid Card plan: clear app trial so access follows the subscription.
+      ...(live && plan === "card" ? { trialEndsAt: null } : {}),
       ...(live && !owner.subscriptionStartedAt
         ? { subscriptionStartedAt: new Date() }
         : {}),

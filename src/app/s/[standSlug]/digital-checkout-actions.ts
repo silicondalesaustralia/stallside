@@ -7,7 +7,9 @@ import {
   ReceiptChannel,
 } from "@/generated/prisma/client";
 import { loadStandCart, type CartItemInput } from "@/lib/checkout";
+import { isDemoStandSlug } from "@/lib/demo";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
+import { resolveDemoCardStripe } from "@/lib/stripe-demo";
 import { PLATFORM_FEE_BPS } from "@/lib/constants";
 import { platformFeeCents } from "@/lib/money";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
@@ -17,10 +19,6 @@ export async function startCardCheckout(input: {
   items: CartItemInput[];
 }) {
   try {
-    if (!isStripeConfigured()) {
-      return { error: "Card payments are not configured yet." };
-    }
-
     const loaded = await loadStandCart(input.standSlug, input.items);
     if ("error" in loaded) return { error: loaded.error };
 
@@ -30,6 +28,7 @@ export async function startCardCheckout(input: {
       where: { id: owner.userId },
       select: { email: true, role: true },
     });
+    const demo = isDemoStandSlug(stand.slug);
 
     if (!stand.acceptCard) {
       return { error: "Card is not enabled at this stand." };
@@ -42,11 +41,30 @@ export async function startCardCheckout(input: {
     ) {
       return { error: "Card / Tap & Go requires the Card plan." };
     }
-    if (!owner.stripeAccountId || !owner.stripeChargesEnabled) {
-      return {
-        error: "This stand cannot take card payments yet (Stripe not connected).",
-      };
+
+    const demoStripe = demo ? resolveDemoCardStripe(owner) : null;
+    if (demo) {
+      if (!demoStripe) {
+        return {
+          error:
+            "Demo card checkout needs STRIPE_SECRET_KEY_TEST (or sk_test platform key) and a test Connect account.",
+        };
+      }
+    } else {
+      if (!isStripeConfigured()) {
+        return { error: "Card payments are not configured yet." };
+      }
+      if (!owner.stripeAccountId || !owner.stripeChargesEnabled) {
+        return {
+          error:
+            "This stand cannot take card payments yet (Stripe not connected).",
+        };
+      }
     }
+
+    const stripe = demoStripe?.stripe ?? getStripe();
+    const stripeAccountId =
+      demoStripe?.stripeAccountId ?? owner.stripeAccountId!;
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
     const trackedFee = platformFeeCents(
@@ -71,7 +89,6 @@ export async function startCardCheckout(input: {
     });
 
     const base = appBaseUrl();
-    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create(
       {
         mode: "payment",
@@ -90,12 +107,14 @@ export async function startCardCheckout(input: {
           orderId: order.id,
           standId: stand.id,
           ownerId: stand.ownerId,
+          demo: demo ? "1" : "0",
+          stripeAccountId,
         },
         payment_intent_data: {
           metadata: { orderId: order.id },
         },
       },
-      { stripeAccount: owner.stripeAccountId },
+      { stripeAccount: stripeAccountId },
     );
 
     await prisma.order.update({

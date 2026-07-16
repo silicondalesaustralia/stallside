@@ -1,31 +1,28 @@
 const OWNER_LIVE = [
   "Unlimited products, real stock counts",
   "Printable QR poster - print, download, copy",
-  "Cash and PayID payments, customer-confirmed",
+  "Cash and PayID (Australia) payments, customer-confirmed",
+  "Tap & Go - card, Apple Pay, Google Pay",
+  "No terminal, no hardware, no percentage of your sales",
+  "Paid straight to your account: no cash box to empty, count, or bank",
   "Sale alerts - email and push",
   "Low-stock alerts before you run out",
   "Restock from your phone, in the field",
   "Orders dashboard - what sold, when, for how much",
   "Stock shows Available / Low / Sold out",
-  "Owner app on iPhone and Android",
+  "Add to your phone Home Screen for push alerts - no App Store install",
 ] as const;
 
-const OWNER_SOON = [
-  "Tap & Go - card, Apple Pay, Google Pay",
-  "No terminal, no hardware, no percentage of your sales",
-  "Paid straight to your account: no cash box to empty, count, or bank",
-] as const;
+const OWNER_SOON = ["PayPal at the gate"] as const;
 
 const CUSTOMER_LIVE = [
   "Scan with your phone camera. No app.",
   "See what's there and what's left.",
-  "Pay cash or PayID and confirm - the owner knows.",
+  "Pay cash and PayID (Australia only), then confirm — the owner knows.",
+  "Tap & Go - card, Apple Pay, Google Pay on your phone",
 ] as const;
 
-const CUSTOMER_SOON = [
-  "Tap & Go - card, Apple Pay, Google Pay",
-  "Save your card once, pay in one tap",
-] as const;
+const CUSTOMER_SOON = ["PayPal checkout"] as const;
 
 function FeatureColumn({
   title,
@@ -50,19 +47,6 @@ function FeatureColumn({
             <span className="shrink-0 text-[var(--leaf)]" aria-hidden>
               ✓
             </span>
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-        Coming soon
-      </p>
-      <ul className="mt-3 space-y-2 text-sm text-[var(--muted)]">
-        {soon.map((item) => (
-          <li key={item} className="flex gap-2">
-            <span className="shrink-0" aria-hidden>
-              ○
-            </span>
             <span
               className={
                 item.includes("no percentage")
@@ -75,6 +59,23 @@ function FeatureColumn({
           </li>
         ))}
       </ul>
+      {soon.length > 0 ? (
+        <>
+          <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+            Coming soon
+          </p>
+          <ul className="mt-3 space-y-2 text-sm text-[var(--muted)]">
+            {soon.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="shrink-0" aria-hidden>
+                  ○
+                </span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
     </div>
   );
 }

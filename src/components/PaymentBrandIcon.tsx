@@ -44,18 +44,28 @@ export default function PaymentBrandIcon({
   }
 
   if (brand === "payid") {
+    // Official PayID wordmark — wider than square icons.
+    const height =
+      className.includes("size-7") || className.includes("h-7")
+        ? "h-7"
+        : className.includes("size-6") || className.includes("h-6")
+          ? "h-6"
+          : className.includes("size-4") || className.includes("h-4")
+            ? "h-4"
+            : "h-5";
+    const extras = className
+      .replace(/\bsize-\d+\b/g, "")
+      .replace(/\bh-\d+\b/g, "")
+      .trim();
+    const maxWidth = extras.includes("max-w-") ? "" : "max-w-[4.5rem]";
     return (
-      <svg {...common}>
-        <rect x="3" y="4" width="18" height="16" rx="3" stroke="currentColor" strokeWidth="1.75" />
-        <path
-          d="M8 9h3.2a2.2 2.2 0 0 1 0 4.4H8V9Zm0 4.4V17"
-          stroke="currentColor"
-          strokeWidth="1.75"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <circle cx="16.5" cy="14.5" r="1.2" fill="currentColor" />
-      </svg>
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src="/brand/payid.png"
+        alt="PayID"
+        aria-hidden
+        className={`${height} w-auto ${maxWidth} object-contain object-left ${extras}`}
+      />
     );
   }
 

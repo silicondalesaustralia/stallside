@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
+import { stripeClientForLivemode } from "@/lib/stripe-demo";
 import {
   constructStripeWebhookEvent,
   stripeWebhookSecrets,
@@ -16,15 +17,20 @@ import { PaymentStatus } from "@/generated/prisma/client";
 
 export const runtime = "nodejs";
 
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+async function handleCheckoutCompleted(
+  session: Stripe.Checkout.Session,
+  livemode: boolean,
+) {
   if (session.mode === "subscription") {
+    // Demo uses test payment Checkout only — ignore test SaaS events.
+    if (!livemode) return;
     const subscriptionId =
       typeof session.subscription === "string"
         ? session.subscription
         : session.subscription?.id;
     if (!subscriptionId) return;
-    const subscription =
-      await getStripe().subscriptions.retrieve(subscriptionId);
+    const stripe = stripeClientForLivemode(true) ?? getStripe();
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     await syncOwnerFromSubscription(subscription);
     return;
   }
@@ -72,11 +78,17 @@ export async function POST(req: NextRequest) {
 
   try {
     if (event.type === "checkout.session.completed") {
-      await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+      await handleCheckoutCompleted(
+        event.data.object as Stripe.Checkout.Session,
+        event.livemode,
+      );
     }
 
     if (event.type === "checkout.session.async_payment_succeeded") {
-      await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+      await handleCheckoutCompleted(
+        event.data.object as Stripe.Checkout.Session,
+        event.livemode,
+      );
     }
 
     if (event.type === "checkout.session.async_payment_failed") {
@@ -106,15 +118,16 @@ export async function POST(req: NextRequest) {
     }
 
     if (
-      event.type === "customer.subscription.updated" ||
-      event.type === "customer.subscription.deleted"
+      event.livemode &&
+      (event.type === "customer.subscription.updated" ||
+        event.type === "customer.subscription.deleted")
     ) {
       await syncOwnerFromSubscription(
         event.data.object as Stripe.Subscription,
       );
     }
 
-    if (event.type === "invoice.paid") {
+    if (event.livemode && event.type === "invoice.paid") {
       await recordSubscriptionInvoicePaid(
         event.data.object as Stripe.Invoice,
       );

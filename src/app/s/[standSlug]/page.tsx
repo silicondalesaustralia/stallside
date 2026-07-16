@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import BrandMark from "@/components/BrandMark";
 import { localTransferForCurrency } from "@/lib/local-transfer";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { standOffersCard } from "@/lib/stand-payment-brands";
 import PublicCart from "./PublicCart";
 
 function stockLabel(showExact: boolean, quantity: number, threshold: number): string {
@@ -75,15 +75,10 @@ export default async function PublicStandPage({
             currency={stand.currency}
             products={products}
             cashEnabled={stand.acceptCash}
-            cardEnabled={Boolean(
-              stand.acceptCard &&
-                ownerHasCardTierAccess(stand.owner, {
-                  email: stand.owner.user.email,
-                  role: stand.owner.user.role,
-                }) &&
-                stand.owner.stripeAccountId &&
-                stand.owner.stripeChargesEnabled,
-            )}
+            cardEnabled={standOffersCard(stand, {
+              ...stand.owner,
+              user: stand.owner.user,
+            })}
             paypalEnabled={Boolean(
               stand.acceptPayPal &&
                 stand.owner.paypalMerchantId &&

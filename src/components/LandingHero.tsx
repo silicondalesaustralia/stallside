@@ -29,14 +29,22 @@ export default function LandingHero() {
         }}
       />
 
-      <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4 sm:px-6">
+      <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-6">
         <BrandLockup variant="dark" size="sm" />
-        <Link
-          href="/login"
-          className="rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/30 bg-white/5 px-4 py-2 text-sm font-semibold backdrop-blur-sm transition duration-150 hover:bg-white/10"
-        >
-          Owner login
-        </Link>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            href="/demo"
+            className="rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/30 bg-white/5 px-3 py-2 text-sm font-semibold backdrop-blur-sm transition duration-150 hover:bg-white/10 sm:px-4"
+          >
+            Try Demo
+          </Link>
+          <Link
+            href="/login"
+            className="rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/30 bg-white/5 px-3 py-2 text-sm font-semibold backdrop-blur-sm transition duration-150 hover:bg-white/10 sm:px-4"
+          >
+            Owner login
+          </Link>
+        </div>
       </header>
 
       <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-8 px-5 pb-10 pt-2 sm:px-6 sm:pb-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-10">

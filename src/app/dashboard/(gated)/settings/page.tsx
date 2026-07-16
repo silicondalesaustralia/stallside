@@ -128,14 +128,14 @@ export default async function SettingsPage() {
               </span>
             </h2>
             <p className="text-[var(--muted)]">
-              Card, Apple Pay, and Google Pay at your gate. Join the waitlist from
-              pricing, or ask us to enable Card on your account.
+              Card, Apple Pay, and Google Pay at your gate. No free trial — billed
+              from day one.
             </p>
             <Link
-              href="/#pricing"
+              href="/dashboard/settings/billing?plan=card"
               className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
             >
-              View Card plan
+              Subscribe to Card plan
             </Link>
           </>
         )}
@@ -179,8 +179,8 @@ export default async function SettingsPage() {
             </span>
           </h2>
           <p className="text-[var(--muted)]">
-            PayPal checkout is on the Card plan. Upgrade when Card billing is
-            live.
+            PayPal checkout is on the Card plan. Subscribe to Card / Tap &amp; Go
+            first.
           </p>
         </section>
       )}

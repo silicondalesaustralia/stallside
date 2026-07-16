@@ -1,11 +1,13 @@
 import type Stripe from "stripe";
 import { cleanEnvSecret, getStripe } from "@/lib/stripe";
 
-/** Platform (Your account) + Connect destinations can share one URL with two secrets. */
+/** Platform + Connect + optional test-mode secrets (demo Card) on one URL. */
 export function stripeWebhookSecrets(): string[] {
   const secrets = [
     cleanEnvSecret(process.env.STRIPE_WEBHOOK_SECRET),
     cleanEnvSecret(process.env.STRIPE_WEBHOOK_SECRET_CONNECT),
+    cleanEnvSecret(process.env.STRIPE_WEBHOOK_SECRET_TEST),
+    cleanEnvSecret(process.env.STRIPE_WEBHOOK_SECRET_TEST_CONNECT),
   ].filter((value): value is string => Boolean(value));
   return [...new Set(secrets)];
 }

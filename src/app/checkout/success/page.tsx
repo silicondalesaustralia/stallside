@@ -3,7 +3,9 @@ import {
   fulfillPaidCardOrder,
   fulfillPaidPayPalOrder,
 } from "@/lib/fulfill-paid-order";
+import { isDemoStandSlug } from "@/lib/demo";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
+import { resolveDemoCardStripe } from "@/lib/stripe-demo";
 import { isPayPalConfigured } from "@/lib/paypal";
 import { capturePayPalOrder } from "@/lib/paypal-orders";
 import { prisma } from "@/lib/prisma";
@@ -23,18 +25,26 @@ export default async function CheckoutSuccessPage({
   const params = await searchParams;
   let message = "Thanks - your payment is being confirmed.";
 
-  if (params.session_id && isStripeConfigured()) {
+  if (params.session_id) {
     try {
       const order = await prisma.order.findFirst({
         where: { stripeCheckoutSessionId: params.session_id },
-        include: { owner: true },
+        include: { owner: true, stand: { select: { slug: true } } },
       });
 
-      if (order?.owner.stripeAccountId) {
-        const session = await getStripe().checkout.sessions.retrieve(
+      const demo =
+        order?.stand && isDemoStandSlug(order.stand.slug)
+          ? resolveDemoCardStripe(order.owner)
+          : null;
+      const stripe = demo?.stripe ?? (isStripeConfigured() ? getStripe() : null);
+      const stripeAccountId =
+        demo?.stripeAccountId ?? order?.owner.stripeAccountId ?? null;
+
+      if (order && stripe && stripeAccountId) {
+        const session = await stripe.checkout.sessions.retrieve(
           params.session_id,
           undefined,
-          { stripeAccount: order.owner.stripeAccountId },
+          { stripeAccount: stripeAccountId },
         );
 
         if (session.payment_status === "paid") {

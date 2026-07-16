@@ -1,8 +1,10 @@
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
+import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 
 type StandPaymentFlags = {
+  slug?: string;
   currency: string;
   acceptCash: boolean;
   acceptLocalTransfer: boolean;
@@ -42,16 +44,7 @@ export function standPaymentBrands(
     brands.push("payid");
   }
 
-  const cardReady = Boolean(
-    stand.acceptCard &&
-      ownerHasCardTierAccess(owner, {
-        email: owner.user?.email,
-        role: owner.user?.role,
-      }) &&
-      owner.stripeAccountId &&
-      owner.stripeChargesEnabled,
-  );
-  if (cardReady) {
+  if (standOffersCard(stand, owner)) {
     brands.push("card", "apple", "google");
   }
 
@@ -65,4 +58,22 @@ export function standPaymentBrands(
   if (paypalReady) brands.push("paypal");
 
   return brands;
+}
+
+/** Card / Tap & Go available for this stand (includes demo test-Stripe path). */
+export function standOffersCard(
+  stand: Pick<StandPaymentFlags, "slug" | "acceptCard">,
+  owner: OwnerPaymentReady,
+): boolean {
+  if (!stand.acceptCard) return false;
+  if (
+    !ownerHasCardTierAccess(owner, {
+      email: owner.user?.email,
+      role: owner.user?.role,
+    })
+  ) {
+    return false;
+  }
+  if (stand.slug && isDemoCardReady(stand.slug, owner)) return true;
+  return Boolean(owner.stripeAccountId && owner.stripeChargesEnabled);
 }
