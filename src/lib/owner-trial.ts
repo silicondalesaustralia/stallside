@@ -54,6 +54,18 @@ export function hasComplimentaryAccess(input: ComplimentaryAccessInput): boolean
   return (COMPLIMENTARY_ACCESS_EMAILS as readonly string[]).includes(email);
 }
 
+const CARD_TIER_PLANS = new Set(["card", "card_paypal"]);
+
+/** Card / PayPal ($19.99) features: paid card plan, or complimentary / admin. */
+export function ownerHasCardTierAccess(
+  owner: { subscriptionPlan?: string | null },
+  access?: ComplimentaryAccessInput,
+): boolean {
+  if (access && hasComplimentaryAccess(access)) return true;
+  const plan = (owner.subscriptionPlan ?? "").trim().toLowerCase();
+  return CARD_TIER_PLANS.has(plan);
+}
+
 /** Owner may use stands/products/orders — data is always retained. */
 export function ownerHasAppAccess(
   owner: OwnerAccessFields,

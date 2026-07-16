@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { isPayPalConfigured } from "@/lib/paypal";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import {
   createPartnerReferralLink,
   getMerchantIntegrationStatus,
@@ -17,8 +18,20 @@ function revalidatePayPal() {
   revalidatePath("/dashboard/settings/paypal");
 }
 
+function assertCardTier(
+  owner: { subscriptionPlan?: string | null },
+  user: { email?: string | null; role?: string | null },
+) {
+  if (
+    !ownerHasCardTierAccess(owner, { email: user.email, role: user.role })
+  ) {
+    throw new Error("PayPal requires the Card plan.");
+  }
+}
+
 export async function startPayPalConnect() {
   const { owner, user } = await requireOwner();
+  assertCardTier(owner, user);
   if (!isPayPalConfigured()) {
     throw new Error("PayPal is not configured on the server yet.");
   }
@@ -35,7 +48,8 @@ export async function startPayPalConnect() {
 export async function refreshPayPalStatus(
   merchantIdOrForm?: string | FormData | null,
 ) {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
+  assertCardTier(owner, user);
   if (!isPayPalConfigured()) {
     redirect("/dashboard/settings/paypal");
   }
@@ -80,7 +94,8 @@ export async function refreshPayPalStatus(
 }
 
 export async function setPayPalPaymentsEnabled(formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
+  assertCardTier(owner, user);
   const enabled = formData.get("enabled") === "1";
 
   if (enabled && (!owner.paypalMerchantId || !owner.paypalOnboardingComplete)) {

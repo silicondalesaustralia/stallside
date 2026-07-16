@@ -3,12 +3,17 @@ import { requireOwner } from "@/lib/session";
 import { logout } from "@/app/login/actions";
 import { MONTHLY_FEE_CENTS } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { Role } from "@/generated/prisma/client";
 import AlertSettingsForm from "./AlertSettingsForm";
 import BusinessNameForm from "./BusinessNameForm";
 
 export default async function SettingsPage() {
   const { user, owner } = await requireOwner();
+  const cardTier = ownerHasCardTierAccess(owner, {
+    email: user.email,
+    role: user.role,
+  });
 
   return (
     <main className="flex max-w-xl flex-col gap-8">
@@ -79,46 +84,80 @@ export default async function SettingsPage() {
         </Link>
       </section>
 
-      <section className="space-y-3 text-sm opacity-55">
-        <h2 className="text-lg font-semibold">
-          Stripe payments (Connect){" "}
-          <span className="text-sm font-medium text-[var(--muted)]">· Coming soon!</span>
-        </h2>
-        <p>Status: Not connected</p>
-        <p className="text-[var(--muted)]">
-          Connect your Stripe so stand customers can pay you by card / Tap &amp; Go.
-        </p>
-        <span
-          aria-disabled
-          className="inline-flex cursor-not-allowed rounded-lg border border-[var(--line)] bg-[var(--wash)] px-4 py-2.5 text-sm font-semibold text-[var(--muted)]"
-        >
-          Coming soon!
-        </span>
-      </section>
+      {cardTier ? (
+        <section className="space-y-3 text-sm">
+          <h2 className="text-lg font-semibold">Stripe payments (Connect)</h2>
+          <p>
+            Status:{" "}
+            {owner.stripeChargesEnabled
+              ? "Connected · charges enabled"
+              : owner.stripeAccountId
+                ? "Connected · finish setup"
+                : "Not connected"}
+          </p>
+          <p className="text-[var(--muted)]">
+            Connect your Stripe so stand customers can pay you by card / Tap
+            &amp; Go.
+          </p>
+          <Link
+            href="/dashboard/settings/stripe"
+            className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+          >
+            {owner.stripeAccountId ? "Manage Stripe" : "Connect Stripe"}
+          </Link>
+        </section>
+      ) : (
+        <section className="space-y-3 text-sm opacity-55">
+          <h2 className="text-lg font-semibold">
+            Stripe payments (Connect){" "}
+            <span className="text-sm font-medium text-[var(--muted)]">
+              · Card plan
+            </span>
+          </h2>
+          <p className="text-[var(--muted)]">
+            Tap &amp; Go is on the Card plan. Upgrade when Card billing is live.
+          </p>
+        </section>
+      )}
 
-      <section className="space-y-3 text-sm">
-        <h2 className="text-lg font-semibold">PayPal Connect</h2>
-        <p>
-          Status:{" "}
-          {owner.paypalMerchantId
-            ? owner.paypalPaymentsEnabled
-              ? "Connected · offering at checkout"
-              : owner.paypalOnboardingComplete
-                ? "Connected · off at checkout"
-                : "Connected · finish setup"
-            : "Not connected"}
-        </p>
-        <p className="text-[var(--muted)]">
-          Connect a PayPal Business account so customers can pay you with PayPal
-          after scanning your Stallside QR. Funds go to you.
-        </p>
-        <Link
-          href="/dashboard/settings/paypal"
-          className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
-        >
-          {owner.paypalMerchantId ? "Manage PayPal" : "Connect PayPal"}
-        </Link>
-      </section>
+      {cardTier ? (
+        <section className="space-y-3 text-sm">
+          <h2 className="text-lg font-semibold">PayPal Connect</h2>
+          <p>
+            Status:{" "}
+            {owner.paypalMerchantId
+              ? owner.paypalPaymentsEnabled
+                ? "Connected · offering at checkout"
+                : owner.paypalOnboardingComplete
+                  ? "Connected · off at checkout"
+                  : "Connected · finish setup"
+              : "Not connected"}
+          </p>
+          <p className="text-[var(--muted)]">
+            Connect a PayPal Business account so customers can pay you with
+            PayPal after scanning your Stallside QR. Funds go to you.
+          </p>
+          <Link
+            href="/dashboard/settings/paypal"
+            className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+          >
+            {owner.paypalMerchantId ? "Manage PayPal" : "Connect PayPal"}
+          </Link>
+        </section>
+      ) : (
+        <section className="space-y-3 text-sm opacity-55">
+          <h2 className="text-lg font-semibold">
+            PayPal Connect{" "}
+            <span className="text-sm font-medium text-[var(--muted)]">
+              · Card plan
+            </span>
+          </h2>
+          <p className="text-[var(--muted)]">
+            PayPal checkout is on the Card plan. Upgrade when Card billing is
+            live.
+          </p>
+        </section>
+      )}
     </main>
   );
 }

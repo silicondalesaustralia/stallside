@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { isPayPalConfigured } from "@/lib/paypal";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import {
   refreshPayPalStatus,
   setPayPalPaymentsEnabled,
@@ -17,10 +18,14 @@ export default async function PayPalSettingsPage({
     permissionsGranted?: string;
   }>;
 }) {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
   const params = await searchParams;
+  const cardTier = ownerHasCardTierAccess(owner, {
+    email: user.email,
+    role: user.role,
+  });
 
-  if (params.return === "1" || params.merchantIdInPayPal) {
+  if (cardTier && (params.return === "1" || params.merchantIdInPayPal)) {
     await refreshPayPalStatus(params.merchantIdInPayPal ?? null);
   }
 
@@ -44,7 +49,14 @@ export default async function PayPalSettingsPage({
         </p>
       </div>
 
-      <PayPalWarnings billingCurrency={owner.billingCurrency} />
+      {!cardTier ? (
+        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
+          PayPal is on the Card plan. Your account does not have Card-tier access
+          yet.
+        </p>
+      ) : null}
+
+      {cardTier ? <PayPalWarnings billingCurrency={owner.billingCurrency} /> : null}
 
       {!configured ? (
         <p className="text-sm text-red-700">
@@ -75,6 +87,7 @@ export default async function PayPalSettingsPage({
         </p>
       </section>
 
+      {cardTier ? (
       <div className="flex flex-wrap gap-3">
         <form action={startPayPalConnect}>
           <button
@@ -96,8 +109,9 @@ export default async function PayPalSettingsPage({
           </form>
         ) : null}
       </div>
+      ) : null}
 
-      {connected && ready ? (
+      {cardTier && connected && ready ? (
         <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
           <p className="font-semibold">Show PayPal at checkout</p>
           <p className="text-[var(--muted)]">
