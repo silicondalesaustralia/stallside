@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { isStripeConfigured } from "@/lib/stripe";
+import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { refreshStripeStatus, startStripeConnect } from "./actions";
 
 export default async function StripeSettingsPage({
@@ -11,8 +13,16 @@ export default async function StripeSettingsPage({
   const { owner } = await requireOwner();
   const params = await searchParams;
 
-  if (params.return === "1" || params.refresh === "1") {
-    await refreshStripeStatus();
+  if (
+    (params.return === "1" || params.refresh === "1") &&
+    owner.stripeAccountId &&
+    isStripeConfigured()
+  ) {
+    await syncStripeAccountStatus({
+      ownerId: owner.id,
+      stripeAccountId: owner.stripeAccountId,
+    });
+    redirect("/dashboard/settings/stripe");
   }
 
   const configured = isStripeConfigured();

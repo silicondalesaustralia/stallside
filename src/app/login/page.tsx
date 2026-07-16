@@ -1,8 +1,16 @@
 import BrandLockup from "@/components/BrandLockup";
 import { APP_NAME } from "@/lib/constants";
+import { safeCallbackUrl } from "@/lib/login-callback";
 import { requestLoginCode } from "./actions";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}) {
+  const params = await searchParams;
+  const callbackUrl = safeCallbackUrl(params.callbackUrl);
+
   return (
     <main className="mx-auto flex min-h-full w-full max-w-md flex-1 flex-col justify-center px-6 py-16">
       <BrandLockup />
@@ -13,6 +21,9 @@ export default function LoginPage() {
         We&apos;ll email a 6-digit code. Enter it here — no passwords, no App Store.
       </p>
       <form action={requestLoginCode} className="mt-8 flex w-full flex-col gap-4">
+        {callbackUrl !== "/dashboard" ? (
+          <input type="hidden" name="callbackUrl" value={callbackUrl} />
+        ) : null}
         <label className="flex flex-col gap-2 text-sm">
           <span className="font-medium text-[var(--ink)]">Email</span>
           <input

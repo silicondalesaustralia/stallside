@@ -5,9 +5,13 @@ import { requestLoginCode, verifyLoginCode } from "../actions";
 
 type LoginCodeFormProps = {
   email: string;
+  callbackUrl?: string;
 };
 
-export default function LoginCodeForm({ email }: LoginCodeFormProps) {
+export default function LoginCodeForm({
+  email,
+  callbackUrl = "/dashboard",
+}: LoginCodeFormProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -42,6 +46,7 @@ export default function LoginCodeForm({ email }: LoginCodeFormProps) {
     <div className="mt-8 flex w-full flex-col gap-6">
       <form action={onVerify} className="flex flex-col gap-4">
         <input type="hidden" name="email" value={email} />
+        <input type="hidden" name="callbackUrl" value={callbackUrl} />
         <label className="flex flex-col gap-2 text-sm">
           <span className="font-medium text-[var(--ink)]">6-digit code</span>
           <input
@@ -67,6 +72,7 @@ export default function LoginCodeForm({ email }: LoginCodeFormProps) {
       </form>
       <form action={onResend}>
         <input type="hidden" name="email" value={email} />
+        <input type="hidden" name="callbackUrl" value={callbackUrl} />
         <button
           type="submit"
           disabled={pending}

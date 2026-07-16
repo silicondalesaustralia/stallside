@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { isPayPalConfigured } from "@/lib/paypal";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { syncPayPalMerchantStatus } from "@/lib/paypal-sync";
 import {
   refreshPayPalStatus,
   setPayPalPaymentsEnabled,
@@ -25,8 +27,19 @@ export default async function PayPalSettingsPage({
     role: user.role,
   });
 
-  if (cardTier && (params.return === "1" || params.merchantIdInPayPal)) {
-    await refreshPayPalStatus(params.merchantIdInPayPal ?? null);
+  if (
+    cardTier &&
+    isPayPalConfigured() &&
+    (params.return === "1" || params.merchantIdInPayPal)
+  ) {
+    await syncPayPalMerchantStatus({
+      ownerId: owner.id,
+      trackingId: owner.id,
+      existingMerchantId: owner.paypalMerchantId,
+      existingPaymentsEnabled: owner.paypalPaymentsEnabled,
+      merchantIdHint: params.merchantIdInPayPal ?? null,
+    });
+    redirect("/dashboard/settings/paypal");
   }
 
   const configured = isPayPalConfigured();

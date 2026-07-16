@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
+import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 
 export async function startStripeConnect() {
   const { owner, user } = await requireOwner();
@@ -53,16 +54,9 @@ export async function refreshStripeStatus() {
     redirect("/dashboard/settings/stripe");
   }
 
-  const stripe = getStripe();
-  const account = await stripe.accounts.retrieve(owner.stripeAccountId);
-
-  await prisma.owner.update({
-    where: { id: owner.id },
-    data: {
-      stripeOnboardingComplete: account.details_submitted ?? false,
-      stripeChargesEnabled: account.charges_enabled ?? false,
-      stripePayoutsEnabled: account.payouts_enabled ?? false,
-    },
+  await syncStripeAccountStatus({
+    ownerId: owner.id,
+    stripeAccountId: owner.stripeAccountId,
   });
 
   revalidatePath("/dashboard/settings");

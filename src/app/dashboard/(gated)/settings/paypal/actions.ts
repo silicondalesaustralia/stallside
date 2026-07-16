@@ -6,12 +6,8 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { isPayPalConfigured } from "@/lib/paypal";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
-import {
-  createPartnerReferralLink,
-  getMerchantIntegrationStatus,
-  lookupMerchantByTrackingId,
-  merchantPaymentsReady,
-} from "@/lib/paypal-connect";
+import { createPartnerReferralLink } from "@/lib/paypal-connect";
+import { syncPayPalMerchantStatus } from "@/lib/paypal-sync";
 
 function revalidatePayPal() {
   revalidatePath("/dashboard/settings");
@@ -45,48 +41,24 @@ export async function startPayPalConnect() {
   redirect(url);
 }
 
-export async function refreshPayPalStatus(
-  merchantIdOrForm?: string | FormData | null,
-) {
+export async function refreshPayPalStatus(formData?: FormData) {
   const { owner, user } = await requireOwner();
   assertCardTier(owner, user);
   if (!isPayPalConfigured()) {
     redirect("/dashboard/settings/paypal");
   }
 
-  const merchantIdFromReturn =
-    typeof merchantIdOrForm === "string" ? merchantIdOrForm.trim() : "";
-  let merchantId = merchantIdFromReturn || owner.paypalMerchantId;
-  const wasConnected = Boolean(owner.paypalMerchantId);
+  const hint =
+    formData instanceof FormData
+      ? String(formData.get("merchantIdInPayPal") ?? "").trim()
+      : "";
 
-  if (!merchantId) {
-    try {
-      const looked = await lookupMerchantByTrackingId(owner.id);
-      merchantId = looked.merchant_id ?? null;
-    } catch (error) {
-      console.error("PayPal tracking lookup failed", error);
-    }
-  }
-
-  if (!merchantId) {
-    redirect("/dashboard/settings/paypal");
-  }
-
-  const status = await getMerchantIntegrationStatus(merchantId);
-  const ready = merchantPaymentsReady(status);
-
-  await prisma.owner.update({
-    where: { id: owner.id },
-    data: {
-      paypalMerchantId: merchantId,
-      paypalOnboardingComplete: ready || Boolean(status.primary_email_confirmed),
-      // First time ready → on by default; later refreshes keep owner toggle.
-      paypalPaymentsEnabled: ready
-        ? wasConnected
-          ? owner.paypalPaymentsEnabled
-          : true
-        : false,
-    },
+  await syncPayPalMerchantStatus({
+    ownerId: owner.id,
+    trackingId: owner.id,
+    existingMerchantId: owner.paypalMerchantId,
+    existingPaymentsEnabled: owner.paypalPaymentsEnabled,
+    merchantIdHint: hint || null,
   });
 
   revalidatePayPal();

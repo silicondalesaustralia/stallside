@@ -5,6 +5,7 @@ import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { issueLoginOtp } from "@/lib/login-otp";
+import { safeCallbackUrl } from "@/lib/login-callback";
 
 function normalizeEmail(raw: FormDataEntryValue | null) {
   return String(raw ?? "")
@@ -17,6 +18,7 @@ export async function requestLoginCode(formData: FormData) {
   if (!email || !email.includes("@")) {
     throw new Error("Enter a valid email address.");
   }
+  const callbackUrl = safeCallbackUrl(String(formData.get("callbackUrl") ?? ""));
 
   try {
     await issueLoginOtp(email);
@@ -25,12 +27,17 @@ export async function requestLoginCode(formData: FormData) {
     throw new Error("Could not send sign-in code. Try again in a moment.");
   }
 
-  redirect(`/login/code?email=${encodeURIComponent(email)}`);
+  const codeQs = new URLSearchParams({ email });
+  if (callbackUrl !== "/dashboard") {
+    codeQs.set("callbackUrl", callbackUrl);
+  }
+  redirect(`/login/code?${codeQs.toString()}`);
 }
 
 export async function verifyLoginCode(formData: FormData) {
   const email = normalizeEmail(formData.get("email"));
   const code = String(formData.get("code") ?? "").trim();
+  const callbackUrl = safeCallbackUrl(String(formData.get("callbackUrl") ?? ""));
   if (!email || !email.includes("@")) {
     return { error: "Enter a valid email address." };
   }
@@ -42,7 +49,7 @@ export async function verifyLoginCode(formData: FormData) {
     await signIn("otp", {
       email,
       code: code.replace(/\s+/g, ""),
-      redirectTo: "/dashboard",
+      redirectTo: callbackUrl,
     });
   } catch (error) {
     if (
