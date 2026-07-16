@@ -64,8 +64,9 @@ export default function DemoStandPanel({
             <span className="font-receipt text-[var(--ink)]">
               4242 4242 4242 4242
             </span>
-            , any future expiry, any CVC. No real charge. After success, the
-            sale alert slides down on the phone.
+            ,             any future expiry, any CVC. No real charge. Card opens in a new tab
+            from the phone frame — the sale alert slides down when payment
+            completes.
           </p>
         </div>
       ) : null}

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import DemoPhoneFrame from "@/components/DemoPhoneFrame";
 import DemoSaleBanner from "@/components/DemoSaleBanner";
 import {
+  DEMO_SALE_CHANNEL,
   isDemoSalePayload,
   type DemoSalePayload,
 } from "@/lib/demo-sale-message";
@@ -38,9 +39,20 @@ export default function DemoPhoneCheckout({
       showSale(event.data);
     }
     window.addEventListener("message", onMessage);
+
+    let channel: BroadcastChannel | null = null;
+    try {
+      channel = new BroadcastChannel(DEMO_SALE_CHANNEL);
+      channel.onmessage = (event) => {
+        if (isDemoSalePayload(event.data)) showSale(event.data);
+      };
+    } catch {
+      // BroadcastChannel unavailable
+    }
+
     return () => {
       window.removeEventListener("message", onMessage);
-      if (hideTimer.current) clearTimeout(hideTimer.current);
+      channel?.close();
     };
   }, [showSale]);
 
@@ -73,7 +85,7 @@ export default function DemoPhoneCheckout({
           href={checkoutUrl}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] px-4 py-3 text-sm font-semibold text-[var(--field)] lg:hidden"
+          className="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] px-4 py-3 text-sm font-semibold text-[var(--field)]"
         >
           Open full screen
         </a>
@@ -103,6 +115,7 @@ export default function DemoPhoneCheckout({
               title={`${standName} checkout`}
               src={checkoutUrl}
               className="size-full border-0 bg-[var(--wash)]"
+              allow="payment *"
               onLoad={onIframeLoad}
             />
           ) : (

@@ -9,7 +9,7 @@ import {
   confirmCashCheckout,
   confirmLocalTransferCheckout,
 } from "./actions";
-import { notifyDemoParentSale } from "@/lib/demo-sale-message";
+import { isEmbeddedCheckout, notifyDemoSale } from "@/lib/demo-sale-message";
 import { startCardCheckout } from "./digital-checkout-actions";
 
 type ProductRow = {
@@ -71,6 +71,7 @@ export default function PublicCart({
   );
   const [paidVia, setPaidVia] = useState<"cash" | "local_transfer" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cardTabHint, setCardTabHint] = useState(false);
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -98,7 +99,7 @@ export default function PublicCart({
     setPaidVia(via);
     setDone(true);
     setQty({});
-    notifyDemoParentSale({
+    notifyDemoSale({
       standSlug,
       via,
       totalCents: total,
@@ -135,6 +136,7 @@ export default function PublicCart({
 
   function payCard() {
     setError(null);
+    setCardTabHint(false);
     startTransition(async () => {
       const result = await startCardCheckout({ standSlug, items: payload });
       if ("error" in result && result.error) {
@@ -142,6 +144,17 @@ export default function PublicCart({
         return;
       }
       if ("url" in result && result.url) {
+        if (isEmbeddedCheckout()) {
+          const opened = window.open(result.url, "_blank", "noopener,noreferrer");
+          if (!opened) {
+            setError(
+              "Allow pop-ups to open Stripe Checkout, or use Open full screen.",
+            );
+            return;
+          }
+          setCardTabHint(true);
+          return;
+        }
         window.location.href = result.url;
       }
     });
@@ -224,6 +237,13 @@ export default function PublicCart({
       </ul>
 
       {error ? <p className="text-lg text-[var(--gone)]">{error}</p> : null}
+      {cardTabHint ? (
+        <p className="rounded-lg border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--ink)]">
+          Stripe Checkout opened in a new tab. Pay with{" "}
+          <span className="font-receipt">4242 4242 4242 4242</span> — when done,
+          the sale alert appears on the demo phone.
+        </p>
+      ) : null}
 
       {step === "pay" ? (
         <CheckoutPayStep

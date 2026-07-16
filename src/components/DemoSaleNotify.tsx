@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { notifyDemoParentSale } from "@/lib/demo-sale-message";
+import { notifyDemoSale } from "@/lib/demo-sale-message";
 
 /** Fires a demo sale alert when checkout success loads inside the /demo phone iframe. */
 export default function DemoSaleNotify({
@@ -17,7 +17,7 @@ export default function DemoSaleNotify({
 }) {
   useEffect(() => {
     if (!standSlug) return;
-    notifyDemoParentSale({ standSlug, via, totalCents, currency });
+    notifyDemoSale({ standSlug, via, totalCents, currency });
   }, [standSlug, via, totalCents, currency]);
 
   return null;
