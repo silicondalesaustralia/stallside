@@ -5,6 +5,8 @@ import { MONTHLY_FEE_CENTS } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { Role } from "@/generated/prisma/client";
+import PaymentBrandIcon from "@/components/PaymentBrandIcon";
+import PaymentIconRow from "@/components/PaymentIconRow";
 import AlertSettingsForm from "./AlertSettingsForm";
 import BusinessNameForm from "./BusinessNameForm";
 
@@ -87,7 +89,11 @@ export default async function SettingsPage() {
       <section id="stripe" className="space-y-3 text-sm scroll-mt-8">
         {cardTier ? (
           <>
-            <h2 className="text-lg font-semibold">Card / Tap &amp; Go (Stripe)</h2>
+            <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+              <PaymentBrandIcon brand="stripe" className="size-6" />
+              Card / Tap &amp; Go
+              <PaymentIconRow brands={["card", "apple", "google"]} />
+            </h2>
             <p>
               Status:{" "}
               {owner.stripeChargesEnabled
@@ -102,8 +108,9 @@ export default async function SettingsPage() {
             </p>
             <Link
               href="/dashboard/settings/stripe"
-              className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+              className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
             >
+              <PaymentBrandIcon brand="stripe" className="size-5" />
               {owner.stripeChargesEnabled
                 ? "Manage Stripe"
                 : owner.stripeAccountId
@@ -113,8 +120,9 @@ export default async function SettingsPage() {
           </>
         ) : (
           <>
-            <h2 className="text-lg font-semibold">
-              Accept cards / Tap &amp; Go{" "}
+            <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+              <PaymentBrandIcon brand="stripe" className="size-6" />
+              Accept cards / Tap &amp; Go
               <span className="text-sm font-medium text-[var(--muted)]">
                 · Card plan
               </span>
@@ -135,7 +143,10 @@ export default async function SettingsPage() {
 
       {cardTier ? (
         <section className="space-y-3 text-sm">
-          <h2 className="text-lg font-semibold">PayPal Connect</h2>
+          <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+            <PaymentBrandIcon brand="paypal" className="size-6" />
+            PayPal Connect
+          </h2>
           <p>
             Status:{" "}
             {owner.paypalMerchantId
@@ -152,14 +163,16 @@ export default async function SettingsPage() {
           </p>
           <Link
             href="/dashboard/settings/paypal"
-            className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+            className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
           >
+            <PaymentBrandIcon brand="paypal" className="size-5" />
             {owner.paypalMerchantId ? "Manage PayPal" : "Connect PayPal"}
           </Link>
         </section>
       ) : (
         <section className="space-y-3 text-sm opacity-55">
-          <h2 className="text-lg font-semibold">
+          <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+            <PaymentBrandIcon brand="paypal" className="size-6" />
             PayPal Connect{" "}
             <span className="text-sm font-medium text-[var(--muted)]">
               · Card plan

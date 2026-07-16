@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { updateStandPayments } from "../stand-payment-actions";
+import StandPaymentToggles from "./StandPaymentToggles";
 
 export type StandPaymentOptionsProps = {
   standId: string;
@@ -41,8 +41,14 @@ export default function StandPaymentOptions({
     method && localTransferMethodId === method.id
       ? (localTransferAlias ?? "")
       : "";
-  const [alias, setAlias] = useState(initialAlias);
   const save = updateStandPayments.bind(null, standId);
+  const formKey = [
+    acceptCash,
+    acceptLocalTransfer,
+    acceptCard,
+    acceptPayPal,
+    localTransferAlias,
+  ].join(":");
 
   function onSubmit(formData: FormData) {
     setMessage(null);
@@ -69,105 +75,18 @@ export default function StandPaymentOptions({
         Enable or disable what customers see at this stand. Currency: {currency}.
       </p>
 
-      <form action={onSubmit} className="mt-4 flex flex-col gap-4">
-        <label className="flex items-start gap-3 text-sm">
-          <input
-            type="checkbox"
-            name="acceptCash"
-            defaultChecked={acceptCash}
-            className="mt-1 size-4"
-          />
-          <span>
-            <span className="font-medium">Cash</span>
-            <span className="mt-0.5 block text-[var(--muted)]">
-              Customer confirms they paid cash at the stand.
-            </span>
-          </span>
-        </label>
-
-        {method ? (
-          <div className="rounded-xl border border-[var(--line)] bg-[var(--wash)] p-4">
-            <label className="flex items-start gap-3 text-sm">
-              <input
-                type="checkbox"
-                name="acceptLocalTransfer"
-                defaultChecked={acceptLocalTransfer}
-                className="mt-1 size-4"
-              />
-              <span>
-                <span className="font-medium">PayID</span>
-                <span className="mt-0.5 block text-[var(--muted)]">
-                  AUD only. Customer pays your PayID, then confirms.
-                </span>
-              </span>
-            </label>
-            <input type="hidden" name="localTransferMethodId" value={method.id} />
-            <label className="mt-3 flex flex-col gap-2 text-sm">
-              <span className="font-medium">{method.aliasLabel}</span>
-              <input
-                name="localTransferAlias"
-                value={alias}
-                onChange={(event) => setAlias(event.target.value)}
-                placeholder={method.aliasPlaceholder}
-                maxLength={120}
-                className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-              />
-              <span className="text-[var(--muted)]">{method.aliasHint}</span>
-            </label>
-          </div>
-        ) : null}
-
-        <label className="flex items-start gap-3 text-sm">
-          <input
-            type="checkbox"
-            name="acceptCard"
-            defaultChecked={acceptCard}
-            disabled={!cardTier || !cardReady}
-            className="mt-1 size-4 disabled:opacity-50"
-          />
-          <span>
-            <span className="font-medium">Card / Tap &amp; Go</span>
-            <span className="mt-0.5 block text-[var(--muted)]">
-              {!cardTier
-                ? "Card plan feature — join the waitlist from pricing."
-                : cardReady
-                  ? "Card, Apple Pay, Google Pay. Money to your Stripe."
-                  : "Finish Stripe setup in Settings before enabling."}
-            </span>
-          </span>
-        </label>
-
-        <label className="flex items-start gap-3 text-sm">
-          <input
-            type="checkbox"
-            name="acceptPayPal"
-            defaultChecked={acceptPayPal}
-            disabled={!cardTier || !paypalReady}
-            className="mt-1 size-4 disabled:opacity-50"
-          />
-          <span>
-            <span className="font-medium">PayPal</span>
-            <span className="mt-0.5 block text-[var(--muted)]">
-              {!cardTier
-                ? "Card plan feature."
-                : paypalReady
-                  ? "All currencies, including USD."
-                  : "Connect PayPal in Settings and turn it on first."}
-            </span>
-          </span>
-        </label>
-
-        {cardTier ? (
-          <p className="text-sm">
-            <Link
-              href="/dashboard/settings"
-              className="font-medium text-[var(--leaf-dark)] underline"
-            >
-              Manage Stripe &amp; PayPal Connect
-            </Link>
-          </p>
-        ) : null}
-
+      <form key={formKey} action={onSubmit} className="mt-4 flex flex-col gap-4">
+        <StandPaymentToggles
+          method={method}
+          initialAlias={initialAlias}
+          acceptCash={acceptCash}
+          acceptLocalTransfer={acceptLocalTransfer}
+          acceptCard={acceptCard}
+          acceptPayPal={acceptPayPal}
+          cardReady={cardReady}
+          paypalReady={paypalReady}
+          cardTier={cardTier}
+        />
         {message ? <p className="text-sm text-[var(--muted)]">{message}</p> : null}
         <button
           type="submit"

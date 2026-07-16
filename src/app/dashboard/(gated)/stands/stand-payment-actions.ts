@@ -28,11 +28,14 @@ export async function updateStandPayments(standId: string, formData: FormData) {
   );
 
   const acceptCash = formData.get("acceptCash") === "on";
-  // Disabled checkboxes are omitted from FormData — keep prior value.
-  const acceptCard = formData.has("acceptCard")
+  // Disabled inputs are omitted from FormData — keep prior value.
+  // Enabled + unchecked is also omitted — that must mean off (same as cash).
+  const cardEditable = cardTier && cardReady;
+  const paypalEditable = cardTier && paypalReady;
+  const acceptCard = cardEditable
     ? formData.get("acceptCard") === "on"
     : existing.acceptCard;
-  const acceptPayPal = formData.has("acceptPayPal")
+  const acceptPayPal = paypalEditable
     ? formData.get("acceptPayPal") === "on"
     : existing.acceptPayPal;
 

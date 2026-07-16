@@ -1,0 +1,64 @@
+import PaymentBrandIcon, {
+  type PaymentBrand,
+} from "@/components/PaymentBrandIcon";
+
+export default function QrPaymentMethods({
+  brands,
+  compact = false,
+}: {
+  brands: PaymentBrand[];
+  compact?: boolean;
+}) {
+  if (brands.length === 0) return null;
+
+  return (
+    <div
+      className={`qr-sign-payments flex flex-col items-center ${
+        compact ? "mt-2 gap-1" : "mt-4 gap-2"
+      }`}
+    >
+      <p
+        className={`font-semibold uppercase tracking-wide text-[var(--muted)] ${
+          compact ? "text-[9px]" : "text-xs"
+        }`}
+      >
+        Pay with
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        {brands.map((brand) => (
+          <span
+            key={brand}
+            className={`inline-flex items-center justify-center rounded-md border border-[var(--line)] bg-white text-[var(--ink)] ${
+              compact ? "size-7" : "size-10"
+            }`}
+            title={labelFor(brand)}
+          >
+            <PaymentBrandIcon
+              brand={brand}
+              className={compact ? "size-4" : "size-6"}
+            />
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function labelFor(brand: PaymentBrand): string {
+  switch (brand) {
+    case "cash":
+      return "Cash";
+    case "payid":
+      return "PayID";
+    case "card":
+      return "Card";
+    case "apple":
+      return "Apple Pay";
+    case "google":
+      return "Google Pay";
+    case "paypal":
+      return "PayPal";
+    case "stripe":
+      return "Stripe";
+  }
+}

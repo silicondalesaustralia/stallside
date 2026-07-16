@@ -1,5 +1,6 @@
 "use client";
 
+import TapAndGoPayIcon from "@/components/TapAndGoPayIcon";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 
 type CartItem = { productId: string; quantity: number };
@@ -72,9 +73,21 @@ export default function CheckoutPayStep({
           type="button"
           disabled={pending}
           onClick={onCard}
-          className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-left text-xl font-semibold disabled:opacity-50"
+          className="flex items-center gap-4 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4 text-left disabled:opacity-50"
         >
-          {pending ? "Opening checkout…" : "Card / Tap & Go"}
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[var(--field)] text-white">
+            <TapAndGoPayIcon className="size-7" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-xl font-semibold text-[var(--ink)]">
+              {pending ? "Opening checkout…" : "Card / Tap & Go"}
+            </span>
+            {!pending ? (
+              <span className="mt-0.5 block text-base font-normal text-[var(--muted)]">
+                Card, Apple Pay or Google Pay
+              </span>
+            ) : null}
+          </span>
         </button>
       ) : null}
       {showPayPal && paypalClientId && paypalMerchantId ? (

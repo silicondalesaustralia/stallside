@@ -4,6 +4,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { APP_DOMAIN } from "@/lib/constants";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
+import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import QrActions from "./QrActions";
 import QrPrintEditor from "./QrPrintEditor";
 import QrSignSheet from "./QrSignSheet";
@@ -14,7 +15,7 @@ export default async function StandQrPage({
   params: Promise<{ standId: string }>;
 }) {
   const { standId } = await params;
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
   const stand = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
   });
@@ -23,6 +24,10 @@ export default async function StandQrPage({
   const checkoutUrl = standCheckoutUrl(stand.slug);
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 640);
   const siteUrl = `https://${APP_DOMAIN}`;
+  const paymentBrands = standPaymentBrands(stand, {
+    ...owner,
+    user: { email: user.email, role: user.role },
+  });
   const sheet = {
     name: stand.name,
     qrCallout: stand.qrCallout,
@@ -32,6 +37,7 @@ export default async function StandQrPage({
     checkoutUrl,
     qrDataUrl,
     siteUrl,
+    paymentBrands,
   };
 
   return (

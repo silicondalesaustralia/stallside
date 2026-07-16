@@ -4,6 +4,8 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
+import { standPaymentBrands } from "@/lib/stand-payment-brands";
+import PaymentIconRow from "@/components/PaymentIconRow";
 import StandDeleteButton from "./StandDeleteButton";
 import StandEditForm from "./StandEditForm";
 import StandPaymentOptions from "./StandPaymentOptions";
@@ -35,6 +37,10 @@ export default async function StandDetailPage({
       owner.paypalOnboardingComplete &&
       owner.paypalPaymentsEnabled,
   );
+  const paymentBrands = standPaymentBrands(stand, {
+    ...owner,
+    user: { email: user.email, role: user.role },
+  });
 
   return (
     <main className="flex flex-col gap-10">
@@ -64,12 +70,18 @@ export default async function StandDetailPage({
       </div>
 
       <section className="flex flex-wrap items-center gap-6 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={qrDataUrl} alt="" className="size-28 shrink-0" />
+        <div className="flex shrink-0 flex-col items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={qrDataUrl} alt="" className="size-28" />
+          {paymentBrands.length > 0 ? (
+            <PaymentIconRow brands={paymentBrands} />
+          ) : null}
+        </div>
         <div className="min-w-0 flex-1">
           <h2 className="font-semibold">Stand QR code</h2>
           <p className="mt-1 text-sm text-[var(--muted)]">
             Always available here - download or print anytime for the stall.
+            Payment icons match what is enabled below.
           </p>
           <div className="mt-3 flex flex-wrap gap-3 text-sm">
             <Link

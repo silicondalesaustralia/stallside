@@ -1,4 +1,6 @@
 import BrandLockup from "@/components/BrandLockup";
+import type { PaymentBrand } from "@/components/PaymentBrandIcon";
+import QrPaymentMethods from "@/components/QrPaymentMethods";
 import SafeSignHtml from "@/components/SafeSignHtml";
 
 export type QrSignSheetProps = {
@@ -10,6 +12,7 @@ export type QrSignSheetProps = {
   checkoutUrl: string;
   qrDataUrl: string;
   siteUrl: string;
+  paymentBrands?: PaymentBrand[];
   className?: string;
   /** full = stacked A4; compact = text + QR side-by-side for half/quarter */
   layout?: "full" | "compact";
@@ -26,6 +29,7 @@ export default function QrSignSheet({
   checkoutUrl,
   qrDataUrl,
   siteUrl,
+  paymentBrands = [],
   className = "",
   layout = "full",
 }: QrSignSheetProps) {
@@ -115,6 +119,7 @@ export default function QrSignSheet({
           alt={`QR code for ${name}`}
           className={`qr-sign-code mx-auto ${compact ? "mt-0 w-[42mm] max-w-[42mm]" : "mt-6 w-full max-w-[320px]"}`}
         />
+        <QrPaymentMethods brands={paymentBrands} compact={compact} />
         <p
           className={`break-all font-receipt text-[var(--muted)] ${
             compact ? "mt-1 text-[9px] leading-tight" : "mt-4 text-xs"
