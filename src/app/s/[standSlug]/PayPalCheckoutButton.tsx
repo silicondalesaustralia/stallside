@@ -172,7 +172,9 @@ export default function PayPalCheckoutButton({
         }}
         onError={() => setFallback(true)}
       />
-      <div id={hostId} className="min-h-[55px] w-full" />
+      <div className="overflow-hidden rounded-[var(--radius)] [&_iframe]:rounded-[var(--radius)] [&_.paypal-buttons]:rounded-[var(--radius)] [&_.paypal-buttons-context-iframe]:rounded-[var(--radius)]">
+        <div id={hostId} className="min-h-[55px] w-full" />
+      </div>
       {!sdkReady && !fallback ? (
         <p className="text-center text-sm text-[var(--muted)]">Loading PayPal…</p>
       ) : null}
