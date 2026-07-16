@@ -137,6 +137,58 @@ export async function adjustInventory(formData: FormData) {
   return { ok: true as const };
 }
 
+export async function updateProduct(productId: string, formData: FormData) {
+  try {
+    const { owner } = await requireOwner();
+    const product = await prisma.product.findFirst({
+      where: { id: productId, ownerId: owner.id },
+      include: { stand: { select: { slug: true } } },
+    });
+    if (!product) return { error: "Product not found." };
+
+    const parsed = z
+      .object({
+        name: z.string().trim().min(1).max(120),
+        description: z.string().trim().max(500).optional(),
+        price: z.string().min(1),
+        lowStockThreshold: z.coerce.number().int().min(0),
+      })
+      .safeParse({
+        name: formData.get("name"),
+        description: formData.get("description") || undefined,
+        price: formData.get("price"),
+        lowStockThreshold: formData.get("lowStockThreshold") || 0,
+      });
+    if (!parsed.success) return { error: "Check product details." };
+
+    let priceCents: number;
+    try {
+      priceCents = dollarsToCents(parsed.data.price);
+    } catch {
+      return { error: "Invalid price." };
+    }
+
+    await prisma.product.update({
+      where: { id: product.id },
+      data: {
+        name: parsed.data.name,
+        description: parsed.data.description || null,
+        priceCents,
+        lowStockThreshold: parsed.data.lowStockThreshold,
+      },
+    });
+
+    revalidatePath("/dashboard/products");
+    revalidatePath("/dashboard/inventory");
+    revalidatePath(`/dashboard/products/${product.id}`);
+    revalidatePath(`/s/${product.stand.slug}`);
+    return { ok: true as const };
+  } catch (error) {
+    console.error("updateProduct failed", error);
+    return { error: "Could not save product." };
+  }
+}
+
 /** Remove a product from the catalog. Hard-deletes if never sold; otherwise archives. */
 export async function deleteProduct(productId: string) {
   const { owner } = await requireOwner();

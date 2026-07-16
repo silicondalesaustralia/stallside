@@ -48,6 +48,12 @@ export default async function ProductsPage() {
               </div>
               <div className="flex flex-wrap items-center gap-4">
                 <Link
+                  href={`/dashboard/products/${product.id}`}
+                  className="text-[var(--leaf-dark)] underline"
+                >
+                  Edit
+                </Link>
+                <Link
                   href="/dashboard/inventory"
                   className="text-[var(--leaf-dark)] underline"
                 >
