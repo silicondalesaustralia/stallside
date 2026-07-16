@@ -187,6 +187,11 @@ model Stand {
   /** PayID / Pix / UPI alias shown at checkout (owner-direct; not verified). */
   localTransferAlias String?
   localTransferMethodId String?
+  /** Per-stand checkout method toggles (still need owner Connect for card/PayPal). */
+  acceptCash         Boolean              @default(true)
+  acceptLocalTransfer Boolean             @default(true)
+  acceptCard         Boolean              @default(true)
+  acceptPayPal       Boolean              @default(true)
   showExactStock     Boolean              @default(false)
   isActive           Boolean              @default(true)
   products           Product[]

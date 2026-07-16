@@ -46,6 +46,7 @@ export default function PublicCart({
   standSlug,
   currency,
   products,
+  cashEnabled,
   cardEnabled,
   paypalEnabled,
   localTransfer,
@@ -53,6 +54,7 @@ export default function PublicCart({
   standSlug: string;
   currency: string;
   products: ProductRow[];
+  cashEnabled: boolean;
   cardEnabled: boolean;
   paypalEnabled: boolean;
   localTransfer: LocalTransferInfo | null;
@@ -227,6 +229,7 @@ export default function PublicCart({
 
       {step === "pay" ? (
         <CheckoutPayStep
+          cashEnabled={cashEnabled}
           cardEnabled={cardEnabled}
           paypalEnabled={paypalEnabled}
           localTransferLabel={localTransfer?.buttonLabel ?? null}

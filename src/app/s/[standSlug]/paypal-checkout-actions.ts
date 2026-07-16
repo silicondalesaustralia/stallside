@@ -28,6 +28,9 @@ export async function startPayPalCheckout(input: {
     const { stand, lineData, totalCents } = loaded;
     const owner = stand.owner;
 
+    if (!stand.acceptPayPal) {
+      return { error: "PayPal is not enabled at this stand." };
+    }
     if (
       !owner.paypalMerchantId ||
       !owner.paypalOnboardingComplete ||

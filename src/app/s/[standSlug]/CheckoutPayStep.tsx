@@ -1,6 +1,7 @@
 "use client";
 
 type CheckoutPayStepProps = {
+  cashEnabled: boolean;
   cardEnabled: boolean;
   paypalEnabled: boolean;
   localTransferLabel: string | null;
@@ -13,6 +14,7 @@ type CheckoutPayStepProps = {
 };
 
 export default function CheckoutPayStep({
+  cashEnabled,
   cardEnabled,
   paypalEnabled,
   localTransferLabel,
@@ -26,14 +28,16 @@ export default function CheckoutPayStep({
   return (
     <div className="flex flex-col gap-3">
       <p className="text-xl font-semibold">How would you like to pay?</p>
-      <button
-        type="button"
-        disabled={pending}
-        onClick={onCash}
-        className="rounded-[var(--radius)] bg-[var(--leaf)] px-5 py-5 text-left text-xl font-semibold text-white disabled:opacity-50"
-      >
-        Pay cash
-      </button>
+      {cashEnabled ? (
+        <button
+          type="button"
+          disabled={pending}
+          onClick={onCash}
+          className="rounded-[var(--radius)] bg-[var(--leaf)] px-5 py-5 text-left text-xl font-semibold text-white disabled:opacity-50"
+        >
+          Pay cash
+        </button>
+      ) : null}
       {localTransferLabel ? (
         <button
           type="button"
@@ -53,13 +57,7 @@ export default function CheckoutPayStep({
         >
           {pending ? "Opening checkout…" : "Tap & Go - card, Apple Pay, Google Pay"}
         </button>
-      ) : (
-        <div className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5">
-          <p className="text-lg font-semibold text-[var(--muted)]">
-            Tap &amp; Go not active at this stand
-          </p>
-        </div>
-      )}
+      ) : null}
       {paypalEnabled ? (
         <button
           type="button"
@@ -69,13 +67,12 @@ export default function CheckoutPayStep({
         >
           {pending ? "Opening PayPal…" : "Pay with PayPal"}
         </button>
-      ) : (
-        <div className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5">
-          <p className="text-lg font-semibold text-[var(--muted)]">
-            PayPal not active at this stand
-          </p>
-        </div>
-      )}
+      ) : null}
+      {!cashEnabled && !localTransferLabel && !cardEnabled && !paypalEnabled ? (
+        <p className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-lg text-[var(--muted)]">
+          No payment methods are available at this stand right now.
+        </p>
+      ) : null}
       <button
         type="button"
         onClick={onBack}

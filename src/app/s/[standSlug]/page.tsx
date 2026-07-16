@@ -34,7 +34,10 @@ export default async function PublicStandPage({
   const method = localTransferForCurrency(stand.currency);
   const alias = stand.localTransferAlias?.trim() ?? "";
   const localTransfer =
-    method && alias && stand.localTransferMethodId === method.id
+    stand.acceptLocalTransfer &&
+    method &&
+    alias &&
+    stand.localTransferMethodId === method.id
       ? {
           methodId: method.id,
           buttonLabel: method.buttonLabel,
@@ -70,11 +73,15 @@ export default async function PublicStandPage({
             standSlug={stand.slug}
             currency={stand.currency}
             products={products}
+            cashEnabled={stand.acceptCash}
             cardEnabled={Boolean(
-              stand.owner.stripeAccountId && stand.owner.stripeChargesEnabled,
+              stand.acceptCard &&
+                stand.owner.stripeAccountId &&
+                stand.owner.stripeChargesEnabled,
             )}
             paypalEnabled={Boolean(
-              stand.owner.paypalMerchantId &&
+              stand.acceptPayPal &&
+                stand.owner.paypalMerchantId &&
                 stand.owner.paypalOnboardingComplete &&
                 stand.owner.paypalPaymentsEnabled,
             )}

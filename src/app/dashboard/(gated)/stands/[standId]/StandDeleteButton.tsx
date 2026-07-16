@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { deleteStand } from "../actions";
+import { deleteStand } from "../stand-delete-actions";
 
 export default function StandDeleteButton({
   standId,

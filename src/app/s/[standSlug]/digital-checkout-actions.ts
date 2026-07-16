@@ -26,6 +26,9 @@ export async function startCardCheckout(input: {
     const { stand, lineData, totalCents } = loaded;
     const owner = stand.owner;
 
+    if (!stand.acceptCard) {
+      return { error: "Card is not enabled at this stand." };
+    }
     if (!owner.stripeAccountId || !owner.stripeChargesEnabled) {
       return {
         error: "This stand cannot take card payments yet (Stripe not connected).",

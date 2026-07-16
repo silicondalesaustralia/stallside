@@ -86,9 +86,14 @@ export default async function StandDetailPage({
       </section>
 
       <StandPaymentOptions
+        standId={stand.id}
         currency={stand.currency}
         localTransferAlias={stand.localTransferAlias}
         localTransferMethodId={stand.localTransferMethodId}
+        acceptCash={stand.acceptCash}
+        acceptLocalTransfer={stand.acceptLocalTransfer}
+        acceptCard={stand.acceptCard}
+        acceptPayPal={stand.acceptPayPal}
         cardReady={cardReady}
         paypalReady={paypalReady}
         cardTier={cardTier}

@@ -37,7 +37,12 @@ export async function confirmLocalTransferCheckout(input: {
 
   const method = localTransferForCurrency(loaded.stand.currency);
   const alias = loaded.stand.localTransferAlias?.trim();
-  if (!method || !alias || loaded.stand.localTransferMethodId !== method.id) {
+  if (
+    !loaded.stand.acceptLocalTransfer ||
+    !method ||
+    !alias ||
+    loaded.stand.localTransferMethodId !== method.id
+  ) {
     return { error: "Local transfer is not available at this stand." };
   }
 
@@ -65,6 +70,19 @@ async function confirmDeclaredCheckout(input: {
     if ("error" in loaded) return { error: loaded.error };
 
     const { stand, byId, items, lineData, totalCents } = loaded;
+    if (
+      input.paymentMethod === PaymentMethod.CASH &&
+      !stand.acceptCash
+    ) {
+      return { error: "Cash is not available at this stand." };
+    }
+    if (
+      input.paymentMethod === PaymentMethod.LOCAL_TRANSFER &&
+      !stand.acceptLocalTransfer
+    ) {
+      return { error: "Local transfer is not available at this stand." };
+    }
+
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
 
     const order = await prisma.$transaction(
