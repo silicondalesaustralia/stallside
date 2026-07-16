@@ -8,7 +8,7 @@ import {
 } from "@/generated/prisma/client";
 import { loadStandCart, type CartItemInput } from "@/lib/checkout";
 import { isPayPalConfigured } from "@/lib/paypal";
-import { createPayPalCheckoutOrder } from "@/lib/paypal-connect";
+import { createPayPalCheckoutOrder } from "@/lib/paypal-orders";
 import { PLATFORM_FEE_BPS } from "@/lib/constants";
 import { platformFeeCents } from "@/lib/money";
 import { appBaseUrl } from "@/lib/app-url";
@@ -28,7 +28,11 @@ export async function startPayPalCheckout(input: {
     const { stand, lineData, totalCents } = loaded;
     const owner = stand.owner;
 
-    if (!owner.paypalMerchantId || !owner.paypalPaymentsEnabled) {
+    if (
+      !owner.paypalMerchantId ||
+      !owner.paypalOnboardingComplete ||
+      !owner.paypalPaymentsEnabled
+    ) {
       return {
         error: "This stand cannot take PayPal yet (PayPal not connected).",
       };

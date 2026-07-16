@@ -74,7 +74,9 @@ export default async function PublicStandPage({
               stand.owner.stripeAccountId && stand.owner.stripeChargesEnabled,
             )}
             paypalEnabled={Boolean(
-              stand.owner.paypalMerchantId && stand.owner.paypalPaymentsEnabled,
+              stand.owner.paypalMerchantId &&
+                stand.owner.paypalOnboardingComplete &&
+                stand.owner.paypalPaymentsEnabled,
             )}
             localTransfer={localTransfer}
           />

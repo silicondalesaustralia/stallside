@@ -96,18 +96,28 @@ export default async function SettingsPage() {
         </span>
       </section>
 
-      <section className="space-y-3 text-sm opacity-55">
-        <h2 className="text-lg font-semibold">
-          PayPal Connect{" "}
-          <span className="text-sm font-medium text-[var(--muted)]">· Coming soon!</span>
-        </h2>
-        <p>Status: Not connected</p>
-        <span
-          aria-disabled
-          className="inline-flex cursor-not-allowed rounded-lg border border-[var(--line)] bg-[var(--wash)] px-4 py-2.5 text-sm font-semibold text-[var(--muted)]"
+      <section className="space-y-3 text-sm">
+        <h2 className="text-lg font-semibold">PayPal Connect</h2>
+        <p>
+          Status:{" "}
+          {owner.paypalMerchantId
+            ? owner.paypalPaymentsEnabled
+              ? "Connected · offering at checkout"
+              : owner.paypalOnboardingComplete
+                ? "Connected · off at checkout"
+                : "Connected · finish setup"
+            : "Not connected"}
+        </p>
+        <p className="text-[var(--muted)]">
+          Connect a PayPal Business account so customers can pay you with PayPal
+          after scanning your Stallside QR. Funds go to you.
+        </p>
+        <Link
+          href="/dashboard/settings/paypal"
+          className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
         >
-          Coming soon!
-        </span>
+          {owner.paypalMerchantId ? "Manage PayPal" : "Connect PayPal"}
+        </Link>
       </section>
     </main>
   );

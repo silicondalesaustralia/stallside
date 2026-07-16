@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { isPayPalConfigured } from "@/lib/paypal";
-import { refreshPayPalStatus, startPayPalConnect } from "./actions";
+import {
+  refreshPayPalStatus,
+  setPayPalPaymentsEnabled,
+  startPayPalConnect,
+} from "./actions";
+import PayPalWarnings from "./PayPalWarnings";
 
 export default async function PayPalSettingsPage({
   searchParams,
@@ -20,6 +25,8 @@ export default async function PayPalSettingsPage({
   }
 
   const configured = isPayPalConfigured();
+  const connected = Boolean(owner.paypalMerchantId);
+  const ready = owner.paypalOnboardingComplete;
 
   return (
     <main className="flex max-w-xl flex-col gap-8">
@@ -31,17 +38,24 @@ export default async function PayPalSettingsPage({
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">PayPal Connect</h1>
         <p className="mt-2 text-[var(--muted)]">
-          Connect your PayPal Business account so customers can pay with PayPal.
-          Funds go to you - Stallside does not take a Connect cut in MVP.
+          Connect your PayPal Business account so customers can pay with PayPal
+          after they scan your Stallside QR. Funds go to you — Stallside is not
+          in the funds flow.
         </p>
       </div>
+
+      <PayPalWarnings billingCurrency={owner.billingCurrency} />
 
       {!configured ? (
         <p className="text-sm text-red-700">
           Add <code className="rounded bg-black/5 px-1">PAYPAL_CLIENT_ID</code>,{" "}
-          <code className="rounded bg-black/5 px-1">PAYPAL_CLIENT_SECRET</code>, and{" "}
-          <code className="rounded bg-black/5 px-1">PAYPAL_PARTNER_MERCHANT_ID</code>{" "}
-          to <code className="rounded bg-black/5 px-1">.env</code> to enable Connect.
+          <code className="rounded bg-black/5 px-1">PAYPAL_CLIENT_SECRET</code>,
+          and{" "}
+          <code className="rounded bg-black/5 px-1">
+            PAYPAL_PARTNER_MERCHANT_ID
+          </code>{" "}
+          to <code className="rounded bg-black/5 px-1">.env</code> to enable
+          Connect.
         </p>
       ) : null}
 
@@ -54,8 +68,11 @@ export default async function PayPalSettingsPage({
             "Not connected"
           )}
         </p>
-        <p>Onboarding complete: {owner.paypalOnboardingComplete ? "Yes" : "No"}</p>
-        <p>Payments enabled: {owner.paypalPaymentsEnabled ? "Yes" : "No"}</p>
+        <p>Onboarding complete: {ready ? "Yes" : "No"}</p>
+        <p>
+          Offering PayPal at checkout:{" "}
+          {owner.paypalPaymentsEnabled ? "On" : "Off"}
+        </p>
       </section>
 
       <div className="flex flex-wrap gap-3">
@@ -65,10 +82,10 @@ export default async function PayPalSettingsPage({
             disabled={!configured}
             className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
           >
-            {owner.paypalMerchantId ? "Continue PayPal setup" : "Connect PayPal"}
+            {connected ? "Continue PayPal setup" : "Connect PayPal"}
           </button>
         </form>
-        {owner.paypalMerchantId ? (
+        {connected ? (
           <form action={refreshPayPalStatus}>
             <button
               type="submit"
@@ -79,6 +96,30 @@ export default async function PayPalSettingsPage({
           </form>
         ) : null}
       </div>
+
+      {connected && ready ? (
+        <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+          <p className="font-semibold">Show PayPal at checkout</p>
+          <p className="text-[var(--muted)]">
+            Independent of card. Customers see PayPal only when this is on.
+          </p>
+          <form action={setPayPalPaymentsEnabled}>
+            <input
+              type="hidden"
+              name="enabled"
+              value={owner.paypalPaymentsEnabled ? "0" : "1"}
+            />
+            <button
+              type="submit"
+              className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold"
+            >
+              {owner.paypalPaymentsEnabled
+                ? "Turn PayPal off"
+                : "Turn PayPal on"}
+            </button>
+          </form>
+        </section>
+      ) : null}
     </main>
   );
 }

@@ -12,6 +12,11 @@ import {
   merchantPaymentsReady,
 } from "@/lib/paypal-connect";
 
+function revalidatePayPal() {
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard/settings/paypal");
+}
+
 export async function startPayPalConnect() {
   const { owner, user } = await requireOwner();
   if (!isPayPalConfigured()) {
@@ -38,6 +43,7 @@ export async function refreshPayPalStatus(
   const merchantIdFromReturn =
     typeof merchantIdOrForm === "string" ? merchantIdOrForm.trim() : "";
   let merchantId = merchantIdFromReturn || owner.paypalMerchantId;
+  const wasConnected = Boolean(owner.paypalMerchantId);
 
   if (!merchantId) {
     try {
@@ -60,11 +66,31 @@ export async function refreshPayPalStatus(
     data: {
       paypalMerchantId: merchantId,
       paypalOnboardingComplete: ready || Boolean(status.primary_email_confirmed),
-      paypalPaymentsEnabled: ready,
+      // First time ready → on by default; later refreshes keep owner toggle.
+      paypalPaymentsEnabled: ready
+        ? wasConnected
+          ? owner.paypalPaymentsEnabled
+          : true
+        : false,
     },
   });
 
-  revalidatePath("/dashboard/settings");
-  revalidatePath("/dashboard/settings/paypal");
+  revalidatePayPal();
   redirect("/dashboard/settings/paypal");
+}
+
+export async function setPayPalPaymentsEnabled(formData: FormData) {
+  const { owner } = await requireOwner();
+  const enabled = formData.get("enabled") === "1";
+
+  if (enabled && (!owner.paypalMerchantId || !owner.paypalOnboardingComplete)) {
+    throw new Error("Connect PayPal before enabling checkout.");
+  }
+
+  await prisma.owner.update({
+    where: { id: owner.id },
+    data: { paypalPaymentsEnabled: enabled },
+  });
+
+  revalidatePayPal();
 }

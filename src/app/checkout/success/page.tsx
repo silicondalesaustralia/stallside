@@ -5,7 +5,7 @@ import {
 } from "@/lib/fulfill-paid-order";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { isPayPalConfigured } from "@/lib/paypal";
-import { capturePayPalOrder } from "@/lib/paypal-connect";
+import { capturePayPalOrder } from "@/lib/paypal-orders";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
 import { PaymentMethod } from "@/generated/prisma/client";
