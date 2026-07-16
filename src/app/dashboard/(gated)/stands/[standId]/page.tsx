@@ -2,9 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
 import StandDeleteButton from "./StandDeleteButton";
 import StandEditForm from "./StandEditForm";
+import StandPaymentOptions from "./StandPaymentOptions";
 
 export default async function StandDetailPage({
   params,
@@ -12,7 +14,7 @@ export default async function StandDetailPage({
   params: Promise<{ standId: string }>;
 }) {
   const { standId } = await params;
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
   const stand = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
     include: { products: { orderBy: { sortOrder: "asc" } } },
@@ -21,6 +23,18 @@ export default async function StandDetailPage({
 
   const checkoutUrl = standCheckoutUrl(stand.slug);
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 240);
+  const cardTier = ownerHasCardTierAccess(owner, {
+    email: user.email,
+    role: user.role,
+  });
+  const cardReady = Boolean(
+    owner.stripeAccountId && owner.stripeChargesEnabled,
+  );
+  const paypalReady = Boolean(
+    owner.paypalMerchantId &&
+      owner.paypalOnboardingComplete &&
+      owner.paypalPaymentsEnabled,
+  );
 
   return (
     <main className="flex flex-col gap-10">
@@ -70,6 +84,15 @@ export default async function StandDetailPage({
           </div>
         </div>
       </section>
+
+      <StandPaymentOptions
+        currency={stand.currency}
+        localTransferAlias={stand.localTransferAlias}
+        localTransferMethodId={stand.localTransferMethodId}
+        cardReady={cardReady}
+        paypalReady={paypalReady}
+        cardTier={cardTier}
+      />
 
       <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
         <div>
