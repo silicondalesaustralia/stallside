@@ -1,10 +1,10 @@
 import Link from "next/link";
-import DemoSaleNotify from "@/components/DemoSaleNotify";
+import DemoCheckoutSuccessRedirect from "@/components/DemoCheckoutSuccessRedirect";
 import {
   fulfillPaidCardOrder,
   fulfillPaidPayPalOrder,
 } from "@/lib/fulfill-paid-order";
-import { isDemoStandSlug } from "@/lib/demo";
+import { demoRegionForStandSlug, isDemoStandSlug, type DemoRegion } from "@/lib/demo";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
 import { isPayPalConfigured } from "@/lib/paypal";
@@ -26,6 +26,7 @@ export default async function CheckoutSuccessPage({
   const params = await searchParams;
   let message = "Thanks - your payment is being confirmed.";
   let demoStandSlug: string | null = null;
+  let demoRegion: DemoRegion | null = null;
   let demoTotalCents: number | undefined;
   let demoCurrency: string | undefined;
 
@@ -37,6 +38,7 @@ export default async function CheckoutSuccessPage({
       });
       if (order?.stand && isDemoStandSlug(order.stand.slug)) {
         demoStandSlug = order.stand.slug;
+        demoRegion = demoRegionForStandSlug(order.stand.slug);
         demoTotalCents = order.totalCents;
         demoCurrency = order.currency;
       }
@@ -108,12 +110,6 @@ export default async function CheckoutSuccessPage({
 
   return (
     <main className="mx-auto flex min-h-full max-w-lg flex-1 flex-col justify-center px-6 py-16">
-      <DemoSaleNotify
-        standSlug={demoStandSlug}
-        via="card"
-        totalCents={demoTotalCents}
-        currency={demoCurrency}
-      />
       <div className="relative rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-8">
         <div
           aria-hidden
@@ -127,13 +123,24 @@ export default async function CheckoutSuccessPage({
           Thank you
         </h1>
         <p className="mt-3 text-xl text-[var(--muted)]">{message}</p>
+        {demoStandSlug && demoRegion ? (
+          <DemoCheckoutSuccessRedirect
+            region={demoRegion}
+            standSlug={demoStandSlug}
+            via="card"
+            totalCents={demoTotalCents}
+            currency={demoCurrency}
+          />
+        ) : null}
       </div>
-      <Link
-        href="/"
-        className="mt-8 inline-flex w-full items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-6 py-4 text-lg font-semibold text-[var(--ink)]"
-      >
-        Back to {APP_NAME}
-      </Link>
+      {demoStandSlug && demoRegion ? null : (
+        <Link
+          href="/"
+          className="mt-8 inline-flex w-full items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-6 py-4 text-lg font-semibold text-[var(--ink)]"
+        >
+          Back to {APP_NAME}
+        </Link>
+      )}
     </main>
   );
 }

@@ -10,12 +10,14 @@ export default function DemoSaleBanner({
   totalCents,
   currency,
   standName,
+  onDismiss,
 }: {
   visible: boolean;
   via: string;
   totalCents?: number;
   currency?: string;
   standName: string;
+  onDismiss: () => void;
 }) {
   const amount =
     totalCents != null && currency
@@ -30,7 +32,7 @@ export default function DemoSaleBanner({
 
   return (
     <div
-      className={`pointer-events-none absolute inset-x-2 top-9 z-30 transition-all duration-500 ease-out ${
+      className={`absolute inset-x-2 top-9 z-30 transition-all duration-500 ease-out ${
         visible
           ? "translate-y-0 opacity-100"
           : "-translate-y-[120%] opacity-0"
@@ -38,7 +40,7 @@ export default function DemoSaleBanner({
       role="status"
       aria-live="polite"
     >
-      <div className="flex gap-2.5 rounded-2xl border border-black/8 bg-white px-3 py-2.5 shadow-[0_8px_24px_rgb(0_0_0/0.12)]">
+      <div className="relative flex gap-2.5 rounded-2xl border border-black/8 bg-white py-2.5 pl-3 pr-9 shadow-[0_8px_24px_rgb(0_0_0/0.12)]">
         <Image
           src="/brand/logo-mark.png"
           alt=""
@@ -61,6 +63,14 @@ export default function DemoSaleBanner({
             {standName} · {method}
           </p>
         </div>
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full text-lg leading-none text-[var(--muted)] transition hover:bg-black/5 hover:text-[var(--ink)]"
+          aria-label="Dismiss notification"
+        >
+          ×
+        </button>
       </div>
     </div>
   );

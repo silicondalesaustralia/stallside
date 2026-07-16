@@ -58,6 +58,16 @@ export function isDemoStandSlug(slug: string): boolean {
   return demoStandSlugs().has(slug.trim().toLowerCase());
 }
 
+/** Map a demo stand slug back to a /demo region query param. */
+export function demoRegionForStandSlug(slug: string): DemoRegion | null {
+  const normalized = slug.trim().toLowerCase();
+  const au = demoStandSlugForRegion("au");
+  const us = demoStandSlugForRegion("us");
+  if (au && normalized === au) return "au";
+  if (us && normalized === us) return "us";
+  return null;
+}
+
 /** Test-mode Connect account for demo Card checkout (optional when platform key is already sk_test). */
 export function demoStripeAccountId(): string | null {
   return cleanEnvSecret(process.env.DEMO_STRIPE_ACCOUNT_ID);

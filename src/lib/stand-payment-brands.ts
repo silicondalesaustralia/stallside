@@ -81,8 +81,7 @@ export function standOffersCard(
 
 /**
  * Brands for the public /demo QR sign.
- * Always shows a full poster set for the region (not gated on Connect / PayID alias),
- * so the demo looks like a live printable sign.
+ * Cash + PayID (AU) + Card only — wallets need a real device/account and aren’t demoable.
  */
 export function demoSignPaymentBrands(
   stand: StandPaymentFlags & { slug: string },
@@ -93,6 +92,6 @@ export function demoSignPaymentBrands(
   const aud =
     region === "au" || stand.currency.trim().toUpperCase() === "AUD";
   if (aud) brands.push("payid");
-  brands.push("card", "apple", "google");
+  brands.push("card");
   return brands;
 }

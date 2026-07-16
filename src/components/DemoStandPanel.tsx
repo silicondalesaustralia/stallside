@@ -1,11 +1,11 @@
+import Link from "next/link";
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
-import DemoPhoneCheckout from "@/components/DemoPhoneCheckout";
 import QrSignSheet from "@/app/dashboard/(gated)/stands/[standId]/qr/QrSignSheet";
-import { isStripeTestConfigured } from "@/lib/stripe-demo";
+import type { DemoRegion } from "@/lib/demo";
 
 export default function DemoStandPanel({
   name,
-  standSlug,
+  region,
   qrCallout,
   qrSignMessage,
   description,
@@ -14,10 +14,9 @@ export default function DemoStandPanel({
   qrDataUrl,
   siteUrl,
   paymentBrands,
-  cardDemoReady,
 }: {
   name: string;
-  standSlug: string;
+  region: DemoRegion;
   qrCallout: string | null;
   qrSignMessage: string | null;
   description: string | null;
@@ -26,50 +25,42 @@ export default function DemoStandPanel({
   qrDataUrl: string;
   siteUrl: string;
   paymentBrands: PaymentBrand[];
-  cardDemoReady: boolean;
 }) {
-  const showTestCards = cardDemoReady && isStripeTestConfigured();
-
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,320px)] lg:items-start">
-        <QrSignSheet
-          name={name}
-          qrCallout={qrCallout}
-          qrSignMessage={qrSignMessage}
-          description={description}
-          locationLabel={locationLabel}
-          checkoutUrl={checkoutUrl}
-          qrDataUrl={qrDataUrl}
-          siteUrl={siteUrl}
-          paymentBrands={paymentBrands}
-          className="rounded-[var(--radius)] border border-[var(--line)]"
-        />
-        <div className="lg:sticky lg:top-6">
-          <DemoPhoneCheckout
-            checkoutUrl={checkoutUrl}
-            standName={name}
-            standSlug={standSlug}
-          />
-        </div>
-      </div>
+    <div className="mx-auto flex max-w-xl flex-col gap-6">
+      <QrSignSheet
+        name={name}
+        qrCallout={qrCallout}
+        qrSignMessage={qrSignMessage}
+        description={description}
+        locationLabel={locationLabel}
+        checkoutUrl={checkoutUrl}
+        qrDataUrl={qrDataUrl}
+        siteUrl={siteUrl}
+        paymentBrands={paymentBrands}
+        className="rounded-[var(--radius)] border border-[var(--line)]"
+      />
 
-      {showTestCards ? (
-        <div className="rounded-lg border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--ink)]">
-          <p className="font-semibold text-[var(--field)]">
-            Try Card with a Stripe test card
-          </p>
-          <p className="mt-1 text-[var(--muted)]">
-            Use{" "}
-            <span className="font-receipt text-[var(--ink)]">
-              4242 4242 4242 4242
-            </span>
-            ,             any future expiry, any CVC. No real charge. Card opens in a new tab
-            from the phone frame — the sale alert slides down when payment
-            completes.
-          </p>
-        </div>
-      ) : null}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <Link
+          href={`/demo/phone?region=${region}`}
+          className="inline-flex flex-1 items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]"
+        >
+          Try checkout on phone
+        </Link>
+        <a
+          href={checkoutUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] px-4 py-3 text-sm font-semibold text-[var(--field)]"
+        >
+          Open checkout full screen
+        </a>
+      </div>
+      <p className="text-center text-sm text-[var(--muted)]">
+        Scan the QR on your real phone, or open the desktop phone demo to walk
+        through a sale and owner alert.
+      </p>
     </div>
   );
 }

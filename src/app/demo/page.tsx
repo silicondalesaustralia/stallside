@@ -13,10 +13,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
-import {
-  demoSignPaymentBrands,
-  standOffersCard,
-} from "@/lib/stand-payment-brands";
+import { demoSignPaymentBrands } from "@/lib/stand-payment-brands";
 
 export const metadata: Metadata = {
   title: "Try Demo",
@@ -63,7 +60,7 @@ export default async function DemoPage({
         body={`Create an active stand with slug “${slug}”, then refresh this page.`}
       />
     );
-  } else if (stand) {
+  } else if (stand && region) {
     const checkoutUrl = standCheckoutUrl(stand.slug);
     const qrDataUrl = await standQrDataUrl(checkoutUrl, 640);
     const owner = {
@@ -74,7 +71,7 @@ export default async function DemoPage({
     panel = (
       <DemoStandPanel
         name={stand.name}
-        standSlug={stand.slug}
+        region={region}
         qrCallout={stand.qrCallout}
         qrSignMessage={stand.qrSignMessage}
         description={stand.description}
@@ -83,14 +80,13 @@ export default async function DemoPage({
         qrDataUrl={qrDataUrl}
         siteUrl={`https://${APP_DOMAIN}`}
         paymentBrands={paymentBrands}
-        cardDemoReady={standOffersCard(stand, owner)}
       />
     );
   }
 
   return (
     <MarketingPageShell>
-      <main className="mx-auto w-full max-w-5xl px-5 py-12 sm:px-6 sm:py-16">
+      <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
         <p className="text-sm text-[var(--muted)]">
           <Link href="/" className="underline">
             Home
@@ -100,9 +96,8 @@ export default async function DemoPage({
           Try the demo
         </h1>
         <p className="mt-3 max-w-2xl text-base leading-snug text-[var(--muted)]">
-          Pick your country, then scan the QR on your phone — or on desktop, open
-          checkout in the iPhone frame. Complete a cash sale to see the owner
-          alert slide down. Card uses Stripe test mode — no real money.
+          Pick your country to see a printable QR sign. Scan it on your phone,
+          or continue to the desktop phone checkout to walk through a sale.
         </p>
 
         <div className="mt-8">
@@ -115,7 +110,7 @@ export default async function DemoPage({
         {region ? (
           <div className="mt-10">
             <p className="mb-3 text-sm font-semibold text-[var(--field)]">
-              2. Scan or open checkout
+              2. Scan the QR
             </p>
             {panel}
           </div>
