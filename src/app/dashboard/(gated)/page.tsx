@@ -5,10 +5,12 @@ import { formatMoney } from "@/lib/money";
 import DashboardStat from "@/components/DashboardStat";
 import DashboardPanels from "@/components/DashboardPanels";
 import DateRangeFilter from "@/components/DateRangeFilter";
+import SalesSeriesChart from "@/components/SalesSeriesChart";
 import TapAndGoSetupCard from "@/components/TapAndGoSetupCard";
 import { resolveDateWindow } from "@/lib/date-range";
 import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { buildSalesSeries } from "@/lib/sales-series";
 
 export default async function DashboardPage({
   searchParams,
@@ -72,6 +74,12 @@ export default async function DashboardPage({
 
   const current = summarizeOrders(currentOrders);
   const previous = summarizeOrders(previousOrders);
+  const series = buildSalesSeries(currentOrders, window.start, window.end);
+  const previousSeries = buildSalesSeries(
+    previousOrders,
+    window.prevStart,
+    window.prevEnd,
+  );
   const lowStock = catalog
     .filter((p) => p.stockQuantity <= p.lowStockThreshold)
     .slice(0, 8);
@@ -135,6 +143,13 @@ export default async function DashboardPage({
           previous={previous.orderCount}
         />
       </section>
+
+      <SalesSeriesChart
+        points={series}
+        previousPoints={previousSeries}
+        currency={current.currency}
+        title={`${window.label} vs prior period`}
+      />
 
       <DashboardPanels
         stands={standRows.length}

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
-import CashConfirmMock from "@/components/CashConfirmMock";
 import HeroCheckoutDemo from "@/components/HeroCheckoutDemo";
 import { APP_NAME, APP_HERO_SUPPORT, APP_POSITIONING, APP_TAGLINE } from "@/lib/constants";
 
@@ -47,7 +46,7 @@ export default function LandingHero() {
         </div>
       </header>
 
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-8 px-5 pb-10 pt-2 sm:px-6 sm:pb-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-10">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-8 px-5 pb-10 pt-2 sm:px-6 sm:pb-12 2xl:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] 2xl:items-center 2xl:gap-8">
         <div
           aria-hidden
           className="hero-bracket pointer-events-none absolute left-5 top-0 size-12 border-l-[3px] border-t-[3px] border-[var(--ink-on-dark)]/40 sm:left-6 sm:size-16"
@@ -109,11 +108,8 @@ export default function LandingHero() {
           </div>
         </div>
 
-        <div className="hidden min-w-0 lg:block">
+        <div className="min-w-0">
           <HeroCheckoutDemo />
-        </div>
-        <div className="lg:hidden">
-          <CashConfirmMock compact />
         </div>
       </div>
     </section>

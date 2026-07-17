@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import FeatureColumns from "@/components/FeatureColumns";
 import HowItWorksFlow from "@/components/HowItWorksFlow";
 import JsonLd from "@/components/JsonLd";
+import LandingAnalyticsPreview from "@/components/LandingAnalyticsPreview";
 import LandingFaq from "@/components/LandingFaq";
 import LandingFooter from "@/components/LandingFooter";
 import LandingHero from "@/components/LandingHero";
@@ -26,6 +27,7 @@ export default function HomePage() {
       <JsonLd data={homeGraphSchema(LANDING_FAQS)} />
       <LandingHero />
       <HowItWorksFlow />
+      <LandingAnalyticsPreview />
       <UseCaseGrid />
       <TrustSection />
       <FeatureColumns />
