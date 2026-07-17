@@ -11,32 +11,37 @@ function getAudio(): HTMLAudioElement | null {
 
   const audio = new Audio(DING_SRC);
   audio.preload = "auto";
-  audio.volume = 0.7;
+  audio.volume = 0.75;
   sharedAudio = audio;
   return audio;
 }
 
-/** Warm up / unlock after a click or tap so play() is allowed. */
-export function unlockHeroSaleDing(): void {
-  if (typeof window === "undefined") return;
+/** Prefetch the MP3 so the first real play is instant. */
+export function prefetchHeroSaleDing(): void {
+  getAudio()?.load();
+}
+
+/** Unlock autoplay after a click/tap (silent). Returns true when unlocked. */
+export async function unlockHeroSaleDing(): Promise<boolean> {
+  if (typeof window === "undefined") return false;
   try {
     const audio = getAudio();
-    if (!audio) return;
-    // Mute-play-pause unlocks autoplay without an audible blip.
-    const wasMuted = audio.muted;
+    if (!audio) return false;
+
     audio.muted = true;
-    void audio
-      .play()
-      .then(() => {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.muted = wasMuted;
-      })
-      .catch(() => {
-        audio.muted = wasMuted;
-      });
+    await audio.play();
+    audio.pause();
+    audio.currentTime = 0;
+    audio.muted = false;
+    return true;
   } catch {
-    // ignore
+    try {
+      const audio = getAudio();
+      if (audio) audio.muted = false;
+    } catch {
+      // ignore
+    }
+    return false;
   }
 }
 
@@ -47,7 +52,7 @@ export function bindHeroSaleDingUnlock(): () => void {
   unlockBound = true;
 
   const onGesture = () => {
-    unlockHeroSaleDing();
+    void unlockHeroSaleDing();
   };
 
   window.addEventListener("pointerdown", onGesture, { once: true, passive: true });

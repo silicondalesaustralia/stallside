@@ -7,19 +7,24 @@ import DemoSaleBanner from "@/components/DemoSaleBanner";
 import {
   bindHeroSaleDingUnlock,
   playHeroSaleDing,
+  prefetchHeroSaleDing,
   unlockHeroSaleDing,
 } from "@/lib/hero-sale-ding";
 
 const STAND_NAME = "Green Valley Eggs";
+const FIRST_NOTIFICATION_MS = 4000;
 
 export default function HeroOwnerPhoneAlert() {
   const [visible, setVisible] = useState(false);
   const hasPlayedDing = useRef(false);
   const audioReady = useRef(false);
+  const bannerVisible = useRef(false);
+  const firstTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    prefetchHeroSaleDing();
     return bindHeroSaleDingUnlock();
   }, []);
 
@@ -30,50 +35,53 @@ export default function HeroOwnerPhoneAlert() {
 
     if (reduced) {
       setVisible(true);
+      bannerVisible.current = true;
       return;
     }
 
     async function tryDing() {
-      if (hasPlayedDing.current) return;
-      if (!audioReady.current) return;
+      if (hasPlayedDing.current || !audioReady.current) return;
       const ok = await playHeroSaleDing();
       if (ok) hasPlayedDing.current = true;
     }
 
     function scheduleNext() {
       const delay = 5500 + Math.random() * 1500;
-      loopTimer.current = setTimeout(play, delay);
+      loopTimer.current = setTimeout(replay, delay);
     }
 
-    function play() {
+    function showBanner() {
+      setVisible(true);
+      bannerVisible.current = true;
+      void tryDing();
+      scheduleNext();
+    }
+
+    function replay() {
       setVisible(false);
+      bannerVisible.current = false;
       if (revealTimer.current) clearTimeout(revealTimer.current);
-      revealTimer.current = setTimeout(() => {
-        setVisible(true);
-        void tryDing();
-        scheduleNext();
-      }, 400);
+      revealTimer.current = setTimeout(showBanner, 400);
     }
 
-    // Unlock on gesture only — ding plays with the next notification reveal.
-    function onGesture() {
-      unlockHeroSaleDing();
+    async function onGesture() {
+      const unlocked = await unlockHeroSaleDing();
+      if (!unlocked) return;
       audioReady.current = true;
+      // If the first alert is already on screen, ding now — don't wait for the next loop.
+      if (bannerVisible.current) {
+        void tryDing();
+      }
     }
+
     window.addEventListener("pointerdown", onGesture, { passive: true });
     window.addEventListener("keydown", onGesture);
 
-    // Attempt autoplay once (works if the browser already allows it).
-    void playHeroSaleDing().then((ok) => {
-      if (ok) {
-        audioReady.current = true;
-        hasPlayedDing.current = true;
-      }
-    });
-
-    play();
+    // First notification after 4s — gives time for a click to unlock audio first.
+    firstTimer.current = setTimeout(showBanner, FIRST_NOTIFICATION_MS);
 
     return () => {
+      if (firstTimer.current) clearTimeout(firstTimer.current);
       if (revealTimer.current) clearTimeout(revealTimer.current);
       if (loopTimer.current) clearTimeout(loopTimer.current);
       window.removeEventListener("pointerdown", onGesture);
