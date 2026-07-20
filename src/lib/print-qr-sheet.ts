@@ -13,6 +13,24 @@ const COPIES: Record<QrPrintSize, number> = {
   quarter: 4,
 };
 
+function absoluteUrl(href: string): string {
+  try {
+    return new URL(href, window.location.origin).href;
+  } catch {
+    return href;
+  }
+}
+
+/** Rewrite relative src/href so assets resolve from about:blank. */
+function absolutizeHtml(html: string): string {
+  return html
+    .replace(
+      /\b(src|href)=("|\')(?!https?:|data:|blob:|\/\/)([^"']+)\2/gi,
+      (_m, attr: string, quote: string, path: string) =>
+        `${attr}=${quote}${absoluteUrl(path)}${quote}`,
+    );
+}
+
 /** Print only the QR sign sheet in a blank popup so browser headers/footers stay empty. */
 export function printQrSheet(size: QrPrintSize = "a4") {
   const sheet = document.querySelector(".qr-print-sheet");
@@ -32,15 +50,27 @@ export function printQrSheet(size: QrPrintSize = "a4") {
     return `<div class="qr-print-tile">${clone.outerHTML}</div>`;
   }).join("");
 
-  const popup = window.open("", "_blank", "noopener,noreferrer,width=900,height=1200");
+  // Do not use noopener/noreferrer — both make window.open() return null in Chromium,
+  // which falls back to printing this page (preview is print:hidden → blank sheet).
+  const popup = window.open("", "_blank", "width=900,height=1200");
   if (!popup) {
-    window.print();
+    window.alert("Allow pop-ups for this site to print the QR sign.");
     return;
   }
+  popup.opener = null;
 
   const rootClass = document.documentElement.className;
-  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-    .map((node) => node.outerHTML)
+  const styles = Array.from(
+    document.querySelectorAll('link[rel="stylesheet"], style'),
+  )
+    .map((node) => {
+      if (node instanceof HTMLLinkElement && node.href) {
+        const link = node.cloneNode(true) as HTMLLinkElement;
+        link.href = absoluteUrl(node.getAttribute("href") || node.href);
+        return link.outerHTML;
+      }
+      return node.outerHTML;
+    })
     .join("\n");
 
   popup.document.open();
@@ -48,6 +78,7 @@ export function printQrSheet(size: QrPrintSize = "a4") {
 <html class="${rootClass}">
 <head>
 <meta charset="utf-8" />
+<base href="${window.location.origin}/" />
 <title>\u200B</title>
 ${styles}
 <style>
@@ -73,31 +104,41 @@ ${styles}
 </style>
 </head>
 <body>
-  <div class="qr-print-layout">${tiles}</div>
+  <div class="qr-print-layout">${absolutizeHtml(tiles)}</div>
 </body>
 </html>`);
   popup.document.close();
   popup.document.title = "\u200B";
 
   const runPrint = () => {
-    popup.focus();
-    popup.print();
-    popup.close();
+    try {
+      popup.focus();
+      popup.print();
+    } finally {
+      // Close after the print dialog is dismissed when possible.
+      window.setTimeout(() => {
+        try {
+          popup.close();
+        } catch {
+          // Ignore if already closed.
+        }
+      }, 250);
+    }
   };
 
   const images = Array.from(popup.document.images);
   if (images.length === 0) {
-    window.setTimeout(runPrint, 150);
+    window.setTimeout(runPrint, 200);
     return;
   }
 
   let left = images.length;
   const done = () => {
     left -= 1;
-    if (left <= 0) window.setTimeout(runPrint, 100);
+    if (left <= 0) window.setTimeout(runPrint, 150);
   };
   for (const img of images) {
-    if (img.complete) done();
+    if (img.complete && img.naturalWidth > 0) done();
     else {
       img.addEventListener("load", done, { once: true });
       img.addEventListener("error", done, { once: true });
