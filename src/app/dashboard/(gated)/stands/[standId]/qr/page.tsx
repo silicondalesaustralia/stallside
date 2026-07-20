@@ -5,9 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { APP_DOMAIN } from "@/lib/constants";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
-import QrActions from "./QrActions";
 import QrPrintEditor from "./QrPrintEditor";
-import QrSignSheet from "./QrSignSheet";
+import QrWorkspace from "./QrWorkspace";
 
 export default async function StandQrPage({
   params,
@@ -52,26 +51,23 @@ export default async function StandQrPage({
         </Link>
       </p>
 
-      <QrSignSheet
-        {...sheet}
-        className="qr-print-sheet rounded-[var(--radius)] border border-[var(--line)]"
+      <QrWorkspace
+        sheet={sheet}
+        checkoutUrl={checkoutUrl}
+        qrDataUrl={qrDataUrl}
+        fileName={`${stand.slug}-qr.png`}
+        urlWarning={
+          !checkoutUrl.startsWith("https://") ? (
+            <p className="mb-3 rounded-lg border border-[var(--warn)]/40 bg-[var(--panel)] px-3 py-2 text-sm text-[var(--warn)]">
+              This QR still points at a local URL. Set{" "}
+              <code className="font-receipt">
+                NEXT_PUBLIC_APP_URL=https://{APP_DOMAIN}
+              </code>{" "}
+              in production and regenerate before printing.
+            </p>
+          ) : null
+        }
       />
-
-      <div className="print:hidden">
-        {!checkoutUrl.startsWith("https://") ? (
-          <p className="mb-3 rounded-lg border border-[var(--warn)]/40 bg-[var(--panel)] px-3 py-2 text-sm text-[var(--warn)]">
-            This QR still points at a local URL. Set{" "}
-            <code className="font-receipt">NEXT_PUBLIC_APP_URL=https://{APP_DOMAIN}</code> in
-            production and regenerate before printing.
-          </p>
-        ) : null}
-        <QrActions
-          checkoutUrl={checkoutUrl}
-          qrDataUrl={qrDataUrl}
-          fileName={`${stand.slug}-qr.png`}
-          sheet={sheet}
-        />
-      </div>
 
       <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-4 print:hidden">
         <QrPrintEditor stand={stand} />

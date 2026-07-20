@@ -10,14 +10,17 @@ export default function QrActions({
   qrDataUrl,
   fileName,
   sheet,
+  size,
+  onSizeChange,
 }: {
   checkoutUrl: string;
   qrDataUrl: string;
   fileName: string;
   sheet: QrSignSheetProps;
+  size: QrPrintSize;
+  onSizeChange: (size: QrPrintSize) => void;
 }) {
   const [copied, setCopied] = useState(false);
-  const [size, setSize] = useState<QrPrintSize>("a4");
 
   async function copyLink() {
     try {
@@ -31,7 +34,7 @@ export default function QrActions({
 
   return (
     <div className="flex flex-col gap-4">
-      <QrSizePreviews size={size} onSizeChange={setSize} sheet={sheet} />
+      <QrSizePreviews size={size} onSizeChange={onSizeChange} sheet={sheet} />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <button

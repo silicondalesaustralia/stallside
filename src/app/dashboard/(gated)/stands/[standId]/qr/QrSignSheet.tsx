@@ -16,6 +16,8 @@ export type QrSignSheetProps = {
   className?: string;
   /** full = stacked A4; compact = text + QR side-by-side for half/quarter */
   layout?: "full" | "compact";
+  /** When false, omit .qr-print-sheet so thumbnails do not become the print source. */
+  printable?: boolean;
 };
 
 const defaultMessage = "Scan to browse and pay at this stand.";
@@ -32,13 +34,15 @@ export default function QrSignSheet({
   paymentBrands = [],
   className = "",
   layout = "full",
+  printable = true,
 }: QrSignSheetProps) {
   const compact = layout === "compact";
 
   return (
     <div
       className={[
-        "qr-print-sheet relative overflow-hidden bg-[var(--panel)] text-center",
+        printable ? "qr-print-sheet" : null,
+        "relative overflow-hidden bg-[var(--panel)] text-center",
         compact
           ? "qr-print-sheet--compact px-3 py-3"
           : "px-6 pb-8 pt-12 print:px-10 print:pb-12 print:pt-16",
