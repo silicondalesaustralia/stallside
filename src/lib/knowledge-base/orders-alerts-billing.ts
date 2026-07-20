@@ -72,23 +72,23 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
   },
   {
     slug: "customer-payments",
-    title: "Accept card and PayPal at the stand",
+    title: "Accept card at the stand",
     summary:
-      "Connect Stripe or PayPal so customers pay you at the stand — separate from your Stallside subscription.",
-    videoUrl: null,
+      "Connect Stripe so customers pay by card, Apple Pay, or Google Pay — separate from your Stallside subscription. PayPal coming soon.",
+    videoUrl: "https://youtu.be/keo53YG_Nks",
     comingSoon: false,
     related: ["billing", "first-stand"],
     ctas: [
-      { label: "PayPal", href: "/dashboard/settings/paypal" },
-      { label: "Stripe", href: "/dashboard/settings/stripe" },
+      { label: "Connect Stripe", href: "/dashboard/settings/stripe" },
       { label: "Billing", href: "/dashboard/settings/billing" },
     ],
     steps: [
-      "Your Stallside subscription pays for the software. Stripe / PayPal Connect is how customers pay you at the stand.",
-      "For PayPal: open Settings → PayPal Connect. Use a PayPal Business account (not Friends & Family).",
-      "Finish onboarding, turn “Show PayPal at checkout” on, then scan your Stallside QR and test a PayPal sale on your phone.",
-      "Funds go to your PayPal account — Stallside is not in the funds flow. PayPal’s merchant fee comes out of your proceeds.",
-      "Stripe Connect for Tap & Go follows the same idea from Settings → Stripe.",
+      "Your Stallside subscription pays for the software. Stripe Connect is how customers pay you at the stand by card, Apple Pay, or Google Pay.",
+      "You need the Card plan (Settings → Billing) before Stripe Connect is available.",
+      "Open Settings → Stripe (Card / Tap & Go) and tap Connect Stripe. Complete Stripe’s onboarding with your business and bank details.",
+      "When charges are enabled, turn Card / Tap & Go on for each stand under My stands → manage.",
+      "Scan your Stallside QR on another phone and run a small test card sale. Payments are deposited directly into your Stripe account — Stallside never holds the money.",
+      "PayPal at checkout is coming soon. Cash and PayID (where available) still work without Stripe.",
     ],
   },
 ];
