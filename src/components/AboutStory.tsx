@@ -1,13 +1,13 @@
 import Link from "next/link";
+import AboutPhotoPair from "@/components/AboutPhotoPair";
+import { ABOUT_SIGN_PHOTOS, ABOUT_STAND_PHOTOS } from "@/lib/about-photos";
 
 /** Origin story for /about. Keep claims aligned with live vs coming-soon features. */
 export default function AboutStory() {
   return (
     <div className="space-y-10 text-base leading-relaxed text-[var(--muted)] sm:text-lg">
       <section className="space-y-5">
-        <p>
-          Stallside began about 500 metres from our front door.
-        </p>
+        <p>Stallside began about 500 metres from our front door.</p>
         <p>
           My daughter is ten. She keeps hens, and like a lot of kids in rural Australia, she
           set up a little stall at the road to sell the eggs: a table, a handwritten sign, a
@@ -15,6 +15,10 @@ export default function AboutStory() {
           these stalls have always worked. You leave the eggs out, people take them, people
           pay. Most of the country runs on exactly this kind of quiet trust.
         </p>
+        <AboutPhotoPair
+          {...ABOUT_STAND_PHOTOS}
+          caption="Her stall, still at the road — now with a Stallside QR on it."
+        />
         <p>
           But two things kept going wrong, and they&apos;re the reason this exists.
         </p>
@@ -46,7 +50,7 @@ export default function AboutStory() {
         <p>
           Nothing complicated. We wanted to know, from the house, when something sold and when we
           were running low, before a customer drove up to an empty stall. And we wanted a way for
-          people to pay by card too, for the ones with no cash. That part is coming.
+          people to pay by card too, for the ones with no cash.
         </p>
         <p>
           That&apos;s still the whole idea. Stallside is a QR code on the stall and an app on your
@@ -54,6 +58,10 @@ export default function AboutStory() {
           moment something sells, your stock counts itself down, and you get a nudge before you
           run out. No one has to stand at the table. The honesty stays; the guessing goes.
         </p>
+        <AboutPhotoPair
+          {...ABOUT_SIGN_PHOTOS}
+          caption="The printable QR sign — cash, PayID, and Tap & Go when the owner enables them."
+        />
       </section>
 
       <section className="space-y-5">
