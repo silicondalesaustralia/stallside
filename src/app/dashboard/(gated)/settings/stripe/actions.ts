@@ -69,3 +69,53 @@ export async function refreshStripeStatus() {
   revalidatePath("/dashboard/settings/stripe");
   redirect("/dashboard/settings/stripe");
 }
+
+/** Unlink Stripe Connect from this owner so card checkout stops. */
+export async function disconnectStripe() {
+  const { owner } = await requireOwner();
+  if (!owner.stripeAccountId) {
+    redirect("/dashboard/settings/stripe");
+  }
+
+  const accountId = owner.stripeAccountId;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.owner.update({
+      where: { id: owner.id },
+      data: {
+        stripeAccountId: null,
+        stripeOnboardingComplete: false,
+        stripeChargesEnabled: false,
+        stripePayoutsEnabled: false,
+      },
+    });
+    await tx.stand.updateMany({
+      where: { ownerId: owner.id },
+      data: { acceptCard: false },
+    });
+    await tx.stand.updateMany({
+      where: {
+        ownerId: owner.id,
+        acceptCash: false,
+        acceptLocalTransfer: false,
+        acceptPayPal: false,
+        acceptCard: false,
+      },
+      data: { acceptCash: true },
+    });
+  });
+
+  if (isStripeConfigured()) {
+    try {
+      await getStripe().accounts.del(accountId);
+    } catch (error) {
+      // Balance or Stripe-side lock — Stallside is already unlinked.
+      console.error("Stripe connected-account delete after disconnect failed", error);
+    }
+  }
+
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard/settings/stripe");
+  revalidatePath("/dashboard/stands");
+  redirect("/dashboard/settings/stripe?disconnected=1");
+}

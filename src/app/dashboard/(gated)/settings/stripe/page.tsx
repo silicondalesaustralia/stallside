@@ -5,11 +5,12 @@ import { isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { refreshStripeStatus, startStripeConnect } from "./actions";
+import StripeDisconnectButton from "./StripeDisconnectButton";
 
 export default async function StripeSettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ return?: string; refresh?: string }>;
+  searchParams: Promise<{ return?: string; refresh?: string; disconnected?: string }>;
 }) {
   const { owner, user } = await requireOwner();
   const params = await searchParams;
@@ -59,6 +60,12 @@ export default async function StripeSettingsPage({
           .
         </p>
       </div>
+
+      {params.disconnected === "1" ? (
+        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
+          Stripe disconnected. Card / Tap &amp; Go is off until you connect again.
+        </p>
+      ) : null}
 
       {!cardTier ? (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
@@ -123,6 +130,7 @@ export default async function StripeSettingsPage({
               </button>
             </form>
           ) : null}
+          {started ? <StripeDisconnectButton /> : null}
         </div>
       ) : null}
     </main>
