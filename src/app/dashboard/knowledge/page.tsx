@@ -11,8 +11,8 @@ export default async function KnowledgeIndexPage() {
       <div className="max-w-3xl">
         <h1 className="text-3xl font-semibold tracking-tight">Owner guides</h1>
         <p className="mt-2 text-[var(--muted)]">
-          Short how-tos for every part of the dashboard. Videos will appear here as
-          we film them — the steps work now.
+          Short how-tos for getting set up, alerts, and billing. Videos appear as we
+          film them — the steps work now.
         </p>
       </div>
 
@@ -37,7 +37,9 @@ export default async function KnowledgeIndexPage() {
                       ? "Coming soon"
                       : article.videoUrl
                         ? "Has video"
-                        : "Video soon"}
+                        : article.omitVideo
+                          ? "Steps"
+                          : "Video soon"}
                   </span>
                 </Link>
               </li>

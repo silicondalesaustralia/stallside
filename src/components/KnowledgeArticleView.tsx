@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import KnowledgeVideo from "@/components/KnowledgeVideo";
 import type { KnowledgeArticle } from "@/lib/knowledge-base";
 import { getRelatedArticles } from "@/lib/knowledge-base";
@@ -27,7 +28,27 @@ export default function KnowledgeArticleView({ article }: KnowledgeArticleViewPr
         ) : null}
       </div>
 
-      <KnowledgeVideo videoUrl={article.videoUrl} title={article.title} />
+      {article.omitVideo ? null : (
+        <KnowledgeVideo videoUrl={article.videoUrl} title={article.title} />
+      )}
+
+      {article.imageSrc ? (
+        <figure className="overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--panel)]">
+          <Image
+            src={article.imageSrc}
+            alt={article.imageAlt ?? ""}
+            width={article.imageWidth ?? 800}
+            height={article.imageHeight ?? 600}
+            className={
+              (article.imageWidth ?? 0) >= (article.imageHeight ?? 0)
+                ? "mx-auto h-auto w-full max-w-2xl object-contain"
+                : "mx-auto h-auto w-full max-w-sm object-contain"
+            }
+            sizes="(max-width: 768px) 100vw, 42rem"
+            priority
+          />
+        </figure>
+      ) : null}
 
       <section>
         <h2 className="text-lg font-semibold">How to</h2>

@@ -5,6 +5,7 @@ import type { Adapter } from "next-auth/adapters";
 import type { Role } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { authorizeEmailOtp } from "@/lib/auth-otp-user";
+import { SESSION_MAX_AGE_SEC, SESSION_UPDATE_AGE_SEC } from "@/lib/auth-session";
 
 function createAdapter(): Adapter {
   const base = PrismaAdapter(prisma);
@@ -18,7 +19,21 @@ function createAdapter(): Adapter {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: createAdapter(),
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: SESSION_MAX_AGE_SEC,
+    updateAge: SESSION_UPDATE_AGE_SEC,
+  },
+  cookies: {
+    sessionToken: {
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: SESSION_MAX_AGE_SEC,
+      },
+    },
+  },
   providers: [
     Credentials({
       id: "otp",

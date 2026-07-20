@@ -1,24 +1,17 @@
 import type { KnowledgeArticle, KnowledgeCategory } from "./types";
 import { gettingStartedArticles } from "./getting-started";
-import { standsQrArticles } from "./stands-qr";
-import { productsStockArticles } from "./products-stock";
 import { ordersAlertsBillingArticles } from "./orders-alerts-billing";
 
 export type { KnowledgeArticle, KnowledgeCategory, KnowledgeCta } from "./types";
 
 export const knowledgeCategories: KnowledgeCategory[] = [
   { id: "getting-started", title: "Getting started", articles: gettingStartedArticles },
-  { id: "stands-qr", title: "Stands and QR", articles: standsQrArticles },
-  { id: "products-stock", title: "Products and stock", articles: productsStockArticles },
-  {
-    id: "orders-overview",
-    title: "Orders and overview",
-    articles: ordersAlertsBillingArticles.filter((a) => a.slug === "sales-orders"),
-  },
   {
     id: "alerts",
     title: "Alerts",
-    articles: ordersAlertsBillingArticles.filter((a) => a.slug === "alerts-push"),
+    articles: ordersAlertsBillingArticles.filter(
+      (a) => a.slug === "sign-in-phone" || a.slug === "alerts-push",
+    ),
   },
   {
     id: "billing",

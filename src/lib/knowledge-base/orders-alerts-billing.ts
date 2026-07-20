@@ -2,23 +2,30 @@ import type { KnowledgeArticle } from "./types";
 
 export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
   {
-    slug: "sales-orders",
-    title: "Read sales and orders",
+    slug: "sign-in-phone",
+    title: "Sign in and open Stallside on your phone",
     summary:
-      "Use Home overview and Orders to see cash and card sales, filters, and status.",
+      "Use a 6-digit email code and Add to Home Screen so login and phone alerts stay in one place.",
     videoUrl: null,
-    related: ["adjust-inventory", "alerts-push", "billing"],
+    omitVideo: true,
+    imageSrc: "/guides/home-screen-stallside.jpg",
+    imageAlt:
+      "iPhone Home Screen with the Stallside app icon highlighted — open Stallside from this icon, not from Safari",
+    imageWidth: 470,
+    imageHeight: 1024,
+    related: ["alerts-push", "first-stand"],
     ctas: [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Orders", href: "/dashboard/orders" },
+      { label: "Sign in", href: "/login" },
+      { label: "Alert settings", href: "/dashboard/settings" },
     ],
     steps: [
-      "Home (Overview) shows sales totals for the date range you pick — handy for a quick day or week check.",
-      "Open Orders for the full list and chart. Change the date range to zoom in or out.",
-      "Each order shows method (cash, card, PayPal when enabled), total, stand, and status.",
-      "Cash orders are customer-confirmed at the stall (honesty-box style). Card and PayPal orders are paid online when those payments are connected.",
-      "Use this screen after a busy weekend to reconcile what left the stand with what was logged.",
-      "Low stock callouts on Home point you to Inventory when something needs restocking.",
+      "On your phone browser, go to stallside.app and tap Sign in (or Start free trial if you are new).",
+      "Enter your email and tap Email me a code. Check your inbox for a 6-digit code.",
+      "Type the code into Stallside on the same screen. Do not leave this browser window to complete sign-in.",
+      "On iPhone: tap Share → Add to Home Screen → Add. Open Stallside from that new icon next time (not from a Safari tab).",
+      "On Android: use Chrome menu → Add to Home screen, then open from the icon.",
+      "Once signed in you land on the dashboard. From Settings you can enable phone push alerts while you are in the Home Screen app.",
+      "If the Home Screen icon shows Check your email or asks for a code again, request a new code and enter it inside that Home Screen window.",
     ],
   },
   {
@@ -27,7 +34,13 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     summary:
       "Get sale, low-stock, and sold-out alerts by email and on your phone.",
     videoUrl: null,
-    related: ["sign-in-phone", "adjust-inventory", "sales-orders"],
+    omitVideo: true,
+    imageSrc: "/guides/alerts-settings.jpg",
+    imageAlt:
+      "Settings → Alerts: email alerts, phone push alerts, Enable this phone, and alert emails",
+    imageWidth: 1024,
+    imageHeight: 759,
+    related: ["sign-in-phone", "first-stand"],
     ctas: [{ label: "Alert settings", href: "/dashboard/settings" }],
     steps: [
       "Open Settings → Alerts. Turn Email alerts on to get sale, low stock, sold out, and related emails.",
@@ -64,7 +77,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
       "Connect Stripe or PayPal so customers pay you at the stand — separate from your Stallside subscription.",
     videoUrl: null,
     comingSoon: false,
-    related: ["billing", "print-qr"],
+    related: ["billing", "first-stand"],
     ctas: [
       { label: "PayPal", href: "/dashboard/settings/paypal" },
       { label: "Stripe", href: "/dashboard/settings/stripe" },

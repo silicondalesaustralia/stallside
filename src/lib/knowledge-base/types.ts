@@ -9,6 +9,13 @@ export type KnowledgeArticle = {
   summary: string;
   /** YouTube or Vimeo URL — null until you drop in a tutorial */
   videoUrl: string | null;
+  /** Skip the video slot entirely (written steps only). */
+  omitVideo?: boolean;
+  /** Optional illustration under the summary (public path). */
+  imageSrc?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   comingSoon?: boolean;
   steps: string[];
   related: string[];
