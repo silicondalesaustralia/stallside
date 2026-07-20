@@ -60,6 +60,7 @@ export default function QrPagePreview({
                 {...sheet}
                 printable={false}
                 layout={compact ? "compact" : "full"}
+                printSize={size}
                 className="h-full w-full rounded-none border-0 bg-white"
               />
             </FitScale>

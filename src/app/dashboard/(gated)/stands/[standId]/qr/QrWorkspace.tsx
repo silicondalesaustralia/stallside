@@ -41,6 +41,7 @@ export default function QrWorkspace({
           {...sheet}
           printable
           layout={compact ? "compact" : "full"}
+          printSize={size}
         />
       </div>
 

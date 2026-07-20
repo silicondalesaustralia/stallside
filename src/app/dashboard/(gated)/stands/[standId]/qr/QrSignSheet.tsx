@@ -14,9 +14,11 @@ export type QrSignSheetProps = {
   siteUrl: string;
   paymentBrands?: PaymentBrand[];
   className?: string;
-  /** full = stacked A4; compact = text + QR side-by-side for half/quarter */
+  /** full = stacked A4; compact = side-by-side for half/quarter */
   layout?: "full" | "compact";
-  /** When false, omit .qr-print-sheet so thumbnails do not become the print source. */
+  /** Size-specific spacing (e.g. quarter logo ↔ name). */
+  printSize?: "a4" | "half" | "quarter";
+  /** When false, omit .qr-print-sheet so thumbnails are not the print source. */
   printable?: boolean;
 };
 
@@ -34,6 +36,7 @@ export default function QrSignSheet({
   paymentBrands = [],
   className = "",
   layout = "full",
+  printSize,
   printable = true,
 }: QrSignSheetProps) {
   const compact = layout === "compact";
@@ -46,6 +49,8 @@ export default function QrSignSheet({
         compact
           ? "qr-print-sheet--compact px-3 py-3"
           : "px-6 pb-8 pt-12 print:px-10 print:pb-12 print:pt-16",
+        printSize === "quarter" ? "qr-print-sheet--quarter" : null,
+        printSize === "half" ? "qr-print-sheet--half" : null,
         className,
       ]
         .filter(Boolean)
@@ -70,22 +75,22 @@ export default function QrSignSheet({
         <div className="flex justify-center">
           <BrandLockup link={false} size={compact ? "sm" : "lg"} />
         </div>
+        <h1
+          className={`font-[family-name:var(--font-display)] font-bold tracking-tight text-[var(--field)] ${
+            compact ? "mt-1.5 text-xl" : "mt-8 text-3xl"
+          }`}
+        >
+          {name}
+        </h1>
         {qrCallout ? (
           <SafeSignHtml
             html={qrCallout}
             allowStyles
             className={`safe-sign-html qr-sign-callout text-center font-[family-name:var(--font-display)] font-bold leading-tight tracking-tight text-[var(--gone)] ${
-              compact ? "mt-2 text-lg" : "mt-8 text-3xl"
+              compact ? "mt-1.5 text-lg" : "mt-8 text-3xl"
             }`}
           />
         ) : null}
-        <h1
-          className={`font-[family-name:var(--font-display)] font-bold tracking-tight text-[var(--field)] ${
-            compact ? "mt-2 text-xl" : "mt-8 text-3xl"
-          }`}
-        >
-          {name}
-        </h1>
       </div>
 
       <div className="qr-sign-body">
@@ -93,10 +98,10 @@ export default function QrSignSheet({
           <SafeSignHtml
             html={qrSignMessage}
             allowStyles
-            className={`safe-sign-html text-[var(--muted)] ${compact ? "mt-2 text-sm" : "mt-6 text-lg"}`}
+            className={`safe-sign-html text-[var(--muted)] ${compact ? "mt-0 text-sm" : "mt-6 text-lg"}`}
           />
         ) : (
-          <p className={`text-[var(--muted)] ${compact ? "mt-2 text-sm" : "mt-6 text-lg"}`}>
+          <p className={`text-[var(--muted)] ${compact ? "mt-0 text-sm" : "mt-6 text-lg"}`}>
             {defaultMessage}
           </p>
         )}
@@ -105,7 +110,7 @@ export default function QrSignSheet({
             html={description}
             allowStyles
             className={`safe-sign-html font-normal text-[var(--ink)] ${
-              compact ? "mt-2 text-sm" : "mt-6 text-lg"
+              compact ? "mt-1.5 text-sm" : "mt-6 text-lg"
             }`}
           />
         ) : null}
@@ -123,16 +128,19 @@ export default function QrSignSheet({
           alt={`QR code for ${name}`}
           className={`qr-sign-code mx-auto ${compact ? "mt-0 w-[42mm] max-w-[42mm]" : "mt-6 w-full max-w-[320px]"}`}
         />
+      </div>
+
+      <div className="qr-sign-foot">
         <QrPaymentMethods brands={paymentBrands} compact={compact} />
         <p
-          className={`break-all font-receipt text-[var(--muted)] ${
+          className={`mx-auto break-all text-center font-receipt text-[var(--muted)] ${
             compact ? "mt-1 text-[9px] leading-tight" : "mt-4 text-xs"
           }`}
         >
           {checkoutUrl}
         </p>
         <p
-          className={`font-[family-name:var(--font-display)] font-semibold tracking-tight text-[var(--field)] ${
+          className={`mx-auto text-center font-[family-name:var(--font-display)] font-semibold tracking-tight text-[var(--field)] ${
             compact ? "mt-1 text-sm" : "mt-3 text-xl"
           }`}
         >

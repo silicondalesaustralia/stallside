@@ -7,7 +7,8 @@ export const QR_COMPACT_SHEET_CSS = `
     grid-template-columns: minmax(0, 1.2fr) auto;
     grid-template-areas:
       "head head"
-      "body qr";
+      "body qr"
+      "foot foot";
     column-gap: 3mm;
     row-gap: 1.5mm;
     align-items: center;
@@ -36,7 +37,12 @@ export const QR_COMPACT_SHEET_CSS = `
     grid-area: qr;
     text-align: center;
     justify-self: end;
+    align-self: center;
     flex-shrink: 0;
+  }
+  .qr-print-sheet--compact .qr-sign-foot {
+    grid-area: foot;
+    text-align: center;
   }
   .qr-print-sheet--compact .qr-sign-code {
     margin: 0 auto !important;
@@ -63,14 +69,20 @@ export const QR_COMPACT_SHEET_CSS = `
     font-size: 1rem !important;
     margin-top: 1.5mm !important;
   }
-  .qr-print-sheet--compact .qr-sign-qr .font-receipt {
+  .qr-print-sheet--compact .qr-sign-foot .font-receipt {
     font-size: 7px !important;
     line-height: 1.2 !important;
-    max-width: 42mm;
+    max-width: 100%;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
   }
-  .qr-print-sheet--compact .qr-sign-qr p:last-child {
+  .qr-print-sheet--compact .qr-sign-foot > p:last-child {
     font-size: 0.75rem !important;
     margin-top: 1mm !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
   }
 `;
 
@@ -106,9 +118,39 @@ export const QR_PRINT_SIZE_CSS: Record<QrPrintSize, string> = {
       border-bottom: 1px dashed #9aab92;
     }
     .qr-print-tile:last-child { border-bottom: none; }
-    .qr-print-sheet--compact .qr-sign-code {
-      width: 48mm !important;
-      max-width: 48mm !important;
+    .qr-print-sheet--half.qr-print-sheet--compact {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+      column-gap: 4mm;
+      row-gap: 2mm;
+      padding: 4mm 5mm !important;
+    }
+    .qr-print-sheet--half .qr-sign-head h1 {
+      margin-top: 3mm !important;
+      font-size: 1.45rem !important;
+    }
+    .qr-print-sheet--half .qr-sign-qr {
+      justify-self: center !important;
+      align-self: center !important;
+      width: 100%;
+      max-width: 100%;
+    }
+    .qr-print-sheet--half .qr-sign-code {
+      width: 100% !important;
+      max-width: 90mm !important;
+      max-height: 55mm !important;
+      height: auto !important;
+      margin: 0 auto !important;
+      object-fit: contain !important;
+    }
+    .qr-print-sheet--half .qr-sign-callout,
+    .qr-print-sheet--half .qr-sign-callout * {
+      font-size: 1.05rem !important;
+    }
+    .qr-print-sheet--half .safe-sign-html,
+    .qr-print-sheet--half .safe-sign-html *,
+    .qr-print-sheet--half .qr-sign-body p {
+      font-size: 0.82rem !important;
+      line-height: 1.3 !important;
     }
   `,
   quarter: `
@@ -142,6 +184,7 @@ export const QR_PRINT_SIZE_CSS: Record<QrPrintSize, string> = {
     }
     .qr-print-sheet--compact .qr-sign-head h1 {
       font-size: 1rem !important;
+      margin-top: 2.5mm !important;
     }
     .qr-print-sheet--compact .safe-sign-html,
     .qr-print-sheet--compact .qr-sign-body p {
@@ -150,10 +193,10 @@ export const QR_PRINT_SIZE_CSS: Record<QrPrintSize, string> = {
     .qr-print-sheet--compact .qr-sign-callout {
       font-size: 0.85rem !important;
     }
-    .qr-print-sheet--compact .qr-sign-qr .font-receipt {
+    .qr-print-sheet--compact .qr-sign-foot .font-receipt {
       font-size: 6px !important;
     }
-    .qr-print-sheet--compact .qr-sign-qr .text-sm {
+    .qr-print-sheet--compact .qr-sign-foot .text-sm {
       font-size: 0.7rem !important;
     }
   `,

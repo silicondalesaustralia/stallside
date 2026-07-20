@@ -25,6 +25,10 @@ export function printQrSheet(size: QrPrintSize = "a4") {
     const clone = sheet.cloneNode(true) as HTMLElement;
     if (size !== "a4") clone.classList.add("qr-print-sheet--compact");
     else clone.classList.remove("qr-print-sheet--compact");
+    if (size === "quarter") clone.classList.add("qr-print-sheet--quarter");
+    else clone.classList.remove("qr-print-sheet--quarter");
+    if (size === "half") clone.classList.add("qr-print-sheet--half");
+    else clone.classList.remove("qr-print-sheet--half");
     return `<div class="qr-print-tile">${clone.outerHTML}</div>`;
   }).join("");
 
