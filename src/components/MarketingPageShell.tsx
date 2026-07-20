@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 import LandingFooter from "@/components/LandingFooter";
+import OwnerAuthLink from "@/components/OwnerAuthLink";
 
 export default function MarketingPageShell({
   children,
@@ -20,12 +21,7 @@ export default function MarketingPageShell({
             >
               Try Demo
             </Link>
-            <Link
-              href="/login"
-              className="rounded-[var(--radius-pill)] border border-[var(--line)] px-3 py-2 text-sm font-semibold text-[var(--field)] transition hover:border-[var(--leaf)] hover:text-[var(--leaf-dark)] sm:px-4"
-            >
-              Owner login
-            </Link>
+            <OwnerAuthLink variant="marketing" />
           </div>
         </div>
       </header>

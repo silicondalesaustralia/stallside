@@ -2,6 +2,7 @@
 
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
+import DemoCardHint from "@/components/DemoCardHint";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 
 type CartItem = { productId: string; quantity: number };
@@ -18,6 +19,7 @@ type CheckoutPayStepProps = {
   items: CartItem[];
   localTransferLabel: string | null;
   pending: boolean;
+  showDemoCardHint?: boolean;
   onCash: () => void;
   onLocalTransfer: () => void;
   onCard: () => void;
@@ -37,6 +39,7 @@ export default function CheckoutPayStep({
   items,
   localTransferLabel,
   pending,
+  showDemoCardHint = false,
   onCash,
   onLocalTransfer,
   onCard,
@@ -76,26 +79,29 @@ export default function CheckoutPayStep({
         </button>
       ) : null}
       {cardEnabled ? (
-        <button
-          type="button"
-          disabled={pending}
-          onClick={onCard}
-          className="flex items-center gap-4 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4 text-left disabled:opacity-50"
-        >
-          <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--wash)] px-3 py-2.5 text-[var(--ink)]">
-            <PaymentIconRow brands={["card", "apple", "google"]} className="gap-2" />
-          </span>
-          <span className="min-w-0">
-            <span className="block text-xl font-semibold text-[var(--ink)]">
-              {pending ? "Opening checkout…" : "Card / Tap & Go"}
+        <>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={onCard}
+            className="flex items-center gap-4 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4 text-left disabled:opacity-50"
+          >
+            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--wash)] px-3 py-2.5 text-[var(--ink)]">
+              <PaymentIconRow brands={["card", "apple", "google"]} className="gap-2" />
             </span>
-            {!pending ? (
-              <span className="mt-0.5 block text-base font-normal text-[var(--muted)]">
-                Card, Apple Pay or Google Pay
+            <span className="min-w-0">
+              <span className="block text-xl font-semibold text-[var(--ink)]">
+                {pending ? "Opening checkout…" : "Card / Tap & Go"}
               </span>
-            ) : null}
-          </span>
-        </button>
+              {!pending ? (
+                <span className="mt-0.5 block text-base font-normal text-[var(--muted)]">
+                  Card, Apple Pay or Google Pay
+                </span>
+              ) : null}
+            </span>
+          </button>
+          {showDemoCardHint ? <DemoCardHint /> : null}
+        </>
       ) : null}
       {showPayPal && paypalClientId && paypalMerchantId ? (
         <PayPalCheckoutButton

@@ -17,6 +17,8 @@ function createAdapter(): Adapter {
   };
 }
 
+const useSecureCookies = (process.env.AUTH_URL ?? "").startsWith("https://");
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: createAdapter(),
   session: {
@@ -24,12 +26,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     maxAge: SESSION_MAX_AGE_SEC,
     updateAge: SESSION_UPDATE_AGE_SEC,
   },
+  jwt: {
+    maxAge: SESSION_MAX_AGE_SEC,
+  },
   cookies: {
     sessionToken: {
+      name: useSecureCookies
+        ? "__Secure-authjs.session-token"
+        : "authjs.session-token",
       options: {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
+        secure: useSecureCookies,
         maxAge: SESSION_MAX_AGE_SEC,
       },
     },

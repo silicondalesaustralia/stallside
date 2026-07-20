@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import BrandMark from "@/components/BrandMark";
 import { localTransferForCurrency } from "@/lib/local-transfer";
@@ -36,6 +37,7 @@ export default async function PublicStandPage({
   const demoRegion = isDemoStandSlug(stand.slug)
     ? demoRegionForStandSlug(stand.slug)
     : null;
+  const isDemo = Boolean(demoRegion);
 
   const method = localTransferForCurrency(stand.currency);
   const alias = stand.localTransferAlias?.trim() ?? "";
@@ -64,6 +66,16 @@ export default async function PublicStandPage({
 
   return (
     <main className="mx-auto min-h-full w-full max-w-lg px-4 pb-8 pt-8">
+      {isDemo ? (
+        <p className="mb-4 text-sm">
+          <Link
+            href="/"
+            className="font-medium text-[var(--leaf-dark)] underline"
+          >
+            ← Back to home
+          </Link>
+        </p>
+      ) : null}
       <div className="flex items-center gap-3">
         <BrandMark className="size-11" />
         <h1 className="font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight text-[var(--field)]">

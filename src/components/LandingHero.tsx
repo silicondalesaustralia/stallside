@@ -1,6 +1,7 @@
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 import HeroCheckoutDemo from "@/components/HeroCheckoutDemo";
+import OwnerAuthLink from "@/components/OwnerAuthLink";
 import { APP_NAME, APP_HERO_SUPPORT, APP_POSITIONING, APP_TAGLINE } from "@/lib/constants";
 
 const WORDMARK = APP_NAME.toLowerCase();
@@ -37,12 +38,7 @@ export default function LandingHero() {
           >
             Try Demo
           </Link>
-          <Link
-            href="/login"
-            className="rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/30 bg-white/5 px-3 py-2 text-sm font-semibold backdrop-blur-sm transition duration-150 hover:bg-white/10 sm:px-4"
-          >
-            Owner login
-          </Link>
+          <OwnerAuthLink variant="hero" />
         </div>
       </header>
 

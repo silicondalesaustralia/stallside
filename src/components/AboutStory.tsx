@@ -9,7 +9,7 @@ export default function AboutStory() {
       <section className="space-y-5">
         <p>Stallside began about 500 metres from our front door.</p>
         <p>
-          My daughter is ten. She keeps hens, and like a lot of kids in rural Australia, she
+          My daughter is ten. She keeps chooks, and like a lot of kids in rural Australia, she
           set up a little stall at the road to sell the eggs: a table, a handwritten sign, a
           cash tin, and the honesty of whoever happened to be driving past. It worked the way
           these stalls have always worked. You leave the eggs out, people take them, people

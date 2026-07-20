@@ -1,5 +1,7 @@
+import { redirect } from "next/navigation";
 import BrandLockup from "@/components/BrandLockup";
 import { APP_NAME } from "@/lib/constants";
+import { auth } from "@/lib/auth";
 import { safeCallbackUrl } from "@/lib/login-callback";
 import { requestLoginCode } from "./actions";
 
@@ -8,8 +10,13 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ callbackUrl?: string }>;
 }) {
+  const session = await auth();
   const params = await searchParams;
   const callbackUrl = safeCallbackUrl(params.callbackUrl);
+
+  if (session?.user?.id) {
+    redirect(callbackUrl);
+  }
 
   return (
     <main className="mx-auto flex min-h-full w-full max-w-md flex-1 flex-col justify-center px-6 py-16">

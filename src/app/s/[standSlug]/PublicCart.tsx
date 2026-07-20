@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import DemoCardHint from "@/components/DemoCardHint";
 import CheckoutCashConfirm from "./CheckoutCashConfirm";
 import CheckoutLocalTransferConfirm from "./CheckoutLocalTransferConfirm";
 import CheckoutPayStep from "./CheckoutPayStep";
@@ -253,6 +254,8 @@ export default function PublicCart({
         </p>
       ) : null}
 
+      {step === "cart" && demoRegion && cardEnabled ? <DemoCardHint /> : null}
+
       {step === "pay" ? (
         <CheckoutPayStep
           cashEnabled={cashEnabled}
@@ -266,6 +269,7 @@ export default function PublicCart({
           items={payload}
           localTransferLabel={localTransfer?.buttonLabel ?? null}
           pending={pending}
+          showDemoCardHint={Boolean(demoRegion)}
           onCash={() => setStep("cash-confirm")}
           onLocalTransfer={() => setStep("lt-confirm")}
           onCard={payCard}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
+import OwnerAuthLink from "@/components/OwnerAuthLink";
 import { APP_DOMAIN } from "@/lib/constants";
 
 const LINKS = [
@@ -9,7 +10,6 @@ const LINKS = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
   { href: "/contact?subject=feature-request", label: "Feature request" },
-  { href: "/login", label: "Owner login" },
   { href: "/terms", label: "Terms" },
   { href: "/privacy", label: "Privacy" },
 ] as const;
@@ -55,6 +55,7 @@ export default function LandingFooter() {
               {link.label}
             </Link>
           ))}
+          <OwnerAuthLink variant="footer" />
         </nav>
       </div>
     </footer>

@@ -26,16 +26,31 @@ async function refreshSessionCookie(request: NextRequest, response: NextResponse
   if (!secret) return;
 
   const secure = requestIsSecure(request);
-  const cookieName = sessionCookieName(secure);
+  // Prefer the cookie name Auth.js used at sign-in (AUTH_URL https → __Secure-).
+  const preferredName = sessionCookieName(secure);
+  const fallbackName = sessionCookieName(!secure);
 
   try {
-    const token = await getToken({
+    let cookieName = preferredName;
+    let token = await getToken({
       req: request,
       secret,
       secureCookie: secure,
-      salt: cookieName,
+      salt: preferredName,
+      cookieName: preferredName,
     });
-    if (!token) return;
+
+    if (!token) {
+      token = await getToken({
+        req: request,
+        secret,
+        secureCookie: !secure,
+        salt: fallbackName,
+        cookieName: fallbackName,
+      });
+      if (!token) return;
+      cookieName = fallbackName;
+    }
 
     const { exp: _exp, iat: _iat, jti: _jti, ...payload } = token;
     const value = await encode({
@@ -49,7 +64,7 @@ async function refreshSessionCookie(request: NextRequest, response: NextResponse
       httpOnly: true,
       sameSite: "lax",
       path: "/",
-      secure,
+      secure: cookieName.startsWith("__Secure-"),
       maxAge: SESSION_MAX_AGE_SEC,
     });
   } catch {
@@ -58,5 +73,15 @@ async function refreshSessionCookie(request: NextRequest, response: NextResponse
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/onboarding", "/admin/:path*"],
+  // Include marketing home so returning owners keep a fresh session cookie.
+  matcher: [
+    "/",
+    "/login",
+    "/signup",
+    "/about",
+    "/contact",
+    "/dashboard/:path*",
+    "/onboarding",
+    "/admin/:path*",
+  ],
 };
