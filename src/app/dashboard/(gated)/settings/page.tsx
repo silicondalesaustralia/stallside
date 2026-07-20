@@ -129,8 +129,8 @@ export default async function SettingsPage() {
               </span>
             </h2>
             <p className="text-[var(--muted)]">
-              Card, Apple Pay, and Google Pay at your gate. No free trial — billed
-              from day one.
+              Card, Apple Pay, and Google Pay at your gate. Payments go straight to
+              your Stripe account.
             </p>
             <Link
               href="/dashboard/settings/billing?plan=card"

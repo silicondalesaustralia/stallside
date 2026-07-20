@@ -70,7 +70,7 @@ export default async function StripeSettingsPage({
 
       {!cardTier ? (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          Card / Tap &amp; Go is on the Card plan (no free trial).{" "}
+          Card / Tap &amp; Go is on the Card plan.{" "}
           <Link href="/dashboard/settings/billing?plan=card" className="underline">
             Subscribe to Card
           </Link>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import PaymentIconRow from "@/components/PaymentIconRow";
+import PlanFeatureBlock from "@/components/PlanFeatureBlock";
 import { formatMoney } from "@/lib/money";
 import {
   BILLING_CURRENCIES,
@@ -41,11 +41,6 @@ export default function PricingTiers() {
   const cardBillingHref = `/login?callbackUrl=${encodeURIComponent(
     "/dashboard/settings/billing?plan=card",
   )}`;
-  const showPayId = currency === "AUD";
-  const cashBrands = showPayId ? (["cash", "payid"] as const) : (["cash"] as const);
-  const cardBrands = showPayId
-    ? (["cash", "payid", "card", "apple", "google", "paypal"] as const)
-    : (["cash", "card", "apple", "google", "paypal"] as const);
 
   return (
     <section id="pricing" className="mx-auto w-full max-w-6xl px-5 py-10 sm:px-6 sm:py-12">
@@ -88,23 +83,13 @@ export default function PricingTiers() {
       <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
         <div className="rounded-[var(--radius)] border-2 border-[var(--leaf)] bg-[var(--panel)] p-[var(--pad-lg)]">
           <p className="text-sm font-semibold text-[var(--leaf)]">Cash - live</p>
-          <div className="mt-3">
-            <PaymentIconRow brands={[...cashBrands]} />
-          </div>
           <p className="mt-3 font-receipt text-4xl font-semibold text-[var(--marigold)]">
             {formatMoney(cashPlanCents(currency), currency)}
             <span className="text-base font-normal text-[var(--muted)]"> /mo per site</span>
           </p>
-          <p className="mt-4 text-sm text-[var(--muted)]">
-            {showPayId
-              ? "Take cash and PayID bank transfers. Track stock. Print QR posters. Sale and low-stock alerts."
-              : "Take cash at the stand. Track stock. Print QR posters. Sale and low-stock alerts."}
-          </p>
-          <p className="mt-2 text-sm text-[var(--muted)]">
-            {showPayId
-              ? "30-day free trial. PayID lands in your account with no fee."
-              : "30-day free trial."}
-          </p>
+          <div className="mt-4">
+            <PlanFeatureBlock plan="cash" currency={currency} />
+          </div>
           <Link
             href="/signup"
             className="mt-8 inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
@@ -117,23 +102,13 @@ export default function PricingTiers() {
           <p className="text-sm font-semibold text-[var(--leaf)]">
             Card / Tap &amp; Go - live
           </p>
-          <div className="mt-3">
-            <PaymentIconRow brands={[...cardBrands]} />
-          </div>
           <p className="mt-3 font-receipt text-4xl font-semibold text-[var(--marigold)]">
             {formatMoney(cardPlanCents(currency), currency)}
             <span className="text-base font-normal text-[var(--muted)]"> /mo per site</span>
           </p>
-          <p className="mt-4 text-sm text-[var(--muted)]">
-            Everything in Cash, plus Tap &amp; Go — card, Apple Pay, and Google Pay
-            at your gate. PayPal coming soon.
-          </p>
-          <p className="mt-2 text-sm font-semibold text-[var(--marigold)]">
-            No terminal. No hardware. No percentage of your sales.
-          </p>
-          <p className="mt-2 text-sm text-[var(--muted)]">
-            No free trial — billed from day one. Paid straight to your Stripe account.
-          </p>
+          <div className="mt-4">
+            <PlanFeatureBlock plan="card" currency={currency} />
+          </div>
           <Link
             href={cardBillingHref}
             className="mt-8 inline-flex rounded-[var(--radius-pill)] border border-[var(--field)] px-5 py-3 text-sm font-semibold text-[var(--field)] transition hover:bg-[var(--wash)]"
@@ -144,9 +119,9 @@ export default function PricingTiers() {
       </div>
 
       <p className="mt-8 text-sm text-[var(--muted)]">
-        Owner plans only. Customers pay nothing to Stallside. Cash plan includes a 30-day
-        free trial; Card / Tap &amp; Go does not. Cancel any time. No transaction fees, on
-        either plan, ever. Prices shown in {currency}; billed in the currency you choose.
+        Owner plans only. Customers pay nothing to Stallside. Cash plan includes a
+        30-day free trial. Cancel any time. No transaction fees, on either plan,
+        ever. Prices shown in {currency}; billed in the currency you choose.
       </p>
     </section>
   );
