@@ -4,6 +4,13 @@ import { prisma } from "@/lib/prisma";
 import { Role } from "@/generated/prisma/client";
 import { redirect } from "next/navigation";
 import { safeCallbackUrl } from "@/lib/login-callback";
+import { PLATFORM_ADMIN_EMAILS } from "@/lib/constants";
+
+export function isPlatformAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false;
+  const normalized = email.trim().toLowerCase();
+  return (PLATFORM_ADMIN_EMAILS as readonly string[]).includes(normalized);
+}
 
 export async function requireUser() {
   const session = await auth();
@@ -32,7 +39,7 @@ export async function requireOwner() {
 
 export async function requireAdmin() {
   const user = await requireUser();
-  if (user.role !== Role.ADMIN) {
+  if (user.role !== Role.ADMIN || !isPlatformAdminEmail(user.email)) {
     redirect("/dashboard");
   }
   return user;

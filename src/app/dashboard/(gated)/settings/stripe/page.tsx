@@ -53,7 +53,8 @@ export default async function StripeSettingsPage({
         </h1>
         <p className="mt-2 text-[var(--muted)]">
           Connect Stripe so stand customers can pay by card, Apple Pay, or Google
-          Pay. Funds go to you — not Stallside. This is separate from your{" "}
+          Pay. Payments are deposited directly into your Stripe account — Stallside
+          never holds the money. This is separate from your{" "}
           <Link href="/dashboard/settings/billing" className="underline">
             app subscription
           </Link>

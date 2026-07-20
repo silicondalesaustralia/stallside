@@ -1,6 +1,7 @@
 "use client";
 
-import TapAndGoPayIcon from "@/components/TapAndGoPayIcon";
+import PaymentBrandIcon from "@/components/PaymentBrandIcon";
+import PaymentIconRow from "@/components/PaymentIconRow";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 
 type CartItem = { productId: string; quantity: number };
@@ -53,9 +54,12 @@ export default function CheckoutPayStep({
           type="button"
           disabled={pending}
           onClick={onCash}
-          className="rounded-[var(--radius)] bg-[var(--leaf)] px-5 py-5 text-left text-xl font-semibold text-white disabled:opacity-50"
+          className="flex items-center gap-4 rounded-[var(--radius)] bg-[var(--leaf)] px-5 py-5 text-left text-xl font-semibold text-white disabled:opacity-50"
         >
-          Pay cash
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white/15 text-white">
+            <PaymentBrandIcon brand="cash" className="size-7" />
+          </span>
+          <span>Pay cash</span>
         </button>
       ) : null}
       {localTransferLabel ? (
@@ -63,9 +67,12 @@ export default function CheckoutPayStep({
           type="button"
           disabled={pending}
           onClick={onLocalTransfer}
-          className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-left text-xl font-semibold disabled:opacity-50"
+          className="flex items-center gap-4 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-left text-xl font-semibold disabled:opacity-50"
         >
-          {localTransferLabel}
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[var(--wash)]">
+            <PaymentBrandIcon brand="payid" className="size-7" />
+          </span>
+          <span>{localTransferLabel}</span>
         </button>
       ) : null}
       {cardEnabled ? (
@@ -75,8 +82,8 @@ export default function CheckoutPayStep({
           onClick={onCard}
           className="flex items-center gap-4 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4 text-left disabled:opacity-50"
         >
-          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[var(--field)] text-white">
-            <TapAndGoPayIcon className="size-7" />
+          <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--wash)] px-3 py-2.5 text-[var(--ink)]">
+            <PaymentIconRow brands={["card", "apple", "google"]} className="gap-2" />
           </span>
           <span className="min-w-0">
             <span className="block text-xl font-semibold text-[var(--ink)]">

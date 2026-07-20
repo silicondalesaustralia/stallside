@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { requireOwner } from "@/lib/session";
+import { isPlatformAdminEmail, requireOwner } from "@/lib/session";
 import { logout } from "@/app/login/actions";
 import { MONTHLY_FEE_CENTS } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
-import { Role } from "@/generated/prisma/client";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import AlertSettingsForm from "./AlertSettingsForm";
@@ -30,7 +29,7 @@ export default async function SettingsPage() {
         <h2 className="text-lg font-semibold">Account</h2>
         <p>Signed in as {user.email}</p>
         <BusinessNameForm businessName={owner.businessName} />
-        {user.role === Role.ADMIN ? (
+        {isPlatformAdminEmail(user.email) ? (
           <p>
             <Link href="/admin" className="text-[var(--leaf-dark)] underline">
               Open platform admin

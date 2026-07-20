@@ -25,6 +25,8 @@ export const LOW_STOCK_ALERT_COOLDOWN_HOURS = 6;
 export const TRIAL_DAYS = 30;
 /** Owner emails with free forever app access (ignore subscription status). */
 export const COMPLIMENTARY_ACCESS_EMAILS = ["jono@silicondales.com"] as const;
+/** Emails allowed to open platform admin (/admin). */
+export const PLATFORM_ADMIN_EMAILS = ["jono@silicondales.com"] as const;
 export const DEFAULT_CURRENCY = "AUD";
 
 export const CURRENCIES = [
