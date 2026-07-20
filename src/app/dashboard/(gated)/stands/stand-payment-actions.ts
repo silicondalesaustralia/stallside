@@ -5,6 +5,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { isPayPalConnectAvailable } from "@/lib/paypal";
 
 export async function updateStandPayments(standId: string, formData: FormData) {
   const { owner, user } = await requireOwner();
@@ -21,8 +22,10 @@ export async function updateStandPayments(standId: string, formData: FormData) {
   const cardReady = Boolean(
     cardTier && owner.stripeAccountId && owner.stripeChargesEnabled,
   );
+  const paypalConnectAvailable = isPayPalConnectAvailable();
   const paypalReady = Boolean(
-    owner.paypalMerchantId &&
+    paypalConnectAvailable &&
+      owner.paypalMerchantId &&
       owner.paypalOnboardingComplete &&
       owner.paypalPaymentsEnabled,
   );
@@ -35,9 +38,12 @@ export async function updateStandPayments(standId: string, formData: FormData) {
   const acceptCard = cardEditable
     ? formData.get("acceptCard") === "on"
     : existing.acceptCard;
-  const acceptPayPal = paypalEditable
-    ? formData.get("acceptPayPal") === "on"
-    : existing.acceptPayPal;
+  // PayPal is coming soon — never leave it on when Connect isn't available.
+  const acceptPayPal = !paypalConnectAvailable
+    ? false
+    : paypalEditable
+      ? formData.get("acceptPayPal") === "on"
+      : existing.acceptPayPal;
 
   let acceptLocalTransfer = false;
   let localTransferAlias: string | null = null;

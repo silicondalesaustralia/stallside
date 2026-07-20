@@ -30,7 +30,7 @@ export async function startCardCheckout(input: {
     });
     const demo = isDemoStandSlug(stand.slug);
 
-    if (!stand.acceptCard) {
+  if (!stand.acceptCard) {
       return { error: "Card is not enabled at this stand." };
     }
     if (

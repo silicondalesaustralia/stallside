@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import BrandMark from "@/components/BrandMark";
 import { localTransferForCurrency } from "@/lib/local-transfer";
-import { standOffersCard } from "@/lib/stand-payment-brands";
+import { standOffersCard, standOffersPayPal } from "@/lib/stand-payment-brands";
 import { demoRegionForStandSlug, isDemoStandSlug } from "@/lib/demo";
 import PublicCart from "./PublicCart";
 
@@ -47,7 +47,7 @@ export default async function PublicStandPage({
       ? {
           methodId: method.id,
           buttonLabel: method.buttonLabel,
-          aliasLabel: method.aliasLabel,
+          aliasLabel: method.checkoutAliasLabel,
           alias,
         }
       : null;
@@ -84,13 +84,10 @@ export default async function PublicStandPage({
               ...stand.owner,
               user: stand.owner.user,
             })}
-            paypalEnabled={Boolean(
-              stand.acceptPayPal &&
-                stand.owner.paypalMerchantId &&
-                stand.owner.paypalOnboardingComplete &&
-                stand.owner.paypalPaymentsEnabled &&
-                process.env.PAYPAL_CLIENT_ID,
-            )}
+            paypalEnabled={standOffersPayPal(stand, {
+              ...stand.owner,
+              user: stand.owner.user,
+            })}
             paypalClientId={process.env.PAYPAL_CLIENT_ID ?? null}
             paypalMerchantId={stand.owner.paypalMerchantId}
             paypalSandbox={

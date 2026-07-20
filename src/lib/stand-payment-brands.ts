@@ -1,5 +1,6 @@
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
 import type { DemoRegion } from "@/lib/demo";
+import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
@@ -49,16 +50,25 @@ export function standPaymentBrands(
     brands.push("card", "apple", "google");
   }
 
-  const paypalReady = Boolean(
-    stand.acceptPayPal &&
-      owner.paypalMerchantId &&
+  if (standOffersPayPal(stand, owner)) {
+    brands.push("paypal");
+  }
+
+  return brands;
+}
+
+/** PayPal at checkout — off until Connect is enabled for this environment. */
+export function standOffersPayPal(
+  stand: Pick<StandPaymentFlags, "acceptPayPal">,
+  owner: OwnerPaymentReady,
+): boolean {
+  if (!stand.acceptPayPal || !isPayPalConnectAvailable()) return false;
+  return Boolean(
+    owner.paypalMerchantId &&
       owner.paypalOnboardingComplete &&
       owner.paypalPaymentsEnabled &&
       process.env.PAYPAL_CLIENT_ID,
   );
-  if (paypalReady) brands.push("paypal");
-
-  return brands;
 }
 
 /** Card / Tap & Go available for this stand (includes demo test-Stripe path). */

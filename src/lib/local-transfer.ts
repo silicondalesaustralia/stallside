@@ -4,7 +4,10 @@ export type LocalTransferMethod = {
   id: string;
   currencies: string[];
   buttonLabel: string;
+  /** Owner settings field label */
   aliasLabel: string;
+  /** Label shown to shoppers above the stand’s alias at checkout */
+  checkoutAliasLabel: string;
   aliasHint: string;
   aliasPlaceholder: string;
   validate: (value: string) => boolean;
@@ -48,6 +51,7 @@ export const LOCAL_TRANSFER_METHODS: LocalTransferMethod[] = [
     currencies: ["AUD"],
     buttonLabel: "Pay with PayID",
     aliasLabel: "Your PayID",
+    checkoutAliasLabel: "Stall PayID",
     aliasHint: "The phone, email, or ABN linked to your bank account.",
     aliasPlaceholder: "0400 000 000 or you@email.com",
     validate: isPhoneEmailOrAbn,
@@ -58,6 +62,7 @@ export const LOCAL_TRANSFER_METHODS: LocalTransferMethod[] = [
     currencies: ["BRL"],
     buttonLabel: "Pagar com Pix",
     aliasLabel: "Sua chave Pix",
+    checkoutAliasLabel: "Stall Pix key",
     aliasHint: "Telefone, e-mail, CPF/CNPJ ou chave aleatória.",
     aliasPlaceholder: "email@exemplo.com",
     validate: isPixKey,
@@ -68,6 +73,7 @@ export const LOCAL_TRANSFER_METHODS: LocalTransferMethod[] = [
     currencies: ["INR"],
     buttonLabel: "Pay with UPI",
     aliasLabel: "Your UPI ID",
+    checkoutAliasLabel: "Stall UPI ID",
     aliasHint: "Your UPI ID, e.g. name@bank.",
     aliasPlaceholder: "name@bank",
     validate: isUpiId,

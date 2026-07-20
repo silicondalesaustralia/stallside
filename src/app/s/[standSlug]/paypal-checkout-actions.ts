@@ -7,7 +7,7 @@ import {
   ReceiptChannel,
 } from "@/generated/prisma/client";
 import { loadStandCart, type CartItemInput } from "@/lib/checkout";
-import { isPayPalConfigured } from "@/lib/paypal";
+import { isPayPalConfigured, isPayPalConnectAvailable } from "@/lib/paypal";
 import { createPayPalCheckoutOrder } from "@/lib/paypal-orders";
 import { PLATFORM_FEE_BPS } from "@/lib/constants";
 import { platformFeeCents } from "@/lib/money";
@@ -18,8 +18,8 @@ export async function startPayPalCheckout(input: {
   items: CartItemInput[];
 }) {
   try {
-    if (!isPayPalConfigured()) {
-      return { error: "PayPal is not configured yet." };
+    if (!isPayPalConfigured() || !isPayPalConnectAvailable()) {
+      return { error: "PayPal is not available yet." };
     }
 
     const loaded = await loadStandCart(input.standSlug, input.items);

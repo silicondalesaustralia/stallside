@@ -191,7 +191,7 @@ model Stand {
   acceptCash         Boolean              @default(true)
   acceptLocalTransfer Boolean             @default(true)
   acceptCard         Boolean              @default(true)
-  acceptPayPal       Boolean              @default(true)
+  acceptPayPal       Boolean              @default(false)
   showExactStock     Boolean              @default(false)
   isActive           Boolean              @default(true)
   products           Product[]
