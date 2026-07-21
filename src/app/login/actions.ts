@@ -97,7 +97,9 @@ export async function requestSignup(formData: FormData) {
     throw new Error("Could not send sign-in code. Try again in a moment.");
   }
 
-  redirect(`/login/code?email=${encodeURIComponent(email)}`);
+  redirect(
+    `/login/code?email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent("/signup-complete")}`,
+  );
 }
 
 /** Free for Life invite: name + email → claim invite, then email code. */
@@ -140,7 +142,9 @@ export async function requestLifetimeSignup(formData: FormData) {
     throw new Error("Could not send sign-in code. Try again in a moment.");
   }
 
-  redirect(`/login/code?email=${encodeURIComponent(email)}`);
+  redirect(
+    `/login/code?email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent("/signup-complete")}`,
+  );
 }
 
 export async function logout() {
