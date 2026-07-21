@@ -65,26 +65,36 @@ model User {
   updatedAt     DateTime  @updatedAt
 }
 
-/** Pending name from frictionless signup until magic-link creates the User */
+/** Pending name from frictionless signup until OTP creates the User */
 model SignupIntent {
-  email       String  @id
+  email       String   @id
   name        String
-  /** One-use Free for Life invite token, if signing up via /invite/[token] */
+  /** Free for Life invite token, if signing up via /invite/[token] */
   inviteToken String?
   createdAt   DateTime @default(now())
 }
 
-/** One-use Free for Life invite links (admin-created). */
+/** Free for Life invite links (admin-created). maxUses=1 for DMs, higher for group posts. */
 model LifetimeInvite {
-  id           String    @id @default(cuid())
-  token        String    @unique
-  note         String?
-  /** Email that started signup with this invite (holds the seat until used). */
-  claimedEmail String?
-  usedAt       DateTime?
-  usedByEmail  String?
-  usedByUserId String?
-  createdAt    DateTime  @default(now())
+  id          String                     @id @default(cuid())
+  token       String                     @unique
+  note        String?
+  maxUses     Int                        @default(1)
+  useCount    Int                        @default(0)
+  createdAt   DateTime                   @default(now())
+  redemptions LifetimeInviteRedemption[]
+}
+
+model LifetimeInviteRedemption {
+  id        String         @id @default(cuid())
+  inviteId  String
+  invite    LifetimeInvite @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+  email     String
+  userId    String?
+  createdAt DateTime       @default(now())
+
+  @@unique([inviteId, email])
+  @@index([inviteId])
 }
 
 /** Card / PayPal plan interest from landing waitlist */

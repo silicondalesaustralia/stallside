@@ -7,7 +7,6 @@ import { prisma } from "@/lib/prisma";
 import { issueLoginOtp } from "@/lib/login-otp";
 import { safeCallbackUrl } from "@/lib/login-callback";
 import {
-  claimLifetimeInvite,
   getOpenLifetimeInvite,
 } from "@/lib/lifetime-invite";
 
@@ -123,14 +122,9 @@ export async function requestLifetimeSignup(formData: FormData) {
 
   const invite = await getOpenLifetimeInvite(token);
   if (!invite) {
-    throw new Error("This invite link has already been used or is invalid.");
-  }
-  if (invite.claimedEmail && invite.claimedEmail !== email) {
-    throw new Error("This invite link is already reserved for another email.");
-  }
-  const claimed = await claimLifetimeInvite(token, email);
-  if (!claimed) {
-    throw new Error("This invite link has already been used or is invalid.");
+    throw new Error(
+      "This invite link is full or invalid. Ask for a new link if you still need access.",
+    );
   }
 
   await prisma.signupIntent.upsert({

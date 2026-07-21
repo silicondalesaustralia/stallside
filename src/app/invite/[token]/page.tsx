@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import BrandLockup from "@/components/BrandLockup";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import { APP_NAME } from "@/lib/constants";
-import { getOpenLifetimeInvite } from "@/lib/lifetime-invite";
+import {
+  getLifetimeInvite,
+  inviteHasSeats,
+} from "@/lib/lifetime-invite";
 import { requestLifetimeSignup } from "@/app/login/actions";
 
 const FEATURES = [
@@ -21,8 +24,32 @@ export default async function LifetimeInvitePage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  const invite = await getOpenLifetimeInvite(token);
+  const invite = await getLifetimeInvite(token);
   if (!invite) notFound();
+
+  const open = inviteHasSeats(invite);
+  const remaining = Math.max(0, invite.maxUses - invite.useCount);
+
+  if (!open) {
+    return (
+      <main className="mx-auto flex min-h-full w-full max-w-md flex-1 flex-col justify-center px-6 py-16">
+        <BrandLockup />
+        <h1 className="mt-8 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
+          Offer fully claimed
+        </h1>
+        <p className="mt-2 text-[var(--muted)]">
+          This Free for Life invite has no seats left. If you still need access,
+          ask the person who shared the link for a new one.
+        </p>
+        <p className="mt-6 text-sm text-[var(--muted)]">
+          Already signed up?{" "}
+          <Link href="/login" className="font-semibold text-[var(--leaf-dark)] underline">
+            Sign in
+          </Link>
+        </p>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto flex min-h-full w-full max-w-md flex-1 flex-col justify-center px-6 py-16">
@@ -35,6 +62,11 @@ export default async function LifetimeInvitePage({
         forever, no subscription. Name and email only. We&apos;ll send a 6-digit
         sign-in code.
       </p>
+      {invite.maxUses > 1 ? (
+        <p className="mt-2 text-sm font-medium text-[var(--leaf-dark)]">
+          {remaining} of {invite.maxUses} seats left on this invite
+        </p>
+      ) : null}
 
       <div className="mt-6">
         <PaymentIconRow
