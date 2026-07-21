@@ -13,30 +13,30 @@ export default function DemoPhoneFrame({
   const compact = size === "compact";
 
   return (
-    <div className={`mx-auto w-full ${compact ? "max-w-[220px]" : "max-w-[320px]"}`}>
+    <div className={`mx-auto w-full ${compact ? "max-w-[180px]" : "max-w-[320px]"}`}>
       <div
         className={`relative border-[var(--field)] bg-[var(--field)] shadow-[0_24px_60px_rgb(0_0_0/0.28)] ${
           compact
-            ? "rounded-[2rem] border-[8px]"
+            ? "rounded-[1.75rem] border-[7px]"
             : "rounded-[2.4rem] border-[10px]"
         }`}
       >
         <div
           aria-hidden
           className={`absolute left-1/2 z-20 -translate-x-1/2 rounded-full bg-black ${
-            compact ? "top-2 h-5 w-16" : "top-2.5 h-6 w-24"
+            compact ? "top-1.5 h-4 w-14" : "top-2.5 h-6 w-24"
           }`}
         />
         <div
           className={`relative overflow-hidden bg-[var(--wash)] ${
-            compact ? "rounded-[1.5rem]" : "rounded-[1.85rem]"
+            compact ? "rounded-[1.35rem]" : "rounded-[1.85rem]"
           }`}
         >
           <div
             aria-hidden
             className={`relative z-10 flex items-center justify-between font-semibold text-[var(--ink)] ${
               compact
-                ? "px-4 pb-0.5 pt-2.5 text-[9px]"
+                ? "px-3 pb-0.5 pt-2 text-[8px]"
                 : "px-5 pb-1 pt-3 text-[10px]"
             }`}
           >
@@ -51,7 +51,7 @@ export default function DemoPhoneFrame({
 
           <div
             className={`relative overflow-hidden bg-[var(--wash)] ${
-              compact ? "h-[380px]" : "h-[560px]"
+              compact ? "h-[300px]" : "h-[560px]"
             }`}
           >
             {children}

@@ -90,7 +90,7 @@ export default function HeroOwnerPhoneAlert() {
   }, []);
 
   return (
-    <div className="flex w-full max-w-[220px] flex-col items-center gap-1.5">
+    <div className="flex w-full max-w-[180px] flex-col items-center gap-1">
       <p className="text-[10px] font-semibold tracking-wide text-[var(--ink-on-dark)]/55 uppercase">
         Owner phone
       </p>

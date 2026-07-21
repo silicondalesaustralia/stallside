@@ -42,7 +42,7 @@ export default function LandingHero() {
         </div>
       </header>
 
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-8 px-5 pb-10 pt-2 sm:px-6 sm:pb-12 2xl:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] 2xl:items-center 2xl:gap-8">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-6 px-5 pb-8 pt-2 sm:px-6 sm:pb-10 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.2fr)] xl:items-center xl:gap-6 xl:pb-8">
         <div
           aria-hidden
           className="hero-bracket pointer-events-none absolute left-5 top-0 size-12 border-l-[3px] border-t-[3px] border-[var(--ink-on-dark)]/40 sm:left-6 sm:size-16"
@@ -51,7 +51,7 @@ export default function LandingHero() {
 
         <div className="relative min-w-0">
           <h1
-            className="font-[family-name:var(--font-display)] text-[clamp(2.5rem,11vw,5.25rem)] font-bold leading-[0.9] tracking-[-0.035em] lowercase"
+            className="font-[family-name:var(--font-display)] text-[clamp(2.5rem,11vw,5.25rem)] font-bold leading-[0.9] tracking-[-0.035em] lowercase xl:text-[clamp(2.75rem,4.2vw,3.85rem)]"
             aria-label={WORDMARK}
           >
             {WORDMARK.split("").map((letter, i) => (
@@ -64,20 +64,20 @@ export default function LandingHero() {
               </span>
             ))}
           </h1>
-          <p className="mt-3 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-[var(--ink-on-dark)] sm:mt-4 sm:text-2xl">
+          <p className="mt-3 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-[var(--ink-on-dark)] sm:mt-4 sm:text-2xl xl:mt-3 xl:text-xl">
             {APP_TAGLINE}
           </p>
-          <p className="mt-3 max-w-xl text-base leading-snug text-[var(--ink-on-dark)]/75">
+          <p className="mt-3 max-w-xl text-base leading-snug text-[var(--ink-on-dark)]/75 xl:mt-2 xl:text-sm">
             {APP_POSITIONING}
           </p>
-          <p className="mt-2 max-w-xl text-base leading-snug text-[var(--ink-on-dark)]/75">
+          <p className="mt-2 max-w-xl text-base leading-snug text-[var(--ink-on-dark)]/75 xl:text-sm">
             {APP_HERO_SUPPORT}
           </p>
-          <p className="mt-2 max-w-xl text-sm leading-snug text-[var(--ink-on-dark)]/60 sm:text-base">
+          <p className="mt-2 max-w-xl text-sm leading-snug text-[var(--ink-on-dark)]/60 sm:text-base xl:text-sm">
             The honesty stall, upgraded. Pay however your customers want.
           </p>
 
-          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm xl:mt-3">
             <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]">
               <span className="size-2 rounded-full bg-[var(--leaf)]" aria-hidden />
               Cash - live today
@@ -88,7 +88,7 @@ export default function LandingHero() {
             </span>
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap gap-3 xl:mt-4">
             <Link
               href="/signup"
               className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition duration-150 hover:bg-[var(--leaf-dark)]"
