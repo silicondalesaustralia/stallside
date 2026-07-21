@@ -34,7 +34,11 @@ export default async function BillingSettingsPage({
   const params = await searchParams;
   const configured = isStripeBillingConfigured();
   const cardConfigured = isStripeCardBillingConfigured();
-  const complimentary = { email: user.email, role: user.role };
+  const complimentary = {
+    email: user.email,
+    role: user.role,
+    lifetimeAccess: owner.lifetimeAccess,
+  };
   const freeForever = hasComplimentaryAccess(complimentary);
   const isPaid =
     owner.subscriptionStatus === "ACTIVE" ||

@@ -34,8 +34,14 @@ export default async function AdminOverviewPage() {
         </div>
         <div className="flex flex-wrap gap-3 text-sm">
           <Link
-            href="/admin/billing"
+            href="/admin/invites"
             className="rounded-lg bg-[var(--leaf)] px-3 py-2 font-semibold text-white"
+          >
+            Free for Life invites
+          </Link>
+          <Link
+            href="/admin/billing"
+            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2 font-semibold"
           >
             Billing &amp; coupons
           </Link>

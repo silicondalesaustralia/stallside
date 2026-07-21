@@ -6,6 +6,10 @@ import { signIn, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { issueLoginOtp } from "@/lib/login-otp";
 import { safeCallbackUrl } from "@/lib/login-callback";
+import {
+  claimLifetimeInvite,
+  getOpenLifetimeInvite,
+} from "@/lib/lifetime-invite";
 
 function normalizeEmail(raw: FormDataEntryValue | null) {
   return String(raw ?? "")
@@ -84,13 +88,61 @@ export async function requestSignup(formData: FormData) {
   await prisma.signupIntent.upsert({
     where: { email },
     create: { email, name },
-    update: { name },
+    update: { name, inviteToken: null },
   });
 
   try {
     await issueLoginOtp(email);
   } catch (error) {
     console.error("Signup OTP send failed", error);
+    throw new Error("Could not send sign-in code. Try again in a moment.");
+  }
+
+  redirect(`/login/code?email=${encodeURIComponent(email)}`);
+}
+
+/** Free for Life invite: name + email → claim invite, then email code. */
+export async function requestLifetimeSignup(formData: FormData) {
+  const email = normalizeEmail(formData.get("email"));
+  const name = String(formData.get("name") ?? "").trim();
+  const token = String(formData.get("inviteToken") ?? "").trim();
+  if (!token) {
+    throw new Error("This invite link is invalid.");
+  }
+  if (!email || !email.includes("@")) {
+    throw new Error("Enter a valid email address.");
+  }
+  if (name.length < 2) {
+    throw new Error("Enter your name.");
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    throw new Error("That email already has an account. Sign in instead.");
+  }
+
+  const invite = await getOpenLifetimeInvite(token);
+  if (!invite) {
+    throw new Error("This invite link has already been used or is invalid.");
+  }
+  if (invite.claimedEmail && invite.claimedEmail !== email) {
+    throw new Error("This invite link is already reserved for another email.");
+  }
+  const claimed = await claimLifetimeInvite(token, email);
+  if (!claimed) {
+    throw new Error("This invite link has already been used or is invalid.");
+  }
+
+  await prisma.signupIntent.upsert({
+    where: { email },
+    create: { email, name, inviteToken: token },
+    update: { name, inviteToken: token },
+  });
+
+  try {
+    await issueLoginOtp(email);
+  } catch (error) {
+    console.error("Lifetime signup OTP send failed", error);
     throw new Error("Could not send sign-in code. Try again in a moment.");
   }
 

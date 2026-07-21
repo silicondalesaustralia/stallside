@@ -48,6 +48,9 @@ export default async function AdminOwnerDetailPage({
         </p>
         <p>Plan: {owner.subscriptionPlan ?? "—"}</p>
         <p>Status: {owner.subscriptionStatus.toLowerCase()}</p>
+        {owner.lifetimeAccess ? (
+          <p className="font-semibold text-[var(--leaf)]">Free for Life</p>
+        ) : null}
         <p>
           LTV: {formatMoney(owner.lifetimePaidCents, owner.billingCurrency)} · Fee{" "}
           {formatMoney(owner.monthlyFeeCents, owner.billingCurrency)}/mo (

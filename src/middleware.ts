@@ -78,6 +78,7 @@ export const config = {
     "/",
     "/login",
     "/signup",
+    "/invite/:path*",
     "/about",
     "/contact",
     "/dashboard/:path*",

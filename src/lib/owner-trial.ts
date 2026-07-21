@@ -45,10 +45,13 @@ function hasFutureDate(value: Date | null): boolean {
 export type ComplimentaryAccessInput = {
   email?: string | null;
   role?: Role | string | null;
+  /** Owner.lifetimeAccess from Free for Life invite / admin grant */
+  lifetimeAccess?: boolean | null;
 };
 
-/** Admin users and allowlisted emails never need a paid subscription. */
+/** Admin users, allowlisted emails, and lifetime invitees never need a paid subscription. */
 export function hasComplimentaryAccess(input: ComplimentaryAccessInput): boolean {
+  if (input.lifetimeAccess) return true;
   if (input.role === Role.ADMIN) return true;
   const email = (input.email ?? "").trim().toLowerCase();
   return (COMPLIMENTARY_ACCESS_EMAILS as readonly string[]).includes(email);
@@ -58,9 +61,10 @@ const CARD_TIER_PLANS = new Set(["card", "card_paypal"]);
 
 /** Card / PayPal ($19.99) features: paid card plan, or complimentary / admin. */
 export function ownerHasCardTierAccess(
-  owner: { subscriptionPlan?: string | null },
+  owner: { subscriptionPlan?: string | null; lifetimeAccess?: boolean | null },
   access?: ComplimentaryAccessInput,
 ): boolean {
+  if (owner.lifetimeAccess) return true;
   if (access && hasComplimentaryAccess(access)) return true;
   const plan = (owner.subscriptionPlan ?? "").trim().toLowerCase();
   return CARD_TIER_PLANS.has(plan);
@@ -68,9 +72,10 @@ export function ownerHasCardTierAccess(
 
 /** Owner may use stands/products/orders — data is always retained. */
 export function ownerHasAppAccess(
-  owner: OwnerAccessFields,
+  owner: OwnerAccessFields & { lifetimeAccess?: boolean | null },
   access?: ComplimentaryAccessInput,
 ): boolean {
+  if (owner.lifetimeAccess) return true;
   if (access && hasComplimentaryAccess(access)) return true;
   if (owner.subscriptionStatus === SubscriptionStatus.ACTIVE) return true;
   if (owner.subscriptionStatus === SubscriptionStatus.PAST_DUE) return true;
@@ -101,9 +106,10 @@ function daysUntil(date: Date): number {
 
 /** Free-trial days remaining (null if not on an active app trial). */
 export function trialDaysRemaining(
-  owner: OwnerAccessFields,
+  owner: OwnerAccessFields & { lifetimeAccess?: boolean | null },
   access?: ComplimentaryAccessInput,
 ): number | null {
+  if (owner.lifetimeAccess) return null;
   if (access && hasComplimentaryAccess(access)) return null;
   if (owner.stripeSubscriptionId) return null;
   if (owner.subscriptionStatus !== SubscriptionStatus.TRIALING) return null;
@@ -116,9 +122,10 @@ export function trialDaysRemaining(
  * (or cancelled but still inside the paid window).
  */
 export function paidAccessDaysRemaining(
-  owner: OwnerAccessFields,
+  owner: OwnerAccessFields & { lifetimeAccess?: boolean | null },
   access?: ComplimentaryAccessInput,
 ): number | null {
+  if (owner.lifetimeAccess) return null;
   if (access && hasComplimentaryAccess(access)) return null;
   if (!hasFutureDate(owner.currentPeriodEndsAt)) return null;
   if (owner.subscriptionStatus === SubscriptionStatus.ACTIVE && !owner.cancelAtPeriodEnd) {

@@ -67,9 +67,24 @@ model User {
 
 /** Pending name from frictionless signup until magic-link creates the User */
 model SignupIntent {
-  email     String   @id
-  name      String
-  createdAt DateTime @default(now())
+  email       String  @id
+  name        String
+  /** One-use Free for Life invite token, if signing up via /invite/[token] */
+  inviteToken String?
+  createdAt   DateTime @default(now())
+}
+
+/** One-use Free for Life invite links (admin-created). */
+model LifetimeInvite {
+  id           String    @id @default(cuid())
+  token        String    @unique
+  note         String?
+  /** Email that started signup with this invite (holds the seat until used). */
+  claimedEmail String?
+  usedAt       DateTime?
+  usedByEmail  String?
+  usedByUserId String?
+  createdAt    DateTime  @default(now())
 }
 
 /** Card / PayPal plan interest from landing waitlist */
@@ -138,6 +153,8 @@ model Owner {
   alertEmails               String[]           @default([])
   subscriptionStatus        SubscriptionStatus @default(NONE)
   subscriptionPlan          String?            @default("cash")
+  /** Free Card / Tap & Go forever (invite or admin grant). */
+  lifetimeAccess            Boolean            @default(false)
   monthlyFeeCents           Int                @default(699)
   /** Currency of the SaaS subscription (AUD/USD/GBP/EUR) */
   billingCurrency           String             @default("AUD")
