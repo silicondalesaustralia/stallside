@@ -10,8 +10,12 @@ declare global {
   }
 }
 
+type Props = {
+  userId: string;
+};
+
 /** Fires Meta + GA + Reddit signup conversion once on the thank-you page. */
-export default function SignupCompleteConversion() {
+export default function SignupCompleteConversion({ userId }: Props) {
   useEffect(() => {
     try {
       window.fbq?.("track", "CompleteRegistration");
@@ -24,11 +28,14 @@ export default function SignupCompleteConversion() {
       /* ignore */
     }
     try {
-      window.rdt?.("track", "SignUp");
+      // Stable ID so pixel + CAPI can dedupe the same signup.
+      window.rdt?.("track", "Complete Rego", {
+        conversionId: `signup_${userId}`,
+      });
     } catch {
       /* ignore */
     }
-  }, []);
+  }, [userId]);
 
   return null;
 }
