@@ -81,6 +81,21 @@ export default async function AdminOverviewPage() {
         <DashboardStat label="Cancelled" value={String(saas.cancelled)} />
       </section>
 
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <DashboardStat
+          label="Demo completions"
+          value={String(saas.demoCompletions)}
+        />
+        <DashboardStat
+          label="Demo last 7 days"
+          value={String(saas.demoCompletions7d)}
+        />
+        <DashboardStat
+          label="Demo stands"
+          value={String(saas.demoStandCount)}
+        />
+      </section>
+
       <section>
         <h2 className="text-lg font-semibold">Recent owners</h2>
         {recent.length === 0 ? (
