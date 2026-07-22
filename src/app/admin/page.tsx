@@ -3,14 +3,29 @@ import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
 import { getSaasStats } from "@/lib/admin-saas-stats";
+import { getSaasSeries } from "@/lib/admin-saas-series";
+import { resolveDateWindow } from "@/lib/date-range";
 import { isStripeBillingConfigured } from "@/lib/stripe";
 import DashboardStat from "@/components/DashboardStat";
+import DateRangeFilter from "@/components/DateRangeFilter";
+import SaasSeriesChart from "@/components/SaasSeriesChart";
 
-export default async function AdminOverviewPage() {
+export default async function AdminOverviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ range?: string; from?: string; to?: string }>;
+}) {
   await requireAdmin();
+  const params = await searchParams;
+  const window = resolveDateWindow({
+    range: params.range ?? "30d",
+    from: params.from,
+    to: params.to,
+  });
 
-  const [saas, recent] = await Promise.all([
+  const [saas, series, recent] = await Promise.all([
     getSaasStats(),
+    getSaasSeries(window.start, window.end),
     prisma.owner.findMany({
       orderBy: { createdAt: "desc" },
       take: 8,
@@ -60,6 +75,15 @@ export default async function AdminOverviewPage() {
           <code className="rounded bg-black/5 px-1">STRIPE_PRICE_ID_CASH</code>.
         </p>
       ) : null}
+
+      <DateRangeFilter
+        pathname="/admin"
+        activeKey={window.key}
+        from={window.fromParam}
+        to={window.toParam}
+      />
+
+      <SaasSeriesChart points={series} title={`${window.label} · SaaS activity`} />
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <DashboardStat
