@@ -36,10 +36,10 @@ const PREV_CARD = PREV_TOTAL - PREV_CASH;
 export default function LandingAnalyticsPreview() {
   return (
     <section className="mx-auto w-full max-w-6xl px-5 py-10 sm:px-6 sm:py-12">
-      <div className="relative rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-[var(--pad-lg)]">
+      <div className="relative rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-4 sm:p-[var(--pad-lg)]">
         <div
           aria-hidden
-          className="absolute left-5 top-5 size-7 border-l-2 border-t-2 border-[var(--field)]/30 sm:left-7 sm:top-7"
+          className="absolute left-4 top-4 size-7 border-l-2 border-t-2 border-[var(--field)]/30 sm:left-7 sm:top-7"
           style={{ borderTopLeftRadius: 8 }}
         />
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--leaf)]">
@@ -60,7 +60,7 @@ export default function LandingAnalyticsPreview() {
           <span className="text-[var(--muted)]">vs previous 7 days</span>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
           <DashboardStat
             label="Revenue"
             value={formatMoney(CURRENT_TOTAL, "AUD")}

@@ -12,9 +12,11 @@ export default function DashboardStat({
   previous?: number;
 }) {
   return (
-    <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-5">
-      <p className="text-xs uppercase tracking-wide text-[var(--muted)]">{label}</p>
-      <p className="mt-2 font-receipt text-2xl font-semibold tracking-tight sm:text-3xl">
+    <div className="min-w-0 overflow-hidden rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-3 py-4 sm:px-4 sm:py-5">
+      <p className="truncate text-[0.65rem] uppercase tracking-wide text-[var(--muted)] sm:text-xs">
+        {label}
+      </p>
+      <p className="mt-2 break-words font-receipt text-lg font-semibold leading-tight tracking-tight tabular-nums sm:text-2xl lg:text-3xl">
         {value}
       </p>
       {typeof current === "number" && typeof previous === "number" ? (
