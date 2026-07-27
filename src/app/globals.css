@@ -137,7 +137,7 @@ html.nav-busy * {
 .ticker-track {
   display: flex;
   width: max-content;
-  animation: ticker-scroll 28s linear infinite;
+  animation: ticker-scroll 75s linear infinite;
 }
 
 .ticker-tape:hover .ticker-track,
