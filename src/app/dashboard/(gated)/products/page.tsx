@@ -3,14 +3,28 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
 import ProductDeleteButton from "./ProductDeleteButton";
+import RestockNotifyPanel from "./RestockNotifyPanel";
+import { loadRestockPanels } from "./load-restock-panels";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 
 export default async function ProductsPage() {
-  const { owner } = await requireOwner();
+  const { user, owner } = await requireOwner();
   const products = await prisma.product.findMany({
     where: { ownerId: owner.id, isActive: true },
     include: { stand: true },
     orderBy: [{ standId: "asc" }, { sortOrder: "asc" }, { name: "asc" }],
   });
+
+  const showRestock =
+    isRestockAlertsEnabled() &&
+    ownerHasCardTierAccess(owner, {
+      email: user.email,
+      role: user.role,
+      lifetimeAccess: owner.lifetimeAccess,
+    });
+
+  const restockPanels = showRestock ? await loadRestockPanels(owner.id) : [];
 
   return (
     <main className="flex flex-col gap-8">
@@ -28,6 +42,19 @@ export default async function ProductsPage() {
           Add product
         </Link>
       </div>
+
+      {restockPanels.length > 0 ? (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold tracking-tight">
+            Restock alerts
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {restockPanels.map((panel) => (
+              <RestockNotifyPanel key={panel.standId} {...panel} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {products.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">No products yet.</p>
@@ -59,7 +86,10 @@ export default async function ProductsPage() {
                 >
                   Adjust stock
                 </Link>
-                <ProductDeleteButton productId={product.id} productName={product.name} />
+                <ProductDeleteButton
+                  productId={product.id}
+                  productName={product.name}
+                />
               </div>
             </li>
           ))}

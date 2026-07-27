@@ -1,17 +1,8 @@
 import Link from "next/link";
 import DemoCheckoutSuccessRedirect from "@/components/DemoCheckoutSuccessRedirect";
-import {
-  fulfillPaidCardOrder,
-  fulfillPaidPayPalOrder,
-} from "@/lib/fulfill-paid-order";
-import { demoRegionForStandSlug, isDemoStandSlug, type DemoRegion } from "@/lib/demo";
-import { getStripe, isStripeConfigured } from "@/lib/stripe";
-import { resolveDemoCardStripe } from "@/lib/stripe-demo";
-import { isPayPalConfigured } from "@/lib/paypal";
-import { capturePayPalOrder } from "@/lib/paypal-orders";
-import { prisma } from "@/lib/prisma";
+import RestockOptIn from "./RestockOptIn";
+import { resolveCheckoutSuccess } from "./resolve-checkout-success";
 import { APP_NAME } from "@/lib/constants";
-import { PaymentMethod } from "@/generated/prisma/client";
 
 export default async function CheckoutSuccessPage({
   searchParams,
@@ -24,89 +15,14 @@ export default async function CheckoutSuccessPage({
   }>;
 }) {
   const params = await searchParams;
-  let message = "Thanks - your payment is being confirmed.";
-  let demoStandSlug: string | null = null;
-  let demoRegion: DemoRegion | null = null;
-  let demoTotalCents: number | undefined;
-  let demoCurrency: string | undefined;
-
-  if (params.session_id) {
-    try {
-      const order = await prisma.order.findFirst({
-        where: { stripeCheckoutSessionId: params.session_id },
-        include: { owner: true, stand: { select: { slug: true } } },
-      });
-      if (order?.stand && isDemoStandSlug(order.stand.slug)) {
-        demoStandSlug = order.stand.slug;
-        demoRegion = demoRegionForStandSlug(order.stand.slug);
-        demoTotalCents = order.totalCents;
-        demoCurrency = order.currency;
-      }
-
-      const demo =
-        order?.stand && isDemoStandSlug(order.stand.slug)
-          ? resolveDemoCardStripe(order.owner)
-          : null;
-      const stripe = demo?.stripe ?? (isStripeConfigured() ? getStripe() : null);
-      const stripeAccountId =
-        demo?.stripeAccountId ?? order?.owner.stripeAccountId ?? null;
-
-      if (order && stripe && stripeAccountId) {
-        const session = await stripe.checkout.sessions.retrieve(
-          params.session_id,
-          undefined,
-          { stripeAccount: stripeAccountId },
-        );
-
-        if (session.payment_status === "paid") {
-          const paymentIntent =
-            typeof session.payment_intent === "string"
-              ? session.payment_intent
-              : session.payment_intent?.id;
-          const result = await fulfillPaidCardOrder(order.id, paymentIntent);
-          if ("orderNumber" in result && result.orderNumber) {
-            message = "Payment confirmed. You're all set.";
-          } else if ("error" in result && result.error) {
-            message = result.error;
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Checkout success fulfillment failed", error);
-      message = "Payment received - stock will update shortly if not already.";
-    }
-  } else if (
-    (params.paypal === "1" || params.token) &&
-    params.order_id &&
-    isPayPalConfigured()
-  ) {
-    try {
-      const order = await prisma.order.findUnique({
-        where: { id: params.order_id },
-      });
-      if (!order || order.paymentMethod !== PaymentMethod.PAYPAL) {
-        message = "PayPal order not found.";
-      } else {
-        const paypalOrderId = params.token || order.paypalOrderId;
-        if (!paypalOrderId) {
-          message = "PayPal payment token missing.";
-        } else {
-          const captured = await capturePayPalOrder(paypalOrderId);
-          const captureId =
-            captured.purchase_units?.[0]?.payments?.captures?.[0]?.id ?? null;
-          const result = await fulfillPaidPayPalOrder(order.id, captureId);
-          if ("orderNumber" in result && result.orderNumber) {
-            message = "Payment confirmed. You're all set.";
-          } else if ("error" in result && result.error) {
-            message = result.error;
-          }
-        }
-      }
-    } catch (error) {
-      console.error("PayPal success fulfillment failed", error);
-      message = "Payment received - stock will update shortly if not already.";
-    }
-  }
+  const {
+    message,
+    demoStandSlug,
+    demoRegion,
+    demoTotalCents,
+    demoCurrency,
+    restock,
+  } = await resolveCheckoutSuccess(params);
 
   return (
     <main className="mx-auto flex min-h-full max-w-lg flex-1 flex-col justify-center px-6 py-16">
@@ -130,6 +46,12 @@ export default async function CheckoutSuccessPage({
             via="card"
             totalCents={demoTotalCents}
             currency={demoCurrency}
+          />
+        ) : null}
+        {restock && !demoStandSlug ? (
+          <RestockOptIn
+            standId={restock.standId}
+            prefillEmail={restock.prefillEmail}
           />
         ) : null}
       </div>

@@ -61,6 +61,21 @@ export default function PrivacyContent() {
 
       <section className="space-y-3">
         <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
+          Restock alerts
+        </h2>
+        <p className="text-[var(--muted)]">
+          When you buy from a Card-plan stand, you may opt in to an email when that stand
+          restocks. {LEGAL_ENTITY} ({APP_NAME}) is the controller: we store your email and
+          consent record solely for that purpose. Stand owners see a subscriber count and can
+          ask us to send a restock notice — they never receive or export your address. Emails
+          are delivered via Resend (processor). You can unsubscribe any time via the link in
+          each email (no login). We retain active subscriptions until you unsubscribe or the
+          stand is removed; unsubscribed records may be kept briefly for audit.
+        </p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
           Cookies and sessions
         </h2>
         <p className="text-[var(--muted)]">

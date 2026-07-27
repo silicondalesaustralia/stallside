@@ -22,7 +22,7 @@ export async function sendOwnerEmail(
   to: string | string[],
   subject: string,
   html: string,
-  options?: { replyTo?: string },
+  options?: { replyTo?: string; headers?: Record<string, string> },
 ) {
   const recipients = (Array.isArray(to) ? to : [to])
     .map((email) => email.trim())
@@ -49,6 +49,7 @@ export async function sendOwnerEmail(
     subject: string;
     html: string;
     reply_to?: string;
+    headers?: Record<string, string>;
   } = {
     from,
     to: recipients,
@@ -57,6 +58,9 @@ export async function sendOwnerEmail(
   };
   if (options?.replyTo) {
     body.reply_to = options.replyTo;
+  }
+  if (options?.headers && Object.keys(options.headers).length > 0) {
+    body.headers = options.headers;
   }
 
   const res = await fetch("https://api.resend.com/emails", {

@@ -34,6 +34,11 @@ enum ReceiptChannel {
   EMAIL
 }
 
+enum SubStatus {
+  ACTIVE
+  UNSUBSCRIBED
+}
+
 enum InventorySource {
   OWNER_MANUAL
   ORDER_CASH
@@ -225,6 +230,8 @@ model Stand {
   orders             Order[]
   inventoryAdjustments InventoryAdjustment[]
   lowStockAlerts     LowStockAlert[]
+  restockSubscribers RestockSubscriber[]
+  restockNotifications RestockNotification[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 }
@@ -330,4 +337,32 @@ model LowStockAlert {
   createdAt            DateTime @default(now())
 
   @@index([productId, sentAt])
+}
+
+model RestockSubscriber {
+  id             String    @id @default(cuid())
+  standId        String
+  stand          Stand     @relation(fields: [standId], references: [id], onDelete: Cascade)
+  email          String
+  status         SubStatus @default(ACTIVE)
+  consentText    String
+  consentAt      DateTime  @default(now())
+  consentSource  String
+  unsubToken     String    @unique
+  unsubscribedAt DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@unique([standId, email])
+  @@index([standId, status])
+}
+
+model RestockNotification {
+  id             String   @id @default(cuid())
+  standId        String
+  stand          Stand    @relation(fields: [standId], references: [id], onDelete: Cascade)
+  sentByUserId   String
+  recipientCount Int
+  sentAt         DateTime @default(now())
+
+  @@index([standId, sentAt])
 }

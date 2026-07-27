@@ -1,0 +1,14 @@
+import { LOW_STOCK_ALERT_COOLDOWN_HOURS } from "@/lib/constants";
+
+/** Kill-switch: set RESTOCK_ALERTS_ENABLED=0 to hide UI and block sends. */
+export function isRestockAlertsEnabled(): boolean {
+  return process.env.RESTOCK_ALERTS_ENABLED !== "0";
+}
+
+/** Exact wording shown at opt-in — stored as consentText. */
+export const RESTOCK_CONSENT_TEXT =
+  "Want to know when this stand restocks? We'll email you when it does — nothing else.";
+
+export const RESTOCK_CONSENT_SOURCE = "checkout_success";
+
+export const RESTOCK_ALERT_COOLDOWN_HOURS = LOW_STOCK_ALERT_COOLDOWN_HOURS;

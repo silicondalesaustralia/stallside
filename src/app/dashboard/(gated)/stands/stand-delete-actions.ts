@@ -24,6 +24,8 @@ export async function deleteStand(standId: string) {
     }
     await tx.inventoryAdjustment.deleteMany({ where: { standId } });
     await tx.lowStockAlert.deleteMany({ where: { standId } });
+    await tx.restockNotification.deleteMany({ where: { standId } });
+    await tx.restockSubscriber.deleteMany({ where: { standId } });
     await tx.order.deleteMany({ where: { standId, ownerId: owner.id } });
     await tx.product.deleteMany({ where: { standId, ownerId: owner.id } });
     await tx.stand.delete({ where: { id: standId } });
