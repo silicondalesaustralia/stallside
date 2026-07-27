@@ -8,7 +8,7 @@ export default function CashConfirmMock({ compact = false }: CashConfirmMockProp
   if (compact) {
     return (
       <div className="hero-phone mt-6 flex items-center gap-3 rounded-2xl border border-[var(--ink-on-dark)]/20 bg-[var(--panel)]/95 px-4 py-3 text-[var(--ink)]">
-        <BrandMark className="size-8 shrink-0" />
+        <BrandMark className="size-8 shrink-0" link={false} />
         <div className="min-w-0 flex-1">
           <p className="text-[11px] text-[var(--muted)]">Cash confirmed</p>
           <p className="font-receipt text-lg font-semibold text-[var(--field)]">$12.00</p>
@@ -28,7 +28,7 @@ export default function CashConfirmMock({ compact = false }: CashConfirmMockProp
       <div className="hero-phone relative rounded-[28px] border-[5px] border-[var(--ink-on-dark)]/90 bg-[var(--panel)] p-2.5 shadow-[0_20px_50px_rgb(0_0_0/0.4)]">
         <div className="rounded-[20px] bg-[var(--wash)] px-3 py-4 text-[var(--ink)]">
           <div className="flex items-center gap-2">
-            <BrandMark className="size-6" />
+            <BrandMark className="size-6" link={false} />
             <p className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight">
               Gate stall
             </p>

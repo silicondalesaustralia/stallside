@@ -25,7 +25,7 @@ export default function BrandLockup({
 
   const inner = (
     <>
-      <BrandMark className={markClass} variant={variant} />
+      <BrandMark className={markClass} variant={variant} link={false} />
       <span>{APP_NAME.toLowerCase()}</span>
     </>
   );

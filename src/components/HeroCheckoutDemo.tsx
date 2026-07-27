@@ -17,7 +17,7 @@ export default function HeroCheckoutDemo() {
           <div className="bg-[var(--wash)] px-3 py-3 text-[var(--ink)] sm:px-4 sm:py-4">
             <div className="flex items-center justify-between gap-2">
               <div className="flex min-w-0 items-center gap-2">
-                <BrandMark className="size-5 shrink-0 sm:size-6" />
+                <BrandMark className="size-5 shrink-0 sm:size-6" link={false} />
                 <p className="truncate font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight sm:text-base">
                   Green Valley Eggs
                 </p>

@@ -15,7 +15,7 @@ export default function AdminNav() {
     <header className="bg-[var(--field)] text-[var(--ink-on-dark)]">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-baseline gap-3">
-          <BrandLockup href="/admin" variant="dark" size="sm" />
+          <BrandLockup href="/" variant="dark" size="sm" />
           <span className="text-xs font-semibold uppercase tracking-wide text-[var(--marigold)]">
             Admin
           </span>

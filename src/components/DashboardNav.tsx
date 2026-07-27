@@ -33,7 +33,7 @@ export default function DashboardNav() {
     <>
       <header className="border-b border-[var(--line)] bg-[var(--panel)]/90 backdrop-blur print:hidden">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <BrandLockup href="/dashboard" size="sm" />
+          <BrandLockup href="/" size="sm" />
           <nav className="hidden flex-wrap gap-x-4 gap-y-2 text-sm md:flex">
             {desktopLinks.map((link) => (
               <Link

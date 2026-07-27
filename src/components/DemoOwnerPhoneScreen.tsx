@@ -6,7 +6,7 @@ export default function DemoOwnerPhoneScreen() {
   return (
     <div className="flex h-full flex-col bg-[var(--wash)] px-4 pb-6 pt-2">
       <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-        <BrandMark className="size-14" />
+        <BrandMark className="size-14" link={false} />
         <p className="font-[family-name:var(--font-display)] text-lg font-semibold text-[var(--field)]">
           {APP_NAME}
         </p>
