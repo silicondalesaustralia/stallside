@@ -32,15 +32,15 @@ export default function RestockNotifyPanel({
       <p className="text-sm font-medium text-[var(--ink)]">{standName}</p>
       <p className="mt-1 text-sm text-[var(--muted)]">
         {subscriberCount === 0
-          ? "No subscribers yet."
-          : `${subscriberCount} ${subscriberCount === 1 ? "person wants" : "people want"} restock alerts.`}
+          ? "No customers opted in yet."
+          : `${subscriberCount} ${subscriberCount === 1 ? "customer wants" : "customers want"} restock alerts.`}
       </p>
       {cooldownMessage ? (
         <p className="mt-2 text-sm text-[var(--muted)]">{cooldownMessage}</p>
       ) : null}
       {state.ok ? (
         <p className="mt-2 text-sm text-[var(--muted)]">
-          Notified {state.recipientCount ?? subscriberCount} subscriber
+          Notified {state.recipientCount ?? subscriberCount} customer
           {(state.recipientCount ?? subscriberCount) === 1 ? "" : "s"}.
         </p>
       ) : null}
@@ -52,7 +52,7 @@ export default function RestockNotifyPanel({
         >
           <input type="hidden" name="standId" value={standId} />
           <p className="text-sm text-[var(--ink)]">
-            Email {subscriberCount} subscriber
+            Email {subscriberCount} customer
             {subscriberCount === 1 ? "" : "s"} that {standName} has restocked?
           </p>
           <label className="sr-only" htmlFor={`restock-msg-${standId}`}>
@@ -90,7 +90,7 @@ export default function RestockNotifyPanel({
           onClick={() => setConfirming(true)}
           className="mt-3 rounded-lg border border-[var(--line)] px-3 py-2 text-sm font-semibold text-[var(--ink)] hover:bg-[var(--wash)] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Notify subscribers
+          Notify customers
         </button>
       )}
       {state.error ? (

@@ -75,7 +75,7 @@ export async function notifyRestockSubscribers(
       });
       return {
         ok: false,
-        error: `You notified subscribers recently — available again at ${time}.`,
+        error: `You notified customers recently — available again at ${time}.`,
       };
     }
   }

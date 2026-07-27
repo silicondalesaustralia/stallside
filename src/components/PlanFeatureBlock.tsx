@@ -4,6 +4,7 @@ import {
   CARD_PLAN_BILLING_BLURB,
   CARD_PLAN_BLURB,
   CARD_PLAN_HARDWARE_BLURB,
+  CARD_PLAN_RESTOCK_BLURB,
   cardPaymentBrands,
   cashPaymentBrands,
   cashPlanBlurb,
@@ -31,6 +32,7 @@ export default function PlanFeatureBlock({
     <div className="space-y-2">
       <PaymentIconRow brands={cardPaymentBrands(currency)} />
       <p className="text-sm text-[var(--muted)]">{CARD_PLAN_BLURB}</p>
+      <p className="text-sm text-[var(--muted)]">{CARD_PLAN_RESTOCK_BLURB}</p>
       <p className="text-sm font-semibold text-[var(--marigold)]">
         {CARD_PLAN_HARDWARE_BLURB}
       </p>

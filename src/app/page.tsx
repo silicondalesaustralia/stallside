@@ -10,6 +10,7 @@ import LandingPaymentMethods from "@/components/LandingPaymentMethods";
 import LifetimePromoTicker from "@/components/LifetimePromoTicker";
 import NetworkVision from "@/components/NetworkVision";
 import PricingTiers from "@/components/PricingTiers";
+import RestockCustomersSection from "@/components/RestockCustomersSection";
 import TrustSection from "@/components/TrustSection";
 import UseCaseGrid from "@/components/UseCaseGrid";
 import { APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
@@ -32,6 +33,7 @@ export default function HomePage() {
       <LandingAnalyticsPreview />
       <UseCaseGrid />
       <TrustSection />
+      <RestockCustomersSection />
       <FeatureColumns />
       <LandingPaymentMethods />
       <PricingTiers />

@@ -1,13 +1,11 @@
-import type { ReactNode } from "react";
-import { FlowArrowDown, FlowArrowRight } from "@/components/FlowArrows";
-
-type Tone = "owner" | "customer" | "alert";
-
-type FlowBox = {
-  title: string;
-  subtitle: string;
-  tone: Tone;
-};
+import { FlowArrowDown } from "@/components/FlowArrows";
+import {
+  FlowDesktopRow,
+  FlowMobileSection,
+  FlowRoleLabel,
+  FlowStepBox,
+  type FlowBox,
+} from "@/components/FlowDiagramBits";
 
 const OWNER_START: FlowBox = {
   title: "Print a QR",
@@ -27,54 +25,18 @@ const OWNER_RESULT: FlowBox[] = [
   { title: "Low stock", subtitle: "Before you run out", tone: "alert" },
 ];
 
-function toneClass(tone: Tone): string {
-  if (tone === "alert") {
-    return "border-[var(--marigold)] bg-[var(--marigold)] text-[var(--field)]";
-  }
-  if (tone === "customer") {
-    return "border-[var(--field)] bg-[var(--field)] text-[var(--ink-on-dark)]";
-  }
-  return "border-[var(--leaf)] bg-[var(--leaf)] text-white";
-}
+const RESTOCK_CUSTOMER: FlowBox[] = [
+  { title: "Opt in", subtitle: "One tap after pay", tone: "customer" },
+];
 
-function Box({ title, subtitle, tone }: FlowBox) {
-  return (
-    <div
-      className={`flex min-h-[4.5rem] min-w-[10.5rem] flex-col justify-center rounded-[var(--radius-sm)] border px-4 py-3 sm:min-h-[5.25rem] sm:min-w-[12.5rem] sm:px-5 sm:py-3.5 ${toneClass(tone)}`}
-    >
-      <p className="text-sm font-semibold leading-tight sm:text-base">{title}</p>
-      <p className="mt-0.5 text-xs leading-tight opacity-80 sm:text-sm">{subtitle}</p>
-    </div>
-  );
-}
+const RESTOCK_OWNER: FlowBox[] = [
+  { title: "Restock", subtitle: "Fill the stand", tone: "owner" },
+  { title: "Notify customers", subtitle: "One button", tone: "owner" },
+];
 
-function RoleLabel({ children }: { children: ReactNode }) {
-  return (
-    <p className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)] sm:text-base">
-      {children}
-    </p>
-  );
-}
-
-function MobileSection({
-  label,
-  steps,
-}: {
-  label: string;
-  steps: readonly FlowBox[];
-}) {
-  return (
-    <li className="flex w-full flex-col items-center gap-3">
-      <RoleLabel>{label}</RoleLabel>
-      {steps.map((step, i) => (
-        <div key={step.title} className="flex flex-col items-center gap-3">
-          {i > 0 ? <FlowArrowDown className="h-12 w-10" /> : null}
-          <Box {...step} />
-        </div>
-      ))}
-    </li>
-  );
-}
+const RESTOCK_RESULT: FlowBox[] = [
+  { title: "Back in stock", subtitle: "Email when you restock", tone: "alert" },
+];
 
 export default function HowItWorksFlow() {
   return (
@@ -89,61 +51,64 @@ export default function HowItWorksFlow() {
           How it works
         </h2>
 
-        {/* Mobile: labelled swim sections */}
         <ol className="mt-8 flex flex-col items-center gap-6 md:hidden">
-          <MobileSection label="Owner" steps={[OWNER_START]} />
+          <FlowMobileSection label="Owner" steps={[OWNER_START]} />
           <FlowArrowDown className="h-12 w-10" />
-          <MobileSection label="Customer" steps={CUSTOMER} />
+          <FlowMobileSection label="Customer" steps={CUSTOMER} />
           <FlowArrowDown className="h-12 w-10" />
-          <MobileSection label="Owner, instantly" steps={OWNER_RESULT} />
+          <FlowMobileSection label="Owner, instantly" steps={OWNER_RESULT} />
         </ol>
 
-        {/* Desktop: swim rows */}
         <div className="mt-10 hidden gap-y-3 md:grid md:grid-cols-[10rem_1fr]">
           <div className="flex items-center">
-            <RoleLabel>Owner</RoleLabel>
+            <FlowRoleLabel>Owner</FlowRoleLabel>
           </div>
           <div className="flex justify-center">
-            <Box {...OWNER_START} />
+            <FlowStepBox {...OWNER_START} />
           </div>
-
           <div aria-hidden className="col-span-2 flex justify-center py-2">
             <FlowArrowDown className="h-12 w-10" />
           </div>
-
-          <div className="flex items-center">
-            <RoleLabel>Customer</RoleLabel>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {CUSTOMER.map((step, i) => (
-              <div key={step.title} className="flex items-center gap-2">
-                {i > 0 ? <FlowArrowRight className="h-8 w-12" /> : null}
-                <Box {...step} />
-              </div>
-            ))}
-          </div>
-
+          <FlowDesktopRow label="Customer" steps={CUSTOMER} />
           <div aria-hidden className="col-span-2 flex justify-center py-2">
             <FlowArrowDown className="h-12 w-10" />
           </div>
-
-          <div className="flex items-center">
-            <RoleLabel>Owner, instantly</RoleLabel>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {OWNER_RESULT.map((step, i) => (
-              <div key={step.title} className="flex items-center gap-2">
-                {i > 0 ? <FlowArrowRight className="h-8 w-12" /> : null}
-                <Box {...step} />
-              </div>
-            ))}
-          </div>
+          <FlowDesktopRow label="Owner, instantly" steps={OWNER_RESULT} />
         </div>
 
         <p className="mt-8 text-center text-sm text-[var(--muted)]">
           Customers scan free - no app, no account. Cash or Card / Tap &amp; Go —
           same flow, one tap.
         </p>
+
+        <div className="mt-10 border-t border-[var(--line)] pt-8">
+          <h3 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--field)] sm:text-3xl">
+            When you restock
+          </h3>
+          <p className="mt-2 max-w-2xl text-sm text-[var(--muted)] sm:text-base">
+            Card plan: regulars can ask for an email when you fill the stand again.
+          </p>
+
+          <ol className="mt-8 flex flex-col items-center gap-6 md:hidden">
+            <FlowMobileSection label="Customer" steps={RESTOCK_CUSTOMER} />
+            <FlowArrowDown className="h-12 w-10" />
+            <FlowMobileSection label="Owner" steps={RESTOCK_OWNER} />
+            <FlowArrowDown className="h-12 w-10" />
+            <FlowMobileSection label="Customer" steps={RESTOCK_RESULT} />
+          </ol>
+
+          <div className="mt-10 hidden gap-y-3 md:grid md:grid-cols-[10rem_1fr]">
+            <FlowDesktopRow label="Customer" steps={RESTOCK_CUSTOMER} />
+            <div aria-hidden className="col-span-2 flex justify-center py-2">
+              <FlowArrowDown className="h-12 w-10" />
+            </div>
+            <FlowDesktopRow label="Owner" steps={RESTOCK_OWNER} />
+            <div aria-hidden className="col-span-2 flex justify-center py-2">
+              <FlowArrowDown className="h-12 w-10" />
+            </div>
+            <FlowDesktopRow label="Customer" steps={RESTOCK_RESULT} />
+          </div>
+        </div>
       </div>
     </section>
   );

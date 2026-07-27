@@ -26,6 +26,9 @@ export function cashPlanTrialBlurb(currency: BillingCurrency): string {
 export const CARD_PLAN_BLURB =
   "Everything in Cash, plus Tap & Go — card, Apple Pay, and Google Pay at your gate. PayPal coming soon.";
 
+export const CARD_PLAN_RESTOCK_BLURB =
+  "Notify customers by email when you restock — they opt in after checkout; you never see their addresses.";
+
 export const CARD_PLAN_HARDWARE_BLURB =
   "No terminal. No hardware. No percentage of your sales.";
 

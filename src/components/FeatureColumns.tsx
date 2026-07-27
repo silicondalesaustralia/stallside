@@ -8,6 +8,7 @@ const OWNER_LIVE = [
   "Sale alerts - email and push",
   "Low-stock alerts before you run out",
   "Restock from your phone, in the field",
+  "Notify customers by email when you restock (Card plan)",
   "Orders dashboard - what sold, when, for how much",
   "Stock shows Available / Low / Sold out",
   "Add to your phone Home Screen for push alerts - no App Store install",
@@ -20,6 +21,7 @@ const CUSTOMER_LIVE = [
   "See what's there and what's left.",
   "Pay cash and PayID (Australia only), then confirm — the owner knows.",
   "Tap & Go - card, Apple Pay, Google Pay on your phone",
+  "Opt in for an email when the stand restocks",
 ] as const;
 
 const CUSTOMER_SOON = ["PayPal checkout"] as const;

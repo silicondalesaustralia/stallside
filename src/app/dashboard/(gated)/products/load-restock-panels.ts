@@ -50,7 +50,7 @@ export async function loadRestockPanels(
             hour: "numeric",
             minute: "2-digit",
           });
-          cooldownMessage = `You notified subscribers ${hoursAgo} hour${hoursAgo === 1 ? "" : "s"} ago — available again at ${time}.`;
+          cooldownMessage = `You notified customers ${hoursAgo} hour${hoursAgo === 1 ? "" : "s"} ago — available again at ${time}.`;
         }
       }
 
