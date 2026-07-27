@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import DemoCardHint from "@/components/DemoCardHint";
+import RestockOptIn from "@/components/RestockOptIn";
 import CheckoutCashConfirm from "./CheckoutCashConfirm";
 import CheckoutLocalTransferConfirm from "./CheckoutLocalTransferConfirm";
 import CheckoutPayStep from "./CheckoutPayStep";
@@ -56,6 +57,7 @@ export default function PublicCart({
   paypalSandbox,
   localTransfer,
   demoRegion,
+  restockStandId,
 }: {
   standSlug: string;
   currency: string;
@@ -68,6 +70,7 @@ export default function PublicCart({
   paypalSandbox: boolean;
   localTransfer: LocalTransferInfo | null;
   demoRegion?: DemoRegion | null;
+  restockStandId?: string | null;
 }) {
   const [qty, setQty] = useState<Record<string, number>>({});
   const [step, setStep] = useState<"cart" | "pay" | "cash-confirm" | "lt-confirm">(
@@ -186,6 +189,12 @@ export default function PublicCart({
               ? "Marked as paid. The owner will see this in their account shortly."
               : "Cash payment confirmed. You're all set."}
           </p>
+          {restockStandId ? (
+            <RestockOptIn
+              standId={restockStandId}
+              inputId="restock-email-cash"
+            />
+          ) : null}
         </div>
         {!cardEnabled && !paypalEnabled ? (
           <TapAndGoInterestCta standSlug={standSlug} />

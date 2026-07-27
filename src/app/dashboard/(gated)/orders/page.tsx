@@ -8,6 +8,7 @@ import { resolveDateWindow } from "@/lib/date-range";
 import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
 import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
 import { buildSalesSeries } from "@/lib/sales-series";
+import OrderDeleteButton from "./OrderDeleteButton";
 
 export default async function OrdersPage({
   searchParams,
@@ -112,23 +113,38 @@ export default async function OrdersPage({
         <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
           {listedOrders.map((order) => (
             <li key={order.id} className="py-4 text-sm">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="font-medium">
-                  {order.orderNumber} · {order.stand.name}
-                </p>
-                <p>{formatMoney(order.totalCents, order.currency)}</p>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="font-medium">
+                      {order.orderNumber} · {order.stand.name}
+                    </p>
+                    <p>{formatMoney(order.totalCents, order.currency)}</p>
+                  </div>
+                  <p className="mt-1 text-[var(--muted)]">
+                    {order.createdAt.toLocaleString()} ·{" "}
+                    {orderPaymentLabel(
+                      order.paymentMethod,
+                      order.localTransferMethodId,
+                    )}{" "}
+                    · {paymentStatusNote(order.paymentStatus)}
+                    {order.receiptEmail ? ` · ${order.receiptEmail}` : ""}
+                  </p>
+                  <p className="mt-2 text-[var(--muted)]">
+                    {order.items
+                      .map(
+                        (item) =>
+                          `${item.quantity}× ${item.productNameSnapshot}`,
+                      )
+                      .join(", ")}
+                  </p>
+                </div>
+                <OrderDeleteButton
+                  orderId={order.id}
+                  orderNumber={order.orderNumber}
+                  restoresStock={COUNTED_STATUSES.includes(order.paymentStatus)}
+                />
               </div>
-              <p className="mt-1 text-[var(--muted)]">
-                {order.createdAt.toLocaleString()} ·{" "}
-                {orderPaymentLabel(order.paymentMethod, order.localTransferMethodId)} ·{" "}
-                {paymentStatusNote(order.paymentStatus)}
-                {order.receiptEmail ? ` · ${order.receiptEmail}` : ""}
-              </p>
-              <p className="mt-2 text-[var(--muted)]">
-                {order.items
-                  .map((item) => `${item.quantity}× ${item.productNameSnapshot}`)
-                  .join(", ")}
-              </p>
             </li>
           ))}
         </ul>

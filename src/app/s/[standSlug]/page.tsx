@@ -5,6 +5,8 @@ import BrandMark from "@/components/BrandMark";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { standOffersCard, standOffersPayPal } from "@/lib/stand-payment-brands";
 import { demoRegionForStandSlug, isDemoStandSlug } from "@/lib/demo";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 import PublicCart from "./PublicCart";
 
 function stockLabel(showExact: boolean, quantity: number, threshold: number): string {
@@ -64,6 +66,17 @@ export default async function PublicStandPage({
     soldOut: p.stockQuantity <= 0,
   }));
 
+  const restockStandId =
+    !isDemo &&
+    isRestockAlertsEnabled() &&
+    ownerHasCardTierAccess(stand.owner, {
+      email: stand.owner.user?.email,
+      role: stand.owner.user?.role,
+      lifetimeAccess: stand.owner.lifetimeAccess,
+    })
+      ? stand.id
+      : null;
+
   return (
     <main className="mx-auto min-h-full w-full max-w-lg px-4 pb-8 pt-8">
       {isDemo ? (
@@ -107,6 +120,7 @@ export default async function PublicStandPage({
             }
             localTransfer={localTransfer}
             demoRegion={demoRegion}
+            restockStandId={restockStandId}
           />
         </>
       )}
