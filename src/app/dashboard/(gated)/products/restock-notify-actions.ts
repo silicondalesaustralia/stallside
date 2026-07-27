@@ -56,26 +56,28 @@ export async function notifyRestockSubscribers(
     return { ok: false, error: "Stand not found." };
   }
 
-  const since = new Date(
-    Date.now() - RESTOCK_ALERT_COOLDOWN_HOURS * 60 * 60 * 1000,
-  );
-  const recent = await prisma.restockNotification.findFirst({
-    where: { standId: stand.id, sentAt: { gte: since } },
-    orderBy: { sentAt: "desc" },
-    select: { sentAt: true },
-  });
-  if (recent) {
-    const availableAt = new Date(
-      recent.sentAt.getTime() + RESTOCK_ALERT_COOLDOWN_HOURS * 60 * 60 * 1000,
+  if (RESTOCK_ALERT_COOLDOWN_HOURS > 0) {
+    const since = new Date(
+      Date.now() - RESTOCK_ALERT_COOLDOWN_HOURS * 60 * 60 * 1000,
     );
-    const time = availableAt.toLocaleTimeString([], {
-      hour: "numeric",
-      minute: "2-digit",
+    const recent = await prisma.restockNotification.findFirst({
+      where: { standId: stand.id, sentAt: { gte: since } },
+      orderBy: { sentAt: "desc" },
+      select: { sentAt: true },
     });
-    return {
-      ok: false,
-      error: `You notified subscribers recently — available again at ${time}.`,
-    };
+    if (recent) {
+      const availableAt = new Date(
+        recent.sentAt.getTime() + RESTOCK_ALERT_COOLDOWN_HOURS * 60 * 60 * 1000,
+      );
+      const time = availableAt.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+      return {
+        ok: false,
+        error: `You notified subscribers recently — available again at ${time}.`,
+      };
+    }
   }
 
   const { recipientCount } = await sendRestockNotifications({

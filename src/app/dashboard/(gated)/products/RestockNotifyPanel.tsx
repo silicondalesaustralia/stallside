@@ -27,15 +27,6 @@ export default function RestockNotifyPanel({
 
   const disabled = subscriberCount === 0 || Boolean(cooldownMessage) || pending;
 
-  if (state.ok) {
-    return (
-      <p className="text-sm text-[var(--muted)]">
-        Notified {state.recipientCount ?? subscriberCount} subscriber
-        {(state.recipientCount ?? subscriberCount) === 1 ? "" : "s"}.
-      </p>
-    );
-  }
-
   return (
     <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-4">
       <p className="text-sm font-medium text-[var(--ink)]">{standName}</p>
@@ -46,6 +37,12 @@ export default function RestockNotifyPanel({
       </p>
       {cooldownMessage ? (
         <p className="mt-2 text-sm text-[var(--muted)]">{cooldownMessage}</p>
+      ) : null}
+      {state.ok ? (
+        <p className="mt-2 text-sm text-[var(--muted)]">
+          Notified {state.recipientCount ?? subscriberCount} subscriber
+          {(state.recipientCount ?? subscriberCount) === 1 ? "" : "s"}.
+        </p>
       ) : null}
       {confirming ? (
         <form
