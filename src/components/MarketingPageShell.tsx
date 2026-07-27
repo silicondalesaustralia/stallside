@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 import LandingFooter from "@/components/LandingFooter";
+import LifetimePromoTicker from "@/components/LifetimePromoTicker";
 import OwnerAuthLink from "@/components/OwnerAuthLink";
 
 export default function MarketingPageShell({
@@ -11,6 +12,7 @@ export default function MarketingPageShell({
 }) {
   return (
     <div className="relative flex min-h-full flex-1 flex-col bg-[var(--wash)]">
+      <LifetimePromoTicker />
       <header className="border-b border-[var(--line)] bg-[var(--panel)]/80 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-6">
           <BrandLockup size="sm" />
