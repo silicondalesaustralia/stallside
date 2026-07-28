@@ -17,6 +17,7 @@ const desktopLinks = [
 const tabs = [
   { href: "/dashboard", label: "Home" },
   { href: "/dashboard/stands", label: "Stands" },
+  { href: "/dashboard/products", label: "Products" },
   { href: "/dashboard/inventory", label: "Stock" },
   { href: "/dashboard/orders", label: "Orders" },
 ] as const;
@@ -57,14 +58,14 @@ export default function DashboardNav() {
       </header>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--field)]/20 bg-[var(--field)] pb-[env(safe-area-inset-bottom)] print:hidden md:hidden">
-        <ul className="mx-auto grid max-w-lg grid-cols-4 gap-1 px-2 py-2">
+        <ul className="mx-auto grid max-w-lg grid-cols-5 gap-0.5 px-1 py-2">
           {tabs.map((tab) => {
             const active = tabActive(pathname, tab.href);
             return (
               <li key={tab.href}>
                 <Link
                   href={tab.href}
-                  className={`flex flex-col items-center gap-1 rounded-xl px-2 py-2 text-[11px] font-medium ${
+                  className={`flex flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium sm:text-[11px] ${
                     active ? "text-[var(--ink-on-dark)]" : "text-[var(--ink-on-dark)]/55"
                   }`}
                 >
