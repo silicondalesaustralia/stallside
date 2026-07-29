@@ -50,7 +50,9 @@ export async function sendTrialDay7(r: Recipient) {
       <p>If something&apos;s confusing, slow, or missing — tell us. Reply here or email
       <strong>hello@stallside.app</strong>.</p>
       <p><strong>Want a feature?</strong> If it&apos;s a rational request that helps stall
-      owners, we&apos;ll seriously consider building it.</p>
+      owners, we&apos;ll seriously consider building it. That includes other payment
+      types for your region (beyond cash, PayID if in Australia, and card / Apple Pay /
+      Google Pay) — tell us what your customers ask for.</p>
       ${ctaButton(L.featureRequest, "Request a feature")}
       <p>Still finding your feet? <a href="${L.knowledge}">Guides</a> are there when you need them.</p>
     `,
@@ -69,9 +71,11 @@ export async function sendTrialDay14(r: Recipient) {
       <p>If you&apos;re blocked on anything — stock, signs, alerts, payments — reply or email
       <strong>hello@stallside.app</strong>.</p>
       <p>When you&apos;re ready after the trial, you can keep going on <strong>Cash</strong>
-      or step up to <strong>Card / Tap &amp; Go</strong>.</p>
+      or step up to the <strong>Card</strong> plan (customer card payments, including Apple Pay
+      and Google Pay when their wallet is linked).</p>
       ${ctaButton(L.billing, "View billing")}
-      <p>No pressure — just want the trial to be useful.</p>
+      <p>Need a different payment type for your area?
+      <a href="${L.featureRequest}">Request a feature</a> — we build what stall owners need.</p>
     `,
   );
   await send(r.to, `Halfway through your ${APP_NAME} trial`, html);
@@ -86,10 +90,11 @@ export async function sendTrialDay28(r: Recipient) {
       <p>Your free trial ends in <strong>two days</strong>.</p>
       <p>To keep your stand online, pick a plan and subscribe:</p>
       ${ctaButton(L.billing, "Subscribe now")}
-      <p><strong>Cash</strong> — cash (and PayID where available), stock tracking, QR posters,
+      <p><strong>Cash</strong> — cash and PayID (if in Australia), stock tracking, QR posters,
       sale &amp; low-stock alerts.</p>
-      <p><strong>Card / Tap &amp; Go</strong> — everything in Cash, plus card / Apple Pay /
-      Google Pay at the gate, and restock emails for customers.</p>
+      <p><strong>Card</strong> — everything in Cash, plus customer card checkout (Apple Pay and
+      Google Pay when linked on their device), and restock emails for customers. No terminal.</p>
+      <p>Want another payment method? <a href="${L.featureRequest}">Send a feature request</a>.</p>
       <p>Questions? <strong>hello@stallside.app</strong> or
       <a href="${L.contact}">Contact</a>.</p>
     `,
@@ -106,7 +111,7 @@ export async function sendTrialDay30(r: Recipient) {
       <p>Hi ${name},</p>
       <p>Your free trial has ended. To keep (or restore) your stand online:</p>
       ${ctaButton(L.billing, "Subscribe to Stallside")}
-      <p>Choose <strong>Cash</strong> or <strong>Card / Tap &amp; Go</strong> on that page —
+      <p>Choose <strong>Cash</strong> or <strong>Card</strong> on that page —
       Stripe handles payment securely.</p>
       <p><strong>Not continuing?</strong> We&apos;d genuinely like to know why. A quick note
       helps us improve ${APP_NAME} for other stall owners:</p>
