@@ -53,6 +53,7 @@ export async function submitContact(
   try {
     await sendOwnerEmail(CONTACT_TO, `[Stallside contact] ${subjectRaw}`, html, {
       replyTo: email,
+      kind: "contact_form",
     });
     return { ok: true };
   } catch (error) {

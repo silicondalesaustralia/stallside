@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
-import { cleanEnvSecret } from "@/lib/env";
+import { sendOwnerEmail } from "@/lib/notify-email";
 
 const OTP_TTL_MS = 10 * 60 * 1000;
 const OTP_PREFIX = "otp:";
@@ -19,7 +19,6 @@ function otpIdentifier(email: string) {
 }
 
 async function sendOtpEmail(email: string, code: string) {
-  const apiKey = cleanEnvSecret(process.env.RESEND_API_KEY);
   const subject = `${code} is your ${APP_NAME} code`;
   const html = `
     <div style="font-family:system-ui,sans-serif;line-height:1.5;color:#182C1B">
@@ -29,29 +28,14 @@ async function sendOtpEmail(email: string, code: string) {
     </div>
   `;
 
-  if (!apiKey) {
-    console.log(`\n[${APP_NAME} login code] ${email}\n${code}\n`);
-    return;
-  }
-
-  const from = process.env.EMAIL_FROM ?? `${APP_NAME} <hello@stallside.app>`;
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ from, to: [email], subject, html }),
-  });
-
-  if (!res.ok) {
-    const detail = await res.text();
-    console.error(`[${APP_NAME}] OTP email failed`, detail);
+  try {
+    await sendOwnerEmail(email, subject, html, { kind: "otp" });
+  } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.log(`\n[${APP_NAME} login code] ${email}\n${code}\n`);
       return;
     }
-    throw new Error(`Could not send sign-in code: ${detail}`);
+    throw error;
   }
 }
 

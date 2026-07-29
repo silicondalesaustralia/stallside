@@ -31,6 +31,6 @@ export async function sendFirstTenOrdersEmail(input: {
     input.to,
     `Congrats - 10 orders on ${APP_NAME}`,
     html,
-    { replyTo: emailReplyTo() },
+    { replyTo: emailReplyTo(), kind: "lifecycle_ten_orders" },
   );
 }

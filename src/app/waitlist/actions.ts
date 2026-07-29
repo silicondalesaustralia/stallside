@@ -83,6 +83,7 @@ async function sendWaitlistEmails(
         <p style="font-size:12px;color:#56684F">From the ${APP_NAME} team</p>
       </div>
     `,
+    { kind: "waitlist_confirm" },
   );
 
   if (alreadyJoined) return;
@@ -94,7 +95,7 @@ async function sendWaitlistEmails(
       `
         <p><strong>${safeName}</strong> &lt;${safeEmail}&gt; joined the Tap &amp; Go waitlist.</p>
       `,
-      { replyTo: email },
+      { replyTo: email, kind: "waitlist_admin" },
     );
   } catch (error) {
     console.error("Waitlist owner notify failed", error);

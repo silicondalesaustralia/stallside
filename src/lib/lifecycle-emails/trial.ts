@@ -11,8 +11,8 @@ import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 
 type Recipient = { to: string; name: string; businessName?: string };
 
-async function send(to: string, subject: string, html: string) {
-  await sendOwnerEmail(to, subject, html, { replyTo: emailReplyTo() });
+async function send(to: string, subject: string, html: string, kind: string) {
+  await sendOwnerEmail(to, subject, html, { replyTo: emailReplyTo(), kind });
 }
 
 export async function sendTrialWelcome(r: Recipient) {
@@ -58,7 +58,7 @@ export async function sendTrialWelcome(r: Recipient) {
       <strong>hello@stallside.app</strong>.</p>
     `,
   );
-  await send(r.to, `Welcome to ${APP_NAME} - let’s get your stand live`, html);
+  await send(r.to, `Welcome to ${APP_NAME} - let’s get your stand live`, html, "lifecycle_welcome");
 }
 
 export async function sendTrialDay7(r: Recipient) {
@@ -78,7 +78,7 @@ export async function sendTrialDay7(r: Recipient) {
       <p>Still finding your feet? <a href="${L.knowledge}">Guides</a> are there when you need them.</p>
     `,
   );
-  await send(r.to, `How’s ${APP_NAME} going?`, html);
+  await send(r.to, `How’s ${APP_NAME} going?`, html, "lifecycle_day7");
 }
 
 export async function sendTrialDay14(r: Recipient) {
@@ -99,7 +99,7 @@ export async function sendTrialDay14(r: Recipient) {
       <a href="${L.featureRequest}">Request a feature</a> - we build what stall owners need.</p>
     `,
   );
-  await send(r.to, `Halfway through your ${APP_NAME} trial`, html);
+  await send(r.to, `Halfway through your ${APP_NAME} trial`, html, "lifecycle_day14");
 }
 
 export async function sendTrialDay28(r: Recipient) {
@@ -120,7 +120,7 @@ export async function sendTrialDay28(r: Recipient) {
       <a href="${L.contact}">Contact</a>.</p>
     `,
   );
-  await send(r.to, `Your ${APP_NAME} trial ends in 2 days`, html);
+  await send(r.to, `Your ${APP_NAME} trial ends in 2 days`, html, "lifecycle_day28");
 }
 
 export async function sendTrialDay30(r: Recipient) {
@@ -145,5 +145,6 @@ export async function sendTrialDay30(r: Recipient) {
     r.to,
     `Your ${APP_NAME} free trial has ended. Subscribe to keep going`,
     html,
+    "lifecycle_day30",
   );
 }

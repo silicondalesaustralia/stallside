@@ -410,3 +410,21 @@ model RestockNotification {
 
   @@index([standId, sentAt])
 }
+
+/** Audit log for outbound emails (Resend + local console fallback). */
+model EmailSendLog {
+  id        String   @id @default(cuid())
+  /** Lowercased recipient addresses */
+  toEmails  String[]
+  subject   String
+  /** e.g. otp, sale, lifecycle_welcome, restock, waitlist */
+  kind      String?
+  /** sent | failed | console */
+  status    String
+  resendId  String?
+  error     String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([kind, createdAt])
+}

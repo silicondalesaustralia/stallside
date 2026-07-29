@@ -44,6 +44,7 @@ export async function notifySale(orderId: string) {
       recipients,
       `[${APP_NAME}] ${title}`,
       `<p><strong>${title}</strong></p><p>${body}</p><p>Order ${order.orderNumber}</p>`,
+      { kind: "sale" },
     );
   }
   if (pushOn) {

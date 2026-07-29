@@ -58,6 +58,8 @@ export async function notifyTapAndGoInterest(standSlug: string) {
     </div>
   `;
 
-  await sendOwnerEmail(recipients, `[${APP_NAME}] ${title}`, html);
+  await sendOwnerEmail(recipients, `[${APP_NAME}] ${title}`, html, {
+    kind: "tap_and_go_interest",
+  });
   return { ok: true as const };
 }

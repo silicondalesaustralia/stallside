@@ -22,6 +22,7 @@ export async function sendStockAlert(input: {
       input.recipients,
       `[${APP_NAME}] ${input.title}`,
       `<p><strong>${input.title}</strong></p><p>${input.body}</p>`,
+      { kind: input.type },
     );
   }
 

@@ -52,6 +52,7 @@ ${messageHtml}
         html,
         {
           replyTo: `${APP_NAME} <hello@stallside.app>`,
+          kind: "restock",
           headers: {
             "List-Unsubscribe": `<${listUnsubUrl}>`,
             "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",

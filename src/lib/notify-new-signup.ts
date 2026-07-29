@@ -39,7 +39,7 @@ export async function notifyAdminNewSignup(input: {
     contactInbox(),
     `[${APP_NAME}] - New User Sign Up`,
     html,
-    { replyTo: email },
+    { replyTo: email, kind: "admin_new_signup" },
   );
 }
 

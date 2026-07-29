@@ -10,8 +10,8 @@ import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 
 type Recipient = { to: string; name: string };
 
-async function send(to: string, subject: string, html: string) {
-  await sendOwnerEmail(to, subject, html, { replyTo: emailReplyTo() });
+async function send(to: string, subject: string, html: string, kind: string) {
+  await sendOwnerEmail(to, subject, html, { replyTo: emailReplyTo(), kind });
 }
 
 export async function sendCashWelcome(r: Recipient) {
@@ -35,7 +35,7 @@ export async function sendCashWelcome(r: Recipient) {
       <p>Questions: <strong>hello@stallside.app</strong>.</p>
     `,
   );
-  await send(r.to, `You’re on ${APP_NAME} Cash - welcome`, html);
+  await send(r.to, `You’re on ${APP_NAME} Cash - welcome`, html, "lifecycle_cash_welcome");
 }
 
 export async function sendCashUpgradeDay2(r: Recipient) {
@@ -55,7 +55,7 @@ export async function sendCashUpgradeDay2(r: Recipient) {
       <a href="${L.featureRequest}">Request a feature</a>.</p>
     `,
   );
-  await send(r.to, "Customers who only carry a card", html);
+  await send(r.to, "Customers who only carry a card", html, "lifecycle_cash_upgrade_d2");
 }
 
 export async function sendCashUpgradeDay7(r: Recipient) {
@@ -75,7 +75,7 @@ export async function sendCashUpgradeDay7(r: Recipient) {
       at building.</p>
     `,
   );
-  await send(r.to, "Tell customers when you’ve restocked", html);
+  await send(r.to, "Tell customers when you’ve restocked", html, "lifecycle_cash_upgrade_d7");
 }
 
 export async function sendCashUpgradeDay14(r: Recipient) {
@@ -95,7 +95,7 @@ export async function sendCashUpgradeDay14(r: Recipient) {
       <a href="${L.featureRequest}">Tell us via a feature request</a>.</p>
     `,
   );
-  await send(r.to, "Still thinking about card payments?", html);
+  await send(r.to, "Still thinking about card payments?", html, "lifecycle_cash_upgrade_d14");
 }
 
 export async function sendCardWelcome(r: Recipient) {
@@ -121,5 +121,5 @@ export async function sendCardWelcome(r: Recipient) {
       <p>Anything odd in setup? <strong>hello@stallside.app</strong>.</p>
     `,
   );
-  await send(r.to, `You’re on the ${APP_NAME} Card plan`, html);
+  await send(r.to, `You’re on the ${APP_NAME} Card plan`, html, "lifecycle_card_welcome");
 }
