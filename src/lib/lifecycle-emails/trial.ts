@@ -34,7 +34,26 @@ export async function sendTrialWelcome(r: Recipient) {
       ${ctaButton(L.newStand, "Create your first stand")}
       <p>Need a walkthrough? <a href="${L.firstStand}">Your first stand in 10 minutes</a>
       - or browse all <a href="${L.knowledge}">Guides</a>.</p>
-      <p>Stuck? Reply to this email or write to <strong>hello@stallside.app</strong>.</p>
+      <p><strong>What&apos;s on the Card plan</strong> (available on your trial and after you
+      subscribe - upgrade anytime from Billing):</p>
+      <ul>
+        <li>Everything in Cash: cash and PayID (if in Australia), stock tracking, QR posters,
+        sale and low-stock alerts</li>
+        <li>Customer card checkout on the same QR - including Apple Pay and Google Pay when
+        linked on their device</li>
+        <li>Restock emails: customers opt in after checkout</li>
+        <li>No terminal. No hardware. No percentage of your sales</li>
+        <li>Customer payments go straight to your Stripe account</li>
+        <li>PayPal coming soon + other payment options globally on request</li>
+      </ul>
+      <p><a href="${L.billingCard}">See Card plan pricing</a></p>
+      <p><strong>Features you&apos;d like?</strong> We&apos;re a small team building for real
+      stalls. If something would help your stand - another payment type for your region,
+      a stock flow, a sign option, whatever is rational - tell us and we&apos;ll seriously
+      consider building it.</p>
+      ${ctaButton(L.featureRequest, "Request a feature")}
+      <p>Stuck on anything else? Reply to this email or write to
+      <strong>hello@stallside.app</strong>.</p>
     `,
   );
   await send(r.to, `Welcome to ${APP_NAME} - let’s get your stand live`, html);

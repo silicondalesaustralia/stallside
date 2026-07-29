@@ -65,8 +65,8 @@ export async function sendCashUpgradeDay7(r: Recipient) {
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>One Card-plan feature stall owners like: <strong>restock alerts</strong>.</p>
-      <p>After checkout, customers can ask to be emailed when you restock. You see a count,
-      not their addresses. One tap when you&apos;ve filled the stand again.</p>
+      <p>After checkout, customers can ask to be emailed when you restock. You see a count.
+      One tap when you&apos;ve filled the stand again.</p>
       <p>That sits on the <strong>Card</strong> plan, along with card / Apple Pay / Google Pay
       checkout.</p>
       ${ctaButton(L.billingCard, "Upgrade")}
