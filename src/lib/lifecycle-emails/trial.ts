@@ -22,8 +22,10 @@ export async function sendTrialWelcome(r: Recipient) {
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>Thanks for starting your 30-day ${APP_NAME} trial. Glad you&apos;re here.</p>
-      <p>${APP_NAME} is built for unmanned farm stands: customers scan a QR, pick what
-      they&apos;re taking, and you get the sale and stock update.</p>
+      <p>We started with a kid&apos;s roadside egg stall, sold-out stock and no-cash shoppers.
+      It&apos;s why we created ${APP_NAME} in the first place.</p>
+      <p>${APP_NAME} is what we wished we&apos;d had: customers scan a QR, pay, and you get the
+      sale and stock update on your phone.</p>
       <p><strong>Start here</strong></p>
       <ol>
         <li>Create your first stand</li>
