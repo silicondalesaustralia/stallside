@@ -56,6 +56,17 @@ enum SubscriptionStatus {
   NONE
 }
 
+enum GalleryStatus {
+  PENDING
+  APPROVED
+  HIDDEN
+}
+
+enum GallerySource {
+  ADMIN
+  OWNER_SUBMIT
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -178,7 +189,19 @@ model Owner {
   subscriptionStartedAt     DateTime?
   /** App-managed trial end (no card until they subscribe) */
   trialEndsAt               DateTime?
+  /** Day 30 trial-ended email (lifecycle sequence) */
   trialReminderSentAt       DateTime?
+  trialWelcomeSentAt        DateTime?
+  trialDay7SentAt           DateTime?
+  trialDay14SentAt          DateTime?
+  trialDay28SentAt          DateTime?
+  cashWelcomeSentAt         DateTime?
+  cashSubscribedAt          DateTime?
+  cashUpgradeDay2SentAt     DateTime?
+  cashUpgradeDay7SentAt     DateTime?
+  cashUpgradeDay14SentAt    DateTime?
+  cardWelcomeSentAt         DateTime?
+  firstTenOrdersEmailSentAt DateTime?
   /** Access continues until this time after cancel-at-period-end */
   currentPeriodEndsAt       DateTime?
   cancelAtPeriodEnd         Boolean            @default(false)
@@ -189,8 +212,29 @@ model Owner {
   inventoryAdjustments      InventoryAdjustment[]
   lowStockAlerts            LowStockAlert[]
   pushDevices               PushDevice[]
+  galleryStands             GalleryStand[]
   createdAt                 DateTime           @default(now())
   updatedAt                 DateTime           @updatedAt
+}
+
+/** Public stand gallery — admin-curated + owner submissions */
+model GalleryStand {
+  id          String        @id @default(cuid())
+  displayName String
+  location    String
+  imageUrl    String
+  caption     String?
+  source      GallerySource
+  status      GalleryStatus @default(PENDING)
+  sortOrder   Int           @default(100)
+  ownerId     String?
+  owner       Owner?        @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  standId     String?
+  consentAt   DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status, sortOrder])
 }
 
 model PushDevice {

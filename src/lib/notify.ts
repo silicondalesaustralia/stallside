@@ -5,6 +5,7 @@ import { sendOwnerEmail } from "@/lib/notify-email";
 import { sendOwnerPush } from "@/lib/notify-push";
 import { ownerAlertRecipients } from "@/lib/owner-alert-recipients";
 import { sendStockAlert } from "@/lib/notify-stock";
+import { maybeSendFirstTenOrdersEmail } from "@/lib/lifecycle-emails/send-and-mark";
 
 export async function notifySale(orderId: string) {
   const order = await prisma.order.findUnique({
@@ -60,6 +61,10 @@ export async function notifySale(orderId: string) {
     order.ownerId,
     order.standId,
   );
+
+  await maybeSendFirstTenOrdersEmail(order.ownerId).catch((error) => {
+    console.error(`[${APP_NAME}] 10-order check failed`, error);
+  });
 }
 
 export async function notifyLowStockForProducts(

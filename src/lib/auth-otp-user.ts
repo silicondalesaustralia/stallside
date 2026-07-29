@@ -6,6 +6,10 @@ import {
   consumeLifetimeInvite,
   createOwnerWithLifetime,
 } from "@/lib/lifetime-invite";
+import {
+  sendAndMarkCardWelcome,
+  sendAndMarkTrialWelcome,
+} from "@/lib/lifecycle-emails/send-and-mark";
 
 /** Verify email code and return the Auth.js user (creating owner on first sign-in). */
 export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
@@ -64,14 +68,20 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
     } catch (error) {
       console.error("Admin new-signup notify failed", error);
     }
+    if (lifetime) {
+      await sendAndMarkCardWelcome(owner.id);
+    } else {
+      await sendAndMarkTrialWelcome(owner.id);
+    }
   } else {
     const owner = await prisma.owner.findUnique({ where: { userId: user.id } });
     if (!owner) {
-      await createOwnerWithTrial({
+      const created = await createOwnerWithTrial({
         userId: user.id,
         name: user.name || "My stand",
         email,
       });
+      await sendAndMarkTrialWelcome(created.id);
     }
   }
 

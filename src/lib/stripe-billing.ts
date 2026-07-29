@@ -104,8 +104,23 @@ export async function syncOwnerFromSubscription(
       ...(live && !owner.subscriptionStartedAt
         ? { subscriptionStartedAt: new Date() }
         : {}),
+      ...(live && plan === "cash" && !owner.cashSubscribedAt
+        ? { cashSubscribedAt: new Date() }
+        : {}),
     },
   });
+
+  if (live && !cancelled) {
+    const { sendAndMarkCashWelcome, sendAndMarkCardWelcome } = await import(
+      "@/lib/lifecycle-emails/send-and-mark"
+    );
+    if (plan === "cash") {
+      await sendAndMarkCashWelcome(owner.id);
+    }
+    if (plan === "card") {
+      await sendAndMarkCardWelcome(owner.id);
+    }
+  }
 }
 
 function subscriptionIdFromInvoice(invoice: Stripe.Invoice): string | null {

@@ -2,6 +2,7 @@ export const CONTACT_SUBJECTS = [
   "General",
   "Subscriptions",
   "Feature Request",
+  "Feedback",
   "Support",
 ] as const;
 
@@ -11,6 +12,7 @@ const SLUG_TO_SUBJECT: Record<string, ContactSubject> = {
   general: "General",
   subscriptions: "Subscriptions",
   "feature-request": "Feature Request",
+  feedback: "Feedback",
   support: "Support",
 };
 
