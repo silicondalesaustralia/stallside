@@ -35,7 +35,7 @@ export async function sendCashWelcome(r: Recipient) {
       <p>Questions: <strong>hello@stallside.app</strong>.</p>
     `,
   );
-  await send(r.to, `You’re on ${APP_NAME} Cash — welcome`, html);
+  await send(r.to, `You’re on ${APP_NAME} Cash - welcome`, html);
 }
 
 export async function sendCashUpgradeDay2(r: Recipient) {
@@ -46,11 +46,11 @@ export async function sendCashUpgradeDay2(r: Recipient) {
       <p>Hi ${greetName(r.name)},</p>
       <p>On Cash, you&apos;re set for cash and PayID (if in Australia). A lot of stall owners
       still lose a few sales when someone only has a card or phone wallet.</p>
-      <p>The <strong>Card</strong> plan adds customer card checkout on the same QR — including
+      <p>The <strong>Card</strong> plan adds customer card checkout on the same QR - including
       Apple Pay and Google Pay when those are linked on their device. No hardware, no
       percentage of your sales to ${APP_NAME}. Money goes to your Stripe account.</p>
       ${ctaButton(L.billingCard, "Upgrade to Card")}
-      <p>Happy on Cash? Ignore this — Cash is a proper plan, not a trap.</p>
+      <p>Happy on Cash? Ignore this - Cash is a proper plan, not a trap.</p>
       <p>Need a different payment type for your customers?
       <a href="${L.featureRequest}">Request a feature</a>.</p>
     `,
@@ -70,7 +70,7 @@ export async function sendCashUpgradeDay7(r: Recipient) {
       <p>That sits on the <strong>Card</strong> plan, along with card / Apple Pay / Google Pay
       checkout.</p>
       ${ctaButton(L.billingCard, "Upgrade")}
-      <p>Still not sure — or want another payment method entirely? Reply or
+      <p>Still not sure - or want another payment method entirely? Reply or
       <a href="${L.featureRequest}">request a feature</a>. Rational requests, we&apos;ll look
       at building.</p>
     `,
@@ -87,7 +87,7 @@ export async function sendCashUpgradeDay14(r: Recipient) {
       <p>Last note from us on the Card plan for a while.</p>
       <p><strong>Cash</strong> keeps working as it does today.<br/>
       <strong>Card</strong> adds customer card checkout (Apple Pay and Google Pay when linked),
-      plus restock emails — still no terminal.</p>
+      plus restock emails - still no terminal.</p>
       ${ctaButton(L.billingCard, "Compare / upgrade")}
       <p>Need help connecting Stripe? <a href="${L.stripe}">Stripe settings</a> or
       <strong>hello@stallside.app</strong>.</p>
