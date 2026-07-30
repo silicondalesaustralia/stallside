@@ -74,13 +74,13 @@ export default function StandCatalogGrid({
   return (
     <div className="mt-6 flex flex-col gap-4 pb-24">
       {error ? <p className="text-sm text-[var(--gone)]">{error}</p> : null}
-      <ul className="grid grid-cols-2 gap-3 sm:gap-4">
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
         {products.map((product) => {
           const href = standProductPath(standSlug, product.slug);
           return (
             <li
               key={product.id}
-              className={`flex flex-col overflow-hidden rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] only:col-span-2 only:mx-auto only:w-full only:max-w-[17.5rem] ${
+              className={`flex flex-col overflow-hidden rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] sm:only:col-span-2 sm:only:mx-auto sm:only:w-full sm:only:max-w-[17.5rem] ${
                 product.soldOut ? "opacity-50" : ""
               }`}
             >
