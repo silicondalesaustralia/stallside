@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { toDateTimeLocalValue } from "@/lib/pre-order";
 
 type Props = {
+  stripeConnected: boolean;
   defaultIsPreOrder?: boolean;
   defaultOrderByAt?: Date | null;
   defaultCollectionAt?: Date | null;
@@ -12,6 +14,7 @@ type Props = {
 };
 
 export default function PreOrderFields({
+  stripeConnected,
   defaultIsPreOrder = false,
   defaultOrderByAt = null,
   defaultCollectionAt = null,
@@ -20,20 +23,41 @@ export default function PreOrderFields({
 }: Props) {
   const [on, setOn] = useState(defaultIsPreOrder);
   const [showExact, setShowExact] = useState(defaultShowExactStock);
+  const canEnable = stripeConnected || on;
 
   return (
     <fieldset className="flex flex-col gap-3 rounded-lg border border-[var(--line)] p-4">
       {/* Hidden flag — controlled checkboxes are unreliable in FormData/actions. */}
       {on ? <input type="hidden" name="isPreOrder" value="true" /> : null}
-      <label className="flex items-center gap-2 text-sm font-medium">
+      <label
+        className={`flex items-center gap-2 text-sm font-medium ${
+          !canEnable ? "opacity-60" : ""
+        }`}
+      >
         <input
           type="checkbox"
           checked={on}
-          onChange={(e) => setOn(e.target.checked)}
+          disabled={!canEnable}
+          onChange={(e) => {
+            if (e.target.checked && !stripeConnected) return;
+            setOn(e.target.checked);
+          }}
           className="size-4 accent-[var(--leaf)]"
         />
         Pre-order (pay upfront, collect later)
       </label>
+      {!stripeConnected ? (
+        <p className="text-sm text-[var(--muted)]">
+          Pre-orders need Stripe so customers can pay to reserve.{" "}
+          <Link
+            href="/dashboard/settings/stripe"
+            className="font-medium text-[var(--leaf-dark)] underline"
+          >
+            Connect Stripe
+          </Link>{" "}
+          before enabling pre-orders.
+        </p>
+      ) : null}
       {on ? (
         <>
           <label className="flex flex-col gap-2 text-sm">

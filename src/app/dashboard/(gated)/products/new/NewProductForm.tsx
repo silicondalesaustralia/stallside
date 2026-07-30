@@ -20,10 +20,12 @@ export default function NewProductForm({
   stands,
   defaultStandId,
   cardTier,
+  stripeConnected,
 }: {
   stands: StandOption[];
   defaultStandId?: string;
   cardTier: boolean;
+  stripeConnected: boolean;
 }) {
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -147,7 +149,7 @@ export default function NewProductForm({
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      {cardTier ? <PreOrderFields /> : null}
+      {cardTier ? <PreOrderFields stripeConnected={stripeConnected} /> : null}
       {message ? (
         <p className="text-sm text-[var(--warn)]">{message}</p>
       ) : null}

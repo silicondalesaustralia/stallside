@@ -15,21 +15,15 @@ export default function MarketingPageShell({
     <div className="relative flex min-h-full flex-1 flex-col bg-[var(--wash)]">
       <LifetimePromoTicker />
       <header className="border-b border-[var(--line)] bg-[var(--panel)]/80 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-6">
-          <div className="flex min-w-0 items-center gap-6">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">
+          <div className="flex min-w-0 flex-1 items-center gap-6">
             <BrandLockup size="sm" />
             <MarketingNavLinks />
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              href="/testimonials"
-              className="text-sm font-medium text-[var(--muted)] underline md:hidden"
-            >
-              Testimonials
-            </Link>
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
             <Link
               href="/demo"
-              className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)] sm:px-4"
+              className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap text-white transition hover:bg-[var(--leaf-dark)] sm:px-4 sm:py-2 sm:text-sm"
             >
               Try Demo
             </Link>

@@ -32,6 +32,9 @@ export default async function EditProductPage({
     email: user.email,
     role: user.role,
   });
+  const stripeConnected = Boolean(
+    owner.stripeAccountId && owner.stripeChargesEnabled,
+  );
   const path = standProductPath(product.stand.slug, product.slug);
 
   return (
@@ -74,6 +77,7 @@ export default async function EditProductPage({
             standSlug: product.stand.slug,
             publicUrl: `${SITE_URL}${path}`,
             cardTier,
+            stripeConnected,
             isPreOrder: product.isPreOrder,
             orderByAt: product.orderByAt,
             collectionAt: product.collectionAt,

@@ -79,7 +79,10 @@ export async function createProduct(formData: FormData) {
     email: user.email,
     role: user.role,
   });
-  const pre = parsePreOrderFromForm(formData, cardTier);
+  const stripeConnected = Boolean(
+    owner.stripeAccountId && owner.stripeChargesEnabled,
+  );
+  const pre = parsePreOrderFromForm(formData, cardTier, stripeConnected);
   if (!pre.ok) return { error: pre.error };
 
   let priceCents: number;
@@ -246,7 +249,10 @@ export async function updateProduct(productId: string, formData: FormData) {
       email: user.email,
       role: user.role,
     });
-    const pre = parsePreOrderFromForm(formData, cardTier);
+    const stripeConnected = Boolean(
+      owner.stripeAccountId && owner.stripeChargesEnabled,
+    );
+    const pre = parsePreOrderFromForm(formData, cardTier, stripeConnected);
     if (!pre.ok) return { error: pre.error };
 
     let priceCents: number;

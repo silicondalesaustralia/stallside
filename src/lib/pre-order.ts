@@ -45,6 +45,7 @@ export function toDateTimeLocalValue(d: Date): string {
 export function parsePreOrderFromForm(
   formData: FormData,
   cardTier: boolean,
+  stripeConnected: boolean,
 ): { ok: true; data: PreOrderParsed } | { ok: false; error: string } {
   const flagged = formData.get("isPreOrder") === "on" || formData.get("isPreOrder") === "true";
   if (!flagged) {
@@ -61,6 +62,12 @@ export function parsePreOrderFromForm(
   }
   if (!cardTier) {
     return { ok: false, error: "Pre-orders require the Card plan." };
+  }
+  if (!stripeConnected) {
+    return {
+      ok: false,
+      error: "Connect Stripe before enabling pre-orders.",
+    };
   }
   const orderByAt = parseDateTimeLocal(String(formData.get("orderByAt") ?? ""));
   const collectionAt = parseDateTimeLocal(String(formData.get("collectionAt") ?? ""));

@@ -19,6 +19,9 @@ export default async function NewProductPage({
     email: user.email,
     role: user.role,
   });
+  const stripeConnected = Boolean(
+    owner.stripeAccountId && owner.stripeChargesEnabled,
+  );
 
   if (stands.length === 0) {
     return (
@@ -36,6 +39,7 @@ export default async function NewProductPage({
         stands={stands}
         defaultStandId={standId}
         cardTier={cardTier}
+        stripeConnected={stripeConnected}
       />
     </main>
   );

@@ -22,6 +22,7 @@ type ProductFields = {
   standSlug: string;
   publicUrl: string;
   cardTier: boolean;
+  stripeConnected: boolean;
   isPreOrder: boolean;
   orderByAt: Date | null;
   collectionAt: Date | null;
@@ -185,7 +186,9 @@ export default function ProductEditForm({ product }: { product: ProductFields })
             product.orderByAt?.toISOString() ?? "",
             product.collectionAt?.toISOString() ?? "",
             product.collectionNote ?? "",
+            product.stripeConnected ? "1" : "0",
           ].join("|")}
+          stripeConnected={product.stripeConnected}
           defaultIsPreOrder={product.isPreOrder}
           defaultOrderByAt={product.orderByAt}
           defaultCollectionAt={product.collectionAt}

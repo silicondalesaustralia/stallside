@@ -7,9 +7,9 @@ type OwnerAuthLinkProps = {
 };
 
 const STYLES = {
-  hero: "rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/30 bg-white/5 px-3 py-2 text-sm font-semibold backdrop-blur-sm transition duration-150 hover:bg-white/10 sm:px-4",
+  hero: "rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/30 bg-white/5 px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap backdrop-blur-sm transition duration-150 hover:bg-white/10 sm:px-4 sm:py-2 sm:text-sm",
   marketing:
-    "rounded-[var(--radius-pill)] border border-[var(--line)] px-3 py-2 text-sm font-semibold text-[var(--field)] transition hover:border-[var(--leaf)] hover:text-[var(--leaf-dark)] sm:px-4",
+    "rounded-[var(--radius-pill)] border border-[var(--line)] px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap text-[var(--field)] transition hover:border-[var(--leaf)] hover:text-[var(--leaf-dark)] sm:px-4 sm:py-2 sm:text-sm",
   footer: "hover:text-[var(--ink-on-dark)]",
 } as const;
 
