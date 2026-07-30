@@ -36,18 +36,18 @@ export default function CollectionDaySection({
   return (
     <section className="flex flex-col gap-4">
       <div className="border-b border-[var(--line)] pb-2">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-xl font-semibold">{label}</h2>
+        <h2 className="text-xl font-semibold">{label}</h2>
+        <p className="text-sm text-[var(--muted)]">
+          {orders.length} order{orders.length === 1 ? "" : "s"}, {itemCount}{" "}
+          item{itemCount === 1 ? "" : "s"}
+        </p>
+        <div className="mt-2">
           <CollectionDayEmailAll
             collectionDayKey={dayKey}
             dayLabel={label}
             recipientCount={emailCount}
           />
         </div>
-        <p className="text-sm text-[var(--muted)]">
-          {orders.length} order{orders.length === 1 ? "" : "s"}, {itemCount}{" "}
-          item{itemCount === 1 ? "" : "s"}
-        </p>
       </div>
       <ul className="flex flex-col gap-3">
         {orders.map((order) => (
