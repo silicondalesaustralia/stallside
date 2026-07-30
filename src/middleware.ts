@@ -82,6 +82,7 @@ export const config = {
     "/invite/:path*",
     "/about",
     "/gallery",
+    "/testimonials",
     "/contact",
     "/dashboard/:path*",
     "/onboarding",

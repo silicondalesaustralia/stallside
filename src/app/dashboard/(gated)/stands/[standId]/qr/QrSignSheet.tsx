@@ -2,6 +2,7 @@ import BrandLockup from "@/components/BrandLockup";
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
 import QrPaymentMethods from "@/components/QrPaymentMethods";
 import SafeSignHtml from "@/components/SafeSignHtml";
+import { standAccentStyle } from "@/lib/stand-brand";
 
 export type QrSignSheetProps = {
   name: string;
@@ -14,12 +15,12 @@ export type QrSignSheetProps = {
   siteUrl: string;
   paymentBrands?: PaymentBrand[];
   className?: string;
-  /** full = stacked A4; compact = side-by-side for half/quarter */
   layout?: "full" | "compact";
-  /** Size-specific spacing (e.g. quarter logo ↔ name). */
   printSize?: "a4" | "half" | "quarter";
-  /** When false, omit .qr-print-sheet so thumbnails are not the print source. */
   printable?: boolean;
+  logoUrl?: string | null;
+  accentColor?: string | null;
+  secondaryColor?: string | null;
 };
 
 const defaultMessage = "Scan to browse and pay at this stand.";
@@ -38,8 +39,12 @@ export default function QrSignSheet({
   layout = "full",
   printSize,
   printable = true,
+  logoUrl = null,
+  accentColor = null,
+  secondaryColor = null,
 }: QrSignSheetProps) {
   const compact = layout === "compact";
+  const accentStyle = standAccentStyle(accentColor, secondaryColor);
 
   return (
     <div
@@ -55,10 +60,11 @@ export default function QrSignSheet({
       ]
         .filter(Boolean)
         .join(" ")}
+      style={accentStyle}
     >
       <div
         aria-hidden
-        className={`qr-sign-corner absolute left-3 top-3 border-l-[3px] border-t-[3px] border-[var(--field)] ${
+        className={`qr-sign-corner absolute left-3 top-3 border-l-[3px] border-t-[3px] border-[var(--leaf)] ${
           compact ? "size-6" : "size-10 sm:size-12"
         }`}
         style={{ borderTopLeftRadius: 10 }}
@@ -73,7 +79,20 @@ export default function QrSignSheet({
 
       <div className="qr-sign-head">
         <div className="flex justify-center">
-          <BrandLockup link={false} size={compact ? "sm" : "lg"} />
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logoUrl}
+              alt=""
+              className={
+                compact
+                  ? "h-8 w-auto max-w-[140px] object-contain"
+                  : "h-12 w-auto max-w-[220px] object-contain"
+              }
+            />
+          ) : (
+            <BrandLockup link={false} size={compact ? "sm" : "lg"} />
+          )}
         </div>
         <h1
           className={`font-[family-name:var(--font-display)] font-bold tracking-tight text-[var(--field)] ${

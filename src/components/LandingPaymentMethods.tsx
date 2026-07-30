@@ -18,7 +18,7 @@ const METHODS: {
   },
   {
     brand: "payid",
-    label: "PayID",
+    label: "PayID (Australia only)",
     note: "Bank transfer confirm",
     regions: "Australia (AUD stands)",
     status: "live",
@@ -70,7 +70,7 @@ export default function LandingPaymentMethods() {
         </h2>
       </div>
       <p className="mb-8 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        One Stallside QR. Shoppers pay how they want — cash today, Tap &amp; Go
+        One Stallside QR. Shoppers pay how they want - cash today, Tap &amp; Go
         when you turn it on. Money goes to the stall owner, not Stallside.
         Availability depends on the stand&apos;s currency and the owner&apos;s
         payment setup.

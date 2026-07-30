@@ -13,3 +13,4 @@ export {
   sendCardWelcome,
 } from "@/lib/lifecycle-emails/plans";
 export { sendFirstTenOrdersEmail } from "@/lib/lifecycle-emails/milestone";
+export { sendCancellationFeedback } from "@/lib/lifecycle-emails/cancellation";

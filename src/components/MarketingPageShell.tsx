@@ -3,6 +3,7 @@ import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 import LandingFooter from "@/components/LandingFooter";
 import LifetimePromoTicker from "@/components/LifetimePromoTicker";
+import MarketingNavLinks from "@/components/MarketingNavLinks";
 import OwnerAuthLink from "@/components/OwnerAuthLink";
 
 export default function MarketingPageShell({
@@ -15,8 +16,17 @@ export default function MarketingPageShell({
       <LifetimePromoTicker />
       <header className="border-b border-[var(--line)] bg-[var(--panel)]/80 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-6">
-          <BrandLockup size="sm" />
+          <div className="flex min-w-0 items-center gap-6">
+            <BrandLockup size="sm" />
+            <MarketingNavLinks />
+          </div>
           <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/testimonials"
+              className="text-sm font-medium text-[var(--muted)] underline md:hidden"
+            >
+              Testimonials
+            </Link>
             <Link
               href="/demo"
               className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)] sm:px-4"

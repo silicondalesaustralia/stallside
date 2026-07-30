@@ -25,7 +25,10 @@ export async function startPayPalCheckout(input: {
     const loaded = await loadStandCart(input.standSlug, input.items);
     if ("error" in loaded) return { error: loaded.error };
 
-    const { stand, lineData, totalCents } = loaded;
+    const { stand, lineData, totalCents, preOrderCart } = loaded;
+    if (preOrderCart) {
+      return { error: "Pre-orders must be paid by card." };
+    }
     const owner = stand.owner;
 
     if (!stand.acceptPayPal) {

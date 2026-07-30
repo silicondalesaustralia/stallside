@@ -3,6 +3,7 @@ import { COUNTED_STATUSES } from "@/lib/order-metrics";
 import {
   sendCardWelcome,
   sendCashWelcome,
+  sendCancellationFeedback,
   sendFirstTenOrdersEmail,
   sendTrialWelcome,
 } from "@/lib/lifecycle-emails";
@@ -86,6 +87,31 @@ export async function sendAndMarkCardWelcome(ownerId: string) {
     });
   } catch (error) {
     console.error(`[${APP_NAME}] card welcome failed`, ownerId, error);
+  }
+}
+
+/** Once when they cancel a paid plan (portal). Skipped for Free for Life owners. */
+export async function sendAndMarkCancelFeedback(ownerId: string) {
+  const owner = await prisma.owner.findUnique({
+    where: { id: ownerId },
+    include: { user: { select: { email: true, name: true } } },
+  });
+  if (!owner || owner.cancelFeedbackSentAt) return;
+  if (owner.lifetimeAccess) return;
+  const to = recipientEmail(owner);
+  if (!to) return;
+
+  try {
+    await sendCancellationFeedback({
+      to,
+      name: owner.user?.name || owner.businessName,
+    });
+    await prisma.owner.update({
+      where: { id: ownerId },
+      data: { cancelFeedbackSentAt: new Date() },
+    });
+  } catch (error) {
+    console.error(`[${APP_NAME}] cancel feedback email failed`, ownerId, error);
   }
 }
 

@@ -67,6 +67,12 @@ enum GallerySource {
   OWNER_SUBMIT
 }
 
+enum CollectionStatus {
+  ORDERED
+  READY
+  COLLECTED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -202,6 +208,8 @@ model Owner {
   cashUpgradeDay14SentAt    DateTime?
   cardWelcomeSentAt         DateTime?
   firstTenOrdersEmailSentAt DateTime?
+  /** Cancellation / leave feedback email (portal cancel or delete). */
+  cancelFeedbackSentAt      DateTime?
   /** Access continues until this time after cancel-at-period-end */
   currentPeriodEndsAt       DateTime?
   cancelAtPeriodEnd         Boolean            @default(false)
@@ -270,6 +278,18 @@ model Stand {
   acceptPayPal       Boolean              @default(false)
   showExactStock     Boolean              @default(false)
   isActive           Boolean              @default(true)
+  /** Owner logo for public stall + QR poster (Card tier). */
+  logoUrl            String?
+  /** Hex accent e.g. #2e7d3f — overrides --leaf on public stall + QR. */
+  accentColor        String?
+  /** Hex secondary for prices / stock labels — overrides --ok. */
+  secondaryColor     String?
+  /** Optional social / website links shown on the public stall (Card tier). */
+  instagramUrl       String?
+  facebookUrl        String?
+  tiktokUrl          String?
+  youtubeUrl         String?
+  websiteUrl         String?
   products           Product[]
   orders             Order[]
   inventoryAdjustments InventoryAdjustment[]
@@ -287,29 +307,76 @@ model Product {
   ownerId            String
   owner              Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   name               String
+  /** URL segment under /s/{standSlug}/{slug}; unique per stand. */
+  slug               String
   description        String?
+  imageUrl           String?
+  seoTitle           String?
+  seoDescription     String?
   priceCents         Int
   currency           String               @default("AUD")
   stockQuantity      Int                  @default(0)
   lowStockThreshold  Int                  @default(5)
+  /** Legacy soft-off; kept in sync with isArchived for older queries. */
   isActive           Boolean              @default(true)
+  /** Hidden from stand catalog; direct link + checkout still work. */
+  isHidden           Boolean              @default(false)
+  /** Archived from selling; restorable. Not shown publicly. */
+  isArchived         Boolean              @default(false)
   sortOrder          Int                  @default(0)
+  /** Card-tier pay-upfront pre-order; stockQuantity is the cap. */
+  isPreOrder         Boolean              @default(false)
+  orderByAt          DateTime?
+  collectionAt       DateTime?
+  collectionNote     String?
+  /** When pre-order: show remaining slots publicly (e.g. "3 left"). */
+  showExactStock     Boolean              @default(false)
+  optionGroups       ProductOptionGroup[]
   orderItems         OrderItem[]
   inventoryAdjustments InventoryAdjustment[]
   lowStockAlerts     LowStockAlert[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 
+  @@unique([standId, slug])
   @@index([standId, isActive])
 }
 
+/** Named option group on a product (e.g. Size, Flavour). Max 3 per product in app. */
+model ProductOptionGroup {
+  id        String                @id @default(cuid())
+  productId String
+  product   Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  sortOrder Int                   @default(0)
+  choices   ProductOptionChoice[]
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+
+  @@index([productId, sortOrder])
+}
+
+model ProductOptionChoice {
+  id              String             @id @default(cuid())
+  groupId         String
+  group           ProductOptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  name            String
+  /** Added to product base price (can be 0 or positive). */
+  priceDeltaCents Int                @default(0)
+  sortOrder       Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([groupId, sortOrder])
+}
+
 model Order {
-  id                      String         @id @default(cuid())
+  id                      String            @id @default(cuid())
   standId                 String
-  stand                   Stand          @relation(fields: [standId], references: [id], onDelete: Cascade)
+  stand                   Stand             @relation(fields: [standId], references: [id], onDelete: Cascade)
   ownerId                 String
-  owner                   Owner          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  orderNumber             String         @unique
+  owner                   Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  orderNumber             String            @unique
   paymentMethod           PaymentMethod
   paymentStatus           PaymentStatus
   /** payid | pix | upi when paymentMethod is LOCAL_TRANSFER */
@@ -317,20 +384,27 @@ model Order {
   subtotalCents           Int
   totalCents              Int
   currency                String
-  platformFeeCents        Int            @default(0)
+  platformFeeCents        Int               @default(0)
   stripeCheckoutSessionId String?
   stripePaymentIntentId   String?
   paypalOrderId           String?
   paypalCaptureId         String?
   receiptEmail            String?
-  receiptChannel          ReceiptChannel @default(NONE)
+  receiptChannel          ReceiptChannel    @default(NONE)
+  isPreOrder              Boolean           @default(false)
+  collectionAt            DateTime?
+  collectionNote          String?
+  customerName            String?
+  customerPhone           String?
+  collectionStatus        CollectionStatus?
   items                   OrderItem[]
   inventoryAdjustments    InventoryAdjustment[]
-  createdAt               DateTime       @default(now())
-  updatedAt               DateTime       @updatedAt
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
 
   @@index([ownerId, createdAt])
   @@index([standId, createdAt])
+  @@index([standId, collectionAt, collectionStatus])
 }
 
 model OrderItem {
@@ -340,6 +414,8 @@ model OrderItem {
   productId           String
   product             Product  @relation(fields: [productId], references: [id])
   productNameSnapshot String
+  /** e.g. "Size: Dozen · Flavour: Chocolate" */
+  optionsSnapshot     String?
   quantity            Int
   unitPriceCents      Int
   lineTotalCents      Int

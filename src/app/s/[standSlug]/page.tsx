@@ -1,19 +1,44 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import BrandMark from "@/components/BrandMark";
-import { localTransferForCurrency } from "@/lib/local-transfer";
-import { standOffersCard, standOffersPayPal } from "@/lib/stand-payment-brands";
+import PaymentIconRow from "@/components/PaymentIconRow";
 import { demoRegionForStandSlug, isDemoStandSlug } from "@/lib/demo";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
-import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
-import PublicCart from "./PublicCart";
+import { mapPublicProduct } from "@/lib/public-product";
+import { standAccentStyle } from "@/lib/stand-brand";
+import { standPaymentBrands } from "@/lib/stand-payment-brands";
+import { standSocialFromStand } from "@/lib/stand-social";
+import { catalogMetadata } from "@/lib/stand-seo";
+import { productCatalogWhere } from "@/lib/product-visibility";
+import StandCatalogGrid from "./StandCatalogGrid";
+import StandGoToCartBar from "./StandGoToCartBar";
+import StandSocialLinks from "./StandSocialLinks";
+import StandStoreHeader from "./StandStoreHeader";
 
-function stockLabel(showExact: boolean, quantity: number, threshold: number): string {
-  if (quantity <= 0) return "Sold out";
-  if (showExact) return `${quantity} left`;
-  if (quantity <= threshold) return "Low stock";
-  return "Available";
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ standSlug: string }>;
+}): Promise<Metadata> {
+  const { standSlug } = await params;
+  const slug = decodeURIComponent(standSlug).trim().toLowerCase();
+  const stand = await prisma.stand.findUnique({
+    where: { slug },
+    select: {
+      name: true,
+      slug: true,
+      locationLabel: true,
+      logoUrl: true,
+      isActive: true,
+    },
+  });
+  if (!stand || !stand.isActive) return { title: "Stand" };
+  return catalogMetadata({
+    standName: stand.name,
+    standSlug: stand.slug,
+    locationLabel: stand.locationLabel,
+    logoUrl: stand.logoUrl,
+  });
 }
 
 export default async function PublicStandPage({
@@ -27,8 +52,14 @@ export default async function PublicStandPage({
     where: { slug },
     include: {
       products: {
-        where: { isActive: true },
+        where: productCatalogWhere,
         orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+        include: {
+          optionGroups: {
+            orderBy: { sortOrder: "asc" },
+            include: { choices: { orderBy: { sortOrder: "asc" } } },
+          },
+        },
       },
       owner: { include: { user: { select: { email: true, role: true } } } },
     },
@@ -36,94 +67,71 @@ export default async function PublicStandPage({
 
   if (!stand || !stand.isActive) notFound();
 
-  const demoRegion = isDemoStandSlug(stand.slug)
-    ? demoRegionForStandSlug(stand.slug)
-    : null;
-  const isDemo = Boolean(demoRegion);
+  const isDemo = Boolean(
+    isDemoStandSlug(stand.slug) ? demoRegionForStandSlug(stand.slug) : null,
+  );
 
-  const method = localTransferForCurrency(stand.currency);
-  const alias = stand.localTransferAlias?.trim() ?? "";
-  const localTransfer =
-    stand.acceptLocalTransfer &&
-    method &&
-    alias &&
-    stand.localTransferMethodId === method.id
-      ? {
-          methodId: method.id,
-          buttonLabel: method.buttonLabel,
-          aliasLabel: method.checkoutAliasLabel,
-          alias,
-        }
-      : null;
+  const products = stand.products.map((p) =>
+    mapPublicProduct(p, { showExactStock: stand.showExactStock }),
+  );
 
-  const products = stand.products.map((p) => ({
-    id: p.id,
-    name: p.name,
-    description: p.description,
-    priceCents: p.priceCents,
-    stockQuantity: p.stockQuantity,
-    label: stockLabel(stand.showExactStock, p.stockQuantity, p.lowStockThreshold),
-    soldOut: p.stockQuantity <= 0,
-  }));
-
-  const restockStandId =
-    !isDemo &&
-    isRestockAlertsEnabled() &&
-    ownerHasCardTierAccess(stand.owner, {
-      email: stand.owner.user?.email,
-      role: stand.owner.user?.role,
-      lifetimeAccess: stand.owner.lifetimeAccess,
-    })
-      ? stand.id
-      : null;
+  const paymentBrands = standPaymentBrands(stand, {
+    ...stand.owner,
+    user: stand.owner.user,
+  });
+  const social = standSocialFromStand(stand);
+  const hasSocial = Boolean(
+    social.instagramUrl ||
+      social.facebookUrl ||
+      social.tiktokUrl ||
+      social.youtubeUrl ||
+      social.websiteUrl,
+  );
 
   return (
-    <main className="mx-auto min-h-full w-full max-w-lg px-4 pb-8 pt-8">
+    <main
+      className="mx-auto min-h-full w-full max-w-lg px-4 pb-28 pt-8"
+      style={standAccentStyle(stand.accentColor, stand.secondaryColor)}
+    >
       {isDemo ? (
         <p className="mb-4 text-sm">
-          <Link
-            href="/"
-            className="font-medium text-[var(--leaf-dark)] underline"
-          >
+          <Link href="/" className="font-medium text-[var(--leaf-dark)] underline">
             ← Back to home
           </Link>
         </p>
       ) : null}
-      <div className="flex items-center gap-3">
-        <BrandMark className="size-11" />
-        <h1 className="font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight text-[var(--field)]">
-          {stand.name}
-        </h1>
-      </div>
+      <StandStoreHeader
+        standName={stand.name}
+        standSlug={stand.slug}
+        logoUrl={stand.logoUrl}
+      />
       {products.length === 0 ? (
-        <p className="mt-10 text-xl text-[var(--muted)]">Nothing for sale right now.</p>
+        <p className="mt-10 text-center text-xl text-[var(--muted)]">
+          Nothing for sale right now.
+        </p>
       ) : (
         <>
-          <p className="mt-4 text-xl text-[var(--muted)]">Please select your items below.</p>
-          <PublicCart
+          <p className="mt-4 text-center text-lg text-[var(--muted)]">
+            Choose items to purchase.
+          </p>
+          {paymentBrands.length > 0 ? (
+            <div className="mt-2 flex justify-center">
+              <PaymentIconRow brands={paymentBrands} className="gap-2" />
+            </div>
+          ) : null}
+          <StandCatalogGrid
             standSlug={stand.slug}
             currency={stand.currency}
             products={products}
-            cashEnabled={stand.acceptCash}
-            cardEnabled={standOffersCard(stand, {
-              ...stand.owner,
-              user: stand.owner.user,
-            })}
-            paypalEnabled={standOffersPayPal(stand, {
-              ...stand.owner,
-              user: stand.owner.user,
-            })}
-            paypalClientId={process.env.PAYPAL_CLIENT_ID ?? null}
-            paypalMerchantId={stand.owner.paypalMerchantId}
-            paypalSandbox={
-              (process.env.PAYPAL_MODE || "sandbox").toLowerCase() !== "live"
-            }
-            localTransfer={localTransfer}
-            demoRegion={demoRegion}
-            restockStandId={restockStandId}
           />
         </>
       )}
+      {hasSocial ? (
+        <footer className="mt-10 border-t border-[var(--line)] pt-6">
+          <StandSocialLinks urls={social} standName={stand.name} className="mt-0" />
+        </footer>
+      ) : null}
+      <StandGoToCartBar standSlug={stand.slug} />
     </main>
   );
 }

@@ -20,7 +20,12 @@ export default async function StandDetailPage({
   const { owner, user } = await requireOwner();
   const stand = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
-    include: { products: { orderBy: { sortOrder: "asc" } } },
+    include: {
+      products: {
+        where: { isArchived: false },
+        orderBy: { sortOrder: "asc" },
+      },
+    },
   });
   if (!stand) notFound();
 
@@ -118,7 +123,23 @@ export default async function StandDetailPage({
         <div>
           <h2 className="text-lg font-semibold">Stand details</h2>
           <div className="mt-4">
-            <StandEditForm stand={stand} />
+            <StandEditForm
+              stand={stand}
+              branding={
+                cardTier
+                  ? {
+                      logoUrl: stand.logoUrl,
+                      accentColor: stand.accentColor,
+                      secondaryColor: stand.secondaryColor,
+                      instagramUrl: stand.instagramUrl,
+                      facebookUrl: stand.facebookUrl,
+                      tiktokUrl: stand.tiktokUrl,
+                      youtubeUrl: stand.youtubeUrl,
+                      websiteUrl: stand.websiteUrl,
+                    }
+                  : null
+              }
+            />
           </div>
         </div>
         <div>

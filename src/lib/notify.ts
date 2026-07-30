@@ -36,8 +36,20 @@ export async function notifySale(orderId: string) {
   const lines = order.items
     .map((i) => `${i.quantity}× ${i.productNameSnapshot}`)
     .join(", ");
-  const title = `Sale · ${order.stand.name}`;
-  const body = `${method} ${total} - ${lines}`;
+  const title = order.isPreOrder
+    ? `Pre-order · ${order.stand.name}`
+    : `Sale · ${order.stand.name}`;
+  const collectBit =
+    order.isPreOrder && order.collectionAt
+      ? ` · collect ${order.collectionAt.toLocaleDateString(undefined, {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+        })}`
+      : "";
+  const nameBit = order.customerName ? ` · ${order.customerName}` : "";
+  const emailBit = order.receiptEmail ? ` · ${order.receiptEmail}` : "";
+  const body = `${method} ${total} - ${lines}${collectBit}${nameBit}${emailBit}`;
 
   if (emailOn && recipients.length) {
     await sendOwnerEmail(

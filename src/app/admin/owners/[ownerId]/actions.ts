@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getStripe, isStripeBillingConfigured } from "@/lib/stripe";
 import { syncOwnerFromSubscription } from "@/lib/stripe-billing";
+import { wipeOwnerAccount } from "@/lib/wipe-owner-account";
 
 async function loadOwner(ownerId: string) {
   await requireAdmin();
@@ -106,4 +108,24 @@ export async function cancelOwnerSubscription(ownerId: string) {
   revalidatePath(`/admin/owners/${ownerId}`);
   revalidatePath("/admin/owners");
   revalidatePath("/admin");
+}
+
+/** Permanently delete owner + user (same wipe as Settings → Delete account). */
+export async function adminDeleteOwner(ownerId: string) {
+  const admin = await requireAdmin();
+  const owner = await prisma.owner.findUnique({
+    where: { id: ownerId },
+    include: { user: { select: { id: true, email: true, role: true } } },
+  });
+  if (!owner) return { error: "Owner not found." };
+  if (owner.userId === admin.id) {
+    return { error: "You cannot delete your own admin account here." };
+  }
+
+  const result = await wipeOwnerAccount(ownerId, { allowDemoStands: true });
+  if ("error" in result && result.error) return result;
+
+  revalidatePath("/admin/owners");
+  revalidatePath("/admin");
+  redirect("/admin/owners");
 }

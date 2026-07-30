@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { CURRENCIES } from "@/lib/constants";
 import { updateStand } from "../actions";
+import StandBrandingFields, {
+  type StandBrandingValues,
+} from "./StandBrandingFields";
 
 type StandFields = {
   id: string;
@@ -16,17 +19,28 @@ type StandFields = {
   isActive: boolean;
 };
 
-export default function StandEditForm({ stand }: { stand: StandFields }) {
+export default function StandEditForm({
+  stand,
+  branding,
+}: {
+  stand: StandFields;
+  branding?: StandBrandingValues | null;
+}) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const save = updateStand.bind(null, stand.id);
 
   function onSubmit(formData: FormData) {
+    // Snapshot before transition — React may reset the live FormData.
+    const payload = new FormData();
+    for (const [key, value] of formData.entries()) {
+      payload.append(key, value);
+    }
     setMessage(null);
     startTransition(async () => {
       try {
-        const result = await save(formData);
+        const result = await save(payload);
         if (result && "error" in result && result.error) {
           setMessage(result.error);
           return;
@@ -43,12 +57,15 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
   return (
     <form action={onSubmit} className="flex flex-col gap-4">
       <input type="hidden" name="standId" value={stand.id} />
+      {branding ? <input type="hidden" name="includeBranding" value="1" /> : null}
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Name</span>
         <input
           name="name"
           defaultValue={stand.name}
           required
+          minLength={2}
+          maxLength={80}
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
@@ -108,7 +125,25 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
         <input type="checkbox" name="isActive" defaultChecked={stand.isActive} className="size-4" />
         Public checkout enabled
       </label>
-      {message ? <p className="text-sm text-[var(--muted)]">{message}</p> : null}
+      {branding ? (
+        <div className="border-t border-[var(--line)] pt-6">
+          <h3 className="text-base font-semibold">Branding</h3>
+          <div className="mt-4">
+            <StandBrandingFields {...branding} />
+          </div>
+        </div>
+      ) : null}
+      {message ? (
+        <p
+          className={`text-sm ${
+            message === "Saved."
+              ? "text-[var(--leaf-dark)]"
+              : "text-[var(--warn)]"
+          }`}
+        >
+          {message}
+        </p>
+      ) : null}
       <button
         type="submit"
         disabled={pending}

@@ -7,6 +7,7 @@ import {
 import { PLATFORM_FEE_BPS } from "@/lib/constants";
 import { platformFeeCents } from "@/lib/money";
 import { notifySale } from "@/lib/notify";
+import { notifyOrderCustomer } from "@/lib/notify-order-customer";
 import { decrementStockForOrder } from "@/lib/checkout";
 
 export async function fulfillPaidCardOrder(
@@ -110,6 +111,12 @@ async function fulfillPaidOnlineOrder(
     await notifySale(orderId);
   } catch (error) {
     console.error("Sale notify failed", error);
+  }
+
+  try {
+    await notifyOrderCustomer(orderId);
+  } catch (error) {
+    console.error("Customer order email failed", error);
   }
 
   return { orderNumber: order.orderNumber, alreadyPaid: false as const };

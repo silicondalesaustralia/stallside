@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { isPlatformAdminEmail, requireOwner } from "@/lib/session";
 import { logout } from "@/app/login/actions";
-import { MONTHLY_FEE_CENTS } from "@/lib/constants";
-import { formatMoney } from "@/lib/money";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { stallsideSubscriptionSummary } from "@/lib/stallside-subscription-summary";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import AlertSettingsForm from "./AlertSettingsForm";
 import BusinessNameForm from "./BusinessNameForm";
+import DeleteAccountButton from "./DeleteAccountButton";
 
 export default async function SettingsPage() {
   const { user, owner } = await requireOwner();
@@ -17,6 +17,11 @@ export default async function SettingsPage() {
     role: user.role,
   });
   const paypalConnectAvailable = isPayPalConnectAvailable();
+  const subscriptionLine = stallsideSubscriptionSummary(owner, {
+    email: user.email,
+    role: user.role,
+    lifetimeAccess: owner.lifetimeAccess,
+  });
 
   return (
     <main className="flex max-w-xl flex-col gap-8">
@@ -41,6 +46,9 @@ export default async function SettingsPage() {
             Sign out
           </button>
         </form>
+        <div className="pt-4">
+          <DeleteAccountButton />
+        </div>
       </section>
 
       <section className="space-y-2 text-sm">
@@ -72,10 +80,7 @@ export default async function SettingsPage() {
 
       <section className="space-y-3 text-sm">
         <h2 className="text-lg font-semibold">Stallside subscription</h2>
-        <p>
-          Cash plan: {formatMoney(MONTHLY_FEE_CENTS, "AUD")}/mo. Status:{" "}
-          {owner.subscriptionStatus.toLowerCase()}.
-        </p>
+        <p>{subscriptionLine}</p>
         <p className="text-[var(--muted)]">
           Pays Stallside for the app. Separate from accepting customer payments.
         </p>

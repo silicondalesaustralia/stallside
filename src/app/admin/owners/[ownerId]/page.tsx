@@ -8,6 +8,7 @@ import {
   cancelOwnerSubscription,
   refundLatestSubscriptionInvoice,
 } from "./actions";
+import AdminDeleteOwnerButton from "./AdminDeleteOwnerButton";
 
 export default async function AdminOwnerDetailPage({
   params,
@@ -120,6 +121,12 @@ export default async function AdminOwnerDetailPage({
           </button>
         </form>
       </section>
+
+      <AdminDeleteOwnerButton
+        ownerId={owner.id}
+        businessName={owner.businessName}
+        email={owner.user.email}
+      />
     </main>
   );
 }

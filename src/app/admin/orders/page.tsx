@@ -42,7 +42,14 @@ export default async function AdminOrdersPage() {
               </p>
               <p className="mt-2 text-[var(--muted)]">
                 {order.items
-                  .map((item) => `${item.quantity}× ${item.productNameSnapshot}`)
+                  .map(
+                    (item) =>
+                      `${item.quantity}× ${item.productNameSnapshot}${
+                        item.optionsSnapshot
+                          ? ` (${item.optionsSnapshot})`
+                          : ""
+                      }`,
+                  )
                   .join(", ")}
               </p>
             </li>

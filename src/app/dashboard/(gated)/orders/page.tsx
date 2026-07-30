@@ -8,16 +8,23 @@ import { resolveDateWindow } from "@/lib/date-range";
 import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
 import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
 import { buildSalesSeries } from "@/lib/sales-series";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import Link from "next/link";
 import OrderDeleteButton from "./OrderDeleteButton";
+import OrderCustomerEmail from "../collections/OrderCustomerEmail";
 
 export default async function OrdersPage({
   searchParams,
 }: {
   searchParams: Promise<{ range?: string; from?: string; to?: string }>;
 }) {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
   const params = await searchParams;
   const window = resolveDateWindow(params);
+  const cardTier = ownerHasCardTierAccess(owner, {
+    email: user.email,
+    role: user.role,
+  });
 
   const [currentOrders, previousOrders, listedOrders] = await Promise.all([
     prisma.order.findMany({
@@ -69,6 +76,16 @@ export default async function OrdersPage({
         <p className="mt-1 text-[var(--muted)]">
           {window.label} - cash, PayID, card, and PayPal sales at your stands.
         </p>
+        {cardTier ? (
+          <p className="mt-2 text-sm md:hidden">
+            <Link
+              href="/dashboard/collections"
+              className="font-semibold text-[var(--leaf-dark)] underline"
+            >
+              Pre-order collections
+            </Link>
+          </p>
+        ) : null}
       </div>
 
       <DateRangeFilter
@@ -128,13 +145,27 @@ export default async function OrdersPage({
                       order.localTransferMethodId,
                     )}{" "}
                     · {paymentStatusNote(order.paymentStatus)}
-                    {order.receiptEmail ? ` · ${order.receiptEmail}` : ""}
+                    {order.customerName ? ` · ${order.customerName}` : ""}
+                    {order.customerPhone ? ` · ${order.customerPhone}` : ""}
                   </p>
+                  {order.receiptEmail ? (
+                    <div className="mt-1">
+                      <OrderCustomerEmail
+                        orderId={order.id}
+                        email={order.receiptEmail}
+                        defaultSubject={`${order.stand.name} · order ${order.orderNumber}`}
+                      />
+                    </div>
+                  ) : null}
                   <p className="mt-2 text-[var(--muted)]">
                     {order.items
                       .map(
                         (item) =>
-                          `${item.quantity}× ${item.productNameSnapshot}`,
+                          `${item.quantity}× ${item.productNameSnapshot}${
+                            item.optionsSnapshot
+                              ? ` (${item.optionsSnapshot})`
+                              : ""
+                          }`,
                       )
                       .join(", ")}
                   </p>

@@ -1,17 +1,24 @@
+import {
+  CARD_PLAN_FEATURES,
+  CARD_PLAN_HARDWARE_BLURB,
+  CARD_PLAN_RESTOCK_BLURB,
+} from "@/lib/plan-copy";
+
 const OWNER_LIVE = [
   "Unlimited products, real stock counts",
   "Printable QR poster - print, download, copy",
-  "Cash and PayID (Australia) payments, customer-confirmed",
+  "Cash and PayID (Australia only) payments, customer-confirmed",
   "Tap & Go - card, Apple Pay, Google Pay",
-  "No terminal, no hardware, no percentage of your sales",
-  "Paid straight to your account: no cash box to empty, count, or bank",
+  CARD_PLAN_HARDWARE_BLURB,
+  "Paid straight to your Stripe account: no cash box to empty, count, or bank",
   "Sale alerts - email and push",
   "Low-stock alerts before you run out",
   "Restock from your phone, in the field",
-  "Notify customers by email when you restock (Card plan)",
+  CARD_PLAN_RESTOCK_BLURB,
   "Orders dashboard - what sold, when, for how much",
   "Stock shows Available / Low / Sold out",
   "Add to your phone Home Screen for push alerts - no App Store install",
+  ...CARD_PLAN_FEATURES,
 ] as const;
 
 const OWNER_SOON = ["PayPal at the gate"] as const;
@@ -19,8 +26,11 @@ const OWNER_SOON = ["PayPal at the gate"] as const;
 const CUSTOMER_LIVE = [
   "Scan with your phone camera. No app.",
   "See what's there and what's left.",
-  "Pay cash and PayID (Australia only), then confirm — the owner knows.",
+  "Pay cash and PayID (Australia only), then confirm - the owner knows.",
   "Tap & Go - card, Apple Pay, Google Pay on your phone",
+  "Pre-order and pay by card to reserve for a collection day",
+  "See when orders close, when to collect, and how many slots are left",
+  "Get a confirmation email with your order details",
   "Opt in for an email when the stand restocks",
 ] as const;
 
@@ -51,7 +61,7 @@ function FeatureColumn({
             </span>
             <span
               className={
-                item.includes("no percentage")
+                item.includes("no percentage") || item.includes("No percentage")
                   ? "font-semibold text-[var(--marigold)]"
                   : undefined
               }

@@ -9,6 +9,8 @@ import { CURRENCIES } from "@/lib/constants";
 import { uniqueStandSlug } from "@/lib/slug";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
 import { localTransferForCurrency } from "@/lib/local-transfer";
+import { brandingDataFromForm } from "./stand-branding-from-form";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 
 const standSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -62,16 +64,20 @@ export async function createStand(formData: FormData) {
 }
 
 export async function updateStand(standId: string, formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
   const existing = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
   });
   if (!existing) return { error: "Stand not found." };
 
+  // Always read as strings — empty must become null in Prisma (undefined = skip).
+  const description = String(formData.get("description") ?? "").trim();
+  const locationLabel = String(formData.get("locationLabel") ?? "").trim();
+
   const parsed = standSchema.safeParse({
     name: formData.get("name"),
-    description: formData.get("description") || undefined,
-    locationLabel: formData.get("locationLabel") || undefined,
+    description: description || undefined,
+    locationLabel: locationLabel || undefined,
     currency: formData.get("currency") || existing.currency,
     showExactStock: formData.get("showExactStock") === "on",
     isActive: formData.get("isActive") === "on",
@@ -98,13 +104,25 @@ export async function updateStand(standId: string, formData: FormData) {
   const method = localTransferForCurrency(parsed.data.currency);
   const clearLocal = !method;
 
+  let brandingPatch: Awaited<ReturnType<typeof brandingDataFromForm>> | null =
+    null;
+  if (formData.get("includeBranding") === "1") {
+    if (
+      !ownerHasCardTierAccess(owner, { email: user.email, role: user.role })
+    ) {
+      return { error: "Branding requires the Card plan." };
+    }
+    brandingPatch = await brandingDataFromForm(existing, formData);
+    if (!brandingPatch.ok) return { error: brandingPatch.error };
+  }
+
   await prisma.stand.update({
     where: { id: standId },
     data: {
       name: parsed.data.name,
       slug,
-      description: parsed.data.description,
-      locationLabel: parsed.data.locationLabel,
+      description: description || null,
+      locationLabel: locationLabel || null,
       currency: parsed.data.currency,
       ...(clearLocal
         ? {
@@ -115,6 +133,7 @@ export async function updateStand(standId: string, formData: FormData) {
         : {}),
       showExactStock: parsed.data.showExactStock ?? false,
       isActive: parsed.data.isActive ?? true,
+      ...(brandingPatch?.ok ? brandingPatch.data : {}),
     },
   });
 
@@ -122,6 +141,9 @@ export async function updateStand(standId: string, formData: FormData) {
   revalidatePath(`/dashboard/stands/${standId}`);
   revalidatePath(`/dashboard/stands/${standId}/qr`);
   revalidatePath(`/s/${slug}`);
+  if (slug !== existing.slug) {
+    revalidatePath(`/s/${existing.slug}`);
+  }
   return { ok: true as const };
 }
 

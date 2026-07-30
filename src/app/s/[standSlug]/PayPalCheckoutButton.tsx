@@ -4,7 +4,11 @@ import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 import { startPayPalCheckout } from "./paypal-checkout-actions";
 
-type CartItem = { productId: string; quantity: number };
+type CartItem = {
+  productId: string;
+  quantity: number;
+  choiceIds?: string[];
+};
 
 type PayPalButtonsApi = {
   FUNDING: { PAYPAL: string };

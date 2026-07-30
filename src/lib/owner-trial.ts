@@ -8,7 +8,11 @@ export function trialEndDate(from = new Date()): Date {
   return end;
 }
 
-/** Start a no-card 30-day trial when creating an owner profile. */
+/**
+ * Start a no-card 30-day trial when creating an owner profile.
+ * Trial includes full Card-plan features until trialEndsAt (see ownerHasCardTierAccess).
+ * subscriptionPlan stays "cash" until they subscribe — plan only matters after trial.
+ */
 export async function createOwnerWithTrial(input: {
   userId: string;
   name: string;
@@ -59,13 +63,31 @@ export function hasComplimentaryAccess(input: ComplimentaryAccessInput): boolean
 
 const CARD_TIER_PLANS = new Set(["card", "card_paypal"]);
 
-/** Card / PayPal ($19.99) features: paid card plan, or complimentary / admin. */
+function isActiveFreeTrial(owner: {
+  subscriptionStatus?: SubscriptionStatus | string | null;
+  trialEndsAt?: Date | null;
+}): boolean {
+  if (owner.subscriptionStatus !== SubscriptionStatus.TRIALING) return false;
+  if (!owner.trialEndsAt) return true;
+  return hasFutureDate(owner.trialEndsAt);
+}
+
+/**
+ * Card-tier features: paid card plan, active free trial (full Card features),
+ * or complimentary / admin / lifetime.
+ */
 export function ownerHasCardTierAccess(
-  owner: { subscriptionPlan?: string | null; lifetimeAccess?: boolean | null },
+  owner: {
+    subscriptionPlan?: string | null;
+    lifetimeAccess?: boolean | null;
+    subscriptionStatus?: SubscriptionStatus | string | null;
+    trialEndsAt?: Date | null;
+  },
   access?: ComplimentaryAccessInput,
 ): boolean {
   if (owner.lifetimeAccess) return true;
   if (access && hasComplimentaryAccess(access)) return true;
+  if (isActiveFreeTrial(owner)) return true;
   const plan = (owner.subscriptionPlan ?? "").trim().toLowerCase();
   return CARD_TIER_PLANS.has(plan);
 }

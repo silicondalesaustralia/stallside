@@ -1,6 +1,7 @@
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 import HeroCheckoutDemo from "@/components/HeroCheckoutDemo";
+import MarketingNavLinks from "@/components/MarketingNavLinks";
 import OwnerAuthLink from "@/components/OwnerAuthLink";
 import { APP_NAME, APP_HERO_SUPPORT, APP_POSITIONING, APP_TAGLINE } from "@/lib/constants";
 
@@ -30,8 +31,17 @@ export default function LandingHero() {
       />
 
       <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-6">
-        <BrandLockup variant="dark" size="sm" />
+        <div className="flex min-w-0 items-center gap-6">
+          <BrandLockup variant="dark" size="sm" />
+          <MarketingNavLinks variant="dark" />
+        </div>
         <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            href="/testimonials"
+            className="text-sm font-medium text-[var(--ink-on-dark)]/80 underline md:hidden"
+          >
+            Testimonials
+          </Link>
           <Link
             href="/demo"
             className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-3 py-2 text-sm font-semibold text-white transition duration-150 hover:bg-[var(--leaf-dark)] sm:px-4"

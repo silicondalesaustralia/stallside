@@ -13,6 +13,7 @@ export default function robots(): MetadataRoute.Robots {
         "/login",
         "/onboarding",
         "/checkout",
+        "/s/*/cart",
       ],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,

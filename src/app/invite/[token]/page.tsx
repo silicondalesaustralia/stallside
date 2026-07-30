@@ -10,7 +10,7 @@ import {
 import { requestLifetimeSignup } from "@/app/login/actions";
 
 const FEATURES = [
-  "Cash and PayID at the stand",
+  "Cash and PayID (Australia only) at the stand",
   "Tap & Go — card, Apple Pay, and Google Pay",
   "PayPal when Connect is live",
   "Stock tracking, QR posters, sale and low-stock alerts",

@@ -1,11 +1,12 @@
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import InventoryAdjustForm from "./InventoryAdjustForm";
+import { productDashboardWhere } from "@/lib/product-visibility";
 
 export default async function InventoryPage() {
   const { owner } = await requireOwner();
   const products = await prisma.product.findMany({
-    where: { ownerId: owner.id, isActive: true },
+    where: { ownerId: owner.id, ...productDashboardWhere },
     include: { stand: true },
     orderBy: [{ stand: { name: "asc" } }, { name: "asc" }],
   });

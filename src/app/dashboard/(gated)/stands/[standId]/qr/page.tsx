@@ -37,6 +37,9 @@ export default async function StandQrPage({
     qrDataUrl,
     siteUrl,
     paymentBrands,
+    logoUrl: stand.logoUrl,
+    accentColor: stand.accentColor,
+    secondaryColor: stand.secondaryColor,
   };
 
   return (

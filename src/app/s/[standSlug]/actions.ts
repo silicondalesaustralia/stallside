@@ -69,7 +69,10 @@ async function confirmDeclaredCheckout(input: {
     const loaded = await loadStandCart(input.standSlug, input.items);
     if ("error" in loaded) return { error: loaded.error };
 
-    const { stand, byId, items, lineData, totalCents } = loaded;
+    const { stand, byId, items, lineData, totalCents, preOrderCart } = loaded;
+    if (preOrderCart) {
+      return { error: "Pre-orders must be paid by card." };
+    }
     if (
       input.paymentMethod === PaymentMethod.CASH &&
       !stand.acceptCash

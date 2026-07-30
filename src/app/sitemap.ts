@@ -1,14 +1,73 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/legal";
+import { prisma } from "@/lib/prisma";
+import { isDemoStandSlug } from "@/lib/demo";
+import { isReservedProductSlug } from "@/lib/slug";
+import {
+  standCatalogPath,
+  standProductPath,
+} from "@/lib/stand-seo";
+import { productCatalogWhere } from "@/lib/product-visibility";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+/** Refresh storefront URLs hourly so new stands/products show up for crawlers. */
+export const revalidate = 3600;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
-  const routes = ["", "/about", "/gallery", "/contact", "/privacy", "/terms"] as const;
+  const marketing = [
+    "",
+    "/about",
+    "/gallery",
+    "/testimonials",
+    "/contact",
+    "/privacy",
+    "/terms",
+  ] as const;
 
-  return routes.map((path) => ({
+  const entries: MetadataRoute.Sitemap = marketing.map((path) => ({
     url: `${SITE_URL}${path}`,
     lastModified,
     changeFrequency: path === "" ? "weekly" : "monthly",
     priority: path === "" ? 1 : 0.6,
   }));
+
+  try {
+    const stands = await prisma.stand.findMany({
+      where: { isActive: true },
+      select: {
+        slug: true,
+        updatedAt: true,
+        products: {
+          where: productCatalogWhere,
+          select: { slug: true, updatedAt: true },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    for (const stand of stands) {
+      if (isDemoStandSlug(stand.slug)) continue;
+
+      entries.push({
+        url: `${SITE_URL}${standCatalogPath(stand.slug)}`,
+        lastModified: stand.updatedAt,
+        changeFrequency: "daily",
+        priority: 0.8,
+      });
+
+      for (const product of stand.products) {
+        if (!product.slug || isReservedProductSlug(product.slug)) continue;
+        entries.push({
+          url: `${SITE_URL}${standProductPath(stand.slug, product.slug)}`,
+          lastModified: product.updatedAt,
+          changeFrequency: "daily",
+          priority: 0.7,
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Sitemap stand query failed", error);
+  }
+
+  return entries;
 }

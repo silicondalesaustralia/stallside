@@ -22,14 +22,23 @@ export default function BillingStatusCard({
   subscriptionStatus: string;
   accessUntil: Date | null;
 }) {
+  const lifetime = planLabel.startsWith("Lifetime FREE");
+  const trial = planLabel.includes("free trial");
+
   return (
     <section className="space-y-2 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
-      <p>
-        Plan: {planLabel} · {formatMoney(feeCents, billingCurrency)}/mo (
-        {billingCurrency})
-      </p>
-      <p>Status: {STATUS_LABEL[subscriptionStatus] ?? subscriptionStatus}</p>
-      {accessUntil ? (
+      {lifetime || trial ? (
+        <p>{planLabel}</p>
+      ) : (
+        <>
+          <p>
+            Plan: {planLabel} · {formatMoney(feeCents, billingCurrency)}/mo (
+            {billingCurrency})
+          </p>
+          <p>Status: {STATUS_LABEL[subscriptionStatus] ?? subscriptionStatus}</p>
+        </>
+      )}
+      {accessUntil && !lifetime ? (
         <p>
           Access until:{" "}
           {accessUntil.toLocaleDateString(undefined, { dateStyle: "medium" })}

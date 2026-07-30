@@ -17,7 +17,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "What's the difference between Cash and Card / PayPal?",
     answer:
-      "Cash (live today): shoppers confirm they left cash in your slot or cash box, or paid you by PayID. Every sale is logged and you get alerts. No card reader for Cash. Card / Tap & Go (live): same QR flow, shoppers pay by card, Apple Pay, or Google Pay on their phone — money goes to your Stripe account. PayPal coming soon. No Stallside transaction fees on either plan.",
+      "Cash (live today): shoppers confirm they left cash in your slot or cash box, or paid you by PayID (Australia only). Every sale is logged and you get alerts. No card reader for Cash. Card / Tap & Go (live): same QR flow, shoppers pay by card, Apple Pay, or Google Pay on their phone - money goes to your Stripe account. PayPal coming soon. No Stallside transaction fees on either plan.",
   },
   {
     question: "Can customers pay by bank transfer / PayID?",
@@ -30,8 +30,13 @@ export const LANDING_FAQS: FaqItem[] = [
       "You print a QR poster for each stand. Shoppers open it on their phone and select items. On Cash they confirm cash and PayID (Australia only) at the stand and you are alerted. On Card / Tap & Go they pay digitally in the same checkout (card, Apple Pay, Google Pay). Stock updates either way.",
   },
   {
+    question: "How do pre-orders work?",
+    answer:
+      "On your free trial or Card plan, mark a product as a pre-order with an order-by deadline and collection day. Customers scan your QR, choose what they want, and pay by card to reserve - money goes to your Stripe account at checkout. They get a confirmation email; you see their name and email on the order. In Collections you track who's coming by day and mark Ready, then Collected. You can show exact slots left on the stall, and message buyers from Stallside if plans change. Take-now and pre-order items need separate checkouts.",
+  },
+  {
     question: "How much does it cost?",
-    answer: `Cash (live): ${formatMoney(CASH_PLAN_BY_CURRENCY.AUD, "AUD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.USD, "USD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.GBP, "GBP")}, or ${formatMoney(CASH_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site, with a 30-day free trial. Card / Tap & Go (live): ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site. Pick billing currency at signup or in billing settings.`,
+    answer: `New owners get a 30-day free trial with every Card plan feature (no card required). After the trial, your dashboard locks until you subscribe. Cash (live): ${formatMoney(CASH_PLAN_BY_CURRENCY.AUD, "AUD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.USD, "USD")}, ${formatMoney(CASH_PLAN_BY_CURRENCY.GBP, "GBP")}, or ${formatMoney(CASH_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site. Card / Tap & Go (live): ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site. Pick billing currency at signup or in billing settings.`,
   },
   {
     question: "Who is Stallside for?",
@@ -46,7 +51,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "Do I need special hardware?",
     answer:
-      "A printer for your QR poster is enough. Customers use their own phones. Card / Tap & Go needs no terminal or card reader — payments happen on the shopper's phone via Stripe Checkout.",
+      "A printer for your QR poster is enough. Customers use their own phones. Card / Tap & Go needs no terminal or card reader - payments happen on the shopper's phone via Stripe Checkout.",
   },
   {
     question: "What about cash going missing?",

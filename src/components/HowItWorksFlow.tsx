@@ -77,7 +77,7 @@ export default function HowItWorksFlow() {
         </div>
 
         <p className="mt-8 text-center text-sm text-[var(--muted)]">
-          Customers scan free - no app, no account. Cash or Card / Tap &amp; Go —
+          Customers scan free - no app, no account. Cash or Card / Tap &amp; Go -
           same flow, one tap.
         </p>
 
@@ -86,7 +86,7 @@ export default function HowItWorksFlow() {
             When you restock
           </h3>
           <p className="mt-2 max-w-2xl text-sm text-[var(--muted)] sm:text-base">
-            Card plan: regulars can ask for an email when you fill the stand again.
+            Free trial &amp; Card plan: regulars can ask for an email when you fill the stand again.
           </p>
 
           <ol className="mt-8 flex flex-col items-center gap-6 md:hidden">

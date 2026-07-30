@@ -22,6 +22,7 @@ export default async function CheckoutSuccessPage({
     demoTotalCents,
     demoCurrency,
     restock,
+    preOrder,
   } = await resolveCheckoutSuccess(params);
 
   return (
@@ -39,6 +40,30 @@ export default async function CheckoutSuccessPage({
           Thank you
         </h1>
         <p className="mt-3 text-xl text-[var(--muted)]">{message}</p>
+        {preOrder ? (
+          <div className="mt-6 space-y-2 text-base text-[var(--ink)]">
+            <p>
+              <span className="font-semibold">Collect:</span>{" "}
+              {preOrder.collectionLabel}
+            </p>
+            {preOrder.collectionNote ? (
+              <p className="text-[var(--muted)]">{preOrder.collectionNote}</p>
+            ) : null}
+            {preOrder.customerName ? (
+              <p>
+                <span className="font-semibold">Name:</span>{" "}
+                {preOrder.customerName}
+              </p>
+            ) : null}
+            <ul className="mt-2 list-inside list-disc text-[var(--muted)]">
+              {preOrder.items.map((item) => (
+                <li key={`${item.name}-${item.quantity}`}>
+                  {item.quantity}× {item.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         {demoStandSlug && demoRegion ? (
           <DemoCheckoutSuccessRedirect
             region={demoRegion}

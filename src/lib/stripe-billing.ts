@@ -82,6 +82,10 @@ export async function syncOwnerFromSubscription(
     subscription.status === "incomplete_expired";
   const live =
     subscription.status === "active" || subscription.status === "trialing";
+  const newlySchedulingCancel =
+    !cancelled &&
+    Boolean(subscription.cancel_at_period_end) &&
+    !owner.cancelAtPeriodEnd;
   const { currency, monthlyFeeCents } = billingFromSubscription(subscription);
   const periodEnd = periodEndFromSubscription(subscription);
   const plan = saasPlanFromSubscription(subscription);
@@ -120,6 +124,13 @@ export async function syncOwnerFromSubscription(
     if (plan === "card") {
       await sendAndMarkCardWelcome(owner.id);
     }
+  }
+
+  if (cancelled || newlySchedulingCancel) {
+    const { sendAndMarkCancelFeedback } = await import(
+      "@/lib/lifecycle-emails/send-and-mark"
+    );
+    await sendAndMarkCancelFeedback(owner.id);
   }
 }
 

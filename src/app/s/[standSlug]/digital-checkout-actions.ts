@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import {
+  CollectionStatus,
   PaymentMethod,
   PaymentStatus,
   ReceiptChannel,
@@ -17,12 +18,15 @@ import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 export async function startCardCheckout(input: {
   standSlug: string;
   items: CartItemInput[];
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
 }) {
   try {
     const loaded = await loadStandCart(input.standSlug, input.items);
     if ("error" in loaded) return { error: loaded.error };
 
-    const { stand, lineData, totalCents } = loaded;
+    const { stand, lineData, totalCents, preOrderCart } = loaded;
     const owner = stand.owner;
     const ownerUser = await prisma.user.findUnique({
       where: { id: owner.userId },
@@ -30,7 +34,7 @@ export async function startCardCheckout(input: {
     });
     const demo = isDemoStandSlug(stand.slug);
 
-  if (!stand.acceptCard) {
+    if (!stand.acceptCard) {
       return { error: "Card is not enabled at this stand." };
     }
     if (
@@ -40,6 +44,18 @@ export async function startCardCheckout(input: {
       })
     ) {
       return { error: "Card / Tap & Go requires the Card plan." };
+    }
+
+    const customerName = (input.customerName ?? "").trim().slice(0, 120);
+    const customerEmail = (input.customerEmail ?? "").trim().toLowerCase().slice(0, 200);
+    const customerPhone = (input.customerPhone ?? "").trim().slice(0, 40) || null;
+    if (preOrderCart && !customerName) {
+      return { error: "Enter your name for collection." };
+    }
+    if (preOrderCart) {
+      if (!customerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+        return { error: "Enter a valid email for order details." };
+      }
     }
 
     const demoStripe = demo ? resolveDemoCardStripe(owner) : null;
@@ -83,8 +99,21 @@ export async function startCardCheckout(input: {
         totalCents,
         currency: stand.currency,
         platformFeeCents: trackedFee,
-        receiptChannel: ReceiptChannel.NONE,
+        receiptChannel: customerEmail
+          ? ReceiptChannel.EMAIL
+          : ReceiptChannel.NONE,
+        receiptEmail: customerEmail || null,
         items: { create: lineData },
+        ...(preOrderCart
+          ? {
+              isPreOrder: true,
+              collectionAt: preOrderCart.collectionAt,
+              collectionNote: preOrderCart.collectionNote,
+              customerName,
+              customerPhone,
+              collectionStatus: CollectionStatus.ORDERED,
+            }
+          : {}),
       },
     });
 
@@ -98,11 +127,16 @@ export async function startCardCheckout(input: {
           price_data: {
             currency: stand.currency.toLowerCase(),
             unit_amount: line.unitPriceCents,
-            product_data: { name: line.productNameSnapshot },
+            product_data: {
+              name: line.optionsSnapshot
+                ? `${line.productNameSnapshot} (${line.optionsSnapshot})`
+                : line.productNameSnapshot,
+            },
           },
         })),
         success_url: `${base}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${base}/checkout/cancelled?order=${order.id}`,
+        ...(customerEmail ? { customer_email: customerEmail } : {}),
         metadata: {
           orderId: order.id,
           standId: stand.id,
@@ -129,6 +163,16 @@ export async function startCardCheckout(input: {
     return { url: session.url };
   } catch (error) {
     console.error("Card checkout failed", error);
+    const stripeMessage =
+      error &&
+      typeof error === "object" &&
+      "message" in error &&
+      typeof (error as { message: unknown }).message === "string"
+        ? (error as { message: string }).message
+        : null;
+    if (process.env.NODE_ENV !== "production" && stripeMessage) {
+      return { error: stripeMessage };
+    }
     return { error: "Could not start card checkout." };
   }
 }

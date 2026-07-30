@@ -4,8 +4,13 @@ import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import DemoCardHint from "@/components/DemoCardHint";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
+import PreOrderContactFields from "./PreOrderContactFields";
 
-type CartItem = { productId: string; quantity: number };
+type CartItem = {
+  productId: string;
+  quantity: number;
+  choiceIds?: string[];
+};
 
 type CheckoutPayStepProps = {
   cashEnabled: boolean;
@@ -20,6 +25,14 @@ type CheckoutPayStepProps = {
   localTransferLabel: string | null;
   pending: boolean;
   showDemoCardHint?: boolean;
+  /** Pre-order carts: card only + name/email/phone. */
+  preOrderOnly?: boolean;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  onCustomerName: (v: string) => void;
+  onCustomerEmail: (v: string) => void;
+  onCustomerPhone: (v: string) => void;
   onCash: () => void;
   onLocalTransfer: () => void;
   onCard: () => void;
@@ -40,19 +53,42 @@ export default function CheckoutPayStep({
   localTransferLabel,
   pending,
   showDemoCardHint = false,
+  preOrderOnly = false,
+  customerName,
+  customerEmail,
+  customerPhone,
+  onCustomerName,
+  onCustomerEmail,
+  onCustomerPhone,
   onCash,
   onLocalTransfer,
   onCard,
   onPayPalError,
   onBack,
 }: CheckoutPayStepProps) {
+  const showCash = cashEnabled && !preOrderOnly;
+  const showLt = Boolean(localTransferLabel) && !preOrderOnly;
   const showPayPal =
-    paypalEnabled && Boolean(paypalClientId && paypalMerchantId);
+    !preOrderOnly &&
+    paypalEnabled &&
+    Boolean(paypalClientId && paypalMerchantId);
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xl font-semibold">How would you like to pay?</p>
-      {cashEnabled ? (
+      <p className="text-xl font-semibold">
+        {preOrderOnly ? "Pay to reserve your order" : "How would you like to pay?"}
+      </p>
+      {preOrderOnly ? (
+        <PreOrderContactFields
+          customerName={customerName}
+          customerEmail={customerEmail}
+          customerPhone={customerPhone}
+          onCustomerName={onCustomerName}
+          onCustomerEmail={onCustomerEmail}
+          onCustomerPhone={onCustomerPhone}
+        />
+      ) : null}
+      {showCash ? (
         <button
           type="button"
           disabled={pending}
@@ -65,7 +101,7 @@ export default function CheckoutPayStep({
           <span>Pay cash</span>
         </button>
       ) : null}
-      {localTransferLabel ? (
+      {showLt ? (
         <button
           type="button"
           disabled={pending}
@@ -82,7 +118,11 @@ export default function CheckoutPayStep({
         <>
           <button
             type="button"
-            disabled={pending}
+            disabled={
+              pending ||
+              (preOrderOnly &&
+                (!customerName.trim() || !customerEmail.trim()))
+            }
             onClick={onCard}
             className="flex items-center gap-4 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4 text-left disabled:opacity-50"
           >
@@ -115,7 +155,7 @@ export default function CheckoutPayStep({
           onError={onPayPalError}
         />
       ) : null}
-      {!cashEnabled && !localTransferLabel && !cardEnabled && !showPayPal ? (
+      {!showCash && !showLt && !cardEnabled && !showPayPal ? (
         <p className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-lg text-[var(--muted)]">
           No payment methods are available at this stand right now.
         </p>

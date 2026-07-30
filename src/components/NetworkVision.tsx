@@ -7,8 +7,8 @@ export default function NetworkVision() {
             One QR. Every kind of stand.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-[var(--ink-on-dark)]/70 sm:text-base">
-            Produce, firewood, flowers, car parks — shoppers scan, pick, and pay
-            at that stand. Cash, PayID (Australia), or Tap &amp; Go when the owner
+            Produce, firewood, flowers, car parks - shoppers scan, pick, and pay
+            at that stand. Cash, PayID (Australia only), or Tap &amp; Go when the owner
             turns it on.
             No shared network wallet; each sale goes to that stall owner.
           </p>

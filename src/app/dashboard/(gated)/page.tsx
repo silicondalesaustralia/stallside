@@ -11,6 +11,7 @@ import { resolveDateWindow } from "@/lib/date-range";
 import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { buildSalesSeries } from "@/lib/sales-series";
+import { productDashboardWhere } from "@/lib/product-visibility";
 
 export default async function DashboardPage({
   searchParams,
@@ -32,7 +33,9 @@ export default async function DashboardPage({
         orderBy: { name: "asc" },
         select: { id: true, name: true, slug: true },
       }),
-      prisma.product.count({ where: { ownerId: owner.id, isActive: true } }),
+      prisma.product.count({
+        where: { ownerId: owner.id, ...productDashboardWhere },
+      }),
       prisma.order.findMany({
         where: {
           ownerId: owner.id,
@@ -60,7 +63,7 @@ export default async function DashboardPage({
         },
       }),
       prisma.product.findMany({
-        where: { ownerId: owner.id, isActive: true },
+        where: { ownerId: owner.id, ...productDashboardWhere },
         include: { stand: true },
         orderBy: { stockQuantity: "asc" },
       }),

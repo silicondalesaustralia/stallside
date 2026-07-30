@@ -3,7 +3,7 @@ import SalesSeriesChart from "@/components/SalesSeriesChart";
 import { formatMoney } from "@/lib/money";
 import type { SeriesPoint } from "@/lib/sales-series";
 
-/** Sample Green Valley Eggs week — marketing preview of owner analytics. */
+/** Sample Green Valley Eggs week - marketing preview of owner analytics. */
 const CURRENT: SeriesPoint[] = [
   { label: "Mon", cents: 4200 },
   { label: "Tue", cents: 5600 },
@@ -46,11 +46,11 @@ export default function LandingAnalyticsPreview() {
           Owner analytics · example
         </p>
         <h2 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
-          Know what sold — and when
+          Know what sold - and when
         </h2>
         <p className="mt-3 max-w-2xl text-base leading-snug text-[var(--muted)]">
           Compare this week with the last. See revenue, orders, and how cash vs
-          Tap &amp; Go are trending — the same view stall owners get in the app.
+          Tap &amp; Go are trending - the same view stall owners get in the app.
         </p>
 
         <div className="mt-6 flex flex-wrap items-center gap-2 text-sm">

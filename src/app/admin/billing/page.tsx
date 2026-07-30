@@ -62,7 +62,9 @@ export default async function AdminBillingPage() {
             );
           })}
         </ul>
-        <h2 className="mt-4 text-lg font-semibold">Card plan prices (no trial)</h2>
+        <h2 className="mt-4 text-lg font-semibold">
+          Card plan prices (Stripe bills immediately on subscribe)
+        </h2>
         <ul className="space-y-1">
           {BILLING_CURRENCIES.map((currency) => {
             const configuredPrice = cardPrices.find((p) => p.currency === currency);

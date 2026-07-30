@@ -1,6 +1,13 @@
 import { demoRegionForStandSlug, isDemoStandSlug, type DemoRegion } from "@/lib/demo";
 import type { RestockOptInProps } from "./restock-opt-in-gate";
 
+export type PreOrderSuccessInfo = {
+  collectionLabel: string;
+  collectionNote: string | null;
+  items: { name: string; quantity: number }[];
+  customerName: string | null;
+};
+
 export type SuccessPageState = {
   message: string;
   demoStandSlug: string | null;
@@ -8,6 +15,7 @@ export type SuccessPageState = {
   demoTotalCents?: number;
   demoCurrency?: string;
   restock: RestockOptInProps | null;
+  preOrder: PreOrderSuccessInfo | null;
 };
 
 export const emptySuccessState = (): SuccessPageState => ({
@@ -15,6 +23,7 @@ export const emptySuccessState = (): SuccessPageState => ({
   demoStandSlug: null,
   demoRegion: null,
   restock: null,
+  preOrder: null,
 });
 
 export function applyDemo(

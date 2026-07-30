@@ -1,9 +1,9 @@
-import { PrismaClient, PaymentMethod } from "@/generated/prisma/client";
+import { PrismaClient, Prisma } from "@/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 type CachedPrisma = {
   client: PrismaClient;
-  /** Bust dev HMR cache when `prisma generate` adds enum values. */
+  /** Bust dev HMR cache when `prisma generate` changes model fields. */
   schemaFingerprint: string;
 };
 
@@ -11,7 +11,14 @@ const globalForPrisma = globalThis as unknown as {
   prisma?: CachedPrisma | PrismaClient;
 };
 
-const schemaFingerprint = Object.values(PaymentMethod).sort().join(",");
+/** Changes when generated client gains/loses scalar fields (not just enums). */
+const schemaFingerprint = [
+  ...Object.keys(Prisma.StandScalarFieldEnum),
+  ...Object.keys(Prisma.OwnerScalarFieldEnum),
+  ...Object.keys(Prisma.OrderScalarFieldEnum),
+]
+  .sort()
+  .join(",");
 
 function createPrismaClient() {
   const connectionString = process.env.DATABASE_URL;

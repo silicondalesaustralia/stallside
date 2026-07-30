@@ -90,9 +90,10 @@ export default function PrivacyContent() {
         </h2>
         <p className="text-[var(--muted)]">
           We retain account and transaction data while your account is active and for a reasonable
-          period afterward for billing, disputes, and legal requirements. You may request access
-          to or correction of personal information we hold about you, or ask us about deletion,
-          by emailing {LEGAL_EMAIL}.
+          period afterward for billing, disputes, and legal requirements. You can delete your
+          account anytime in Settings → Delete account (this cancels any Stallside subscription and
+          removes your stands and related data). You may also request access to or correction of
+          personal information we hold about you by emailing {LEGAL_EMAIL}.
         </p>
       </section>
 

@@ -21,7 +21,7 @@ export async function sendCashWelcome(r: Recipient) {
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>Thanks for subscribing to <strong>${APP_NAME} Cash</strong>. Your stand stays online
-      with cash and PayID (if in Australia), stock tracking, QR posters, and sale /
+      with cash and PayID (Australia only), stock tracking, QR posters, and sale /
       low-stock alerts.</p>
       <p><strong>Useful next steps</strong></p>
       <ul>
@@ -44,7 +44,7 @@ export async function sendCashUpgradeDay2(r: Recipient) {
     "Customers who only carry a card",
     `
       <p>Hi ${greetName(r.name)},</p>
-      <p>On Cash, you&apos;re set for cash and PayID (if in Australia). A lot of stall owners
+      <p>On Cash, you&apos;re set for cash and PayID (Australia only). A lot of stall owners
       still lose a few sales when someone only has a card or phone wallet.</p>
       <p>The <strong>Card</strong> plan adds customer card checkout on the same QR - including
       Apple Pay and Google Pay when those are linked on their device. No hardware, no

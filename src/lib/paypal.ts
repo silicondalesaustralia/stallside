@@ -18,9 +18,11 @@ export function isPayPalLiveMode(): boolean {
   return (process.env.PAYPAL_MODE || "sandbox").toLowerCase() === "live";
 }
 
-/** Owner Connect UI — off in live until PAYPAL_CONNECT_ENABLED=1. */
+/**
+ * Owner Connect UI + checkout. Off everywhere until PAYPAL_CONNECT_ENABLED=1
+ * (sandbox included), so local/dev shows Coming soon by default.
+ */
 export function isPayPalConnectAvailable(): boolean {
-  if (!isPayPalLiveMode()) return true;
   return process.env.PAYPAL_CONNECT_ENABLED === "1";
 }
 

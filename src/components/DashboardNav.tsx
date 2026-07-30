@@ -10,6 +10,7 @@ const desktopLinks = [
   { href: "/dashboard/products", label: "Products" },
   { href: "/dashboard/inventory", label: "Inventory" },
   { href: "/dashboard/orders", label: "Orders" },
+  { href: "/dashboard/collections", label: "Collections" },
   { href: "/dashboard/knowledge", label: "Guides" },
   { href: "/dashboard/settings", label: "Settings" },
 ] as const;

@@ -56,15 +56,22 @@ export default async function BillingSettingsPage({
   const billingCurrency: BillingCurrency = isBillingCurrency(owner.billingCurrency)
     ? owner.billingCurrency
     : "AUD";
-  const planLabel =
-    (owner.subscriptionPlan ?? "cash").toLowerCase() === "card"
-      ? "Card / Tap & Go"
-      : "Cash";
+  const planLabel = freeForever
+    ? "Lifetime FREE - All features"
+    : trialActive
+      ? "30 day free trial"
+      : (owner.subscriptionPlan ?? "cash").toLowerCase() === "card" ||
+          (owner.subscriptionPlan ?? "cash").toLowerCase() === "card_paypal"
+        ? "Card / Tap & Go"
+        : "Cash";
   const feeCents =
-    owner.monthlyFeeCents ||
-    ((owner.subscriptionPlan ?? "").toLowerCase() === "card"
-      ? cardPlanCents(billingCurrency)
-      : cashPlanCents(billingCurrency));
+    freeForever || trialActive
+      ? 0
+      : owner.monthlyFeeCents ||
+        ((owner.subscriptionPlan ?? "").toLowerCase() === "card" ||
+        (owner.subscriptionPlan ?? "").toLowerCase() === "card_paypal"
+          ? cardPlanCents(billingCurrency)
+          : cashPlanCents(billingCurrency));
   const preferCard = params.plan === "card";
   const onCardPlan =
     (owner.subscriptionPlan ?? "").trim().toLowerCase() === "card" ||

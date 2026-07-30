@@ -30,12 +30,14 @@ export default function BillingNotices({
       ) : null}
       {!freeForever && locked ? (
         <p className="rounded-xl border border-[var(--marigold)]/40 bg-[var(--marigold)]/10 px-4 py-3 text-sm">
-          Your subscription is not active. Stands, products, inventory, and orders
-          stay saved. Subscribe again to reopen the app.
+          Your dashboard is locked. Stands, products, inventory, and orders stay
+          saved. Choose Cash or Card below to reopen the app.
         </p>
       ) : null}
       {trialEnded ? (
-        <p className="text-sm text-[var(--muted)]">Your free trial has ended.</p>
+        <p className="text-sm text-[var(--muted)]">
+          Your free trial has ended. Subscribe to Cash or Card to continue.
+        </p>
       ) : null}
       {success ? (
         <p className="text-sm text-[var(--leaf-dark)]">
@@ -47,7 +49,8 @@ export default function BillingNotices({
       ) : null}
       {trialActive && trialEndsLabel ? (
         <p className="text-sm text-[var(--leaf-dark)]">
-          Cash free trial active until {trialEndsLabel}.
+          Free trial (full Card features) active until {trialEndsLabel}. After
+          that, pick Cash or Card to keep your dashboard open.
         </p>
       ) : null}
       {cancelling && cancelUntilLabel ? (

@@ -17,8 +17,8 @@ export default function TrialDaysBadge({
       : daysLeft <= 0
         ? "Trial ended"
         : daysLeft === 1
-          ? "1 day left on free plan"
-          : `${daysLeft} days left on free plan`;
+          ? "1 day left on free trial"
+          : `${daysLeft} days left on free trial`;
 
   const cta = mode === "paid" ? "Resubscribe" : "Subscribe Now";
 

@@ -2,21 +2,35 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
-import ProductDeleteButton from "./ProductDeleteButton";
+import {
+  productDashboardWhere,
+} from "@/lib/product-visibility";
+import ProductLifecycleActions from "./ProductLifecycleActions";
 import RestockNotifyPanel from "./RestockNotifyPanel";
 import { loadRestockPanels } from "./load-restock-panels";
 import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 
-export default async function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
   const { user, owner } = await requireOwner();
+  const { view } = await searchParams;
+  const showArchived = view === "archived";
+
   const products = await prisma.product.findMany({
-    where: { ownerId: owner.id, isActive: true },
+    where: {
+      ownerId: owner.id,
+      ...(showArchived ? { isArchived: true } : productDashboardWhere),
+    },
     include: { stand: true },
     orderBy: [{ standId: "asc" }, { sortOrder: "asc" }, { name: "asc" }],
   });
 
   const showRestock =
+    !showArchived &&
     isRestockAlertsEnabled() &&
     ownerHasCardTierAccess(owner, {
       email: user.email,
@@ -33,6 +47,28 @@ export default async function ProductsPage() {
           <h1 className="text-3xl font-semibold tracking-tight">Products</h1>
           <p className="mt-1 text-[var(--muted)]">
             Name products as you sell them - e.g. Dozen eggs, 500g steak.
+          </p>
+          <p className="mt-3 flex flex-wrap gap-3 text-sm">
+            <Link
+              href="/dashboard/products"
+              className={
+                !showArchived
+                  ? "font-semibold text-[var(--ink)]"
+                  : "text-[var(--leaf-dark)] underline"
+              }
+            >
+              Active
+            </Link>
+            <Link
+              href="/dashboard/products?view=archived"
+              className={
+                showArchived
+                  ? "font-semibold text-[var(--ink)]"
+                  : "text-[var(--leaf-dark)] underline"
+              }
+            >
+              Archived
+            </Link>
           </p>
         </div>
         <Link
@@ -57,7 +93,9 @@ export default async function ProductsPage() {
       ) : null}
 
       {products.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">No products yet.</p>
+        <p className="text-sm text-[var(--muted)]">
+          {showArchived ? "No archived products." : "No products yet."}
+        </p>
       ) : (
         <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
           {products.map((product) => (
@@ -66,7 +104,15 @@ export default async function ProductsPage() {
               className="flex flex-wrap items-center justify-between gap-3 py-4 text-sm"
             >
               <div>
-                <p className="font-medium">{product.name}</p>
+                <p className="font-medium">
+                  {product.name}
+                  {product.isHidden && !product.isArchived ? (
+                    <span className="ml-2 text-[var(--muted)]">(hidden)</span>
+                  ) : null}
+                  {product.isArchived ? (
+                    <span className="ml-2 text-[var(--muted)]">(archived)</span>
+                  ) : null}
+                </p>
                 <p className="mt-1 text-[var(--muted)]">
                   {product.stand.name} ·{" "}
                   {formatMoney(product.priceCents, product.currency)} ·{" "}
@@ -80,15 +126,19 @@ export default async function ProductsPage() {
                 >
                   Edit
                 </Link>
-                <Link
-                  href="/dashboard/inventory"
-                  className="text-[var(--leaf-dark)] underline"
-                >
-                  Adjust stock
-                </Link>
-                <ProductDeleteButton
+                {!product.isArchived ? (
+                  <Link
+                    href="/dashboard/inventory"
+                    className="text-[var(--leaf-dark)] underline"
+                  >
+                    Adjust stock
+                  </Link>
+                ) : null}
+                <ProductLifecycleActions
                   productId={product.id}
                   productName={product.name}
+                  isHidden={product.isHidden}
+                  isArchived={product.isArchived}
                 />
               </div>
             </li>

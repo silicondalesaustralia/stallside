@@ -8,6 +8,15 @@ import { prisma } from "@/lib/prisma";
 import { dollarsToCents } from "@/lib/money";
 import { InventorySource } from "@/generated/prisma/client";
 import { notifyLowStockForProducts } from "@/lib/notify";
+import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { parsePreOrderFromForm } from "@/lib/pre-order";
+import { uploadProductImage } from "@/lib/product-image-upload";
+import {
+  isReservedProductSlug,
+  slugify,
+  uniqueProductSlug,
+} from "@/lib/slug";
+import { archiveProduct } from "./product-lifecycle-actions";
 
 const productSchema = z.object({
   standId: z.string().min(1),
@@ -16,10 +25,29 @@ const productSchema = z.object({
   price: z.string().min(1),
   stockQuantity: z.coerce.number().int().min(0),
   lowStockThreshold: z.coerce.number().int().min(0),
+  slug: z.string().trim().max(60).optional(),
+  seoTitle: z.string().trim().max(120).optional(),
+  seoDescription: z.string().trim().max(300).optional(),
 });
 
+async function productSlugExists(
+  standId: string,
+  slug: string,
+  excludeId?: string,
+) {
+  const found = await prisma.product.findFirst({
+    where: {
+      standId,
+      slug,
+      ...(excludeId ? { NOT: { id: excludeId } } : {}),
+    },
+    select: { id: true },
+  });
+  return Boolean(found);
+}
+
 export async function createProduct(formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
   const parsed = productSchema.safeParse({
     standId: formData.get("standId"),
     name: formData.get("name"),
@@ -27,38 +55,77 @@ export async function createProduct(formData: FormData) {
     price: formData.get("price"),
     stockQuantity: formData.get("stockQuantity") || 0,
     lowStockThreshold: formData.get("lowStockThreshold") || 5,
+    slug: formData.get("slug") || undefined,
+    seoTitle: formData.get("seoTitle") || undefined,
+    seoDescription: formData.get("seoDescription") || undefined,
   });
   if (!parsed.success) {
-    throw new Error("Check product details.");
+    const detail = parsed.error.issues[0]?.message;
+    return {
+      error: detail
+        ? `Check product details (${detail}).`
+        : "Check product details.",
+    };
   }
 
   const stand = await prisma.stand.findFirst({
     where: { id: parsed.data.standId, ownerId: owner.id },
   });
   if (!stand) {
-    throw new Error("Stand not found.");
+    return { error: "Stand not found." };
   }
+
+  const cardTier = ownerHasCardTierAccess(owner, {
+    email: user.email,
+    role: user.role,
+  });
+  const pre = parsePreOrderFromForm(formData, cardTier);
+  if (!pre.ok) return { error: pre.error };
 
   let priceCents: number;
   try {
     priceCents = dollarsToCents(parsed.data.price);
   } catch {
-    throw new Error("Invalid price.");
+    return { error: "Invalid price." };
   }
+
+  const slugBase = parsed.data.slug?.trim() || parsed.data.name;
+  const slug = await uniqueProductSlug(stand.id, slugBase, (sid, s) =>
+    productSlugExists(sid, s),
+  );
 
   const product = await prisma.product.create({
     data: {
       ownerId: owner.id,
       standId: stand.id,
       name: parsed.data.name,
+      slug,
       description: parsed.data.description,
+      seoTitle: parsed.data.seoTitle || null,
+      seoDescription: parsed.data.seoDescription || null,
       priceCents,
       currency: stand.currency,
       stockQuantity: parsed.data.stockQuantity,
       lowStockThreshold: parsed.data.lowStockThreshold,
       isActive: true,
+      isHidden: false,
+      isArchived: false,
+      ...pre.data,
     },
   });
+
+  const imageFile = formData.get("image");
+  if (imageFile instanceof File && imageFile.size > 0) {
+    try {
+      const imageUrl = await uploadProductImage(stand.id, product.id, imageFile);
+      await prisma.product.update({
+        where: { id: product.id },
+        data: { imageUrl },
+      });
+    } catch (error) {
+      console.error("Product image upload failed", error);
+    }
+  }
 
   if (parsed.data.stockQuantity > 0) {
     await prisma.inventoryAdjustment.create({
@@ -76,7 +143,8 @@ export async function createProduct(formData: FormData) {
   }
 
   revalidatePath("/dashboard/products");
-  redirect("/dashboard/products");
+  revalidatePath(`/s/${stand.slug}`);
+  redirect(`/dashboard/products/${product.id}`);
 }
 
 export async function adjustInventory(formData: FormData) {
@@ -139,7 +207,7 @@ export async function adjustInventory(formData: FormData) {
 
 export async function updateProduct(productId: string, formData: FormData) {
   try {
-    const { owner } = await requireOwner();
+    const { owner, user } = await requireOwner();
     const product = await prisma.product.findFirst({
       where: { id: productId, ownerId: owner.id },
       include: { stand: { select: { slug: true } } },
@@ -152,14 +220,34 @@ export async function updateProduct(productId: string, formData: FormData) {
         description: z.string().trim().max(500).optional(),
         price: z.string().min(1),
         lowStockThreshold: z.coerce.number().int().min(0),
+        slug: z.string().trim().min(1).max(60),
+        seoTitle: z.string().trim().max(120).optional(),
+        seoDescription: z.string().trim().max(300).optional(),
       })
       .safeParse({
         name: formData.get("name"),
         description: formData.get("description") || undefined,
         price: formData.get("price"),
         lowStockThreshold: formData.get("lowStockThreshold") || 0,
+        slug: formData.get("slug") || product.slug,
+        seoTitle: formData.get("seoTitle") || undefined,
+        seoDescription: formData.get("seoDescription") || undefined,
       });
-    if (!parsed.success) return { error: "Check product details." };
+    if (!parsed.success) {
+      const detail = parsed.error.issues[0]?.message;
+      return {
+        error: detail
+          ? `Check product details (${detail}).`
+          : "Check product details.",
+      };
+    }
+
+    const cardTier = ownerHasCardTierAccess(owner, {
+      email: user.email,
+      role: user.role,
+    });
+    const pre = parsePreOrderFromForm(formData, cardTier);
+    if (!pre.ok) return { error: pre.error };
 
     let priceCents: number;
     try {
@@ -168,13 +256,44 @@ export async function updateProduct(productId: string, formData: FormData) {
       return { error: "Invalid price." };
     }
 
+    let slug = slugify(parsed.data.slug) || product.slug;
+    if (isReservedProductSlug(slug)) {
+      return { error: "That URL slug is reserved. Pick another." };
+    }
+    if (slug !== product.slug) {
+      slug = await uniqueProductSlug(
+        product.standId,
+        slug,
+        (sid, s) => productSlugExists(sid, s, product.id),
+      );
+    }
+
+    let imageUrl: string | null = product.imageUrl;
+    if (formData.get("clearImage") === "on") {
+      imageUrl = null;
+    } else {
+      const imageFile = formData.get("image");
+      if (imageFile instanceof File && imageFile.size > 0) {
+        imageUrl = await uploadProductImage(
+          product.standId,
+          product.id,
+          imageFile,
+        );
+      }
+    }
+
     await prisma.product.update({
       where: { id: product.id },
       data: {
         name: parsed.data.name,
         description: parsed.data.description || null,
+        slug,
+        seoTitle: parsed.data.seoTitle || null,
+        seoDescription: parsed.data.seoDescription || null,
+        imageUrl,
         priceCents,
         lowStockThreshold: parsed.data.lowStockThreshold,
+        ...pre.data,
       },
     });
 
@@ -182,37 +301,17 @@ export async function updateProduct(productId: string, formData: FormData) {
     revalidatePath("/dashboard/inventory");
     revalidatePath(`/dashboard/products/${product.id}`);
     revalidatePath(`/s/${product.stand.slug}`);
+    revalidatePath(`/s/${product.stand.slug}/${slug}`);
     return { ok: true as const };
   } catch (error) {
     console.error("updateProduct failed", error);
-    return { error: "Could not save product." };
+    const message =
+      error instanceof Error ? error.message : "Could not save product.";
+    return { error: message };
   }
 }
 
-/** Remove a product from the catalog. Hard-deletes if never sold; otherwise archives. */
+/** Prefer archiveProduct — kept for older callers. */
 export async function deleteProduct(productId: string) {
-  const { owner } = await requireOwner();
-  const product = await prisma.product.findFirst({
-    where: { id: productId, ownerId: owner.id },
-    include: { _count: { select: { orderItems: true } } },
-  });
-  if (!product) return { error: "Product not found." };
-
-  if (product._count.orderItems > 0) {
-    await prisma.product.update({
-      where: { id: product.id },
-      data: { isActive: false, stockQuantity: 0 },
-    });
-  } else {
-    await prisma.$transaction([
-      prisma.inventoryAdjustment.deleteMany({ where: { productId: product.id } }),
-      prisma.lowStockAlert.deleteMany({ where: { productId: product.id } }),
-      prisma.product.delete({ where: { id: product.id } }),
-    ]);
-  }
-
-  revalidatePath("/dashboard/products");
-  revalidatePath("/dashboard/inventory");
-  revalidatePath(`/dashboard/stands/${product.standId}`);
-  return { ok: true as const };
+  return archiveProduct(productId);
 }
