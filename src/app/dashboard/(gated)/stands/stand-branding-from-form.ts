@@ -57,7 +57,13 @@ export async function brandingDataFromForm(
   } else {
     const file = formData.get("logo");
     if (file instanceof File && file.size > 0) {
-      logoUrl = await uploadStandLogo(stand.id, file);
+      try {
+        logoUrl = await uploadStandLogo(stand.id, file);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Could not upload logo.";
+        return { ok: false, error: message };
+      }
     }
   }
 
