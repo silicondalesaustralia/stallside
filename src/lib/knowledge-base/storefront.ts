@@ -21,7 +21,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
       "Take-now and pre-order items cannot share one checkout. Different collection days also need separate checkouts.",
       "After payment, the buyer gets an email with order details. You get a sale alert with their name and email.",
       "Open Collections to see paid pre-orders by collection day. Mark each order Ready, then Collected when they pick up.",
-      "On Collections or Orders, tap the customer email to send them a message (subject + body) from Stallside.",
+      "On Collections or Orders, tap the customer email to send them a message (subject + body) from Stallside. On Collections, use Email all on a collection day to message everyone picking up that day at once.",
     ],
   },
   {
