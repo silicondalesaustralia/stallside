@@ -84,28 +84,31 @@ export default function StandCatalogGrid({
                 product.soldOut ? "opacity-50" : ""
               }`}
             >
-              <Link href={href} className="block">
+              <Link href={href} className="block p-3 pb-0 sm:p-0">
                 {product.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={product.imageUrl}
                     alt=""
-                    className="aspect-square w-full object-cover"
+                    className="aspect-[4/3] w-full rounded-[calc(var(--radius)-2px)] object-cover sm:aspect-square sm:rounded-none"
                   />
                 ) : (
-                  <div className="flex aspect-square items-center justify-center bg-[var(--wash)] px-3 text-center">
-                    <span className="font-[family-name:var(--font-display)] text-lg font-bold leading-tight text-[var(--field)]">
+                  <div className="flex aspect-[4/3] items-center justify-center rounded-[calc(var(--radius)-2px)] bg-[var(--wash)] px-3 text-center sm:aspect-square sm:rounded-none">
+                    <span className="font-[family-name:var(--font-display)] text-xl font-bold leading-tight text-[var(--field)] sm:text-lg">
                       {product.name}
                     </span>
                   </div>
                 )}
               </Link>
-              <div className="flex flex-1 flex-col gap-1 p-3">
-                <Link href={href} className="font-semibold leading-snug hover:underline">
+              <div className="flex flex-1 flex-col gap-1.5 p-4 sm:gap-1 sm:p-3">
+                <Link
+                  href={href}
+                  className="text-base font-semibold leading-snug hover:underline sm:text-[15px]"
+                >
                   {product.name}
                 </Link>
                 <p
-                  className={`text-xs font-medium ${
+                  className={`text-sm font-medium sm:text-xs ${
                     product.isPreOrder
                       ? "text-[var(--leaf-dark)]"
                       : "invisible"
@@ -114,17 +117,19 @@ export default function StandCatalogGrid({
                 >
                   Pre-order
                 </p>
-                <p className="font-receipt text-base text-[var(--stand-secondary,var(--ok))]">
+                <p className="font-receipt text-lg text-[var(--stand-secondary,var(--ok))] sm:text-base">
                   {formatMoney(product.priceCents, currency)}
                 </p>
-                <p className={`font-receipt text-xs ${stockTone(product.label)}`}>
+                <p
+                  className={`font-receipt text-sm sm:text-xs ${stockTone(product.label)}`}
+                >
                   {product.label}
                 </p>
                 <button
                   type="button"
                   disabled={product.soldOut}
                   onClick={() => addOne(product)}
-                  className="mt-auto w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-40"
+                  className="mt-4 w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-3 py-2.5 text-sm font-semibold text-white disabled:opacity-40 sm:mt-auto sm:py-2"
                 >
                   {product.hasOptions ? "Choose options" : "Add"}
                 </button>
