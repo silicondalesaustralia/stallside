@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import { APP_NAME } from "@/lib/constants";
@@ -38,8 +39,16 @@ export default async function GalleryPage() {
           Stand gallery
         </h1>
         <p className="mt-3 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-          Stands out in the wild using {APP_NAME}. Own a stall? After a few real
-          sales we&apos;ll invite you to share a photo.
+          Stands out in the wild using {APP_NAME}. Run a stall? Share a photo and
+          we may feature it here.
+        </p>
+        <p className="mt-5">
+          <Link
+            href="/dashboard/gallery/submit"
+            className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
+          >
+            Add your stand photo
+          </Link>
         </p>
         {stands.length === 0 ? (
           <p className="mt-10 text-sm text-[var(--muted)]">Gallery coming soon.</p>
