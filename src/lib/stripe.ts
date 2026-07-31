@@ -36,51 +36,71 @@ export function isStripeConfigured(): boolean {
   return Boolean(cleanEnvSecret(process.env.STRIPE_SECRET_KEY));
 }
 
-/** Legacy Cash prices - keep resolvable for webhook sync until all Cash subs closed. */
-const CASH_PRICE_ENV: Record<BillingCurrency, string> = {
-  AUD: "STRIPE_PRICE_ID_CASH_AUD",
-  USD: "STRIPE_PRICE_ID_CASH_USD",
-  GBP: "STRIPE_PRICE_ID_CASH_GBP",
-  EUR: "STRIPE_PRICE_ID_CASH_EUR",
-};
-
-const PRO_PRICE_ENV: Record<BillingCurrency, string> = {
-  AUD: "STRIPE_PRICE_ID_PRO_AUD",
-  USD: "STRIPE_PRICE_ID_PRO_USD",
-  GBP: "STRIPE_PRICE_ID_PRO_GBP",
-  EUR: "STRIPE_PRICE_ID_PRO_EUR",
-};
-
-/** Legacy Card env names - fallback when PRO_* not set. */
-const CARD_PRICE_ENV: Record<BillingCurrency, string> = {
-  AUD: "STRIPE_PRICE_ID_CARD_AUD",
-  USD: "STRIPE_PRICE_ID_CARD_USD",
-  GBP: "STRIPE_PRICE_ID_CARD_GBP",
-  EUR: "STRIPE_PRICE_ID_CARD_EUR",
-};
-
 export type SaasPlan = "starter" | "pro";
 
+/**
+ * Static process.env.NAME reads only — Next/Vercel do not resolve
+ * process.env[dynamicKey] for server bundles the same way as local Node.
+ */
+function proPriceEnv(currency: BillingCurrency): string | undefined {
+  switch (currency) {
+    case "AUD":
+      return process.env.STRIPE_PRICE_ID_PRO_AUD;
+    case "USD":
+      return process.env.STRIPE_PRICE_ID_PRO_USD;
+    case "GBP":
+      return process.env.STRIPE_PRICE_ID_PRO_GBP;
+    case "EUR":
+      return process.env.STRIPE_PRICE_ID_PRO_EUR;
+  }
+}
+
+function cardPriceEnv(currency: BillingCurrency): string | undefined {
+  switch (currency) {
+    case "AUD":
+      return process.env.STRIPE_PRICE_ID_CARD_AUD;
+    case "USD":
+      return process.env.STRIPE_PRICE_ID_CARD_USD;
+    case "GBP":
+      return process.env.STRIPE_PRICE_ID_CARD_GBP;
+    case "EUR":
+      return process.env.STRIPE_PRICE_ID_CARD_EUR;
+  }
+}
+
+function cashPriceEnv(currency: BillingCurrency): string | undefined {
+  switch (currency) {
+    case "AUD":
+      return process.env.STRIPE_PRICE_ID_CASH_AUD;
+    case "USD":
+      return process.env.STRIPE_PRICE_ID_CASH_USD;
+    case "GBP":
+      return process.env.STRIPE_PRICE_ID_CASH_GBP;
+    case "EUR":
+      return process.env.STRIPE_PRICE_ID_CASH_EUR;
+  }
+}
+
 export function getCashPlanPriceId(currency: BillingCurrency = "AUD"): string {
-  const specific = cleanEnvSecret(process.env[CASH_PRICE_ENV[currency]]);
+  const specific = cleanEnvSecret(cashPriceEnv(currency));
   if (specific) return specific;
   if (currency === "AUD") {
     const legacy = cleanEnvSecret(process.env.STRIPE_PRICE_ID_CASH);
     if (legacy) return legacy;
   }
   throw new Error(
-    `${CASH_PRICE_ENV[currency]} is not set` +
+    `STRIPE_PRICE_ID_CASH_${currency} is not set` +
       (currency === "AUD" ? " (or STRIPE_PRICE_ID_CASH)" : ""),
   );
 }
 
 export function getProPlanPriceId(currency: BillingCurrency = "AUD"): string {
-  const pro = cleanEnvSecret(process.env[PRO_PRICE_ENV[currency]]);
+  const pro = cleanEnvSecret(proPriceEnv(currency));
   if (pro) return pro;
-  const card = cleanEnvSecret(process.env[CARD_PRICE_ENV[currency]]);
+  const card = cleanEnvSecret(cardPriceEnv(currency));
   if (card) return card;
   throw new Error(
-    `${PRO_PRICE_ENV[currency]} (or ${CARD_PRICE_ENV[currency]}) is not set`,
+    `STRIPE_PRICE_ID_PRO_${currency} (or STRIPE_PRICE_ID_CARD_${currency}) is not set`,
   );
 }
 
