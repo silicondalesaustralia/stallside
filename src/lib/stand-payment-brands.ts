@@ -3,7 +3,7 @@ import type { DemoRegion } from "@/lib/demo";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 
 type StandPaymentFlags = {
   slug?: string;
@@ -78,7 +78,7 @@ export function standOffersCard(
 ): boolean {
   if (!stand.acceptCard) return false;
   if (
-    !ownerHasCardTierAccess(owner, {
+    !ownerHasProAccess(owner, {
       email: owner.user?.email,
       role: owner.user?.role,
     })

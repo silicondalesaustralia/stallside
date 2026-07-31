@@ -3,7 +3,7 @@ import LandingFeatureCallout from "@/components/LandingFeatureCallout";
 export default function StandBrandingSection() {
   return (
     <LandingFeatureCallout
-      eyebrow="Free trial & Card plan"
+      eyebrow="Pro"
       title="Your stall, your look"
     >
       <p>

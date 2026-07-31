@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import { SITE_URL } from "@/lib/legal";
 import { standProductPath } from "@/lib/stand-seo";
 import ProductEditForm from "./ProductEditForm";
@@ -28,7 +28,7 @@ export default async function EditProductPage({
   });
   if (!product) notFound();
 
-  const cardTier = ownerHasCardTierAccess(owner, {
+  const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
   });

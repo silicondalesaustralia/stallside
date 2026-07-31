@@ -6,10 +6,11 @@ import DashboardStat from "@/components/DashboardStat";
 import DashboardPanels from "@/components/DashboardPanels";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesSeriesChart from "@/components/SalesSeriesChart";
+import StarterUpgradeSignals from "@/components/StarterUpgradeSignals";
 import TapAndGoSetupCard from "@/components/TapAndGoSetupCard";
 import { resolveDateWindow } from "@/lib/date-range";
 import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import { buildSalesSeries } from "@/lib/sales-series";
 import { productDashboardWhere } from "@/lib/product-visibility";
 
@@ -19,15 +20,26 @@ export default async function DashboardPage({
   searchParams: Promise<{ range?: string; from?: string; to?: string }>;
 }) {
   const { owner, user } = await requireOwner();
-  const cardTier = ownerHasCardTierAccess(owner, {
+  const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
   });
   const params = await searchParams;
   const window = resolveDateWindow(params);
+  const monthStart = new Date();
+  monthStart.setUTCDate(1);
+  monthStart.setUTCHours(0, 0, 0, 0);
 
-  const [standRows, products, currentOrders, previousOrders, catalog, recent] =
-    await Promise.all([
+  const [
+    standRows,
+    products,
+    currentOrders,
+    previousOrders,
+    catalog,
+    recent,
+    cardInterests,
+    restockSubscriberCount,
+  ] = await Promise.all([
       prisma.stand.findMany({
         where: { ownerId: owner.id },
         orderBy: { name: "asc" },
@@ -73,6 +85,23 @@ export default async function DashboardPage({
         take: 8,
         include: { stand: true },
       }),
+      cardTier
+        ? Promise.resolve([])
+        : prisma.cardInterest.findMany({
+            where: {
+              stand: { ownerId: owner.id },
+              createdAt: { gte: monthStart },
+            },
+            select: { subtotalCents: true, currency: true },
+          }),
+      cardTier
+        ? Promise.resolve(0)
+        : prisma.restockSubscriber.count({
+            where: {
+              stand: { ownerId: owner.id },
+              unsubscribedAt: null,
+            },
+          }),
     ]);
 
   const current = summarizeOrders(currentOrders);
@@ -119,6 +148,18 @@ export default async function DashboardPage({
         stripeConnected={owner.stripeChargesEnabled}
         stripeStarted={Boolean(owner.stripeAccountId)}
       />
+
+      {!cardTier ? (
+        <StarterUpgradeSignals
+          cardInterestCount={cardInterests.length}
+          cardInterestCents={cardInterests.reduce(
+            (s, r) => s + r.subtotalCents,
+            0,
+          )}
+          currency={cardInterests[0]?.currency ?? current.currency}
+          restockSubscriberCount={restockSubscriberCount}
+        />
+      ) : null}
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <DashboardStat

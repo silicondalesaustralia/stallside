@@ -31,13 +31,13 @@ export default async function LifetimePromoTicker() {
   if (left <= 0) return null;
 
   const href = promoLifetimeInvitePath();
-  const line = `${left} FREE for Life Full Features Subscriptions left · Click to claim invite`;
+  const line = `${left} Pro-for-life memberships left · Click to claim invite`;
 
   return (
     <Link
       href={href}
       className="ticker-tape group relative z-30 block overflow-hidden bg-[var(--marigold)] text-[var(--field)] no-underline outline-none focus-visible:ring-2 focus-visible:ring-[var(--field)] focus-visible:ring-offset-2"
-      aria-label={`${left} Free for Life full-feature subscriptions left. Click to claim invite.`}
+      aria-label={`${left} Pro-for-life memberships left. Click to claim invite.`}
     >
       <div className="ticker-track">
         <TickerGroup line={line} prefix="a" />

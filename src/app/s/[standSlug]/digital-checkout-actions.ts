@@ -13,7 +13,7 @@ import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
 import { PLATFORM_FEE_BPS } from "@/lib/constants";
 import { platformFeeCents } from "@/lib/money";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -38,12 +38,12 @@ export async function startCardCheckout(input: {
       return { error: "Card is not enabled at this stand." };
     }
     if (
-      !ownerHasCardTierAccess(owner, {
+      !ownerHasProAccess(owner, {
         email: ownerUser?.email,
         role: ownerUser?.role,
       })
     ) {
-      return { error: "Card / Tap & Go requires the Card plan." };
+      return { error: "Card / Tap & Go requires Stallside Pro." };
     }
 
     const customerName = (input.customerName ?? "").trim().slice(0, 120);

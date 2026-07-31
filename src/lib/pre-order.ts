@@ -61,7 +61,7 @@ export function parsePreOrderFromForm(
     };
   }
   if (!cardTier) {
-    return { ok: false, error: "Pre-orders require the Card plan." };
+    return { ok: false, error: "Pre-orders require Stallside Pro." };
   }
   if (!stripeConnected) {
     return {

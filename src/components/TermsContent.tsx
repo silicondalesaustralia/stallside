@@ -37,11 +37,11 @@ export default function TermsContent() {
           Subscriptions and fees
         </h2>
         <p className="text-[var(--muted)]">
-          Paid plans are billed as described at signup or in your dashboard. The free
-          trial includes full Card plan features and ends automatically; after it ends
-          your dashboard locks until you subscribe to Cash or Card. You are responsible
-          for applicable taxes. Refunds are handled case-by-case unless required by
-          Australian Consumer Law.
+          Paid plans are billed as described at signup or in your dashboard. Starter is
+          free forever. The free Pro trial includes full Pro features and ends
+          automatically; after it ends you stay on Starter unless you upgrade to Pro.
+          You are responsible for applicable taxes. Refunds are handled case-by-case
+          unless required by Australian Consumer Law.
         </p>
       </section>
 

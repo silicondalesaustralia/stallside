@@ -70,10 +70,10 @@ export default function LandingPaymentMethods() {
         </h2>
       </div>
       <p className="mb-8 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        One Stallside QR. Shoppers pay how they want - cash today, Tap &amp; Go
-        when you turn it on. Money goes to the stall owner, not Stallside.
-        Availability depends on the stand&apos;s currency and the owner&apos;s
-        payment setup.
+        One Stallside QR. Shoppers pay how they want - cash and PayID on
+        Starter; Tap &amp; Go on Pro. Money goes to the stall owner, not
+        Stallside. Availability depends on the stand&apos;s currency and the
+        owner&apos;s plan and payment setup.
       </p>
 
       <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">

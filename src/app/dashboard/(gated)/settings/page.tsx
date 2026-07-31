@@ -2,7 +2,7 @@ import Link from "next/link";
 import { isPlatformAdminEmail, requireOwner } from "@/lib/session";
 import { logout } from "@/app/login/actions";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import { stallsideSubscriptionSummary } from "@/lib/stallside-subscription-summary";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
@@ -12,7 +12,7 @@ import DeleteAccountButton from "./DeleteAccountButton";
 
 export default async function SettingsPage() {
   const { user, owner } = await requireOwner();
-  const cardTier = ownerHasCardTierAccess(owner, {
+  const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
   });
@@ -130,7 +130,7 @@ export default async function SettingsPage() {
               <PaymentBrandIcon brand="stripe" className="size-6" />
               Accept cards / Tap &amp; Go
               <span className="text-sm font-medium text-[var(--muted)]">
-                · Card plan
+                · Pro
               </span>
             </h2>
             <p className="text-[var(--muted)]">
@@ -141,7 +141,7 @@ export default async function SettingsPage() {
               href="/dashboard/settings/billing?plan=card"
               className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
             >
-              Subscribe to Card plan
+              Upgrade to Pro plan
             </Link>
           </>
         )}
@@ -195,11 +195,11 @@ export default async function SettingsPage() {
             <PaymentBrandIcon brand="paypal" className="size-6" />
             PayPal Connect{" "}
             <span className="text-sm font-medium text-[var(--muted)]">
-              · Card plan
+              · Pro
             </span>
           </h2>
           <p className="text-[var(--muted)]">
-            PayPal checkout is on the Card plan. Subscribe to Card / Tap &amp; Go
+            PayPal checkout is on Stallside Pro. Upgrade to Pro / Tap &amp; Go
             first.
           </p>
         </section>

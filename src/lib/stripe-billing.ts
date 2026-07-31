@@ -3,11 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { SubscriptionStatus } from "@/generated/prisma/client";
 import {
   cardPlanCents,
-  cashPlanCents,
   isBillingCurrency,
   type BillingCurrency,
 } from "@/lib/saas-pricing";
 import { saasPlanFromSubscription } from "@/lib/stripe";
+import { ensureStandsHaveStarterPaymentMethod } from "@/lib/ensure-stand-payment-fallback";
 
 export function mapStripeSubscriptionStatus(
   status: Stripe.Subscription.Status,
@@ -38,7 +38,7 @@ function billingFromSubscription(subscription: Stripe.Subscription): {
   const monthlyFeeCents =
     typeof item?.price.unit_amount === "number"
       ? item.price.unit_amount
-      : cashPlanCents(currency);
+      : cardPlanCents(currency);
   return { currency, monthlyFeeCents };
 }
 
@@ -89,8 +89,15 @@ export async function syncOwnerFromSubscription(
   const { currency, monthlyFeeCents } = billingFromSubscription(subscription);
   const periodEnd = periodEndFromSubscription(subscription);
   const plan = saasPlanFromSubscription(subscription);
-  const feeFallback =
-    plan === "card" ? cardPlanCents(currency) : cashPlanCents(currency);
+  const isPro = plan === "pro";
+  const feeFallback = isPro ? cardPlanCents(currency) : 0;
+
+  // Fully cancelled with no remaining period → Starter.
+  const downgradeToStarter =
+    cancelled &&
+    !(periodEnd != null && periodEnd.getTime() > Date.now());
+
+  const now = new Date();
 
   await prisma.owner.update({
     where: { id: owner.id },
@@ -98,35 +105,52 @@ export async function syncOwnerFromSubscription(
       stripeCustomerId: customerId || owner.stripeCustomerId,
       stripeSubscriptionId: cancelled ? null : subscription.id,
       subscriptionStatus: mapStripeSubscriptionStatus(subscription.status),
-      subscriptionPlan: cancelled ? owner.subscriptionPlan : plan,
-      monthlyFeeCents: monthlyFeeCents || feeFallback,
+      subscriptionPlan: downgradeToStarter
+        ? "starter"
+        : isPro
+          ? "pro"
+          : "starter",
+      monthlyFeeCents: downgradeToStarter
+        ? 0
+        : monthlyFeeCents || feeFallback,
       billingCurrency: currency,
-      cancelAtPeriodEnd: cancelled ? false : Boolean(subscription.cancel_at_period_end),
+      cancelAtPeriodEnd: cancelled
+        ? false
+        : Boolean(subscription.cancel_at_period_end),
       currentPeriodEndsAt: periodEnd,
-      // Paid Card plan: clear app trial so access follows the subscription.
-      ...(live && plan === "card" ? { trialEndsAt: null } : {}),
-      ...(live && !owner.subscriptionStartedAt
-        ? { subscriptionStartedAt: new Date() }
+      ...(live && isPro
+        ? {
+            trialEndsAt: null,
+            proLapsedAt: null,
+            proLapseDay0SentAt: null,
+            proLapseDay23SentAt: null,
+            proLapseDay45SentAt: null,
+          }
         : {}),
-      ...(live && plan === "cash" && !owner.cashSubscribedAt
-        ? { cashSubscribedAt: new Date() }
+      ...(live && !owner.subscriptionStartedAt
+        ? { subscriptionStartedAt: now }
+        : {}),
+      ...(downgradeToStarter
+        ? { proLapsedAt: owner.proLapsedAt ?? now }
         : {}),
     },
   });
 
-  if (live && !cancelled) {
-    const { sendAndMarkCashWelcome, sendAndMarkCardWelcome } = await import(
+  if (live && !cancelled && isPro) {
+    const { sendAndMarkCardWelcome } = await import(
       "@/lib/lifecycle-emails/send-and-mark"
     );
-    if (plan === "cash") {
-      await sendAndMarkCashWelcome(owner.id);
-    }
-    if (plan === "card") {
-      await sendAndMarkCardWelcome(owner.id);
-    }
+    await sendAndMarkCardWelcome(owner.id);
   }
 
-  if (cancelled || newlySchedulingCancel) {
+  if (downgradeToStarter) {
+    const { sendAndMarkProLapseDay0 } = await import(
+      "@/lib/lifecycle-emails/send-and-mark"
+    );
+    await sendAndMarkProLapseDay0(owner.id);
+    await ensureStandsHaveStarterPaymentMethod(owner.id);
+  } else if (cancelled || newlySchedulingCancel) {
+    // Still has Pro until period end (or cancelled without downgrade yet).
     const { sendAndMarkCancelFeedback } = await import(
       "@/lib/lifecycle-emails/send-and-mark"
     );

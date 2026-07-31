@@ -1,10 +1,11 @@
 "use server";
 
-import { PaymentStatus } from "@/generated/prisma/client";
+import { CollectionStatus, PaymentStatus } from "@/generated/prisma/client";
 import { APP_NAME } from "@/lib/constants";
 import { escapeHtml } from "@/lib/lifecycle-emails/html";
 import { sendOwnerEmail } from "@/lib/notify-email";
 import { ownerAlertRecipients } from "@/lib/owner-alert-recipients";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import { prisma } from "@/lib/prisma";
 import { requireOwner } from "@/lib/session";
 
@@ -44,6 +45,18 @@ export async function sendOrderCustomerEmail(input: {
   });
   if (!order?.receiptEmail) {
     return { error: "This order has no customer email." };
+  }
+
+  const hasPro = ownerHasProAccess(owner, {
+    email: user.email,
+    role: user.role,
+  });
+  const fulfilmentEmail =
+    order.isPreOrder &&
+    order.collectionStatus != null &&
+    order.collectionStatus !== CollectionStatus.COLLECTED;
+  if (!hasPro && !fulfilmentEmail) {
+    return { error: "Messaging customers requires Stallside Pro." };
   }
 
   const replyTo =
@@ -88,12 +101,24 @@ export async function sendCollectionDayCustomerEmails(input: {
   const end = new Date(start);
   end.setUTCDate(end.getUTCDate() + 1);
 
+  const hasPro = ownerHasProAccess(owner, {
+    email: user.email,
+    role: user.role,
+  });
+
   const orders = await prisma.order.findMany({
     where: {
       ownerId: owner.id,
       isPreOrder: true,
       paymentStatus: PaymentStatus.PAID,
       collectionAt: { gte: start, lt: end },
+      ...(hasPro
+        ? {}
+        : {
+            collectionStatus: {
+              in: [CollectionStatus.ORDERED, CollectionStatus.READY],
+            },
+          }),
     },
     include: {
       stand: { select: { name: true } },
@@ -101,6 +126,10 @@ export async function sendCollectionDayCustomerEmails(input: {
     },
     orderBy: { createdAt: "asc" },
   });
+
+  if (!hasPro && orders.length === 0) {
+    return { error: "Email all requires Stallside Pro." };
+  }
 
   const withEmail = orders.filter((o) => o.receiptEmail);
   if (withEmail.length === 0) {

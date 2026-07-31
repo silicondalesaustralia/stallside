@@ -3,16 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import { brandingDataFromForm } from "./stand-branding-from-form";
 
 export async function updateStandBranding(standId: string, formData: FormData) {
   try {
     const { owner, user } = await requireOwner();
     if (
-      !ownerHasCardTierAccess(owner, { email: user.email, role: user.role })
+      !ownerHasProAccess(owner, { email: user.email, role: user.role })
     ) {
-      return { error: "Branding requires the Card plan." };
+      return { error: "Branding requires Stallside Pro." };
     }
 
     const stand = await prisma.stand.findFirst({

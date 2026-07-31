@@ -6,7 +6,7 @@ import {
   LEGAL_ENTITY,
   SITE_URL,
 } from "@/lib/legal";
-import { CASH_PLAN_BY_CURRENCY, BILLING_CURRENCIES } from "@/lib/saas-pricing";
+import { CARD_PLAN_BY_CURRENCY, BILLING_CURRENCIES } from "@/lib/saas-pricing";
 
 export type FaqItem = { question: string; answer: string };
 
@@ -62,12 +62,20 @@ export function softwareApplicationSchema() {
     operatingSystem: "Web, iOS, Android",
     url: SITE_URL,
     description: APP_SEO_DESCRIPTION,
-    offers: BILLING_CURRENCIES.map((currency) => ({
-      "@type": "Offer",
-      price: (CASH_PLAN_BY_CURRENCY[currency] / 100).toFixed(2),
-      priceCurrency: currency,
-      description: "Cash plan per site, billed monthly",
-    })),
+    offers: [
+      {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "AUD",
+        description: "Starter — free forever per site",
+      },
+      ...BILLING_CURRENCIES.map((currency) => ({
+        "@type": "Offer",
+        price: (CARD_PLAN_BY_CURRENCY[currency] / 100).toFixed(2),
+        priceCurrency: currency,
+        description: "Stallside Pro per site, billed monthly",
+      })),
+    ],
     provider: { "@id": `${SITE_URL}/#organization` },
   };
 }

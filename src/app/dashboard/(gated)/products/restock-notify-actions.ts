@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import {
   isRestockAlertsEnabled,
   RESTOCK_ALERT_COOLDOWN_HOURS,
@@ -26,13 +26,13 @@ export async function notifyRestockSubscribers(
 
   const { user, owner } = await requireOwner();
   if (
-    !ownerHasCardTierAccess(owner, {
+    !ownerHasProAccess(owner, {
       email: user.email,
       role: user.role,
       lifetimeAccess: owner.lifetimeAccess,
     })
   ) {
-    return { ok: false, error: "Restock alerts require the Card plan." };
+    return { ok: false, error: "Restock alerts require Stallside Pro." };
   }
 
   const standId =

@@ -2,12 +2,12 @@ import { SubscriptionStatus } from "@/generated/prisma/client";
 import { formatMoney } from "@/lib/money";
 import {
   cardPlanCents,
-  cashPlanCents,
   isBillingCurrency,
   type BillingCurrency,
 } from "@/lib/saas-pricing";
 import {
   hasComplimentaryAccess,
+  normalizeSubscriptionPlan,
   type ComplimentaryAccessInput,
 } from "@/lib/owner-trial";
 
@@ -34,21 +34,21 @@ function isActiveTrial(owner: SubscriptionSummaryOwner): boolean {
 }
 
 function paidPlanLabel(plan: string | null | undefined): string {
-  const p = (plan ?? "cash").trim().toLowerCase();
-  if (p === "card" || p === "card_paypal") return "Card / Tap & Go";
-  return "Cash";
+  const p = normalizeSubscriptionPlan(plan);
+  if (p === "pro" || p === "pro_paypal") return "Stallside Pro";
+  return "Starter";
 }
 
 function paidFeeCents(
   owner: SubscriptionSummaryOwner,
   currency: BillingCurrency,
 ): number {
+  const p = normalizeSubscriptionPlan(owner.subscriptionPlan);
+  if (p === "starter") return 0;
   if (owner.monthlyFeeCents && owner.monthlyFeeCents > 0) {
     return owner.monthlyFeeCents;
   }
-  const p = (owner.subscriptionPlan ?? "cash").trim().toLowerCase();
-  if (p === "card" || p === "card_paypal") return cardPlanCents(currency);
-  return cashPlanCents(currency);
+  return cardPlanCents(currency);
 }
 
 function statusLabel(status: string): string {
@@ -62,7 +62,7 @@ function statusLabel(status: string): string {
     case SubscriptionStatus.TRIALING:
       return "Free trial";
     case SubscriptionStatus.NONE:
-      return "No active subscription";
+      return "Starter";
     default:
       return status;
   }
@@ -84,13 +84,18 @@ export function stallsideSubscriptionSummary(
   }
 
   if (isActiveTrial(owner)) {
-    return "30 day free trial";
+    return "Pro free trial";
   }
 
   const currency = billingCurrencyOf(owner);
   const plan = paidPlanLabel(owner.subscriptionPlan);
   const fee = formatMoney(paidFeeCents(owner, currency), currency);
   const status = statusLabel(String(owner.subscriptionStatus));
+  const norm = normalizeSubscriptionPlan(owner.subscriptionPlan);
+
+  if (norm === "starter") {
+    return "Starter (free forever)";
+  }
 
   if (
     owner.subscriptionStatus === SubscriptionStatus.ACTIVE ||

@@ -1,17 +1,22 @@
+import crypto from "node:crypto";
 import Script from "next/script";
 import { auth } from "@/lib/auth";
 
 const REDDIT_PIXEL_ID = "a2_e8yaoiabudhk";
 
-/** Sitewide Reddit Ads Pixel with advanced matching when logged in. */
+function sha256Hex(value: string) {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+/** Sitewide Reddit Ads Pixel with hashed advanced matching when logged in. */
 export default async function RedditPixel() {
   const session = await auth();
   const email = session?.user?.email?.trim().toLowerCase();
   const externalId = session?.user?.id?.trim();
 
   const match: Record<string, string> = {};
-  if (email) match.email = email;
-  if (externalId) match.externalId = externalId;
+  if (email) match.email = sha256Hex(email);
+  if (externalId) match.externalId = sha256Hex(externalId);
 
   const initExtra =
     Object.keys(match).length > 0 ? `, ${JSON.stringify(match)}` : "";

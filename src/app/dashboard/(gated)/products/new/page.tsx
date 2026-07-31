@@ -1,6 +1,6 @@
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import NewProductForm from "./NewProductForm";
 
 export default async function NewProductPage({
@@ -15,7 +15,7 @@ export default async function NewProductPage({
     orderBy: { name: "asc" },
     select: { id: true, name: true },
   });
-  const cardTier = ownerHasCardTierAccess(owner, {
+  const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
   });

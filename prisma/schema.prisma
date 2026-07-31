@@ -184,10 +184,11 @@ model Owner {
   pushAlertsEnabled         Boolean            @default(true)
   alertEmails               String[]           @default([])
   subscriptionStatus        SubscriptionStatus @default(NONE)
-  subscriptionPlan          String?            @default("cash")
-  /** Free Card / Tap & Go forever (invite or admin grant). */
+  /** starter | pro | pro_paypal — legacy cash/card values backfilled. */
+  subscriptionPlan          String?            @default("starter")
+  /** Free Pro forever (invite or admin grant). */
   lifetimeAccess            Boolean            @default(false)
-  monthlyFeeCents           Int                @default(699)
+  monthlyFeeCents           Int                @default(0)
   /** Currency of the SaaS subscription (AUD/USD/GBP/EUR) */
   billingCurrency           String             @default("AUD")
   /** Sum of paid SaaS invoices (platform Billing), in invoice currency units */
@@ -200,12 +201,21 @@ model Owner {
   trialWelcomeSentAt        DateTime?
   trialDay7SentAt           DateTime?
   trialDay14SentAt          DateTime?
+  trialDay23SentAt          DateTime?
   trialDay28SentAt          DateTime?
+  trialDay45SentAt          DateTime?
+  /** When paid Pro last fully lapsed to Starter (anchor for lapse emails). */
+  proLapsedAt               DateTime?
+  /** Pro cancel/lapse sequence (day 0 / 23 / 45). */
+  proLapseDay0SentAt        DateTime?
+  proLapseDay23SentAt       DateTime?
+  proLapseDay45SentAt       DateTime?
   cashWelcomeSentAt         DateTime?
   cashSubscribedAt          DateTime?
   cashUpgradeDay2SentAt     DateTime?
   cashUpgradeDay7SentAt     DateTime?
   cashUpgradeDay14SentAt    DateTime?
+  /** Pro welcome after paid subscribe (legacy name cardWelcomeSentAt). */
   cardWelcomeSentAt         DateTime?
   firstTenOrdersEmailSentAt DateTime?
   /** Cancellation / leave feedback email (portal cancel or delete). */
@@ -278,13 +288,13 @@ model Stand {
   acceptPayPal       Boolean              @default(false)
   showExactStock     Boolean              @default(false)
   isActive           Boolean              @default(true)
-  /** Owner logo for public stall + QR poster (Card tier). */
+  /** Owner logo for public stall + QR poster (Pro). */
   logoUrl            String?
   /** Hex accent e.g. #2e7d3f — overrides --leaf on public stall + QR. */
   accentColor        String?
   /** Hex secondary for prices / stock labels — overrides --ok. */
   secondaryColor     String?
-  /** Optional social / website links shown on the public stall (Card tier). */
+  /** Optional social / website links shown on the public stall (Pro). */
   instagramUrl       String?
   facebookUrl        String?
   tiktokUrl          String?
@@ -296,8 +306,21 @@ model Stand {
   lowStockAlerts     LowStockAlert[]
   restockSubscribers RestockSubscriber[]
   restockNotifications RestockNotification[]
+  cardInterests      CardInterest[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
+}
+
+/** Starter checkout: shopper tapped "I'd have paid by card" (no PII). */
+model CardInterest {
+  id            String   @id @default(cuid())
+  standId       String
+  stand         Stand    @relation(fields: [standId], references: [id], onDelete: Cascade)
+  subtotalCents Int
+  currency      String
+  createdAt     DateTime @default(now())
+
+  @@index([standId, createdAt])
 }
 
 model Product {

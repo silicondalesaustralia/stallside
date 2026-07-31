@@ -9,7 +9,6 @@ import {
   BILLING_CURRENCIES,
   BILLING_CURRENCY_STORAGE_KEY,
   cardPlanCents,
-  cashPlanCents,
   detectBrowserBillingCurrency,
   type BillingCurrency,
 } from "@/lib/saas-pricing";
@@ -52,111 +51,81 @@ export default function PricingTiers() {
         </h2>
       </div>
       <p className="mb-8 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        This is what you pay to run Stallside - not your customers. Shoppers never pay a fee:
-        they scan your QR, pick what they&apos;re taking, and pay at the stand.
+        Starter is free forever. Pro adds Tap &amp; Go and more. Shoppers never
+        pay a fee to Stallside.
       </p>
 
-      <div className="relative overflow-hidden rounded-[var(--radius)] border-2 border-[var(--leaf)] bg-[var(--panel)]">
-        <div
-          aria-hidden
-          className="absolute left-0 top-0 size-8 border-l-2 border-t-2 border-[var(--field)]/35"
-          style={{ borderTopLeftRadius: 8 }}
-        />
+      <div
+        className="mb-6 flex flex-wrap gap-2"
+        role="group"
+        aria-label="Billing currency"
+      >
+        {BILLING_CURRENCIES.map((code) => (
+          <button
+            key={code}
+            type="button"
+            onClick={() => selectCurrency(code)}
+            className={`rounded-[var(--radius-pill)] border px-3 py-1.5 text-sm font-semibold transition ${
+              currency === code
+                ? "border-[var(--leaf)] bg-[var(--leaf)] text-white"
+                : "border-[var(--line)] bg-white text-[var(--field)] hover:border-[var(--leaf)]"
+            }`}
+          >
+            {code}
+          </button>
+        ))}
+      </div>
 
-        <div className="border-b border-[var(--line)] p-[var(--pad-lg)] sm:p-10">
-          <p className="pl-3 text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">
-            Start here
-          </p>
-          <h3 className="mt-2 max-w-2xl pl-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
-            30-day free trial
-          </h3>
-          <p className="mt-2 pl-3 font-receipt text-2xl font-semibold text-[var(--marigold)] sm:text-3xl">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
+        <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-5 sm:p-6">
+          <p className="text-sm font-semibold text-[var(--leaf)]">Starter</p>
+          <p className="mt-3 font-receipt text-3xl font-semibold text-[var(--marigold)] sm:text-4xl">
             Free
             <span className="text-base font-normal text-[var(--muted)]">
               {" "}
-              · full Card features · no card required
+              forever
             </span>
           </p>
-          <p className="mt-4 max-w-3xl pl-3 text-base leading-relaxed text-[var(--muted)] sm:text-lg">
-            {FREE_TRIAL_BLURB}
-          </p>
-          <div className="mt-8 pl-3">
+          <div className="mt-4">
+            <PlanFeatureBlock plan="starter" currency={currency} />
+          </div>
+          <div className="mt-6">
             <Link
               href="/signup"
-              className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
+              className="inline-flex rounded-[var(--radius-pill)] border border-[var(--field)] px-5 py-3 text-sm font-semibold text-[var(--field)] hover:bg-[var(--wash)]"
             >
-              Start free - 30 days
+              Start free
             </Link>
           </div>
         </div>
 
-        <div className="p-[var(--pad-lg)] sm:p-10">
-          <p className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
-            Then choose a plan
+        <div className="rounded-[var(--radius)] border-2 border-[var(--leaf)] bg-[var(--panel)] p-5 sm:p-6">
+          <p className="text-sm font-semibold text-[var(--leaf)]">Stallside Pro</p>
+          <p className="mt-3 font-receipt text-3xl font-semibold text-[var(--marigold)] sm:text-4xl">
+            {formatMoney(cardPlanCents(currency), currency)}
+            <span className="text-base font-normal text-[var(--muted)]">
+              {" "}
+              /mo per site
+            </span>
           </p>
-          <p className="mt-2 max-w-2xl text-base text-[var(--muted)]">
-            After the trial, pick Cash or Card to keep your dashboard open.
-          </p>
-
-          <div
-            className="mt-6 flex flex-wrap gap-2"
-            role="group"
-            aria-label="Billing currency"
-          >
-            {BILLING_CURRENCIES.map((code) => (
-              <button
-                key={code}
-                type="button"
-                onClick={() => selectCurrency(code)}
-                className={`rounded-[var(--radius-pill)] border px-3 py-1.5 text-sm font-semibold transition ${
-                  currency === code
-                    ? "border-[var(--leaf)] bg-[var(--leaf)] text-white"
-                    : "border-[var(--line)] bg-white text-[var(--field)] hover:border-[var(--leaf)]"
-                }`}
-              >
-                {code}
-              </button>
-            ))}
+          <p className="mt-2 text-sm text-[var(--muted)]">{FREE_TRIAL_BLURB}</p>
+          <div className="mt-4">
+            <PlanFeatureBlock plan="pro" currency={currency} />
           </div>
-
-          <div className="mt-6 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
-            <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--wash)]/40 p-5 sm:p-6">
-              <p className="text-sm font-semibold text-[var(--leaf)]">Cash - live</p>
-              <p className="mt-3 font-receipt text-3xl font-semibold text-[var(--marigold)] sm:text-4xl">
-                {formatMoney(cashPlanCents(currency), currency)}
-                <span className="text-base font-normal text-[var(--muted)]">
-                  {" "}
-                  /mo per site
-                </span>
-              </p>
-              <div className="mt-4">
-                <PlanFeatureBlock plan="cash" currency={currency} />
-              </div>
-            </div>
-
-            <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--wash)]/40 p-5 sm:p-6">
-              <p className="text-sm font-semibold text-[var(--leaf)]">
-                Card / Tap &amp; Go - live
-              </p>
-              <p className="mt-3 font-receipt text-3xl font-semibold text-[var(--marigold)] sm:text-4xl">
-                {formatMoney(cardPlanCents(currency), currency)}
-                <span className="text-base font-normal text-[var(--muted)]">
-                  {" "}
-                  /mo per site
-                </span>
-              </p>
-              <div className="mt-4">
-                <PlanFeatureBlock plan="card" currency={currency} />
-              </div>
-            </div>
+          <div className="mt-6">
+            <Link
+              href="/signup"
+              className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
+            >
+              Start free
+            </Link>
           </div>
         </div>
       </div>
 
       <p className="mt-6 text-sm text-[var(--muted)]">
-        Owner plans only. Customers pay nothing to Stallside. Cancel any time.
-        No transaction fees, on either plan, ever. Prices shown in {currency}; billed in
-        the currency you choose.
+        After the 30-day Pro trial you stay on Starter free forever unless you
+        upgrade. Cancel Pro anytime. No transaction fees. Prices in {currency}.
       </p>
     </section>
   );

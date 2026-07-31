@@ -8,7 +8,7 @@ import { resolveDateWindow } from "@/lib/date-range";
 import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
 import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
 import { buildSalesSeries } from "@/lib/sales-series";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import Link from "next/link";
 import OrderDeleteButton from "./OrderDeleteButton";
 import OrderCustomerEmail from "../collections/OrderCustomerEmail";
@@ -21,7 +21,7 @@ export default async function OrdersPage({
   const { owner, user } = await requireOwner();
   const params = await searchParams;
   const window = resolveDateWindow(params);
-  const cardTier = ownerHasCardTierAccess(owner, {
+  const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
   });

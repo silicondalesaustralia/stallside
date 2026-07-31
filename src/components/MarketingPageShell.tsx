@@ -5,6 +5,7 @@ import LandingFooter from "@/components/LandingFooter";
 import LifetimePromoTicker from "@/components/LifetimePromoTicker";
 import MarketingNavLinks from "@/components/MarketingNavLinks";
 import OwnerAuthLink from "@/components/OwnerAuthLink";
+import StartFreeNavLink from "@/components/StartFreeNavLink";
 
 export default function MarketingPageShell({
   children,
@@ -21,9 +22,10 @@ export default function MarketingPageShell({
             <MarketingNavLinks />
           </div>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+            <StartFreeNavLink variant="marketing" />
             <Link
               href="/demo"
-              className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap text-white transition hover:bg-[var(--leaf-dark)] sm:px-4 sm:py-2 sm:text-sm"
+              className="hidden rounded-[var(--radius-pill)] border border-[var(--line)] px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap text-[var(--field)] transition hover:border-[var(--leaf)] hover:text-[var(--leaf-dark)] sm:inline-flex sm:px-4 sm:py-2 sm:text-sm"
             >
               Try Demo
             </Link>

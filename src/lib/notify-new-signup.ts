@@ -16,8 +16,8 @@ export async function notifyAdminNewSignup(input: {
     ? `${appBaseUrl()}/admin/owners/${input.ownerId}`
     : `${appBaseUrl()}/admin/owners`;
   const planLine = input.lifetime
-    ? "<p><strong>Plan:</strong> Free for Life (Card / Tap &amp; Go)</p>"
-    : "<p><strong>Plan:</strong> 30-day trial</p>";
+    ? "<p><strong>Plan:</strong> Pro-for-life</p>"
+    : "<p><strong>Plan:</strong> 30-day Pro trial → then Starter</p>";
 
   const html = `
     <div style="font-family:system-ui,sans-serif;line-height:1.5;color:#182C1B">

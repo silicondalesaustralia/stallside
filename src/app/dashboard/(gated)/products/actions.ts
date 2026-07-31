@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { dollarsToCents } from "@/lib/money";
 import { InventorySource } from "@/generated/prisma/client";
 import { notifyLowStockForProducts } from "@/lib/notify";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import { parsePreOrderFromForm } from "@/lib/pre-order";
 import { uploadProductImage } from "@/lib/product-image-upload";
 import {
@@ -75,7 +75,7 @@ export async function createProduct(formData: FormData) {
     return { error: "Stand not found." };
   }
 
-  const cardTier = ownerHasCardTierAccess(owner, {
+  const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
   });
@@ -245,7 +245,7 @@ export async function updateProduct(productId: string, formData: FormData) {
       };
     }
 
-    const cardTier = ownerHasCardTierAccess(owner, {
+    const cardTier = ownerHasProAccess(owner, {
       email: user.email,
       role: user.role,
     });

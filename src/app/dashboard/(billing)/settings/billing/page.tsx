@@ -3,17 +3,18 @@ import { logout } from "@/app/login/actions";
 import { requireOwner } from "@/lib/session";
 import {
   cardPlanCents,
-  cashPlanCents,
   isBillingCurrency,
   type BillingCurrency,
 } from "@/lib/saas-pricing";
 import {
-  listConfiguredCardPlanPrices,
-  listConfiguredCashPlanPrices,
-  isStripeBillingConfigured,
-  isStripeCardBillingConfigured,
+  listConfiguredProPlanPrices,
+  isStripeProBillingConfigured,
 } from "@/lib/stripe";
-import { hasComplimentaryAccess, ownerNeedsPayment } from "@/lib/owner-trial";
+import {
+  hasComplimentaryAccess,
+  normalizeSubscriptionPlan,
+  ownerHasProAccess,
+} from "@/lib/owner-trial";
 import { openBillingPortal } from "./actions";
 import BillingNotices from "./BillingNotices";
 import BillingPlanForms from "./BillingPlanForms";
@@ -32,22 +33,28 @@ export default async function BillingSettingsPage({
 }) {
   const { owner, user } = await requireOwner();
   const params = await searchParams;
-  const configured = isStripeBillingConfigured();
-  const cardConfigured = isStripeCardBillingConfigured();
+  const proConfigured = isStripeProBillingConfigured();
   const complimentary = {
     email: user.email,
     role: user.role,
     lifetimeAccess: owner.lifetimeAccess,
   };
   const freeForever = hasComplimentaryAccess(complimentary);
-  const isPaid =
-    owner.subscriptionStatus === "ACTIVE" ||
-    owner.subscriptionStatus === "PAST_DUE";
-  const needsPayment = ownerNeedsPayment(owner, complimentary);
+  const hasPro = ownerHasProAccess(owner, complimentary);
+  const isPaidPro =
+    hasPro &&
+    (owner.subscriptionStatus === "ACTIVE" ||
+      owner.subscriptionStatus === "PAST_DUE") &&
+    Boolean(owner.stripeSubscriptionId);
   const trialActive =
     owner.subscriptionStatus === "TRIALING" &&
     owner.trialEndsAt != null &&
     owner.trialEndsAt.getTime() > Date.now() &&
+    !owner.stripeSubscriptionId;
+  const trialEnded =
+    !hasPro &&
+    owner.trialEndsAt != null &&
+    owner.trialEndsAt.getTime() <= Date.now() &&
     !owner.stripeSubscriptionId;
   const cancelling =
     owner.cancelAtPeriodEnd &&
@@ -56,28 +63,19 @@ export default async function BillingSettingsPage({
   const billingCurrency: BillingCurrency = isBillingCurrency(owner.billingCurrency)
     ? owner.billingCurrency
     : "AUD";
+  const planNorm = normalizeSubscriptionPlan(owner.subscriptionPlan);
   const planLabel = freeForever
     ? "Lifetime FREE - All features"
     : trialActive
-      ? "30 day free trial"
-      : (owner.subscriptionPlan ?? "cash").toLowerCase() === "card" ||
-          (owner.subscriptionPlan ?? "cash").toLowerCase() === "card_paypal"
-        ? "Card / Tap & Go"
-        : "Cash";
+      ? "Pro free trial"
+      : planNorm === "pro" || planNorm === "pro_paypal"
+        ? "Stallside Pro"
+        : "Starter (free forever)";
   const feeCents =
-    freeForever || trialActive
+    freeForever || trialActive || planNorm === "starter"
       ? 0
-      : owner.monthlyFeeCents ||
-        ((owner.subscriptionPlan ?? "").toLowerCase() === "card" ||
-        (owner.subscriptionPlan ?? "").toLowerCase() === "card_paypal"
-          ? cardPlanCents(billingCurrency)
-          : cashPlanCents(billingCurrency));
-  const preferCard = params.plan === "card";
-  const onCardPlan =
-    (owner.subscriptionPlan ?? "").trim().toLowerCase() === "card" ||
-    (owner.subscriptionPlan ?? "").trim().toLowerCase() === "card_paypal";
-  const showPlanForms =
-    !freeForever && (!isPaid || needsPayment || preferCard || !onCardPlan);
+      : owner.monthlyFeeCents || cardPlanCents(billingCurrency);
+  const showPlanForms = !freeForever && !isPaidPro;
   const dateOpts = { dateStyle: "medium" as const };
 
   return (
@@ -90,14 +88,16 @@ export default async function BillingSettingsPage({
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Stallside billing</h1>
         <p className="mt-2 text-[var(--muted)]">
-          This is what you pay Stallside for the app, not stand customer payments.
+          Starter is free forever. Pro adds Tap &amp; Go, pre-orders, branding,
+          and restock emails. This is what you pay Stallside — not stand customer
+          payments.
         </p>
       </div>
 
       <BillingNotices
         freeForever={freeForever}
-        locked={!freeForever && (params.locked === "1" || needsPayment)}
-        trialEnded={params.trial === "ended" && needsPayment}
+        locked={false}
+        trialEnded={trialEnded || params.trial === "ended"}
         success={params.success === "1"}
         cancelled={params.cancelled === "1"}
         trialActive={Boolean(trialActive && owner.trialEndsAt)}
@@ -114,9 +114,10 @@ export default async function BillingSettingsPage({
         }
       />
 
-      {!configured ? (
+      {!proConfigured ? (
         <p className="text-sm text-red-700">
-          Cash billing is not configured on the server yet (Stripe cash Price IDs).
+          Pro billing is not configured on the server yet (STRIPE_PRICE_ID_PRO_*
+          or STRIPE_PRICE_ID_CARD_*).
         </p>
       ) : null}
 
@@ -131,12 +132,9 @@ export default async function BillingSettingsPage({
       {showPlanForms ? (
         <BillingPlanForms
           billingCurrency={billingCurrency}
-          cashPrices={listConfiguredCashPlanPrices()}
-          cardPrices={listConfiguredCardPlanPrices()}
-          showCash={!isPaid || needsPayment}
-          showCard={!onCardPlan}
-          cashConfigured={configured}
-          cardConfigured={cardConfigured}
+          proPrices={listConfiguredProPlanPrices()}
+          showPro
+          proConfigured={proConfigured}
         />
       ) : null}
 
@@ -144,7 +142,7 @@ export default async function BillingSettingsPage({
         <form action={openBillingPortal}>
           <button
             type="submit"
-            disabled={!configured && !cardConfigured}
+            disabled={!proConfigured}
             className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold disabled:opacity-50"
           >
             Manage payment method / cancel

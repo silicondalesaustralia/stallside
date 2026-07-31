@@ -3,6 +3,7 @@ import BrandLockup from "@/components/BrandLockup";
 import HeroCheckoutDemo from "@/components/HeroCheckoutDemo";
 import MarketingNavLinks from "@/components/MarketingNavLinks";
 import OwnerAuthLink from "@/components/OwnerAuthLink";
+import StartFreeNavLink from "@/components/StartFreeNavLink";
 import { APP_NAME, APP_HERO_SUPPORT, APP_POSITIONING, APP_TAGLINE } from "@/lib/constants";
 
 const WORDMARK = APP_NAME.toLowerCase();
@@ -36,9 +37,10 @@ export default function LandingHero() {
           <MarketingNavLinks variant="dark" />
         </div>
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+          <StartFreeNavLink variant="hero" />
           <Link
             href="/demo"
-            className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap text-white transition duration-150 hover:bg-[var(--leaf-dark)] sm:px-4 sm:py-2 sm:text-sm"
+            className="hidden rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/30 bg-white/5 px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap backdrop-blur-sm transition duration-150 hover:bg-white/10 sm:inline-flex sm:px-4 sm:py-2 sm:text-sm"
           >
             Try Demo
           </Link>
@@ -97,7 +99,7 @@ export default function LandingHero() {
               href="/signup"
               className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition duration-150 hover:bg-[var(--leaf-dark)]"
             >
-              Open your stand
+              Start free
             </Link>
             <Link
               href="#pricing"

@@ -1,5 +1,4 @@
 import { isDemoStandSlug } from "@/lib/demo";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 
 export type RestockOptInProps = {
@@ -7,14 +6,11 @@ export type RestockOptInProps = {
   prefillEmail?: string;
 };
 
+/** Starter and Pro both collect opt-ins; sending notify is Pro-gated elsewhere. */
 export function restockOptInForOrder(
   order: {
     stand: { id: string; slug: string } | null;
-    owner: {
-      subscriptionPlan?: string | null;
-      lifetimeAccess?: boolean | null;
-      user?: { email: string | null; role: string | null } | null;
-    };
+    owner?: unknown;
   },
   paymentConfirmed: boolean,
   prefillEmail?: string | null,
@@ -22,15 +18,6 @@ export function restockOptInForOrder(
   if (!paymentConfirmed || !order.stand) return null;
   if (!isRestockAlertsEnabled()) return null;
   if (isDemoStandSlug(order.stand.slug)) return null;
-  if (
-    !ownerHasCardTierAccess(order.owner, {
-      email: order.owner.user?.email,
-      role: order.owner.user?.role,
-      lifetimeAccess: order.owner.lifetimeAccess,
-    })
-  ) {
-    return null;
-  }
   return {
     standId: order.stand.id,
     prefillEmail: prefillEmail?.trim() || undefined,

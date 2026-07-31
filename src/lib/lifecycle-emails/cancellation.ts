@@ -1,34 +1,39 @@
 import { APP_NAME } from "@/lib/constants";
 import { appBaseUrl } from "@/lib/app-url";
 import {
+  ctaButton,
   emailReplyTo,
   emailShell,
   greetName,
 } from "@/lib/lifecycle-emails/html";
+import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 import { sendOwnerEmail } from "@/lib/notify-email";
 
-/** Thank-you + feedback ask after cancel or account delete. */
+/** Thank-you + feedback after Pro cancel. Owner keeps Starter. */
 export async function sendCancellationFeedback(input: {
   to: string;
   name?: string | null;
 }) {
+  const L = lifecycleLinks();
   const feedbackUrl = `${appBaseUrl()}/contact?subject=feedback`;
-  const title = `Thanks for being with ${APP_NAME}`;
+  const title = `Thanks for trying ${APP_NAME} Pro`;
   const html = emailShell(
     title,
     `
       <p>Hi ${greetName(input.name ?? "")},</p>
-      <p>Thanks for being a ${APP_NAME} subscriber — we&apos;re sorry to see you go.</p>
-      <p>To help us improve, we&apos;d appreciate any feedback you may have about what
-      worked, what didn&apos;t, or what would have made you stay.</p>
-      <p>Just reply to this email, or share a note here:</p>
+      <p>Sorry to see you leave <strong>${APP_NAME} Pro</strong>. Your account stays on
+      <strong>Starter free forever</strong> — stands, products, QR posters, and order
+      history remain. Nothing locks.</p>
+      <p>If you have a minute, what worked, what didn&apos;t, or what would have made
+      you stay helps us improve:</p>
       <p style="margin:24px 0">
         <a href="${feedbackUrl}"
            style="background:#2E7D3F;color:#fff;padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block">
           Send feedback
         </a>
       </p>
-      <p>You&apos;re always welcome back if you need Stallside again.</p>
+      ${ctaButton(L.billingPro, "Upgrade to Pro anytime")}
+      <p>You&apos;re always welcome back on Pro if you need Tap &amp; Go again.</p>
     `,
   );
 

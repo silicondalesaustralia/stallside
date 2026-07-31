@@ -13,7 +13,7 @@ let stripeClient: Stripe | null = null;
 
 /**
  * Single Stripe *platform* account powers both:
- * - Billing: owners pay Stallside (subscriptions)
+ * - Billing: owners pay Stallside (Pro subscription)
  * - Connect: owners receive stand customer payments
  */
 export function getStripe(): Stripe {
@@ -36,6 +36,7 @@ export function isStripeConfigured(): boolean {
   return Boolean(cleanEnvSecret(process.env.STRIPE_SECRET_KEY));
 }
 
+/** Legacy Cash prices — keep resolvable for webhook sync until all Cash subs closed. */
 const CASH_PRICE_ENV: Record<BillingCurrency, string> = {
   AUD: "STRIPE_PRICE_ID_CASH_AUD",
   USD: "STRIPE_PRICE_ID_CASH_USD",
@@ -43,6 +44,14 @@ const CASH_PRICE_ENV: Record<BillingCurrency, string> = {
   EUR: "STRIPE_PRICE_ID_CASH_EUR",
 };
 
+const PRO_PRICE_ENV: Record<BillingCurrency, string> = {
+  AUD: "STRIPE_PRICE_ID_PRO_AUD",
+  USD: "STRIPE_PRICE_ID_PRO_USD",
+  GBP: "STRIPE_PRICE_ID_PRO_GBP",
+  EUR: "STRIPE_PRICE_ID_PRO_EUR",
+};
+
+/** Legacy Card env names — fallback when PRO_* not set. */
 const CARD_PRICE_ENV: Record<BillingCurrency, string> = {
   AUD: "STRIPE_PRICE_ID_CARD_AUD",
   USD: "STRIPE_PRICE_ID_CARD_USD",
@@ -50,29 +59,34 @@ const CARD_PRICE_ENV: Record<BillingCurrency, string> = {
   EUR: "STRIPE_PRICE_ID_CARD_EUR",
 };
 
-export type SaasPlan = "cash" | "card";
+export type SaasPlan = "starter" | "pro";
 
-/** Recurring cash-plan Price ID for a billing currency. */
 export function getCashPlanPriceId(currency: BillingCurrency = "AUD"): string {
   const specific = cleanEnvSecret(process.env[CASH_PRICE_ENV[currency]]);
   if (specific) return specific;
-
-  // Legacy fallback: STRIPE_PRICE_ID_CASH is the AUD price
   if (currency === "AUD") {
     const legacy = cleanEnvSecret(process.env.STRIPE_PRICE_ID_CASH);
     if (legacy) return legacy;
   }
-
   throw new Error(
     `${CASH_PRICE_ENV[currency]} is not set` +
       (currency === "AUD" ? " (or STRIPE_PRICE_ID_CASH)" : ""),
   );
 }
 
+export function getProPlanPriceId(currency: BillingCurrency = "AUD"): string {
+  const pro = cleanEnvSecret(process.env[PRO_PRICE_ENV[currency]]);
+  if (pro) return pro;
+  const card = cleanEnvSecret(process.env[CARD_PRICE_ENV[currency]]);
+  if (card) return card;
+  throw new Error(
+    `${PRO_PRICE_ENV[currency]} (or ${CARD_PRICE_ENV[currency]}) is not set`,
+  );
+}
+
+/** @deprecated Use getProPlanPriceId */
 export function getCardPlanPriceId(currency: BillingCurrency = "AUD"): string {
-  const specific = cleanEnvSecret(process.env[CARD_PRICE_ENV[currency]]);
-  if (specific) return specific;
-  throw new Error(`${CARD_PRICE_ENV[currency]} is not set`);
+  return getProPlanPriceId(currency);
 }
 
 export function tryCashPlanPriceId(currency: BillingCurrency): string | null {
@@ -83,12 +97,17 @@ export function tryCashPlanPriceId(currency: BillingCurrency): string | null {
   }
 }
 
-export function tryCardPlanPriceId(currency: BillingCurrency): string | null {
+export function tryProPlanPriceId(currency: BillingCurrency): string | null {
   try {
-    return getCardPlanPriceId(currency);
+    return getProPlanPriceId(currency);
   } catch {
     return null;
   }
+}
+
+/** @deprecated Use tryProPlanPriceId */
+export function tryCardPlanPriceId(currency: BillingCurrency): string | null {
+  return tryProPlanPriceId(currency);
 }
 
 export function listConfiguredCashPlanPrices(): {
@@ -101,28 +120,35 @@ export function listConfiguredCashPlanPrices(): {
   });
 }
 
-export function listConfiguredCardPlanPrices(): {
+export function listConfiguredProPlanPrices(): {
   currency: BillingCurrency;
   priceId: string;
 }[] {
   return BILLING_CURRENCIES.flatMap((currency) => {
-    const priceId = tryCardPlanPriceId(currency);
+    const priceId = tryProPlanPriceId(currency);
     return priceId ? [{ currency, priceId }] : [];
   });
+}
+
+/** @deprecated Use listConfiguredProPlanPrices */
+export function listConfiguredCardPlanPrices() {
+  return listConfiguredProPlanPrices();
 }
 
 export function isStripeBillingConfigured(): boolean {
   return Boolean(
     cleanEnvSecret(process.env.STRIPE_SECRET_KEY) &&
-      listConfiguredCashPlanPrices().length > 0,
+      listConfiguredProPlanPrices().length > 0,
   );
 }
 
+export function isStripeProBillingConfigured(): boolean {
+  return isStripeBillingConfigured();
+}
+
+/** @deprecated Use isStripeProBillingConfigured */
 export function isStripeCardBillingConfigured(): boolean {
-  return Boolean(
-    cleanEnvSecret(process.env.STRIPE_SECRET_KEY) &&
-      listConfiguredCardPlanPrices().length > 0,
-  );
+  return isStripeProBillingConfigured();
 }
 
 /** Resolve SaaS plan from subscription metadata or known Price IDs. */
@@ -131,37 +157,29 @@ export function saasPlanFromSubscription(subscription: {
   items: { data: Array<{ price: { id: string } }> };
 }): SaasPlan {
   const meta = (subscription.metadata?.saasPlan ?? "").trim().toLowerCase();
-  if (meta === "card" || meta === "card_paypal") return "card";
-  if (meta === "cash") return "cash";
+  if (meta === "pro" || meta === "card" || meta === "card_paypal" || meta === "pro_paypal") {
+    return "pro";
+  }
+  if (meta === "cash" || meta === "starter") return "starter";
 
   const priceId = subscription.items.data[0]?.price.id;
   if (priceId) {
     for (const currency of BILLING_CURRENCIES) {
-      if (tryCardPlanPriceId(currency) === priceId) return "card";
-      if (tryCashPlanPriceId(currency) === priceId) return "cash";
+      if (tryProPlanPriceId(currency) === priceId) return "pro";
+      if (tryCashPlanPriceId(currency) === priceId) return "starter";
     }
   }
-  return "cash";
+  return "starter";
 }
 
 export function parseBillingCurrencyParam(
   value: FormDataEntryValue | null,
-  plan: SaasPlan = "cash",
+  _plan: SaasPlan = "pro",
 ): BillingCurrency {
   const raw = typeof value === "string" ? value.trim().toUpperCase() : "";
-  const tryPrice = plan === "card" ? tryCardPlanPriceId : tryCashPlanPriceId;
-  const list =
-    plan === "card"
-      ? listConfiguredCardPlanPrices
-      : listConfiguredCashPlanPrices;
-
-  if (isBillingCurrency(raw) && tryPrice(raw)) return raw;
-  if (tryPrice("AUD")) return "AUD";
-  const first = list()[0];
+  if (isBillingCurrency(raw) && tryProPlanPriceId(raw)) return raw;
+  if (tryProPlanPriceId("AUD")) return "AUD";
+  const first = listConfiguredProPlanPrices()[0];
   if (first) return first.currency;
-  throw new Error(
-    plan === "card"
-      ? "No Stripe card-plan prices configured"
-      : "No Stripe cash-plan prices configured",
-  );
+  throw new Error("No Stripe Pro plan prices configured");
 }

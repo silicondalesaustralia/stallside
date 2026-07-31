@@ -12,7 +12,7 @@ export function lifecycleLinks() {
     billingGuide: `${base}/dashboard/knowledge/billing`,
     settings: `${base}/dashboard/settings`,
     billing: `${base}/dashboard/settings/billing`,
-    billingCard: `${base}/dashboard/settings/billing?plan=card`,
+    billingPro: `${base}/dashboard/settings/billing`,
     stripe: `${base}/dashboard/settings/stripe`,
     contact: `${base}/contact`,
     featureRequest: `${base}/contact?subject=feature-request`,

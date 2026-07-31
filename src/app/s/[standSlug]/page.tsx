@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import { demoRegionForStandSlug, isDemoStandSlug } from "@/lib/demo";
 import { mapPublicProduct } from "@/lib/public-product";
+import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import { standSocialFromStand } from "@/lib/stand-social";
@@ -75,11 +76,12 @@ export default async function PublicStandPage({
     mapPublicProduct(p, { showExactStock: stand.showExactStock }),
   );
 
+  const branded = publicStandBranding(stand, stand.owner);
   const paymentBrands = standPaymentBrands(stand, {
     ...stand.owner,
     user: stand.owner.user,
   });
-  const social = standSocialFromStand(stand);
+  const social = standSocialFromStand(branded);
   const hasSocial = Boolean(
     social.instagramUrl ||
       social.facebookUrl ||
@@ -91,7 +93,7 @@ export default async function PublicStandPage({
   return (
     <main
       className="mx-auto min-h-full w-full max-w-lg px-4 pb-28 pt-8"
-      style={standAccentStyle(stand.accentColor, stand.secondaryColor)}
+      style={standAccentStyle(branded.accentColor, branded.secondaryColor)}
     >
       {isDemo ? (
         <p className="mb-4 text-sm">
@@ -103,7 +105,7 @@ export default async function PublicStandPage({
       <StandStoreHeader
         standName={stand.name}
         standSlug={stand.slug}
-        logoUrl={stand.logoUrl}
+        logoUrl={branded.logoUrl}
       />
       {products.length === 0 ? (
         <p className="mt-10 text-center text-xl text-[var(--muted)]">

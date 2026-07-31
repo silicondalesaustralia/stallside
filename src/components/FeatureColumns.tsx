@@ -2,22 +2,19 @@ import {
   CARD_PLAN_FEATURES,
   CARD_PLAN_HARDWARE_BLURB,
   CARD_PLAN_RESTOCK_BLURB,
+  STARTER_PLAN_FEATURES,
 } from "@/lib/plan-copy";
 
-const OWNER_LIVE = [
-  "Unlimited products, real stock counts",
-  "Printable QR poster - print, download, copy",
-  "Cash and PayID (Australia only) payments, customer-confirmed",
-  "Tap & Go - card, Apple Pay, Google Pay",
+const OWNER_STARTER = [
+  ...STARTER_PLAN_FEATURES,
+  "Add to your phone Home Screen for push alerts - no App Store install",
+] as const;
+
+const OWNER_PRO = [
+  "Tap & Go on Pro - card, Apple Pay, Google Pay",
   CARD_PLAN_HARDWARE_BLURB,
   "Paid straight to your Stripe account: no cash box to empty, count, or bank",
-  "Sale alerts - email and push",
-  "Low-stock alerts before you run out",
-  "Restock from your phone, in the field",
   CARD_PLAN_RESTOCK_BLURB,
-  "Orders dashboard - what sold, when, for how much",
-  "Stock shows Available / Low / Sold out",
-  "Add to your phone Home Screen for push alerts - no App Store install",
   ...CARD_PLAN_FEATURES,
 ] as const;
 
@@ -29,21 +26,43 @@ const CUSTOMER_LIVE = [
   "Choose options like size or flavour when a product offers them",
   "Pay cash and PayID (Australia only), then confirm - the owner knows.",
   "Tap & Go - card, Apple Pay, Google Pay on your phone",
+  "When card isn't on, tap “I'd have paid by card” so the owner sees demand",
   "Pre-order and pay by card to reserve for a collection day",
   "See when orders close, when to collect, and how many slots are left",
   "Get a confirmation email with your order details",
-  "Opt in for an email when the stand restocks",
+  "Opt in to hear when the stand restocks",
 ] as const;
 
 const CUSTOMER_SOON = ["PayPal checkout"] as const;
 
+function FeatureGroupList({
+  heading,
+  items,
+}: {
+  heading: string;
+  items: readonly string[];
+}) {
+  return (
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-wide text-[var(--leaf)]">
+        {heading}
+      </p>
+      <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-[var(--muted)]">
+        {items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function FeatureColumn({
   title,
-  live,
+  groups,
   soon,
 }: {
   title: string;
-  live: readonly string[];
+  groups: readonly { heading: string; items: readonly string[] }[];
   soon: readonly string[];
 }) {
   return (
@@ -51,40 +70,23 @@ function FeatureColumn({
       <h3 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
         {title}
       </h3>
-      <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-[var(--leaf)]">
-        Live today
-      </p>
-      <ul className="mt-3 space-y-2 text-sm text-[var(--muted)]">
-        {live.map((item) => (
-          <li key={item} className="flex gap-2">
-            <span className="shrink-0 text-[var(--leaf)]" aria-hidden>
-              ✓
-            </span>
-            <span
-              className={
-                item.includes("no percentage") || item.includes("No percentage")
-                  ? "font-semibold text-[var(--marigold)]"
-                  : undefined
-              }
-            >
-              {item}
-            </span>
-          </li>
+      <div className="mt-4 space-y-5">
+        {groups.map((group) => (
+          <FeatureGroupList
+            key={group.heading}
+            heading={group.heading}
+            items={group.items}
+          />
         ))}
-      </ul>
+      </div>
       {soon.length > 0 ? (
         <>
           <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
             Coming soon
           </p>
-          <ul className="mt-3 space-y-2 text-sm text-[var(--muted)]">
+          <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-[var(--muted)]">
             {soon.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="shrink-0" aria-hidden>
-                  ○
-                </span>
-                <span>{item}</span>
-              </li>
+              <li key={item}>{item}</li>
             ))}
           </ul>
         </>
@@ -95,11 +97,20 @@ function FeatureColumn({
 
 export default function FeatureColumns() {
   return (
-    <section className="mx-auto w-full max-w-6xl px-5 py-10 sm:px-6 sm:py-12">
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
-        <FeatureColumn title="For stall owners" live={OWNER_LIVE} soon={OWNER_SOON} />
-        <FeatureColumn title="For customers" live={CUSTOMER_LIVE} soon={CUSTOMER_SOON} />
-      </div>
+    <section className="mx-auto grid w-full max-w-6xl gap-6 px-5 py-10 sm:px-6 sm:py-12 lg:grid-cols-2">
+      <FeatureColumn
+        title="For owners"
+        groups={[
+          { heading: "Starter — free forever", items: OWNER_STARTER },
+          { heading: "Pro", items: OWNER_PRO },
+        ]}
+        soon={OWNER_SOON}
+      />
+      <FeatureColumn
+        title="For customers"
+        groups={[{ heading: "At the stall", items: CUSTOMER_LIVE }]}
+        soon={CUSTOMER_SOON}
+      />
     </section>
   );
 }

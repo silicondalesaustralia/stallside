@@ -5,14 +5,12 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import {
   appBaseUrl,
-  getCardPlanPriceId,
-  getCashPlanPriceId,
+  getProPlanPriceId,
   getStripe,
-  isStripeBillingConfigured,
-  isStripeCardBillingConfigured,
+  isStripeProBillingConfigured,
   parseBillingCurrencyParam,
 } from "@/lib/stripe";
-import { cardPlanCents, cashPlanCents } from "@/lib/saas-pricing";
+import { cardPlanCents } from "@/lib/saas-pricing";
 
 async function ensureStripeCustomer(ownerId: string, email: string | null) {
   const owner = await prisma.owner.findUniqueOrThrow({ where: { id: ownerId } });
@@ -34,63 +32,17 @@ async function ensureStripeCustomer(ownerId: string, email: string | null) {
   return customer.id;
 }
 
-export async function startCashPlanCheckout(formData: FormData) {
+/** Stallside Pro — paid from day one (app trial is separate). */
+export async function startProPlanCheckout(formData: FormData) {
   const { owner, user } = await requireOwner();
-  if (!isStripeBillingConfigured()) {
-    throw new Error("Stripe Billing is not configured (need cash plan Price IDs).");
+  if (!isStripeProBillingConfigured()) {
+    throw new Error(
+      "Stripe Pro Billing is not configured (need STRIPE_PRICE_ID_PRO_* or CARD_*).",
+    );
   }
 
-  const currency = parseBillingCurrencyParam(formData.get("currency"));
-  const priceId = getCashPlanPriceId(currency);
-  const customerId = await ensureStripeCustomer(owner.id, user.email ?? null);
-  const base = appBaseUrl();
-
-  await prisma.owner.update({
-    where: { id: owner.id },
-    data: {
-      billingCurrency: currency,
-      monthlyFeeCents: cashPlanCents(currency),
-    },
-  });
-
-  const session = await getStripe().checkout.sessions.create({
-    mode: "subscription",
-    customer: customerId,
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${base}/dashboard/settings/billing?success=1`,
-    cancel_url: `${base}/dashboard/settings/billing?cancelled=1`,
-    allow_promotion_codes: true,
-    metadata: {
-      ownerId: owner.id,
-      purpose: "saas_subscription",
-      saasPlan: "cash",
-      billingCurrency: currency,
-    },
-    subscription_data: {
-      metadata: {
-        ownerId: owner.id,
-        purpose: "saas_subscription",
-        saasPlan: "cash",
-        billingCurrency: currency,
-      },
-    },
-  });
-
-  if (!session.url) {
-    throw new Error("Could not start Stripe subscription checkout.");
-  }
-  redirect(session.url);
-}
-
-/** Card / Tap & Go plan — paid from day one (no free trial). */
-export async function startCardPlanCheckout(formData: FormData) {
-  const { owner, user } = await requireOwner();
-  if (!isStripeCardBillingConfigured()) {
-    throw new Error("Stripe Card Billing is not configured (need card plan Price IDs).");
-  }
-
-  const currency = parseBillingCurrencyParam(formData.get("currency"), "card");
-  const priceId = getCardPlanPriceId(currency);
+  const currency = parseBillingCurrencyParam(formData.get("currency"), "pro");
+  const priceId = getProPlanPriceId(currency);
   const customerId = await ensureStripeCustomer(owner.id, user.email ?? null);
   const base = appBaseUrl();
 
@@ -107,34 +59,43 @@ export async function startCardPlanCheckout(formData: FormData) {
     customer: customerId,
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${base}/dashboard/settings/billing?success=1`,
-    cancel_url: `${base}/dashboard/settings/billing?cancelled=1&plan=card`,
+    cancel_url: `${base}/dashboard/settings/billing?cancelled=1`,
     allow_promotion_codes: true,
     metadata: {
       ownerId: owner.id,
       purpose: "saas_subscription",
-      saasPlan: "card",
+      saasPlan: "pro",
       billingCurrency: currency,
     },
     subscription_data: {
-      // No trial — Card plan bills immediately.
       metadata: {
         ownerId: owner.id,
         purpose: "saas_subscription",
-        saasPlan: "card",
+        saasPlan: "pro",
         billingCurrency: currency,
       },
     },
   });
 
   if (!session.url) {
-    throw new Error("Could not start Card plan checkout.");
+    throw new Error("Could not start Pro plan checkout.");
   }
   redirect(session.url);
 }
 
+/** @deprecated Use startProPlanCheckout */
+export async function startCardPlanCheckout(formData: FormData) {
+  return startProPlanCheckout(formData);
+}
+
+/** Cash plan is no longer sold. */
+export async function startCashPlanCheckout() {
+  redirect("/dashboard/settings/billing");
+}
+
 export async function openBillingPortal() {
   const { owner } = await requireOwner();
-  if (!owner.stripeCustomerId || !isStripeBillingConfigured()) {
+  if (!owner.stripeCustomerId || !isStripeProBillingConfigured()) {
     redirect("/dashboard/settings/billing");
   }
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import FeatureColumns from "@/components/FeatureColumns";
 import HowItWorksFlow from "@/components/HowItWorksFlow";
 import JsonLd from "@/components/JsonLd";
+import CardDemandProof from "@/components/CardDemandProof";
 import LandingAnalyticsPreview from "@/components/LandingAnalyticsPreview";
 import LandingFaq from "@/components/LandingFaq";
 import LandingFooter from "@/components/LandingFooter";
@@ -40,6 +41,7 @@ export default function HomePage() {
       <StandBrandingSection />
       <FeatureColumns />
       <LandingPaymentMethods />
+      <CardDemandProof />
       <PricingTiers />
       <NetworkVision />
       <LandingFaq />

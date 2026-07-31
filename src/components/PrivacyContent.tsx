@@ -64,8 +64,9 @@ export default function PrivacyContent() {
           Restock alerts
         </h2>
         <p className="text-[var(--muted)]">
-          When you buy from a Card-plan stand, you may opt in to an email when that stand
-          restocks. {LEGAL_ENTITY} ({APP_NAME}) is the controller: we store your email and
+          When you buy from a stand, you may opt in to an email when that stand restocks.
+          Collecting opt-ins is available on Starter; sending restock emails is a Pro
+          feature. {LEGAL_ENTITY} ({APP_NAME}) is the controller: we store your email and
           consent record solely for that purpose. Stand owners see a subscriber count and can
           ask us to send a restock notice — they never receive or export your address. Emails
           are delivered via Resend (processor). You can unsubscribe any time via the link in
@@ -81,6 +82,20 @@ export default function PrivacyContent() {
         <p className="text-[var(--muted)]">
           We use session cookies and similar technologies necessary to keep you signed in and
           operate the service. We do not sell personal information.
+        </p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
+          Advertising measurement
+        </h2>
+        <p className="text-[var(--muted)]">
+          We use Meta, Google Analytics, and Reddit advertising pixels to understand how
+          people find {APP_NAME} and to measure campaigns. When you are signed in as an
+          owner, we may pass a hashed (SHA-256) copy of your account email and internal
+          user id to Reddit for advanced matching. We do not put plaintext emails in page
+          source for this purpose. You can limit ad tracking via your browser or platform
+          settings where available.
         </p>
       </section>
 

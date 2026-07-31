@@ -12,7 +12,7 @@ import {
 } from "@/lib/paypal";
 import {
   hasComplimentaryAccess,
-  ownerHasCardTierAccess,
+  ownerHasProAccess,
 } from "@/lib/owner-trial";
 import { createPartnerReferralLink } from "@/lib/paypal-connect";
 import { syncPayPalMerchantStatus } from "@/lib/paypal-sync";
@@ -27,9 +27,9 @@ function assertCardTier(
   user: { email?: string | null; role?: string | null },
 ) {
   if (
-    !ownerHasCardTierAccess(owner, { email: user.email, role: user.role })
+    !ownerHasProAccess(owner, { email: user.email, role: user.role })
   ) {
-    throw new Error("PayPal requires the Card plan.");
+    throw new Error("PayPal requires Stallside Pro.");
   }
 }
 

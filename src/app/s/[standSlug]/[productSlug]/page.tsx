@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { isReservedProductSlug } from "@/lib/slug";
 import { mapPublicProduct } from "@/lib/public-product";
+import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { productMetadata, standCatalogPath } from "@/lib/stand-seo";
 import { productLiveWhere } from "@/lib/product-visibility";
@@ -58,6 +59,7 @@ export default async function PublicProductPage({
   const stand = await prisma.stand.findUnique({
     where: { slug: standKey },
     include: {
+      owner: { include: { user: { select: { email: true, role: true } } } },
       products: {
         where: productLiveWhere,
         orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
@@ -75,6 +77,7 @@ export default async function PublicProductPage({
   const productRow = stand.products.find((p) => p.slug === productKey);
   if (!productRow) notFound();
 
+  const branded = publicStandBranding(stand, stand.owner);
   const catalogProducts = stand.products
     .filter((p) => !p.isHidden)
     .map((p) => mapPublicProduct(p, { showExactStock: stand.showExactStock }));
@@ -85,12 +88,12 @@ export default async function PublicProductPage({
   return (
     <main
       className="mx-auto min-h-full w-full max-w-lg px-4 pb-10 pt-8"
-      style={standAccentStyle(stand.accentColor, stand.secondaryColor)}
+      style={standAccentStyle(branded.accentColor, branded.secondaryColor)}
     >
       <StandStoreHeader
         standName={stand.name}
         standSlug={stand.slug}
-        logoUrl={stand.logoUrl}
+        logoUrl={branded.logoUrl}
         backHref={standCatalogPath(stand.slug)}
         backLabel="← All products"
       />

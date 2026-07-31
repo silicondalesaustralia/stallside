@@ -28,10 +28,10 @@ const CURRENT_TOTAL = CURRENT.reduce((sum, p) => sum + p.cents, 0);
 const PREV_TOTAL = PREVIOUS.reduce((sum, p) => sum + p.cents, 0);
 const CURRENT_ORDERS = 47;
 const PREV_ORDERS = 39;
-const CURRENT_CASH = 31800;
-const PREV_CASH = 27400;
-const CURRENT_CARD = CURRENT_TOTAL - CURRENT_CASH;
-const PREV_CARD = PREV_TOTAL - PREV_CASH;
+const CURRENT_CASH = CURRENT_TOTAL;
+const PREV_CASH = PREV_TOTAL;
+const CURRENT_CARD_DEMAND = 23;
+const PREV_CARD_DEMAND = 14;
 
 export default function LandingAnalyticsPreview() {
   return (
@@ -43,14 +43,15 @@ export default function LandingAnalyticsPreview() {
           style={{ borderTopLeftRadius: 8 }}
         />
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--leaf)]">
-          Owner analytics · example
+          Owner analytics · example · Starter
         </p>
         <h2 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
           Know what sold - and when
         </h2>
         <p className="mt-3 max-w-2xl text-base leading-snug text-[var(--muted)]">
-          Compare this week with the last. See revenue, orders, and how cash vs
-          Tap &amp; Go are trending - the same view stall owners get in the app.
+          Compare this week with the last. See revenue, orders, and how many
+          shoppers wanted to pay by card - the same view stall owners get in the
+          app.
         </p>
 
         <div className="mt-6 flex flex-wrap items-center gap-2 text-sm">
@@ -80,10 +81,10 @@ export default function LandingAnalyticsPreview() {
             previous={PREV_CASH}
           />
           <DashboardStat
-            label="Card / Tap & Go"
-            value={formatMoney(CURRENT_CARD, "AUD")}
-            current={CURRENT_CARD}
-            previous={PREV_CARD}
+            label="Wanted to pay by card"
+            value={String(CURRENT_CARD_DEMAND)}
+            current={CURRENT_CARD_DEMAND}
+            previous={PREV_CARD_DEMAND}
           />
         </div>
 

@@ -1,19 +1,18 @@
 import { redirect } from "next/navigation";
-import { PaymentStatus } from "@/generated/prisma/client";
+import { CollectionStatus, PaymentStatus } from "@/generated/prisma/client";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import { formatCollectionLabel } from "@/lib/pre-order";
 import CollectionDaySection from "./CollectionDaySection";
 import CollectionsPrintButton from "./CollectionsPrintButton";
 
 export default async function CollectionsPage() {
   const { owner, user } = await requireOwner();
-  if (
-    !ownerHasCardTierAccess(owner, { email: user.email, role: user.role })
-  ) {
-    redirect("/dashboard/orders");
-  }
+  const hasPro = ownerHasProAccess(owner, {
+    email: user.email,
+    role: user.role,
+  });
 
   const orders = await prisma.order.findMany({
     where: {
@@ -21,6 +20,13 @@ export default async function CollectionsPage() {
       isPreOrder: true,
       paymentStatus: PaymentStatus.PAID,
       collectionAt: { not: null },
+      ...(hasPro
+        ? {}
+        : {
+            collectionStatus: {
+              in: [CollectionStatus.ORDERED, CollectionStatus.READY],
+            },
+          }),
     },
     orderBy: [{ collectionAt: "asc" }, { createdAt: "asc" }],
     include: {
@@ -28,6 +34,10 @@ export default async function CollectionsPage() {
       stand: { select: { name: true } },
     },
   });
+
+  if (!hasPro && orders.length === 0) {
+    redirect("/dashboard/orders");
+  }
 
   const groups = new Map<
     string,
@@ -65,7 +75,9 @@ export default async function CollectionsPage() {
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Collections</h1>
           <p className="mt-1 text-[var(--muted)] print:hidden">
-            Who&apos;s collecting what, by date.
+            {hasPro
+              ? "Who's collecting what, by date."
+              : "Paid pre-orders still to collect. Upgrade to Pro to create new pre-orders."}
           </p>
         </div>
         {days.length > 0 ? <CollectionsPrintButton /> : null}

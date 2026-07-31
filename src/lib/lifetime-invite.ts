@@ -38,7 +38,7 @@ export async function getLifetimeInvite(token: string) {
   return prisma.lifetimeInvite.findUnique({ where: { token } });
 }
 
-/** Create owner on Card plan, active, $0 forever. */
+/** Create owner on Pro plan, active, $0 forever. */
 export async function createOwnerWithLifetime(input: {
   userId: string;
   name: string;
@@ -53,7 +53,7 @@ export async function createOwnerWithLifetime(input: {
       businessName: displayName,
       contactEmail: input.email,
       subscriptionStatus: SubscriptionStatus.ACTIVE,
-      subscriptionPlan: "card",
+      subscriptionPlan: "pro",
       lifetimeAccess: true,
       monthlyFeeCents: 0,
       subscriptionStartedAt: now,

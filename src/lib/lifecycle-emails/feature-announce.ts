@@ -11,7 +11,7 @@ import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 type Recipient = { to: string; name: string };
 
 export const FEATURE_ANNOUNCE_SUBJECT =
-  "[NEW UPDATES] - Stallside update: pre-orders, branding, and free trial features";
+  "[NEW UPDATES] - Stallside: Starter free forever, Pro trial, and more";
 
 export function featureAnnounceHtml(name: string): string {
   const L = lifecycleLinks();
@@ -19,13 +19,14 @@ export function featureAnnounceHtml(name: string): string {
     FEATURE_ANNOUNCE_SUBJECT,
     `
       <p>Hi ${greetName(name)},</p>
-      <p>We&apos;ve shipped a bunch of improvements for stall owners - and we&apos;ve
-      changed how the free trial works.</p>
+      <p>We&apos;ve updated how Stallside plans work — and shipped more tools for
+      stall owners.</p>
 
-      <p><strong>30-day free trial now includes every Card plan feature</strong></p>
-      <p>New owners (and anyone still on trial) get the full Card toolset for 30 days -
-      no card required to start. That means Tap &amp; Go, pre-orders, collections,
-      restock emails, branding, and more from day one.</p>
+      <p><strong>Starter is free forever</strong></p>
+      <p>Cash, PayID (AU), products and options, stock, QR posters, alerts, and the
+      card-demand counter — no card, no expiry. New owners also get a
+      <strong>30-day Pro trial</strong> (Tap &amp; Go, pre-orders, branding, restock
+      notify). When it ends you stay on Starter — the dashboard never locks.</p>
 
       <p><strong>What&apos;s new</strong></p>
       <ul>
@@ -37,8 +38,8 @@ export function featureAnnounceHtml(name: string): string {
         a product (up to three option groups).</li>
         <li><strong>Stand branding</strong> - your logo and colours on the public stall
         and QR poster, plus social links (Instagram, Facebook, TikTok, YouTube, website).</li>
-        <li><strong>Restock emails</strong> - customers opt in after checkout; you hit
-        Notify customers when you fill the stand again.</li>
+        <li><strong>Restock emails</strong> - customers opt in after checkout (free on
+        Starter); sending the notify is Pro. You never see their addresses.</li>
         <li><strong>Hide / archive / duplicate</strong> products when you need to rotate
         stock without losing settings.</li>
       </ul>

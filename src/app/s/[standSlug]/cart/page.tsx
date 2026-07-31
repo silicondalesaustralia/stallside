@@ -4,9 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { standOffersCard, standOffersPayPal } from "@/lib/stand-payment-brands";
 import { demoRegionForStandSlug, isDemoStandSlug } from "@/lib/demo";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 import { mapPublicProduct } from "@/lib/public-product";
+import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { standCatalogPath } from "@/lib/stand-seo";
 import { productLiveWhere } from "@/lib/product-visibility";
@@ -67,26 +67,19 @@ export default async function StandCartPage({
     mapPublicProduct(p, { showExactStock: stand.showExactStock }),
   );
 
+  const branded = publicStandBranding(stand, stand.owner);
   const restockStandId =
-    !isDemo &&
-    isRestockAlertsEnabled() &&
-    ownerHasCardTierAccess(stand.owner, {
-      email: stand.owner.user?.email,
-      role: stand.owner.user?.role,
-      lifetimeAccess: stand.owner.lifetimeAccess,
-    })
-      ? stand.id
-      : null;
+    !isDemo && isRestockAlertsEnabled() ? stand.id : null;
 
   return (
     <main
       className="mx-auto min-h-full w-full max-w-lg px-4 pb-8 pt-8"
-      style={standAccentStyle(stand.accentColor, stand.secondaryColor)}
+      style={standAccentStyle(branded.accentColor, branded.secondaryColor)}
     >
       <StandStoreHeader
         standName={stand.name}
         standSlug={stand.slug}
-        logoUrl={stand.logoUrl}
+        logoUrl={branded.logoUrl}
         backHref={standCatalogPath(stand.slug)}
         backLabel="← Continue shopping"
       />

@@ -5,7 +5,7 @@ export function isRestockAlertsEnabled(): boolean {
 
 /** Exact wording shown at opt-in — stored as consentText. */
 export const RESTOCK_CONSENT_TEXT =
-  "Want to know when this stand restocks? We'll email you when it does — nothing else.";
+  "Want to hear when this stand restocks? Join the list — unsubscribe anytime. Nothing else.";
 
 export const RESTOCK_CONSENT_SOURCE = "checkout_success";
 

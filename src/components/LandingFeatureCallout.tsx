@@ -32,7 +32,7 @@ export default function LandingFeatureCallout({
             href="/signup"
             className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
           >
-            Start free trial
+            Start free — includes 30 days of Pro
           </Link>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import { refreshStripeStatus, startStripeConnect } from "./actions";
 import StripeDisconnectButton from "./StripeDisconnectButton";
 
@@ -14,7 +14,7 @@ export default async function StripeSettingsPage({
 }) {
   const { owner, user } = await requireOwner();
   const params = await searchParams;
-  const cardTier = ownerHasCardTierAccess(owner, {
+  const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
   });
@@ -70,7 +70,7 @@ export default async function StripeSettingsPage({
 
       {!cardTier ? (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          Card / Tap &amp; Go is on the Card plan.{" "}
+          Card / Tap &amp; Go is on Stallside Pro.{" "}
           <Link href="/dashboard/settings/billing?plan=card" className="underline">
             Subscribe to Card
           </Link>

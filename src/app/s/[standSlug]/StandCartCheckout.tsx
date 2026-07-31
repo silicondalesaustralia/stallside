@@ -428,6 +428,7 @@ export default function StandCartCheckout({
           currency={currency}
           standSlug={standSlug}
           items={payload}
+          subtotalCents={total}
           localTransferLabel={localTransfer?.buttonLabel ?? null}
           pending={pending}
           showDemoCardHint={Boolean(demoRegion)}

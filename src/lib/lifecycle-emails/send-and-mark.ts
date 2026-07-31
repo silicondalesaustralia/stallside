@@ -2,9 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { COUNTED_STATUSES } from "@/lib/order-metrics";
 import {
   sendCardWelcome,
-  sendCashWelcome,
   sendCancellationFeedback,
   sendFirstTenOrdersEmail,
+  sendProLapseDay0,
   sendTrialWelcome,
 } from "@/lib/lifecycle-emails";
 import { APP_NAME } from "@/lib/constants";
@@ -40,33 +40,7 @@ export async function sendAndMarkTrialWelcome(ownerId: string) {
   }
 }
 
-export async function sendAndMarkCashWelcome(ownerId: string) {
-  const owner = await prisma.owner.findUnique({
-    where: { id: ownerId },
-    include: { user: { select: { email: true, name: true } } },
-  });
-  if (!owner || owner.cashWelcomeSentAt) return;
-  const to = recipientEmail(owner);
-  if (!to) return;
-  const now = new Date();
-
-  try {
-    await sendCashWelcome({
-      to,
-      name: owner.user?.name || owner.businessName,
-    });
-    await prisma.owner.update({
-      where: { id: ownerId },
-      data: {
-        cashWelcomeSentAt: now,
-        cashSubscribedAt: owner.cashSubscribedAt ?? now,
-      },
-    });
-  } catch (error) {
-    console.error(`[${APP_NAME}] cash welcome failed`, ownerId, error);
-  }
-}
-
+/** Pro welcome after paid subscribe (cardWelcomeSentAt). */
 export async function sendAndMarkCardWelcome(ownerId: string) {
   const owner = await prisma.owner.findUnique({
     where: { id: ownerId },
@@ -86,11 +60,41 @@ export async function sendAndMarkCardWelcome(ownerId: string) {
       data: { cardWelcomeSentAt: new Date() },
     });
   } catch (error) {
-    console.error(`[${APP_NAME}] card welcome failed`, ownerId, error);
+    console.error(`[${APP_NAME}] Pro welcome failed`, ownerId, error);
   }
 }
 
-/** Once when they cancel a paid plan (portal). Skipped for Free for Life owners. */
+/** Day-0 Pro lapse → Starter (once per lapse). */
+export async function sendAndMarkProLapseDay0(ownerId: string) {
+  const owner = await prisma.owner.findUnique({
+    where: { id: ownerId },
+    include: { user: { select: { email: true, name: true } } },
+  });
+  if (!owner || owner.proLapseDay0SentAt) return;
+  if (owner.lifetimeAccess) return;
+  const to = recipientEmail(owner);
+  if (!to) return;
+
+  const now = new Date();
+  try {
+    await sendProLapseDay0({
+      to,
+      name: owner.user?.name || owner.businessName,
+      businessName: owner.businessName,
+    });
+    await prisma.owner.update({
+      where: { id: ownerId },
+      data: {
+        proLapseDay0SentAt: now,
+        proLapsedAt: owner.proLapsedAt ?? now,
+      },
+    });
+  } catch (error) {
+    console.error(`[${APP_NAME}] Pro lapse day-0 email failed`, ownerId, error);
+  }
+}
+
+/** Cancel-at-period-end feedback (skipped for lifetime). */
 export async function sendAndMarkCancelFeedback(ownerId: string) {
   const owner = await prisma.owner.findUnique({
     where: { id: ownerId },
@@ -115,7 +119,6 @@ export async function sendAndMarkCancelFeedback(ownerId: string) {
   }
 }
 
-/** Fire once when owner reaches 10 counted orders. */
 export async function maybeSendFirstTenOrdersEmail(ownerId: string) {
   const owner = await prisma.owner.findUnique({
     where: { id: ownerId },

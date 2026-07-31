@@ -97,7 +97,7 @@ export default function StandPaymentToggles({
           </span>
           <span className="mt-0.5 block text-[var(--muted)]">
             {!cardTier
-                ? "Card plan feature — subscribe under Settings → Billing."
+                ? "Pro feature — subscribe under Settings → Billing."
               : cardReady
                 ? "Card, Apple Pay, Google Pay. Money to your Stripe."
                 : "Finish Stripe setup in Settings before enabling."}
@@ -125,7 +125,7 @@ export default function StandPaymentToggles({
           </span>
           <span className="mt-0.5 block text-[var(--muted)]">
             {!cardTier
-              ? "Card plan feature."
+              ? "Pro feature."
               : !paypalConnectAvailable
                 ? "PayPal checkout is coming soon."
                 : paypalReady

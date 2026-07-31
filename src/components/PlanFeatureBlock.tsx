@@ -6,9 +6,9 @@ import {
   CARD_PLAN_FEATURES,
   CARD_PLAN_HARDWARE_BLURB,
   CARD_PLAN_RESTOCK_BLURB,
+  STARTER_PLAN_FEATURES,
   cardPaymentBrands,
   cashPaymentBrands,
-  cashPlanBlurb,
   cashPlanExtraBlurb,
 } from "@/lib/plan-copy";
 
@@ -16,18 +16,24 @@ export default function PlanFeatureBlock({
   plan,
   currency,
 }: {
-  plan: "cash" | "card";
+  plan: "starter" | "pro" | "cash" | "card";
   currency: BillingCurrency;
 }) {
-  if (plan === "cash") {
+  const isStarter = plan === "starter" || plan === "cash";
+
+  if (isStarter) {
     const extra = cashPlanExtraBlurb(currency);
     return (
       <div className="space-y-2">
         <PaymentIconRow brands={cashPaymentBrands(currency)} />
-        <p className="text-sm text-[var(--muted)]">{cashPlanBlurb(currency)}</p>
         {extra ? (
           <p className="text-sm text-[var(--muted)]">{extra}</p>
         ) : null}
+        <ul className="list-disc space-y-1.5 pl-4 text-sm text-[var(--muted)]">
+          {STARTER_PLAN_FEATURES.map((feature) => (
+            <li key={feature}>{feature}</li>
+          ))}
+        </ul>
       </div>
     );
   }

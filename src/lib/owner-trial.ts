@@ -9,9 +9,9 @@ export function trialEndDate(from = new Date()): Date {
 }
 
 /**
- * Start a no-card 30-day trial when creating an owner profile.
- * Trial includes full Card-plan features until trialEndsAt (see ownerHasCardTierAccess).
- * subscriptionPlan stays "cash" until they subscribe — plan only matters after trial.
+ * Start a no-card 30-day Pro trial when creating an owner profile.
+ * After trialEndsAt the account stays on Starter (free forever) — no dashboard lock.
+ * subscriptionPlan stays "starter" until they subscribe to Pro.
  */
 export async function createOwnerWithTrial(input: {
   userId: string;
@@ -27,9 +27,10 @@ export async function createOwnerWithTrial(input: {
       businessName: displayName,
       contactEmail: input.email,
       subscriptionStatus: SubscriptionStatus.TRIALING,
-      subscriptionPlan: "cash",
+      subscriptionPlan: "starter",
       subscriptionStartedAt: now,
       trialEndsAt: trialEndDate(now),
+      monthlyFeeCents: 0,
     },
   });
 }
@@ -61,7 +62,7 @@ export function hasComplimentaryAccess(input: ComplimentaryAccessInput): boolean
   return (COMPLIMENTARY_ACCESS_EMAILS as readonly string[]).includes(email);
 }
 
-const CARD_TIER_PLANS = new Set(["card", "card_paypal"]);
+const PRO_PLANS = new Set(["pro", "pro_paypal", "card", "card_paypal"]);
 
 function isActiveFreeTrial(owner: {
   subscriptionStatus?: SubscriptionStatus | string | null;
@@ -72,52 +73,62 @@ function isActiveFreeTrial(owner: {
   return hasFutureDate(owner.trialEndsAt);
 }
 
+function isPaidProPlan(plan: string | null | undefined): boolean {
+  return PRO_PLANS.has((plan ?? "").trim().toLowerCase());
+}
+
 /**
- * Card-tier features: paid card plan, active free trial (full Card features),
- * or complimentary / admin / lifetime.
+ * Pro features: paid Pro, active free Pro trial, complimentary / admin / lifetime,
+ * or still inside cancel-at-period-end window while on a Pro plan.
  */
-export function ownerHasCardTierAccess(
+export function ownerHasProAccess(
   owner: {
     subscriptionPlan?: string | null;
     lifetimeAccess?: boolean | null;
     subscriptionStatus?: SubscriptionStatus | string | null;
     trialEndsAt?: Date | null;
+    currentPeriodEndsAt?: Date | null;
+    cancelAtPeriodEnd?: boolean;
   },
   access?: ComplimentaryAccessInput,
 ): boolean {
   if (owner.lifetimeAccess) return true;
   if (access && hasComplimentaryAccess(access)) return true;
   if (isActiveFreeTrial(owner)) return true;
+
   const plan = (owner.subscriptionPlan ?? "").trim().toLowerCase();
-  return CARD_TIER_PLANS.has(plan);
-}
+  if (!isPaidProPlan(plan)) return false;
 
-/** Owner may use stands/products/orders — data is always retained. */
-export function ownerHasAppAccess(
-  owner: OwnerAccessFields & { lifetimeAccess?: boolean | null },
-  access?: ComplimentaryAccessInput,
-): boolean {
-  if (owner.lifetimeAccess) return true;
-  if (access && hasComplimentaryAccess(access)) return true;
-  if (owner.subscriptionStatus === SubscriptionStatus.ACTIVE) return true;
-  if (owner.subscriptionStatus === SubscriptionStatus.PAST_DUE) return true;
-
-  if (owner.subscriptionStatus === SubscriptionStatus.TRIALING) {
-    if (!owner.trialEndsAt) return true;
-    return hasFutureDate(owner.trialEndsAt);
+  if (
+    owner.subscriptionStatus === SubscriptionStatus.ACTIVE ||
+    owner.subscriptionStatus === SubscriptionStatus.PAST_DUE
+  ) {
+    return true;
   }
 
-  // Cancelled (or scheduled to end): keep access until paid period finishes.
-  if (hasFutureDate(owner.currentPeriodEndsAt)) return true;
+  // Cancelled / ended but still inside paid period.
+  if (hasFutureDate(owner.currentPeriodEndsAt ?? null)) return true;
 
   return false;
 }
 
-export function ownerNeedsPayment(
-  owner: OwnerAccessFields,
-  access?: ComplimentaryAccessInput,
+/**
+ * Dashboard is never locked for a live owner account (Starter is free forever).
+ * Kept for call-site compatibility; always true when complimentary or any real owner row.
+ */
+export function ownerHasAppAccess(
+  _owner?: OwnerAccessFields & { lifetimeAccess?: boolean | null },
+  _access?: ComplimentaryAccessInput,
 ): boolean {
-  return !ownerHasAppAccess(owner, access);
+  return true;
+}
+
+/** @deprecated Dashboard is never payment-locked. Always false. */
+export function ownerNeedsPayment(
+  _owner?: OwnerAccessFields,
+  _access?: ComplimentaryAccessInput,
+): boolean {
+  return false;
 }
 
 function daysUntil(date: Date): number {
@@ -140,15 +151,19 @@ export function trialDaysRemaining(
 }
 
 /**
- * Days until paid access ends after cancel-at-period-end
+ * Days until Pro access ends after cancel-at-period-end
  * (or cancelled but still inside the paid window).
  */
 export function paidAccessDaysRemaining(
-  owner: OwnerAccessFields & { lifetimeAccess?: boolean | null },
+  owner: OwnerAccessFields & {
+    lifetimeAccess?: boolean | null;
+    subscriptionPlan?: string | null;
+  },
   access?: ComplimentaryAccessInput,
 ): number | null {
   if (owner.lifetimeAccess) return null;
   if (access && hasComplimentaryAccess(access)) return null;
+  if (!ownerHasProAccess(owner, access)) return null;
   if (!hasFutureDate(owner.currentPeriodEndsAt)) return null;
   if (owner.subscriptionStatus === SubscriptionStatus.ACTIVE && !owner.cancelAtPeriodEnd) {
     return null;
@@ -160,4 +175,14 @@ export function paidAccessDaysRemaining(
     return daysUntil(owner.currentPeriodEndsAt!);
   }
   return null;
+}
+
+/** Normalize legacy plan strings to starter | pro | pro_paypal. */
+export function normalizeSubscriptionPlan(
+  plan: string | null | undefined,
+): "starter" | "pro" | "pro_paypal" {
+  const p = (plan ?? "starter").trim().toLowerCase();
+  if (p === "pro" || p === "card") return "pro";
+  if (p === "pro_paypal" || p === "card_paypal") return "pro_paypal";
+  return "starter";
 }

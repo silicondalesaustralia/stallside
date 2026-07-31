@@ -40,11 +40,13 @@ export const metadata: Metadata = {
     siteName: APP_NAME,
     title: APP_SEO_TITLE,
     description: APP_SEO_DESCRIPTION,
+    images: [{ url: "/brand/logo-lockup.png" }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: APP_SEO_TITLE,
     description: APP_SEO_DESCRIPTION,
+    images: ["/brand/logo-lockup.png"],
   },
   manifest: "/manifest.webmanifest",
   appleWebApp: {

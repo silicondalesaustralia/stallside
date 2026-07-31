@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
@@ -31,7 +31,7 @@ export default async function StandDetailPage({
 
   const checkoutUrl = standCheckoutUrl(stand.slug);
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 240);
-  const cardTier = ownerHasCardTierAccess(owner, {
+  const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
   });

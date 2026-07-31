@@ -3,6 +3,7 @@
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import DemoCardHint from "@/components/DemoCardHint";
+import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import PreOrderContactFields from "./PreOrderContactFields";
 
@@ -22,6 +23,8 @@ type CheckoutPayStepProps = {
   currency: string;
   standSlug: string;
   items: CartItem[];
+  /** Cart total for card-demand logging on Starter. */
+  subtotalCents?: number;
   localTransferLabel: string | null;
   pending: boolean;
   showDemoCardHint?: boolean;
@@ -50,6 +53,7 @@ export default function CheckoutPayStep({
   currency,
   standSlug,
   items,
+  subtotalCents = 0,
   localTransferLabel,
   pending,
   showDemoCardHint = false,
@@ -159,6 +163,13 @@ export default function CheckoutPayStep({
         <p className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-lg text-[var(--muted)]">
           No payment methods are available at this stand right now.
         </p>
+      ) : null}
+      {!cardEnabled && !preOrderOnly ? (
+        <CardInterestButton
+          standSlug={standSlug}
+          subtotalCents={subtotalCents}
+          currency={currency}
+        />
       ) : null}
       <button
         type="button"

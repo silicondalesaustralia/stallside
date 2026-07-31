@@ -38,7 +38,7 @@ export default async function LifetimeInvitePage({
           Offer fully claimed
         </h1>
         <p className="mt-2 text-[var(--muted)]">
-          This Free for Life invite has no seats left. If you still need access,
+          This Pro-for-life invite has no seats left. If you still need access,
           ask the person who shared the link for a new one.
         </p>
         <p className="mt-6 text-sm text-[var(--muted)]">
@@ -55,12 +55,12 @@ export default async function LifetimeInvitePage({
     <main className="mx-auto flex min-h-full w-full max-w-md flex-1 flex-col justify-center px-6 py-16">
       <BrandLockup />
       <h1 className="mt-8 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
-        Free for Life
+        Pro-for-life
       </h1>
       <p className="mt-2 text-[var(--muted)]">
-        You&apos;ve been invited to Stallside on the full Card / Tap &amp; Go plan —
-        forever, no subscription. Name and email only. We&apos;ll send a 6-digit
-        sign-in code.
+        You&apos;ve been invited to Stallside Pro forever — Tap &amp; Go, pre-orders,
+        branding, and everything else Pro includes, with no subscription. Name and
+        email only. We&apos;ll send a 6-digit sign-in code.
       </p>
       {invite.maxUses > 1 ? (
         <p className="mt-2 text-sm font-medium text-[var(--leaf-dark)]">
@@ -115,7 +115,7 @@ export default async function LifetimeInvitePage({
           type="submit"
           className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]"
         >
-          Claim Free for Life
+          Claim Pro-for-life
         </button>
       </form>
 

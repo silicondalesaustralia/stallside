@@ -7,7 +7,6 @@ import {
   RESTOCK_CONSENT_SOURCE,
   RESTOCK_CONSENT_TEXT,
 } from "@/lib/restock-alerts";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
 import { SubStatus } from "@/generated/prisma/client";
 
 export type RestockSubscribeState = {
@@ -43,24 +42,9 @@ export async function subscribeRestockAlert(
 
   const stand = await prisma.stand.findUnique({
     where: { id: standId },
-    include: {
-      owner: {
-        include: { user: { select: { email: true, role: true } } },
-      },
-    },
   });
   if (!stand?.isActive) {
     return { ok: false, error: "Stand not found." };
-  }
-
-  if (
-    !ownerHasCardTierAccess(stand.owner, {
-      email: stand.owner.user?.email,
-      role: stand.owner.user?.role,
-      lifetimeAccess: stand.owner.lifetimeAccess,
-    })
-  ) {
-    return { ok: false, error: "Restock alerts are unavailable." };
   }
 
   const unsubToken = randomBytes(24).toString("hex");

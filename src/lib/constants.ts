@@ -10,7 +10,7 @@ export const APP_SEO_TITLE =
   "Stallside · Checkout For Unattended Farm Stands & Stalls";
 /** Meta description (~155 chars) */
 export const APP_SEO_DESCRIPTION =
-  "QR self-checkout for farm stands, honesty stalls, firewood, flowers, and car parks. Print a QR, get paid, track every sale from your phone.";
+  "Free forever QR checkout for farm stands, honesty stalls, firewood, flowers, and car parks. Print a QR, get paid, track every sale from your phone.";
 
 /** Cash plan AUD list price — prefer cashPlanCents(currency) */
 export const CASH_PLAN_CENTS = 699;

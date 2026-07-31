@@ -6,7 +6,7 @@ type TapAndGoSetupCardProps = {
   stripeStarted: boolean;
 };
 
-/** Dashboard prompt: upgrade / finish Connect for Card / Tap & Go. */
+/** Dashboard prompt: upgrade / finish Connect for Tap & Go. */
 export default function TapAndGoSetupCard({
   cardTier,
   stripeConnected,
@@ -19,14 +19,15 @@ export default function TapAndGoSetupCard({
       <section className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-5">
         <h2 className="text-lg font-semibold">Accept cards / Tap &amp; Go</h2>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          Card, Apple Pay, and Google Pay at your gate. Money goes to your Stripe
-          account. No terminal. No percentage of sales.
+          Upgrade to Stallside Pro for card, Apple Pay, and Google Pay at your
+          gate. Money goes to your Stripe account. No terminal. No percentage of
+          sales.
         </p>
         <Link
-          href="/dashboard/settings/billing?plan=card"
+          href="/dashboard/settings/billing"
           className="mt-4 inline-flex rounded-[var(--radius-pill)] border border-[var(--field)] px-4 py-2.5 text-sm font-semibold text-[var(--field)] hover:bg-[var(--wash)]"
         >
-          Subscribe to Card plan
+          Upgrade to Pro
         </Link>
       </section>
     );

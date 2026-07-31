@@ -9,7 +9,7 @@ import {
 } from "@/lib/paypal";
 import {
   hasComplimentaryAccess,
-  ownerHasCardTierAccess,
+  ownerHasProAccess,
 } from "@/lib/owner-trial";
 import { syncPayPalMerchantStatus } from "@/lib/paypal-sync";
 import {
@@ -33,7 +33,7 @@ export default async function PayPalSettingsPage({
 }) {
   const { owner, user } = await requireOwner();
   const params = await searchParams;
-  const cardTier = ownerHasCardTierAccess(owner, {
+  const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
   });
@@ -117,7 +117,7 @@ export default async function PayPalSettingsPage({
 
       {!cardTier ? (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          PayPal is on the Card plan. Your account does not have Card-tier access
+          PayPal is on Stallside Pro. Your account does not have Pro access
           yet.
         </p>
       ) : null}

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { localTransferForCurrency } from "@/lib/local-transfer";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
 
 export async function updateStandPayments(standId: string, formData: FormData) {
@@ -15,7 +15,7 @@ export async function updateStandPayments(standId: string, formData: FormData) {
   if (!existing) return { error: "Stand not found." };
 
   const method = localTransferForCurrency(existing.currency);
-  const cardTier = ownerHasCardTierAccess(owner, {
+  const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
   });
@@ -71,7 +71,7 @@ export async function updateStandPayments(standId: string, formData: FormData) {
   }
 
   if (acceptCard && !cardTier) {
-    return { error: "Card / Tap & Go requires the Card plan." };
+    return { error: "Card / Tap & Go requires Stallside Pro." };
   }
   if (acceptCard && !cardReady) {
     return { error: "Finish Stripe setup in Settings before enabling card." };

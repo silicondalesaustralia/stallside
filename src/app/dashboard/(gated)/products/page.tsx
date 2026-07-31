@@ -8,7 +8,7 @@ import {
 import ProductLifecycleActions from "./ProductLifecycleActions";
 import RestockNotifyPanel from "./RestockNotifyPanel";
 import { loadRestockPanels } from "./load-restock-panels";
-import { ownerHasCardTierAccess } from "@/lib/owner-trial";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 
 export default async function ProductsPage({
@@ -32,7 +32,7 @@ export default async function ProductsPage({
   const showRestock =
     !showArchived &&
     isRestockAlertsEnabled() &&
-    ownerHasCardTierAccess(owner, {
+    ownerHasProAccess(owner, {
       email: user.email,
       role: user.role,
       lifetimeAccess: owner.lifetimeAccess,

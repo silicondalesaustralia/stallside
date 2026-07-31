@@ -14,7 +14,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
       { label: "Collections", href: "/dashboard/collections" },
     ],
     steps: [
-      "Pre-orders need Stripe connected so customers can pay to reserve. Available on your free trial and on the Card plan.",
+      "Pre-orders need Stripe connected so customers can pay to reserve. Available on your free trial and on Stallside Pro.",
       "On a product, turn on Pre-order and set the order-by deadline and collection date/time. Optionally show exact slots left publicly. Add a short collection note if buyers need directions.",
       "Stock on a pre-order product is the number of orders you will take — each paid order counts against that cap. Duplicate a product to reuse settings, hide it from the stand page while keeping the direct link live, or archive it to bring back later.",
       "Customers browse your stand, add pre-order items, and pay by card only. They enter name, email, and optional phone so you can contact them.",
@@ -34,7 +34,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
     related: ["pre-orders", "first-stand", "customer-payments"],
     ctas: [{ label: "My stands", href: "/dashboard/stands" }],
     steps: [
-      "Branding is available on your free trial and on the Card plan. Open My stands → your stand → Branding.",
+      "Branding is available on your free trial and on Stallside Pro. Open My stands → your stand → Branding.",
       "Upload a logo (JPEG, PNG, or WebP). It appears on the public stall header and on your QR poster.",
       "Pick a primary colour for buttons and a secondary colour for prices and stock labels. Use Stallside default to clear a custom colour.",
       "Add Instagram, Facebook, TikTok, YouTube, or website links. Leave a field blank to hide that icon.",
