@@ -19,14 +19,14 @@ export function featureAnnounceHtml(name: string): string {
     FEATURE_ANNOUNCE_SUBJECT,
     `
       <p>Hi ${greetName(name)},</p>
-      <p>We&apos;ve updated how Stallside plans work — and shipped more tools for
+      <p>We&apos;ve updated how Stallside plans work - and shipped more tools for
       stall owners.</p>
 
       <p><strong>Starter is free forever</strong></p>
-      <p>Cash, PayID (AU), products and options, stock, QR posters, alerts, and the
-      card-demand counter — no card, no expiry. New owners also get a
+      <p>Cash, PayID (Australia only), products and options, stock, QR posters, alerts,
+      and the card-demand counter - no card, no expiry. New owners also get a
       <strong>30-day Pro trial</strong> (Tap &amp; Go, pre-orders, branding, restock
-      notify). When it ends you stay on Starter — the dashboard never locks.</p>
+      notify). When it ends you stay on Starter - the dashboard never locks.</p>
 
       <p><strong>What&apos;s new</strong></p>
       <ul>

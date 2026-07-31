@@ -18,7 +18,7 @@ export default function CardInterestButton({
   if (done) {
     return (
       <p className="text-sm text-[var(--muted)]">
-        Thanks — we&apos;ve noted you&apos;d have paid by card.
+        Thanks - we&apos;ve noted you&apos;d have paid by card.
       </p>
     );
   }

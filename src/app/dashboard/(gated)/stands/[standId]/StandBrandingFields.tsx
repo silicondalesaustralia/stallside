@@ -14,7 +14,7 @@ export type StandBrandingValues = {
   websiteUrl: string | null;
 };
 
-/** Branding inputs only — parent form owns submit. */
+/** Branding inputs only - parent form owns submit. */
 export default function StandBrandingFields({
   logoUrl,
   accentColor,

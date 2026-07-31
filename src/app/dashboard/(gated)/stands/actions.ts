@@ -70,7 +70,7 @@ export async function updateStand(standId: string, formData: FormData) {
   });
   if (!existing) return { error: "Stand not found." };
 
-  // Always read as strings — empty must become null in Prisma (undefined = skip).
+  // Always read as strings - empty must become null in Prisma (undefined = skip).
   const description = String(formData.get("description") ?? "").trim();
   const locationLabel = String(formData.get("locationLabel") ?? "").trim();
 

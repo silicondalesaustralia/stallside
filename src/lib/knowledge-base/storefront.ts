@@ -16,7 +16,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
     steps: [
       "Pre-orders need Stripe connected so customers can pay to reserve. Available on your free trial and on Stallside Pro.",
       "On a product, turn on Pre-order and set the order-by deadline and collection date/time. Optionally show exact slots left publicly. Add a short collection note if buyers need directions.",
-      "Stock on a pre-order product is the number of orders you will take — each paid order counts against that cap. Duplicate a product to reuse settings, hide it from the stand page while keeping the direct link live, or archive it to bring back later.",
+      "Stock on a pre-order product is the number of orders you will take - each paid order counts against that cap. Duplicate a product to reuse settings, hide it from the stand page while keeping the direct link live, or archive it to bring back later.",
       "Customers browse your stand, add pre-order items, and pay by card only. They enter name, email, and optional phone so you can contact them.",
       "Take-now and pre-order items cannot share one checkout. Different collection days also need separate checkouts.",
       "After payment, the buyer gets an email with order details. You get a sale alert with their name and email.",
@@ -28,7 +28,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
     slug: "stand-branding",
     title: "Logo, colours, and social links",
     summary:
-      "Make your public stall and QR poster look like your farm — logo, brand colours, and social icons.",
+      "Make your public stall and QR poster look like your farm - logo, brand colours, and social icons.",
     videoUrl: null,
     omitVideo: true,
     related: ["pre-orders", "first-stand", "customer-payments"],

@@ -68,7 +68,7 @@ export default function PrivacyContent() {
           Collecting opt-ins is available on Starter; sending restock emails is a Pro
           feature. {LEGAL_ENTITY} ({APP_NAME}) is the controller: we store your email and
           consent record solely for that purpose. Stand owners see a subscriber count and can
-          ask us to send a restock notice — they never receive or export your address. Emails
+          ask us to send a restock notice - they never receive or export your address. Emails
           are delivered via Resend (processor). You can unsubscribe any time via the link in
           each email (no login). We retain active subscriptions until you unsubscribe or the
           stand is removed; unsubscribed records may be kept briefly for audit.

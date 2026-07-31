@@ -59,7 +59,7 @@ export default function DemoStandPanel({
       </div>
       <p className="text-center text-sm text-[var(--muted)]">
         Scan the QR on your real phone as a customer, or open the desktop phone
-        demo — then see the sale alert on the stall owner&apos;s phone.
+        demo - then see the sale alert on the stall owner&apos;s phone.
       </p>
     </div>
   );

@@ -57,7 +57,7 @@ export function standPaymentBrands(
   return brands;
 }
 
-/** PayPal at checkout — off until Connect is enabled for this environment. */
+/** PayPal at checkout - off until Connect is enabled for this environment. */
 export function standOffersPayPal(
   stand: Pick<StandPaymentFlags, "acceptPayPal">,
   owner: OwnerPaymentReady,
@@ -91,7 +91,7 @@ export function standOffersCard(
 
 /**
  * Brands for the public /demo QR sign.
- * Cash + PayID (AU) + Card only — wallets need a real device/account and aren’t demoable.
+ * Cash + PayID (AU) + Card only - wallets need a real device/account and aren’t demoable.
  */
 export function demoSignPaymentBrands(
   stand: StandPaymentFlags & { slug: string },

@@ -10,7 +10,7 @@ import { marketingPageGraphSchema } from "@/lib/schema";
 
 const title = "Stand gallery";
 const description =
-  "Real roadside stands running Stallside — farm eggs, honesty stalls, and more.";
+  "Real roadside stands running Stallside - farm eggs, honesty stalls, and more.";
 
 export const metadata: Metadata = {
   title,

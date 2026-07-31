@@ -143,7 +143,7 @@ export default async function AdminOverviewPage({
                   </p>
                 </div>
                 <p className="text-[var(--muted)]">
-                  {owner.subscriptionPlan ?? "—"} ·{" "}
+                  {owner.subscriptionPlan ?? "-"} ·{" "}
                   {owner.subscriptionStatus.toLowerCase()} · LTV{" "}
                   {formatMoney(owner.lifetimePaidCents, saas.currency)}
                 </p>

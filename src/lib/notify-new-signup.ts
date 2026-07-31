@@ -10,7 +10,7 @@ export async function notifyAdminNewSignup(input: {
   ownerId?: string;
   lifetime?: boolean;
 }) {
-  const name = input.name.trim() || "—";
+  const name = input.name.trim() || "-";
   const email = input.email.trim().toLowerCase();
   const adminUrl = input.ownerId
     ? `${appBaseUrl()}/admin/owners/${input.ownerId}`

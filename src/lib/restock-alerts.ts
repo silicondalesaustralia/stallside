@@ -3,9 +3,9 @@ export function isRestockAlertsEnabled(): boolean {
   return process.env.RESTOCK_ALERTS_ENABLED !== "0";
 }
 
-/** Exact wording shown at opt-in — stored as consentText. */
+/** Exact wording shown at opt-in - stored as consentText. */
 export const RESTOCK_CONSENT_TEXT =
-  "Want to hear when this stand restocks? Join the list — unsubscribe anytime. Nothing else.";
+  "Want to hear when this stand restocks? Join the list - unsubscribe anytime. Nothing else.";
 
 export const RESTOCK_CONSENT_SOURCE = "checkout_success";
 

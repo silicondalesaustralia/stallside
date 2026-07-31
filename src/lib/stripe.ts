@@ -23,7 +23,7 @@ export function getStripe(): Stripe {
   }
   if (/[^\x20-\x7E]/.test(key)) {
     throw new Error(
-      "STRIPE_SECRET_KEY has invalid characters — remove quotes/newlines in Vercel env",
+      "STRIPE_SECRET_KEY has invalid characters - remove quotes/newlines in Vercel env",
     );
   }
   if (!stripeClient) {
@@ -36,7 +36,7 @@ export function isStripeConfigured(): boolean {
   return Boolean(cleanEnvSecret(process.env.STRIPE_SECRET_KEY));
 }
 
-/** Legacy Cash prices — keep resolvable for webhook sync until all Cash subs closed. */
+/** Legacy Cash prices - keep resolvable for webhook sync until all Cash subs closed. */
 const CASH_PRICE_ENV: Record<BillingCurrency, string> = {
   AUD: "STRIPE_PRICE_ID_CASH_AUD",
   USD: "STRIPE_PRICE_ID_CASH_USD",
@@ -51,7 +51,7 @@ const PRO_PRICE_ENV: Record<BillingCurrency, string> = {
   EUR: "STRIPE_PRICE_ID_PRO_EUR",
 };
 
-/** Legacy Card env names — fallback when PRO_* not set. */
+/** Legacy Card env names - fallback when PRO_* not set. */
 const CARD_PRICE_ENV: Record<BillingCurrency, string> = {
   AUD: "STRIPE_PRICE_ID_CARD_AUD",
   USD: "STRIPE_PRICE_ID_CARD_USD",

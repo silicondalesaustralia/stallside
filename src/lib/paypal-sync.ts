@@ -5,7 +5,7 @@ import {
   merchantPaymentsReady,
 } from "@/lib/paypal-connect";
 
-/** Persist PayPal merchant status. No revalidatePath — safe during RSC render. */
+/** Persist PayPal merchant status. No revalidatePath - safe during RSC render. */
 export async function syncPayPalMerchantStatus(input: {
   ownerId: string;
   trackingId: string;

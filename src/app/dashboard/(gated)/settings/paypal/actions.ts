@@ -121,7 +121,7 @@ export async function refreshPayPalStatus(formData?: FormData) {
       ? String(formData.get("merchantIdInPayPal") ?? "").trim()
       : "";
 
-  // Direct-linked accounts: partner merchant-status APIs often 403 — keep local flags.
+  // Direct-linked accounts: partner merchant-status APIs often 403 - keep local flags.
   if (
     owner.paypalMerchantId &&
     owner.paypalMerchantId === paypalDirectMerchantId()

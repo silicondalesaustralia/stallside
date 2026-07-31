@@ -24,7 +24,7 @@ export default function StarterUpgradeSignals({
             {cardInterestCount === 1 ? "person" : "people"} wanted to pay by
             card
             {cardInterestCents > 0
-              ? ` — about ${formatMoney(cardInterestCents, currency)}`
+              ? ` - about ${formatMoney(cardInterestCents, currency)}`
               : ""}
             .
           </p>

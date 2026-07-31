@@ -32,7 +32,7 @@ export default async function AdminInvitesPage({
           Free for Life invites
         </h1>
         <p className="mt-1 text-[var(--muted)]">
-          Set seats to 1 for a private DM, or 20 for a Facebook group post — one
+          Set seats to 1 for a private DM, or 20 for a Facebook group post - one
           link, capped redemptions, Card / Tap &amp; Go forever.
         </p>
       </div>
@@ -58,7 +58,7 @@ export default async function AdminInvitesPage({
           <input
             type="text"
             name="note"
-            placeholder="FB farmers group — Jul 2026"
+            placeholder="FB farmers group - Jul 2026"
             className="rounded-[var(--radius)] border border-[var(--line)] px-3 py-2 outline-none ring-[var(--leaf)] focus:ring-2"
           />
         </label>
@@ -73,7 +73,7 @@ export default async function AdminInvitesPage({
       {createdUrl ? (
         <div className="rounded-[var(--radius)] border border-[var(--leaf)] bg-[var(--panel)] p-4">
           <p className="text-sm font-semibold text-[var(--field)]">
-            New invite ready — copy and post it
+            New invite ready - copy and post it
           </p>
           <InviteCopyLink url={createdUrl} />
         </div>
@@ -127,7 +127,7 @@ export default async function AdminInvitesPage({
                       )}
                     </td>
                     <td className="py-3 pr-3 text-[var(--muted)]">
-                      {invite.note || "—"}
+                      {invite.note || "-"}
                     </td>
                     <td className="py-3 text-[var(--muted)]">
                       {invite.createdAt.toLocaleDateString()}

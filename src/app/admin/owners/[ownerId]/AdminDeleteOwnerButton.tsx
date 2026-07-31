@@ -30,7 +30,7 @@ export default function AdminDeleteOwnerButton({
       <h2 className="text-lg font-semibold text-[var(--gone)]">Delete user</h2>
       <p className="mt-1 text-sm text-[var(--muted)]">
         Permanently wipe {businessName}
-        {email ? ` (${email})` : ""} from the database — same as Settings →
+        {email ? ` (${email})` : ""} from the database - same as Settings →
         Delete account.
       </p>
 

@@ -36,7 +36,7 @@ export const LANDING_FAQS: FaqItem[] = [
   },
   {
     question: "How much does it cost?",
-    answer: `Starter is free forever. New owners also get a 30-day Pro free trial (no card required); when it ends you stay on Starter — the dashboard never locks. Stallside Pro is ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site. Pick billing currency at signup or in billing settings.`,
+    answer: `Starter is free forever. New owners also get a 30-day Pro free trial (no card required); when it ends you stay on Starter - the dashboard never locks. Stallside Pro is ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site. Pick billing currency at signup or in billing settings.`,
   },
   {
     question: "What happens when the Pro trial ends?",

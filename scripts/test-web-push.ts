@@ -63,7 +63,7 @@ async function main() {
 
     if (!devices.length) {
       console.error(`
-FAIL: No PushDevice rows for this owner — nothing to send to.
+FAIL: No PushDevice rows for this owner - nothing to send to.
 
 On the phone:
   1. Open Stallside from the Home Screen icon (iPhone requires this)
@@ -107,7 +107,7 @@ On the phone:
         console.error(`FAIL web device (${device.id.slice(0, 8)}…)`, status ?? error);
         if (status === 404 || status === 410) {
           await prisma.pushDevice.delete({ where: { id: device.id } });
-          console.error("  Removed stale subscription from DB — re-enable Phone push on phone.");
+          console.error("  Removed stale subscription from DB - re-enable Phone push on phone.");
         }
       }
     }

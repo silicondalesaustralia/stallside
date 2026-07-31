@@ -1,4 +1,4 @@
-/** Idle session lifetime — refreshed on each matched middleware hit. */
+/** Idle session lifetime - refreshed on each matched middleware hit. */
 export const SESSION_MAX_AGE_SEC = 90 * 24 * 60 * 60; // 90 days
 
 /** Re-issue the JWT cookie at most this often (Auth.js default). */

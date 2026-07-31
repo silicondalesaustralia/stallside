@@ -24,7 +24,7 @@ export function cashPlanExtraBlurb(currency: BillingCurrency): string | null {
     : null;
 }
 
-/** @deprecated Prefer starter wording — kept for call sites during rename. */
+/** @deprecated Prefer starter wording - kept for call sites during rename. */
 export const FREE_TRIAL_BLURB =
   "30-day Pro free trial includes every Pro feature. No card required. Then Starter stays free forever.";
 
@@ -54,15 +54,34 @@ export const CARD_PLAN_FEATURES = [
   "Social links - Instagram, Facebook, TikTok, YouTube, or your website on the stall",
 ] as const;
 
-export const STARTER_PLAN_FEATURES = [
+const STARTER_FEATURES_CORE = [
   "Cash at the stand (customer self-confirms)",
-  "PayID bank transfer (Australia / AUD)",
   "Unlimited products and product options / variants",
   "Real stock counts and printable QR posters",
   "Sale alerts and low-stock alerts (email / push)",
   "Orders and inventory dashboard",
-  "Card-demand counter — see how many shoppers wanted to pay by card",
+  "Card-demand counter - see how many shoppers wanted to pay by card",
 ] as const;
+
+const STARTER_PAYID_FEATURE =
+  "PayID bank transfer (Australia only)" as const;
+
+/** Starter bullets for pricing - PayID only when region is Australia. */
+export function starterPlanFeatures(
+  currency: BillingCurrency,
+): readonly string[] {
+  if (currency === "AUD") {
+    return [
+      STARTER_FEATURES_CORE[0],
+      STARTER_PAYID_FEATURE,
+      ...STARTER_FEATURES_CORE.slice(1),
+    ];
+  }
+  return STARTER_FEATURES_CORE;
+}
+
+/** Default list (Australia) for static marketing columns. */
+export const STARTER_PLAN_FEATURES = starterPlanFeatures("AUD");
 
 /** Aliases for new naming. */
 export const PRO_PLAN_BLURB = CARD_PLAN_BLURB;

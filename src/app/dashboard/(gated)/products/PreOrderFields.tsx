@@ -27,7 +27,7 @@ export default function PreOrderFields({
 
   return (
     <fieldset className="flex flex-col gap-3 rounded-lg border border-[var(--line)] p-4">
-      {/* Hidden flag — controlled checkboxes are unreliable in FormData/actions. */}
+      {/* Hidden flag - controlled checkboxes are unreliable in FormData/actions. */}
       {on ? <input type="hidden" name="isPreOrder" value="true" /> : null}
       <label
         className={`flex items-center gap-2 text-sm font-medium ${
@@ -91,7 +91,7 @@ export default function PreOrderFields({
             <input
               name="collectionNote"
               maxLength={200}
-              placeholder="Collect from the stall 8am–noon Sat"
+              placeholder="Collect from the stall 8am-noon Sat"
               defaultValue={defaultCollectionNote ?? ""}
               className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
             />

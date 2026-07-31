@@ -23,7 +23,7 @@ export default function BillingPlanForms({
   proPrices: PriceRow[];
   showPro: boolean;
   proConfigured: boolean;
-  /** @deprecated ignored — Cash is free forever */
+  /** @deprecated ignored - Cash is free forever */
   cashPrices?: PriceRow[];
   cardPrices?: PriceRow[];
   showCash?: boolean;

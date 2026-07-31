@@ -138,7 +138,7 @@ export default function PayPalCheckoutButton({
       .render(`#${hostId}`)
       .catch(() => {
         setFallback(true);
-        onErrorRef.current("Could not render PayPal — use Continue below.");
+        onErrorRef.current("Could not render PayPal - use Continue below.");
       });
   }, [sdkReady, disabled, hostId, standSlug, sandbox]);
 

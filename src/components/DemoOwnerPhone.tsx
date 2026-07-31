@@ -78,7 +78,7 @@ export default function DemoOwnerPhone({
       <ul className="list-disc space-y-2 pl-5 text-base leading-snug text-[var(--muted)]">
         <li>
           This is the <strong className="font-semibold text-[var(--field)]">stall owner&apos;s phone</strong>{" "}
-          — separate from the customer checkout you just completed.
+          - separate from the customer checkout you just completed.
         </li>
         <li>
           When a sale goes through, the owner gets a push-style alert like the

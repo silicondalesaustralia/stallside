@@ -39,7 +39,7 @@ export default function ProductEditForm({ product }: { product: ProductFields })
   const priceDefault = (product.priceCents / 100).toFixed(2);
 
   function onSubmit(formData: FormData) {
-    // Snapshot before transition — React may reset the live FormData (files + fields).
+    // Snapshot before transition - React may reset the live FormData (files + fields).
     const payload = new FormData();
     for (const [key, value] of formData.entries()) {
       payload.append(key, value);

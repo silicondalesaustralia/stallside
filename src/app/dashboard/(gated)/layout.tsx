@@ -1,4 +1,4 @@
-/** Dashboard routes — Starter is free forever; no payment lock redirect. */
+/** Dashboard routes - Starter is free forever; no payment lock redirect. */
 export default function GatedDashboardLayout({
   children,
 }: {

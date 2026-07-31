@@ -1,4 +1,4 @@
-# Release notes — Starter / Pro
+# Release notes - Starter / Pro
 
 What shipped in this release (subscription model change + conversion mechanics).  
 Source of truth for ongoing behaviour: [SUBSCRIPTIONS-AND-PAYMENTS.md](./SUBSCRIPTIONS-AND-PAYMENTS.md).
@@ -20,7 +20,7 @@ The dashboard never locks. Trial ends → Starter. Card-demand counter ships in 
 | **Stallside Pro** | AUD $19.99 / USD $14.99 / GBP £11.99 / EUR €14.99 per site / month | Stripe Billing Checkout only |
 
 - **30-day Pro trial** still auto-starts at signup (no card). One per account.
-- After trial: account stays on **Starter** — not locked.
+- After trial: account stays on **Starter** - not locked.
 - Lifetime / complimentary invites map to **Pro**.
 - Cash plan is **no longer sold**. Legacy Cash Price IDs kept resolvable for migration only.
 - Annual / multi-site pricing: **not** in this release.
@@ -36,7 +36,7 @@ The dashboard never locks. Trial ends → Starter. Card-demand counter ships in 
 
 ### Pro adds
 
-- Tap & Go (Stripe Connect — card / Apple Pay / Google Pay)
+- Tap & Go (Stripe Connect - card / Apple Pay / Google Pay)
 - Pre-orders + Collections (+ Email all)
 - Stand branding + social on the public stall
 - Restock **notify** (send)
@@ -61,13 +61,13 @@ The dashboard never locks. Trial ends → Starter. Card-demand counter ships in 
 
 ---
 
-## Card-demand counter (launch blocker — shipped)
+## Card-demand counter (launch blocker - shipped)
 
 Shopper on a stand without card checkout can tap **“I'd have paid by card”**.
 
 - New `CardInterest` rows: stand, subtotal, currency, timestamp (no PII).
 - Cookie rate-limit (~1/hour per stand).
-- Owner dashboard: *“N people wanted to pay by card this month — about $X”* + Upgrade CTA.
+- Owner dashboard: *“N people wanted to pay by card this month - about $X”* + Upgrade CTA.
 - Also feeds day-45 trial email stats.
 
 ---

@@ -29,7 +29,7 @@ export default function GallerySubmitForm({
             className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
             defaultValue=""
           >
-            <option value="">—</option>
+            <option value="">-</option>
             {stands.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}

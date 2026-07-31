@@ -53,7 +53,7 @@ export function isEmbeddedCheckout(): boolean {
   return typeof window !== "undefined" && window.self !== window.top;
 }
 
-/** Notify /demo phone frame — postMessage when embedded, BroadcastChannel for card-in-new-tab. */
+/** Notify /demo phone frame - postMessage when embedded, BroadcastChannel for card-in-new-tab. */
 export function notifyDemoSale(payload: Omit<DemoSalePayload, "type">): void {
   if (typeof window === "undefined") return;
 

@@ -8,6 +8,8 @@ import { FREE_TRIAL_BLURB } from "@/lib/plan-copy";
 import {
   BILLING_CURRENCIES,
   BILLING_CURRENCY_STORAGE_KEY,
+  BILLING_REGIONS,
+  billingRegionLabel,
   cardPlanCents,
   detectBrowserBillingCurrency,
   type BillingCurrency,
@@ -29,7 +31,7 @@ export default function PricingTiers() {
     setCurrency(detectBrowserBillingCurrency());
   }, []);
 
-  function selectCurrency(next: BillingCurrency) {
+  function selectRegion(next: BillingCurrency) {
     setCurrency(next);
     try {
       localStorage.setItem(BILLING_CURRENCY_STORAGE_KEY, next);
@@ -55,23 +57,26 @@ export default function PricingTiers() {
         pay a fee to Stallside.
       </p>
 
+      <p className="mb-2 text-sm font-semibold text-[var(--field)]">
+        Where Can I Use Stallside?
+      </p>
       <div
         className="mb-6 flex flex-wrap gap-2"
         role="group"
-        aria-label="Billing currency"
+        aria-label="Where Can I Use Stallside?"
       >
-        {BILLING_CURRENCIES.map((code) => (
+        {BILLING_REGIONS.map(({ currency: code, label }) => (
           <button
             key={code}
             type="button"
-            onClick={() => selectCurrency(code)}
+            onClick={() => selectRegion(code)}
             className={`rounded-[var(--radius-pill)] border px-3 py-1.5 text-sm font-semibold transition ${
               currency === code
                 ? "border-[var(--leaf)] bg-[var(--leaf)] text-white"
                 : "border-[var(--line)] bg-white text-[var(--field)] hover:border-[var(--leaf)]"
             }`}
           >
-            {code}
+            {label}
           </button>
         ))}
       </div>
@@ -125,7 +130,8 @@ export default function PricingTiers() {
 
       <p className="mt-6 text-sm text-[var(--muted)]">
         After the 30-day Pro trial you stay on Starter free forever unless you
-        upgrade. Cancel Pro anytime. No transaction fees. Prices in {currency}.
+        upgrade. Cancel Pro anytime. No transaction fees. Prices for{" "}
+        {billingRegionLabel(currency)} ({currency}).
       </p>
     </section>
   );

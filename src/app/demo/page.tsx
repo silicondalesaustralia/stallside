@@ -17,7 +17,7 @@ import { demoSignPaymentBrands } from "@/lib/stand-payment-brands";
 
 export const metadata: Metadata = {
   title: "Try Demo",
-  description: `Scan a live ${APP_NAME} QR and try checkout — cash, PayID, or Stripe test cards.`,
+  description: `Scan a live ${APP_NAME} QR and try checkout - cash, PayID, or Stripe test cards.`,
   alternates: { canonical: "/demo" },
 };
 

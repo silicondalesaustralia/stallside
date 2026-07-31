@@ -2,6 +2,23 @@ export const BILLING_CURRENCIES = ["AUD", "USD", "GBP", "EUR"] as const;
 
 export type BillingCurrency = (typeof BILLING_CURRENCIES)[number];
 
+/** Homepage / billing region picker - one label per billing currency. */
+export const BILLING_REGIONS: readonly {
+  currency: BillingCurrency;
+  label: string;
+}[] = [
+  { currency: "AUD", label: "Australia" },
+  { currency: "USD", label: "United States" },
+  { currency: "GBP", label: "United Kingdom" },
+  { currency: "EUR", label: "Europe" },
+] as const;
+
+export function billingRegionLabel(currency: BillingCurrency): string {
+  return (
+    BILLING_REGIONS.find((r) => r.currency === currency)?.label ?? currency
+  );
+}
+
 /** Fixed list prices (not live FX). Per site / month. */
 export const CASH_PLAN_BY_CURRENCY: Record<BillingCurrency, number> = {
   AUD: 699,

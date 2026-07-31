@@ -23,7 +23,7 @@ export async function submitGalleryStand(
   const file = formData.get("photo");
 
   if (displayName.length < 2 || displayName.length > 120) {
-    return { error: "Enter a stand name (2–120 characters)." };
+    return { error: "Enter a stand name (2-120 characters)." };
   }
   if (location.length < 2 || location.length > 120) {
     return { error: "Enter a location (town or region is enough)." };

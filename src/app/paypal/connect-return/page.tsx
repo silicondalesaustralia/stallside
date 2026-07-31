@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 
-/** PayPal Partner return — no session yet; bounce through login if needed. */
+/** PayPal Partner return - no session yet; bounce through login if needed. */
 export default async function PayPalConnectReturnPage({
   searchParams,
 }: {

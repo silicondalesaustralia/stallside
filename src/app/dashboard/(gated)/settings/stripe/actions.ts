@@ -109,7 +109,7 @@ export async function disconnectStripe() {
     try {
       await getStripe().accounts.del(accountId);
     } catch (error) {
-      // Balance or Stripe-side lock — Stallside is already unlinked.
+      // Balance or Stripe-side lock - Stallside is already unlinked.
       console.error("Stripe connected-account delete after disconnect failed", error);
     }
   }

@@ -22,7 +22,7 @@ export async function sendCancellationFeedback(input: {
     `
       <p>Hi ${greetName(input.name ?? "")},</p>
       <p>Sorry to see you leave <strong>${APP_NAME} Pro</strong>. Your account stays on
-      <strong>Starter free forever</strong> — stands, products, QR posters, and order
+      <strong>Starter free forever</strong> - stands, products, QR posters, and order
       history remain. Nothing locks.</p>
       <p>If you have a minute, what worked, what didn&apos;t, or what would have made
       you stay helps us improve:</p>

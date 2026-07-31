@@ -26,8 +26,8 @@ export async function sendProLapseDay0(r: Recipient) {
       <p>Your <strong>${APP_NAME} Pro</strong> access has ended.
       <strong>You're on Starter now. Nothing's lost.</strong></p>
       <p>Your stands, products, QR posters, and orders are still here. Cash and PayID
-      keep working. Tap &amp; Go, new pre-orders, branding, and restock notify are
-      paused until you upgrade.</p>
+      (Australia only) keep working. Tap &amp; Go, new pre-orders, branding, and
+      restock notify are paused until you upgrade.</p>
       <p>You can still fulfil paid pre-orders in Collections.</p>
       ${ctaButton(L.billingPro, "Upgrade to Pro")}
       <p>Questions? <strong>hello@stallside.app</strong></p>
@@ -35,7 +35,7 @@ export async function sendProLapseDay0(r: Recipient) {
   );
   await send(
     r.to,
-    `You're on ${APP_NAME} Starter — nothing's lost`,
+    `You're on ${APP_NAME} Starter - nothing's lost`,
     html,
     "lifecycle_pro_lapse_day0",
   );
@@ -45,12 +45,12 @@ export async function sendProLapseDay0(r: Recipient) {
 export async function sendProLapseDay23(r: Recipient) {
   const L = lifecycleLinks();
   const html = emailShell(
-    "Still on Starter — here's what Pro adds back",
+    "Still on Starter - here's what Pro adds back",
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>It&apos;s been a few weeks on <strong>Starter</strong> (free forever).</p>
-      <p><strong>You still have:</strong> cash &amp; PayID, products and options, stock,
-      QR posters, alerts, and the card-demand counter.</p>
+      <p><strong>You still have:</strong> cash &amp; PayID (Australia only), products
+      and options, stock, QR posters, alerts, and the card-demand counter.</p>
       <p><strong>Pro brings back:</strong> Tap &amp; Go, pre-orders, branding, and
       sending restock emails to the regulars already on your list.</p>
       ${ctaButton(L.billingPro, "See Stallside Pro")}
@@ -59,13 +59,13 @@ export async function sendProLapseDay23(r: Recipient) {
   );
   await send(
     r.to,
-    `Still on ${APP_NAME} Starter — Pro is ready when you are`,
+    `Still on ${APP_NAME} Starter - Pro is ready when you are`,
     html,
     "lifecycle_pro_lapse_day23",
   );
 }
 
-/** ~45 days after Pro lapse — card-demand / restock stats. */
+/** ~45 days after Pro lapse - card-demand / restock stats. */
 export async function sendProLapseDay45(
   r: Recipient,
   stats?: { cardInterestCount?: number; restockCount?: number },
@@ -80,7 +80,7 @@ export async function sendProLapseDay45(
          ${restockN > 0 ? `<strong>${restockN}</strong> regulars are waiting on your restock list.` : ""}
          </p>`
       : `<p>Shoppers on Starter can still tell you they wanted card, and join your restock
-         list — Pro is how you take the card and send the email.</p>`;
+         list - Pro is how you take the card and send the email.</p>`;
   const html = emailShell(
     "What Pro would have done",
     `

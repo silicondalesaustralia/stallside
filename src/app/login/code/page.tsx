@@ -23,7 +23,7 @@ export default async function LoginCodePage({
         Enter your code
       </h1>
       <p className="mt-3 text-[var(--muted)]">
-        We emailed a 6-digit code to <strong>{email}</strong>. Stay in this app —
+        We emailed a 6-digit code to <strong>{email}</strong>. Stay in this app -
         type it in here.
       </p>
       <LoginCodeForm email={email} callbackUrl={callbackUrl} />

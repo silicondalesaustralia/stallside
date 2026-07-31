@@ -25,7 +25,7 @@ export default async function LoginPage({
         Owner sign in
       </h1>
       <p className="mt-2 text-[var(--muted)]">
-        We&apos;ll email a 6-digit code. Enter it here — no passwords, no App Store.
+        We&apos;ll email a 6-digit code. Enter it here - no passwords, no App Store.
       </p>
       <form action={requestLoginCode} className="mt-8 flex w-full flex-col gap-4">
         {callbackUrl !== "/dashboard" ? (

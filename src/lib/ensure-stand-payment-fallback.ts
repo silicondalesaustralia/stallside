@@ -31,7 +31,7 @@ export async function ensureStandsHaveStarterPaymentMethod(ownerId: string) {
       method != null &&
       stand.localTransferMethodId === method.id;
     const paypalOk = standOffersPayPal(stand, owner);
-    // On Starter, card is never offered — ignore acceptCard.
+    // On Starter, card is never offered - ignore acceptCard.
     const hasMethod = stand.acceptCash || payidOk || paypalOk;
     if (hasMethod) continue;
 

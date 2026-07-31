@@ -10,7 +10,7 @@ export function trialEndDate(from = new Date()): Date {
 
 /**
  * Start a no-card 30-day Pro trial when creating an owner profile.
- * After trialEndsAt the account stays on Starter (free forever) — no dashboard lock.
+ * After trialEndsAt the account stays on Starter (free forever) - no dashboard lock.
  * subscriptionPlan stays "starter" until they subscribe to Pro.
  */
 export async function createOwnerWithTrial(input: {

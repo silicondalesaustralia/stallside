@@ -7,7 +7,7 @@ const OWNER_INBOX = "jono@silicondales.com";
 
 export function contactInbox(): string {
   const configured = cleanEnvSecret(process.env.CONTACT_EMAIL)?.toLowerCase();
-  // Public brand address (hello@) has no mailbox yet — Resend accepts it then it vanishes.
+  // Public brand address (hello@) has no mailbox yet - Resend accepts it then it vanishes.
   if (!configured || configured.endsWith("@stallside.app")) {
     if (configured) {
       console.warn(

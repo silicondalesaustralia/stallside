@@ -11,7 +11,7 @@ import { requestLifetimeSignup } from "@/app/login/actions";
 
 const FEATURES = [
   "Cash and PayID (Australia only) at the stand",
-  "Tap & Go — card, Apple Pay, and Google Pay",
+  "Tap & Go - card, Apple Pay, and Google Pay",
   "PayPal when Connect is live",
   "Stock tracking, QR posters, sale and low-stock alerts",
   "No terminal, no hardware, no percentage of sales",
@@ -58,7 +58,7 @@ export default async function LifetimeInvitePage({
         Pro-for-life
       </h1>
       <p className="mt-2 text-[var(--muted)]">
-        You&apos;ve been invited to Stallside Pro forever — Tap &amp; Go, pre-orders,
+        You&apos;ve been invited to Stallside Pro forever - Tap &amp; Go, pre-orders,
         branding, and everything else Pro includes, with no subscription. Name and
         email only. We&apos;ll send a 6-digit sign-in code.
       </p>

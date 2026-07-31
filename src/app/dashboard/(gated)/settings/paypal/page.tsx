@@ -97,7 +97,7 @@ export default async function PayPalSettingsPage({
             ? "PayPal Partner Referrals is not enabled on this app yet (403 NOT_AUTHORIZED). Marketplace owner-onboarding needs PayPal partner approval."
             : "Marketplace Connect is disabled (PAYPAL_CONNECT_MODE=direct)."}{" "}
           Until Partner API is approved, use{" "}
-          <strong>Use platform PayPal (direct test)</strong> below — funds go to
+          <strong>Use platform PayPal (direct test)</strong> below - funds go to
           the Stallside PayPal Business account linked in env.
         </p>
       ) : null}

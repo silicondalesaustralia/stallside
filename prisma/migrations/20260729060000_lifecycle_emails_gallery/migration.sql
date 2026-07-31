@@ -49,7 +49,7 @@ VALUES (
   'Alexa''s Egg Stand',
   'Regional Australia',
   '/about/alexas-egg-stand-roadside-front.jpg',
-  'Her stall, still at the road — now with a Stallside QR on it.',
+  'Her stall, still at the road - now with a Stallside QR on it.',
   'ADMIN',
   'APPROVED',
   0,

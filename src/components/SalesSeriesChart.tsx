@@ -102,7 +102,7 @@ export default function SalesSeriesChart({
       >
         <title>
           {compare
-            ? `${title} — this period vs previous period`
+            ? `${title} - this period vs previous period`
             : title}
         </title>
         <path d={area} fill="var(--leaf)" opacity="0.12" />

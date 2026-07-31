@@ -317,7 +317,7 @@ export async function updateProduct(productId: string, formData: FormData) {
   }
 }
 
-/** Prefer archiveProduct — kept for older callers. */
+/** Prefer archiveProduct - kept for older callers. */
 export async function deleteProduct(productId: string) {
   return archiveProduct(productId);
 }

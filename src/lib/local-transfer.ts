@@ -1,4 +1,4 @@
-/** Currency-gated local transfer (PayID / Pix / UPI). Display + confirm only — no rails. */
+/** Currency-gated local transfer (PayID / Pix / UPI). Display + confirm only - no rails. */
 
 export type LocalTransferMethod = {
   id: string;

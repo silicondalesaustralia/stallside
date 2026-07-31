@@ -32,7 +32,7 @@ export default function QrWorkspace({
         className="print:hidden"
       />
 
-      {/* Unscaled print source for printQrSheet — layout follows selected size */}
+      {/* Unscaled print source for printQrSheet - layout follows selected size */}
       <div
         className="pointer-events-none fixed left-[-10000px] top-0 w-[210mm]"
         aria-hidden

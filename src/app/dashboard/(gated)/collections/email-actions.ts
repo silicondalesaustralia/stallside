@@ -80,7 +80,7 @@ export async function sendOrderCustomerEmail(input: {
   return { ok: true as const };
 }
 
-/** YYYY-MM-DD from collectionAt.toISOString() — matches Collections grouping. */
+/** YYYY-MM-DD from collectionAt.toISOString() - matches Collections grouping. */
 export async function sendCollectionDayCustomerEmails(input: {
   collectionDayKey: string;
   subject: string;

@@ -17,7 +17,7 @@ export default function AboutStory() {
         </p>
         <AboutPhotoPair
           {...ABOUT_STAND_PHOTOS}
-          caption="Her stall, still at the road — now with a Stallside QR on it."
+          caption="Her stall, still at the road - now with a Stallside QR on it."
         />
         <p>
           But two things kept going wrong, and they&apos;re the reason this exists.
@@ -60,7 +60,7 @@ export default function AboutStory() {
         </p>
         <AboutPhotoPair
           {...ABOUT_SIGN_PHOTOS}
-          caption="The printable QR sign — cash, PayID, and Tap & Go when the owner enables them."
+          caption="The printable QR sign - cash, PayID, and Tap & Go when the owner enables them."
         />
       </section>
 

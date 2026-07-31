@@ -11,7 +11,7 @@ export default function SignupPage() {
         Start free for {TRIAL_DAYS} days
       </h1>
       <p className="mt-2 text-[var(--muted)]">
-        Full Pro features for {TRIAL_DAYS} days. Name and email only — no
+        Full Pro features for {TRIAL_DAYS} days. Name and email only - no
         card required. We&apos;ll send a 6-digit sign-in code.
       </p>
       <form action={requestSignup} className="mt-8 flex w-full flex-col gap-4">

@@ -10,7 +10,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     omitVideo: true,
     imageSrc: "/guides/home-screen-stallside.jpg",
     imageAlt:
-      "iPhone Home Screen with the Stallside app icon highlighted — open Stallside from this icon, not from Safari",
+      "iPhone Home Screen with the Stallside app icon highlighted - open Stallside from this icon, not from Safari",
     imageWidth: 470,
     imageHeight: 1024,
     related: ["alerts-push", "first-stand"],
@@ -44,7 +44,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     ctas: [{ label: "Alert settings", href: "/dashboard/settings" }],
     steps: [
       "Open Settings → Alerts. Turn Email alerts on to get sale, low stock, sold out, and related emails.",
-      "Add extra alert emails (partner, farmhand) under Alert emails — your contact email is always included.",
+      "Add extra alert emails (partner, farmhand) under Alert emails - your contact email is always included.",
       "Turn Phone push alerts on, then tap Enable this phone and Allow when the browser asks.",
       "On iPhone, open Stallside from the Home Screen icon before enabling push. Safari tabs alone cannot keep reliable web push.",
       "When a customer completes a sale, you get a Sale alert. When stock hits your threshold or zero, you get Low stock or Sold out (about 6 hours cooldown per product).",
@@ -56,7 +56,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     slug: "billing",
     title: "Starter, Pro trial, and Stallside Pro",
     summary:
-      "Free forever Starter, 30-day Pro trial, upgrade, and cancel — the dashboard never locks.",
+      "Free forever Starter, 30-day Pro trial, upgrade, and cancel - the dashboard never locks.",
     videoUrl: null,
     related: ["customer-payments", "first-stand"],
     ctas: [{ label: "Billing", href: "/dashboard/settings/billing" }],
@@ -64,7 +64,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
       "Stallside’s subscription is what you pay for Pro features. It is separate from customer card payments at the stand.",
       "Starter is free forever for every account: cash, PayID (AU), products and options, stock, QR, and alerts.",
       "New owners get a 30-day Pro free trial (Tap & Go, pre-orders, branding, restock notify, and more). No card required.",
-      "When the trial ends you stay on Starter — nothing locks. Upgrade anytime from Settings → Billing.",
+      "When the trial ends you stay on Starter - nothing locks. Upgrade anytime from Settings → Billing.",
       "Stallside Pro is billed monthly via Stripe. Manage payment method or cancel in the Stripe Customer Portal.",
       "If you cancel Pro, you keep Pro until the paid period ends, then return to Starter. Data is retained (freeze, never delete).",
       "Delete account (Settings) immediately cancels any subscription, stops emails, and permanently removes your data.",
@@ -74,7 +74,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     slug: "customer-payments",
     title: "Accept card at the stand",
     summary:
-      "Connect Stripe so customers pay by card, Apple Pay, or Google Pay — separate from your Stallside subscription. PayPal coming soon.",
+      "Connect Stripe so customers pay by card, Apple Pay, or Google Pay - separate from your Stallside subscription. PayPal coming soon.",
     videoUrl: "https://youtu.be/keo53YG_Nks",
     comingSoon: false,
     related: ["billing", "first-stand", "pre-orders"],
@@ -87,7 +87,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
       "You need an active Pro trial or Stallside Pro (Settings → Billing) before Stripe Connect is available.",
       "Open Settings → Stripe (Card / Tap & Go) and tap Connect Stripe. Complete Stripe’s onboarding with your business and bank details.",
       "When charges are enabled, turn Card / Tap & Go on for each stand under My stands → manage.",
-      "Scan your Stallside QR on another phone and run a small test card sale. Payments are deposited directly into your Stripe account — Stallside never holds the money.",
+      "Scan your Stallside QR on another phone and run a small test card sale. Payments are deposited directly into your Stripe account - Stallside never holds the money.",
       "PayPal at checkout is coming soon. Cash and PayID (Australia only) work on Starter without Stripe.",
     ],
   },

@@ -50,7 +50,7 @@ export function printQrSheet(size: QrPrintSize = "a4") {
     return `<div class="qr-print-tile">${clone.outerHTML}</div>`;
   }).join("");
 
-  // Do not use noopener/noreferrer — both make window.open() return null in Chromium,
+  // Do not use noopener/noreferrer - both make window.open() return null in Chromium,
   // which falls back to printing this page (preview is print:hidden → blank sheet).
   const popup = window.open("", "_blank", "width=900,height=1200");
   if (!popup) {

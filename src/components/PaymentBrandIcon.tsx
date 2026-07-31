@@ -44,7 +44,7 @@ export default function PaymentBrandIcon({
   }
 
   if (brand === "payid") {
-    // Official PayID wordmark — wider than square icons.
+    // Official PayID wordmark - wider than square icons.
     const height =
       className.includes("size-7") || className.includes("h-7")
         ? "h-7"

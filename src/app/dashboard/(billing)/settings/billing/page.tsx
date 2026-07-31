@@ -89,7 +89,7 @@ export default async function BillingSettingsPage({
         <h1 className="text-3xl font-semibold tracking-tight">Stallside billing</h1>
         <p className="mt-2 text-[var(--muted)]">
           Starter is free forever. Pro adds Tap &amp; Go, pre-orders, branding,
-          and restock emails. This is what you pay Stallside — not stand customer
+          and restock emails. This is what you pay Stallside - not stand customer
           payments.
         </p>
       </div>

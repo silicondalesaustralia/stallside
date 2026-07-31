@@ -1,6 +1,6 @@
 export type QrPrintSize = "a4" | "half" | "quarter";
 
-/** Shared compact (half/quarter) sheet rules — also mirrored in globals for on-page previews. */
+/** Shared compact (half/quarter) sheet rules - also mirrored in globals for on-page previews. */
 export const QR_COMPACT_SHEET_CSS = `
   .qr-print-sheet--compact {
     display: grid !important;

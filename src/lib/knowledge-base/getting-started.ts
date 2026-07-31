@@ -19,7 +19,7 @@ export const gettingStartedArticles: KnowledgeArticle[] = [
       "Open the stand → QR & print (or the QR link from My stands). Pick a print size and print or download the sign.",
       "Put the QR at the stall. On another phone, scan it to open the public checkout page.",
       "Add the test product, choose Pay cash, confirm the amount, and tap that you have paid.",
-      "Back in the owner app, check Orders and Inventory — the sale should appear and stock should drop by one.",
+      "Back in the owner app, check Orders and Inventory - the sale should appear and stock should drop by one.",
       "Turn on email and/or phone push in Settings so the next real sale alerts you automatically.",
     ],
   },

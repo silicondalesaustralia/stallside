@@ -11,7 +11,7 @@ export default function KnowledgeVideo({ videoUrl, title }: KnowledgeVideoProps)
   if (!embed) {
     return (
       <div className="flex aspect-video items-center justify-center rounded-2xl border border-dashed border-[var(--line)] bg-[var(--panel)] px-6 text-center text-sm text-[var(--muted)]">
-        Video coming soon — written steps below work without it.
+        Video coming soon - written steps below work without it.
       </div>
     );
   }

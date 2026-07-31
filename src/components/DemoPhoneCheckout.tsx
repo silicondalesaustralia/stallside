@@ -68,7 +68,7 @@ export default function DemoPhoneCheckout({
       <ul className="list-disc space-y-2 pl-5 text-base leading-snug text-[var(--muted)]">
         <li>
           Checkout runs on the <strong className="font-semibold text-[var(--field)]">customer&apos;s phone</strong>{" "}
-          below — pick items and pay as a shopper would at the stand.
+          below - pick items and pay as a shopper would at the stand.
         </li>
         <li>
           Apple Pay, Link, and Google Pay work live, but we can&apos;t show them

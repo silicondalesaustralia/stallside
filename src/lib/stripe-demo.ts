@@ -29,7 +29,7 @@ export function getStripeTest(): Stripe {
   }
   if (/[^\x20-\x7E]/.test(key)) {
     throw new Error(
-      "STRIPE_SECRET_KEY_TEST has invalid characters — remove quotes/newlines in Vercel env",
+      "STRIPE_SECRET_KEY_TEST has invalid characters - remove quotes/newlines in Vercel env",
     );
   }
   const platform = platformSecretKey();

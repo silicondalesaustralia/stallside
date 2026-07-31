@@ -12,9 +12,9 @@ export const APP_SEO_TITLE =
 export const APP_SEO_DESCRIPTION =
   "Free forever QR checkout for farm stands, honesty stalls, firewood, flowers, and car parks. Print a QR, get paid, track every sale from your phone.";
 
-/** Cash plan AUD list price — prefer cashPlanCents(currency) */
+/** Cash plan AUD list price - prefer cashPlanCents(currency) */
 export const CASH_PLAN_CENTS = 699;
-/** Card plan AUD list price — prefer cardPlanCents(currency) */
+/** Card plan AUD list price - prefer cardPlanCents(currency) */
 export const CARD_PLAN_CENTS = 1999;
 /** @deprecated use CASH_PLAN_CENTS */
 export const MONTHLY_FEE_CENTS = CASH_PLAN_CENTS;

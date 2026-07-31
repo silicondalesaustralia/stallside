@@ -39,7 +39,7 @@ export function paypalPartnerMerchantId(): string {
   return id;
 }
 
-/** Same account as REST credentials — for direct (non-marketplace) checkout. */
+/** Same account as REST credentials - for direct (non-marketplace) checkout. */
 export function paypalDirectMerchantId(): string | null {
   const id =
     process.env.PAYPAL_DIRECT_MERCHANT_ID?.trim() ||

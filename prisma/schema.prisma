@@ -184,7 +184,7 @@ model Owner {
   pushAlertsEnabled         Boolean            @default(true)
   alertEmails               String[]           @default([])
   subscriptionStatus        SubscriptionStatus @default(NONE)
-  /** starter | pro | pro_paypal — legacy cash/card values backfilled. */
+  /** starter | pro | pro_paypal - legacy cash/card values backfilled. */
   subscriptionPlan          String?            @default("starter")
   /** Free Pro forever (invite or admin grant). */
   lifetimeAccess            Boolean            @default(false)
@@ -235,7 +235,7 @@ model Owner {
   updatedAt                 DateTime           @updatedAt
 }
 
-/** Public stand gallery — admin-curated + owner submissions */
+/** Public stand gallery - admin-curated + owner submissions */
 model GalleryStand {
   id          String        @id @default(cuid())
   displayName String
@@ -290,9 +290,9 @@ model Stand {
   isActive           Boolean              @default(true)
   /** Owner logo for public stall + QR poster (Pro). */
   logoUrl            String?
-  /** Hex accent e.g. #2e7d3f — overrides --leaf on public stall + QR. */
+  /** Hex accent e.g. #2e7d3f - overrides --leaf on public stall + QR. */
   accentColor        String?
-  /** Hex secondary for prices / stock labels — overrides --ok. */
+  /** Hex secondary for prices / stock labels - overrides --ok. */
   secondaryColor     String?
   /** Optional social / website links shown on the public stall (Pro). */
   instagramUrl       String?

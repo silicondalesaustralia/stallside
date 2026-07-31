@@ -24,13 +24,13 @@ export default function BillingNotices({
     <>
       {freeForever ? (
         <p className="rounded-xl border border-[var(--leaf)]/30 bg-[var(--leaf)]/10 px-4 py-3 text-sm">
-          Complimentary access — full Pro forever, no subscription required.
+          Complimentary access - full Pro forever, no subscription required.
         </p>
       ) : null}
       {trialEnded ? (
         <p className="rounded-xl border border-[var(--line)] bg-[var(--wash)] px-4 py-3 text-sm">
           You&apos;re on <strong>Starter</strong> (free forever). Nothing&apos;s
-          lost — upgrade to Pro anytime for Tap &amp; Go, pre-orders, branding,
+          lost - upgrade to Pro anytime for Tap &amp; Go, pre-orders, branding,
           and restock emails.
         </p>
       ) : null}

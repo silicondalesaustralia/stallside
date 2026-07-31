@@ -47,7 +47,7 @@ export default async function AdminOwnerDetailPage({
         <p>
           Owner ID: <code className="text-xs">{owner.id}</code>
         </p>
-        <p>Plan: {owner.subscriptionPlan ?? "—"}</p>
+        <p>Plan: {owner.subscriptionPlan ?? "-"}</p>
         <p>Status: {owner.subscriptionStatus.toLowerCase()}</p>
         {owner.lifetimeAccess ? (
           <p className="font-semibold text-[var(--leaf)]">Free for Life</p>
@@ -62,7 +62,7 @@ export default async function AdminOwnerDetailPage({
           {owner.stripeCustomerId ? (
             <code className="text-xs">{owner.stripeCustomerId}</code>
           ) : (
-            "—"
+            "-"
           )}
         </p>
         <p>
@@ -70,7 +70,7 @@ export default async function AdminOwnerDetailPage({
           {owner.stripeSubscriptionId ? (
             <code className="text-xs">{owner.stripeSubscriptionId}</code>
           ) : (
-            "—"
+            "-"
           )}
         </p>
         <p>

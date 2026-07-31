@@ -28,7 +28,7 @@ export const DEMO_REGIONS: {
   {
     id: "row",
     label: "Rest of world",
-    description: "Same stand as USA — cash and Card (test)",
+    description: "Same stand as USA - cash and Card (test)",
     standName: "Green Valley Eggs USA",
     envKey: "DEMO_STAND_SLUG_US",
   },

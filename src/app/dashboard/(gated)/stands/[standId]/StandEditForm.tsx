@@ -32,7 +32,7 @@ export default function StandEditForm({
   const save = updateStand.bind(null, stand.id);
 
   function onSubmit(formData: FormData) {
-    // Snapshot before transition — React may reset the live FormData.
+    // Snapshot before transition - React may reset the live FormData.
     const payload = new FormData();
     for (const [key, value] of formData.entries()) {
       payload.append(key, value);

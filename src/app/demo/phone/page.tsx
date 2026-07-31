@@ -14,7 +14,7 @@ import { standCheckoutUrl } from "@/lib/stand-qr";
 
 export const metadata: Metadata = {
   title: "Demo checkout",
-  description: `Try ${APP_NAME} checkout in a phone frame — cash, PayID, or Stripe test cards.`,
+  description: `Try ${APP_NAME} checkout in a phone frame - cash, PayID, or Stripe test cards.`,
   alternates: { canonical: "/demo/phone" },
 };
 

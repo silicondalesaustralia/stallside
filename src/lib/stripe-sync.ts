@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 
-/** Persist Stripe Connect status. No revalidatePath — safe during RSC render. */
+/** Persist Stripe Connect status. No revalidatePath - safe during RSC render. */
 export async function syncStripeAccountStatus(input: {
   ownerId: string;
   stripeAccountId: string;

@@ -11,7 +11,7 @@ export default function DemoOwnerPhoneScreen() {
           {APP_NAME}
         </p>
         <p className="max-w-[220px] text-sm leading-snug text-[var(--muted)]">
-          Orders and sale alerts appear here — just like on the owner&apos;s real
+          Orders and sale alerts appear here - just like on the owner&apos;s real
           phone.
         </p>
       </div>

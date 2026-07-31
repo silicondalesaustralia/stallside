@@ -101,7 +101,7 @@ export default function FeatureColumns() {
       <FeatureColumn
         title="For owners"
         groups={[
-          { heading: "Starter — free forever", items: OWNER_STARTER },
+          { heading: "Starter - free forever", items: OWNER_STARTER },
           { heading: "Pro", items: OWNER_PRO },
         ]}
         soon={OWNER_SOON}

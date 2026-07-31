@@ -23,7 +23,7 @@ export default function RestockOptIn({
   if (state.ok) {
     return (
       <p className="mt-6 text-sm text-[var(--muted)]">
-        Done — we&apos;ll let you know.
+        Done - we&apos;ll let you know.
       </p>
     );
   }
@@ -34,7 +34,7 @@ export default function RestockOptIn({
         Want to know when this stand restocks?
       </p>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        We&apos;ll email you when it does — nothing else.
+        We&apos;ll email you when it does - nothing else.
       </p>
       <form action={action} className="mt-4 flex flex-col gap-3">
         <input type="hidden" name="standId" value={standId} />

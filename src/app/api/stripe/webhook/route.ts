@@ -22,7 +22,7 @@ async function handleCheckoutCompleted(
   livemode: boolean,
 ) {
   if (session.mode === "subscription") {
-    // Demo uses test payment Checkout only — ignore test SaaS events.
+    // Demo uses test payment Checkout only - ignore test SaaS events.
     if (!livemode) return;
     const subscriptionId =
       typeof session.subscription === "string"

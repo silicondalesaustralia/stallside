@@ -18,7 +18,7 @@ export default function CardDemandProof() {
         </h2>
         <p className="mt-4 max-w-2xl pl-3 text-base leading-relaxed text-[var(--muted)] sm:text-lg">
           When Tap &amp; Go isn&apos;t on, shoppers can tap &ldquo;I&apos;d have
-          paid by card.&rdquo; You get a running total on your dashboard — free
+          paid by card.&rdquo; You get a running total on your dashboard - free
           forever on Starter. That number is why owners upgrade to Pro.
         </p>
 
@@ -43,7 +43,7 @@ export default function CardDemandProof() {
             href="/signup"
             className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
           >
-            Start free — includes 30 days of Pro
+            Start free - includes 30 days of Pro
           </Link>
         </div>
       </div>

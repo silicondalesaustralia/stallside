@@ -19,7 +19,7 @@ export type PreOrderParsed =
 function parseDateTimeLocal(raw: string): Date | null {
   const trimmed = raw.trim();
   if (!trimmed) return null;
-  // datetime-local has no zone — treat digits as wall-clock (not UTC via Date.parse).
+  // datetime-local has no zone - treat digits as wall-clock (not UTC via Date.parse).
   const match =
     /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(trimmed);
   if (match) {

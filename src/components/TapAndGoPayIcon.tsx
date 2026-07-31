@@ -1,4 +1,4 @@
-/** Contactless card mark — no official universal Tap & Go logo exists. */
+/** Contactless card mark - no official universal Tap & Go logo exists. */
 export default function TapAndGoPayIcon({ className }: { className?: string }) {
   return (
     <svg

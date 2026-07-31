@@ -68,7 +68,7 @@ export default function HeroOwnerPhoneAlert() {
       const unlocked = await unlockHeroSaleDing();
       if (!unlocked) return;
       audioReady.current = true;
-      // If the first alert is already on screen, ding now — don't wait for the next loop.
+      // If the first alert is already on screen, ding now - don't wait for the next loop.
       if (bannerVisible.current) {
         void tryDing();
       }
@@ -77,7 +77,7 @@ export default function HeroOwnerPhoneAlert() {
     window.addEventListener("pointerdown", onGesture, { passive: true });
     window.addEventListener("keydown", onGesture);
 
-    // First notification after 4s — gives time for a click to unlock audio first.
+    // First notification after 4s - gives time for a click to unlock audio first.
     firstTimer.current = setTimeout(showBanner, FIRST_NOTIFICATION_MS);
 
     return () => {
