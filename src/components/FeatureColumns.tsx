@@ -26,6 +26,7 @@ const OWNER_SOON = ["PayPal at the gate"] as const;
 const CUSTOMER_LIVE = [
   "Scan with your phone camera. No app.",
   "See what's there and what's left.",
+  "Choose options like size or flavour when a product offers them",
   "Pay cash and PayID (Australia only), then confirm - the owner knows.",
   "Tap & Go - card, Apple Pay, Google Pay on your phone",
   "Pre-order and pay by card to reserve for a collection day",

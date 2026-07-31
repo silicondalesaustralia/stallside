@@ -44,6 +44,7 @@ export const CARD_PLAN_BILLING_BLURB =
 export const CARD_PLAN_FEATURES = [
   "Pre-orders - customers pay to reserve, with an order-by deadline and collection day",
   "Collections - track paid pre-orders by day and mark Ready, then Collected",
+  "Product options - flavours, sizes, and similar choices (up to three groups per product)",
   "Buyer details on pre-order - name, email, optional phone, plus a confirmation email",
   "Message customers from Collections or Orders (compose subject and body in Stallside)",
   "Optional exact pre-order slots on your public stall (e.g. “3 left”)",
