@@ -8,7 +8,6 @@ import LandingFaq from "@/components/LandingFaq";
 import LandingFooter from "@/components/LandingFooter";
 import LandingHero from "@/components/LandingHero";
 import LandingPaymentMethods from "@/components/LandingPaymentMethods";
-import LifetimePromoTicker from "@/components/LifetimePromoTicker";
 import NetworkVision from "@/components/NetworkVision";
 import PricingTiers from "@/components/PricingTiers";
 import PreOrdersSection from "@/components/PreOrdersSection";
@@ -30,7 +29,6 @@ export default function HomePage() {
   return (
     <main className="relative flex min-h-full flex-1 flex-col">
       <JsonLd data={homeGraphSchema(LANDING_FAQS)} />
-      <LifetimePromoTicker />
       <LandingHero />
       <HowItWorksFlow />
       <LandingAnalyticsPreview />
