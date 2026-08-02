@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AdminRecentOwners from "@/components/AdminRecentOwners";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
@@ -122,35 +123,7 @@ export default async function AdminOverviewPage({
 
       <section>
         <h2 className="text-lg font-semibold">Recent owners</h2>
-        {recent.length === 0 ? (
-          <p className="mt-2 text-sm text-[var(--muted)]">None yet.</p>
-        ) : (
-          <ul className="mt-3 divide-y divide-[var(--line)] border-y border-[var(--line)] text-sm">
-            {recent.map((owner) => (
-              <li key={owner.id} className="flex flex-wrap justify-between gap-2 py-3">
-                <div>
-                  <Link
-                    href={`/admin/owners/${owner.id}`}
-                    className="font-medium underline"
-                  >
-                    {owner.businessName}
-                  </Link>
-                  <p className="text-[var(--muted)]">
-                    {owner.user.email}
-                    {owner.stands[0]
-                      ? ` · ${owner.stands.map((s) => s.name).join(", ")}`
-                      : ""}
-                  </p>
-                </div>
-                <p className="text-[var(--muted)]">
-                  {owner.subscriptionPlan ?? "-"} ·{" "}
-                  {owner.subscriptionStatus.toLowerCase()} · LTV{" "}
-                  {formatMoney(owner.lifetimePaidCents, saas.currency)}
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
+        <AdminRecentOwners owners={recent} currency={saas.currency} />
       </section>
     </main>
   );

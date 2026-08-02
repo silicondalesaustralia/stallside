@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AdminLoginAsButton from "@/components/AdminLoginAsButton";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
@@ -101,6 +102,15 @@ export default async function AdminOwnerDetailPage({
             Apply code
           </button>
         </form>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Support</h2>
+        <p className="text-sm text-[var(--muted)]">
+          Open their owner dashboard to check settings and troubleshoot. An amber
+          banner lets you return to admin.
+        </p>
+        <AdminLoginAsButton ownerId={owner.id} />
       </section>
 
       <section className="flex flex-wrap gap-3">

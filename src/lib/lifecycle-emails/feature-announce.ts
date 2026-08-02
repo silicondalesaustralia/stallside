@@ -11,7 +11,7 @@ import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 type Recipient = { to: string; name: string };
 
 export const FEATURE_ANNOUNCE_SUBJECT =
-  "[NEW UPDATES] - Stallside: Starter free forever, Pro trial, and more";
+  "What's new on Stallside: Starter free forever, Pro, and fresh tools";
 
 export function featureAnnounceHtml(name: string): string {
   const L = lifecycleLinks();
@@ -19,29 +19,43 @@ export function featureAnnounceHtml(name: string): string {
     FEATURE_ANNOUNCE_SUBJECT,
     `
       <p>Hi ${greetName(name)},</p>
-      <p>We&apos;ve updated how Stallside plans work - and shipped more tools for
-      stall owners.</p>
+      <p>We've been busy. Here's what's live on ${APP_NAME} - a clearer plan model,
+      plus tools that make the stall feel more like your farm.</p>
 
-      <p><strong>Starter is free forever</strong></p>
-      <p>Cash, PayID (Australia only), products and options, stock, QR posters, alerts,
-      and the card-demand counter - no card, no expiry. New owners also get a
-      <strong>30-day Pro trial</strong> (Tap &amp; Go, pre-orders, branding, restock
-      notify). When it ends you stay on Starter - the dashboard never locks.</p>
+      <p><strong>Plans, simplified</strong></p>
+      <p><strong>Starter</strong> is free forever: cash, PayID (Australia only),
+      products and options, stock, QR posters, sale and low-stock alerts, and a new
+      <strong>card-demand counter</strong> (shoppers can tap “I'd have paid by card”
+      when Tap &amp; Go isn't on - you see the count on your dashboard).</p>
+      <p><strong>Stallside Pro</strong> adds Tap &amp; Go (card, Apple Pay, Google Pay),
+      pre-orders and Collections, stand branding and social links, and restock notify
+      emails. From A$19.99 / US$14.99 / £11.99 / €14.99 per site / month.</p>
+      <p><strong>If you're mid-trial right now:</strong> your remaining days now
+      include <strong>every Pro feature</strong> - Tap &amp; Go, pre-orders,
+      Collections, branding, restock notify, and the rest. Same end date; fuller
+      access. When the trial ends you stay on <strong>Starter free forever</strong>
+      - the dashboard never locks. Stands, products, QR posters, and order history
+      stay either way.</p>
+      <p>New owners still get a 30-day Pro trial with all features from day one
+      (no card required).</p>
+      <p>If you were on the old Cash or Card labels, you're on this same model now:
+      Starter = free forever; Pro = the full paid toolkit. Check
+      <a href="${L.billing}">Settings → Billing</a> anytime.</p>
 
-      <p><strong>What&apos;s new</strong></p>
+      <p><strong>New tools for stall owners</strong></p>
       <ul>
         <li><strong>Pre-orders</strong> - customers pay by card to reserve for a
-        collection day, with an order-by deadline. You track who&apos;s coming in
-        Collections (Ready → Collected), optionally show exact slots left, and message
-        buyers from Stallside.</li>
-        <li><strong>Product options</strong> - flavours, sizes, and similar choices on
-        a product (up to three option groups).</li>
+        collection day, with an order-by deadline. Track who's coming in Collections
+        (Ready → Collected), show exact slots left if you want, and message buyers
+        from Stallside. Use <strong>Email all</strong> for everyone collecting on a day.</li>
+        <li><strong>Product options</strong> - flavours, sizes, and similar choices
+        (up to three option groups) - included on Starter.</li>
         <li><strong>Stand branding</strong> - your logo and colours on the public stall
-        and QR poster, plus social links (Instagram, Facebook, TikTok, YouTube, website).</li>
-        <li><strong>Restock emails</strong> - customers opt in after checkout (free on
-        Starter); sending the notify is Pro. You never see their addresses.</li>
-        <li><strong>Hide / archive / duplicate</strong> products when you need to rotate
-        stock without losing settings.</li>
+        and QR poster, plus Instagram, Facebook, TikTok, YouTube, or your website.</li>
+        <li><strong>Restock list</strong> - customers can opt in after checkout (free on
+        Starter). Sending the “we're back” email is Pro.</li>
+        <li><strong>Hide / archive / duplicate</strong> products when you rotate stock
+        without losing settings.</li>
       </ul>
 
       ${ctaButton(`${L.base}/dashboard`, "Open your dashboard")}
@@ -49,7 +63,7 @@ export function featureAnnounceHtml(name: string): string {
       <a href="${L.billing}">Billing</a> ·
       <a href="${`${L.base}/dashboard/knowledge/pre-orders`}">Pre-orders</a></p>
 
-      <p>Want something else for your stall? Reply or
+      <p>Questions or something missing for your stall? Reply to this email or
       <a href="${L.featureRequest}">request a feature</a> - we build for real stands.</p>
       <p>Thanks for being with ${APP_NAME}.</p>
     `,

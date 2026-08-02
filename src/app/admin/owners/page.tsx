@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AdminLoginAsButton from "@/components/AdminLoginAsButton";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
@@ -35,7 +36,8 @@ export default async function AdminOwnersPage() {
                 <th className="py-2 pr-3 font-medium">Email</th>
                 <th className="py-2 pr-3 font-medium">Plan</th>
                 <th className="py-2 pr-3 font-medium">LTV</th>
-                <th className="py-2 font-medium">Status</th>
+                <th className="py-2 pr-3 font-medium">Status</th>
+                <th className="py-2 font-medium">Support</th>
               </tr>
             </thead>
             <tbody>
@@ -67,8 +69,11 @@ export default async function AdminOwnersPage() {
                   <td className="py-3 pr-3">
                     {formatMoney(owner.lifetimePaidCents, DEFAULT_CURRENCY)}
                   </td>
-                  <td className="py-3 capitalize">
+                  <td className="py-3 pr-3 capitalize">
                     {owner.subscriptionStatus.toLowerCase()}
+                  </td>
+                  <td className="py-3">
+                    <AdminLoginAsButton ownerId={owner.id} compact />
                   </td>
                 </tr>
               ))}

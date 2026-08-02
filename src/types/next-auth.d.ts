@@ -7,6 +7,12 @@ declare module "next-auth" {
       id: string;
       role: Role;
     } & DefaultSession["user"];
+    /** Present when a platform admin is viewing as this user. */
+    impersonator?: {
+      id: string;
+      email: string;
+    };
+    impersonatingOwnerId?: string;
   }
 
   interface User {
@@ -18,5 +24,9 @@ declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
     role?: Role;
+    impersonatorId?: string;
+    impersonatorEmail?: string;
+    impersonatorRole?: Role;
+    impersonatingOwnerId?: string;
   }
 }

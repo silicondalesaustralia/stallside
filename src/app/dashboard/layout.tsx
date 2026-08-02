@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import DashboardNav from "@/components/DashboardNav";
+import ImpersonationBanner from "@/components/ImpersonationBanner";
 import OwnerPushRegister from "@/components/OwnerPushRegister";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
+import { auth } from "@/lib/auth";
 import { requireOwner } from "@/lib/session";
 import {
   paidAccessDaysRemaining,
@@ -18,13 +20,23 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { owner, user } = await requireOwner();
+  const session = await auth();
+  const impersonator = session?.impersonator;
   const access = { email: user.email, role: user.role };
   const trialDays = trialDaysRemaining(owner, access);
   const paidDays = paidAccessDaysRemaining(owner, access);
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-[var(--wash)] pb-20 print:bg-white print:pb-0 md:pb-0">
-      <OwnerPushRegister pushAlertsEnabled={owner.pushAlertsEnabled} />
+      {impersonator ? (
+        <ImpersonationBanner
+          targetEmail={user.email ?? owner.contactEmail}
+          adminEmail={impersonator.email}
+        />
+      ) : null}
+      <OwnerPushRegister
+        pushAlertsEnabled={owner.pushAlertsEnabled && !impersonator}
+      />
       <DashboardNav />
       <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 print:max-w-none print:px-0 print:py-0">
         {trialDays != null ? (
