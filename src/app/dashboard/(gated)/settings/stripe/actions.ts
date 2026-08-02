@@ -7,6 +7,14 @@ import { prisma } from "@/lib/prisma";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { ownerHasProAccess } from "@/lib/owner-trial";
+import {
+  stripeConnectCountry,
+  stripeConnectDefaultCurrency,
+} from "@/lib/stripe-connect-country";
+import {
+  clearOwnerStripeLink,
+  dropMismatchedConnectAccount,
+} from "@/lib/stripe-connect-account";
 
 export async function startStripeConnect() {
   const { owner, user } = await requireOwner();
@@ -20,11 +28,24 @@ export async function startStripeConnect() {
   }
 
   const stripe = getStripe();
+  const country = stripeConnectCountry(owner.billingCurrency);
+  const defaultCurrency = stripeConnectDefaultCurrency(owner.billingCurrency);
   let accountId = owner.stripeAccountId;
+
+  if (accountId) {
+    accountId = await dropMismatchedConnectAccount({
+      ownerId: owner.id,
+      accountId,
+      desiredCountry: country,
+      chargesEnabled: owner.stripeChargesEnabled,
+    });
+  }
 
   if (!accountId) {
     const account = await stripe.accounts.create({
       type: "express",
+      country,
+      default_currency: defaultCurrency,
       email: owner.contactEmail || user.email || undefined,
       capabilities: {
         card_payments: { requested: true },
@@ -78,38 +99,12 @@ export async function disconnectStripe() {
   }
 
   const accountId = owner.stripeAccountId;
-
-  await prisma.$transaction(async (tx) => {
-    await tx.owner.update({
-      where: { id: owner.id },
-      data: {
-        stripeAccountId: null,
-        stripeOnboardingComplete: false,
-        stripeChargesEnabled: false,
-        stripePayoutsEnabled: false,
-      },
-    });
-    await tx.stand.updateMany({
-      where: { ownerId: owner.id },
-      data: { acceptCard: false },
-    });
-    await tx.stand.updateMany({
-      where: {
-        ownerId: owner.id,
-        acceptCash: false,
-        acceptLocalTransfer: false,
-        acceptPayPal: false,
-        acceptCard: false,
-      },
-      data: { acceptCash: true },
-    });
-  });
+  await clearOwnerStripeLink(owner.id);
 
   if (isStripeConfigured()) {
     try {
       await getStripe().accounts.del(accountId);
     } catch (error) {
-      // Balance or Stripe-side lock - Stallside is already unlinked.
       console.error("Stripe connected-account delete after disconnect failed", error);
     }
   }

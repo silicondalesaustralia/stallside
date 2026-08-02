@@ -4,6 +4,7 @@ import { requireOwner } from "@/lib/session";
 import { isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { ownerHasProAccess } from "@/lib/owner-trial";
+import { stripeConnectRegionLabel } from "@/lib/stripe-connect-country";
 import { refreshStripeStatus, startStripeConnect } from "./actions";
 import StripeDisconnectButton from "./StripeDisconnectButton";
 
@@ -39,6 +40,7 @@ export default async function StripeSettingsPage({
   const configured = isStripeConfigured();
   const ready = owner.stripeChargesEnabled;
   const started = Boolean(owner.stripeAccountId);
+  const connectRegion = stripeConnectRegionLabel(owner.billingCurrency);
 
   return (
     <main className="flex max-w-xl flex-col gap-8">
@@ -104,6 +106,13 @@ export default async function StripeSettingsPage({
         <p>Onboarding complete: {owner.stripeOnboardingComplete ? "Yes" : "No"}</p>
         <p>Charges enabled: {ready ? "Yes" : "No"}</p>
         <p>Payouts enabled: {owner.stripePayoutsEnabled ? "Yes" : "No"}</p>
+        <p>
+          Connect country: <strong>{connectRegion}</strong> (from your{" "}
+          <Link href="/dashboard/settings/billing" className="underline">
+            billing region
+          </Link>
+          , not stand display currency)
+        </p>
       </section>
 
       {cardTier ? (
