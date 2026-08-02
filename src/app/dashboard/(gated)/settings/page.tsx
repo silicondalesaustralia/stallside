@@ -3,6 +3,7 @@ import { isPlatformAdminEmail, requireOwner } from "@/lib/session";
 import { logout } from "@/app/login/actions";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { ownerHasProAccess } from "@/lib/owner-trial";
+import { billingRegionDisplay } from "@/lib/saas-pricing";
 import { stallsideSubscriptionSummary } from "@/lib/stallside-subscription-summary";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
@@ -22,6 +23,7 @@ export default async function SettingsPage() {
     role: user.role,
     lifetimeAccess: owner.lifetimeAccess,
   });
+  const billingRegion = billingRegionDisplay(owner.billingCurrency);
 
   return (
     <main className="flex max-w-xl flex-col gap-8">
@@ -81,8 +83,12 @@ export default async function SettingsPage() {
       <section className="space-y-3 text-sm">
         <h2 className="text-lg font-semibold">Stallside subscription</h2>
         <p>{subscriptionLine}</p>
+        <p>
+          Billing region: <strong>{billingRegion}</strong>
+        </p>
         <p className="text-[var(--muted)]">
-          Pays Stallside for the app. Separate from accepting customer payments.
+          Pays Stallside for the app. Also sets your Stripe Connect country for
+          Card / Tap &amp; Go. Separate from stand display currency.
         </p>
         <Link
           href="/dashboard/settings/billing"

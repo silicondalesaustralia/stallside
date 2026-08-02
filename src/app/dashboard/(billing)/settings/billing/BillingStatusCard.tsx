@@ -1,5 +1,8 @@
 import { formatMoney } from "@/lib/money";
-import type { BillingCurrency } from "@/lib/saas-pricing";
+import {
+  billingRegionDisplay,
+  type BillingCurrency,
+} from "@/lib/saas-pricing";
 
 const STATUS_LABEL: Record<string, string> = {
   NONE: "No active subscription",
@@ -24,6 +27,7 @@ export default function BillingStatusCard({
 }) {
   const lifetime = planLabel.startsWith("Lifetime FREE");
   const trial = planLabel.includes("free trial");
+  const region = billingRegionDisplay(billingCurrency);
 
   return (
     <section className="space-y-2 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
@@ -38,6 +42,9 @@ export default function BillingStatusCard({
           <p>Status: {STATUS_LABEL[subscriptionStatus] ?? subscriptionStatus}</p>
         </>
       )}
+      <p>
+        Billing region: <strong>{region}</strong>
+      </p>
       {accessUntil && !lifetime ? (
         <p>
           Access until:{" "}

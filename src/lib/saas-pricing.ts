@@ -19,6 +19,15 @@ export function billingRegionLabel(currency: BillingCurrency): string {
   );
 }
 
+/** e.g. "United States (USD)" for Settings / Stripe Connect copy. */
+export function billingRegionDisplay(
+  currency: string | null | undefined,
+): string {
+  const raw = (currency ?? "AUD").trim().toUpperCase();
+  const code: BillingCurrency = isBillingCurrency(raw) ? raw : "AUD";
+  return `${billingRegionLabel(code)} (${code})`;
+}
+
 /** Fixed list prices (not live FX). Per site / month. */
 export const CASH_PLAN_BY_CURRENCY: Record<BillingCurrency, number> = {
   AUD: 699,
