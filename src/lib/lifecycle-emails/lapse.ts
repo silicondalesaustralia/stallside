@@ -49,10 +49,11 @@ export async function sendProLapseDay23(r: Recipient) {
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>It&apos;s been a few weeks on <strong>Starter</strong> (free forever).</p>
-      <p><strong>You still have:</strong> cash &amp; PayID (Australia only), products
-      and options, stock, QR posters, alerts, and the card-demand counter.</p>
-      <p><strong>Pro brings back:</strong> Tap &amp; Go, pre-orders, branding, and
-      sending restock emails to the regulars already on your list.</p>
+      <p><strong>You still have:</strong> every Free feature - cash &amp; PayID
+      (Australia only), Tap &amp; Go, pre-orders, branding, restock emails,
+      products, stock, QR posters, alerts, and the card-demand counter.</p>
+      <p><strong>Pro brings back:</strong> no Stallside card fee - keep 100% of
+      your card, Tap &amp; Go, and pay-later sales.</p>
       ${ctaButton(L.billingPro, "See Stallside Pro")}
       <p>Questions? <strong>hello@stallside.app</strong></p>
     `,
@@ -79,8 +80,8 @@ export async function sendProLapseDay45(
          ${cardN > 0 ? `<strong>${cardN}</strong> shoppers tapped “I'd have paid by card”. ` : ""}
          ${restockN > 0 ? `<strong>${restockN}</strong> regulars are waiting on your restock list.` : ""}
          </p>`
-      : `<p>Shoppers on Starter can still tell you they wanted card, and join your restock
-         list - Pro is how you take the card and send the email.</p>`;
+      : `<p>Shoppers on Free can still tell you they wanted card, and join your restock
+         list. Pro removes the Stallside card fee when you take those sales.</p>`;
   const html = emailShell(
     "What Pro would have done",
     `

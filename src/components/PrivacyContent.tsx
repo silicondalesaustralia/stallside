@@ -65,8 +65,8 @@ export default function PrivacyContent() {
         </h2>
         <p className="text-[var(--muted)]">
           When you buy from a stand, you may opt in to an email when that stand restocks.
-          Collecting opt-ins is available on Starter; sending restock emails is a Pro
-          feature. {LEGAL_ENTITY} ({APP_NAME}) is the controller: we store your email and
+          Opt-in and restock notify emails are available on Free and Pro.
+          {LEGAL_ENTITY} ({APP_NAME}) is the controller: we store your email and
           consent record solely for that purpose. Stand owners see a subscriber count and can
           ask us to send a restock notice - they never receive or export your address. Emails
           are delivered via Resend (processor). You can unsubscribe any time via the link in

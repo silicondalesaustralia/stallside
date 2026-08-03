@@ -6,7 +6,7 @@ export type RestockOptInProps = {
   prefillEmail?: string;
 };
 
-/** Starter and Pro both collect opt-ins; sending notify is Pro-gated elsewhere. */
+/** Free and Pro both collect opt-ins and can send restock notify emails. */
 export function restockOptInForOrder(
   order: {
     stand: { id: string; slug: string } | null;

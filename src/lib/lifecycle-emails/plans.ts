@@ -21,9 +21,9 @@ export async function sendCardWelcome(r: Recipient) {
     `You're on ${APP_NAME} Pro`,
     `
       <p>Hi ${greetName(r.name)},</p>
-      <p>Welcome to <strong>${APP_NAME} Pro</strong>. You&apos;ve got everything in
-      Starter, plus Tap &amp; Go (card, Apple Pay, Google Pay), pre-orders,
-      collections, branding, and restock notify emails.</p>
+      <p>Welcome to <strong>${APP_NAME} Pro</strong>. Same features as Free - and
+      no Stallside fee on card, Tap &amp; Go, or pay-later. Keep 100% of those
+      sales (Stripe&apos;s own processing fees still apply).</p>
       <p><strong>Get Tap &amp; Go live</strong></p>
       <ol>
         <li><a href="${L.stripe}">Connect Stripe</a> (finish onboarding so charges are enabled)</li>

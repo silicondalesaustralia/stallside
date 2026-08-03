@@ -43,7 +43,7 @@ export default function LandingAnalyticsPreview() {
           style={{ borderTopLeftRadius: 8 }}
         />
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--leaf)]">
-          Owner analytics · example · Starter
+          Owner analytics · example · Free
         </p>
         <h2 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
           Know what sold - and when

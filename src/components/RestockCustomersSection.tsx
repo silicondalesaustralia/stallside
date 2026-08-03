@@ -3,7 +3,7 @@ import LandingFeatureCallout from "@/components/LandingFeatureCallout";
 export default function RestockCustomersSection() {
   return (
     <LandingFeatureCallout
-      eyebrow="Pro"
+      eyebrow="Free"
       title="Tell regulars you're back in stock"
     >
       <p>

@@ -22,18 +22,20 @@ export async function sendTrialWelcome(r: Recipient) {
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>Thanks for joining ${APP_NAME}. Glad you&apos;re here.</p>
-      <p><strong>Starter is free forever</strong> - cash, PayID (Australia only), products, options,
-      stock, QR posters, and alerts. You also get a <strong>30-day Pro trial</strong>
-      with Tap &amp; Go, pre-orders, branding, and restock notify. No card required.</p>
+      <p><strong>Free is $0/mo with every feature</strong> - cash, PayID (Australia only),
+      Tap &amp; Go, pre-orders, branding, restock emails, and more. You also get a
+      <strong>30-day Pro trial</strong> with no Stallside card fee (keep 100% of those
+      sales). No card required.</p>
       <p><strong>Start here</strong></p>
       <ol>
         <li>Create your first stand</li>
         <li>Add a product and stock</li>
         <li>Print your QR sign</li>
-        <li>Connect Stripe if you want Tap &amp; Go during the trial</li>
+        <li>Connect Stripe if you want Tap &amp; Go</li>
       </ol>
       ${ctaButton(L.newStand, "Create your first stand")}
-      <p>After the trial you stay on Starter free forever unless you upgrade to Pro.</p>
+      <p>After the trial you stay on Free ($0/mo) unless you upgrade to Pro to keep
+      the card fee waived.</p>
       <p><a href="${L.billing}">See Pro pricing</a> · <a href="${L.knowledge}">Guides</a></p>
     `,
   );
@@ -63,8 +65,9 @@ export async function sendTrialDay14(r: Recipient) {
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>You&apos;re halfway through your 30-day <strong>Pro trial</strong>.</p>
-      <p>Pro includes Tap &amp; Go, pre-orders, collections, restock emails, and branding.
-      When the trial ends you stay on <strong>Starter free forever</strong> - nothing locks.</p>
+      <p>Pro means no Stallside fee on card, Tap &amp; Go, and pay-later - keep 100%
+      of those sales. When the trial ends you stay on <strong>Free ($0/mo)</strong> with
+      every feature; the Stallside card fee applies again unless you upgrade.</p>
       ${ctaButton(L.billing, "View Pro pricing")}
     `,
   );
@@ -79,12 +82,11 @@ export async function sendTrialDay23(r: Recipient) {
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>Your Pro trial ends in about a week.</p>
-      <p><strong>You'll keep on Starter (free forever):</strong> cash &amp; PayID
-      (Australia only), products and options, stock, QR posters, sale &amp; low-stock
-      alerts, order history.</p>
-      <p><strong>Pauses without Pro:</strong> Tap &amp; Go, new pre-orders, branding on the
-      public stall, sending restock emails. You can still fulfil paid pre-orders in
-      Collections.</p>
+      <p><strong>You'll keep on Free ($0/mo):</strong> every feature - cash &amp; PayID
+      (Australia only), Tap &amp; Go, pre-orders, branding, restock emails, products,
+      stock, QR posters, alerts, and order history.</p>
+      <p><strong>What changes without Pro:</strong> the Stallside fee (2.5% + 30¢) applies
+      again on card, Tap &amp; Go, and pay-later. You can absorb it or pass it on.</p>
       ${ctaButton(L.billing, "Upgrade to Pro")}
       <p>Questions? <strong>hello@stallside.app</strong></p>
     `,
@@ -106,13 +108,13 @@ export async function sendTrialDay30(r: Recipient) {
   const L = lifecycleLinks();
   const name = escapeHtml(r.businessName?.trim() || r.name.trim() || "there");
   const html = emailShell(
-    "You're on Starter now",
+    "You're on Free now",
     `
       <p>Hi ${name},</p>
-      <p>Your Pro trial has ended. <strong>You're on Starter now. Nothing's lost.</strong></p>
-      <p>Your stands, products, QR posters, and orders are still here. Cash and PayID
-      (Australia only) keep working. Upgrade anytime for Tap &amp; Go, pre-orders,
-      branding, and restock notify.</p>
+      <p>Your Pro trial has ended. <strong>You're on Free now. Nothing's lost.</strong></p>
+      <p>Your stands, products, QR posters, and orders are still here. Every Free
+      feature keeps working - including Tap &amp; Go, pre-orders, branding, and
+      restock emails. A Stallside fee applies on card sales unless you upgrade to Pro.</p>
       ${ctaButton(L.billing, "Upgrade to Pro")}
       <p>Not upgrading? A quick note helps us improve:
       <a href="${L.feedback}">Send feedback</a> or hello@stallside.app.</p>
@@ -120,7 +122,7 @@ export async function sendTrialDay30(r: Recipient) {
   );
   await send(
     r.to,
-    `You're on ${APP_NAME} Starter - nothing's lost`,
+    `You're on ${APP_NAME} Free - nothing's lost`,
     html,
     "lifecycle_day30",
   );
@@ -136,12 +138,12 @@ export async function sendTrialDay45(
   const restockN = stats?.restockCount ?? 0;
   const statsLine =
     cardN > 0 || restockN > 0
-      ? `<p>Over the last two weeks on Starter:
+      ? `<p>Over the last two weeks on Free:
          ${cardN > 0 ? `<strong>${cardN}</strong> shoppers tapped “I'd have paid by card”. ` : ""}
          ${restockN > 0 ? `<strong>${restockN}</strong> regulars are waiting on your restock list.` : ""}
          </p>`
-      : `<p>Shoppers on Starter can still tell you they wanted card, and join your restock
-         list - Pro is how you take the card and send the email.</p>`;
+      : `<p>Shoppers on Free can still tell you they wanted card, and join your restock
+         list. Pro removes the Stallside card fee when you take those sales.</p>`;
   const html = emailShell(
     "What Pro would have done",
     `

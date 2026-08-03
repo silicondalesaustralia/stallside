@@ -8,8 +8,9 @@ export default function NetworkVision() {
           </p>
           <p className="mt-3 text-sm leading-relaxed text-[var(--ink-on-dark)]/70 sm:text-base">
             Produce, firewood, flowers, car parks - shoppers scan, pick, and pay
-            at that stand. Cash and PayID on Starter; Tap &amp; Go on Pro.
-            No shared network wallet; each sale goes to that stall owner.
+            at that stand. Cash, PayID, and Tap &amp; Go on Free; Pro just
+            removes the Stallside card fee. No shared network wallet; each sale
+            goes to that stall owner.
           </p>
         </div>
       </div>
