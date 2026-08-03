@@ -13,19 +13,28 @@ function MarkChip({ mark }: { mark: LandingPaymentMark }) {
     mark.brand && WORDMARK_BRANDS.has(mark.brand)
       ? "h-5 w-auto max-w-[3.25rem]"
       : "size-6";
+  const showCashCaption = mark.brand === "cash";
 
   return (
     <span className="relative flex h-12 w-[4.75rem] shrink-0 items-center justify-center rounded-xl border border-[var(--line)] bg-[var(--panel)] px-2 shadow-[0_1px_0_rgba(0,0,0,0.04)]">
-      <span className="flex h-full w-full items-center justify-center overflow-hidden">
+      <span className="flex h-full w-full flex-col items-center justify-center gap-0.5 overflow-hidden">
         {mark.network ? (
           <CardNetworkIcon network={mark.network} className="h-6 w-10" />
         ) : mark.brand ? (
-          <PaymentBrandIcon brand={mark.brand} className={iconClass} />
+          <PaymentBrandIcon
+            brand={mark.brand}
+            className={showCashCaption ? "size-5" : iconClass}
+          />
         ) : (
           <span className="text-[0.65rem] font-bold tracking-tight text-[var(--ink)]">
             {mark.label}
           </span>
         )}
+        {showCashCaption ? (
+          <span className="text-[0.6rem] font-semibold leading-none text-[var(--field)]">
+            Cash
+          </span>
+        ) : null}
       </span>
       {mark.region ? (
         <span
