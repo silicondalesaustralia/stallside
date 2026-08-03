@@ -1,6 +1,10 @@
 import PaymentBrandIcon, {
   type PaymentBrand,
 } from "@/components/PaymentBrandIcon";
+import {
+  paymentBrandLabel,
+  WORDMARK_BRANDS,
+} from "@/lib/payment-brand-assets";
 
 export default function QrPaymentMethods({
   brands,
@@ -26,8 +30,9 @@ export default function QrPaymentMethods({
       </p>
       <div className="flex flex-wrap items-start justify-center gap-2">
         {brands.map((brand) => {
-          const label = labelFor(brand);
+          const label = paymentBrandLabel(brand);
           const showCaption = brand === "cash";
+          const wide = WORDMARK_BRANDS.has(brand);
           return (
             <span
               key={brand}
@@ -36,7 +41,7 @@ export default function QrPaymentMethods({
             >
               <span
                 className={`inline-flex items-center justify-center rounded-md border border-[var(--line)] bg-white text-[var(--ink)] ${
-                  brand === "payid"
+                  wide
                     ? compact
                       ? "h-7 px-1.5"
                       : "h-10 px-2"
@@ -65,23 +70,4 @@ export default function QrPaymentMethods({
       </div>
     </div>
   );
-}
-
-function labelFor(brand: PaymentBrand): string {
-  switch (brand) {
-    case "cash":
-      return "Cash";
-    case "payid":
-      return "PayID";
-    case "card":
-      return "Card";
-    case "apple":
-      return "Apple Pay";
-    case "google":
-      return "Google Pay";
-    case "paypal":
-      return "PayPal";
-    case "stripe":
-      return "Stripe";
-  }
 }

@@ -4,6 +4,7 @@ const LINKS = [
   { href: "/about", label: "About" },
   { href: "/gallery", label: "Gallery" },
   { href: "/testimonials", label: "Testimonials" },
+  { href: "/#pricing", label: "Pricing" },
 ] as const;
 
 export default function MarketingNavLinks({

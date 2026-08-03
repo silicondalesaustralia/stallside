@@ -94,10 +94,10 @@ export async function notifyAdminBillingEvent(input: {
   const fee =
     input.monthlyFeeCents > 0
       ? `${(input.monthlyFeeCents / 100).toFixed(2)} ${input.currency}`
-      : "—";
+      : "-";
   const period = input.periodEndsAt
     ? input.periodEndsAt.toISOString()
-    : "—";
+    : "-";
   const adminUrl = `${appBaseUrl()}/admin/owners/${input.ownerId}`;
 
   const html = `

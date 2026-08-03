@@ -17,17 +17,17 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "What's the difference between Free and Pro?",
     answer:
-      "Free is $0/mo with every feature: cash, PayID (Australia), Tap & Go, pre-orders, collections, branding, restock notify, and more. Card, Tap & Go, and pay-later carry a Stallside fee of 2.5% + 30¢; cash and PayID stay free. Pro is a flat monthly fee with no Stallside card fee — you keep 100% of your sales.",
+      "Free is $0/mo with every feature: cash, PayID (Australia), Tap & Go, pre-orders, collections, branding, restock notify, and more. Card, Tap & Go, and pay-later carry a Stallside fee of 2.5% + 30¢ on all transactions; cash and PayID stay free. Pro is a flat monthly fee with no Stallside card fee - you keep 100% of your sales.",
   },
   {
     question: "What payment methods can customers use?",
     answer:
-      "Cash and PayID (free, no fee), plus card, Tap & Go, Apple Pay and Google Pay. On larger orders, customers can also use Buy Now, Pay Later with Afterpay, Zip or Klarna. Card and pay-later payments carry a small Stallside fee on the Free plan, removed on Pro. Cash and PayID are always free.",
+      "Cash and PayID (free, no fee), plus card, Tap & Go, Apple Pay and Google Pay. On larger orders, customers can also use Buy Now, Pay Later with Afterpay, Zip or Klarna. On Free, Stallside fee is 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; removed on Pro. Cash and PayID are always free.",
   },
   {
     question: "Is there a fee on card payments?",
     answer:
-      "On Free, Stallside charges 2.5% + 30¢ on card, Tap & Go (Apple Pay / Google Pay), and pay-later. Cash and PayID have no Stallside fee. On Pro there is no Stallside cut — keep 100% of your sales. Stripe's own processing fees still apply either way (pay-later providers usually charge more than cards). You can pass the Stallside fee to customers at checkout or absorb it.",
+      "On Free, Stallside charges 2.5% + 30¢ on card, Tap & Go (Apple Pay / Google Pay), and pay-later on all transactions. Cash and PayID have no Stallside fee. On Pro there is no Stallside cut - keep 100% of your sales. Stripe's own processing fees still apply either way (pay-later providers usually charge more than cards). You can pass the Stallside fee to customers at checkout or absorb it.",
   },
   {
     question: "Can customers pay by bank transfer / PayID?",
@@ -42,16 +42,11 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "How do pre-orders work?",
     answer:
-      "Mark a product as a pre-order with an order-by deadline and collection day. Customers scan your QR, choose what they want, and pay by card to reserve — money goes to your Stripe account at checkout. They get a confirmation email; you see their name and email on the order. In Collections you track who's coming by day and mark Ready, then Collected. You can show exact slots left on the stall, and message buyers from Stallside if plans change. Take-now and pre-order items need separate checkouts.",
+      "Mark a product as a pre-order with an order-by deadline and collection day. Customers scan your QR, choose what they want, and pay by card to reserve - money goes to your Stripe account at checkout. They get a confirmation email; you see their name and email on the order. In Collections you track who's coming by day and mark Ready, then Collected. You can show exact slots left on the stall, and message buyers from Stallside if plans change. Take-now and pre-order items need separate checkouts.",
   },
   {
     question: "How much does it cost?",
-    answer: `Free is $0/mo with all features; card / Tap & Go take a Stallside fee of 2.5% + 30¢ (cash and PayID stay free). New owners get a 30-day Pro free trial (no card required) with no Stallside card fee; when it ends you stay on Free — the dashboard never locks. Stallside Pro is ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site and removes the Stallside card fee. Pick billing currency at signup or in billing settings.`,
-  },
-  {
-    question: "What happens when the Pro trial ends?",
-    answer:
-      "You stay on Free ($0/mo) with all features. Products, stock, QR posters, and order history stay. Card and Tap & Go then carry the Stallside fee (2.5% + 30¢) unless you upgrade to Pro to keep 100% of your sales.",
+    answer: `Free is $0/mo with all features; Stallside fee is 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions (cash and PayID stay free). Stallside Pro is ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site and removes the Stallside card fee. Pick billing currency at signup or in billing settings.`,
   },
   {
     question: "Who is Stallside for?",

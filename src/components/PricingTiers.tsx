@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import PlanFeatureBlock from "@/components/PlanFeatureBlock";
 import { formatMoney } from "@/lib/money";
-import { FREE_TRIAL_BLURB } from "@/lib/plan-copy";
 import {
   BILLING_CURRENCIES,
   BILLING_CURRENCY_STORAGE_KEY,
@@ -53,9 +52,9 @@ export default function PricingTiers() {
         </h2>
       </div>
       <p className="mb-8 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        Free is $0/mo with every feature. Card and Tap &amp; Go carry a small
-        Stallside fee; cash and PayID stay free. Pro removes that fee so you
-        keep 100% of your sales.
+        Free is $0/mo with every feature. Stallside fee 2.5% + 30¢ on card, Tap
+        &amp; Go, and pay-later on all transactions; cash and PayID stay free. Pro
+        removes that fee so you keep 100% of your sales.
       </p>
 
       <p className="mb-2 text-sm font-semibold text-[var(--field)]">
@@ -100,7 +99,7 @@ export default function PricingTiers() {
               href="/signup"
               className="inline-flex rounded-[var(--radius-pill)] border border-[var(--field)] px-5 py-3 text-sm font-semibold text-[var(--field)] hover:bg-[var(--wash)]"
             >
-              Start free
+              Free
             </Link>
           </div>
         </div>
@@ -114,7 +113,9 @@ export default function PricingTiers() {
               /mo per site
             </span>
           </p>
-          <p className="mt-2 text-sm text-[var(--muted)]">{FREE_TRIAL_BLURB}</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">
+            Keep 100% of your card sales - no Stallside fee.
+          </p>
           <div className="mt-4">
             <PlanFeatureBlock plan="pro" currency={currency} />
           </div>
@@ -123,16 +124,17 @@ export default function PricingTiers() {
               href="/signup"
               className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
             >
-              Start free
+              Go Pro
             </Link>
           </div>
         </div>
       </div>
 
       <p className="mt-6 text-sm text-[var(--muted)]">
-        After the 30-day Pro trial you stay on Free ($0/mo) unless you upgrade.
-        Cancel Pro anytime. Prices for {billingRegionLabel(currency)} ({currency}).
-        Stripe&apos;s own processing fees still apply on card sales.
+        Free is $0/mo with every feature. Upgrade to Pro anytime to remove the
+        Stallside card fee. Cancel Pro anytime. Prices for{" "}
+        {billingRegionLabel(currency)} ({currency}). Stripe&apos;s own processing
+        fees still apply on card sales.
       </p>
     </section>
   );

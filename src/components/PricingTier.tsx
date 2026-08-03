@@ -99,7 +99,7 @@ export default function PricingTiers() {
             href="/signup"
             className="mt-8 inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
           >
-            Start free - 30 days
+            Free
           </Link>
         </div>
 

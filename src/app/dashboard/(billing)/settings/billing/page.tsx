@@ -90,7 +90,7 @@ export default async function BillingSettingsPage({
         <p className="mt-2 text-[var(--muted)]">
           Free is $0/mo with all features (card/Tap &amp; Go carry a Stallside
           fee). Pro removes that fee so you keep 100% of card sales. This is what
-          you pay Stallside — not stand customer payments.
+          you pay Stallside - not stand customer payments.
         </p>
       </div>
 

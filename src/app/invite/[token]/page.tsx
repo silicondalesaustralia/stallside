@@ -70,7 +70,16 @@ export default async function LifetimeInvitePage({
 
       <div className="mt-6">
         <PaymentIconRow
-          brands={["cash", "payid", "card", "apple", "google", "paypal"]}
+          brands={[
+            "cash",
+            "payid",
+            "card",
+            "apple",
+            "google",
+            "afterpay",
+            "zip",
+            "klarna",
+          ]}
         />
       </div>
 

@@ -5,6 +5,7 @@ import { billingRegionDisplay } from "@/lib/saas-pricing";
 import { stallsideSubscriptionSummary } from "@/lib/stallside-subscription-summary";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
+import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
 import AlertSettingsForm from "./AlertSettingsForm";
 import BusinessNameForm from "./BusinessNameForm";
 import DeleteAccountButton from "./DeleteAccountButton";
@@ -95,7 +96,7 @@ export default async function SettingsPage() {
         <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
           <PaymentBrandIcon brand="stripe" className="size-6" />
           Card / Tap &amp; Go
-          <PaymentIconRow brands={["card", "apple", "google"]} />
+          <PaymentIconRow brands={STRIPE_CHECKOUT_BRANDS} />
         </h2>
         <p>
           Status:{" "}

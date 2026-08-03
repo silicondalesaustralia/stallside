@@ -99,7 +99,7 @@ export default function LandingHero() {
               href="/signup"
               className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition duration-150 hover:bg-[var(--leaf-dark)]"
             >
-              Start free
+              Free
             </Link>
             <Link
               href="#pricing"

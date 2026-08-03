@@ -112,10 +112,7 @@ export default async function StandCartPage({
         demoRegion={demoRegion}
         restockStandId={restockStandId}
         passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner)}
-        stallsideFeeApplies={shouldChargeStallsideFee(stand.owner, {
-          email: stand.owner.user?.email,
-          role: stand.owner.user?.role,
-        })}
+        stallsideFeeApplies={shouldChargeStallsideFee(stand.owner)}
       />
     </main>
   );

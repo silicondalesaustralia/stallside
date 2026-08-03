@@ -2,6 +2,7 @@ import Link from "next/link";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import type { LocalTransferMethod } from "@/lib/local-transfer";
+import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
 
 type StandPaymentTogglesProps = {
   method: LocalTransferMethod | null;
@@ -92,7 +93,7 @@ export default function StandPaymentToggles({
         />
         <span className="min-w-0">
           <span className="flex flex-wrap items-center gap-2 font-medium">
-            <PaymentIconRow brands={["card", "apple", "google"]} />
+            <PaymentIconRow brands={STRIPE_CHECKOUT_BRANDS} />
             Card / Tap &amp; Go
           </span>
           <span className="mt-0.5 block text-[var(--muted)]">

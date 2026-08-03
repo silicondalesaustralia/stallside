@@ -1,4 +1,6 @@
-/** Homepage payment-methods block — text first; BNPL as “and also”, on larger orders. */
+import PaymentIconRow from "@/components/PaymentIconRow";
+
+/** Homepage payment-methods block - text first; BNPL as “and also”, on larger orders. */
 export default function LandingPaymentMethods() {
   return (
     <section
@@ -16,10 +18,25 @@ export default function LandingPaymentMethods() {
         </h2>
       </div>
       <p className="max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        Cash, PayID, card, Tap &amp; Go, Apple Pay and Google Pay — plus Buy
+        Cash, PayID, card, Tap &amp; Go, Apple Pay and Google Pay - plus Buy
         Now, Pay Later with Afterpay, Zip and Klarna on larger orders. One QR,
         every option.
       </p>
+      <div className="mt-6 pl-3">
+        <PaymentIconRow
+          brands={[
+            "cash",
+            "payid",
+            "card",
+            "apple",
+            "google",
+            "afterpay",
+            "zip",
+            "klarna",
+          ]}
+          className="gap-2.5"
+        />
+      </div>
     </section>
   );
 }

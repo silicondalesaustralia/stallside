@@ -1,4 +1,5 @@
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
+import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
 import type { BillingCurrency } from "@/lib/saas-pricing";
 
 export function cashPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
@@ -7,19 +8,19 @@ export function cashPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
 
 export function cardPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
   return currency === "AUD"
-    ? ["cash", "payid", "card", "apple", "google"]
-    : ["cash", "card", "apple", "google"];
+    ? ["cash", "payid", ...STRIPE_CHECKOUT_BRANDS]
+    : ["cash", ...STRIPE_CHECKOUT_BRANDS];
 }
 
 /** Free plan fee note (card / Tap & Go only). */
 export const FREE_PLAN_FEE_BLURB =
-  "Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later. Cash and PayID always free.";
+  "Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions. Cash and PayID always free.";
 
 /** Free ($0/mo) blurb. */
 export function cashPlanBlurb(currency: BillingCurrency): string {
   return currency === "AUD"
-    ? "Free forever. All features — cash, PayID, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card only; cash and PayID stay free."
-    : "Free forever. All features — cash, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card only; cash stays free.";
+    ? "Free forever. All features - cash, PayID, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; cash and PayID stay free."
+    : "Free forever. All features - cash, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; cash stays free.";
 }
 
 export function cashPlanExtraBlurb(currency: BillingCurrency): string | null {
@@ -30,19 +31,19 @@ export function cashPlanExtraBlurb(currency: BillingCurrency): string | null {
 
 /** @deprecated Prefer free wording - kept for call sites during rename. */
 export const FREE_TRIAL_BLURB =
-  "30-day Pro free trial: no Stallside card fee — keep 100% of your sales. No card required. Then Free stays $0/mo with the card fee unless you upgrade.";
+  "30-day Pro free trial: no Stallside card fee - keep 100% of your sales. No card required. Then Free stays $0/mo with the card fee unless you upgrade.";
 
 export const STARTER_PLAN_BLURB =
-  "Free forever. All features. Stallside fee 2.5% + 30¢ on card / Tap & Go only. Cash and PayID always free.";
+  "Free forever. All features. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions. Cash and PayID always free.";
 
 export const CARD_PLAN_BLURB =
-  "Same features as Free, with no Stallside card fee — keep 100% of your sales.";
+  "Same features as Free, with no Stallside card fee - keep 100% of your sales.";
 
 export const CARD_PLAN_RESTOCK_BLURB =
   "Notify customers by email when you restock - they opt in after checkout; you never see their addresses.";
 
 export const CARD_PLAN_HARDWARE_BLURB =
-  "No terminal. No hardware. Keep 100% of your sales — no Stallside cut on card.";
+  "No terminal. No hardware. Keep 100% of your sales - no Stallside cut on card.";
 
 export const CARD_PLAN_BILLING_BLURB =
   "Paid straight to your Stripe account.";
@@ -60,7 +61,7 @@ export const CARD_PLAN_FEATURES = [
 
 const FREE_FEATURES_CORE = [
   "Cash at the stand (customer self-confirms)",
-  "Tap & Go - card, Apple Pay, Google Pay (Stallside fee on Free)",
+  "Tap & Go - card, Apple Pay, Google Pay (Stallside fee 2.5% + 30¢ on all transactions)",
   "Unlimited products and product options / variants",
   "Real stock counts and printable QR posters",
   "Sale alerts and low-stock alerts (email / push)",
@@ -69,7 +70,7 @@ const FREE_FEATURES_CORE = [
 ] as const;
 
 const FREE_PAYID_FEATURE =
-  "PayID bank transfer (Australia only) — no Stallside fee" as const;
+  "PayID bank transfer (Australia only) - no Stallside fee" as const;
 
 /** Free bullets for pricing - PayID only when region is Australia. */
 export function starterPlanFeatures(

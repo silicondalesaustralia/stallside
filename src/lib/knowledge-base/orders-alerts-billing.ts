@@ -62,9 +62,9 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     ctas: [{ label: "Billing", href: "/dashboard/settings/billing" }],
     steps: [
       "Stallside’s subscription is optional Pro. It is separate from customer card payments at the stand.",
-      "Free is $0/mo with all features. Card / Tap & Go take a Stallside fee of 2.5% + 30¢; cash and PayID stay free.",
+      "Free is $0/mo with all features. Stallside fee is 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; cash and PayID stay free.",
       "New owners get a 30-day Pro free trial (no Stallside card fee). No card required.",
-      "When the trial ends you stay on Free — nothing locks. Upgrade anytime from Settings → Billing to remove the card fee.",
+      "When the trial ends you stay on Free - nothing locks. Upgrade anytime from Settings → Billing to remove the card fee.",
       "Stallside Pro is billed monthly via Stripe. Manage payment method or cancel in the Stripe Customer Portal.",
       "If you cancel Pro, you keep Pro until the paid period ends, then return to Free (card fee applies again). Data is retained.",
       "Delete account (Settings) immediately cancels any subscription, stops emails, and permanently removes your data.",
@@ -74,7 +74,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     slug: "customer-payments",
     title: "Accept card at the stand",
     summary:
-      "Connect Stripe so customers pay by card, Apple Pay, or Google Pay — separate from your Stallside subscription. PayPal coming soon.",
+      "Connect Stripe so customers pay by card, Apple Pay, or Google Pay - separate from your Stallside subscription. PayPal coming soon.",
     videoUrl: "https://youtu.be/keo53YG_Nks",
     comingSoon: false,
     related: ["billing", "first-stand", "pre-orders"],
@@ -84,7 +84,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     ],
     steps: [
       "Stripe Connect is how customers pay you at the stand by card, Apple Pay, or Google Pay. Available on Free and Pro.",
-      "On Free, Stallside takes 2.5% + 30¢ per card sale (you can absorb or pass on in Settings → Stripe). Pro has no Stallside card fee.",
+      "On Free, Stallside takes 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions (you can absorb or pass on in Settings → Stripe). Pro has no Stallside card fee.",
       "Open Settings → Stripe (Card / Tap & Go) and tap Connect Stripe. Complete Stripe’s onboarding with your business and bank details.",
       "When charges are enabled, turn Card / Tap & Go on for each stand under My stands → manage.",
       "Scan your Stallside QR on another phone and run a small test card sale. Payments go to your Stripe account.",

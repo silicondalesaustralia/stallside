@@ -39,7 +39,7 @@ export function isStripeConfigured(): boolean {
 export type SaasPlan = "free" | "pro";
 
 /**
- * Static process.env.NAME reads only — Next/Vercel do not resolve
+ * Static process.env.NAME reads only - Next/Vercel do not resolve
  * process.env[dynamicKey] for server bundles the same way as local Node.
  */
 function proPriceEnv(currency: BillingCurrency): string | undefined {

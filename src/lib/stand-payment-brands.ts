@@ -1,8 +1,10 @@
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
 import type { DemoRegion } from "@/lib/demo";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
+import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
 import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
+
 type StandPaymentFlags = {
   slug?: string;
   currency: string;
@@ -45,7 +47,7 @@ export function standPaymentBrands(
   }
 
   if (standOffersCard(stand, owner)) {
-    brands.push("card", "apple", "google");
+    brands.push(...STRIPE_CHECKOUT_BRANDS);
   }
 
   if (standOffersPayPal(stand, owner)) {
@@ -92,6 +94,6 @@ export function demoSignPaymentBrands(
   const aud =
     region === "au" || stand.currency.trim().toUpperCase() === "AUD";
   if (aud) brands.push("payid");
-  brands.push("card");
+  brands.push(...STRIPE_CHECKOUT_BRANDS);
   return brands;
 }

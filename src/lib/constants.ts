@@ -10,9 +10,9 @@ export const APP_SEO_TITLE =
   "Stallside · Checkout For Unattended Farm Stands & Stalls";
 /** Meta description (~155 chars) */
 export const APP_SEO_DESCRIPTION =
-  "Free QR checkout for farm stands and honesty stalls. Cash and PayID free; card has a small fee — or go Pro and keep 100%.";
+  "Free QR checkout for farm stands and honesty stalls. Cash and PayID free; card has a small fee - or go Pro and keep 100%.";
 
-/** @deprecated legacy Cash tier list price — prefer cashPlanCents(currency) */
+/** @deprecated legacy Cash tier list price - prefer cashPlanCents(currency) */
 export const CASH_PLAN_CENTS = 699;
 /** Pro plan AUD list price - prefer cardPlanCents(currency) */
 export const CARD_PLAN_CENTS = 1999;

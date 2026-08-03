@@ -30,12 +30,7 @@ export async function startCardCheckout(input: {
 
     const { stand, lineData, totalCents, preOrderCart } = loaded;
     const owner = stand.owner;
-    const ownerUser = await prisma.user.findUnique({
-      where: { id: owner.userId },
-      select: { email: true, role: true },
-    });
     const demo = isDemoStandSlug(stand.slug);
-    const access = { email: ownerUser?.email, role: ownerUser?.role };
 
     if (!stand.acceptCard) {
       return { error: "Card is not enabled at this stand." };
@@ -80,11 +75,7 @@ export async function startCardCheckout(input: {
     const stripeAccountId =
       demoStripe?.stripeAccountId ?? owner.stripeAccountId!;
 
-    const applicationFee = computeStallsideApplicationFee(
-      totalCents,
-      owner,
-      access,
-    );
+    const applicationFee = computeStallsideApplicationFee(totalCents, owner);
     const passOn = applicationFee > 0 && ownerPassesFeeToCustomer(owner);
     const chargeTotal = totalCents + (passOn ? applicationFee : 0);
 

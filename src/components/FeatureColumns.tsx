@@ -16,7 +16,7 @@ const OWNER_FREE = [
 
 const OWNER_PRO = [
   CARD_PLAN_HARDWARE_BLURB,
-  "Same features as Free — no Stallside card fee",
+  "Same features as Free - no Stallside card fee",
   "Paid straight to your Stripe account: no cash box to empty, count, or bank",
 ] as const;
 
@@ -34,65 +34,102 @@ const CUSTOMER_LIVE = [
   "Opt in to hear when the stand restocks",
 ] as const;
 
-function FeatureGroupList({
-  heading,
+type Accent = "leaf" | "marigold" | "field";
+
+const ACCENT: Record<
+  Accent,
+  { bar: string; eyebrow: string; wash: string; border: string }
+> = {
+  leaf: {
+    bar: "border-[var(--leaf)]",
+    eyebrow: "text-[var(--leaf)]",
+    wash: "bg-[var(--wash)]",
+    border: "border-[var(--leaf)]/35",
+  },
+  marigold: {
+    bar: "border-[var(--marigold)]",
+    eyebrow: "text-[var(--marigold)]",
+    wash: "bg-[color-mix(in_srgb,var(--marigold)_12%,white)]",
+    border: "border-[var(--marigold)]/50",
+  },
+  field: {
+    bar: "border-[var(--field)]",
+    eyebrow: "text-[var(--field)]",
+    wash: "bg-[var(--panel)]",
+    border: "border-[var(--field)]/25",
+  },
+};
+
+function FeatureBlock({
+  eyebrow,
+  title,
+  accent,
   items,
 }: {
-  heading: string;
+  eyebrow: string;
+  title: string;
+  accent: Accent;
   items: readonly string[];
 }) {
+  const a = ACCENT[accent];
   return (
-    <div>
-      <p className="text-xs font-semibold uppercase tracking-wide text-[var(--leaf)]">
-        {heading}
+    <article
+      className={`rounded-[var(--radius)] border-2 ${a.border} ${a.wash} p-[var(--pad-lg)] sm:p-8`}
+    >
+      <p
+        className={`text-sm font-semibold uppercase tracking-[0.14em] ${a.eyebrow}`}
+      >
+        {eyebrow}
       </p>
-      <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-[var(--muted)]">
+      <h3
+        className={`mt-2 border-l-4 pl-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl ${a.bar}`}
+      >
+        {title}
+      </h3>
+      <ul className="mt-6 list-disc space-y-2.5 pl-5 text-base leading-relaxed text-[var(--field)]/85 sm:text-[1.05rem]">
         {items.map((item) => (
           <li key={item}>{item}</li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-function FeatureColumn({
-  title,
-  groups,
-}: {
-  title: string;
-  groups: readonly { heading: string; items: readonly string[] }[];
-}) {
-  return (
-    <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-[var(--pad-lg)]">
-      <h3 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
-        {title}
-      </h3>
-      <div className="mt-4 space-y-5">
-        {groups.map((group) => (
-          <FeatureGroupList
-            key={group.heading}
-            heading={group.heading}
-            items={group.items}
-          />
-        ))}
-      </div>
-    </div>
+    </article>
   );
 }
 
 export default function FeatureColumns() {
   return (
-    <section className="mx-auto grid w-full max-w-6xl gap-6 px-5 py-10 sm:px-6 sm:py-12 lg:grid-cols-2">
-      <FeatureColumn
-        title="For owners"
-        groups={[
-          { heading: "Free - $0/mo", items: OWNER_FREE },
-          { heading: "Pro — keep 100% of sales", items: OWNER_PRO },
-        ]}
+    <section className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-10 sm:gap-8 sm:px-6 sm:py-12">
+      <div className="relative mb-1">
+        <div
+          aria-hidden
+          className="absolute left-0 top-0 size-8 border-l-2 border-t-2 border-[var(--field)]/35"
+          style={{ borderTopLeftRadius: 8 }}
+        />
+        <h2 className="pl-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
+          What you get
+        </h2>
+        <p className="mt-3 max-w-2xl pl-3 text-base text-[var(--muted)] sm:text-lg">
+          Free and Pro share every feature. The only difference is the Stallside
+          card fee. Shoppers get a simple scan-and-pay stall.
+        </p>
+      </div>
+
+      <FeatureBlock
+        eyebrow="For owners"
+        title="Free - $0/mo"
+        accent="leaf"
+        items={OWNER_FREE}
       />
-      <FeatureColumn
-        title="For customers"
-        groups={[{ heading: "At the stall", items: CUSTOMER_LIVE }]}
+      <FeatureBlock
+        eyebrow="For owners"
+        title="Pro - keep 100% of sales"
+        accent="marigold"
+        items={OWNER_PRO}
+      />
+      <FeatureBlock
+        eyebrow="For customers"
+        title="At the stall"
+        accent="field"
+        items={CUSTOMER_LIVE}
       />
     </section>
   );

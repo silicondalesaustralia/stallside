@@ -20,7 +20,10 @@ export default function PassFeeToggle({
 
   return (
     <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
-      <p className="font-semibold">Stallside card fee (Free plan): 2.5% + 30¢</p>
+      <p className="font-semibold">
+        Stallside fee (Free plan): 2.5% + 30¢ on card, Tap &amp; Go, and pay-later
+        on all transactions
+      </p>
       <label className="flex items-start gap-3">
         <input
           type="radio"

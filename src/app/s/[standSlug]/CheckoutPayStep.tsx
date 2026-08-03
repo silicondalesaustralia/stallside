@@ -3,6 +3,7 @@
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import DemoCardHint from "@/components/DemoCardHint";
+import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
 import { formatMoney } from "@/lib/public-product";
 import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
@@ -144,7 +145,10 @@ export default function CheckoutPayStep({
             className="flex items-center gap-4 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4 text-left disabled:opacity-50"
           >
             <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--wash)] px-3 py-2.5 text-[var(--ink)]">
-              <PaymentIconRow brands={["card", "apple", "google"]} className="gap-2" />
+              <PaymentIconRow
+                brands={STRIPE_CHECKOUT_BRANDS}
+                className="gap-2"
+              />
             </span>
             <span className="min-w-0">
               <span className="block text-xl font-semibold text-[var(--ink)]">
@@ -152,7 +156,7 @@ export default function CheckoutPayStep({
               </span>
               {!pending ? (
                 <span className="mt-0.5 block text-base font-normal text-[var(--muted)]">
-                  Card, Apple Pay, Google Pay — and pay later on larger orders
+                  Card, Apple Pay, Google Pay - and pay later on larger orders
                 </span>
               ) : null}
             </span>
