@@ -56,6 +56,59 @@ export const PMC_METHOD_SORT_ORDER = [
   "paypal",
 ];
 
+/**
+ * Stallside-relevant Stripe Checkout methods by billing currency.
+ * Stripe PMC objects include every global method; we only surface these.
+ */
+const REGION_PMC_METHODS: Record<string, readonly string[]> = {
+  AUD: [
+    "card",
+    "apple_pay",
+    "google_pay",
+    "link",
+    "payto",
+    "afterpay_clearpay",
+    "klarna",
+    "zip",
+  ],
+  USD: [
+    "card",
+    "apple_pay",
+    "google_pay",
+    "link",
+    "cashapp",
+    "afterpay_clearpay",
+    "klarna",
+    "zip",
+    "affirm",
+  ],
+  GBP: [
+    "card",
+    "apple_pay",
+    "google_pay",
+    "link",
+    "afterpay_clearpay",
+    "klarna",
+  ],
+  EUR: [
+    "card",
+    "apple_pay",
+    "google_pay",
+    "link",
+    "klarna",
+    "ideal",
+    "bancontact",
+    "sepa_debit",
+  ],
+};
+
+const FALLBACK_PMC_METHODS = REGION_PMC_METHODS.USD;
+
+export function regionalPmcMethods(currency: string): ReadonlySet<string> {
+  const code = currency.trim().toUpperCase();
+  return new Set(REGION_PMC_METHODS[code] ?? FALLBACK_PMC_METHODS);
+}
+
 export function humanizePmcMethod(method: string): string {
   return (
     LABEL_BY_PMC_METHOD[method] ??

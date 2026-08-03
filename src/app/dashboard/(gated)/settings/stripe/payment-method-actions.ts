@@ -27,6 +27,7 @@ export async function toggleConnectPaymentMethod(input: {
       configurationId: input.configurationId,
       method: input.method,
       preference: input.enabled ? "on" : "off",
+      currency: owner.billingCurrency || "AUD",
     });
     revalidatePath("/dashboard/settings/stripe");
     return { methods };

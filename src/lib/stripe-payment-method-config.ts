@@ -3,6 +3,7 @@ import {
   BRAND_BY_PMC_METHOD,
   humanizePmcMethod,
   PMC_METHOD_SORT_ORDER,
+  regionalPmcMethods,
 } from "@/lib/stripe-pmc-labels";
 import type { PaymentBrand } from "@/lib/payment-brand-assets";
 import { getStripe } from "@/lib/stripe";
@@ -55,10 +56,14 @@ function isMethodSlot(value: unknown): value is MethodSlot {
 
 export function parseConnectPaymentMethods(
   config: Stripe.PaymentMethodConfiguration,
+  currency?: string,
 ): ConnectPaymentMethodToggle[] {
+  const regional = currency ? regionalPmcMethods(currency) : null;
   const rows: ConnectPaymentMethodToggle[] = [];
   for (const [method, value] of Object.entries(config)) {
     if (PMC_META_KEYS.has(method) || !isMethodSlot(value)) continue;
+    // Keep regional methods, plus anything Stripe already marks available.
+    if (regional && !regional.has(method) && !value.available) continue;
     rows.push({
       method,
       label: humanizePmcMethod(method),
@@ -97,6 +102,7 @@ export async function getDefaultPaymentMethodConfiguration(
 
 export async function listConnectPaymentMethodToggles(
   stripeAccountId: string,
+  currency: string,
 ): Promise<{
   configurationId: string;
   methods: ConnectPaymentMethodToggle[];
@@ -105,7 +111,7 @@ export async function listConnectPaymentMethodToggles(
   if (!config) return null;
   return {
     configurationId: config.id,
-    methods: parseConnectPaymentMethods(config),
+    methods: parseConnectPaymentMethods(config, currency),
   };
 }
 
@@ -114,6 +120,7 @@ export async function setConnectPaymentMethodPreference(params: {
   configurationId: string;
   method: string;
   preference: "on" | "off";
+  currency: string;
 }): Promise<ConnectPaymentMethodToggle[]> {
   const stripe = getStripe();
   const updated = await stripe.paymentMethodConfigurations.update(
@@ -125,5 +132,5 @@ export async function setConnectPaymentMethodPreference(params: {
     } as Stripe.PaymentMethodConfigurationUpdateParams,
     { stripeAccount: params.stripeAccountId },
   );
-  return parseConnectPaymentMethods(updated);
+  return parseConnectPaymentMethods(updated, params.currency);
 }

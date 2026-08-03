@@ -50,6 +50,7 @@ export default async function StripeSettingsPage({
     try {
       paymentMethods = await listConnectPaymentMethodToggles(
         owner.stripeAccountId,
+        owner.billingCurrency || "AUD",
       );
     } catch (error) {
       console.error("Failed to load Stripe payment methods", error);

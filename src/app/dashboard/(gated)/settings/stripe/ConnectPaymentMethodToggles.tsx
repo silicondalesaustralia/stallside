@@ -54,9 +54,9 @@ export default function ConnectPaymentMethodToggles({
       <div>
         <p className="font-semibold">Checkout payment methods</p>
         <p className="mt-1 text-[var(--muted)]">
-          These mirror your connected Stripe account for this region. Turn a
-          method off to hide it at customer checkout (takes effect on the next
-          Checkout session - not a tab already open).
+          Common methods for your billing region, synced with your connected
+          Stripe account. Turn a method off to hide it at customer checkout
+          (takes effect on the next Checkout session - not a tab already open).
         </p>
         <p className="mt-1 text-[var(--muted)]">
           Pre-orders stay card-only. Buy Now, Pay Later still only appears above
@@ -85,7 +85,7 @@ export default function ConnectPaymentMethodToggles({
                   </span>
                 ) : method.enabled && !method.available ? (
                   <span className="text-xs text-[var(--muted)]">
-                    On - may need Stripe capability approval
+                    On in Stripe, but not ready for checkout yet
                   </span>
                 ) : null}
               </span>
