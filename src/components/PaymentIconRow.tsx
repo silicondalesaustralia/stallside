@@ -14,7 +14,7 @@ export default function PaymentIconRow({
 }) {
   return (
     <span
-      className={`inline-flex flex-wrap items-center gap-1.5 text-[var(--ink)] ${className}`}
+      className={`flex flex-wrap items-center gap-1.5 text-[var(--ink)] ${className}`}
     >
       {brands.map((brand) => {
         const wide = WORDMARK_BRANDS.has(brand);

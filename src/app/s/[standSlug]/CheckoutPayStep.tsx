@@ -157,10 +157,10 @@ export default function CheckoutPayStep({
               ) : null}
             </span>
             {!pending ? (
-              <span className="flex w-full flex-wrap items-center gap-2.5 rounded-[var(--radius)] bg-[var(--wash)] px-3 py-3 text-[var(--ink)]">
+              <span className="flex w-full justify-center rounded-[var(--radius)] bg-[var(--wash)] px-3 py-3 text-[var(--ink)]">
                 <PaymentIconRow
                   brands={STRIPE_CHECKOUT_BRANDS}
-                  className="gap-2.5"
+                  className="w-full justify-center gap-2.5"
                   size="lg"
                 />
               </span>
