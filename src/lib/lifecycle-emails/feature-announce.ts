@@ -19,8 +19,9 @@ export function featureAnnounceHtml(name: string): string {
     FEATURE_ANNOUNCE_SUBJECT,
     `
       <p>Hi ${greetName(name)},</p>
-      <p>Quick update from ${APP_NAME}: plans are simpler, checkout got stronger,
-      and a few tools that used to sound “Pro only” are on Free for everyone.</p>
+      <p>Quick update from ${APP_NAME}: plans are simpler, checkout got stronger.
+      Free plans now get everything - this makes it better no matter the size of
+      your stall!</p>
 
       <p><strong>Plans (the important bit)</strong></p>
       <p><strong>Free</strong> is $0/mo with <strong>every feature</strong>: cash,
