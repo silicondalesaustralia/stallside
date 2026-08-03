@@ -29,7 +29,7 @@ function MarkChip({ mark }: { mark: LandingPaymentMark }) {
       </span>
       {mark.region ? (
         <span
-          className="absolute -right-1 -top-1 text-[0.75rem] leading-none"
+          className="absolute -right-1.5 -top-1.5 text-[1.15rem] leading-none drop-shadow-sm"
           title={REGION_LABEL[mark.region]}
           aria-hidden
         >

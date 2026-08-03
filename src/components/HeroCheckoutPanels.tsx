@@ -1,3 +1,4 @@
+import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 
 export function HeroPickPanel() {
@@ -45,7 +46,14 @@ export function HeroCashPayPanel() {
         Slot, cash box, or whatever is provided
       </p>
       <div className="mt-1.5 flex justify-center text-[var(--ink)]">
-        <PaymentIconRow brands={["cash"]} className="justify-center gap-2" />
+        <span className="inline-flex flex-col items-center gap-0.5">
+          <span className="inline-flex size-8 items-center justify-center rounded-md border border-[var(--line)] bg-white sm:size-9">
+            <PaymentBrandIcon brand="cash" className="size-5" />
+          </span>
+          <span className="text-[10px] font-semibold leading-none text-[var(--field)]">
+            Cash
+          </span>
+        </span>
       </div>
       <p className="mt-1.5 text-center font-receipt text-xl font-semibold text-[var(--field)] sm:text-2xl">
         $12.00
