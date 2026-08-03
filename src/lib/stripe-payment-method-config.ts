@@ -62,8 +62,9 @@ export function parseConnectPaymentMethods(
   const rows: ConnectPaymentMethodToggle[] = [];
   for (const [method, value] of Object.entries(config)) {
     if (PMC_META_KEYS.has(method) || !isMethodSlot(value)) continue;
-    // Keep regional methods, plus anything Stripe already marks available.
-    if (regional && !regional.has(method) && !value.available) continue;
+    // Strict regional allowlist - Stripe often marks EU methods available
+    // even on AU accounts because those capabilities were auto-granted.
+    if (regional && !regional.has(method)) continue;
     rows.push({
       method,
       label: humanizePmcMethod(method),

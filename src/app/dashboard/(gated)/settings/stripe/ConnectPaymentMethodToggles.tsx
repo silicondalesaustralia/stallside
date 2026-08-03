@@ -85,7 +85,8 @@ export default function ConnectPaymentMethodToggles({
                   </span>
                 ) : method.enabled && !method.available ? (
                   <span className="text-xs text-[var(--muted)]">
-                    On in Stripe, but not ready for checkout yet
+                    On in Stripe, but Stripe has not enabled checkout for it on
+                    this account (often business type or verification)
                   </span>
                 ) : null}
               </span>
