@@ -26,7 +26,7 @@ export function featureAnnounceHtml(name: string): string {
       <p><strong>Plans (the important bit)</strong></p>
       <p><strong>Free</strong> is $0/mo with <strong>every feature</strong>: cash,
       PayID (Australia), Tap &amp; Go (card, Apple Pay, Google Pay), Buy Now Pay
-      Later on larger orders (Afterpay, Zip, Klarna), pre-orders and Collections,
+      Later on larger orders (Zip, Klarna), pre-orders and Collections,
       stand branding and social links, restock notify emails, product options,
       hide/archive/duplicate, and the card-demand counter.</p>
       <p>On Free, Stallside takes <strong>2.5%</strong> on card, Tap &amp; Go,
@@ -41,9 +41,9 @@ export function featureAnnounceHtml(name: string): string {
 
       <p><strong>Also live</strong></p>
       <ul>
-        <li><strong>Buy Now, Pay Later</strong> - Afterpay, Zip, and Klarna show
+        <li><strong>Buy Now, Pay Later</strong> - Zip and Klarna show
         automatically on larger orders at Stripe Checkout (where Stripe supports
-        them). No extra toggle.</li>
+        them).</li>
         <li><strong>Pre-orders</strong> - pay by card to reserve for a collection
         day; track Ready → Collected; Email all for a day.</li>
         <li><strong>Stand branding</strong> - logo, colours, and social links on

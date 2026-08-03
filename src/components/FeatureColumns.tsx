@@ -26,7 +26,7 @@ const CUSTOMER_LIVE = [
   "Choose options like size or flavour when a product offers them",
   "Pay cash and PayID (Australia only), then confirm - the owner knows.",
   "Tap & Go - card, Apple Pay, Google Pay on your phone",
-  "Buy Now, Pay Later (Afterpay, Zip, Klarna) on larger orders",
+  "Buy Now, Pay Later (Zip, Klarna) on larger orders",
   "When card isn't on, tap “I'd have paid by card” so the owner sees demand",
   "Pre-order and pay by card to reserve for a collection day",
   "See when orders close, when to collect, and how many slots are left",

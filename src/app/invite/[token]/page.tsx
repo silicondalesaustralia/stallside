@@ -76,7 +76,6 @@ export default async function LifetimeInvitePage({
             "card",
             "apple",
             "google",
-            "afterpay",
             "zip",
             "klarna",
           ]}

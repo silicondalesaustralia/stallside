@@ -32,7 +32,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "What payment methods can customers use?",
     answer:
-      "Cash and PayID (no Stallside fee), plus card, Tap & Go, Apple Pay, Google Pay, and PayTo (Australia). On larger orders, customers can also use Buy Now, Pay Later with Afterpay, Zip or Klarna. On Free, Stallside fee is 2.5% on card, Tap & Go, pay-later and PayTo; removed on Pro. Cash and PayID are always free of Stallside fees.",
+      "Cash and PayID (no Stallside fee), plus card, Tap & Go, Apple Pay, Google Pay, and PayTo (Australia). On larger orders, customers can also use Buy Now, Pay Later with Zip or Klarna. On Free, Stallside fee is 2.5% on card, Tap & Go, pay-later and PayTo; removed on Pro. Cash and PayID are always free of Stallside fees.",
   },
   {
     question: "Is there a fee on card payments?",
@@ -57,7 +57,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "How does QR checkout work?",
     answer:
-      "You print a QR poster for each stand. Shoppers open it on their phone and select items. When paying cash they confirm cash and PayID (Australia only) at the stand and you are alerted. When paying digitally they use the same Stripe checkout (card, Apple Pay, Google Pay, and on larger orders Afterpay, Zip or Klarna). Stock updates either way.",
+      "You print a QR poster for each stand. Shoppers open it on their phone and select items. When paying cash they confirm cash and PayID (Australia only) at the stand and you are alerted. When paying digitally they use the same Stripe checkout (card, Apple Pay, Google Pay, and on larger orders Zip or Klarna). Stock updates either way.",
   },
   {
     question: "How do pre-orders work?",

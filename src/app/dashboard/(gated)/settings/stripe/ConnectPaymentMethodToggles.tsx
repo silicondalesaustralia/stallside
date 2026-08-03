@@ -59,8 +59,8 @@ export default function ConnectPaymentMethodToggles({
           (takes effect on the next Checkout session - not a tab already open).
         </p>
         <p className="mt-1 text-[var(--muted)]">
-          Pre-orders stay card-only. Buy Now, Pay Later still only appears above
-          the provider&apos;s minimum (usually around $30), even when toggled on.
+          Pre-orders stay card-only. Zip / Klarna still only appear above the
+          provider&apos;s minimum (usually around $30), even when toggled on.
         </p>
       </div>
       <ul className="divide-y divide-[var(--line)]">

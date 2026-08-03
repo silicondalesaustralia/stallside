@@ -168,6 +168,12 @@ export async function startCardCheckout(input: {
       {
         ...sessionParams,
         ...(methodTypes ? { payment_method_types: methodTypes } : {}),
+        ...(!methodTypes
+          ? {
+              // Stallside does not offer Afterpay (unsupported for many stands).
+              excluded_payment_method_types: ["afterpay_clearpay"],
+            }
+          : {}),
         ...(pmc
           ? {
               payment_method_configuration: pmc.parent ?? pmc.id,

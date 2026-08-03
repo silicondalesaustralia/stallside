@@ -14,8 +14,9 @@ export default function BnplExplainer({
         config, so off means hidden on the next payment session.
       </p>
       <p className="text-[var(--muted)]">
-        Buy Now, Pay Later options still only show when the order is above the
-        provider&apos;s minimum (usually around $30). Pre-orders are card-only.
+        Buy Now, Pay Later with Zip or Klarna still only shows when the order is
+        above the provider&apos;s minimum (usually around $30). Pre-orders are
+        card-only.
       </p>
       {showPayTo ? (
         <p className="text-[var(--muted)]">

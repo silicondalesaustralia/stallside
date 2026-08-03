@@ -1,5 +1,6 @@
 import type Stripe from "stripe";
 import {
+  BLOCKED_PMC_METHODS,
   BRAND_BY_PMC_METHOD,
   humanizePmcMethod,
   PMC_METHOD_SORT_ORDER,
@@ -62,6 +63,7 @@ export function parseConnectPaymentMethods(
   const rows: ConnectPaymentMethodToggle[] = [];
   for (const [method, value] of Object.entries(config)) {
     if (PMC_META_KEYS.has(method) || !isMethodSlot(value)) continue;
+    if (BLOCKED_PMC_METHODS.has(method)) continue;
     // Strict regional allowlist - Stripe often marks EU methods available
     // even on AU accounts because those capabilities were auto-granted.
     if (regional && !regional.has(method)) continue;
@@ -114,9 +116,27 @@ export async function listConnectPaymentMethodToggles(
 } | null> {
   const config = await getDefaultPaymentMethodConfiguration(stripeAccountId);
   if (!config) return null;
+
+  // Keep Afterpay off on the connected PMC so it cannot resurface at Checkout.
+  let resolved = config;
+  try {
+    const stripe = getStripe();
+    resolved = await stripe.paymentMethodConfigurations.update(
+      config.id,
+      {
+        afterpay_clearpay: {
+          display_preference: { preference: "off" },
+        },
+      } as Stripe.PaymentMethodConfigurationUpdateParams,
+      { stripeAccount: stripeAccountId },
+    );
+  } catch (error) {
+    console.warn("Could not disable Afterpay on PMC", error);
+  }
+
   return {
-    configurationId: config.id,
-    methods: parseConnectPaymentMethods(config, currency),
+    configurationId: resolved.id,
+    methods: parseConnectPaymentMethods(resolved, currency),
   };
 }
 

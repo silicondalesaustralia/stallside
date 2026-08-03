@@ -9,7 +9,6 @@ export type PaymentBrand =
   | "payto"
   | "cashapp"
   | "link"
-  | "afterpay"
   | "zip"
   | "klarna";
 
@@ -17,7 +16,6 @@ export type PaymentBrand =
 export const WORDMARK_BRANDS: ReadonlySet<PaymentBrand> = new Set([
   "payid",
   "payto",
-  "afterpay",
   "zip",
   "klarna",
 ]);
@@ -27,7 +25,6 @@ export const STRIPE_CHECKOUT_BRANDS: PaymentBrand[] = [
   "card",
   "apple",
   "google",
-  "afterpay",
   "zip",
   "klarna",
 ];
@@ -44,7 +41,6 @@ export const USD_STRIPE_CHECKOUT_BRANDS: PaymentBrand[] = [
   "apple",
   "google",
   "cashapp",
-  "afterpay",
   "zip",
   "klarna",
 ];
@@ -66,8 +62,6 @@ export function paymentBrandSrc(brand: PaymentBrand): string | null {
       return "/brand/payto.png";
     case "stripe":
       return "/brand/stripe.png";
-    case "afterpay":
-      return "/brand/afterpay.svg";
     case "zip":
       return "/brand/zip.svg";
     case "klarna":
@@ -99,8 +93,6 @@ export function paymentBrandLabel(brand: PaymentBrand): string {
       return "PayPal";
     case "stripe":
       return "Stripe";
-    case "afterpay":
-      return "Afterpay";
     case "zip":
       return "Zip";
     case "klarna":

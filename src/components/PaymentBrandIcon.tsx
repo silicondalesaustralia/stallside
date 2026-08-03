@@ -128,9 +128,7 @@ function WordmarkImg({
       ? ""
       : extras.includes("max-w-")
         ? ""
-        : brand === "afterpay"
-          ? "max-w-[5.5rem]"
-          : brand === "payto"
+        : brand === "payto"
             ? "max-w-[5rem]"
             : brand === "klarna"
               ? "max-w-[4.25rem]"

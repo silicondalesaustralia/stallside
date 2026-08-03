@@ -3,7 +3,6 @@ import { getStripe } from "@/lib/stripe";
 
 /** PMC method key → Connect capability id. */
 const CAPABILITY_BY_METHOD: Record<string, string> = {
-  afterpay_clearpay: "afterpay_clearpay_payments",
   payto: "payto_payments",
   zip: "zip_payments",
   klarna: "klarna_payments",
@@ -21,14 +20,12 @@ export function connectCapabilitiesForCountry(
   };
   if (country.toUpperCase() === "AU") {
     caps.payto_payments = { requested: true };
-    caps.afterpay_clearpay_payments = { requested: true };
     caps.zip_payments = { requested: true };
     caps.klarna_payments = { requested: true };
   }
   if (country.toUpperCase() === "US") {
     caps.cashapp_payments = { requested: true };
     caps.affirm_payments = { requested: true };
-    caps.afterpay_clearpay_payments = { requested: true };
     caps.klarna_payments = { requested: true };
   }
   return caps;

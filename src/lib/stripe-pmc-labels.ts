@@ -9,7 +9,6 @@ export const BRAND_BY_PMC_METHOD: Record<string, PaymentBrand> = {
   cashapp: "cashapp",
   paypal: "paypal",
   payto: "payto",
-  afterpay_clearpay: "afterpay",
   klarna: "klarna",
   zip: "zip",
 };
@@ -22,7 +21,6 @@ export const LABEL_BY_PMC_METHOD: Record<string, string> = {
   cashapp: "Cash App Pay",
   paypal: "PayPal",
   payto: "PayTo",
-  afterpay_clearpay: "Afterpay",
   klarna: "Klarna",
   zip: "Zip",
   affirm: "Affirm",
@@ -49,12 +47,16 @@ export const PMC_METHOD_SORT_ORDER = [
   "link",
   "cashapp",
   "payto",
-  "afterpay_clearpay",
   "klarna",
   "zip",
   "affirm",
   "paypal",
 ];
+
+/** Never surface these in Stallside toggles or marketing. */
+export const BLOCKED_PMC_METHODS: ReadonlySet<string> = new Set([
+  "afterpay_clearpay",
+]);
 
 /**
  * Stallside-relevant Stripe Checkout methods by billing currency.
@@ -67,7 +69,6 @@ const REGION_PMC_METHODS: Record<string, readonly string[]> = {
     "google_pay",
     "link",
     "payto",
-    "afterpay_clearpay",
     "klarna",
     "zip",
   ],
@@ -77,19 +78,11 @@ const REGION_PMC_METHODS: Record<string, readonly string[]> = {
     "google_pay",
     "link",
     "cashapp",
-    "afterpay_clearpay",
     "klarna",
     "zip",
     "affirm",
   ],
-  GBP: [
-    "card",
-    "apple_pay",
-    "google_pay",
-    "link",
-    "afterpay_clearpay",
-    "klarna",
-  ],
+  GBP: ["card", "apple_pay", "google_pay", "link", "klarna"],
   EUR: [
     "card",
     "apple_pay",
