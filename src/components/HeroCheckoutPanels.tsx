@@ -44,7 +44,10 @@ export function HeroCashPayPanel() {
       <p className="mt-1.5 text-center text-[11px] leading-snug text-[var(--muted)] sm:mt-2">
         Slot, cash box, or whatever is provided
       </p>
-      <p className="mt-1 text-center font-receipt text-xl font-semibold text-[var(--field)] sm:text-2xl">
+      <div className="mt-1.5 flex justify-center text-[var(--ink)]">
+        <PaymentIconRow brands={["cash"]} className="justify-center gap-2" />
+      </div>
+      <p className="mt-1.5 text-center font-receipt text-xl font-semibold text-[var(--field)] sm:text-2xl">
         $12.00
       </p>
       <p className="mt-2 rounded-[var(--radius-pill)] bg-[var(--leaf)] py-2 text-center text-[11px] font-semibold text-white sm:py-2.5">
