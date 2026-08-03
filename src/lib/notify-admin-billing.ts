@@ -41,7 +41,7 @@ export function classifyAdminBillingEvent(input: {
 
   if (input.downgradeToStarter) {
     if (
-      normalizeSubscriptionPlan(input.priorPlan) === "starter" &&
+      normalizeSubscriptionPlan(input.priorPlan) === "free" &&
       input.priorStatus === SubscriptionStatus.CANCELLED
     ) {
       return null;

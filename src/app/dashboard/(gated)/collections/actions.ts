@@ -4,8 +4,6 @@ import { revalidatePath } from "next/cache";
 import { CollectionStatus, PaymentStatus } from "@/generated/prisma/client";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasProAccess } from "@/lib/owner-trial";
-
 const NEXT: Record<CollectionStatus, CollectionStatus | null> = {
   ORDERED: CollectionStatus.READY,
   READY: CollectionStatus.COLLECTED,
@@ -13,7 +11,7 @@ const NEXT: Record<CollectionStatus, CollectionStatus | null> = {
 };
 
 export async function advanceCollectionStatus(orderId: string) {
-  const { owner, user } = await requireOwner();
+  const { owner } = await requireOwner();
 
   const order = await prisma.order.findFirst({
     where: {
@@ -25,16 +23,6 @@ export async function advanceCollectionStatus(orderId: string) {
   });
   if (!order || !order.collectionStatus) {
     return { error: "Order not found." };
-  }
-
-  const hasPro = ownerHasProAccess(owner, {
-    email: user.email,
-    role: user.role,
-  });
-  // Starter may still fulfil paid, uncollected pre-orders.
-  const unfulfilled = order.collectionStatus !== CollectionStatus.COLLECTED;
-  if (!hasPro && !unfulfilled) {
-    return { error: "Collections require Stallside Pro." };
   }
 
   const next = NEXT[order.collectionStatus];

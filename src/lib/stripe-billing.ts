@@ -63,7 +63,7 @@ export async function syncOwnerFromSubscription(
   const downgradeToStarter =
     cancelled &&
     !(periodEnd != null && periodEnd.getTime() > Date.now());
-  const planAfter = downgradeToStarter ? "starter" : isPro ? "pro" : "starter";
+  const planAfter = downgradeToStarter ? "free" : isPro ? "pro" : "free";
   const feeAfter = downgradeToStarter ? 0 : monthlyFeeCents || feeFallback;
   const statusAfter = mapStripeSubscriptionStatus(subscription.status);
   const storedCancelAtPeriodEnd = cancelled ? false : cancelAtPeriodEnd;

@@ -184,11 +184,13 @@ model Owner {
   pushAlertsEnabled         Boolean            @default(true)
   alertEmails               String[]           @default([])
   subscriptionStatus        SubscriptionStatus @default(NONE)
-  /** starter | pro | pro_paypal - legacy cash/card values backfilled. */
-  subscriptionPlan          String?            @default("starter")
+  /** free | pro | pro_paypal - legacy starter/cash/card values accepted. */
+  subscriptionPlan          String?            @default("free")
   /** Free Pro forever (invite or admin grant). */
   lifetimeAccess            Boolean            @default(false)
   monthlyFeeCents           Int                @default(0)
+  /** Free plan: pass Stallside card fee to customer (default absorb). */
+  passFeeToCustomer         Boolean            @default(false)
   /** Currency of the SaaS subscription (AUD/USD/GBP/EUR) */
   billingCurrency           String             @default("AUD")
   /** Sum of paid SaaS invoices (platform Billing), in invoice currency units */

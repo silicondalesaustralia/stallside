@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { isPlatformAdminEmail, requireOwner } from "@/lib/session";
 import { logout } from "@/app/login/actions";
-import { isPayPalConnectAvailable } from "@/lib/paypal";
-import { ownerHasProAccess } from "@/lib/owner-trial";
 import { billingRegionDisplay } from "@/lib/saas-pricing";
 import { stallsideSubscriptionSummary } from "@/lib/stallside-subscription-summary";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
@@ -13,11 +11,6 @@ import DeleteAccountButton from "./DeleteAccountButton";
 
 export default async function SettingsPage() {
   const { user, owner } = await requireOwner();
-  const cardTier = ownerHasProAccess(owner, {
-    email: user.email,
-    role: user.role,
-  });
-  const paypalConnectAvailable = isPayPalConnectAvailable();
   const subscriptionLine = stallsideSubscriptionSummary(owner, {
     email: user.email,
     role: user.role,
@@ -99,117 +92,50 @@ export default async function SettingsPage() {
       </section>
 
       <section id="stripe" className="space-y-3 text-sm scroll-mt-8">
-        {cardTier ? (
-          <>
-            <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
-              <PaymentBrandIcon brand="stripe" className="size-6" />
-              Card / Tap &amp; Go
-              <PaymentIconRow brands={["card", "apple", "google"]} />
-            </h2>
-            <p>
-              Status:{" "}
-              {owner.stripeChargesEnabled
-                ? "Connected · charges enabled"
-                : owner.stripeAccountId
-                  ? "Connected · finish setup"
-                  : "Not connected"}
-            </p>
-            <p className="text-[var(--muted)]">
-              Connect Stripe so customers can pay by card, Apple Pay, or Google
-              Pay. Funds go to your account.
-            </p>
-            <Link
-              href="/dashboard/settings/stripe"
-              className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
-            >
-              <PaymentBrandIcon brand="stripe" className="size-5" />
-              {owner.stripeChargesEnabled
-                ? "Manage Stripe"
-                : owner.stripeAccountId
-                  ? "Finish Stripe setup"
-                  : "Connect Stripe"}
-            </Link>
-          </>
-        ) : (
-          <>
-            <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
-              <PaymentBrandIcon brand="stripe" className="size-6" />
-              Accept cards / Tap &amp; Go
-              <span className="text-sm font-medium text-[var(--muted)]">
-                · Pro
-              </span>
-            </h2>
-            <p className="text-[var(--muted)]">
-              Card, Apple Pay, and Google Pay at your gate. Payments go straight to
-              your Stripe account.
-            </p>
-            <Link
-              href="/dashboard/settings/billing?plan=card"
-              className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
-            >
-              Upgrade to Pro plan
-            </Link>
-          </>
-        )}
+        <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+          <PaymentBrandIcon brand="stripe" className="size-6" />
+          Card / Tap &amp; Go
+          <PaymentIconRow brands={["card", "apple", "google"]} />
+        </h2>
+        <p>
+          Status:{" "}
+          {owner.stripeChargesEnabled
+            ? "Connected · charges enabled"
+            : owner.stripeAccountId
+              ? "Connected · finish setup"
+              : "Not connected"}
+        </p>
+        <p className="text-[var(--muted)]">
+          Connect Stripe so customers can pay by card, Apple Pay, or Google Pay.
+          Funds go to your account. Free plan includes a small Stallside card fee
+          unless you upgrade to Pro.
+        </p>
+        <Link
+          href="/dashboard/settings/stripe"
+          className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+        >
+          <PaymentBrandIcon brand="stripe" className="size-5" />
+          {owner.stripeChargesEnabled
+            ? "Manage Stripe"
+            : owner.stripeAccountId
+              ? "Finish Stripe setup"
+              : "Connect Stripe"}
+        </Link>
       </section>
 
-      {cardTier && paypalConnectAvailable ? (
-        <section className="space-y-3 text-sm">
-          <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
-            <PaymentBrandIcon brand="paypal" className="size-6" />
-            PayPal Connect
-          </h2>
-          <p>
-            Status:{" "}
-            {owner.paypalMerchantId
-              ? owner.paypalPaymentsEnabled
-                ? "Connected · offering at checkout"
-                : owner.paypalOnboardingComplete
-                  ? "Connected · off at checkout"
-                  : "Connected · finish setup"
-              : "Not connected"}
-          </p>
-          <p className="text-[var(--muted)]">
-            Connect a PayPal Business account so customers can pay you with
-            PayPal after scanning your Stallside QR. Funds go to you.
-          </p>
-          <Link
-            href="/dashboard/settings/paypal"
-            className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
-          >
-            <PaymentBrandIcon brand="paypal" className="size-5" />
-            {owner.paypalMerchantId ? "Manage PayPal" : "Connect PayPal"}
-          </Link>
-        </section>
-      ) : cardTier ? (
-        <section className="space-y-3 text-sm opacity-55">
-          <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
-            <PaymentBrandIcon brand="paypal" className="size-6" />
-            PayPal Connect{" "}
-            <span className="text-sm font-medium text-[var(--muted)]">
-              · Coming soon
-            </span>
-          </h2>
-          <p className="text-[var(--muted)]">
-            PayPal checkout is not available yet. Card / Tap &amp; Go via Stripe
-            is live today.
-          </p>
-        </section>
-      ) : (
-        <section className="space-y-3 text-sm opacity-55">
-          <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
-            <PaymentBrandIcon brand="paypal" className="size-6" />
-            PayPal Connect{" "}
-            <span className="text-sm font-medium text-[var(--muted)]">
-              · Pro
-            </span>
-          </h2>
-          <p className="text-[var(--muted)]">
-            PayPal checkout is on Stallside Pro. Upgrade to Pro / Tap &amp; Go
-            first.
-          </p>
-        </section>
-      )}
+      <section className="space-y-3 text-sm opacity-55">
+        <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+          <PaymentBrandIcon brand="paypal" className="size-6" />
+          PayPal Connect{" "}
+          <span className="text-sm font-medium text-[var(--muted)]">
+            · Coming soon
+          </span>
+        </h2>
+        <p className="text-[var(--muted)]">
+          PayPal checkout is not available yet. Card / Tap &amp; Go via Stripe is
+          live today.
+        </p>
+      </section>
     </main>
   );
 }

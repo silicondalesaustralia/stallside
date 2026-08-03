@@ -36,7 +36,7 @@ export function isStripeConfigured(): boolean {
   return Boolean(cleanEnvSecret(process.env.STRIPE_SECRET_KEY));
 }
 
-export type SaasPlan = "starter" | "pro";
+export type SaasPlan = "free" | "pro";
 
 /**
  * Static process.env.NAME reads only — Next/Vercel do not resolve
@@ -180,16 +180,16 @@ export function saasPlanFromSubscription(subscription: {
   if (meta === "pro" || meta === "card" || meta === "card_paypal" || meta === "pro_paypal") {
     return "pro";
   }
-  if (meta === "cash" || meta === "starter") return "starter";
+  if (meta === "cash" || meta === "starter" || meta === "free") return "free";
 
   const priceId = subscription.items.data[0]?.price.id;
   if (priceId) {
     for (const currency of BILLING_CURRENCIES) {
       if (tryProPlanPriceId(currency) === priceId) return "pro";
-      if (tryCashPlanPriceId(currency) === priceId) return "starter";
+      if (tryCashPlanPriceId(currency) === priceId) return "free";
     }
   }
-  return "starter";
+  return "free";
 }
 
 export function parseBillingCurrencyParam(

@@ -3,8 +3,6 @@ import type { DemoRegion } from "@/lib/demo";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
-import { ownerHasProAccess } from "@/lib/owner-trial";
-
 type StandPaymentFlags = {
   slug?: string;
   currency: string;
@@ -77,14 +75,6 @@ export function standOffersCard(
   owner: OwnerPaymentReady,
 ): boolean {
   if (!stand.acceptCard) return false;
-  if (
-    !ownerHasProAccess(owner, {
-      email: owner.user?.email,
-      role: owner.user?.role,
-    })
-  ) {
-    return false;
-  }
   if (stand.slug && isDemoCardReady(stand.slug, owner)) return true;
   return Boolean(owner.stripeAccountId && owner.stripeChargesEnabled);
 }

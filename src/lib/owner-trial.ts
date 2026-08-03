@@ -10,8 +10,8 @@ export function trialEndDate(from = new Date()): Date {
 
 /**
  * Start a no-card 30-day Pro trial when creating an owner profile.
- * After trialEndsAt the account stays on Starter (free forever) - no dashboard lock.
- * subscriptionPlan stays "starter" until they subscribe to Pro.
+ * After trialEndsAt the account stays on Free - no dashboard lock.
+ * subscriptionPlan stays "free" until they subscribe to Pro.
  */
 export async function createOwnerWithTrial(input: {
   userId: string;
@@ -27,7 +27,7 @@ export async function createOwnerWithTrial(input: {
       businessName: displayName,
       contactEmail: input.email,
       subscriptionStatus: SubscriptionStatus.TRIALING,
-      subscriptionPlan: "starter",
+      subscriptionPlan: "free",
       subscriptionStartedAt: now,
       trialEndsAt: trialEndDate(now),
       monthlyFeeCents: 0,
@@ -113,7 +113,7 @@ export function ownerHasProAccess(
 }
 
 /**
- * Dashboard is never locked for a live owner account (Starter is free forever).
+ * Dashboard is never locked for a live owner account (Free plan).
  * Kept for call-site compatibility; always true when complimentary or any real owner row.
  */
 export function ownerHasAppAccess(
@@ -177,12 +177,12 @@ export function paidAccessDaysRemaining(
   return null;
 }
 
-/** Normalize legacy plan strings to starter | pro | pro_paypal. */
+/** Normalize legacy plan strings to free | pro | pro_paypal. */
 export function normalizeSubscriptionPlan(
   plan: string | null | undefined,
-): "starter" | "pro" | "pro_paypal" {
-  const p = (plan ?? "starter").trim().toLowerCase();
+): "free" | "pro" | "pro_paypal" {
+  const p = (plan ?? "free").trim().toLowerCase();
   if (p === "pro" || p === "card") return "pro";
   if (p === "pro_paypal" || p === "card_paypal") return "pro_paypal";
-  return "starter";
+  return "free";
 }

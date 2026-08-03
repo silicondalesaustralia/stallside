@@ -3,6 +3,7 @@
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import DemoCardHint from "@/components/DemoCardHint";
+import { formatMoney } from "@/lib/public-product";
 import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import PreOrderContactFields from "./PreOrderContactFields";
@@ -23,8 +24,11 @@ type CheckoutPayStepProps = {
   currency: string;
   standSlug: string;
   items: CartItem[];
-  /** Cart total for card-demand logging on Starter. */
+  /** Cart total for card-demand logging. */
   subtotalCents?: number;
+  /** Pass-on Stallside fee (0 when absorb or Pro). */
+  cardFeeCents?: number;
+  cardTotalCents?: number;
   localTransferLabel: string | null;
   pending: boolean;
   showDemoCardHint?: boolean;
@@ -54,6 +58,8 @@ export default function CheckoutPayStep({
   standSlug,
   items,
   subtotalCents = 0,
+  cardFeeCents = 0,
+  cardTotalCents = 0,
   localTransferLabel,
   pending,
   showDemoCardHint = false,
@@ -120,6 +126,13 @@ export default function CheckoutPayStep({
       ) : null}
       {cardEnabled ? (
         <>
+          {cardFeeCents > 0 ? (
+            <p className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--muted)]">
+              Subtotal {formatMoney(subtotalCents, currency)} · Card fee{" "}
+              {formatMoney(cardFeeCents, currency)} · Total{" "}
+              {formatMoney(cardTotalCents || subtotalCents + cardFeeCents, currency)}
+            </p>
+          ) : null}
           <button
             type="button"
             disabled={

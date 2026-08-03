@@ -10,16 +10,20 @@ export const APP_SEO_TITLE =
   "Stallside · Checkout For Unattended Farm Stands & Stalls";
 /** Meta description (~155 chars) */
 export const APP_SEO_DESCRIPTION =
-  "Free forever QR checkout for farm stands, honesty stalls, firewood, flowers, and car parks. Print a QR, get paid, track every sale from your phone.";
+  "Free QR checkout for farm stands and honesty stalls. Cash and PayID free; card has a small fee — or go Pro and keep 100%.";
 
-/** Cash plan AUD list price - prefer cashPlanCents(currency) */
+/** @deprecated legacy Cash tier list price — prefer cashPlanCents(currency) */
 export const CASH_PLAN_CENTS = 699;
-/** Card plan AUD list price - prefer cardPlanCents(currency) */
+/** Pro plan AUD list price - prefer cardPlanCents(currency) */
 export const CARD_PLAN_CENTS = 1999;
 /** @deprecated use CASH_PLAN_CENTS */
 export const MONTHLY_FEE_CENTS = CASH_PLAN_CENTS;
-/** No transaction fees - ever */
+/** @deprecated Free uses STALLSIDE_FEE_*; kept for old call sites */
 export const PLATFORM_FEE_BPS = 0;
+/** Stallside fee on Free plan Stripe card / Tap & Go (2.5%) */
+export const STALLSIDE_FEE_BPS = 250;
+/** Stallside fixed fee on Free plan Stripe sales (30¢) */
+export const STALLSIDE_FEE_FIXED_CENTS = 30;
 export const LOW_STOCK_ALERT_COOLDOWN_HOURS = 6;
 /** Free app trial before card is required */
 export const TRIAL_DAYS = 30;

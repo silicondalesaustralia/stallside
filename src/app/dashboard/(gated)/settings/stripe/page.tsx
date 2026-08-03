@@ -7,6 +7,7 @@ import { ownerHasProAccess } from "@/lib/owner-trial";
 import { billingRegionDisplay } from "@/lib/saas-pricing";
 import { refreshStripeStatus, startStripeConnect } from "./actions";
 import StripeDisconnectButton from "./StripeDisconnectButton";
+import PassFeeToggle from "./PassFeeToggle";
 
 export default async function StripeSettingsPage({
   searchParams,
@@ -15,13 +16,13 @@ export default async function StripeSettingsPage({
 }) {
   const { owner, user } = await requireOwner();
   const params = await searchParams;
-  const cardTier = ownerHasProAccess(owner, {
+  const isPro = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
+    lifetimeAccess: owner.lifetimeAccess,
   });
 
   if (
-    cardTier &&
     (params.return === "1" || params.refresh === "1") &&
     owner.stripeAccountId &&
     isStripeConfigured()
@@ -55,8 +56,7 @@ export default async function StripeSettingsPage({
         </h1>
         <p className="mt-2 text-[var(--muted)]">
           Connect Stripe so stand customers can pay by card, Apple Pay, or Google
-          Pay. Payments are deposited directly into your Stripe account - Stallside
-          never holds the money. This is separate from your{" "}
+          Pay. Payments go to your Stripe account. This is separate from your{" "}
           <Link href="/dashboard/settings/billing" className="underline">
             app subscription
           </Link>
@@ -70,17 +70,7 @@ export default async function StripeSettingsPage({
         </p>
       ) : null}
 
-      {!cardTier ? (
-        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          Card / Tap &amp; Go is on Stallside Pro.{" "}
-          <Link href="/dashboard/settings/billing?plan=card" className="underline">
-            Subscribe to Card
-          </Link>
-          , then finish Stripe Connect here.
-        </p>
-      ) : null}
-
-      {cardTier && started && !ready ? (
+      {started && !ready ? (
         <p className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
           Finish Stripe setup so charges are enabled. Until then, customers will
           not see Card / Tap &amp; Go at checkout.
@@ -110,43 +100,43 @@ export default async function StripeSettingsPage({
           Billing region / Connect country:{" "}
           <strong>{billingRegion}</strong>
         </p>
-        <p className="text-[var(--muted)]">
-          From your{" "}
-          <Link href="/dashboard/settings/billing" className="underline">
-            Stallside subscription
-          </Link>
-          , not stand display currency.
-        </p>
       </section>
 
-      {cardTier ? (
-        <div className="flex flex-wrap gap-3">
-          <form action={startStripeConnect}>
+      {!isPro ? (
+        <PassFeeToggle passFeeToCustomer={owner.passFeeToCustomer} />
+      ) : (
+        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
+          Stallside Pro: no Stallside card fee. Keep 100% of your card sales
+          (Stripe&apos;s own processing fees still apply).
+        </p>
+      )}
+
+      <div className="flex flex-wrap gap-3">
+        <form action={startStripeConnect}>
+          <button
+            type="submit"
+            disabled={!configured}
+            className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
+          >
+            {ready
+              ? "Open Stripe dashboard link"
+              : started
+                ? "Continue Stripe setup"
+                : "Connect Stripe"}
+          </button>
+        </form>
+        {started ? (
+          <form action={refreshStripeStatus}>
             <button
               type="submit"
-              disabled={!configured}
-              className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
+              className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold"
             >
-              {ready
-                ? "Open Stripe dashboard link"
-                : started
-                  ? "Continue Stripe setup"
-                  : "Connect Stripe"}
+              Refresh status
             </button>
           </form>
-          {started ? (
-            <form action={refreshStripeStatus}>
-              <button
-                type="submit"
-                className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold"
-              >
-                Refresh status
-              </button>
-            </form>
-          ) : null}
-          {started ? <StripeDisconnectButton /> : null}
-        </div>
-      ) : null}
+        ) : null}
+        {started ? <StripeDisconnectButton /> : null}
+      </div>
     </main>
   );
 }

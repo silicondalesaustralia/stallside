@@ -125,20 +125,16 @@ export default async function StandDetailPage({
           <div className="mt-4">
             <StandEditForm
               stand={stand}
-              branding={
-                cardTier
-                  ? {
-                      logoUrl: stand.logoUrl,
-                      accentColor: stand.accentColor,
-                      secondaryColor: stand.secondaryColor,
-                      instagramUrl: stand.instagramUrl,
-                      facebookUrl: stand.facebookUrl,
-                      tiktokUrl: stand.tiktokUrl,
-                      youtubeUrl: stand.youtubeUrl,
-                      websiteUrl: stand.websiteUrl,
-                    }
-                  : null
-              }
+              branding={{
+                logoUrl: stand.logoUrl,
+                accentColor: stand.accentColor,
+                secondaryColor: stand.secondaryColor,
+                instagramUrl: stand.instagramUrl,
+                facebookUrl: stand.facebookUrl,
+                tiktokUrl: stand.tiktokUrl,
+                youtubeUrl: stand.youtubeUrl,
+                websiteUrl: stand.websiteUrl,
+              }}
             />
           </div>
         </div>

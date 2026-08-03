@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasProAccess } from "@/lib/owner-trial";
 import {
   isRestockAlertsEnabled,
   RESTOCK_ALERT_COOLDOWN_HOURS,
@@ -25,15 +24,6 @@ export async function notifyRestockSubscribers(
   }
 
   const { user, owner } = await requireOwner();
-  if (
-    !ownerHasProAccess(owner, {
-      email: user.email,
-      role: user.role,
-      lifetimeAccess: owner.lifetimeAccess,
-    })
-  ) {
-    return { ok: false, error: "Restock alerts require Stallside Pro." };
-  }
 
   const standId =
     typeof formData.get("standId") === "string"

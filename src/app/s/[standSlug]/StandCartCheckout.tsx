@@ -20,6 +20,7 @@ import {
 import type { DemoRegion } from "@/lib/demo";
 import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/public-product";
+import { stallsideFeeCents } from "@/lib/money";
 import {
   pruneStandCart,
   productQtyInCart,
@@ -81,6 +82,8 @@ export default function StandCartCheckout({
   localTransfer,
   demoRegion,
   restockStandId,
+  passFeeToCustomer = false,
+  stallsideFeeApplies = false,
 }: {
   standSlug: string;
   currency: string;
@@ -94,6 +97,8 @@ export default function StandCartCheckout({
   localTransfer: LocalTransferInfo | null;
   demoRegion?: DemoRegion | null;
   restockStandId?: string | null;
+  passFeeToCustomer?: boolean;
+  stallsideFeeApplies?: boolean;
 }) {
   const [cartLines, setCartLines] = useState<CartLine[]>([]);
   const [hydrated, setHydrated] = useState(false);
@@ -153,6 +158,11 @@ export default function StandCartCheckout({
   }, [products, cartLines]);
 
   const total = lines.reduce((sum, l) => sum + l.unitCents * l.quantity, 0);
+  const cardFeeCents =
+    stallsideFeeApplies && passFeeToCustomer && total > 0
+      ? stallsideFeeCents(total)
+      : 0;
+  const cardTotalCents = total + cardFeeCents;
   const payload = lines.map((l) => ({
     productId: l.product.id,
     quantity: l.quantity,
@@ -429,6 +439,8 @@ export default function StandCartCheckout({
           standSlug={standSlug}
           items={payload}
           subtotalCents={total}
+          cardFeeCents={cardFeeCents}
+          cardTotalCents={cardTotalCents}
           localTransferLabel={localTransfer?.buttonLabel ?? null}
           pending={pending}
           showDemoCardHint={Boolean(demoRegion)}

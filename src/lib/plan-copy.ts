@@ -11,39 +11,43 @@ export function cardPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
     : ["cash", "card", "apple", "google"];
 }
 
-/** Starter (free forever) blurb. */
+/** Free plan fee note (card / Tap & Go only). */
+export const FREE_PLAN_FEE_BLURB =
+  "Stallside fee 2.5% + 30¢ on card and Tap & Go only. Cash and PayID always free.";
+
+/** Free ($0/mo) blurb. */
 export function cashPlanBlurb(currency: BillingCurrency): string {
   return currency === "AUD"
-    ? "Free forever. Take cash and PayID, track stock, print QR posters, sale and low-stock alerts, product options."
-    : "Free forever. Take cash at the stand, track stock, print QR posters, sale and low-stock alerts, product options.";
+    ? "Free forever. All features — cash, PayID, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card only; cash and PayID stay free."
+    : "Free forever. All features — cash, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card only; cash stays free.";
 }
 
 export function cashPlanExtraBlurb(currency: BillingCurrency): string | null {
   return currency === "AUD"
-    ? "PayID (Australia only) lands in your account with no fee."
+    ? "PayID (Australia only) lands in your account with no Stallside fee."
     : null;
 }
 
-/** @deprecated Prefer starter wording - kept for call sites during rename. */
+/** @deprecated Prefer free wording - kept for call sites during rename. */
 export const FREE_TRIAL_BLURB =
-  "30-day Pro free trial includes every Pro feature. No card required. Then Starter stays free forever.";
+  "30-day Pro free trial: no Stallside card fee — keep 100% of your sales. No card required. Then Free stays $0/mo with the card fee unless you upgrade.";
 
 export const STARTER_PLAN_BLURB =
-  "Free forever. Cash and PayID (AU), unlimited products and options, stock, QR posters, alerts.";
+  "Free forever. All features. Stallside fee 2.5% + 30¢ on card / Tap & Go only. Cash and PayID always free.";
 
 export const CARD_PLAN_BLURB =
-  "Everything in Starter, plus Tap & Go on Pro - card, Apple Pay, and Google Pay at your gate. PayPal coming soon.";
+  "Same features as Free, with no Stallside card fee — keep 100% of your sales. PayPal coming soon.";
 
 export const CARD_PLAN_RESTOCK_BLURB =
   "Notify customers by email when you restock - they opt in after checkout; you never see their addresses.";
 
 export const CARD_PLAN_HARDWARE_BLURB =
-  "No terminal. No hardware. No percentage of your sales.";
+  "No terminal. No hardware. Keep 100% of your sales — no Stallside cut on card.";
 
 export const CARD_PLAN_BILLING_BLURB =
   "Paid straight to your Stripe account.";
 
-/** Pro-only features shown on pricing (home + billing). */
+/** Shared feature list (Free and Pro). */
 export const CARD_PLAN_FEATURES = [
   "Pre-orders - customers pay to reserve, with an order-by deadline and collection day",
   "Collections - track paid pre-orders by day and mark Ready, then Collected",
@@ -54,8 +58,9 @@ export const CARD_PLAN_FEATURES = [
   "Social links - Instagram, Facebook, TikTok, YouTube, or your website on the stall",
 ] as const;
 
-const STARTER_FEATURES_CORE = [
+const FREE_FEATURES_CORE = [
   "Cash at the stand (customer self-confirms)",
+  "Tap & Go - card, Apple Pay, Google Pay (Stallside fee on Free)",
   "Unlimited products and product options / variants",
   "Real stock counts and printable QR posters",
   "Sale alerts and low-stock alerts (email / push)",
@@ -63,26 +68,29 @@ const STARTER_FEATURES_CORE = [
   "Card-demand counter - see how many shoppers wanted to pay by card",
 ] as const;
 
-const STARTER_PAYID_FEATURE =
-  "PayID bank transfer (Australia only)" as const;
+const FREE_PAYID_FEATURE =
+  "PayID bank transfer (Australia only) — no Stallside fee" as const;
 
-/** Starter bullets for pricing - PayID only when region is Australia. */
+/** Free bullets for pricing - PayID only when region is Australia. */
 export function starterPlanFeatures(
   currency: BillingCurrency,
 ): readonly string[] {
   if (currency === "AUD") {
     return [
-      STARTER_FEATURES_CORE[0],
-      STARTER_PAYID_FEATURE,
-      ...STARTER_FEATURES_CORE.slice(1),
+      FREE_FEATURES_CORE[0],
+      FREE_PAYID_FEATURE,
+      ...FREE_FEATURES_CORE.slice(1),
     ];
   }
-  return STARTER_FEATURES_CORE;
+  return FREE_FEATURES_CORE;
 }
 
 /** Default list (Australia) for static marketing columns. */
 export const STARTER_PLAN_FEATURES = starterPlanFeatures("AUD");
 
-/** Aliases for new naming. */
+/** Aliases for Free / Pro naming. */
+export const FREE_PLAN_BLURB = STARTER_PLAN_BLURB;
+export const freePlanFeatures = starterPlanFeatures;
+export const FREE_PLAN_FEATURES = STARTER_PLAN_FEATURES;
 export const PRO_PLAN_BLURB = CARD_PLAN_BLURB;
 export const PRO_PLAN_FEATURES = CARD_PLAN_FEATURES;

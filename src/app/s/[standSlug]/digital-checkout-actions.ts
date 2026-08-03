@@ -11,9 +11,10 @@ import { loadStandCart, type CartItemInput } from "@/lib/checkout";
 import { isDemoStandSlug } from "@/lib/demo";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
-import { PLATFORM_FEE_BPS } from "@/lib/constants";
-import { platformFeeCents } from "@/lib/money";
-import { ownerHasProAccess } from "@/lib/owner-trial";
+import {
+  computeStallsideApplicationFee,
+  ownerPassesFeeToCustomer,
+} from "@/lib/stallside-fee";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -33,21 +34,17 @@ export async function startCardCheckout(input: {
       select: { email: true, role: true },
     });
     const demo = isDemoStandSlug(stand.slug);
+    const access = { email: ownerUser?.email, role: ownerUser?.role };
 
     if (!stand.acceptCard) {
       return { error: "Card is not enabled at this stand." };
     }
-    if (
-      !ownerHasProAccess(owner, {
-        email: ownerUser?.email,
-        role: ownerUser?.role,
-      })
-    ) {
-      return { error: "Card / Tap & Go requires Stallside Pro." };
-    }
 
     const customerName = (input.customerName ?? "").trim().slice(0, 120);
-    const customerEmail = (input.customerEmail ?? "").trim().toLowerCase().slice(0, 200);
+    const customerEmail = (input.customerEmail ?? "")
+      .trim()
+      .toLowerCase()
+      .slice(0, 200);
     const customerPhone = (input.customerPhone ?? "").trim().slice(0, 40) || null;
     if (preOrderCart && !customerName) {
       return { error: "Enter your name for collection." };
@@ -82,11 +79,15 @@ export async function startCardCheckout(input: {
     const stripeAccountId =
       demoStripe?.stripeAccountId ?? owner.stripeAccountId!;
 
-    const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
-    const trackedFee = platformFeeCents(
+    const applicationFee = computeStallsideApplicationFee(
       totalCents,
-      owner.platformFeePercentBps || PLATFORM_FEE_BPS,
+      owner,
+      access,
     );
+    const passOn = applicationFee > 0 && ownerPassesFeeToCustomer(owner);
+    const chargeTotal = totalCents + (passOn ? applicationFee : 0);
+
+    const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
 
     const order = await prisma.order.create({
       data: {
@@ -96,9 +97,9 @@ export async function startCardCheckout(input: {
         paymentMethod: PaymentMethod.CARD,
         paymentStatus: PaymentStatus.PENDING,
         subtotalCents: totalCents,
-        totalCents,
+        totalCents: chargeTotal,
         currency: stand.currency,
-        platformFeeCents: trackedFee,
+        platformFeeCents: applicationFee,
         receiptChannel: customerEmail
           ? ReceiptChannel.EMAIL
           : ReceiptChannel.NONE,
@@ -118,22 +119,34 @@ export async function startCardCheckout(input: {
     });
 
     const base = appBaseUrl();
+    const lineItems = lineData.map((line) => ({
+      quantity: line.quantity,
+      price_data: {
+        currency: stand.currency.toLowerCase(),
+        unit_amount: line.unitPriceCents,
+        product_data: {
+          name: line.optionsSnapshot
+            ? `${line.productNameSnapshot} (${line.optionsSnapshot})`
+            : line.productNameSnapshot,
+        },
+      },
+    }));
+    if (passOn && applicationFee > 0) {
+      lineItems.push({
+        quantity: 1,
+        price_data: {
+          currency: stand.currency.toLowerCase(),
+          unit_amount: applicationFee,
+          product_data: { name: "Card fee" },
+        },
+      });
+    }
+
     const session = await stripe.checkout.sessions.create(
       {
         mode: "payment",
         payment_method_types: ["card"],
-        line_items: lineData.map((line) => ({
-          quantity: line.quantity,
-          price_data: {
-            currency: stand.currency.toLowerCase(),
-            unit_amount: line.unitPriceCents,
-            product_data: {
-              name: line.optionsSnapshot
-                ? `${line.productNameSnapshot} (${line.optionsSnapshot})`
-                : line.productNameSnapshot,
-            },
-          },
-        })),
+        line_items: lineItems,
         success_url: `${base}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${base}/checkout/cancelled?order=${order.id}`,
         ...(customerEmail ? { customer_email: customerEmail } : {}),
@@ -146,6 +159,9 @@ export async function startCardCheckout(input: {
         },
         payment_intent_data: {
           metadata: { orderId: order.id },
+          ...(applicationFee > 0
+            ? { application_fee_amount: applicationFee }
+            : {}),
         },
       },
       { stripeAccount: stripeAccountId },

@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
         { subscriptionStatus: SubscriptionStatus.TRIALING },
         {
           trialEndsAt: { not: null, lte: now },
-          subscriptionPlan: { in: ["starter", "cash"] },
+          subscriptionPlan: { in: ["free", "starter", "cash"] },
         },
       ],
     },
@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
           where: { id: owner.id },
           data: {
             subscriptionStatus: SubscriptionStatus.NONE,
-            subscriptionPlan: "starter",
+            subscriptionPlan: "free",
             monthlyFeeCents: 0,
           },
         });

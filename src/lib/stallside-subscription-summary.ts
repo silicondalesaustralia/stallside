@@ -36,7 +36,7 @@ function isActiveTrial(owner: SubscriptionSummaryOwner): boolean {
 function paidPlanLabel(plan: string | null | undefined): string {
   const p = normalizeSubscriptionPlan(plan);
   if (p === "pro" || p === "pro_paypal") return "Stallside Pro";
-  return "Starter";
+  return "Free";
 }
 
 function paidFeeCents(
@@ -44,7 +44,7 @@ function paidFeeCents(
   currency: BillingCurrency,
 ): number {
   const p = normalizeSubscriptionPlan(owner.subscriptionPlan);
-  if (p === "starter") return 0;
+  if (p === "free") return 0;
   if (owner.monthlyFeeCents && owner.monthlyFeeCents > 0) {
     return owner.monthlyFeeCents;
   }
@@ -62,7 +62,7 @@ function statusLabel(status: string): string {
     case SubscriptionStatus.TRIALING:
       return "Free trial";
     case SubscriptionStatus.NONE:
-      return "Starter";
+      return "Free";
     default:
       return status;
   }
@@ -93,8 +93,8 @@ export function stallsideSubscriptionSummary(
   const status = statusLabel(String(owner.subscriptionStatus));
   const norm = normalizeSubscriptionPlan(owner.subscriptionPlan);
 
-  if (norm === "starter") {
-    return "Starter (free forever)";
+  if (norm === "free") {
+    return "Free plan";
   }
 
   if (

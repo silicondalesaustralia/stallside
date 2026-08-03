@@ -1,6 +1,5 @@
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasProAccess } from "@/lib/owner-trial";
 import NewProductForm from "./NewProductForm";
 
 export default async function NewProductPage({
@@ -8,17 +7,14 @@ export default async function NewProductPage({
 }: {
   searchParams: Promise<{ standId?: string }>;
 }) {
-  const { owner, user } = await requireOwner();
+  const { owner } = await requireOwner();
   const { standId } = await searchParams;
   const stands = await prisma.stand.findMany({
     where: { ownerId: owner.id },
     orderBy: { name: "asc" },
     select: { id: true, name: true },
   });
-  const cardTier = ownerHasProAccess(owner, {
-    email: user.email,
-    role: user.role,
-  });
+  const cardTier = true;
   const stripeConnected = Boolean(
     owner.stripeAccountId && owner.stripeChargesEnabled,
   );

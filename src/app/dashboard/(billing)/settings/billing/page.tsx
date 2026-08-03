@@ -70,9 +70,9 @@ export default async function BillingSettingsPage({
       ? "Pro free trial"
       : planNorm === "pro" || planNorm === "pro_paypal"
         ? "Stallside Pro"
-        : "Starter (free forever)";
+        : "Free plan";
   const feeCents =
-    freeForever || trialActive || planNorm === "starter"
+    freeForever || trialActive || planNorm === "free"
       ? 0
       : owner.monthlyFeeCents || cardPlanCents(billingCurrency);
   const showPlanForms = !freeForever && !isPaidPro;
@@ -88,9 +88,9 @@ export default async function BillingSettingsPage({
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Stallside billing</h1>
         <p className="mt-2 text-[var(--muted)]">
-          Starter is free forever. Pro adds Tap &amp; Go, pre-orders, branding,
-          and restock emails. This is what you pay Stallside - not stand customer
-          payments.
+          Free is $0/mo with all features (card/Tap &amp; Go carry a Stallside
+          fee). Pro removes that fee so you keep 100% of card sales. This is what
+          you pay Stallside — not stand customer payments.
         </p>
       </div>
 

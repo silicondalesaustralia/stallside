@@ -4,8 +4,6 @@ import {
   PaymentMethod,
   PaymentStatus,
 } from "@/generated/prisma/client";
-import { PLATFORM_FEE_BPS } from "@/lib/constants";
-import { platformFeeCents } from "@/lib/money";
 import { notifySale } from "@/lib/notify";
 import { notifyOrderCustomer } from "@/lib/notify-order-customer";
 import { decrementStockForOrder } from "@/lib/checkout";
@@ -66,7 +64,6 @@ async function fulfillPaidOnlineOrder(
     productId: i.productId,
     quantity: i.quantity,
   }));
-  const fee = platformFeeCents(order.totalCents, PLATFORM_FEE_BPS);
 
   try {
     await prisma.$transaction(
@@ -84,7 +81,6 @@ async function fulfillPaidOnlineOrder(
           where: { id: order.id },
           data: {
             paymentStatus: PaymentStatus.PAID,
-            platformFeeCents: fee,
             stripePaymentIntentId:
               options.patch.stripePaymentIntentId ?? order.stripePaymentIntentId,
             paypalCaptureId:

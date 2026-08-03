@@ -10,7 +10,6 @@ import { uniqueStandSlug } from "@/lib/slug";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { brandingDataFromForm } from "./stand-branding-from-form";
-import { ownerHasProAccess } from "@/lib/owner-trial";
 
 const standSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -107,11 +106,6 @@ export async function updateStand(standId: string, formData: FormData) {
   let brandingPatch: Awaited<ReturnType<typeof brandingDataFromForm>> | null =
     null;
   if (formData.get("includeBranding") === "1") {
-    if (
-      !ownerHasProAccess(owner, { email: user.email, role: user.role })
-    ) {
-      return { error: "Branding requires Stallside Pro." };
-    }
     brandingPatch = await brandingDataFromForm(existing, formData);
     if (!brandingPatch.ok) return { error: brandingPatch.error };
   }

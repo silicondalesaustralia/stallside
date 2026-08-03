@@ -17,7 +17,7 @@ export async function runProLapseCron(now: Date): Promise<{
     where: {
       lifetimeAccess: false,
       proLapsedAt: { not: null },
-      subscriptionPlan: { in: ["starter", "cash"] },
+      subscriptionPlan: { in: ["free", "starter", "cash"] },
       OR: [
         { stripeSubscriptionId: null },
         {

@@ -87,7 +87,7 @@ export default function StandPaymentToggles({
           type="checkbox"
           name="acceptCard"
           defaultChecked={acceptCard}
-          disabled={!cardTier || !cardReady}
+          disabled={!cardReady}
           className="mt-1 size-4 disabled:opacity-50"
         />
         <span className="min-w-0">
@@ -96,11 +96,9 @@ export default function StandPaymentToggles({
             Card / Tap &amp; Go
           </span>
           <span className="mt-0.5 block text-[var(--muted)]">
-            {!cardTier
-                ? "Pro feature - subscribe under Settings → Billing."
-              : cardReady
-                ? "Card, Apple Pay, Google Pay. Money to your Stripe."
-                : "Finish Stripe setup in Settings before enabling."}
+            {cardReady
+              ? "Card, Apple Pay, Google Pay. Money to your Stripe."
+              : "Finish Stripe setup in Settings before enabling."}
           </span>
         </span>
       </label>
@@ -110,41 +108,31 @@ export default function StandPaymentToggles({
           type="checkbox"
           name="acceptPayPal"
           defaultChecked={acceptPayPal}
-          disabled={!cardTier || !paypalReady || !paypalConnectAvailable}
+          disabled
           className="mt-1 size-4 disabled:opacity-50"
         />
         <span className="min-w-0">
           <span className="flex flex-wrap items-center gap-2 font-medium">
             <PaymentBrandIcon brand="paypal" />
             PayPal
-            {!paypalConnectAvailable && cardTier ? (
-              <span className="text-xs font-medium text-[var(--muted)]">
-                · Coming soon
-              </span>
-            ) : null}
+            <span className="text-xs font-medium text-[var(--muted)]">
+              · Coming soon
+            </span>
           </span>
           <span className="mt-0.5 block text-[var(--muted)]">
-            {!cardTier
-              ? "Pro feature."
-              : !paypalConnectAvailable
-                ? "PayPal checkout is coming soon."
-                : paypalReady
-                  ? "All currencies, including USD."
-                  : "Connect PayPal in Settings and turn it on first."}
+            PayPal checkout is coming soon.
           </span>
         </span>
       </label>
 
-      {cardTier ? (
-        <p className="text-sm">
-          <Link
-            href="/dashboard/settings"
-            className="font-medium text-[var(--leaf-dark)] underline"
-          >
-            Manage Stripe &amp; PayPal Connect
-          </Link>
-        </p>
-      ) : null}
+      <p className="text-sm">
+        <Link
+          href="/dashboard/settings/stripe"
+          className="font-medium text-[var(--leaf-dark)] underline"
+        >
+          Manage Stripe Connect
+        </Link>
+      </p>
     </>
   );
 }

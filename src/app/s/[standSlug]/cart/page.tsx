@@ -10,6 +10,10 @@ import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { standCatalogPath } from "@/lib/stand-seo";
 import { productLiveWhere } from "@/lib/product-visibility";
+import {
+  ownerPassesFeeToCustomer,
+  shouldChargeStallsideFee,
+} from "@/lib/stallside-fee";
 import StandCartCheckout from "../StandCartCheckout";
 import StandStoreHeader from "../StandStoreHeader";
 
@@ -107,6 +111,11 @@ export default async function StandCartPage({
         localTransfer={localTransfer}
         demoRegion={demoRegion}
         restockStandId={restockStandId}
+        passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner)}
+        stallsideFeeApplies={shouldChargeStallsideFee(stand.owner, {
+          email: stand.owner.user?.email,
+          role: stand.owner.user?.role,
+        })}
       />
     </main>
   );

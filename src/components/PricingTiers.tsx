@@ -53,8 +53,9 @@ export default function PricingTiers() {
         </h2>
       </div>
       <p className="mb-8 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        Starter is free forever. Pro adds Tap &amp; Go and more. Shoppers never
-        pay a fee to Stallside.
+        Free is $0/mo with every feature. Card and Tap &amp; Go carry a small
+        Stallside fee; cash and PayID stay free. Pro removes that fee so you
+        keep 100% of your sales.
       </p>
 
       <p className="mb-2 text-sm font-semibold text-[var(--field)]">
@@ -83,16 +84,16 @@ export default function PricingTiers() {
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
         <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-5 sm:p-6">
-          <p className="text-sm font-semibold text-[var(--leaf)]">Starter</p>
+          <p className="text-sm font-semibold text-[var(--leaf)]">Free</p>
           <p className="mt-3 font-receipt text-3xl font-semibold text-[var(--marigold)] sm:text-4xl">
-            Free
+            $0
             <span className="text-base font-normal text-[var(--muted)]">
               {" "}
-              forever
+              /mo
             </span>
           </p>
           <div className="mt-4">
-            <PlanFeatureBlock plan="starter" currency={currency} />
+            <PlanFeatureBlock plan="free" currency={currency} />
           </div>
           <div className="mt-6">
             <Link
@@ -129,9 +130,9 @@ export default function PricingTiers() {
       </div>
 
       <p className="mt-6 text-sm text-[var(--muted)]">
-        After the 30-day Pro trial you stay on Starter free forever unless you
-        upgrade. Cancel Pro anytime. No transaction fees. Prices for{" "}
-        {billingRegionLabel(currency)} ({currency}).
+        After the 30-day Pro trial you stay on Free ($0/mo) unless you upgrade.
+        Cancel Pro anytime. Prices for {billingRegionLabel(currency)} ({currency}).
+        Stripe&apos;s own processing fees still apply on card sales.
       </p>
     </section>
   );

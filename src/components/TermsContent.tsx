@@ -37,11 +37,30 @@ export default function TermsContent() {
           Subscriptions and fees
         </h2>
         <p className="text-[var(--muted)]">
-          Paid plans are billed as described at signup or in your dashboard. Starter is
-          free forever. The free Pro trial includes full Pro features and ends
-          automatically; after it ends you stay on Starter unless you upgrade to Pro.
-          You are responsible for applicable taxes. Refunds are handled case-by-case
-          unless required by Australian Consumer Law.
+          Paid plans are billed as described at signup or in your dashboard. Free is
+          $0/mo with all features. The free Pro trial includes Pro pricing benefits
+          (no Stallside card fee) and ends automatically; after it ends you stay on
+          Free unless you upgrade to Pro. You are responsible for applicable taxes.
+          Refunds are handled case-by-case unless required by Australian Consumer Law.
+        </p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
+          Card processing fees (Free plan)
+        </h2>
+        <p className="text-[var(--muted)]">
+          On the Free plan, card and digital wallet payments carry a Stallside fee of
+          2.5% + 30¢ per transaction, in addition to the payment processor&apos;s own
+          fees. Cash and PayID payments carry no Stallside fee. This fee is removed on
+          the Pro plan.
+        </p>
+        <p className="text-[var(--muted)]">
+          Stall owners may choose to pass this fee on to their customers at checkout,
+          or to absorb it themselves. Owners who choose to pass the fee to customers
+          are solely responsible for ensuring that any such surcharge complies with the
+          card-surcharging laws applicable in their location. Stallside is not
+          responsible for an owner&apos;s compliance with local surcharging regulations.
         </p>
       </section>
 

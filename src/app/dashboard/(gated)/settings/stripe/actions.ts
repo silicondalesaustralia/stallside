@@ -6,7 +6,6 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
-import { ownerHasProAccess } from "@/lib/owner-trial";
 import {
   stripeConnectCountry,
   stripeConnectDefaultCurrency,
@@ -18,11 +17,6 @@ import {
 
 export async function startStripeConnect() {
   const { owner, user } = await requireOwner();
-  if (
-    !ownerHasProAccess(owner, { email: user.email, role: user.role })
-  ) {
-    throw new Error("Stripe Connect requires Stallside Pro.");
-  }
   if (!isStripeConfigured()) {
     throw new Error("Stripe is not configured on the server yet.");
   }

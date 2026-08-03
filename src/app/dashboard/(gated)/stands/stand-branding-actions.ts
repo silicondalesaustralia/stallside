@@ -3,17 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasProAccess } from "@/lib/owner-trial";
 import { brandingDataFromForm } from "./stand-branding-from-form";
 
 export async function updateStandBranding(standId: string, formData: FormData) {
   try {
-    const { owner, user } = await requireOwner();
-    if (
-      !ownerHasProAccess(owner, { email: user.email, role: user.role })
-    ) {
-      return { error: "Branding requires Stallside Pro." };
-    }
+    const { owner } = await requireOwner();
 
     const stand = await prisma.stand.findFirst({
       where: { id: standId, ownerId: owner.id },

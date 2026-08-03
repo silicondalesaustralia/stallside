@@ -6,8 +6,8 @@ import {
   CARD_PLAN_FEATURES,
   CARD_PLAN_HARDWARE_BLURB,
   CARD_PLAN_RESTOCK_BLURB,
+  FREE_PLAN_FEE_BLURB,
   cardPaymentBrands,
-  cashPaymentBrands,
   cashPlanExtraBlurb,
   starterPlanFeatures,
 } from "@/lib/plan-copy";
@@ -16,17 +16,24 @@ export default function PlanFeatureBlock({
   plan,
   currency,
 }: {
-  plan: "starter" | "pro" | "cash" | "card";
+  plan: "free" | "starter" | "pro" | "cash" | "card";
   currency: BillingCurrency;
 }) {
-  const isStarter = plan === "starter" || plan === "cash";
+  const isFree = plan === "free" || plan === "starter" || plan === "cash";
 
-  if (isStarter) {
+  if (isFree) {
     const extra = cashPlanExtraBlurb(currency);
-    const features = starterPlanFeatures(currency);
+    const features = [
+      ...starterPlanFeatures(currency),
+      CARD_PLAN_RESTOCK_BLURB,
+      ...CARD_PLAN_FEATURES,
+    ];
     return (
       <div className="space-y-2">
-        <PaymentIconRow brands={cashPaymentBrands(currency)} />
+        <PaymentIconRow brands={cardPaymentBrands(currency)} />
+        <p className="text-sm font-semibold text-[var(--marigold)]">
+          {FREE_PLAN_FEE_BLURB}
+        </p>
         {extra ? (
           <p className="text-sm text-[var(--muted)]">{extra}</p>
         ) : null}
@@ -43,12 +50,6 @@ export default function PlanFeatureBlock({
     <div className="space-y-2">
       <PaymentIconRow brands={cardPaymentBrands(currency)} />
       <p className="text-sm text-[var(--muted)]">{CARD_PLAN_BLURB}</p>
-      <p className="text-sm text-[var(--muted)]">{CARD_PLAN_RESTOCK_BLURB}</p>
-      <ul className="list-disc space-y-1.5 pl-4 text-sm text-[var(--muted)]">
-        {CARD_PLAN_FEATURES.map((feature) => (
-          <li key={feature}>{feature}</li>
-        ))}
-      </ul>
       <p className="text-sm font-semibold text-[var(--marigold)]">
         {CARD_PLAN_HARDWARE_BLURB}
       </p>

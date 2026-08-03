@@ -14,7 +14,7 @@ const FEATURES = [
   "Tap & Go - card, Apple Pay, and Google Pay",
   "PayPal when Connect is live",
   "Stock tracking, QR posters, sale and low-stock alerts",
-  "No terminal, no hardware, no percentage of sales",
+  "No terminal. No hardware. Lifetime Free for Life includes no Stallside card fee",
   "Payouts straight to your Stripe account",
 ] as const;
 

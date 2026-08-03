@@ -60,9 +60,7 @@ export function parsePreOrderFromForm(
       },
     };
   }
-  if (!cardTier) {
-    return { ok: false, error: "Pre-orders require Stallside Pro." };
-  }
+  void cardTier;
   if (!stripeConnected) {
     return {
       ok: false,

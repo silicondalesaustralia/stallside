@@ -2,20 +2,22 @@ import {
   CARD_PLAN_FEATURES,
   CARD_PLAN_HARDWARE_BLURB,
   CARD_PLAN_RESTOCK_BLURB,
+  FREE_PLAN_FEE_BLURB,
   STARTER_PLAN_FEATURES,
 } from "@/lib/plan-copy";
 
-const OWNER_STARTER = [
+const OWNER_FREE = [
+  FREE_PLAN_FEE_BLURB,
   ...STARTER_PLAN_FEATURES,
+  CARD_PLAN_RESTOCK_BLURB,
+  ...CARD_PLAN_FEATURES,
   "Add to your phone Home Screen for push alerts - no App Store install",
 ] as const;
 
 const OWNER_PRO = [
-  "Tap & Go on Pro - card, Apple Pay, Google Pay",
   CARD_PLAN_HARDWARE_BLURB,
+  "Same features as Free — no Stallside card fee",
   "Paid straight to your Stripe account: no cash box to empty, count, or bank",
-  CARD_PLAN_RESTOCK_BLURB,
-  ...CARD_PLAN_FEATURES,
 ] as const;
 
 const OWNER_SOON = ["PayPal at the gate"] as const;
@@ -101,8 +103,8 @@ export default function FeatureColumns() {
       <FeatureColumn
         title="For owners"
         groups={[
-          { heading: "Starter - free forever", items: OWNER_STARTER },
-          { heading: "Pro", items: OWNER_PRO },
+          { heading: "Free - $0/mo", items: OWNER_FREE },
+          { heading: "Pro — keep 100% of sales", items: OWNER_PRO },
         ]}
         soon={OWNER_SOON}
       />
