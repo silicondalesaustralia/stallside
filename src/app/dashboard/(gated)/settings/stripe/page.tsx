@@ -109,7 +109,10 @@ export default async function StripeSettingsPage({
         </p>
       )}
 
-      <BnplExplainer isPro={!feeApplies} />
+      <BnplExplainer
+        isPro={!feeApplies}
+        showPayTo={(owner.billingCurrency || "AUD").toUpperCase() === "AUD"}
+      />
 
       <div className="flex flex-wrap gap-3">
         <form action={startStripeConnect}>

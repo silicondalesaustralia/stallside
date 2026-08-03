@@ -18,9 +18,9 @@ export default function LandingPaymentMethods() {
         </h2>
       </div>
       <p className="max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        Cash, PayID, card, Tap &amp; Go, Apple Pay and Google Pay - plus Buy
-        Now, Pay Later with Afterpay, Zip and Klarna on larger orders. One QR,
-        every option.
+        Cash, PayID, card, Tap &amp; Go, Apple Pay, Google Pay and PayTo
+        (Australia) - plus Buy Now, Pay Later with Afterpay, Zip and Klarna on
+        larger orders. One QR, every option.
       </p>
       <div className="mt-6 pl-3">
         <PaymentIconRow
@@ -30,6 +30,7 @@ export default function LandingPaymentMethods() {
             "card",
             "apple",
             "google",
+            "payto",
             "afterpay",
             "zip",
             "klarna",

@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (event.type === "checkout.session.async_payment_succeeded") {
+      // PayTo and other delayed methods: funds clear here, not on session.completed.
       await handleCheckoutCompleted(
         event.data.object as Stripe.Checkout.Session,
         event.livemode,

@@ -6,6 +6,7 @@ export type PaymentBrand =
   | "paypal"
   | "stripe"
   | "payid"
+  | "payto"
   | "afterpay"
   | "zip"
   | "klarna";
@@ -27,6 +28,20 @@ export const STRIPE_CHECKOUT_BRANDS: PaymentBrand[] = [
   "zip",
   "klarna",
 ];
+
+/** AUD checkout extras shown beside Stripe methods (PayTo is Australia-only). */
+export const AUD_STRIPE_CHECKOUT_BRANDS: PaymentBrand[] = [
+  ...STRIPE_CHECKOUT_BRANDS,
+  "payto",
+];
+
+export function stripeCheckoutBrandsForCurrency(
+  currency: string,
+): PaymentBrand[] {
+  return currency.trim().toUpperCase() === "AUD"
+    ? AUD_STRIPE_CHECKOUT_BRANDS
+    : STRIPE_CHECKOUT_BRANDS;
+}
 
 export function paymentBrandSrc(brand: PaymentBrand): string | null {
   switch (brand) {
@@ -51,6 +66,8 @@ export function paymentBrandLabel(brand: PaymentBrand): string {
       return "Cash";
     case "payid":
       return "PayID";
+    case "payto":
+      return "PayTo";
     case "card":
       return "Card";
     case "apple":

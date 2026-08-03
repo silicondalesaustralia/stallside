@@ -1,5 +1,5 @@
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
-import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
+import { stripeCheckoutBrandsForCurrency } from "@/lib/payment-brand-assets";
 import type { BillingCurrency } from "@/lib/saas-pricing";
 
 export function cashPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
@@ -8,8 +8,8 @@ export function cashPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
 
 export function cardPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
   return currency === "AUD"
-    ? ["cash", "payid", ...STRIPE_CHECKOUT_BRANDS]
-    : ["cash", ...STRIPE_CHECKOUT_BRANDS];
+    ? ["cash", "payid", ...stripeCheckoutBrandsForCurrency("AUD")]
+    : ["cash", ...stripeCheckoutBrandsForCurrency(currency)];
 }
 
 /** Free plan fee note (card / Tap & Go only). */

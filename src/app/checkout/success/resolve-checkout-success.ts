@@ -88,7 +88,12 @@ async function resolveStripeSuccess(
       undefined,
       { stripeAccount: stripeAccountId },
     );
-    if (session.payment_status !== "paid") return state;
+    if (session.payment_status !== "paid") {
+      // PayTo / async methods: do not fulfill until paid (webhook will).
+      state.message =
+        "Thanks - your payment is being confirmed. If you paid with PayTo or another bank method, this can take a moment. Stock updates when payment clears.";
+      return state;
+    }
 
     const paymentIntent =
       typeof session.payment_intent === "string"

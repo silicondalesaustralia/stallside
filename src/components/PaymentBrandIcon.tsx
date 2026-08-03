@@ -75,6 +75,17 @@ export default function PaymentBrandIcon({
     );
   }
 
+  if (brand === "payto") {
+    return (
+      <span
+        className={`inline-flex items-center justify-center rounded border border-current px-1 text-[0.55rem] font-bold leading-none tracking-tight ${className.includes("size-") ? "h-[1.25rem] min-w-[2.1rem]" : ""}`}
+        aria-hidden
+      >
+        PayTo
+      </span>
+    );
+  }
+
   return null;
 }
 

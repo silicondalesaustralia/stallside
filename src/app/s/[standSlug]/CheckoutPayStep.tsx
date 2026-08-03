@@ -3,7 +3,7 @@
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import DemoCardHint from "@/components/DemoCardHint";
-import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
+import { stripeCheckoutBrandsForCurrency } from "@/lib/payment-brand-assets";
 import { formatMoney } from "@/lib/public-product";
 import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
@@ -152,14 +152,16 @@ export default function CheckoutPayStep({
               </span>
               {!pending ? (
                 <span className="mt-0.5 block text-base font-normal text-[var(--muted)]">
-                  Card, Apple Pay, Google Pay - and pay later on larger orders
+                  Card, Apple Pay, Google Pay
+                  {currency.toUpperCase() === "AUD" ? ", PayTo" : ""} - and pay
+                  later on larger orders
                 </span>
               ) : null}
             </span>
             {!pending ? (
               <span className="flex w-full justify-center rounded-[var(--radius)] bg-[var(--wash)] px-3 py-3 text-[var(--ink)]">
                 <PaymentIconRow
-                  brands={STRIPE_CHECKOUT_BRANDS}
+                  brands={stripeCheckoutBrandsForCurrency(currency)}
                   className="w-full justify-center gap-2.5"
                   size="lg"
                 />

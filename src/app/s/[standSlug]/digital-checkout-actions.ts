@@ -16,6 +16,7 @@ import {
   ownerPassesFeeToCustomer,
 } from "@/lib/stallside-fee";
 import { standCheckoutPaymentMethodTypes } from "@/lib/stripe-checkout-methods";
+import type Stripe from "stripe";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -155,16 +156,26 @@ export async function startCardCheckout(input: {
       },
     };
 
-    const methodTypes = standCheckoutPaymentMethodTypes(Boolean(preOrderCart));
+    const methodTypes = standCheckoutPaymentMethodTypes(
+      Boolean(preOrderCart),
+      stand.currency,
+    );
     let session;
     try {
       session = await stripe.checkout.sessions.create(
-        { ...sessionParams, payment_method_types: methodTypes },
+        {
+          ...sessionParams,
+          payment_method_types:
+            methodTypes as Stripe.Checkout.SessionCreateParams.PaymentMethodType[],
+        },
         { stripeAccount: stripeAccountId },
       );
-    } catch (bnplError) {
-      // Connected account / currency may not support every BNPL type yet.
-      console.warn("BNPL Checkout methods unavailable; falling back to card", bnplError);
+    } catch (methodError) {
+      // Connected account / currency may not support every method yet (BNPL, PayTo).
+      console.warn(
+        "Extended Checkout methods unavailable; falling back to card",
+        methodError,
+      );
       session = await stripe.checkout.sessions.create(
         { ...sessionParams, payment_method_types: ["card"] },
         { stripeAccount: stripeAccountId },

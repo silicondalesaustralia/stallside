@@ -32,7 +32,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "What payment methods can customers use?",
     answer:
-      "Cash and PayID (no Stallside fee), plus card, Tap & Go, Apple Pay and Google Pay. On larger orders, customers can also use Buy Now, Pay Later with Afterpay, Zip or Klarna. On Free, Stallside fee is 2.5% on card, Tap & Go, and pay-later (absorb or pass on); removed on Pro. Cash and PayID are always free of Stallside fees.",
+      "Cash and PayID (no Stallside fee), plus card, Tap & Go, Apple Pay, Google Pay, and PayTo (Australia). On larger orders, customers can also use Buy Now, Pay Later with Afterpay, Zip or Klarna. On Free, Stallside fee is 2.5% on card, Tap & Go, pay-later and PayTo; removed on Pro. Cash and PayID are always free of Stallside fees.",
   },
   {
     question: "Is there a fee on card payments?",
