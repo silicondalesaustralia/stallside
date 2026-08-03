@@ -145,28 +145,6 @@ export default function PricingTiers() {
         </ul>
       </div>
 
-      <div className="mt-8 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-        <p className="font-semibold text-[var(--field)]">
-          Example: A$5 card sale on Free
-        </p>
-        <ul className="mt-2 list-disc space-y-1 pl-5">
-          <li>Stallside fee: approximately 13¢</li>
-          <li>
-            Stripe processing fee: approximately 39¢ based on current Australian
-            domestic card pricing
-          </li>
-          <li>
-            Seller receives approximately A$4.48 before any variation in Stripe
-            fee tax treatment
-          </li>
-        </ul>
-        <p className="mt-2 text-xs">
-          Stripe fees vary by country, card type and payment method. Check
-          Stripe&apos;s current pricing for your account. This example is
-          marketing only and is not used in checkout math.
-        </p>
-      </div>
-
       <p className="mt-6 text-sm text-[var(--muted)]">
         Cancel Pro anytime. Prices for {billingRegionLabel(currency)} (
         {currency}). Pro may save you money once you process around A$800 or

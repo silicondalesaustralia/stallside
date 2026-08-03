@@ -57,8 +57,8 @@ export const PRO_BREAK_EVEN_BLURB =
 
 /** Fee-focused bullets on the Free pricing card. */
 const FREE_FEE_FEATURES_CORE = [
-  "Cash at the stand — customer self-confirms",
-  "Tap & Go — card, Apple Pay and Google Pay",
+  "Cash at the stand - customer self-confirms",
+  "Tap & Go - card, Apple Pay and Google Pay",
   "Pay-later payments where supported",
   "2.5% Stallside fee on successful card, Tap & Go and pay-later payments",
   "Standard Stripe processing fees apply separately",
@@ -66,7 +66,7 @@ const FREE_FEE_FEATURES_CORE = [
 ] as const;
 
 const FREE_PAYID_FEATURE =
-  "PayID bank transfer — Australia only, with no Stallside fee" as const;
+  "PayID bank transfer - Australia only, with no Stallside fee" as const;
 
 /** Free fee/payment bullets for pricing cards - PayID only when region is Australia. */
 export function starterPlanFeatures(
@@ -94,8 +94,8 @@ export const SHARED_PLAN_FEATURES = [
   "Card-demand counter",
   "Customer restock notifications",
   "Pre-orders with order-by deadlines and collection days",
-  "Collections — Ready and Collected, buyer messaging",
-  "Stall branding — logo, colours, social and website links",
+  "Collections - Ready and Collected, buyer messaging",
+  "Stall branding - logo, colours, social and website links",
 ] as const;
 
 /** @deprecated Prefer SHARED_PLAN_FEATURES for marketing. */
