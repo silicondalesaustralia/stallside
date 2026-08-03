@@ -9,9 +9,8 @@ export function trialEndDate(from = new Date()): Date {
 }
 
 /**
- * Start a no-card 30-day Pro trial when creating an owner profile.
- * After trialEndsAt the account stays on Free - no dashboard lock.
- * subscriptionPlan stays "free" until they subscribe to Pro.
+ * Create an owner on Free: every feature, Stallside card fee applies.
+ * No Pro trial - upgrade anytime to waive the fee.
  */
 export async function createOwnerWithTrial(input: {
   userId: string;
@@ -26,10 +25,10 @@ export async function createOwnerWithTrial(input: {
       userId: input.userId,
       businessName: displayName,
       contactEmail: input.email,
-      subscriptionStatus: SubscriptionStatus.TRIALING,
+      subscriptionStatus: SubscriptionStatus.NONE,
       subscriptionPlan: "free",
       subscriptionStartedAt: now,
-      trialEndsAt: trialEndDate(now),
+      trialEndsAt: null,
       monthlyFeeCents: 0,
     },
   });

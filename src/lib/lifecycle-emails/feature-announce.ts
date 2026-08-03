@@ -11,7 +11,7 @@ import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 type Recipient = { to: string; name: string };
 
 export const FEATURE_ANNOUNCE_SUBJECT =
-  "What's new on Stallside: Starter free forever, Pro, and fresh tools";
+  "What's new on Stallside: Free keeps every feature, Pro removes the card fee";
 
 export function featureAnnounceHtml(name: string): string {
   const L = lifecycleLinks();
@@ -19,52 +19,54 @@ export function featureAnnounceHtml(name: string): string {
     FEATURE_ANNOUNCE_SUBJECT,
     `
       <p>Hi ${greetName(name)},</p>
-      <p>We've been busy. Here's what's live on ${APP_NAME} - a clearer plan model,
-      plus tools that make the stall feel more like your farm.</p>
+      <p>Quick update from ${APP_NAME}: plans are simpler, checkout got stronger,
+      and a few tools that used to sound “Pro only” are on Free for everyone.</p>
 
-      <p><strong>Plans, simplified</strong></p>
-      <p><strong>Starter</strong> is free forever: cash, PayID (Australia only),
-      products and options, stock, QR posters, sale and low-stock alerts, and a new
-      <strong>card-demand counter</strong> (shoppers can tap “I'd have paid by card”
-      when Tap &amp; Go isn't on - you see the count on your dashboard).</p>
-      <p><strong>Stallside Pro</strong> adds Tap &amp; Go (card, Apple Pay, Google Pay),
-      pre-orders and Collections, stand branding and social links, and restock notify
-      emails. From A$19.99 / US$14.99 / £11.99 / €14.99 per site / month.</p>
-      <p><strong>If you're mid-trial right now:</strong> your remaining days now
-      include <strong>every Pro feature</strong> - Tap &amp; Go, pre-orders,
-      Collections, branding, restock notify, and the rest. Same end date; fuller
-      access. When the trial ends you stay on <strong>Starter free forever</strong>
-      - the dashboard never locks. Stands, products, QR posters, and order history
-      stay either way.</p>
-      <p>New owners still get a 30-day Pro trial with all features from day one
-      (no card required).</p>
-      <p>If you were on the old Cash or Card labels, you're on this same model now:
-      Starter = free forever; Pro = the full paid toolkit. Check
-      <a href="${L.billing}">Settings → Billing</a> anytime.</p>
+      <p><strong>Plans (the important bit)</strong></p>
+      <p><strong>Free</strong> is $0/mo with <strong>every feature</strong>: cash,
+      PayID (Australia), Tap &amp; Go (card, Apple Pay, Google Pay), Buy Now Pay
+      Later on larger orders (Afterpay, Zip, Klarna), pre-orders and Collections,
+      stand branding and social links, restock notify emails, product options,
+      hide/archive/duplicate, and the card-demand counter.</p>
+      <p>On Free, Stallside takes <strong>2.5% + 30¢</strong> on card, Tap &amp; Go,
+      and pay-later on all transactions. Cash and PayID stay free. In
+      <a href="${L.stripe}">Settings → Card / Tap &amp; Go</a> you choose whether to
+      <strong>absorb that fee</strong> or <strong>pass it on</strong> as a clear
+      card fee line at checkout. Stallside still receives the fee either way -
+      you're only choosing who pays it.</p>
+      <p><strong>Stallside Pro</strong> is the same product with
+      <strong>no Stallside card fee</strong> - keep 100% of card, Tap &amp; Go, and
+      pay-later sales (Stripe's own processing fees still apply). From A$19.99 /
+      US$14.99 / £11.99 / €14.99 per site / month.</p>
+      <p>There is no separate trial: Free already includes every feature. Upgrade to
+      Pro anytime if you want the Stallside fee waived.
+      <a href="${L.billing}">Settings → Billing</a>.</p>
 
-      <p><strong>New tools for stall owners</strong></p>
+      <p><strong>Also live</strong></p>
       <ul>
-        <li><strong>Pre-orders</strong> - customers pay by card to reserve for a
-        collection day, with an order-by deadline. Track who's coming in Collections
-        (Ready → Collected), show exact slots left if you want, and message buyers
-        from Stallside. Use <strong>Email all</strong> for everyone collecting on a day.</li>
-        <li><strong>Product options</strong> - flavours, sizes, and similar choices
-        (up to three option groups) - included on Starter.</li>
-        <li><strong>Stand branding</strong> - your logo and colours on the public stall
-        and QR poster, plus Instagram, Facebook, TikTok, YouTube, or your website.</li>
-        <li><strong>Restock list</strong> - customers can opt in after checkout (free on
-        Starter). Sending the “we're back” email is Pro.</li>
-        <li><strong>Hide / archive / duplicate</strong> products when you rotate stock
-        without losing settings.</li>
+        <li><strong>Buy Now, Pay Later</strong> - Afterpay, Zip, and Klarna show
+        automatically on larger orders at Stripe Checkout (where Stripe supports
+        them). No extra toggle.</li>
+        <li><strong>Pre-orders</strong> - pay by card to reserve for a collection
+        day; track Ready → Collected; Email all for a day.</li>
+        <li><strong>Stand branding</strong> - logo, colours, and social links on
+        the stall and QR poster (Free and Pro).</li>
+        <li><strong>Restock list</strong> - customers opt in after checkout; you
+        hit Notify customers and Stallside emails them (Free and Pro). You never
+        see their addresses.</li>
+        <li><strong>Card-demand counter</strong> - when Tap &amp; Go isn't on yet,
+        shoppers can tap “I'd have paid by card” so you see demand on the
+        dashboard.</li>
       </ul>
 
       ${ctaButton(`${L.base}/dashboard`, "Open your dashboard")}
       <p>Guides: <a href="${L.knowledge}">Knowledge base</a> ·
       <a href="${L.billing}">Billing</a> ·
-      <a href="${`${L.base}/dashboard/knowledge/pre-orders`}">Pre-orders</a></p>
+      <a href="${L.stripe}">Card / Tap &amp; Go</a></p>
 
       <p>Questions or something missing for your stall? Reply to this email or
-      <a href="${L.featureRequest}">request a feature</a> - we build for real stands.</p>
+      <a href="${L.featureRequest}">request a feature</a> - we build for real
+      stands.</p>
       <p>Thanks for being with ${APP_NAME}.</p>
     `,
   );
@@ -73,6 +75,6 @@ export function featureAnnounceHtml(name: string): string {
 export async function sendFeatureAnnounce(r: Recipient) {
   await sendOwnerEmail(r.to, FEATURE_ANNOUNCE_SUBJECT, featureAnnounceHtml(r.name), {
     replyTo: emailReplyTo(),
-    kind: "announce_features_trial",
+    kind: "announce_free_fee_pro_2026_08",
   });
 }

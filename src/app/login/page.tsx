@@ -52,7 +52,7 @@ export default async function LoginPage({
       <p className="mt-6 text-sm text-[var(--muted)]">
         New here?{" "}
         <a href="/signup" className="font-semibold text-[var(--leaf-dark)] underline">
-          Start free for 30 days
+          Free
         </a>
       </p>
       <p className="mt-4 text-xs text-[var(--muted)]">{APP_NAME.toLowerCase()}.app</p>

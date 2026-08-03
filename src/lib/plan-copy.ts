@@ -33,9 +33,9 @@ export function cashPlanExtraBlurb(currency: BillingCurrency): string | null {
     : null;
 }
 
-/** @deprecated Prefer free wording - kept for call sites during rename. */
+/** @deprecated No signup trial - Free includes all features from day one. */
 export const FREE_TRIAL_BLURB =
-  "30-day Pro free trial: no Stallside card fee - keep 100% of your sales. No card required. Then Free stays $0/mo with the card fee unless you upgrade.";
+  "Free is $0/mo with every feature. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later. Upgrade to Pro anytime to remove that fee.";
 
 export const STARTER_PLAN_BLURB =
   "Free forever. All features. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions. Cash and PayID always free. Pass the fee on or absorb it.";

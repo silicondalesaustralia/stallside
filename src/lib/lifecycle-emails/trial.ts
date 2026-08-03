@@ -23,9 +23,9 @@ export async function sendTrialWelcome(r: Recipient) {
       <p>Hi ${greetName(r.name)},</p>
       <p>Thanks for joining ${APP_NAME}. Glad you&apos;re here.</p>
       <p><strong>Free is $0/mo with every feature</strong> - cash, PayID (Australia only),
-      Tap &amp; Go, pre-orders, branding, restock emails, and more. You also get a
-      <strong>30-day Pro trial</strong> with no Stallside card fee (keep 100% of those
-      sales). No card required.</p>
+      Tap &amp; Go, pre-orders, branding, restock emails, and more. Stallside fee is
+      2.5% + 30¢ on card, Tap &amp; Go, and pay-later; cash and PayID stay free.
+      Upgrade to Pro anytime to remove that fee.</p>
       <p><strong>Start here</strong></p>
       <ol>
         <li>Create your first stand</li>
@@ -34,8 +34,6 @@ export async function sendTrialWelcome(r: Recipient) {
         <li>Connect Stripe if you want Tap &amp; Go</li>
       </ol>
       ${ctaButton(L.newStand, "Create your first stand")}
-      <p>After the trial you stay on Free ($0/mo) unless you upgrade to Pro to keep
-      the card fee waived.</p>
       <p><a href="${L.billing}">See Pro pricing</a> · <a href="${L.knowledge}">Guides</a></p>
     `,
   );

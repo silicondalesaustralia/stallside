@@ -38,9 +38,8 @@ export default function TermsContent() {
         </h2>
         <p className="text-[var(--muted)]">
           Paid plans are billed as described at signup or in your dashboard. Free is
-          $0/mo with all features. The free Pro trial includes Pro pricing benefits
-          (no Stallside card fee) and ends automatically; after it ends you stay on
-          Free unless you upgrade to Pro. You are responsible for applicable taxes.
+          $0/mo with all features. Stallside Pro removes the Stallside card fee for a
+          monthly subscription. You are responsible for applicable taxes.
           Refunds are handled case-by-case unless required by Australian Consumer Law.
         </p>
       </section>
@@ -54,8 +53,8 @@ export default function TermsContent() {
           and pay-later payments carry a Stallside fee of 2.5% + 30¢ on all
           transactions, in addition to the payment processor&apos;s own fees. Cash and
           PayID payments carry no Stallside fee. This fee is removed on the Pro plan
-          (including during an active Pro trial and for Free for Life accounts), so
-          there is no absorb / pass-on choice when no Stallside fee applies.
+          and for Free for Life accounts, so there is no absorb / pass-on choice when
+          no Stallside fee applies.
         </p>
         <p className="text-[var(--muted)]">
           On Free, stall owners may choose in Settings → Card / Tap &amp; Go to pass
