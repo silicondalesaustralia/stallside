@@ -68,7 +68,7 @@ export default function ConnectPaymentMethodToggles({
           const busy = pending && pendingKey === method.method;
           return (
             <li key={method.method} className="flex items-center gap-3 py-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--wash)] text-[var(--ink)]">
+              <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[var(--wash)] p-1.5 text-[var(--ink)]">
                 {method.brand ? (
                   <PaymentBrandIcon brand={method.brand} className="size-5" />
                 ) : (

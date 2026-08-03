@@ -111,6 +111,22 @@ function WordmarkImg({
   src: string;
   className: string;
 }) {
+  // size-* without max-w = square slot (settings toggles) - do not expand wide.
+  const squareSlot =
+    brand === "stripe" ||
+    (/\bsize-\d+\b/.test(className) && !className.includes("max-w-"));
+  if (squareSlot) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt=""
+        aria-hidden
+        className={`${className} object-contain`}
+      />
+    );
+  }
+
   const height =
     className.includes("size-7") || className.includes("h-7")
       ? "h-7"
@@ -123,19 +139,15 @@ function WordmarkImg({
     .replace(/\bsize-\d+\b/g, "")
     .replace(/\bh-\d+\b/g, "")
     .trim();
-  const maxWidth =
-    brand === "stripe"
-      ? ""
-      : extras.includes("max-w-")
-        ? ""
-        : brand === "payto"
-            ? "max-w-[5rem]"
-            : brand === "klarna"
-              ? "max-w-[4.25rem]"
-              : brand === "zip"
-                ? "max-w-[2.75rem]"
-                : "max-w-[4.5rem]";
-  const square = brand === "stripe" ? className : `${height} w-auto ${maxWidth}`;
+  const maxWidth = extras.includes("max-w-")
+    ? ""
+    : brand === "payto"
+      ? "max-w-[5rem]"
+      : brand === "klarna"
+        ? "max-w-[4.25rem]"
+        : brand === "zip"
+          ? "max-w-[2.75rem]"
+          : "max-w-[4.5rem]";
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -143,7 +155,7 @@ function WordmarkImg({
       src={src}
       alt=""
       aria-hidden
-      className={`${square} object-contain object-left ${extras}`}
+      className={`${height} w-auto ${maxWidth} object-contain object-left ${extras}`}
     />
   );
 }
