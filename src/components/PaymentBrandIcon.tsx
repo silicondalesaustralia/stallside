@@ -75,18 +75,6 @@ export default function PaymentBrandIcon({
     );
   }
 
-  if (brand === "link") {
-    return (
-      <svg {...common} viewBox="0 0 24 24" fill="none">
-        <rect width="24" height="24" rx="6" fill="#00D66F" />
-        <path
-          fill="#fff"
-          d="M7.5 12a4.5 4.5 0 0 1 4.5-4.5h1.2v2.2H12a2.3 2.3 0 1 0 0 4.6h1.2v2.2H12A4.5 4.5 0 0 1 7.5 12Zm9 0a4.5 4.5 0 0 1-4.5 4.5h-1.2v-2.2H12a2.3 2.3 0 1 0 0-4.6h-1.2V7.5H12A4.5 4.5 0 0 1 16.5 12Z"
-        />
-      </svg>
-    );
-  }
-
   return null;
 }
 
@@ -132,11 +120,13 @@ function WordmarkImg({
     ? ""
     : brand === "payto"
       ? "max-w-[5rem]"
-      : brand === "klarna"
-        ? "max-w-[4.25rem]"
-        : brand === "zip"
-          ? "max-w-[2.75rem]"
-          : "max-w-[4.5rem]";
+      : brand === "link"
+        ? "max-w-[3.75rem]"
+        : brand === "klarna"
+          ? "max-w-[4.25rem]"
+          : brand === "zip"
+            ? "max-w-[2.75rem]"
+            : "max-w-[4.5rem]";
 
   return (
     // eslint-disable-next-line @next/next/no-img-element

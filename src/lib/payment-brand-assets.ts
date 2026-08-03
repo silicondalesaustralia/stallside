@@ -16,6 +16,7 @@ export type PaymentBrand =
 export const WORDMARK_BRANDS: ReadonlySet<PaymentBrand> = new Set([
   "payid",
   "payto",
+  "link",
   "zip",
   "klarna",
 ]);
@@ -62,6 +63,8 @@ export function paymentBrandSrc(brand: PaymentBrand): string | null {
       return "/brand/payto.png";
     case "cashapp":
       return "/brand/cashapp.png";
+    case "link":
+      return "/brand/link.png";
     case "stripe":
       return "/brand/stripe.png";
     case "zip":
