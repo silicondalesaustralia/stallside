@@ -60,6 +60,8 @@ export function paymentBrandSrc(brand: PaymentBrand): string | null {
       return "/brand/payid.png";
     case "payto":
       return "/brand/payto.png";
+    case "cashapp":
+      return "/brand/cashapp.png";
     case "stripe":
       return "/brand/stripe.png";
     case "zip":

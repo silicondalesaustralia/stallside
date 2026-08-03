@@ -15,7 +15,7 @@ export default function PaymentBrandIcon({
   className?: string;
 }) {
   const asset = paymentBrandSrc(brand);
-  if (asset && (WORDMARK_BRANDS.has(brand) || brand === "stripe")) {
+  if (asset && (WORDMARK_BRANDS.has(brand) || brand === "stripe" || brand === "cashapp")) {
     return <WordmarkImg brand={brand} src={asset} className={className} />;
   }
 
@@ -75,18 +75,6 @@ export default function PaymentBrandIcon({
     );
   }
 
-  if (brand === "cashapp") {
-    return (
-      <svg {...common} viewBox="0 0 24 24" fill="none">
-        <rect width="24" height="24" rx="6" fill="#00C244" />
-        <path
-          fill="#fff"
-          d="M12.2 6.2c1.7 0 3.1.5 4.1 1.4l-1.3 1.5c-.7-.6-1.7-1-2.8-1-1.7 0-2.9.9-2.9 2.1 0 1.1.7 1.7 2.5 2.2l1 .3c2.5.7 3.7 1.8 3.7 3.7 0 2.3-1.9 3.8-4.5 3.8-1.8 0-3.3-.6-4.4-1.7l1.4-1.5c.8.8 1.9 1.3 3 1.3 1.7 0 2.8-.8 2.8-2.1 0-1.1-.8-1.8-2.6-2.3l-1-.3c-2.3-.6-3.5-1.8-3.5-3.6 0-2.2 1.8-3.8 4.5-3.8Z"
-        />
-      </svg>
-    );
-  }
-
   if (brand === "link") {
     return (
       <svg {...common} viewBox="0 0 24 24" fill="none">
@@ -114,6 +102,7 @@ function WordmarkImg({
   // size-* without max-w = square slot (settings toggles) - do not expand wide.
   const squareSlot =
     brand === "stripe" ||
+    brand === "cashapp" ||
     (/\bsize-\d+\b/.test(className) && !className.includes("max-w-"));
   if (squareSlot) {
     return (
