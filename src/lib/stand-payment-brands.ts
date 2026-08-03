@@ -1,7 +1,7 @@
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
 import type { DemoRegion } from "@/lib/demo";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
-import { STRIPE_CHECKOUT_BRANDS, stripeCheckoutBrandsForCurrency } from "@/lib/payment-brand-assets";
+import { stripeCheckoutBrandsForCurrency } from "@/lib/payment-brand-assets";
 import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 
@@ -94,6 +94,8 @@ export function demoSignPaymentBrands(
   const aud =
     region === "au" || stand.currency.trim().toUpperCase() === "AUD";
   if (aud) brands.push("payid");
-  brands.push(...STRIPE_CHECKOUT_BRANDS);
+  brands.push(
+    ...stripeCheckoutBrandsForCurrency(aud ? "AUD" : stand.currency),
+  );
   return brands;
 }

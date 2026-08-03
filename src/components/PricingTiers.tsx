@@ -147,8 +147,7 @@ export default function PricingTiers() {
 
       <p className="mt-6 text-sm text-[var(--muted)]">
         Cancel Pro anytime. Prices for {billingRegionLabel(currency)} (
-        {currency}). Pro may save you money once you process around A$800 or
-        more in card sales per month - a guide, not a guarantee.
+        {currency}).
       </p>
     </section>
   );

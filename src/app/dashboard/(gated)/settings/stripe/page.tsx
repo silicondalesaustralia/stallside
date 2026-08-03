@@ -5,10 +5,12 @@ import { isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { billingRegionDisplay } from "@/lib/saas-pricing";
 import { shouldChargeStallsideFee } from "@/lib/stallside-fee";
-import { refreshStripeStatus, startStripeConnect } from "./actions";
-import StripeDisconnectButton from "./StripeDisconnectButton";
+import { listConnectPaymentMethodToggles } from "@/lib/stripe-payment-method-config";
 import PassFeeToggle from "./PassFeeToggle";
 import BnplExplainer from "./BnplExplainer";
+import ConnectPaymentMethodToggles from "./ConnectPaymentMethodToggles";
+import StripeAccountStatus from "./StripeAccountStatus";
+import StripeConnectControls from "./StripeConnectControls";
 
 export default async function StripeSettingsPage({
   searchParams,
@@ -40,6 +42,22 @@ export default async function StripeSettingsPage({
   const started = Boolean(owner.stripeAccountId);
   const billingRegion = billingRegionDisplay(owner.billingCurrency);
 
+  let paymentMethods: Awaited<
+    ReturnType<typeof listConnectPaymentMethodToggles>
+  > = null;
+  let paymentMethodsError: string | null = null;
+  if (ready && owner.stripeAccountId && configured) {
+    try {
+      paymentMethods = await listConnectPaymentMethodToggles(
+        owner.stripeAccountId,
+      );
+    } catch (error) {
+      console.error("Failed to load Stripe payment methods", error);
+      paymentMethodsError =
+        "Could not load payment methods from Stripe. Try Refresh status.";
+    }
+  }
+
   return (
     <main className="flex max-w-xl flex-col gap-8">
       <p className="text-sm text-[var(--muted)]">
@@ -52,9 +70,10 @@ export default async function StripeSettingsPage({
           Card / Tap &amp; Go
         </h1>
         <p className="mt-2 text-[var(--muted)]">
-          Connect Stripe so stand customers can pay by card, Apple Pay, Google
-          Pay, and Buy Now Pay Later on larger orders. Payments go to your Stripe
-          account. This is separate from your{" "}
+          Connect Stripe so stand customers can pay by card, Tap &amp; Go, and
+          any other methods enabled on your Stripe account (such as PayTo or Buy
+          Now, Pay Later). Payments go to your Stripe account. This is separate
+          from your{" "}
           <Link href="/dashboard/settings/billing" className="underline">
             app subscription
           </Link>
@@ -82,23 +101,13 @@ export default async function StripeSettingsPage({
         </p>
       ) : null}
 
-      <section className="space-y-2 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
-        <p>
-          Account:{" "}
-          {owner.stripeAccountId ? (
-            <code className="text-xs">{owner.stripeAccountId}</code>
-          ) : (
-            "Not connected"
-          )}
-        </p>
-        <p>Onboarding complete: {owner.stripeOnboardingComplete ? "Yes" : "No"}</p>
-        <p>Charges enabled: {ready ? "Yes" : "No"}</p>
-        <p>Payouts enabled: {owner.stripePayoutsEnabled ? "Yes" : "No"}</p>
-        <p>
-          Billing region / Connect country:{" "}
-          <strong>{billingRegion}</strong>
-        </p>
-      </section>
+      <StripeAccountStatus
+        accountId={owner.stripeAccountId}
+        onboardingComplete={owner.stripeOnboardingComplete}
+        chargesEnabled={ready}
+        payoutsEnabled={owner.stripePayoutsEnabled}
+        billingRegion={billingRegion}
+      />
 
       {feeApplies ? (
         <PassFeeToggle passFeeToCustomer={owner.passFeeToCustomer} />
@@ -109,37 +118,26 @@ export default async function StripeSettingsPage({
         </p>
       )}
 
+      {paymentMethods && paymentMethods.methods.length > 0 ? (
+        <ConnectPaymentMethodToggles
+          configurationId={paymentMethods.configurationId}
+          initialMethods={paymentMethods.methods}
+        />
+      ) : null}
+      {paymentMethodsError ? (
+        <p className="text-sm text-red-700">{paymentMethodsError}</p>
+      ) : null}
+
       <BnplExplainer
         isPro={!feeApplies}
         showPayTo={(owner.billingCurrency || "AUD").toUpperCase() === "AUD"}
       />
 
-      <div className="flex flex-wrap gap-3">
-        <form action={startStripeConnect}>
-          <button
-            type="submit"
-            disabled={!configured}
-            className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
-          >
-            {ready
-              ? "Open Stripe dashboard link"
-              : started
-                ? "Continue Stripe setup"
-                : "Connect Stripe"}
-          </button>
-        </form>
-        {started ? (
-          <form action={refreshStripeStatus}>
-            <button
-              type="submit"
-              className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold"
-            >
-              Refresh status
-            </button>
-          </form>
-        ) : null}
-        {started ? <StripeDisconnectButton /> : null}
-      </div>
+      <StripeConnectControls
+        configured={configured}
+        ready={ready}
+        started={started}
+      />
     </main>
   );
 }

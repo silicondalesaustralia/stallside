@@ -1,4 +1,4 @@
-/** Owner explainer for automatic BNPL + PayTo at Stripe Checkout. */
+/** Owner explainer for Stripe Checkout payment methods. */
 export default function BnplExplainer({
   isPro,
   showPayTo = false,
@@ -8,19 +8,18 @@ export default function BnplExplainer({
 }) {
   return (
     <section className="space-y-2 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
-      <p className="font-semibold">
-        Buy Now, Pay Later{showPayTo ? " and PayTo" : ""} (automatic)
+      <p className="font-semibold">Fees and delayed payments</p>
+      <p className="text-[var(--muted)]">
+        Toggles above write straight to Stripe. Checkout uses that same Stripe
+        config, so off means hidden on the next payment session.
       </p>
       <p className="text-[var(--muted)]">
-        Your customers can pay in instalments on larger orders with Afterpay,
-        Zip or Klarna. These appear automatically at checkout when the order is
-        above the provider&apos;s minimum (usually around $30) and available in
-        your country. Nothing to switch on.
+        Buy Now, Pay Later options still only show when the order is above the
+        provider&apos;s minimum (usually around $30). Pre-orders are card-only.
       </p>
       {showPayTo ? (
         <p className="text-[var(--muted)]">
-          Australian stands also get <strong>PayTo</strong> at Stripe Checkout
-          (bank payment). PayTo can take a moment to clear - Stallside waits for
+          <strong>PayTo</strong> can take a moment to clear. Stallside waits for
           Stripe&apos;s confirmation webhook before marking the sale paid and
           updating stock.
         </p>

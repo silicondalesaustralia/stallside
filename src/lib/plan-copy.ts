@@ -52,9 +52,6 @@ export const CARD_PLAN_HARDWARE_BLURB =
 export const CARD_PLAN_BILLING_BLURB =
   "Paid directly to your connected Stripe account. Standard Stripe processing fees still apply.";
 
-export const PRO_BREAK_EVEN_BLURB =
-  "Best for active stalls processing around A$800 or more in card sales each month.";
-
 /** Fee-focused bullets on the Free pricing card. */
 const FREE_FEE_FEATURES_CORE = [
   "Cash at the stand - customer self-confirms",

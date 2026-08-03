@@ -75,14 +75,27 @@ export default function PaymentBrandIcon({
     );
   }
 
-  if (brand === "payto") {
+  if (brand === "cashapp") {
     return (
-      <span
-        className={`inline-flex items-center justify-center rounded border border-current px-1 text-[0.55rem] font-bold leading-none tracking-tight ${className.includes("size-") ? "h-[1.25rem] min-w-[2.1rem]" : ""}`}
-        aria-hidden
-      >
-        PayTo
-      </span>
+      <svg {...common} viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="6" fill="#00C244" />
+        <path
+          fill="#fff"
+          d="M12.2 6.2c1.7 0 3.1.5 4.1 1.4l-1.3 1.5c-.7-.6-1.7-1-2.8-1-1.7 0-2.9.9-2.9 2.1 0 1.1.7 1.7 2.5 2.2l1 .3c2.5.7 3.7 1.8 3.7 3.7 0 2.3-1.9 3.8-4.5 3.8-1.8 0-3.3-.6-4.4-1.7l1.4-1.5c.8.8 1.9 1.3 3 1.3 1.7 0 2.8-.8 2.8-2.1 0-1.1-.8-1.8-2.6-2.3l-1-.3c-2.3-.6-3.5-1.8-3.5-3.6 0-2.2 1.8-3.8 4.5-3.8Z"
+        />
+      </svg>
+    );
+  }
+
+  if (brand === "link") {
+    return (
+      <svg {...common} viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="6" fill="#00D66F" />
+        <path
+          fill="#fff"
+          d="M7.5 12a4.5 4.5 0 0 1 4.5-4.5h1.2v2.2H12a2.3 2.3 0 1 0 0 4.6h1.2v2.2H12A4.5 4.5 0 0 1 7.5 12Zm9 0a4.5 4.5 0 0 1-4.5 4.5h-1.2v-2.2H12a2.3 2.3 0 1 0 0-4.6h-1.2V7.5H12A4.5 4.5 0 0 1 16.5 12Z"
+        />
+      </svg>
     );
   }
 
@@ -117,11 +130,13 @@ function WordmarkImg({
         ? ""
         : brand === "afterpay"
           ? "max-w-[5.5rem]"
-          : brand === "klarna"
-            ? "max-w-[4.25rem]"
-            : brand === "zip"
-              ? "max-w-[2.75rem]"
-              : "max-w-[4.5rem]";
+          : brand === "payto"
+            ? "max-w-[5rem]"
+            : brand === "klarna"
+              ? "max-w-[4.25rem]"
+              : brand === "zip"
+                ? "max-w-[2.75rem]"
+                : "max-w-[4.5rem]";
   const square = brand === "stripe" ? className : `${height} w-auto ${maxWidth}`;
 
   return (

@@ -16,7 +16,6 @@ import {
   ownerPassesFeeToCustomer,
 } from "@/lib/stallside-fee";
 import { standCheckoutPaymentMethodTypes } from "@/lib/stripe-checkout-methods";
-import type Stripe from "stripe";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -156,31 +155,16 @@ export async function startCardCheckout(input: {
       },
     };
 
-    const methodTypes = standCheckoutPaymentMethodTypes(
-      Boolean(preOrderCart),
-      stand.currency,
+    // Omit payment_method_types on normal sales so the connected account's
+    // Dashboard Payment Method Configuration drives card / PayTo / BNPL / etc.
+    const methodTypes = standCheckoutPaymentMethodTypes(Boolean(preOrderCart));
+    const session = await stripe.checkout.sessions.create(
+      {
+        ...sessionParams,
+        ...(methodTypes ? { payment_method_types: methodTypes } : {}),
+      },
+      { stripeAccount: stripeAccountId },
     );
-    let session;
-    try {
-      session = await stripe.checkout.sessions.create(
-        {
-          ...sessionParams,
-          payment_method_types:
-            methodTypes as Stripe.Checkout.SessionCreateParams.PaymentMethodType[],
-        },
-        { stripeAccount: stripeAccountId },
-      );
-    } catch (methodError) {
-      // Connected account / currency may not support every method yet (BNPL, PayTo).
-      console.warn(
-        "Extended Checkout methods unavailable; falling back to card",
-        methodError,
-      );
-      session = await stripe.checkout.sessions.create(
-        { ...sessionParams, payment_method_types: ["card"] },
-        { stripeAccount: stripeAccountId },
-      );
-    }
 
     await prisma.order.update({
       where: { id: order.id },

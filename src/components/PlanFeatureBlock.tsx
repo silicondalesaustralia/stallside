@@ -5,7 +5,6 @@ import {
   CARD_PLAN_BLURB,
   CARD_PLAN_HARDWARE_BLURB,
   FREE_PLAN_FEE_BLURB,
-  PRO_BREAK_EVEN_BLURB,
   cardPaymentBrands,
   cashPlanExtraBlurb,
   starterPlanFeatures,
@@ -52,7 +51,6 @@ export default function PlanFeatureBlock({
         No Stallside fee on card, Tap &amp; Go or pay-later payments. Standard
         Stripe processing fees still apply.
       </p>
-      <p className="text-sm text-[var(--muted)]">{PRO_BREAK_EVEN_BLURB}</p>
       <p className="text-sm font-semibold text-[var(--marigold)]">
         {CARD_PLAN_HARDWARE_BLURB}
       </p>
