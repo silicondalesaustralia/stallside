@@ -11,7 +11,7 @@ import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 type Recipient = { to: string; name: string };
 
 export const FEATURE_ANNOUNCE_SUBJECT =
-  "What's new on Stallside: Free keeps every feature, Pro removes the card fee";
+  "[NEW FEATURES] @ Stallside: Pricing Model Change & More Features Added";
 
 export function featureAnnounceHtml(name: string): string {
   const L = lifecycleLinks();
