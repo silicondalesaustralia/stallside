@@ -1,10 +1,29 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import BrandMark from "@/components/BrandMark";
 import HeroOwnerPhoneAlert from "@/components/HeroOwnerPhoneAlert";
+import {
+  HeroCardPayPanel,
+  HeroCashPayPanel,
+  HeroPickPanel,
+} from "@/components/HeroCheckoutPanels";
 
-/** Customer checkout → owner sale alert. Stacks until xl; then cart | = | phone. */
+type PayMode = "cash" | "card";
+
+/** Customer checkout → owner sale alert. Pay panel rotates cash ↔ card. */
 export default function HeroCheckoutDemo() {
+  const [mode, setMode] = useState<PayMode>("cash");
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (media.matches) return;
+    const id = window.setInterval(() => {
+      setMode((prev) => (prev === "cash" ? "card" : "cash"));
+    }, 3500);
+    return () => window.clearInterval(id);
+  }, []);
+
   return (
     <div className="hero-phone relative w-full max-w-none">
       <div
@@ -28,53 +47,27 @@ export default function HeroCheckoutDemo() {
             </div>
 
             <div className="mt-2.5 grid gap-2.5 @[18rem]:grid-cols-2 sm:mt-3 sm:gap-3">
-              <div className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-2.5 sm:p-3.5">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">
-                  1. Pick
-                </p>
-                <div className="mt-2 flex items-center gap-2 sm:gap-2.5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/brand/dozen-eggs.png"
-                    alt=""
-                    width={40}
-                    height={40}
-                    className="size-8 shrink-0 object-contain sm:size-10"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">Dozen eggs</p>
-                    <p className="mt-0.5 font-receipt text-xs text-[var(--muted)]">
-                      $6.00 each
-                    </p>
-                  </div>
-                  <p className="shrink-0 rounded-full border border-[var(--line)] bg-[var(--wash)] px-2 py-0.5 font-receipt text-sm font-semibold sm:px-2.5 sm:py-1">
-                    ×2
-                  </p>
+              <HeroPickPanel />
+              <div className="grid">
+                <div
+                  className={`col-start-1 row-start-1 transition-opacity duration-500 ease-out ${
+                    mode === "cash"
+                      ? "opacity-100"
+                      : "pointer-events-none opacity-0"
+                  }`}
+                >
+                  <HeroCashPayPanel />
                 </div>
-                <div className="mt-2 flex items-center justify-between border-t border-[var(--line)] pt-2 sm:mt-3">
-                  <p className="text-xs text-[var(--muted)]">Total</p>
-                  <p className="font-receipt text-base font-semibold text-[var(--field)] sm:text-lg">
-                    $12.00
-                  </p>
+                <div
+                  className={`col-start-1 row-start-1 transition-opacity duration-500 ease-out ${
+                    mode === "card"
+                      ? "opacity-100"
+                      : "pointer-events-none opacity-0"
+                  }`}
+                  aria-hidden={mode !== "card"}
+                >
+                  <HeroCardPayPanel />
                 </div>
-              </div>
-
-              <div className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-2.5 sm:p-3.5">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">
-                  2. Pay cash
-                </p>
-                <p className="mt-1.5 text-center text-[11px] leading-snug text-[var(--muted)] sm:mt-2">
-                  Slot, cash box, or whatever is provided
-                </p>
-                <p className="mt-1 text-center font-receipt text-xl font-semibold text-[var(--field)] sm:text-2xl">
-                  $12.00
-                </p>
-                <p className="mt-2 rounded-[var(--radius-pill)] bg-[var(--leaf)] py-2 text-center text-[11px] font-semibold text-white sm:py-2.5">
-                  I have paid cash ✓
-                </p>
-                <p className="mt-1.5 text-center text-[10px] font-medium text-[var(--field)]">
-                  Confirmed - owner alerted
-                </p>
               </div>
             </div>
           </div>
