@@ -74,22 +74,6 @@ export function cardPlanCents(currency: BillingCurrency): number {
   return CARD_PLAN_BY_CURRENCY[currency];
 }
 
-/**
- * Convert SaaS amounts into AUD using Pro list-price parity
- * (e.g. USD $14.99 ↔ AUD $19.99), not live FX.
- */
-export function billingCentsToAud(
-  cents: number,
-  currency: string | null | undefined,
-): number {
-  const raw = (currency ?? "AUD").trim().toUpperCase();
-  const code: BillingCurrency = isBillingCurrency(raw) ? raw : "AUD";
-  if (code === "AUD" || cents === 0) return cents;
-  const from = CARD_PLAN_BY_CURRENCY[code];
-  if (from <= 0) return cents;
-  return Math.round((cents * CARD_PLAN_BY_CURRENCY.AUD) / from);
-}
-
 /** Map BCP47 / region to a billing currency; unknown → AUD. */
 export function billingCurrencyFromLocale(locale: string): BillingCurrency {
   const parts = locale.trim().replace("_", "-").split("-");

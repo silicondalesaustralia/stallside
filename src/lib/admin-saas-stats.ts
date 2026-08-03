@@ -3,7 +3,7 @@ import { SubscriptionStatus } from "@/generated/prisma/client";
 import { DEFAULT_CURRENCY } from "@/lib/constants";
 import { demoStandSlugs } from "@/lib/demo";
 import { COUNTED_STATUSES } from "@/lib/order-metrics";
-import { billingCentsToAud } from "@/lib/saas-pricing";
+import { audRatesFromMarket, billingCentsToAud } from "@/lib/fx-to-aud";
 
 /** Statuses that still bill (exclude trials / comps). */
 const BILLING_LIVE: SubscriptionStatus[] = [
@@ -30,6 +30,7 @@ export async function getSaasStats() {
     ltvOwners,
     demoCompletions,
     demoCompletions7d,
+    fx,
   ] = await Promise.all([
     prisma.owner.count(),
     prisma.owner.groupBy({
@@ -61,6 +62,7 @@ export async function getSaasStats() {
           },
         })
       : Promise.resolve(0),
+    audRatesFromMarket(),
   ]);
 
   const statusCounts = Object.fromEntries(
@@ -69,12 +71,12 @@ export async function getSaasStats() {
 
   const mrrCents = paidSubscribers.reduce(
     (sum, o) =>
-      sum + billingCentsToAud(o.monthlyFeeCents, o.billingCurrency),
+      sum + billingCentsToAud(o.monthlyFeeCents, o.billingCurrency, fx),
     0,
   );
   const totalLtvCents = ltvOwners.reduce(
     (sum, o) =>
-      sum + billingCentsToAud(o.lifetimePaidCents, o.billingCurrency),
+      sum + billingCentsToAud(o.lifetimePaidCents, o.billingCurrency, fx),
     0,
   );
 
