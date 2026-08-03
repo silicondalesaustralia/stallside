@@ -8,6 +8,7 @@ import { billingRegionDisplay } from "@/lib/saas-pricing";
 import { refreshStripeStatus, startStripeConnect } from "./actions";
 import StripeDisconnectButton from "./StripeDisconnectButton";
 import PassFeeToggle from "./PassFeeToggle";
+import BnplExplainer from "./BnplExplainer";
 
 export default async function StripeSettingsPage({
   searchParams,
@@ -55,8 +56,9 @@ export default async function StripeSettingsPage({
           Card / Tap &amp; Go
         </h1>
         <p className="mt-2 text-[var(--muted)]">
-          Connect Stripe so stand customers can pay by card, Apple Pay, or Google
-          Pay. Payments go to your Stripe account. This is separate from your{" "}
+          Connect Stripe so stand customers can pay by card, Apple Pay, Google
+          Pay, and Buy Now Pay Later on larger orders. Payments go to your Stripe
+          account. This is separate from your{" "}
           <Link href="/dashboard/settings/billing" className="underline">
             app subscription
           </Link>
@@ -110,6 +112,8 @@ export default async function StripeSettingsPage({
           (Stripe&apos;s own processing fees still apply).
         </p>
       )}
+
+      <BnplExplainer isPro={isPro} />
 
       <div className="flex flex-wrap gap-3">
         <form action={startStripeConnect}>

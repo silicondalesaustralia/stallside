@@ -13,7 +13,7 @@ export function cardPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
 
 /** Free plan fee note (card / Tap & Go only). */
 export const FREE_PLAN_FEE_BLURB =
-  "Stallside fee 2.5% + 30¢ on card and Tap & Go only. Cash and PayID always free.";
+  "Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later. Cash and PayID always free.";
 
 /** Free ($0/mo) blurb. */
 export function cashPlanBlurb(currency: BillingCurrency): string {
@@ -36,7 +36,7 @@ export const STARTER_PLAN_BLURB =
   "Free forever. All features. Stallside fee 2.5% + 30¢ on card / Tap & Go only. Cash and PayID always free.";
 
 export const CARD_PLAN_BLURB =
-  "Same features as Free, with no Stallside card fee — keep 100% of your sales. PayPal coming soon.";
+  "Same features as Free, with no Stallside card fee — keep 100% of your sales.";
 
 export const CARD_PLAN_RESTOCK_BLURB =
   "Notify customers by email when you restock - they opt in after checkout; you never see their addresses.";

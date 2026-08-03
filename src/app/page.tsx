@@ -35,10 +35,10 @@ export default function HomePage() {
       <UseCaseGrid />
       <TrustSection />
       <PreOrdersSection />
+      <LandingPaymentMethods />
       <RestockCustomersSection />
       <StandBrandingSection />
       <FeatureColumns />
-      <LandingPaymentMethods />
       <CardDemandProof />
       <PricingTiers />
       <NetworkVision />

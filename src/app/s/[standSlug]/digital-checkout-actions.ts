@@ -15,6 +15,7 @@ import {
   computeStallsideApplicationFee,
   ownerPassesFeeToCustomer,
 } from "@/lib/stallside-fee";
+import { standCheckoutPaymentMethodTypes } from "@/lib/stripe-checkout-methods";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -142,30 +143,42 @@ export async function startCardCheckout(input: {
       });
     }
 
-    const session = await stripe.checkout.sessions.create(
-      {
-        mode: "payment",
-        payment_method_types: ["card"],
-        line_items: lineItems,
-        success_url: `${base}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${base}/checkout/cancelled?order=${order.id}`,
-        ...(customerEmail ? { customer_email: customerEmail } : {}),
-        metadata: {
-          orderId: order.id,
-          standId: stand.id,
-          ownerId: stand.ownerId,
-          demo: demo ? "1" : "0",
-          stripeAccountId,
-        },
-        payment_intent_data: {
-          metadata: { orderId: order.id },
-          ...(applicationFee > 0
-            ? { application_fee_amount: applicationFee }
-            : {}),
-        },
+    const sessionParams = {
+      mode: "payment" as const,
+      line_items: lineItems,
+      success_url: `${base}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${base}/checkout/cancelled?order=${order.id}`,
+      ...(customerEmail ? { customer_email: customerEmail } : {}),
+      metadata: {
+        orderId: order.id,
+        standId: stand.id,
+        ownerId: stand.ownerId,
+        demo: demo ? "1" : "0",
+        stripeAccountId,
       },
-      { stripeAccount: stripeAccountId },
-    );
+      payment_intent_data: {
+        metadata: { orderId: order.id },
+        ...(applicationFee > 0
+          ? { application_fee_amount: applicationFee }
+          : {}),
+      },
+    };
+
+    const methodTypes = standCheckoutPaymentMethodTypes(Boolean(preOrderCart));
+    let session;
+    try {
+      session = await stripe.checkout.sessions.create(
+        { ...sessionParams, payment_method_types: methodTypes },
+        { stripeAccount: stripeAccountId },
+      );
+    } catch (bnplError) {
+      // Connected account / currency may not support every BNPL type yet.
+      console.warn("BNPL Checkout methods unavailable; falling back to card", bnplError);
+      session = await stripe.checkout.sessions.create(
+        { ...sessionParams, payment_method_types: ["card"] },
+        { stripeAccount: stripeAccountId },
+      );
+    }
 
     await prisma.order.update({
       where: { id: order.id },

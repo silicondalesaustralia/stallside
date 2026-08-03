@@ -17,12 +17,17 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "What's the difference between Free and Pro?",
     answer:
-      "Free is $0/mo with every feature: cash, PayID (Australia), Tap & Go, pre-orders, collections, branding, restock notify, and more. Card and Tap & Go carry a Stallside fee of 2.5% + 30¢; cash and PayID stay free. Pro is a flat monthly fee with no Stallside card fee — you keep 100% of your sales. PayPal coming soon.",
+      "Free is $0/mo with every feature: cash, PayID (Australia), Tap & Go, pre-orders, collections, branding, restock notify, and more. Card, Tap & Go, and pay-later carry a Stallside fee of 2.5% + 30¢; cash and PayID stay free. Pro is a flat monthly fee with no Stallside card fee — you keep 100% of your sales.",
+  },
+  {
+    question: "What payment methods can customers use?",
+    answer:
+      "Cash and PayID (free, no fee), plus card, Tap & Go, Apple Pay and Google Pay. On larger orders, customers can also use Buy Now, Pay Later with Afterpay, Zip or Klarna. Card and pay-later payments carry a small Stallside fee on the Free plan, removed on Pro. Cash and PayID are always free.",
   },
   {
     question: "Is there a fee on card payments?",
     answer:
-      "On Free, Stallside charges 2.5% + 30¢ on card and Tap & Go (Apple Pay / Google Pay) only. Cash and PayID have no Stallside fee. On Pro there is no Stallside cut — keep 100% of your sales. Stripe's own processing fees still apply on card sales either way. You can pass the Stallside fee to customers at checkout or absorb it.",
+      "On Free, Stallside charges 2.5% + 30¢ on card, Tap & Go (Apple Pay / Google Pay), and pay-later. Cash and PayID have no Stallside fee. On Pro there is no Stallside cut — keep 100% of your sales. Stripe's own processing fees still apply either way (pay-later providers usually charge more than cards). You can pass the Stallside fee to customers at checkout or absorb it.",
   },
   {
     question: "Can customers pay by bank transfer / PayID?",
@@ -32,7 +37,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "How does QR checkout work?",
     answer:
-      "You print a QR poster for each stand. Shoppers open it on their phone and select items. When paying cash they confirm cash and PayID (Australia only) at the stand and you are alerted. When paying by card / Tap & Go they pay digitally in the same checkout (card, Apple Pay, Google Pay). Stock updates either way.",
+      "You print a QR poster for each stand. Shoppers open it on their phone and select items. When paying cash they confirm cash and PayID (Australia only) at the stand and you are alerted. When paying digitally they use the same Stripe checkout (card, Apple Pay, Google Pay, and on larger orders Afterpay, Zip or Klarna). Stock updates either way.",
   },
   {
     question: "How do pre-orders work?",

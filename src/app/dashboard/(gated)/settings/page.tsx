@@ -106,9 +106,9 @@ export default async function SettingsPage() {
               : "Not connected"}
         </p>
         <p className="text-[var(--muted)]">
-          Connect Stripe so customers can pay by card, Apple Pay, or Google Pay.
-          Funds go to your account. Free plan includes a small Stallside card fee
-          unless you upgrade to Pro.
+          Connect Stripe for card, Apple Pay, Google Pay, and Buy Now Pay Later
+          on larger orders. Funds go to your account. Free plan includes a small
+          Stallside fee unless you upgrade to Pro.
         </p>
         <Link
           href="/dashboard/settings/stripe"
@@ -121,20 +121,6 @@ export default async function SettingsPage() {
               ? "Finish Stripe setup"
               : "Connect Stripe"}
         </Link>
-      </section>
-
-      <section className="space-y-3 text-sm opacity-55">
-        <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
-          <PaymentBrandIcon brand="paypal" className="size-6" />
-          PayPal Connect{" "}
-          <span className="text-sm font-medium text-[var(--muted)]">
-            · Coming soon
-          </span>
-        </h2>
-        <p className="text-[var(--muted)]">
-          PayPal checkout is not available yet. Card / Tap &amp; Go via Stripe is
-          live today.
-        </p>
       </section>
     </main>
   );

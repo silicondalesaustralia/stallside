@@ -22,11 +22,11 @@ export default function StandPaymentToggles({
   acceptCash,
   acceptLocalTransfer,
   acceptCard,
-  acceptPayPal,
+  acceptPayPal: _acceptPayPal,
   cardReady,
-  paypalReady,
-  paypalConnectAvailable,
-  cardTier,
+  paypalReady: _paypalReady,
+  paypalConnectAvailable: _paypalConnectAvailable,
+  cardTier: _cardTier,
 }: StandPaymentTogglesProps) {
   return (
     <>
@@ -97,30 +97,8 @@ export default function StandPaymentToggles({
           </span>
           <span className="mt-0.5 block text-[var(--muted)]">
             {cardReady
-              ? "Card, Apple Pay, Google Pay. Money to your Stripe."
+              ? "Card, Apple Pay, Google Pay, and Buy Now Pay Later on larger orders. Money to your Stripe."
               : "Finish Stripe setup in Settings before enabling."}
-          </span>
-        </span>
-      </label>
-
-      <label className="flex items-start gap-3 text-sm">
-        <input
-          type="checkbox"
-          name="acceptPayPal"
-          defaultChecked={acceptPayPal}
-          disabled
-          className="mt-1 size-4 disabled:opacity-50"
-        />
-        <span className="min-w-0">
-          <span className="flex flex-wrap items-center gap-2 font-medium">
-            <PaymentBrandIcon brand="paypal" />
-            PayPal
-            <span className="text-xs font-medium text-[var(--muted)]">
-              · Coming soon
-            </span>
-          </span>
-          <span className="mt-0.5 block text-[var(--muted)]">
-            PayPal checkout is coming soon.
           </span>
         </span>
       </label>

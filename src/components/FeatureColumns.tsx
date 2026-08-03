@@ -20,22 +20,19 @@ const OWNER_PRO = [
   "Paid straight to your Stripe account: no cash box to empty, count, or bank",
 ] as const;
 
-const OWNER_SOON = ["PayPal at the gate"] as const;
-
 const CUSTOMER_LIVE = [
   "Scan with your phone camera. No app.",
   "See what's there and what's left.",
   "Choose options like size or flavour when a product offers them",
   "Pay cash and PayID (Australia only), then confirm - the owner knows.",
   "Tap & Go - card, Apple Pay, Google Pay on your phone",
+  "Buy Now, Pay Later (Afterpay, Zip, Klarna) on larger orders",
   "When card isn't on, tap “I'd have paid by card” so the owner sees demand",
   "Pre-order and pay by card to reserve for a collection day",
   "See when orders close, when to collect, and how many slots are left",
   "Get a confirmation email with your order details",
   "Opt in to hear when the stand restocks",
 ] as const;
-
-const CUSTOMER_SOON = ["PayPal checkout"] as const;
 
 function FeatureGroupList({
   heading,
@@ -61,11 +58,9 @@ function FeatureGroupList({
 function FeatureColumn({
   title,
   groups,
-  soon,
 }: {
   title: string;
   groups: readonly { heading: string; items: readonly string[] }[];
-  soon: readonly string[];
 }) {
   return (
     <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-[var(--pad-lg)]">
@@ -81,18 +76,6 @@ function FeatureColumn({
           />
         ))}
       </div>
-      {soon.length > 0 ? (
-        <>
-          <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-            Coming soon
-          </p>
-          <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-[var(--muted)]">
-            {soon.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </>
-      ) : null}
     </div>
   );
 }
@@ -106,12 +89,10 @@ export default function FeatureColumns() {
           { heading: "Free - $0/mo", items: OWNER_FREE },
           { heading: "Pro — keep 100% of sales", items: OWNER_PRO },
         ]}
-        soon={OWNER_SOON}
       />
       <FeatureColumn
         title="For customers"
         groups={[{ heading: "At the stall", items: CUSTOMER_LIVE }]}
-        soon={CUSTOMER_SOON}
       />
     </section>
   );

@@ -152,7 +152,7 @@ export default function CheckoutPayStep({
               </span>
               {!pending ? (
                 <span className="mt-0.5 block text-base font-normal text-[var(--muted)]">
-                  Card, Apple Pay or Google Pay
+                  Card, Apple Pay, Google Pay — and pay later on larger orders
                 </span>
               ) : null}
             </span>

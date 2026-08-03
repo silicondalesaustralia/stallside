@@ -3,7 +3,7 @@ import LandingFeatureCallout from "@/components/LandingFeatureCallout";
 export default function PreOrdersSection() {
   return (
     <LandingFeatureCallout
-      eyebrow="Pro"
+      eyebrow="Pre-orders"
       title="Take pre-orders for collection day"
     >
       <p>
