@@ -14,6 +14,7 @@ import {
   clearOwnerStripeLink,
   dropMismatchedConnectAccount,
 } from "@/lib/stripe-connect-account";
+import { connectCapabilitiesForCountry } from "@/lib/stripe-connect-capabilities";
 
 export async function startStripeConnect() {
   const { owner, user } = await requireOwner();
@@ -41,10 +42,7 @@ export async function startStripeConnect() {
       country,
       default_currency: defaultCurrency,
       email: owner.contactEmail || user.email || undefined,
-      capabilities: {
-        card_payments: { requested: true },
-        transfers: { requested: true },
-      },
+      capabilities: connectCapabilitiesForCountry(country),
       business_profile: {
         name: owner.businessName,
         product_description: "Farm stand / roadside produce sales",

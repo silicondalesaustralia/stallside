@@ -16,6 +16,7 @@ import {
   ownerPassesFeeToCustomer,
 } from "@/lib/stallside-fee";
 import { standCheckoutPaymentMethodTypes } from "@/lib/stripe-checkout-methods";
+import { getDefaultPaymentMethodConfiguration } from "@/lib/stripe-payment-method-config";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -156,12 +157,22 @@ export async function startCardCheckout(input: {
     };
 
     // Omit payment_method_types on normal sales so the connected account's
-    // Dashboard Payment Method Configuration drives card / PayTo / BNPL / etc.
+    // Payment Method Configuration drives card / PayTo / BNPL / etc.
+    // Prefer the Connect child config's parent ID when present (Stripe resolves
+    // the child for the connected account).
     const methodTypes = standCheckoutPaymentMethodTypes(Boolean(preOrderCart));
+    const pmc = methodTypes
+      ? null
+      : await getDefaultPaymentMethodConfiguration(stripeAccountId);
     const session = await stripe.checkout.sessions.create(
       {
         ...sessionParams,
         ...(methodTypes ? { payment_method_types: methodTypes } : {}),
+        ...(pmc
+          ? {
+              payment_method_configuration: pmc.parent ?? pmc.id,
+            }
+          : {}),
       },
       { stripeAccount: stripeAccountId },
     );

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { isStripeConfigured } from "@/lib/stripe";
 import { setConnectPaymentMethodPreference } from "@/lib/stripe-payment-method-config";
+import { requestCapabilityForPaymentMethod } from "@/lib/stripe-connect-capabilities";
 
 export async function toggleConnectPaymentMethod(input: {
   configurationId: string;
@@ -20,6 +21,17 @@ export async function toggleConnectPaymentMethod(input: {
     }
     if (!input.configurationId.startsWith("pmc_")) {
       return { error: "Invalid configuration." };
+    }
+
+    if (input.enabled) {
+      try {
+        await requestCapabilityForPaymentMethod({
+          stripeAccountId: owner.stripeAccountId,
+          method: input.method,
+        });
+      } catch (capError) {
+        console.warn("Capability request failed", input.method, capError);
+      }
     }
 
     const methods = await setConnectPaymentMethodPreference({

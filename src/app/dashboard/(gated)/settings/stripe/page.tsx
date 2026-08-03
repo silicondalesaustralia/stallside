@@ -6,6 +6,8 @@ import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { billingRegionDisplay } from "@/lib/saas-pricing";
 import { shouldChargeStallsideFee } from "@/lib/stallside-fee";
 import { listConnectPaymentMethodToggles } from "@/lib/stripe-payment-method-config";
+import { ensureRegionalConnectCapabilities } from "@/lib/stripe-connect-capabilities";
+import { stripeConnectCountry } from "@/lib/stripe-connect-country";
 import PassFeeToggle from "./PassFeeToggle";
 import BnplExplainer from "./BnplExplainer";
 import ConnectPaymentMethodToggles from "./ConnectPaymentMethodToggles";
@@ -47,6 +49,14 @@ export default async function StripeSettingsPage({
   > = null;
   let paymentMethodsError: string | null = null;
   if (ready && owner.stripeAccountId && configured) {
+    try {
+      await ensureRegionalConnectCapabilities(
+        owner.stripeAccountId,
+        stripeConnectCountry(owner.billingCurrency),
+      );
+    } catch (error) {
+      console.warn("Regional capability ensure failed", error);
+    }
     try {
       paymentMethods = await listConnectPaymentMethodToggles(
         owner.stripeAccountId,

@@ -92,10 +92,14 @@ export async function getDefaultPaymentMethodConfiguration(
     { limit: 20 },
     { stripeAccount: stripeAccountId },
   );
+  const active = list.data.filter((c) => c.active);
+  // Prefer the Connect child config (has parent) - that is what Dashboard
+  // "Payment methods" edits and what direct-charge Checkout should follow.
   return (
-    list.data.find((c) => c.is_default && c.active) ??
-    list.data.find((c) => c.active) ??
-    list.data[0] ??
+    active.find((c) => c.is_default && c.parent) ??
+    active.find((c) => c.parent) ??
+    active.find((c) => c.is_default) ??
+    active[0] ??
     null
   );
 }
