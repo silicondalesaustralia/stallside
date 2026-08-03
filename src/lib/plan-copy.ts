@@ -1,6 +1,12 @@
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
 import { stripeCheckoutBrandsForCurrency } from "@/lib/payment-brand-assets";
 import type { BillingCurrency } from "@/lib/saas-pricing";
+import { sharedPlanFeatures } from "@/lib/shared-plan-features";
+
+export {
+  sharedPaymentFeatures,
+  sharedPlanFeatures,
+} from "@/lib/shared-plan-features";
 
 export function cashPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
   return currency === "AUD" ? ["cash", "payid"] : ["cash"];
@@ -79,23 +85,10 @@ export function starterPlanFeatures(
   return FREE_FEE_FEATURES_CORE;
 }
 
-/** Shared product features (Free and Pro) - shown once below pricing cards. */
-export const SHARED_PLAN_FEATURES = [
-  "Unlimited products and product options / variants",
-  "Real stock counts and printable QR posters",
-  "Cash self-confirmation",
-  "PayID in Australia",
-  "Tap & Go card payments, Apple Pay and Google Pay",
-  "Sale alerts, low-stock alerts, email and push notifications",
-  "Orders and inventory dashboard",
-  "Card-demand counter",
-  "Customer restock notifications",
-  "Pre-orders with order-by deadlines and collection days",
-  "Collections - Ready and Collected, buyer messaging",
-  "Stall branding - logo, colours, social and website links",
-] as const;
+/** @deprecated Prefer sharedPlanFeatures(currency). Default Australia. */
+export const SHARED_PLAN_FEATURES = sharedPlanFeatures("AUD");
 
-/** @deprecated Prefer SHARED_PLAN_FEATURES for marketing. */
+/** @deprecated Prefer sharedPlanFeatures for marketing. */
 export const CARD_PLAN_FEATURES = [
   "Pre-orders - customers pay to reserve, with an order-by deadline and collection day",
   "Collections - track paid pre-orders by day and mark Ready, then Collected",

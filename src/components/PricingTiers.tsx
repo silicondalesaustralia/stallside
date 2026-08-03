@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import PlanFeatureBlock from "@/components/PlanFeatureBlock";
 import { formatMoney } from "@/lib/money";
-import { SHARED_PLAN_FEATURES } from "@/lib/plan-copy";
+import { sharedPlanFeatures } from "@/lib/plan-copy";
 import {
   BILLING_CURRENCIES,
   BILLING_CURRENCY_STORAGE_KEY,
@@ -139,7 +139,7 @@ export default function PricingTiers() {
           Every feature is included on Free and Pro.
         </p>
         <ul className="mt-3 grid list-disc gap-1.5 pl-5 text-sm text-[var(--muted)] sm:grid-cols-2">
-          {SHARED_PLAN_FEATURES.map((feature) => (
+          {sharedPlanFeatures(currency).map((feature) => (
             <li key={feature}>{feature}</li>
           ))}
         </ul>

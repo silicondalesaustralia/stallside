@@ -97,9 +97,13 @@ const REGION_PMC_METHODS: Record<string, readonly string[]> = {
 
 const FALLBACK_PMC_METHODS = REGION_PMC_METHODS.USD;
 
-export function regionalPmcMethods(currency: string): ReadonlySet<string> {
+export function regionalPmcMethodList(currency: string): readonly string[] {
   const code = currency.trim().toUpperCase();
-  return new Set(REGION_PMC_METHODS[code] ?? FALLBACK_PMC_METHODS);
+  return REGION_PMC_METHODS[code] ?? FALLBACK_PMC_METHODS;
+}
+
+export function regionalPmcMethods(currency: string): ReadonlySet<string> {
+  return new Set(regionalPmcMethodList(currency));
 }
 
 export function humanizePmcMethod(method: string): string {
