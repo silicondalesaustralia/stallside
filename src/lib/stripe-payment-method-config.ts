@@ -30,7 +30,7 @@ export type ConnectPaymentMethodToggle = {
 type MethodSlot = {
   available: boolean;
   display_preference: {
-    overridable: boolean;
+    overridable: boolean | null;
     preference: string;
     value: string;
   };
@@ -43,8 +43,11 @@ function isMethodSlot(value: unknown): value is MethodSlot {
   const pref = slot.display_preference;
   if (!pref || typeof pref !== "object") return false;
   const p = pref as Record<string, unknown>;
+  // Stripe may send overridable as null on some configs.
+  const overridableOk =
+    typeof p.overridable === "boolean" || p.overridable === null;
   return (
-    typeof p.overridable === "boolean" &&
+    overridableOk &&
     typeof p.preference === "string" &&
     typeof p.value === "string"
   );
@@ -62,7 +65,8 @@ export function parseConnectPaymentMethods(
       brand: BRAND_BY_PMC_METHOD[method] ?? null,
       enabled: value.display_preference.value === "on",
       available: value.available,
-      overridable: value.display_preference.overridable,
+      // null means Stripe did not lock it - treat as editable.
+      overridable: value.display_preference.overridable !== false,
     });
   }
   return rows.sort((a, b) => {

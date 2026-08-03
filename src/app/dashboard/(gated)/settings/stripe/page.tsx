@@ -123,6 +123,12 @@ export default async function StripeSettingsPage({
           configurationId={paymentMethods.configurationId}
           initialMethods={paymentMethods.methods}
         />
+      ) : ready && configured ? (
+        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
+          No checkout payment methods were returned from Stripe for this
+          account yet. Try Refresh status, or manage methods in the Stripe
+          dashboard.
+        </p>
       ) : null}
       {paymentMethodsError ? (
         <p className="text-sm text-red-700">{paymentMethodsError}</p>
