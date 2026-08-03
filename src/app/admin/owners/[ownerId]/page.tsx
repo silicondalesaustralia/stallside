@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import AdminLoginAsButton from "@/components/AdminLoginAsButton";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { formatMoney } from "@/lib/money";
+import { audRatesFromMarket, formatBillingWithAud } from "@/lib/fx-to-aud";
 import {
   applyCouponToOwner,
   cancelOwnerSubscription,
@@ -19,13 +19,16 @@ export default async function AdminOwnerDetailPage({
 }) {
   await requireAdmin();
   const { ownerId } = await params;
-  const owner = await prisma.owner.findUnique({
-    where: { id: ownerId },
-    include: {
-      user: true,
-      stands: { select: { id: true, name: true, slug: true } },
-    },
-  });
+  const [owner, fx] = await Promise.all([
+    prisma.owner.findUnique({
+      where: { id: ownerId },
+      include: {
+        user: true,
+        stands: { select: { id: true, name: true, slug: true } },
+      },
+    }),
+    audRatesFromMarket(),
+  ]);
   if (!owner) notFound();
 
   const refundAction = refundLatestSubscriptionInvoice.bind(null, owner.id);
@@ -56,9 +59,19 @@ export default async function AdminOwnerDetailPage({
           <p className="font-semibold text-[var(--leaf)]">Free for Life</p>
         ) : null}
         <p>
-          LTV: {formatMoney(owner.lifetimePaidCents, owner.billingCurrency)} · Fee{" "}
-          {formatMoney(owner.monthlyFeeCents, owner.billingCurrency)}/mo (
-          {owner.billingCurrency})
+          LTV:{" "}
+          {formatBillingWithAud(
+            owner.lifetimePaidCents,
+            owner.billingCurrency,
+            fx,
+          )}{" "}
+          · Fee{" "}
+          {formatBillingWithAud(
+            owner.monthlyFeeCents,
+            owner.billingCurrency,
+            fx,
+          )}
+          /mo
         </p>
         <p>
           Stripe customer:{" "}

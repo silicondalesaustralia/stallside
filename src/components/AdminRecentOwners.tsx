@@ -1,6 +1,6 @@
 import Link from "next/link";
 import AdminLoginAsButton from "@/components/AdminLoginAsButton";
-import { formatMoney } from "@/lib/money";
+import { audRatesFromMarket, formatBillingWithAud } from "@/lib/fx-to-aud";
 
 type RecentOwner = {
   id: string;
@@ -13,7 +13,7 @@ type RecentOwner = {
   stands: { name: string }[];
 };
 
-export default function AdminRecentOwners({
+export default async function AdminRecentOwners({
   owners,
 }: {
   owners: RecentOwner[];
@@ -21,6 +21,8 @@ export default function AdminRecentOwners({
   if (owners.length === 0) {
     return <p className="mt-2 text-sm text-[var(--muted)]">None yet.</p>;
   }
+
+  const fx = await audRatesFromMarket();
 
   return (
     <ul className="mt-3 divide-y divide-[var(--line)] border-y border-[var(--line)] text-sm">
@@ -47,9 +49,10 @@ export default function AdminRecentOwners({
             <p className="text-[var(--muted)]">
               {owner.subscriptionPlan ?? "-"} ·{" "}
               {owner.subscriptionStatus.toLowerCase()} · LTV{" "}
-              {formatMoney(
+              {formatBillingWithAud(
                 owner.lifetimePaidCents,
-                owner.billingCurrency || "AUD",
+                owner.billingCurrency,
+                fx,
               )}
             </p>
             <AdminLoginAsButton ownerId={owner.id} compact />

@@ -1,3 +1,4 @@
+import { formatMoney } from "@/lib/money";
 import type { BillingCurrency } from "@/lib/saas-pricing";
 import { BILLING_CURRENCIES, isBillingCurrency } from "@/lib/saas-pricing";
 
@@ -8,9 +9,11 @@ const FALLBACK_AUD_PER_UNIT: Record<Exclude<BillingCurrency, "AUD">, number> = {
   EUR: 1.75,
 };
 
-type AudRates = Record<string, number>;
+export type AudRates = Record<string, number>;
 
-async function fetchAudPerUnit(from: Exclude<BillingCurrency, "AUD">): Promise<number> {
+async function fetchAudPerUnit(
+  from: Exclude<BillingCurrency, "AUD">,
+): Promise<number> {
   const res = await fetch(
     `https://api.frankfurter.dev/v1/latest?base=${from}&symbols=AUD`,
     { next: { revalidate: 21_600 } },
@@ -59,4 +62,18 @@ export function billingCentsToAud(
   const rate = rates[code];
   if (typeof rate !== "number" || !(rate > 0)) return cents;
   return Math.round(cents * rate);
+}
+
+/** e.g. USD $14.99 (A$21.36) - native Stripe currency plus AUD. */
+export function formatBillingWithAud(
+  cents: number,
+  currency: string | null | undefined,
+  rates: AudRates,
+): string {
+  const raw = (currency ?? "AUD").trim().toUpperCase();
+  const code = isBillingCurrency(raw) ? raw : "AUD";
+  const native = formatMoney(cents, code);
+  if (code === "AUD" || cents === 0) return native;
+  const aud = formatMoney(billingCentsToAud(cents, code, rates), "AUD");
+  return `${code} ${native} (${aud})`;
 }

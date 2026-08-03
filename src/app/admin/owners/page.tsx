@@ -2,25 +2,27 @@ import Link from "next/link";
 import AdminLoginAsButton from "@/components/AdminLoginAsButton";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { formatMoney } from "@/lib/money";
-import { DEFAULT_CURRENCY } from "@/lib/constants";
+import { audRatesFromMarket, formatBillingWithAud } from "@/lib/fx-to-aud";
 
 export default async function AdminOwnersPage() {
   await requireAdmin();
-  const owners = await prisma.owner.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      user: true,
-      stands: { select: { id: true, name: true }, take: 4 },
-    },
-  });
+  const [owners, fx] = await Promise.all([
+    prisma.owner.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: true,
+        stands: { select: { id: true, name: true }, take: 4 },
+      },
+    }),
+    audRatesFromMarket(),
+  ]);
 
   return (
     <main className="flex flex-col gap-8">
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Subscribers</h1>
         <p className="mt-1 text-[var(--muted)]">
-          Business, stalls, plan, LTV, and billing status.
+          Business, stalls, plan, LTV (billing currency + AUD), and status.
         </p>
       </div>
 
@@ -67,9 +69,10 @@ export default async function AdminOwnersPage() {
                     {owner.subscriptionPlan ?? "-"}
                   </td>
                   <td className="py-3 pr-3">
-                    {formatMoney(
+                    {formatBillingWithAud(
                       owner.lifetimePaidCents,
-                      owner.billingCurrency || DEFAULT_CURRENCY,
+                      owner.billingCurrency,
+                      fx,
                     )}
                   </td>
                   <td className="py-3 pr-3 capitalize">
