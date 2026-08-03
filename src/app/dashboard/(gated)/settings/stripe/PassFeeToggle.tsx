@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { updatePassFeeToCustomer } from "./pass-fee-actions";
 
 type PassFeeToggleProps = {
@@ -11,10 +11,28 @@ export default function PassFeeToggle({
   passFeeToCustomer,
 }: PassFeeToggleProps) {
   const [pending, startTransition] = useTransition();
+  const [passOn, setPassOn] = useState(passFeeToCustomer);
+  const [error, setError] = useState<string | null>(null);
 
-  function setPassOn(next: boolean) {
+  useEffect(() => {
+    setPassOn(passFeeToCustomer);
+  }, [passFeeToCustomer]);
+
+  function choose(next: boolean) {
+    const prev = passOn;
+    setPassOn(next);
+    setError(null);
     startTransition(async () => {
-      await updatePassFeeToCustomer(next);
+      try {
+        const result = await updatePassFeeToCustomer(next);
+        if (result && "error" in result && result.error) {
+          setPassOn(prev);
+          setError(result.error);
+        }
+      } catch {
+        setPassOn(prev);
+        setError("Could not save. Try again.");
+      }
     });
   }
 
@@ -28,9 +46,9 @@ export default function PassFeeToggle({
         <input
           type="radio"
           name="passFee"
-          checked={!passFeeToCustomer}
+          checked={!passOn}
           disabled={pending}
-          onChange={() => setPassOn(false)}
+          onChange={() => choose(false)}
           className="mt-1"
         />
         <span>
@@ -44,9 +62,9 @@ export default function PassFeeToggle({
         <input
           type="radio"
           name="passFee"
-          checked={passFeeToCustomer}
+          checked={passOn}
           disabled={pending}
-          onChange={() => setPassOn(true)}
+          onChange={() => choose(true)}
           className="mt-1"
         />
         <span>
@@ -56,6 +74,7 @@ export default function PassFeeToggle({
           </span>
         </span>
       </label>
+      {error ? <p className="text-sm text-red-700">{error}</p> : null}
       <p className="text-[var(--muted)]">
         Cash and PayID are always free. Upgrade to Pro to remove this fee
         entirely.
