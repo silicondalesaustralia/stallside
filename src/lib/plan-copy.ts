@@ -14,17 +14,17 @@ export function cardPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
 
 /** Free plan fee note (card / Tap & Go only). */
 export const FREE_PLAN_FEE_BLURB =
-  "Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions. Cash and PayID always free. Pass the fee to customers at checkout, or absorb it - toggle in Settings → Card / Tap & Go.";
+  "A 2.5% Stallside fee applies to card, Tap & Go and pay-later payments. Standard Stripe processing fees apply separately. Cash and PayID remain free.";
 
 /** Absorb vs pass-on - Free only (Pro has no Stallside fee). */
 export const FREE_PLAN_PASS_FEE_FEATURE =
-  "Choose: absorb the Stallside fee, or pass it on to customers at checkout";
+  "Absorb the Stallside fee or pass it on to customers at checkout from Settings → Card / Tap & Go";
 
 /** Free ($0/mo) blurb. */
 export function cashPlanBlurb(currency: BillingCurrency): string {
   return currency === "AUD"
-    ? "Free forever. All features - cash, PayID, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; cash and PayID stay free. Pass that fee on or absorb it."
-    : "Free forever. All features - cash, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; cash stays free. Pass that fee on or absorb it.";
+    ? "Every Stallside feature, with no monthly fee. A 2.5% Stallside fee applies to card, Tap & Go and pay-later; cash and PayID stay free. Absorb or pass on that fee."
+    : "Every Stallside feature, with no monthly fee. A 2.5% Stallside fee applies to card, Tap & Go and pay-later; cash stays free. Absorb or pass on that fee.";
 }
 
 export function cashPlanExtraBlurb(currency: BillingCurrency): string | null {
@@ -33,26 +33,72 @@ export function cashPlanExtraBlurb(currency: BillingCurrency): string | null {
     : null;
 }
 
-/** @deprecated No signup trial - Free includes all features from day one. */
+/** @deprecated Prefer FREE_PLAN_FEE_BLURB / STARTER_PLAN_BLURB. */
 export const FREE_TRIAL_BLURB =
-  "Free is $0/mo with every feature. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later. Upgrade to Pro anytime to remove that fee.";
+  "Free is $0/mo with every feature. Stallside fee 2.5% on card, Tap & Go, and pay-later. Upgrade to Pro anytime to remove that fee.";
 
 export const STARTER_PLAN_BLURB =
-  "Free forever. All features. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions. Cash and PayID always free. Pass the fee on or absorb it.";
+  "Every Stallside feature, with no monthly fee.";
 
 export const CARD_PLAN_BLURB =
-  "Same features as Free, with no Stallside card fee - keep 100% of your sales.";
+  "Remove the Stallside transaction fee and pay one predictable monthly price.";
 
 export const CARD_PLAN_RESTOCK_BLURB =
   "Notify customers by email when you restock - they opt in after checkout; you never see their addresses.";
 
 export const CARD_PLAN_HARDWARE_BLURB =
-  "No terminal. No hardware. Keep 100% of your sales - no Stallside cut on card.";
+  "No terminal. No hardware. No Stallside cut on card sales.";
 
 export const CARD_PLAN_BILLING_BLURB =
-  "Paid straight to your Stripe account.";
+  "Paid directly to your connected Stripe account. Standard Stripe processing fees still apply.";
 
-/** Shared feature list (Free and Pro). */
+export const PRO_BREAK_EVEN_BLURB =
+  "Best for active stalls processing around A$800 or more in card sales each month.";
+
+/** Fee-focused bullets on the Free pricing card. */
+const FREE_FEE_FEATURES_CORE = [
+  "Cash at the stand — customer self-confirms",
+  "Tap & Go — card, Apple Pay and Google Pay",
+  "Pay-later payments where supported",
+  "2.5% Stallside fee on successful card, Tap & Go and pay-later payments",
+  "Standard Stripe processing fees apply separately",
+  FREE_PLAN_PASS_FEE_FEATURE,
+] as const;
+
+const FREE_PAYID_FEATURE =
+  "PayID bank transfer — Australia only, with no Stallside fee" as const;
+
+/** Free fee/payment bullets for pricing cards - PayID only when region is Australia. */
+export function starterPlanFeatures(
+  currency: BillingCurrency,
+): readonly string[] {
+  if (currency === "AUD") {
+    return [
+      FREE_FEE_FEATURES_CORE[0],
+      FREE_PAYID_FEATURE,
+      ...FREE_FEE_FEATURES_CORE.slice(1),
+    ];
+  }
+  return FREE_FEE_FEATURES_CORE;
+}
+
+/** Shared product features (Free and Pro) - shown once below pricing cards. */
+export const SHARED_PLAN_FEATURES = [
+  "Unlimited products and product options / variants",
+  "Real stock counts and printable QR posters",
+  "Cash self-confirmation",
+  "PayID in Australia",
+  "Tap & Go card payments, Apple Pay and Google Pay",
+  "Sale alerts, low-stock alerts, email and push notifications",
+  "Orders and inventory dashboard",
+  "Card-demand counter",
+  "Customer restock notifications",
+  "Pre-orders with order-by deadlines and collection days",
+  "Collections — Ready and Collected, buyer messaging",
+  "Stall branding — logo, colours, social and website links",
+] as const;
+
+/** @deprecated Prefer SHARED_PLAN_FEATURES for marketing. */
 export const CARD_PLAN_FEATURES = [
   "Pre-orders - customers pay to reserve, with an order-by deadline and collection day",
   "Collections - track paid pre-orders by day and mark Ready, then Collected",
@@ -62,34 +108,6 @@ export const CARD_PLAN_FEATURES = [
   "Stand branding - your logo and colours on the stall and QR poster",
   "Social links - Instagram, Facebook, TikTok, YouTube, or your website on the stall",
 ] as const;
-
-const FREE_FEATURES_CORE = [
-  "Cash at the stand (customer self-confirms)",
-  "Tap & Go - card, Apple Pay, Google Pay (Stallside fee 2.5% + 30¢ on all transactions)",
-  FREE_PLAN_PASS_FEE_FEATURE,
-  "Unlimited products and product options / variants",
-  "Real stock counts and printable QR posters",
-  "Sale alerts and low-stock alerts (email / push)",
-  "Orders and inventory dashboard",
-  "Card-demand counter - see how many shoppers wanted to pay by card",
-] as const;
-
-const FREE_PAYID_FEATURE =
-  "PayID bank transfer (Australia only) - no Stallside fee" as const;
-
-/** Free bullets for pricing - PayID only when region is Australia. */
-export function starterPlanFeatures(
-  currency: BillingCurrency,
-): readonly string[] {
-  if (currency === "AUD") {
-    return [
-      FREE_FEATURES_CORE[0],
-      FREE_PAYID_FEATURE,
-      ...FREE_FEATURES_CORE.slice(1),
-    ];
-  }
-  return FREE_FEATURES_CORE;
-}
 
 /** Default list (Australia) for static marketing columns. */
 export const STARTER_PLAN_FEATURES = starterPlanFeatures("AUD");

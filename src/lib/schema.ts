@@ -67,7 +67,7 @@ export function softwareApplicationSchema() {
         "@type": "Offer",
         price: "0",
         priceCurrency: "AUD",
-        description: "Starter - free forever per site",
+        description: "Free - $0/mo per site",
       },
       ...BILLING_CURRENCIES.map((currency) => ({
         "@type": "Offer",

@@ -91,10 +91,6 @@ export async function sendCustomerSubscriptionEmails(input: {
   }
 
   if (input.downgradeToStarter) {
-    const { sendAndMarkProLapseDay0 } = await import(
-      "@/lib/lifecycle-emails/send-and-mark"
-    );
-    await sendAndMarkProLapseDay0(input.ownerId);
     await ensureStandsHaveStarterPaymentMethod(input.ownerId);
   } else if (input.cancelled || input.newlySchedulingCancel) {
     const { sendAndMarkCancelFeedback } = await import(

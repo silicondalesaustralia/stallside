@@ -7,7 +7,7 @@ import {
 } from "@/lib/lifecycle-emails";
 import { daysAgo, markSent, recipient } from "@/lib/lifecycle-emails/cron-helpers";
 
-/** Day 23 / 45 after paid Pro → Starter. Returns send counts. */
+/** Day 23 / 45 after paid Pro → Free. Returns send counts. */
 export async function runProLapseCron(now: Date): Promise<{
   checked: number;
   day23: number;

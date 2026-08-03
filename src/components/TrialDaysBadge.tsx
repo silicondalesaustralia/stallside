@@ -1,26 +1,19 @@
 import Link from "next/link";
 
+/** Badge for cancel-at-period-end / paid access ending soon. */
 export default function TrialDaysBadge({
   daysLeft,
-  mode = "trial",
 }: {
   daysLeft: number;
+  /** @deprecated App trial removed; only paid countdown is shown. */
   mode?: "trial" | "paid";
 }) {
   const label =
-    mode === "paid"
-      ? daysLeft <= 0
-        ? "Paid access ended"
-        : daysLeft === 1
-          ? "1 day left on paid plan"
-          : `${daysLeft} days left on paid plan`
-      : daysLeft <= 0
-        ? "Trial ended"
-        : daysLeft === 1
-          ? "1 day left on free trial"
-          : `${daysLeft} days left on free trial`;
-
-  const cta = mode === "paid" ? "Resubscribe" : "Subscribe Now";
+    daysLeft <= 0
+      ? "Paid access ended"
+      : daysLeft === 1
+        ? "1 day left on paid plan"
+        : `${daysLeft} days left on paid plan`;
 
   return (
     <p className="mb-3 flex flex-wrap items-center gap-2 print:hidden">
@@ -31,7 +24,7 @@ export default function TrialDaysBadge({
         href="/dashboard/settings/billing"
         className="inline-flex items-center rounded-full bg-[var(--leaf)] px-3 py-1 text-xs font-semibold text-white transition hover:bg-[var(--leaf-dark)]"
       >
-        {cta}
+        Resubscribe
       </Link>
     </p>
   );

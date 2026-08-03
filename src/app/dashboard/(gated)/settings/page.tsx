@@ -108,8 +108,8 @@ export default async function SettingsPage() {
         </p>
         <p className="text-[var(--muted)]">
           Connect Stripe for card, Apple Pay, Google Pay, and Buy Now Pay Later
-          on larger orders. Funds go to your account. Free plan includes a small
-          Stallside fee unless you upgrade to Pro.
+          on larger orders. Funds go to your account. Free includes a 2.5%
+          Stallside fee on card sales unless you upgrade to Pro.
         </p>
         <Link
           href="/dashboard/settings/stripe"

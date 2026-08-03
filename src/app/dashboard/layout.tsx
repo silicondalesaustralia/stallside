@@ -5,10 +5,7 @@ import OwnerPushRegister from "@/components/OwnerPushRegister";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
 import { auth } from "@/lib/auth";
 import { requireOwner } from "@/lib/session";
-import {
-  paidAccessDaysRemaining,
-  trialDaysRemaining,
-} from "@/lib/owner-trial";
+import { paidAccessDaysRemaining } from "@/lib/owner-trial";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -23,7 +20,6 @@ export default async function DashboardLayout({
   const session = await auth();
   const impersonator = session?.impersonator;
   const access = { email: user.email, role: user.role };
-  const trialDays = trialDaysRemaining(owner, access);
   const paidDays = paidAccessDaysRemaining(owner, access);
 
   return (
@@ -39,9 +35,7 @@ export default async function DashboardLayout({
       />
       <DashboardNav />
       <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 print:max-w-none print:px-0 print:py-0">
-        {trialDays != null ? (
-          <TrialDaysBadge daysLeft={trialDays} mode="trial" />
-        ) : paidDays != null ? (
+        {paidDays != null ? (
           <TrialDaysBadge daysLeft={paidDays} mode="paid" />
         ) : null}
         {children}

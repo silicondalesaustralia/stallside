@@ -50,7 +50,7 @@ export default function TermsContent() {
         </h2>
         <p className="text-[var(--muted)]">
           On the Free plan, card, Tap &amp; Go (including Apple Pay and Google Pay),
-          and pay-later payments carry a Stallside fee of 2.5% + 30¢ on all
+          and pay-later payments carry a Stallside fee of 2.5% on all
           transactions, in addition to the payment processor&apos;s own fees. Cash and
           PayID payments carry no Stallside fee. This fee is removed on the Pro plan
           and for Free for Life accounts, so there is no absorb / pass-on choice when

@@ -56,7 +56,7 @@ async function main() {
       stripeSubscriptionId: updated.stripeSubscriptionId,
     });
     console.log(
-      `Downgraded ${email} to Free. Card sales now take Stallside fee (2.5% + 30¢).`,
+      `Downgraded ${email} to Free. Card sales now take Stallside fee (2.5%).`,
     );
   } finally {
     await prisma.$disconnect();

@@ -12,7 +12,7 @@ import { isDemoStandSlug } from "@/lib/demo";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
 import {
-  computeStallsideApplicationFee,
+  computeStallsideCheckoutFees,
   ownerPassesFeeToCustomer,
 } from "@/lib/stallside-fee";
 import { standCheckoutPaymentMethodTypes } from "@/lib/stripe-checkout-methods";
@@ -75,9 +75,9 @@ export async function startCardCheckout(input: {
     const stripeAccountId =
       demoStripe?.stripeAccountId ?? owner.stripeAccountId!;
 
-    const applicationFee = computeStallsideApplicationFee(totalCents, owner);
+    const { applicationFeeCents: applicationFee, chargeTotalCents: chargeTotal } =
+      computeStallsideCheckoutFees(totalCents, owner);
     const passOn = applicationFee > 0 && ownerPassesFeeToCustomer(owner);
-    const chargeTotal = totalCents + (passOn ? applicationFee : 0);
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
 

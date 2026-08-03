@@ -6,7 +6,7 @@ import {
 
 const STATUS_LABEL: Record<string, string> = {
   NONE: "No active subscription",
-  TRIALING: "Free trial",
+  TRIALING: "Free plan",
   ACTIVE: "Active",
   PAST_DUE: "Past due",
   CANCELLED: "Cancelled",
@@ -26,12 +26,11 @@ export default function BillingStatusCard({
   accessUntil: Date | null;
 }) {
   const lifetime = planLabel.startsWith("Lifetime FREE");
-  const trial = planLabel.includes("free trial");
   const region = billingRegionDisplay(billingCurrency);
 
   return (
     <section className="space-y-2 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
-      {lifetime || trial ? (
+      {lifetime ? (
         <p>{planLabel}</p>
       ) : (
         <>

@@ -4,7 +4,6 @@ import {
   ctaButton,
   emailReplyTo,
   emailShell,
-  escapeHtml,
   greetName,
 } from "@/lib/lifecycle-emails/html";
 import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
@@ -15,58 +14,33 @@ async function send(to: string, subject: string, html: string, kind: string) {
   await sendOwnerEmail(to, subject, html, { replyTo: emailReplyTo(), kind });
 }
 
-/** Immediate: paid Pro ended → Starter. */
-export async function sendProLapseDay0(r: Recipient) {
-  const L = lifecycleLinks();
-  const name = escapeHtml(r.businessName?.trim() || r.name.trim() || "there");
-  const html = emailShell(
-    "You're on Starter now",
-    `
-      <p>Hi ${name},</p>
-      <p>Your <strong>${APP_NAME} Pro</strong> access has ended.
-      <strong>You're on Starter now. Nothing's lost.</strong></p>
-      <p>Your stands, products, QR posters, and orders are still here. Cash and PayID
-      (Australia only) keep working. Tap &amp; Go, new pre-orders, branding, and
-      restock notify are paused until you upgrade.</p>
-      <p>You can still fulfil paid pre-orders in Collections.</p>
-      ${ctaButton(L.billingPro, "Upgrade to Pro")}
-      <p>Questions? <strong>hello@stallside.app</strong></p>
-    `,
-  );
-  await send(
-    r.to,
-    `You're on ${APP_NAME} Starter - nothing's lost`,
-    html,
-    "lifecycle_pro_lapse_day0",
-  );
-}
-
 /** ~23 days after Pro lapse. */
 export async function sendProLapseDay23(r: Recipient) {
   const L = lifecycleLinks();
   const html = emailShell(
-    "Still on Starter - here's what Pro adds back",
+    "Still on Free - here's what Pro adds",
     `
       <p>Hi ${greetName(r.name)},</p>
-      <p>It&apos;s been a few weeks on <strong>Starter</strong> (free forever).</p>
+      <p>It&apos;s been a few weeks on <strong>Free</strong> ($0/mo).</p>
       <p><strong>You still have:</strong> every Free feature - cash &amp; PayID
       (Australia only), Tap &amp; Go, pre-orders, branding, restock emails,
       products, stock, QR posters, alerts, and the card-demand counter.</p>
-      <p><strong>Pro brings back:</strong> no Stallside card fee - keep 100% of
-      your card, Tap &amp; Go, and pay-later sales.</p>
+      <p><strong>Pro brings:</strong> no Stallside transaction fee on
+      your card, Tap &amp; Go, and pay-later sales. Standard Stripe processing
+      fees still apply.</p>
       ${ctaButton(L.billingPro, "See Stallside Pro")}
       <p>Questions? <strong>hello@stallside.app</strong></p>
     `,
   );
   await send(
     r.to,
-    `Still on ${APP_NAME} Starter - Pro is ready when you are`,
+    `Still on ${APP_NAME} Free - Pro is ready when you are`,
     html,
     "lifecycle_pro_lapse_day23",
   );
 }
 
-/** ~45 days after Pro lapse - card-demand / restock stats. */
+/** ~45 days after Pro lapse - nudge on fee waiver using Free activity stats. */
 export async function sendProLapseDay45(
   r: Recipient,
   stats?: { cardInterestCount?: number; restockCount?: number },
@@ -76,14 +50,18 @@ export async function sendProLapseDay45(
   const restockN = stats?.restockCount ?? 0;
   const statsLine =
     cardN > 0 || restockN > 0
-      ? `<p>Since Pro ended:
+      ? `<p>On Free you&apos;ve still got real demand:
          ${cardN > 0 ? `<strong>${cardN}</strong> shoppers tapped “I'd have paid by card”. ` : ""}
-         ${restockN > 0 ? `<strong>${restockN}</strong> regulars are waiting on your restock list.` : ""}
-         </p>`
-      : `<p>Shoppers on Free can still tell you they wanted card, and join your restock
-         list. Pro removes the Stallside card fee when you take those sales.</p>`;
+         ${restockN > 0 ? `<strong>${restockN}</strong> regulars are on your restock list.` : ""}
+         </p>
+         <p>Those features work on Free and Pro. <strong>Pro</strong> only changes
+         one thing: no Stallside transaction fee on card, Tap &amp; Go, and
+         pay-later. Standard Stripe processing fees still apply.</p>`
+      : `<p>Free still includes Tap &amp; Go, restock emails, and every other feature.
+         <strong>Pro</strong> removes the Stallside card fee (2.5%) so you pay one
+         predictable monthly price. Standard Stripe processing fees still apply.</p>`;
   const html = emailShell(
-    "What Pro would have done",
+    "Remove the Stallside fee with Pro",
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>A quick check-in from ${APP_NAME}.</p>
@@ -93,7 +71,7 @@ export async function sendProLapseDay45(
   );
   await send(
     r.to,
-    `What ${APP_NAME} Pro would have done`,
+    `Remove the Stallside fee with ${APP_NAME} Pro`,
     html,
     "lifecycle_pro_lapse_day45",
   );

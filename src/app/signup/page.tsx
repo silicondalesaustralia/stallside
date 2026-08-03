@@ -11,9 +11,9 @@ export default function SignupPage() {
         Free
       </h1>
       <p className="mt-2 text-[var(--muted)]">
-        Every feature from day one. Stallside fee only on card, Tap &amp; Go, and
-        pay-later. Name and email only - no card required. We&apos;ll send a
-        6-digit sign-in code.
+        Every feature from day one. Free charges a 2.5% Stallside fee on card,
+        Tap &amp; Go, and pay-later (plus standard Stripe fees). Name and email
+        only - no card required. We&apos;ll send a 6-digit sign-in code.
       </p>
       <form action={requestSignup} className="mt-8 flex w-full flex-col gap-4">
         <label className="flex flex-col gap-2 text-sm">

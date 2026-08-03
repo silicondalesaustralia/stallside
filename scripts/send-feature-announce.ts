@@ -1,5 +1,5 @@
 /**
- * Feature + free-trial announcement.
+ * Feature announcement (pricing model + features).
  *
  * Preview (default):
  *   npx tsx scripts/send-feature-announce.ts

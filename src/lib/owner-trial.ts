@@ -1,16 +1,10 @@
-import { COMPLIMENTARY_ACCESS_EMAILS, TRIAL_DAYS } from "@/lib/constants";
+import { COMPLIMENTARY_ACCESS_EMAILS } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { Role, SubscriptionStatus } from "@/generated/prisma/client";
 
-export function trialEndDate(from = new Date()): Date {
-  const end = new Date(from);
-  end.setUTCDate(end.getUTCDate() + TRIAL_DAYS);
-  return end;
-}
-
 /**
  * Create an owner on Free: every feature, Stallside card fee applies.
- * No Pro trial - upgrade anytime to waive the fee.
+ * Upgrade anytime to Pro to waive the fee.
  */
 export async function createOwnerWithTrial(input: {
   userId: string;
@@ -63,22 +57,13 @@ export function hasComplimentaryAccess(input: ComplimentaryAccessInput): boolean
 
 const PRO_PLANS = new Set(["pro", "pro_paypal", "card", "card_paypal"]);
 
-function isActiveFreeTrial(owner: {
-  subscriptionStatus?: SubscriptionStatus | string | null;
-  trialEndsAt?: Date | null;
-}): boolean {
-  if (owner.subscriptionStatus !== SubscriptionStatus.TRIALING) return false;
-  if (!owner.trialEndsAt) return true;
-  return hasFutureDate(owner.trialEndsAt);
-}
-
 function isPaidProPlan(plan: string | null | undefined): boolean {
   return PRO_PLANS.has((plan ?? "").trim().toLowerCase());
 }
 
 /**
- * Pro features: paid Pro, active free Pro trial, complimentary / admin / lifetime,
- * or still inside cancel-at-period-end window while on a Pro plan.
+ * Pro fee waiver / paid Pro: complimentary / admin / lifetime, or paid Pro
+ * (including cancel-at-period-end window). App free trial no longer exists.
  */
 export function ownerHasProAccess(
   owner: {
@@ -93,7 +78,6 @@ export function ownerHasProAccess(
 ): boolean {
   if (owner.lifetimeAccess) return true;
   if (access && hasComplimentaryAccess(access)) return true;
-  if (isActiveFreeTrial(owner)) return true;
 
   const plan = (owner.subscriptionPlan ?? "").trim().toLowerCase();
   if (!isPaidProPlan(plan)) return false;
@@ -136,17 +120,12 @@ function daysUntil(date: Date): number {
   return Math.ceil(ms / (1000 * 60 * 60 * 24));
 }
 
-/** Free-trial days remaining (null if not on an active app trial). */
+/** @deprecated App free trial removed - always null. */
 export function trialDaysRemaining(
-  owner: OwnerAccessFields & { lifetimeAccess?: boolean | null },
-  access?: ComplimentaryAccessInput,
+  _owner?: OwnerAccessFields & { lifetimeAccess?: boolean | null },
+  _access?: ComplimentaryAccessInput,
 ): number | null {
-  if (owner.lifetimeAccess) return null;
-  if (access && hasComplimentaryAccess(access)) return null;
-  if (owner.stripeSubscriptionId) return null;
-  if (owner.subscriptionStatus !== SubscriptionStatus.TRIALING) return null;
-  if (!owner.trialEndsAt) return null;
-  return daysUntil(owner.trialEndsAt);
+  return null;
 }
 
 /**

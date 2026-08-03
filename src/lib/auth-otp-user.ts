@@ -44,7 +44,7 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
         owner = await createOwnerWithLifetime({ userId: user.id, name, email });
         lifetime = true;
       } else {
-        console.warn("Lifetime invite could not be consumed; falling back to trial", {
+        console.warn("Lifetime invite could not be consumed; falling back to Free", {
           email,
           inviteToken,
         });

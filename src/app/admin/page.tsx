@@ -105,7 +105,7 @@ export default async function AdminOverviewPage({
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <DashboardStat label="Active" value={String(saas.active)} />
-        <DashboardStat label="Trialing" value={String(saas.trialing)} />
+        <DashboardStat label="Stripe trialing" value={String(saas.trialing)} />
         <DashboardStat label="Past due" value={String(saas.pastDue)} />
         <DashboardStat label="Cancelled" value={String(saas.cancelled)} />
       </section>

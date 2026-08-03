@@ -121,7 +121,7 @@ export default function FeatureColumns() {
       />
       <FeatureBlock
         eyebrow="For owners"
-        title="Pro - keep 100% of sales"
+        title="Pro - no Stallside fee"
         accent="marigold"
         items={OWNER_PRO}
       />

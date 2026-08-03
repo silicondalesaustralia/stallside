@@ -3,7 +3,7 @@
   "framework": "nextjs",
   "crons": [
     {
-      "path": "/api/cron/trial-reminders",
+      "path": "/api/cron/lifecycle",
       "schedule": "0 9 * * *"
     }
   ]

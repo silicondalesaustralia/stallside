@@ -20,7 +20,7 @@ import {
 import type { DemoRegion } from "@/lib/demo";
 import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/public-product";
-import { stallsideFeeCents } from "@/lib/money";
+import { stallsidePassOnFeeCents } from "@/lib/money";
 import {
   pruneStandCart,
   productQtyInCart,
@@ -160,7 +160,7 @@ export default function StandCartCheckout({
   const total = lines.reduce((sum, l) => sum + l.unitCents * l.quantity, 0);
   const cardFeeCents =
     stallsideFeeApplies && passFeeToCustomer && total > 0
-      ? stallsideFeeCents(total)
+      ? stallsidePassOnFeeCents(total)
       : 0;
   const cardTotalCents = total + cardFeeCents;
   const payload = lines.map((l) => ({

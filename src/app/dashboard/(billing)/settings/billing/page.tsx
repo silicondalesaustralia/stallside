@@ -26,7 +26,6 @@ export default async function BillingSettingsPage({
   searchParams: Promise<{
     success?: string;
     cancelled?: string;
-    trial?: string;
     locked?: string;
     plan?: string;
   }>;
@@ -46,16 +45,6 @@ export default async function BillingSettingsPage({
     (owner.subscriptionStatus === "ACTIVE" ||
       owner.subscriptionStatus === "PAST_DUE") &&
     Boolean(owner.stripeSubscriptionId);
-  const trialActive =
-    owner.subscriptionStatus === "TRIALING" &&
-    owner.trialEndsAt != null &&
-    owner.trialEndsAt.getTime() > Date.now() &&
-    !owner.stripeSubscriptionId;
-  const trialEnded =
-    !hasPro &&
-    owner.trialEndsAt != null &&
-    owner.trialEndsAt.getTime() <= Date.now() &&
-    !owner.stripeSubscriptionId;
   const cancelling =
     owner.cancelAtPeriodEnd &&
     owner.currentPeriodEndsAt != null &&
@@ -66,17 +55,14 @@ export default async function BillingSettingsPage({
   const planNorm = normalizeSubscriptionPlan(owner.subscriptionPlan);
   const planLabel = freeForever
     ? "Lifetime FREE - All features"
-    : trialActive
-      ? "Pro free trial"
-      : planNorm === "pro" || planNorm === "pro_paypal"
-        ? "Stallside Pro"
-        : "Free plan";
+    : planNorm === "pro" || planNorm === "pro_paypal"
+      ? "Stallside Pro"
+      : "Free plan";
   const feeCents =
-    freeForever || trialActive || planNorm === "free"
+    freeForever || planNorm === "free"
       ? 0
       : owner.monthlyFeeCents || cardPlanCents(billingCurrency);
   const showPlanForms = !freeForever && !isPaidPro;
-  const dateOpts = { dateStyle: "medium" as const };
 
   return (
     <main className="flex max-w-xl flex-col gap-8">
@@ -88,28 +74,24 @@ export default async function BillingSettingsPage({
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Stallside billing</h1>
         <p className="mt-2 text-[var(--muted)]">
-          Free is $0/mo with all features (card/Tap &amp; Go carry a Stallside
-          fee). Pro removes that fee so you keep 100% of card sales. This is what
-          you pay Stallside - not stand customer payments.
+          Free is $0/mo with all features. Card, Tap &amp; Go and pay-later carry
+          a 2.5% Stallside fee (plus standard Stripe processing fees). Pro removes
+          the Stallside fee. This is what you pay Stallside - not stand customer
+          payments.
         </p>
       </div>
 
       <BillingNotices
         freeForever={freeForever}
         locked={false}
-        trialEnded={trialEnded || params.trial === "ended"}
         success={params.success === "1"}
         cancelled={params.cancelled === "1"}
-        trialActive={Boolean(trialActive && owner.trialEndsAt)}
-        trialEndsLabel={
-          owner.trialEndsAt
-            ? owner.trialEndsAt.toLocaleDateString(undefined, dateOpts)
-            : null
-        }
         cancelling={Boolean(cancelling && owner.currentPeriodEndsAt)}
         cancelUntilLabel={
           owner.currentPeriodEndsAt
-            ? owner.currentPeriodEndsAt.toLocaleDateString(undefined, dateOpts)
+            ? owner.currentPeriodEndsAt.toLocaleDateString(undefined, {
+                dateStyle: "medium",
+              })
             : null
         }
       />

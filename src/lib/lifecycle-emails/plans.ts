@@ -22,9 +22,9 @@ export async function sendCardWelcome(r: Recipient) {
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>Welcome to <strong>${APP_NAME} Pro</strong>. Same features as Free - and
-      no Stallside fee on card, Tap &amp; Go, or pay-later. Keep 100% of those
-      sales (Stripe&apos;s own processing fees still apply).</p>
-      <p><strong>Get Tap &amp; Go live</strong></p>
+      <strong>no Stallside transaction fee</strong> on card, Tap &amp; Go, or
+      pay-later. Standard Stripe processing fees still apply.</p>
+      <p>If Tap &amp; Go isn&apos;t live yet:</p>
       <ol>
         <li><a href="${L.stripe}">Connect Stripe</a> (finish onboarding so charges are enabled)</li>
         <li>Turn Card / Tap &amp; Go on for each stand under My stands</li>

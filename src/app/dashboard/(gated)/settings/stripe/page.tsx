@@ -104,8 +104,8 @@ export default async function StripeSettingsPage({
         <PassFeeToggle passFeeToCustomer={owner.passFeeToCustomer} />
       ) : (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          Stallside Pro: no Stallside card fee. Keep 100% of your card sales
-          (Stripe&apos;s own processing fees still apply).
+          Stallside Pro: no Stallside transaction fee on card sales. Standard
+          Stripe processing fees still apply.
         </p>
       )}
 

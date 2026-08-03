@@ -15,7 +15,6 @@ export type SubscriptionSummaryOwner = {
   lifetimeAccess?: boolean | null;
   subscriptionStatus: SubscriptionStatus | string;
   subscriptionPlan?: string | null;
-  trialEndsAt?: Date | null;
   stripeSubscriptionId?: string | null;
   monthlyFeeCents?: number | null;
   billingCurrency?: string | null;
@@ -24,13 +23,6 @@ export type SubscriptionSummaryOwner = {
 function billingCurrencyOf(owner: SubscriptionSummaryOwner): BillingCurrency {
   const raw = owner.billingCurrency ?? "";
   return isBillingCurrency(raw) ? raw : "AUD";
-}
-
-function isActiveTrial(owner: SubscriptionSummaryOwner): boolean {
-  if (owner.subscriptionStatus !== SubscriptionStatus.TRIALING) return false;
-  if (owner.stripeSubscriptionId) return false;
-  if (!owner.trialEndsAt) return true;
-  return owner.trialEndsAt.getTime() > Date.now();
 }
 
 function paidPlanLabel(plan: string | null | undefined): string {
@@ -60,7 +52,8 @@ function statusLabel(status: string): string {
     case SubscriptionStatus.CANCELLED:
       return "Cancelled";
     case SubscriptionStatus.TRIALING:
-      return "Free trial";
+      // Stripe Billing can still report trialing; treat as Free for app copy.
+      return "Free";
     case SubscriptionStatus.NONE:
       return "Free";
     default:
@@ -81,10 +74,6 @@ export function stallsideSubscriptionSummary(
     })
   ) {
     return "Lifetime FREE - All features";
-  }
-
-  if (isActiveTrial(owner)) {
-    return "Pro free trial";
   }
 
   const currency = billingCurrencyOf(owner);

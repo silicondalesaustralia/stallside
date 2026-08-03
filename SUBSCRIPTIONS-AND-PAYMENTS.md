@@ -70,24 +70,12 @@ giving anything away. Quantity-break pricing, if built, also belongs on Starter.
 - **PayPal** at the gate - gated by `PAYPAL_CONNECT_ENABLED=1`; default UI says coming soon
 - Pix / UPI local transfer methods exist in code but are disabled
 
-### Pro free trial **[CHANGE]**
+### No Pro trial **[CURRENT]**
 
-- **30 days** (`TRIAL_DAYS` in `src/lib/constants.ts`), **one per account, ever**
-- **No card required** - app-managed trial, **not** a Stripe `trial_period_days`
-- Full Pro features during trial
-- **At trial end the account drops to Starter. The dashboard never locks.**
-- Data retained in full (see §5)
-- Trial reminder cron: `src/app/api/cron/trial-reminders/route.ts` - sequence rewritten (§4)
-
-**Trial trigger: auto-start at signup.** DECIDED. No `proTrialStartedAt` field needed - trial
-runs from account creation, as today. Only the trial *end* behaviour changes (drop to Starter,
-no lock).
-
-Consequence to design around: a stand in its first 30 days has no regulars to notify and no
-repeat buyers, so restock notify and pre-orders are trialled at the moment they are least
-useful. The trial therefore cannot be the main conversion mechanism - **the card-demand counter
-(§6) is the ongoing upgrade driver**, and it runs indefinitely on Starter. Onboarding during the
-trial should lean on Tap & Go and branding, which do work from day one.
+There is **no app Pro trial**. New owners start on **Free** from day one (all features;
+Stallside card fee applies). Upgrade to Pro anytime to waive the fee.
+Cron `src/app/api/cron/lifecycle/route.ts` runs Pro lapse Day 23 / Day 45 only
+(legacy `/api/cron/trial-reminders` aliases it). Trial sequence emails are retired.
 
 ### Lifetime / complimentary **[CURRENT]**
 
@@ -132,9 +120,9 @@ Core helpers: `src/lib/owner-trial.ts`
 redirect. Every owner reaches every screen; Pro-only surfaces render in a locked/preview state
 with an upgrade affordance.
 
-**`ownerHasProAccess`** is true if any of: lifetime / complimentary, active Pro trial,
-`subscriptionStatus` ∈ `{ACTIVE, PAST_DUE}`, or still inside `currentPeriodEndsAt` after
-cancel-at-period-end.
+**`ownerHasProAccess`** is true if any of: lifetime / complimentary,
+`subscriptionStatus` ∈ `{ACTIVE, PAST_DUE}` on a Pro plan, or still inside `currentPeriodEndsAt`
+after cancel-at-period-end. App free trial is not a path.
 
 **Remove:** the redirect in `src/app/dashboard/(gated)/layout.tsx`. The `(gated)` route group
 either collapses into the normal dashboard or is repurposed as a Pro-preview wrapper.
@@ -177,8 +165,7 @@ either collapses into the normal dashboard or is repurposed as a Pro-preview wra
 7. Cancel at period end → Pro until `currentPeriodEndsAt`, then Starter
 8. Delete account → cancel subscription immediately (`wipe-owner-account.ts`)
 
-Pro Checkout bills immediately (no Stripe trial on the subscription). The free trial remains
-app-side only.
+Pro Checkout bills immediately (no Stripe trial on the subscription). There is no app Pro trial.
 
 ### Env (SaaS) **[CHANGE]**
 
@@ -212,20 +199,12 @@ string comparison against old values anywhere in the codebase after it lands.
 
 ---
 
-## 4. Trial-end and lapse behaviour **[CHANGE]**
+## 4. Pro lapse behaviour **[CURRENT]**
 
-There is no lock, so the owner may not notice a state change. Three touches, not one:
+There is no app trial sequence. For cancelled / lapsed Pro, use the Pro lapse emails
+(`sendProLapseDay*`) so the owner knows they are on Free again and the Stallside card fee applies.
 
-| When | Message |
-|------|---------|
-| Trial day 23 | What you'll keep, what pauses - with the owner's own numbers |
-| Trial day 30 | "You're on Starter now. Nothing's lost." Explicit, not silent. |
-| Trial day 45 | What Pro would have done over the last two weeks (card-demand, restock subscribers waiting) |
-
-The same sequence applies to a lapsed or cancelled Pro subscription.
-
-**A silent downgrade reads as a broken product.** An owner who doesn't know the trial ended will
-assume Tap & Go is failing. Day 30 is the most important message in the sequence.
+**A silent downgrade reads as a broken product.**
 
 ---
 
@@ -265,7 +244,7 @@ must be handled carefully:
 
 Owner-side: surface the count prominently - *"40 regulars are waiting to hear when you restock.
 Upgrade to notify them."* This is the second-strongest upgrade signal after card demand, and
-unlike card demand it accrues from the trial period onward.
+unlike card demand it accrues while the stand is live.
 
 ---
 
@@ -279,8 +258,7 @@ not after.
 - Log an intent record: stand, timestamp, cart subtotal. No PII.
 - Surface in the owner dashboard as lost revenue in their own numbers:
   *"23 people wanted to pay by card this month - about $180."*
-- Use it as the trigger for the Pro trial prompt (if trial option (b) is chosen) and for the
-  day-45 message.
+- Use it as an ongoing upgrade signal on Free (dashboard + Pro CTAs).
 
 New model, roughly `CardInterest { id, standId, subtotalCents, currency, createdAt }`.
 Rate-limit per session so it can't be tapped repeatedly. Do not create a PENDING order.
@@ -305,7 +283,7 @@ Free on both tiers. Full spec belongs in its own doc; the billing-relevant facts
 
 ### Onboarding **[CURRENT, with rename]**
 
-1. Owner needs **Pro** (trial or subscription)
+1. Owner needs **Pro** (paid subscription or lifetime)
 2. **Settings → Stripe (Card / Tap & Go)** creates Express Connect account (`card_payments` +
    `transfers`) and Account Link onboarding
 3. Status synced from Stripe: `charges_enabled`, onboarding complete, payouts
@@ -398,11 +376,10 @@ edge case in §8.
 │     → funds to owner; PLATFORM_FEE_BPS = 0                  │
 └─────────────────────────────────────────────────────────────┘
 
-Signup ──► STARTER (free forever, no card, no expiry)
+Signup ──► FREE ($0/mo, all features, Stallside card fee)
               │
-              ├─ 30-day Pro trial, once per account ──► subscribe ──► PRO
-              │                                    └── don't ──┐
-              └────────────── back to STARTER ◄────────────────┘
+              └─ upgrade anytime ──► PRO (no Stallside fee)
+                              └── cancel / lapse ──► FREE again
                               (freeze, never delete - §5)
 ```
 
@@ -410,9 +387,9 @@ Do **not** confuse:
 
 - `STRIPE_PRICE_ID_*` → **owner SaaS** prices only
 - Connect `stripeAccountId` / `stripeChargesEnabled` → **customer** card checkout
-- App trial vs Stripe subscription trial (we use app trial only)
-- Starter (a real permanent plan, no Stripe object) vs a lapsed subscription (a Stripe object in
-  a terminal state) - both resolve to the same feature set
+- Stripe `subscription.status = trialing` (Billing) vs the retired app Pro trial
+- Free (a real permanent plan, no Stripe object) vs a lapsed subscription (a Stripe object in
+  a terminal state) - both resolve to the same feature set on Free
 
 ---
 
@@ -422,8 +399,8 @@ Do **not** confuse:
 |------|------|--------|
 | Plan copy / features | `src/lib/plan-copy.ts` | Rename tiers, rewrite feature lists |
 | List prices | `src/lib/saas-pricing.ts` | Drop Cash prices, rename Card → Pro |
-| Trial + access gates | `src/lib/owner-trial.ts` | Retire two helpers, rename third |
-| Constants | `src/lib/constants.ts` | `TRIAL_DAYS` unchanged |
+| Access gates | `src/lib/owner-trial.ts` | No app trial path |
+| Constants | `src/lib/constants.ts` | `TRIAL_DAYS` removed |
 | Stripe client + price IDs | `src/lib/stripe.ts` | Rename env keys, keep legacy resolvable |
 | SaaS sub sync | `src/lib/stripe-billing.ts` | Downgrade instead of lock |
 | Webhook route | `src/app/api/stripe/webhook/route.ts` | Downgrade path on `subscription.deleted` |
@@ -439,7 +416,7 @@ Do **not** confuse:
 | Collections | `src/app/dashboard/(gated)/collections/` | Allow fulfilment of existing paid orders on Starter |
 | Owner→customer emails | (email actions) | **Add missing Pro check** |
 | Fulfill paid card | `src/lib/fulfill-paid-order.ts` | - |
-| Trial reminders cron | `src/app/api/cron/trial-reminders/route.ts` | Rewrite to §4 sequence |
+| Trial→Free migrate cron | `src/app/api/cron/trial-reminders/route.ts` | Migrate leftover TRIALING + Pro lapse |
 | Lifetime invites | `src/lib/lifetime-invite.ts` | Maps to Pro |
 | Owner KB | `src/lib/knowledge-base/orders-alerts-billing.ts` | Rewrite billing answers |
 | Marketing site | homepage, `/#pricing`, FAQ | Rewrite - see §12 |
@@ -452,16 +429,15 @@ Do **not** confuse:
 
 The public site currently describes a two-paid-tier world throughout.
 
-- Homepage hero and the "Free trial & Card plan" badges on pre-orders, restock, and branding
+- Homepage hero and feature badges (Free / Pro, no trial framing)
   sections → "Pro"
 - Pricing block: two cards (Starter free forever / Pro), currency toggle keeps four currencies
 - **Re-check USD / GBP / EUR Pro prices** - they were set relative to a $6.99 AUD anchor that no
   longer exists
 - FAQ: "What's the difference between Cash and Card / PayPal?" → rewrite entirely
-- FAQ: "How much does it cost?" → free forever + one paid tier + trial mechanics
+- FAQ: "How much does it cost?" → Free forever + optional Pro (no trial)
 - Feature columns (`FeatureColumns`) → move product options to the free column
-- Add: what happens when the trial ends (a plain, reassuring answer)
-- Add map listing to the feature list once §7 ships
+- Map listing in the feature list once §7 ships
 
 ---
 
@@ -486,7 +462,7 @@ The public site currently describes a two-paid-tier world throughout.
    no-payment-method-left edge case.
 4. **Card-demand counter (§6)** - ships with the free tier, not after.
 5. **Pricing / copy** (§1, §12) and legacy Cash subscriber migration (§3).
-6. **Trial-end sequence** (§4).
+6. **Pro lapse emails** (§4).
 7. **Map listing** (§7) - separate workstream, regional launch.
 
 Deferred: annual billing, multi-site pricing, money-back guarantee (§1). Monthly-only, per-site,

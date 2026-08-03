@@ -5,13 +5,13 @@ import { demoStandSlugs } from "@/lib/demo";
 import { COUNTED_STATUSES } from "@/lib/order-metrics";
 import { audRatesFromMarket, billingCentsToAud } from "@/lib/fx-to-aud";
 
-/** Statuses that still bill (exclude trials / comps). */
+/** Statuses that still bill (exclude comps). */
 const BILLING_LIVE: SubscriptionStatus[] = [
   SubscriptionStatus.ACTIVE,
   SubscriptionStatus.PAST_DUE,
 ];
 
-/** Paying SaaS subscribers only - not Free-for-Life, app trials, or leftover fee rows. */
+/** Paying SaaS subscribers only - not Free-for-Life or leftover fee rows. */
 const paidSubscriberWhere = {
   lifetimeAccess: false,
   stripeSubscriptionId: { not: null },

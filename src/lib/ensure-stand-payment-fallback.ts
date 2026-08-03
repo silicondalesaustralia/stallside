@@ -4,12 +4,13 @@ import { sendOwnerEmail } from "@/lib/notify-email";
 import { APP_NAME } from "@/lib/constants";
 import { escapeHtml } from "@/lib/lifecycle-emails/html";
 import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
-import { standOffersPayPal } from "@/lib/stand-payment-brands";
+import { standOffersCard, standOffersPayPal } from "@/lib/stand-payment-brands";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 
 /**
- * When Pro lapses, Card becomes unavailable. Ensure every stand still has
- * a customer-usable method (force Cash if needed) and notify the owner.
+ * After Pro → Free, ensure every stand still has a usable checkout method.
+ * Free still supports Tap & Go (with Stallside fee) - do not turn card off.
+ * Force Cash only when the stand would otherwise have nothing.
  */
 export async function ensureStandsHaveStarterPaymentMethod(ownerId: string) {
   const owner = await prisma.owner.findUnique({
@@ -31,13 +32,13 @@ export async function ensureStandsHaveStarterPaymentMethod(ownerId: string) {
       method != null &&
       stand.localTransferMethodId === method.id;
     const paypalOk = standOffersPayPal(stand, owner);
-    // On Starter, card is never offered - ignore acceptCard.
-    const hasMethod = stand.acceptCash || payidOk || paypalOk;
+    const cardOk = standOffersCard(stand, owner);
+    const hasMethod = stand.acceptCash || payidOk || paypalOk || cardOk;
     if (hasMethod) continue;
 
     await prisma.stand.update({
       where: { id: stand.id },
-      data: { acceptCash: true, acceptCard: false, acceptPayPal: false },
+      data: { acceptCash: true },
     });
     forced.push(stand.name);
   }
@@ -52,14 +53,15 @@ export async function ensureStandsHaveStarterPaymentMethod(ownerId: string) {
     await sendOwnerEmail(
       to,
       `${APP_NAME}: Cash enabled so checkout still works`,
-      `<p>Your <strong>Pro</strong> access ended, so you&apos;re on <strong>Starter</strong>
-       and Tap &amp; Go is off.</p>
+      `<p>Your <strong>Pro</strong> access ended and you&apos;re on <strong>Free</strong>
+       ($0/mo). At least one stand had no payment method turned on.</p>
        <p>We turned on <strong>Cash</strong> for:
        ${forced.map((n) => escapeHtml(n)).join(", ")}
        so customers scanning your QR can still check out.</p>
-       <p>You can change payment methods anytime under My stands, or
+       <p>Tap &amp; Go still works on Free (Stallside fee 2.5%). You can change
+       payment methods under My stands, or
        <a href="${billingHref}">upgrade to Pro</a>
-       for Tap &amp; Go again.</p>`,
+       to remove the Stallside transaction fee.</p>`,
       { kind: "pro_lapse_cash_fallback" },
     );
   } catch (error) {

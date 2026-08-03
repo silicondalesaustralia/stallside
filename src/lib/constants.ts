@@ -10,7 +10,7 @@ export const APP_SEO_TITLE =
   "Stallside · Checkout For Unattended Farm Stands & Stalls";
 /** Meta description (~155 chars) */
 export const APP_SEO_DESCRIPTION =
-  "Free QR checkout for farm stands and honesty stalls. Cash and PayID free; card has a small fee - or go Pro and keep 100%.";
+  "Free QR checkout for farm stands and honesty stalls. Cash and PayID free; card has a 2.5% Stallside fee - or go Pro to remove it.";
 
 /** @deprecated legacy Cash tier list price - prefer cashPlanCents(currency) */
 export const CASH_PLAN_CENTS = 699;
@@ -22,11 +22,7 @@ export const MONTHLY_FEE_CENTS = CASH_PLAN_CENTS;
 export const PLATFORM_FEE_BPS = 0;
 /** Stallside fee on Free plan Stripe card / Tap & Go (2.5%) */
 export const STALLSIDE_FEE_BPS = 250;
-/** Stallside fixed fee on Free plan Stripe sales (30¢) */
-export const STALLSIDE_FEE_FIXED_CENTS = 30;
 export const LOW_STOCK_ALERT_COOLDOWN_HOURS = 6;
-/** Free app trial before card is required */
-export const TRIAL_DAYS = 30;
 /** Owner emails with free forever app access (ignore subscription status). */
 export const COMPLIMENTARY_ACCESS_EMAILS = ["jono@silicondales.com"] as const;
 /** Emails allowed to open platform admin (/admin). */

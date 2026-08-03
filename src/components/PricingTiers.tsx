@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import PlanFeatureBlock from "@/components/PlanFeatureBlock";
 import { formatMoney } from "@/lib/money";
+import { SHARED_PLAN_FEATURES } from "@/lib/plan-copy";
 import {
   BILLING_CURRENCIES,
   BILLING_CURRENCY_STORAGE_KEY,
@@ -52,10 +53,11 @@ export default function PricingTiers() {
         </h2>
       </div>
       <p className="mb-8 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        Free is $0/mo with every feature. Stallside fee 2.5% + 30¢ on card, Tap
-        &amp; Go, and pay-later on all transactions; cash and PayID stay free.
-        On Free you can absorb that fee or pass it on to customers. Pro removes
-        the fee so you keep 100% of your sales.
+        Start free with every Stallside feature. Cash and PayID stay free. On
+        card, Tap &amp; Go and pay-later transactions, Free charges a 2.5%
+        Stallside fee in addition to standard Stripe processing fees. Pass the
+        Stallside fee on to customers or absorb it yourself. Upgrade to Pro to
+        remove the Stallside fee.
       </p>
 
       <p className="mb-2 text-sm font-semibold text-[var(--field)]">
@@ -100,7 +102,7 @@ export default function PricingTiers() {
               href="/signup"
               className="inline-flex rounded-[var(--radius-pill)] border border-[var(--field)] px-5 py-3 text-sm font-semibold text-[var(--field)] hover:bg-[var(--wash)]"
             >
-              Free
+              Start Free
             </Link>
           </div>
         </div>
@@ -115,7 +117,8 @@ export default function PricingTiers() {
             </span>
           </p>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Keep 100% of your card sales - no Stallside fee.
+            No Stallside transaction fee. Standard Stripe processing fees still
+            apply.
           </p>
           <div className="mt-4">
             <PlanFeatureBlock plan="pro" currency={currency} />
@@ -131,11 +134,43 @@ export default function PricingTiers() {
         </div>
       </div>
 
+      <div className="mt-10">
+        <p className="text-sm font-semibold text-[var(--field)]">
+          Every feature is included on Free and Pro.
+        </p>
+        <ul className="mt-3 grid list-disc gap-1.5 pl-5 text-sm text-[var(--muted)] sm:grid-cols-2">
+          {SHARED_PLAN_FEATURES.map((feature) => (
+            <li key={feature}>{feature}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-8 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
+        <p className="font-semibold text-[var(--field)]">
+          Example: A$5 card sale on Free
+        </p>
+        <ul className="mt-2 list-disc space-y-1 pl-5">
+          <li>Stallside fee: approximately 13¢</li>
+          <li>
+            Stripe processing fee: approximately 39¢ based on current Australian
+            domestic card pricing
+          </li>
+          <li>
+            Seller receives approximately A$4.48 before any variation in Stripe
+            fee tax treatment
+          </li>
+        </ul>
+        <p className="mt-2 text-xs">
+          Stripe fees vary by country, card type and payment method. Check
+          Stripe&apos;s current pricing for your account. This example is
+          marketing only and is not used in checkout math.
+        </p>
+      </div>
+
       <p className="mt-6 text-sm text-[var(--muted)]">
-        Free is $0/mo with every feature, including absorb or pass-on for the
-        Stallside card fee. Upgrade to Pro anytime to remove that fee. Cancel Pro
-        anytime. Prices for {billingRegionLabel(currency)} ({currency}).
-        Stripe&apos;s own processing fees still apply on card sales.
+        Cancel Pro anytime. Prices for {billingRegionLabel(currency)} (
+        {currency}). Pro may save you money once you process around A$800 or
+        more in card sales per month - a guide, not a guarantee.
       </p>
     </section>
   );

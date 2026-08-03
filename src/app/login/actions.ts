@@ -73,7 +73,7 @@ export async function verifyLoginCode(formData: FormData) {
   return { error: "Could not sign in. Try again." };
 }
 
-/** Signup: name + email → trial intent, then email code. */
+/** Signup: name + email → Free account intent, then email code. */
 export async function requestSignup(formData: FormData) {
   const email = normalizeEmail(formData.get("email"));
   const name = String(formData.get("name") ?? "").trim();

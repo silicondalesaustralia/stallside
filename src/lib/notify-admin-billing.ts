@@ -17,7 +17,7 @@ const TITLES: Record<AdminBillingKind, string> = {
   cancel_scheduled: "Cancel scheduled",
   cancel_reversed: "Cancel reversed",
   cancelled: "Subscription cancelled",
-  downgraded_starter: "Downgraded to Starter",
+  downgraded_starter: "Downgraded to Free",
 };
 
 /** Meaningful billing transition for admin mail (null = no email). */
