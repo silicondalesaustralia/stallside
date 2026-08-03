@@ -26,6 +26,7 @@ export const STRIPE_CHECKOUT_BRANDS: PaymentBrand[] = [
   "card",
   "apple",
   "google",
+  "link",
   "zip",
   "klarna",
 ];
@@ -41,6 +42,7 @@ export const USD_STRIPE_CHECKOUT_BRANDS: PaymentBrand[] = [
   "card",
   "apple",
   "google",
+  "link",
   "cashapp",
   "zip",
   "klarna",

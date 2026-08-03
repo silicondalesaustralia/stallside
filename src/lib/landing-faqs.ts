@@ -35,6 +35,11 @@ export const LANDING_FAQS: FaqItem[] = [
       "Cash and PayID (no Stallside fee), plus card, Tap & Go, Apple Pay, Google Pay, and PayTo (Australia). On larger orders, customers can also use Buy Now, Pay Later with Zip or Klarna. On Free, Stallside fee is 2.5% on card, Tap & Go, pay-later and PayTo; removed on Pro. Cash and PayID are always free of Stallside fees.",
   },
   {
+    question: "What countries can I use Stallside in?",
+    answer:
+      "Everywhere you run a stall. Cash works in any region. Cards, Tap & Go, and wallets follow what Stripe supports locally, and some methods are country-specific - for example PayID and PayTo in Australia, or Cash App in the US. Missing a payment option you need? Contact us and we'll add it when it's available for your country.",
+  },
+  {
     question: "Is there a fee on card payments?",
     answer:
       "On Free, Stallside charges 2.5% on card, Tap & Go (Apple Pay / Google Pay), and pay-later. Cash and PayID have no Stallside fee. You can absorb the Stallside fee or pass it on to customers (shown as a card fee line at checkout) in Settings → Card / Tap & Go. On Pro there is no Stallside cut. Stripe's own processing fees still apply either way (pay-later providers usually charge more than cards).",
