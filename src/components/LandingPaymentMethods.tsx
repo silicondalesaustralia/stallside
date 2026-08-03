@@ -1,6 +1,6 @@
-import PaymentIconRow from "@/components/PaymentIconRow";
+import LandingPaymentMarquee from "@/components/LandingPaymentMarquee";
 
-/** Homepage payment-methods block - text first; BNPL as “and also”, on larger orders. */
+/** Homepage payment-methods block - text first; scrolling regional marks. */
 export default function LandingPaymentMethods() {
   return (
     <section
@@ -18,25 +18,18 @@ export default function LandingPaymentMethods() {
         </h2>
       </div>
       <p className="max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        Cash, PayID, card, Tap &amp; Go, Apple Pay, Google Pay and PayTo
-        (Australia) - plus Buy Now, Pay Later with Zip and Klarna on larger
-        orders. One QR, every option.
+        Cash, cards, Tap &amp; Go, and wallets everywhere we operate - plus
+        region extras like PayID and PayTo in Australia, and Cash App in the US.
+        Buy Now, Pay Later with Zip and Klarna on larger orders. One QR, the
+        methods that fit your country.
       </p>
-      <div className="mt-6 pl-3">
-        <PaymentIconRow
-          brands={[
-            "cash",
-            "payid",
-            "card",
-            "apple",
-            "google",
-            "payto",
-            "zip",
-            "klarna",
-          ]}
-          className="gap-2.5"
-        />
+      <div className="mt-6">
+        <LandingPaymentMarquee />
       </div>
+      <p className="mt-3 text-xs text-[var(--muted)]">
+        Flagged icons are country-specific. Card networks and wallets work across
+        AU, US, UK and EU stands.
+      </p>
     </section>
   );
 }

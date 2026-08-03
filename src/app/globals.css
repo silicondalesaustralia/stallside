@@ -178,6 +178,10 @@ html.nav-busy * {
   }
 }
 
+.payment-marquee-track {
+  animation-duration: 42s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ticker-track {
     width: 100%;
@@ -191,6 +195,21 @@ html.nav-busy * {
   }
 
   .ticker-group:first-child .ticker-item:not(:first-child) {
+    display: none;
+  }
+
+  .payment-marquee .ticker-group:first-child {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    row-gap: 0.5rem;
+  }
+
+  .payment-marquee .ticker-group:first-child > span {
+    display: inline-flex;
+  }
+
+  .payment-marquee-fade {
     display: none;
   }
 }
