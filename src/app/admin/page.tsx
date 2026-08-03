@@ -45,7 +45,8 @@ export default async function AdminOverviewPage({
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">SaaS admin</h1>
           <p className="mt-1 text-[var(--muted)]">
-            Subscriptions, owners, and Stallside revenue, not stand checkout sales.
+            Subscriptions, owners, and Stallside revenue in AUD (list-price
+            parity), not stand checkout sales.
           </p>
         </div>
         <div className="flex flex-wrap gap-3 text-sm">
@@ -88,14 +89,17 @@ export default async function AdminOverviewPage({
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <DashboardStat
-          label="MRR"
+          label="MRR (AUD)"
           value={formatMoney(saas.mrrCents, saas.currency)}
         />
         <DashboardStat
-          label="LTV collected"
+          label="LTV collected (AUD)"
           value={formatMoney(saas.totalLtvCents, saas.currency)}
         />
-        <DashboardStat label="Live subs" value={String(saas.liveSubscribers)} />
+        <DashboardStat
+          label="Paying subs"
+          value={String(saas.liveSubscribers)}
+        />
         <DashboardStat label="Owners" value={String(saas.owners)} />
       </section>
 
@@ -123,7 +127,7 @@ export default async function AdminOverviewPage({
 
       <section>
         <h2 className="text-lg font-semibold">Recent owners</h2>
-        <AdminRecentOwners owners={recent} currency={saas.currency} />
+        <AdminRecentOwners owners={recent} />
       </section>
     </main>
   );

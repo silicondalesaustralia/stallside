@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getStripe, isStripeBillingConfigured } from "@/lib/stripe";
 import { syncOwnerFromSubscription } from "@/lib/stripe-billing";
+import { sumPaidSubscriptionInvoiceCents } from "@/lib/stripe-ltv";
 import { wipeOwnerAccount } from "@/lib/wipe-owner-account";
 
 async function loadOwner(ownerId: string) {
@@ -16,6 +17,27 @@ async function loadOwner(ownerId: string) {
     throw new Error("Stripe Billing is not configured");
   }
   return owner;
+}
+
+/** Set lifetimePaidCents from Stripe paid subscription invoices (live key). */
+export async function syncOwnerLtvFromStripe(ownerId: string) {
+  const owner = await loadOwner(ownerId);
+  if (!owner.stripeCustomerId) {
+    throw new Error("Owner has no Stripe customer");
+  }
+
+  const paid = await sumPaidSubscriptionInvoiceCents(
+    getStripe(),
+    owner.stripeCustomerId,
+  );
+  await prisma.owner.update({
+    where: { id: owner.id },
+    data: { lifetimePaidCents: paid },
+  });
+
+  revalidatePath(`/admin/owners/${ownerId}`);
+  revalidatePath("/admin/owners");
+  revalidatePath("/admin");
 }
 
 export async function refundLatestSubscriptionInvoice(ownerId: string) {

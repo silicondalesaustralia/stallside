@@ -62,7 +62,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     ctas: [{ label: "Billing", href: "/dashboard/settings/billing" }],
     steps: [
       "Stallside’s subscription is optional Pro. It is separate from customer card payments at the stand.",
-      "Free is $0/mo with all features. Stallside fee is 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; cash and PayID stay free.",
+      "Free is $0/mo with all features. Stallside fee is 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; cash and PayID stay free. Absorb the fee or pass it on in Settings → Card / Tap & Go.",
       "New owners get a 30-day Pro free trial (no Stallside card fee). No card required.",
       "When the trial ends you stay on Free - nothing locks. Upgrade anytime from Settings → Billing to remove the card fee.",
       "Stallside Pro is billed monthly via Stripe. Manage payment method or cancel in the Stripe Customer Portal.",

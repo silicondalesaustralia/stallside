@@ -8,16 +8,15 @@ type RecentOwner = {
   subscriptionPlan: string | null;
   subscriptionStatus: string;
   lifetimePaidCents: number;
+  billingCurrency: string;
   user: { email: string | null };
   stands: { name: string }[];
 };
 
 export default function AdminRecentOwners({
   owners,
-  currency,
 }: {
   owners: RecentOwner[];
-  currency: string;
 }) {
   if (owners.length === 0) {
     return <p className="mt-2 text-sm text-[var(--muted)]">None yet.</p>;
@@ -48,7 +47,10 @@ export default function AdminRecentOwners({
             <p className="text-[var(--muted)]">
               {owner.subscriptionPlan ?? "-"} ·{" "}
               {owner.subscriptionStatus.toLowerCase()} · LTV{" "}
-              {formatMoney(owner.lifetimePaidCents, currency)}
+              {formatMoney(
+                owner.lifetimePaidCents,
+                owner.billingCurrency || "AUD",
+              )}
             </p>
             <AdminLoginAsButton ownerId={owner.id} compact />
           </div>

@@ -8,6 +8,7 @@ import {
   applyCouponToOwner,
   cancelOwnerSubscription,
   refundLatestSubscriptionInvoice,
+  syncOwnerLtvFromStripe,
 } from "./actions";
 import AdminDeleteOwnerButton from "./AdminDeleteOwnerButton";
 
@@ -29,6 +30,7 @@ export default async function AdminOwnerDetailPage({
 
   const refundAction = refundLatestSubscriptionInvoice.bind(null, owner.id);
   const cancelAction = cancelOwnerSubscription.bind(null, owner.id);
+  const syncLtvAction = syncOwnerLtvFromStripe.bind(null, owner.id);
 
   return (
     <main className="flex max-w-2xl flex-col gap-8">
@@ -114,6 +116,14 @@ export default async function AdminOwnerDetailPage({
       </section>
 
       <section className="flex flex-wrap gap-3">
+        <form action={syncLtvAction}>
+          <button
+            type="submit"
+            className="rounded-lg border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold"
+          >
+            Sync LTV from Stripe
+          </button>
+        </form>
         <form action={refundAction}>
           <button
             type="submit"

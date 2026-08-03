@@ -14,13 +14,17 @@ export function cardPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
 
 /** Free plan fee note (card / Tap & Go only). */
 export const FREE_PLAN_FEE_BLURB =
-  "Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions. Cash and PayID always free.";
+  "Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions. Cash and PayID always free. Pass the fee to customers at checkout, or absorb it - toggle in Settings → Card / Tap & Go.";
+
+/** Absorb vs pass-on - Free only (Pro has no Stallside fee). */
+export const FREE_PLAN_PASS_FEE_FEATURE =
+  "Choose: absorb the Stallside fee, or pass it on to customers at checkout";
 
 /** Free ($0/mo) blurb. */
 export function cashPlanBlurb(currency: BillingCurrency): string {
   return currency === "AUD"
-    ? "Free forever. All features - cash, PayID, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; cash and PayID stay free."
-    : "Free forever. All features - cash, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; cash stays free.";
+    ? "Free forever. All features - cash, PayID, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; cash and PayID stay free. Pass that fee on or absorb it."
+    : "Free forever. All features - cash, Tap & Go, pre-orders, branding, and more. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions; cash stays free. Pass that fee on or absorb it.";
 }
 
 export function cashPlanExtraBlurb(currency: BillingCurrency): string | null {
@@ -34,7 +38,7 @@ export const FREE_TRIAL_BLURB =
   "30-day Pro free trial: no Stallside card fee - keep 100% of your sales. No card required. Then Free stays $0/mo with the card fee unless you upgrade.";
 
 export const STARTER_PLAN_BLURB =
-  "Free forever. All features. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions. Cash and PayID always free.";
+  "Free forever. All features. Stallside fee 2.5% + 30¢ on card, Tap & Go, and pay-later on all transactions. Cash and PayID always free. Pass the fee on or absorb it.";
 
 export const CARD_PLAN_BLURB =
   "Same features as Free, with no Stallside card fee - keep 100% of your sales.";
@@ -62,6 +66,7 @@ export const CARD_PLAN_FEATURES = [
 const FREE_FEATURES_CORE = [
   "Cash at the stand (customer self-confirms)",
   "Tap & Go - card, Apple Pay, Google Pay (Stallside fee 2.5% + 30¢ on all transactions)",
+  FREE_PLAN_PASS_FEE_FEATURE,
   "Unlimited products and product options / variants",
   "Real stock counts and printable QR posters",
   "Sale alerts and low-stock alerts (email / push)",

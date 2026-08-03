@@ -142,17 +142,13 @@ export default function CheckoutPayStep({
                 (!customerName.trim() || !customerEmail.trim()))
             }
             onClick={onCard}
-            className="flex items-center gap-4 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4 text-left disabled:opacity-50"
+            className="flex flex-col gap-3 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4 text-left disabled:opacity-50"
           >
-            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--wash)] px-3 py-2.5 text-[var(--ink)]">
-              <PaymentIconRow
-                brands={STRIPE_CHECKOUT_BRANDS}
-                className="gap-2"
-              />
-            </span>
             <span className="min-w-0">
               <span className="block text-xl font-semibold text-[var(--ink)]">
-                {pending ? "Opening checkout…" : "Card / Tap & Go"}
+                {pending
+                  ? "Opening checkout…"
+                  : "Checkout via credit card or these options:"}
               </span>
               {!pending ? (
                 <span className="mt-0.5 block text-base font-normal text-[var(--muted)]">
@@ -160,6 +156,15 @@ export default function CheckoutPayStep({
                 </span>
               ) : null}
             </span>
+            {!pending ? (
+              <span className="flex w-full flex-wrap items-center gap-2.5 rounded-[var(--radius)] bg-[var(--wash)] px-3 py-3 text-[var(--ink)]">
+                <PaymentIconRow
+                  brands={STRIPE_CHECKOUT_BRANDS}
+                  className="gap-2.5"
+                  size="lg"
+                />
+              </span>
+            ) : null}
           </button>
           {showDemoCardHint ? <DemoCardHint /> : null}
         </>

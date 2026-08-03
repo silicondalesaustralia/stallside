@@ -67,7 +67,10 @@ export default async function AdminOwnersPage() {
                     {owner.subscriptionPlan ?? "-"}
                   </td>
                   <td className="py-3 pr-3">
-                    {formatMoney(owner.lifetimePaidCents, DEFAULT_CURRENCY)}
+                    {formatMoney(
+                      owner.lifetimePaidCents,
+                      owner.billingCurrency || DEFAULT_CURRENCY,
+                    )}
                   </td>
                   <td className="py-3 pr-3 capitalize">
                     {owner.subscriptionStatus.toLowerCase()}

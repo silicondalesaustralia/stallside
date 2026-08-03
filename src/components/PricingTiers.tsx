@@ -53,8 +53,9 @@ export default function PricingTiers() {
       </div>
       <p className="mb-8 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
         Free is $0/mo with every feature. Stallside fee 2.5% + 30¢ on card, Tap
-        &amp; Go, and pay-later on all transactions; cash and PayID stay free. Pro
-        removes that fee so you keep 100% of your sales.
+        &amp; Go, and pay-later on all transactions; cash and PayID stay free.
+        On Free you can absorb that fee or pass it on to customers. Pro removes
+        the fee so you keep 100% of your sales.
       </p>
 
       <p className="mb-2 text-sm font-semibold text-[var(--field)]">
@@ -131,10 +132,10 @@ export default function PricingTiers() {
       </div>
 
       <p className="mt-6 text-sm text-[var(--muted)]">
-        Free is $0/mo with every feature. Upgrade to Pro anytime to remove the
-        Stallside card fee. Cancel Pro anytime. Prices for{" "}
-        {billingRegionLabel(currency)} ({currency}). Stripe&apos;s own processing
-        fees still apply on card sales.
+        Free is $0/mo with every feature, including absorb or pass-on for the
+        Stallside card fee. Upgrade to Pro anytime to remove that fee. Cancel Pro
+        anytime. Prices for {billingRegionLabel(currency)} ({currency}).
+        Stripe&apos;s own processing fees still apply on card sales.
       </p>
     </section>
   );

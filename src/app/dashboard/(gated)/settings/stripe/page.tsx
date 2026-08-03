@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
-import { ownerHasProAccess } from "@/lib/owner-trial";
 import { billingRegionDisplay } from "@/lib/saas-pricing";
+import { shouldChargeStallsideFee } from "@/lib/stallside-fee";
 import { refreshStripeStatus, startStripeConnect } from "./actions";
 import StripeDisconnectButton from "./StripeDisconnectButton";
 import PassFeeToggle from "./PassFeeToggle";
@@ -15,13 +15,9 @@ export default async function StripeSettingsPage({
 }: {
   searchParams: Promise<{ return?: string; refresh?: string; disconnected?: string }>;
 }) {
-  const { owner, user } = await requireOwner();
+  const { owner } = await requireOwner();
   const params = await searchParams;
-  const isPro = ownerHasProAccess(owner, {
-    email: user.email,
-    role: user.role,
-    lifetimeAccess: owner.lifetimeAccess,
-  });
+  const feeApplies = shouldChargeStallsideFee(owner);
 
   if (
     (params.return === "1" || params.refresh === "1") &&
@@ -104,7 +100,7 @@ export default async function StripeSettingsPage({
         </p>
       </section>
 
-      {!isPro ? (
+      {feeApplies ? (
         <PassFeeToggle passFeeToCustomer={owner.passFeeToCustomer} />
       ) : (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
@@ -113,7 +109,7 @@ export default async function StripeSettingsPage({
         </p>
       )}
 
-      <BnplExplainer isPro={isPro} />
+      <BnplExplainer isPro={!feeApplies} />
 
       <div className="flex flex-wrap gap-3">
         <form action={startStripeConnect}>

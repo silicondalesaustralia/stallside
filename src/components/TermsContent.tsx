@@ -53,14 +53,18 @@ export default function TermsContent() {
           On the Free plan, card, Tap &amp; Go (including Apple Pay and Google Pay),
           and pay-later payments carry a Stallside fee of 2.5% + 30¢ on all
           transactions, in addition to the payment processor&apos;s own fees. Cash and
-          PayID payments carry no Stallside fee. This fee is removed on the Pro plan.
+          PayID payments carry no Stallside fee. This fee is removed on the Pro plan
+          (including during an active Pro trial and for Free for Life accounts), so
+          there is no absorb / pass-on choice when no Stallside fee applies.
         </p>
         <p className="text-[var(--muted)]">
-          Stall owners may choose to pass this fee on to their customers at checkout,
-          or to absorb it themselves. Owners who choose to pass the fee to customers
-          are solely responsible for ensuring that any such surcharge complies with the
-          card-surcharging laws applicable in their location. Stallside is not
-          responsible for an owner&apos;s compliance with local surcharging regulations.
+          On Free, stall owners may choose in Settings → Card / Tap &amp; Go to pass
+          this Stallside fee on to their customers at checkout (shown as a clear card
+          fee line), or to absorb it themselves so the customer pays the listed price.
+          Owners who choose to pass the fee to customers are solely responsible for
+          ensuring that any such surcharge complies with the card-surcharging laws
+          applicable in their location. Stallside is not responsible for an owner&apos;s
+          compliance with local surcharging regulations.
         </p>
       </section>
 
