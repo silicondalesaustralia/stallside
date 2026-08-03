@@ -19,9 +19,8 @@ export default function BnplExplainer({
       </p>
       {showPayTo ? (
         <p className="text-[var(--muted)]">
-          <strong>PayTo</strong> can take a moment to clear. Stallside waits for
-          Stripe&apos;s confirmation webhook before marking the sale paid and
-          updating stock.
+          PayTo can take a moment to clear. Stallside waits for Stripe&apos;s
+          confirmation webhook before marking the sale paid and updating stock.
         </p>
       ) : null}
       <p className="text-[var(--muted)]">
