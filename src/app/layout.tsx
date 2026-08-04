@@ -4,6 +4,7 @@ import { Bricolage_Grotesque, DM_Sans, Spline_Sans_Mono } from "next/font/google
 import { APP_DOMAIN, APP_NAME, APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import MetaPixel from "@/components/MetaPixel";
+import PerformPixel from "@/components/PerformPixel";
 import RedditPixel from "@/components/RedditPixel";
 import NativeShellBootstrap from "@/components/NativeShellBootstrap";
 import NavigationBusy from "@/components/NavigationBusy";
@@ -84,6 +85,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col font-sans">
         <GoogleAnalytics />
         <MetaPixel />
+        <PerformPixel />
         <RedditPixel />
         <NativeShellBootstrap />
         <Suspense fallback={null}>
