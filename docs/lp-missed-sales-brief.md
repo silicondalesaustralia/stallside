@@ -166,14 +166,23 @@ Secondary objections, one line each:
 
 ### 6.5 What you get **[required]**
 
-Short scannable list. Feature names in plain language. No icons-in-circles grid unless it genuinely aids scanning.
+*(Revision 3 — two tiers with different visual weight. No feature grid, accordion, or expander.)*
 
-- Cash, PayID, card, Apple Pay, Google Pay
-- Instant sale alerts by push and email
-- Live stock counts and low-stock warnings
-- Pre-orders with a collection day
-- Restock emails to customers who asked to hear
-- Your own logo and colours on the stall page and poster
+**Tier 1 — the loop** (prominent; exactly three items):
+
+- **They pay however they want** — cash, PayID, card, Apple Pay, Google Pay
+- **You know instantly** — an alert on your phone the moment something sells
+- **Stock looks after itself** — counts drop automatically, and you're warned before you run out
+
+**Tier 2 — the depth** (quieter prose; subordinate):
+
+Heading: *And a fair bit more.*
+
+Body: Pre-orders with a collection day, so you know how much to bake before anyone turns up. Restock emails to the regulars who asked to hear. Your own logo and colours on the stall page and the poster. A running count of everyone who'd have paid by card, if you haven't switched card payments on yet.
+
+Plus a good deal more as you grow into it.
+
+Closing line, set apart: *All of it's on the free plan.*
 
 ### 6.6 Pricing **[required]**
 

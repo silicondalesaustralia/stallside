@@ -1,5 +1,7 @@
 const DEFAULT_UTM_CONTENT = "lp-missed-sales";
 
+export const LP_DEFAULT_SIGNUP_HREF = `/signup?utm_content=${DEFAULT_UTM_CONTENT}`;
+
 const FORWARD_KEYS = new Set([
   "fbclid",
   "gclid",
@@ -35,3 +37,9 @@ export function lpSignupHref(
   const qs = out.toString();
   return qs ? `/signup?${qs}` : "/signup";
 }
+
+/**
+ * Tiny inline script: rewrites [data-lp-cta] hrefs from location.search.
+ * Keeps the page fully static while preserving fbclid/utm_* on click.
+ */
+export const LP_CTA_PARAM_SCRIPT = `(function(){try{var F={fbclid:1,gclid:1,ttclid:1,msclkid:1,li_fat_id:1};var q=new URLSearchParams(location.search);var o=new URLSearchParams();q.forEach(function(v,k){var l=k.toLowerCase();if(F[l]||l.indexOf("utm_")==0)o.set(k,v)});if(!o.has("utm_content"))o.set("utm_content","${DEFAULT_UTM_CONTENT}");var h="/signup?"+o.toString();document.querySelectorAll("[data-lp-cta]").forEach(function(a){a.setAttribute("href",h)})}catch(e){}})();`;

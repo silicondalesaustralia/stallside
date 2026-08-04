@@ -80,7 +80,6 @@ export const config = {
     "/signup",
     "/signup-complete",
     "/invite/:path*",
-    "/lp/:path*",
     "/about",
     "/gallery",
     "/testimonials",

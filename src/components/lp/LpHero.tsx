@@ -1,12 +1,7 @@
-import Image from "next/image";
 import BrandLockup from "@/components/BrandLockup";
 import LpStartFreeLink from "@/components/lp/LpStartFreeLink";
 
-type Props = {
-  signupHref: string;
-};
-
-export default function LpHero({ signupHref }: Props) {
+export default function LpHero() {
   return (
     <section className="relative overflow-hidden bg-[var(--field)] text-[var(--ink-on-dark)]">
       <div className="mx-auto grid w-full max-w-5xl gap-8 px-5 pb-10 pt-8 sm:px-6 sm:pb-14 sm:pt-10 lg:grid-cols-2 lg:items-center lg:gap-10">
@@ -21,21 +16,26 @@ export default function LpHero({ signupHref }: Props) {
             fee.
           </p>
           <div className="mt-7">
-            <LpStartFreeLink href={signupHref} />
+            <LpStartFreeLink />
             <p className="mt-3 text-sm text-[var(--ink-on-dark)]/70">
               No card details. No hardware. Prints on an A4 sheet.
             </p>
           </div>
         </div>
         <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[var(--radius)] sm:aspect-[5/4] lg:aspect-[4/5]">
-          <Image
-            src="/about/alexas-egg-stand-qr-sign-mounted.jpg"
-            alt="Roadside egg stall with a Stallside QR poster mounted on the front"
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 520px"
-            className="object-cover"
-          />
+          {/* Pre-compressed static assets — skip next/image optimizer hop on cold load */}
+          <picture>
+            <source srcSet="/lp/hero-stall.webp" type="image/webp" />
+            <img
+              src="/lp/hero-stall.jpg"
+              alt="Roadside egg stall with a Stallside QR poster mounted on the front"
+              width={640}
+              height={853}
+              fetchPriority="high"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
+          </picture>
         </div>
       </div>
     </section>

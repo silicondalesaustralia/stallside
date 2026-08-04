@@ -1,10 +1,6 @@
 import LpStartFreeLink from "@/components/lp/LpStartFreeLink";
 
-type Props = {
-  signupHref: string;
-};
-
-export default function LpClosingCta({ signupHref }: Props) {
+export default function LpClosingCta() {
   return (
     <section className="mx-auto w-full max-w-3xl px-5 py-12 text-center sm:px-6 sm:py-16">
       <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--field)] sm:text-3xl">
@@ -14,7 +10,7 @@ export default function LpClosingCta({ signupHref }: Props) {
         Free to start. No monthly fee. No hardware.
       </p>
       <div className="mt-7">
-        <LpStartFreeLink href={signupHref} />
+        <LpStartFreeLink />
       </div>
     </section>
   );
