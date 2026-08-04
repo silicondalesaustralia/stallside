@@ -59,6 +59,12 @@ describe("computeStallsideCheckoutFees", () => {
     lifetimeAccess: true,
     subscriptionStatus: SubscriptionStatus.NONE,
   };
+  const adminTestingFree = {
+    subscriptionPlan: "free",
+    subscriptionStatus: SubscriptionStatus.NONE,
+    contactEmail: "jono@silicondales.com",
+    passFeeToCustomer: false,
+  };
 
   it("Free absorb: charge subtotal, fee 13¢ on A$5", () => {
     const r = computeStallsideCheckoutFees(500, free);
@@ -81,6 +87,13 @@ describe("computeStallsideCheckoutFees", () => {
 
   it("lifetime: no Stallside fee", () => {
     const r = computeStallsideCheckoutFees(500, lifetime);
+    assert.equal(r.applicationFeeCents, 0);
+    assert.equal(r.chargeTotalCents, 500);
+  });
+
+  it("platform-admin on Free for testing: no Stallside fee", () => {
+    assert.equal(shouldChargeStallsideFee(adminTestingFree), false);
+    const r = computeStallsideCheckoutFees(500, adminTestingFree);
     assert.equal(r.applicationFeeCents, 0);
     assert.equal(r.chargeTotalCents, 500);
   });

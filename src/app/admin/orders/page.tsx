@@ -10,7 +10,11 @@ export default async function AdminOrdersPage() {
     take: 100,
     include: {
       stand: true,
-      owner: true,
+      owner: {
+        include: {
+          user: { select: { email: true, role: true } },
+        },
+      },
       items: true,
     },
   });
@@ -26,8 +30,11 @@ export default async function AdminOrdersPage() {
       ) : (
         <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
           {orders.map((order) => {
-            // Stallside fee only applies on Free; Pro / lifetime show $0.
-            const feeCents = shouldChargeStallsideFee(order.owner)
+            // Free only; Pro / lifetime / platform-admin complimentary → $0.
+            const feeCents = shouldChargeStallsideFee(order.owner, {
+              email: order.owner.user.email,
+              role: order.owner.user.role,
+            })
               ? order.platformFeeCents
               : 0;
             return (
