@@ -1,41 +1,57 @@
+import LpStartFreeLink from "@/components/lp/LpStartFreeLink";
+
 const STEPS = [
   {
-    title: "Print your QR",
-    body: "One A4 poster per stall. Stick it up.",
+    n: "01",
+    title: "Print your stall QR",
+    body: "Create your stall, add what you sell and print the ready-made A4 poster.",
   },
   {
-    title: "They scan and pay",
-    body: "No app, no account. Cash, PayID, card, Apple Pay or Google Pay.",
+    n: "02",
+    title: "Customers scan and pay",
+    body: "They choose what they are taking and pay by cash, PayID, card, Apple Pay or Google Pay. No app or account required.",
   },
   {
-    title: "You get told instantly",
-    body: "Sale alert on your phone, stock count updates itself.",
+    n: "03",
+    title: "You know instantly",
+    body: "You receive a sale alert, the order is logged and your available stock updates automatically.",
   },
 ] as const;
 
 export default function LpHowItWorks() {
   return (
-    <section className="bg-[var(--wash)] px-5 py-10 sm:px-6 sm:py-12">
-      <div className="mx-auto w-full max-w-3xl">
-        <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--field)] sm:text-3xl">
-          How it works
+    <section id="how-it-works" className="scroll-mt-24 bg-[var(--wash)] px-5 py-12 sm:px-6 sm:py-16">
+      <div className="mx-auto max-w-6xl">
+        <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--field)] sm:text-3xl lg:text-[clamp(2rem,3vw,3rem)]">
+          Up and running in three simple steps
         </h2>
-        <ol className="mt-8 space-y-6">
-          {STEPS.map((step, index) => (
-            <li key={step.title} className="flex gap-4">
-              <span
-                aria-hidden
-                className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--field)] text-sm font-semibold text-[var(--ink-on-dark)]"
-              >
-                {index + 1}
+        <p className="mt-3 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
+          Print the QR, place it at your stall and let Stallside handle the rest.
+        </p>
+
+        <ol className="mt-8 grid gap-4 md:grid-cols-3">
+          {STEPS.map((step) => (
+            <li
+              key={step.n}
+              className="rounded-[var(--radius)] border border-[var(--line)] bg-white p-5 shadow-sm sm:p-6"
+            >
+              <span className="font-[family-name:var(--font-mono)] text-sm font-semibold text-[var(--leaf)]">
+                {step.n}
               </span>
-              <div>
-                <p className="font-semibold text-[var(--ink)]">{step.title}</p>
-                <p className="mt-1 text-[var(--muted)]">{step.body}</p>
-              </div>
+              <h3 className="mt-3 font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
+                {step.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--muted)] sm:text-base">
+                {step.body}
+              </p>
             </li>
           ))}
         </ol>
+
+        <div className="mt-8 flex flex-col items-start gap-2">
+          <LpStartFreeLink label="Create my free stall" placement="how_it_works" />
+          <p className="text-sm text-[var(--muted)]">No card details required</p>
+        </div>
       </div>
     </section>
   );

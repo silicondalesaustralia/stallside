@@ -1,42 +1,54 @@
-import BrandLockup from "@/components/BrandLockup";
+import LpHeroVisual from "@/components/lp/LpHeroVisual";
 import LpStartFreeLink from "@/components/lp/LpStartFreeLink";
 
 export default function LpHero() {
   return (
-    <section className="relative overflow-hidden bg-[var(--field)] text-[var(--ink-on-dark)]">
-      <div className="mx-auto grid w-full max-w-5xl gap-8 px-5 pb-10 pt-8 sm:px-6 sm:pb-14 sm:pt-10 lg:grid-cols-2 lg:items-center lg:gap-10">
+    <section className="relative overflow-hidden bg-[var(--panel)] px-5 pb-10 pt-6 sm:px-6 sm:pb-14 sm:pt-8">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_85%_20%,rgb(46_125_63_/_0.08),transparent_55%)]"
+      />
+      <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[48%_52%] lg:gap-10">
         <div>
-          <BrandLockup link={false} variant="dark" size="md" />
-          <h1 className="mt-8 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
-            Your stall, minus the missed sales.
-          </h1>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--ink-on-dark)]/85 sm:text-lg">
-            Give your stall its own QR code so customers can pay by card, PayID
-            or cash — even when nobody&apos;s there. Free to start, no monthly
-            fee.
+          <p className="text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">
+            Built for unattended stalls
           </p>
-          <div className="mt-7">
-            <LpStartFreeLink />
-            <p className="mt-3 text-sm text-[var(--ink-on-dark)]/70">
-              No card details. No hardware. Prints on an A4 sheet.
+          <h1 className="mt-3 font-[family-name:var(--font-display)] text-[2.4rem] font-bold leading-[1.1] tracking-tight text-[var(--field)] sm:text-5xl lg:text-[clamp(3rem,5vw,4.5rem)]">
+            Stop losing sales when customers don&apos;t have cash.
+          </h1>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--muted)] sm:text-lg">
+            Give your stall one QR code so customers can choose what they are
+            taking and pay on their phone - even when nobody is there.
+          </p>
+
+          <div id="lp-hero-cta" className="mt-7 flex flex-col items-start gap-3">
+            <LpStartFreeLink placement="hero" />
+            <p className="text-sm text-[var(--muted)]">
+              No card details · No terminal · Setup takes minutes
             </p>
+            <a
+              href="#how-it-works"
+              className="text-sm font-semibold text-[var(--leaf-dark)] underline-offset-2 hover:underline"
+            >
+              See how it works ↓
+            </a>
           </div>
+
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {["A$0 monthly on Free", "No customer app", "Instant sale alerts"].map(
+              (chip) => (
+                <li
+                  key={chip}
+                  className="rounded-[var(--radius-pill)] border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-semibold text-[var(--ink)] shadow-sm sm:text-sm"
+                >
+                  {chip}
+                </li>
+              ),
+            )}
+          </ul>
         </div>
-        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[var(--radius)] sm:aspect-[5/4] lg:aspect-[4/5]">
-          {/* Pre-compressed static assets — skip next/image optimizer hop on cold load */}
-          <picture>
-            <source srcSet="/lp/hero-stall.webp" type="image/webp" />
-            <img
-              src="/lp/hero-stall.jpg"
-              alt="Roadside egg stall with a Stallside QR poster mounted on the front"
-              width={640}
-              height={853}
-              fetchPriority="high"
-              decoding="async"
-              className="h-full w-full object-cover"
-            />
-          </picture>
-        </div>
+
+        <LpHeroVisual />
       </div>
     </section>
   );

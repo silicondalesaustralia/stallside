@@ -1,33 +1,21 @@
-import { testimonials } from "@/lib/testimonials";
-
-const marnie = testimonials.find((t) => t.id === "marnie-melbourne");
-
 export default function LpTestimonial() {
-  if (!marnie) return null;
-
-  const quote = [
-    marnie.quote[1],
-    marnie.quote[2],
-  ].filter(Boolean);
-
   return (
-    <section className="bg-[var(--wash)] px-5 py-10 sm:px-6 sm:py-12">
-      <div className="mx-auto w-full max-w-3xl">
+    <section className="px-5 py-12 sm:px-6 sm:py-14">
+      <div className="mx-auto max-w-3xl rounded-[var(--radius)] border border-[var(--line)] bg-white p-6 shadow-sm sm:p-8">
         <blockquote>
-          {quote.map((paragraph) => (
-            <p
-              key={paragraph}
-              className="mt-3 text-base leading-relaxed text-[var(--ink)] first:mt-0 sm:text-lg"
-            >
-              &ldquo;{paragraph}&rdquo;
-            </p>
-          ))}
+          <p className="text-lg leading-relaxed text-[var(--ink)] sm:text-xl">
+            &ldquo;It was all so easy and fast to set up - your 10-minute setup
+            was generous. I did it all in about three!&rdquo;
+          </p>
+          <p className="mt-4 text-sm leading-relaxed text-[var(--muted)]">
+            &ldquo;I was keen to try something that didn&apos;t have so many
+            fees - like PayID.&rdquo;
+          </p>
           <footer className="mt-5 text-sm text-[var(--muted)]">
             <cite className="not-italic font-semibold text-[var(--ink)]">
-              {marnie.name}
+              Marnie
             </cite>
-            {" · "}
-            {marnie.location}
+            {" · Melbourne, Australia"}
           </footer>
         </blockquote>
       </div>

@@ -1,300 +1,1190 @@
-# Build brief: dedicated landing page for Stallside Meta ad (AU)
+# Stallside Meta Ad Landing Page Build Brief
 
-> **Implemented route:** `/lp/missed-sales`  
-> **Components:** `src/components/lp/`  
-> Use this doc for content, structure, and design review. Signup completion must remain on `/signup-complete` (existing pixels).
+> **Live route:** `/lp/missed-sales`  
+> CTAs link to `/signup` (params preserved) → OTP → `/signup-complete` for conversion pixels. No signup modal in v1.
 
-## 1. Purpose
+## Page
 
-Build a single-purpose landing page for paid traffic arriving from one Meta video ad targeting Australian roadside / honesty stall owners.
-
-The page has exactly one job: **get the visitor to start a free Stallside account.**
-
-It is not a homepage. It does not need to serve existing customers, job seekers, press, or people comparing plans in detail. Every element either moves someone toward signup or gets cut.
-
-Current destination for this ad is `https://stallside.app` (the full marketing homepage). This brief replaces that destination.
-
----
-
-## 2. Why we're building it
-
-Three problems with sending this ad's traffic to the homepage:
-
-1. **Page weight.** The homepage is a heavy Next.js build — interactive checkout demo, phone mockup, live analytics charts, payment-logo carousel, 16-question FAQ accordion. The audience is rural Australians, frequently on poor mobile reception, sometimes standing at the stall itself. Load time is a live suspect for drop-off.
-2. **Exits.** The homepage nav offers About, Gallery, Testimonials, Pricing, Try Demo, and Owner login — six ways to leave before signing up.
-3. **Cost hierarchy.** Fee structure (2.5% card fee, separate Stripe fees, absorb-or-pass-on) appears early and often. It's admirably transparent but it front-loads cost before the visitor has decided they want the product.
-
-**Measured context:** the ad currently produces a high CTR at roughly $0.10 per click, but a low click-to-landing-page-view ratio. Traffic quality is not the problem. What happens after the click is.
+**Route:** `/lp/missed-sales`  
+**Primary objective:** Create a Stallside account  
+**Traffic source:** Cold Meta traffic from the “AU New Video” ad  
+**Primary audience:** Australian farm-stall, roadside-stall, honesty-box and small unattended-stall owners  
+**Primary CTA:** `Start free`  
+**Secondary CTA:** `See how it works` — scrolls to the three-step product section  
+**Conversion rule:** One page, one goal. Do not send visitors into the main site unless they deliberately use a small footer link.
 
 ---
 
-## 3. Audience
+# 1. Conversion Strategy
 
-Australian owners of unattended / honesty-box stalls. Concretely:
+The landing page must continue the exact conversation started by the ad:
 
-- Backyard egg sellers, small produce growers, flower and plant stalls
-- Firewood and hay stacks by the road
-- Camp supply boxes, community fridges, honesty car parks
+> Customers drive past because they do not have cash.
 
-Demographics from the ad set: Australia, ages 25–65, interests spanning homesteading, poultry farming, organic and sustainable agriculture, farmers' markets, local food, baking, and small business ownership.
+The page should immediately show that Stallside fixes this with:
 
-**Assume about them:**
+- One printable QR code
+- No customer app
+- Card, Apple Pay, Google Pay, PayID and cash
+- Instant sale alerts
+- Automatic stock updates
+- No terminal or extra hardware
+- A$0 monthly on Free
 
-- Not technical. "QR code" is familiar; "Stripe Connect onboarding" is not.
-- Running the stall alongside a job or a farm. Time-poor.
-- Already operating on trust — the honesty box works for them. They are not looking to replace it.
-- Sceptical of monthly software subscriptions.
-- On a phone, on mobile data, possibly with one bar.
+Do not lead with broad product positioning such as “the operating system for farm stalls”. Cold Meta visitors need a fast, concrete answer to:
 
-**Write for the person, not the category.** Say "your stall," not "unattended retail environments."
+1. What is this?
+2. How does it stop missed sales?
+3. Is it easy?
+4. What does it cost?
+5. Can I trust it?
+6. What happens when I click?
 
----
-
-## 4. The ad this page must match
-
-Message match is the single highest-leverage thing in this build. The visitor arrives with these exact words in their head. The page must feel like the obvious next screen.
-
-**Primary text (live):**
-
-> How many people drive past your honesty stall because they don't have cash?
->
-> Stallside gives your stall its own QR code. Customers scan, choose what they're taking, and pay by cash, PayID or card + many other payment options.
->
-> You get an alert the second something sells, and your stock count updates automatically.
->
-> Pre-orders, restock alerts and your own branding are included from day one.
->
-> No monthly fees. No terminal. No extra hardware.
->
-> Cash and PayID are always free. For card payments, you only pay a small transaction fee when a sale is made.
-
-**Headline:** Your Stall, Minus the Missed Sales
-
-**Description:** Take payments, track stock and get instant sale alerts.
-
-**CTA button:** Sign up
-
-**Creative:** vertical video shot at a real roadside stall — weathered timber, hand-painted eggs sign. Deliberately lo-fi and unpolished. That texture is doing real work; the page should not feel like a slicker, more corporate place than the ad implied.
+The page should be substantially shorter and more focused than the homepage.
 
 ---
 
-## 5. Hard constraints
+# 2. Recommended Page Length
 
-These are not negotiable. Everything in section 6 is subordinate to these.
+Aim for approximately **7 concise sections**, plus the footer:
 
-### Performance
+1. Minimal header
+2. Hero
+3. Payment-method trust strip
+4. Three-step “how it works”
+5. Product proof / owner outcome section
+6. Objection handling
+7. Pricing reassurance and final CTA
 
-The primary technical requirement. Target a rural Australian mobile connection, not office wifi.
-
-- **LCP under 2.5s on a throttled 4G connection.** Test on Slow 4G in devtools, not on your laptop.
-- **Total page weight under 500KB** on first load, images included.
-- No client-side JS required to render above-the-fold content. Server-render or statically generate.
-- Hero video: **poster image loads first, video is lazy-loaded and never autoplays with sound.** If the video costs more than ~150KB before interaction, use a static frame and let them tap to play.
-- Every below-fold image lazy-loaded, correctly sized, modern format (WebP/AVIF), explicit `width`/`height` to prevent layout shift.
-- System font stack, or at most one variable webfont subset to Latin. No font families loaded for a single heading.
-- No carousels, no scroll-jacking, no parallax, no animation libraries.
-
-### Structure
-
-- **No navigation bar.** No header links. The logo may appear but must not link away.
-- **One CTA, repeated.** Same wording every time. It goes to `https://stallside.app/signup`.
-- **No footer link farm.** Legal minimum only: Terms, Privacy, Contact. Small, grey, bottom.
-- Page should be readable end to end in under 90 seconds.
-
-### Localisation
-
-- Australian English throughout — "colour", "organised", "cheque".
-- All prices in AUD, shown as `A$`.
-- **PayID must be named explicitly.** It is Australia-specific, familiar to this audience, and free of Stallside fees. It is a genuine trust signal here in a way it isn't in other markets.
-- Use Australian vernacular where natural — "roadside stall", "honesty box", "chooks" is acceptable in a testimonial but not in a headline.
+Avoid turning the page into a full product catalogue. Features such as pre-orders, restock emails and custom branding can appear as compact supporting benefits, not full standalone sections.
 
 ---
 
-## 6. Page structure
+# 3. Visual Direction
 
-Build in this order. Sections marked **[required]** ship in v1; others can follow.
+## Overall Look
 
-### 6.1 Hero **[required]**
+The page should feel:
 
-**Headline:** lead with the missed sale. It is the ad's hook and the strongest thing in the whole proposition.
+- Modern
+- Premium but approachable
+- Rural without looking rustic or old-fashioned
+- Product-led
+- Mobile-first
+- Fast and uncluttered
 
-Recommended: *Your stall, minus the missed sales.*
+Use the existing Stallside visual system from the homepage, but simplify it for conversion.
 
-Match the ad headline exactly unless you have a strong reason. Continuity beats cleverness here.
+## Visual Style
 
-**Subhead:** one sentence, plain, covering what it is and what it costs.
+Use:
 
-Suggested: *Give your stall its own QR code so customers can pay by card, PayID or cash — even when nobody's there. Free to start, no monthly fee.*
+- Large rounded cards
+- Soft shadows
+- Generous whitespace
+- Subtle gradients
+- Light green-tinted backgrounds
+- Strong dark-green headings
+- Warm amber accents from the Stallside logo
+- Real product UI mock-ups
+- Crisp payment icons
+- Simple line icons
+- Subtle motion only where it helps explain the product
 
-**CTA:** primary button, above the fold on a 375px-wide viewport. Label: **Start free**.
+Avoid:
 
-**Supporting line under the CTA:** *No card details. No hardware. Prints on an A4 sheet.*
+- Heavy farm textures
+- Timber backgrounds
+- Cartoon farm illustrations
+- Long blocks of centred copy
+- Excessive badges
+- Multiple competing colours
+- Generic stock photography in every section
+- Large navigation menus
+- Carousels
+- Auto-playing audio
 
-**Visual:** a still from the ad creative, or a photograph of a real stall with a QR poster on it. **Not** a polished 3D product render, not a floating phone mockup on a gradient. The ad promised a real stall by a real road.
+## Suggested Palette
 
-### 6.2 The problem, named **[required]**
+Reuse the actual Stallside brand tokens where available. If the current codebase does not expose them, use these as a close fallback:
 
-Three lines maximum. This is the emotional core and it should be almost uncomfortably specific.
+- Deep green: `#123D2A`
+- Primary green: `#1F6A45`
+- Soft green: `#EAF4ED`
+- Amber: `#E7A62B`
+- Soft amber: `#FFF4D8`
+- Ink: `#17211B`
+- Muted text: `#647168`
+- Border: `#DCE7DF`
+- Off-white: `#F8FAF8`
+- White: `#FFFFFF`
 
-Direction: someone stops, wants the eggs, has no cash, drives off. That's a sale you never knew you lost. It happens more than you think.
+## Typography
 
-Resist explaining the product here. Just name the moment.
+Use the same fonts as the homepage. If unavailable:
 
-### 6.3 How it works **[required]**
+- Headings: `Manrope`, `Inter`, or the existing display font
+- Body: `Inter` or the current site body font
 
-Three steps. Numbered — the order is real information, so numbering is earned here.
+Recommended sizes:
 
-1. **Print your QR** — one A4 poster per stall. Stick it up.
-2. **They scan and pay** — no app, no account. Cash, PayID, card, Apple Pay or Google Pay.
-3. **You get told instantly** — sale alert on your phone, stock count updates itself.
-
-Keep each step to a headline and one line. If a step needs a paragraph, the product is being explained wrong.
-
-### 6.4 Objection handling **[required]**
-
-The single biggest objection is trust, and it is already the top FAQ on the homepage. Handle it head-on, high up, not buried in an accordion.
-
-**"Won't people just scan and not pay?"**
-
-The honest answer, roughly: the same reason your honesty box already works. People who stop at an unattended stall came to pay, not to dodge. Stallside doesn't replace that trust — it backs it up, because every sale is logged the moment it happens. And it catches the sales a cash tin quietly loses: the person with nothing smaller than a fifty.
-
-Secondary objections, one line each:
-
-- **Do I need a card machine?** No. A printer for the poster is all. Customers pay on their own phones.
-- **Do I need to be there?** No. That's the point.
-- **What if I'm not techy?** Print a sheet, stick it up. Setup is a few minutes on your phone.
-
-### 6.5 What you get **[required]**
-
-*(Revision 3 — two tiers with different visual weight. No feature grid, accordion, or expander.)*
-
-**Tier 1 — the loop** (prominent; exactly three items):
-
-- **They pay however they want** — cash, PayID, card, Apple Pay, Google Pay
-- **You know instantly** — an alert on your phone the moment something sells
-- **Stock looks after itself** — counts drop automatically, and you're warned before you run out
-
-**Tier 2 — the depth** (quieter prose; subordinate):
-
-Heading: *And a fair bit more.*
-
-Body: Pre-orders with a collection day, so you know how much to bake before anyone turns up. Restock emails to the regulars who asked to hear. Your own logo and colours on the stall page and the poster. A running count of everyone who'd have paid by card, if you haven't switched card payments on yet.
-
-Plus a good deal more as you grow into it.
-
-Closing line, set apart: *All of it's on the free plan.*
-
-### 6.6 Pricing **[required]**
-
-Deliberately compressed. Do **not** reproduce the homepage's full pricing matrix.
-
-Lead with: **Free plan. A$0 per month. Every feature.**
-
-Then one clarifying line: cash and PayID are always free; card payments carry a small fee per sale.
-
-Then a text link — *See full pricing* — to `https://stallside.app/#pricing`. This is the one permitted outbound link on the page, because hiding cost entirely damages trust with this audience more than the exit costs us.
-
-Do not put the 2.5% figure, Stripe fee mechanics, or the Pro plan in the hero or mid-page. It is accurate and it belongs on the pricing page.
-
-### 6.7 Social proof
-
-Pull one or two testimonials from `https://stallside.app/testimonials`. Prefer an egg, produce, or firewood seller — closest to the ad's audience. Include a real name and location if available. Skip this section entirely rather than fabricate anything.
-
-### 6.8 Closing CTA **[required]**
-
-Restate the hook, restate the offer, repeat the button. Same label: **Start free**.
-
-Do not introduce new information here.
+- Desktop H1: `clamp(3rem, 5vw, 5rem)`
+- Mobile H1: `2.4rem–2.8rem`
+- Section H2: `clamp(2rem, 3vw, 3.25rem)`
+- Body: `1rem–1.125rem`
+- Buttons: `1rem`, semibold
 
 ---
 
-## 7. Verified product facts
+# 4. Header
 
-Sourced from `stallside.app` as of this brief. **Do not invent features, prices, or claims beyond this list.** If something is needed and isn't here, flag it rather than guessing.
+## Layout
 
-**Plans**
+Use a very slim header.
 
-| | Free | Pro |
-|---|---|---|
-| Monthly cost | A$0 | A$19.99 per site |
-| Features | All | All |
-| Stallside fee on card / Tap & Go / pay-later | 2.5% | None |
-| Stallside fee on cash | None | None |
-| Stallside fee on PayID | None | None |
-| Stripe processing fees | Apply separately | Apply separately |
+**Left:** Stallside logo  
+**Right:** Primary CTA button
 
-Pro becomes cheaper than Free at roughly A$800/month in card sales. Free-plan users can absorb the 2.5% or pass it to the customer at checkout.
+Do not include the full homepage navigation.
 
-**Payment methods:** Cash (customer self-confirms), PayID (AU only), PayTo (AU), card, Apple Pay, Google Pay, Link by Stripe, Klarna and Zip on larger orders.
+### Desktop
 
-**Features:** printable QR posters per stand; unlimited products with variants; live stock counts with availability bands (Available / Low stock / Sold out) shown publicly, exact counts private by default; sale and low-stock alerts by email and push; orders and inventory dashboard; pre-orders with order-by deadline and collection day; Collections tracking (Ready / Collected) with buyer messaging; customer restock notifications (owner never sees email addresses); stall branding with logo, colours and social links; card-demand counter for when Stripe isn't connected yet.
+- Max width: `1200px`
+- Height: approximately `72px`
+- Logo left
+- Small reassurance text near CTA: `A$0 monthly on Free`
+- CTA: `Start free`
 
-**Hardware:** none. A printer for the poster. Customers use their own phones. No terminal or card reader.
+### Mobile
 
-**Markets:** AU, US, UK, EU. This page is AU-only.
+- Height: approximately `64px`
+- Logo left
+- Compact CTA right: `Start free`
 
----
+## Header Copy
 
-## 8. Tracking
+**Reassurance:**  
+`A$0 monthly on Free`
 
-Get this right before launch — the campaign optimises on the registration event and is currently working with very low conversion volume, so every lost signal materially hurts delivery.
+**Button:**  
+`Start free`
 
-- **Meta pixel ID `4334670276795300`** must fire `PageView` on load. Same pixel as the main site.
-- The **`CompleteRegistration`** event must fire on successful signup. It fires downstream at `/signup`, so the handoff must not break it.
-- **Preserve all query parameters** — `fbclid`, `utm_*`, and anything else — through to `/signup`. Do not strip them on redirect.
-- Add a distinguishing UTM (e.g. `utm_content=lp-missed-sales`) so this page's performance is separable in analytics.
-- Ensure the page domain is verified in Meta Business Manager and matches the campaign's conversion domain.
-- Google tag / GA4 as per the main site, if present.
+## Header Behaviour
 
----
-
-## 9. Design direction
-
-Ground the design in the subject: hand-painted signs, weathered timber, gravel verges, honesty tins, chalkboard prices. The vernacular of a roadside stall is specific and underused — that's where a distinctive page comes from.
-
-Two things to actively avoid:
-
-**Don't out-polish the ad.** The creative is deliberately lo-fi and that's why it works. A glossy SaaS landing page creates a jarring mismatch at the exact moment of decision. Warm, plain, and slightly handmade beats sleek here.
-
-**Don't reach for the default startup landing page.** Cream background, high-contrast serif, terracotta accent, floating phone mockup, three feature cards with circle icons — that combination is a template, not a choice, and this audience is unusually well-served by something that looks like it was made by a person.
-
-Non-negotiable quality floor: responsive to 320px, visible keyboard focus states, `prefers-reduced-motion` respected, real text (never text baked into images), colour contrast meeting WCAG AA.
+- Sticky after the visitor scrolls beyond the hero CTA
+- White or slightly translucent background
+- Backdrop blur
+- Fine bottom border
+- Do not animate aggressively
 
 ---
 
-## 10. Out of scope
+# 5. Hero Section
 
-- The signup flow itself — unchanged, still `/signup`
-- Any change to the ad creative or copy
-- Pricing page, gallery, demo, testimonials pages
-- A/B testing infrastructure. At current conversion volume there is no statistical power to test with; this page ships on judgment, not experiment.
-- Non-AU variants
+## Conversion Goal
+
+The hero must answer the ad’s question immediately and make the solution visually obvious before the visitor scrolls.
+
+## Desktop Layout
+
+Two-column layout:
+
+- Left: headline, supporting copy, CTA, reassurance
+- Right: layered product composition
+
+Recommended split:
+
+- Copy: 52%
+- Visual: 48%
+
+The hero should fit mostly within the first viewport on a common laptop.
+
+## Mobile Layout
+
+Order:
+
+1. Eyebrow
+2. H1
+3. Supporting copy
+4. CTA
+5. Reassurance
+6. Payment icons
+7. Product visual
+
+Do not push the CTA below a large image on mobile.
+
+## Hero Copy
+
+### Eyebrow
+
+`Built for unattended stalls`
+
+### H1
+
+# Stop losing sales when customers don’t have cash.
+
+### Supporting Copy
+
+Give your stall one QR code so customers can choose what they are taking and pay on their phone — even when nobody is there.
+
+### Primary CTA
+
+`Start free`
+
+### CTA Microcopy
+
+`No card details · No terminal · Setup takes minutes`
+
+### Optional Text Link
+
+`See how it works ↓`
+
+Do not use two equal-weight buttons.
+
+## Hero Benefit Chips
+
+Show three compact chips beneath the CTA or integrated beside the visual:
+
+- `A$0 monthly on Free`
+- `No customer app`
+- `Instant sale alerts`
+
+## Hero Visual
+
+Create a clean, layered product demonstration rather than using a generic image alone.
+
+Recommended composition:
+
+1. A real roadside egg or produce stall photo as the base
+2. A clearly visible Stallside QR poster attached to the stall
+3. A customer phone mock-up showing:
+   - stall name
+   - product selection
+   - payment options
+4. A smaller owner-phone notification:
+   - `New sale · A$12.00`
+   - `Green Valley Eggs`
+5. A compact stock badge:
+   - `Dozen eggs: 8 left`
+
+The visual should communicate the entire loop:
+
+**Scan → choose → pay → owner notified**
+
+Use gentle floating motion on desktop only. Disable or simplify for reduced-motion users.
 
 ---
 
-## 11. Acceptance checklist
+# 6. Payment Trust Strip
 
-Before this replaces the current destination:
+Place directly under the hero.
 
-- [ ] LCP under 2.5s on throttled Slow 4G
-- [ ] Total first-load weight under 500KB
-- [ ] Renders and is readable with JavaScript disabled
-- [ ] No navigation bar; only permitted outbound links are pricing, Terms, Privacy, Contact
-- [ ] CTA visible above the fold at 375px width
-- [ ] Every CTA uses identical wording and points to `/signup`
-- [ ] Meta pixel fires `PageView`; `CompleteRegistration` still fires downstream
-- [ ] `fbclid` and UTM parameters survive the journey to `/signup`
-- [ ] All prices in AUD; PayID named explicitly
-- [ ] Australian English throughout
-- [ ] Every product claim traceable to section 7
-- [ ] Tested on a real phone on mobile data, not just devtools
+## Purpose
+
+Cold visitors need to immediately recognise familiar payment options. This should look polished and credible, not like a long feature section.
+
+## Layout
+
+A full-width rounded strip within the page container.
+
+### Intro Copy
+
+`Let customers pay the way they already prefer`
+
+### Icons
+
+Use official or existing site assets for:
+
+- Cash
+- PayID
+- Visa
+- Mastercard
+- American Express
+- Apple Pay
+- Google Pay
+- Link
+
+Zip and Klarna may be omitted from this campaign landing page unless they are central to the target stall type. Keeping the strip concise is more valuable than showing every possible method.
+
+### Supporting Line
+
+`No card reader. Payments happen on the customer’s phone.`
+
+## Mobile Behaviour
+
+- Horizontally scrollable icon row or wrapped two-line layout
+- No tiny icons
+- Ensure PayID is visible without needing to scroll if the campaign is Australian
 
 ---
 
-## 12. Deployment note
+# 7. Problem-to-Outcome Section
 
-**Do not switch the ad's destination URL while the ad set is in its learning phase.**
+## Layout
 
-The campaign has recently reset learning and needs several clean days to accumulate signal. Changing the destination adds a variable that will make the results unreadable, and there's a good argument it's a significant enough edit to disturb delivery.
+A short, high-contrast section with one strong idea.
 
-Build and stage the page now. Ship it live, then swap the ad's URL only once learning has completed and a stable cost per registration has been established.
+Use a soft amber or pale green card.
+
+## Copy
+
+### Small Label
+
+`The sale you never see`
+
+### Heading
+
+## Someone stops. Wants the eggs. Has no cash. Drives off.
+
+### Body
+
+That is a sale your cash tin cannot record. Stallside gives them another way to pay before they leave — without adding a terminal, staff member or complicated checkout.
+
+### Supporting Proof Points
+
+- `One QR poster per stall`
+- `Customers use their own phone`
+- `You are alerted as soon as they confirm or pay`
+
+## Design
+
+Use a simple left-to-right visual sequence:
+
+`Stops at stall` → `Scans QR` → `Pays` → `You get the sale`
+
+On mobile, stack vertically.
+
+---
+
+# 8. How It Works
+
+## Heading
+
+## Up and running in three simple steps
+
+## Supporting Copy
+
+Print the QR, place it at your stall and let Stallside handle the rest.
+
+## Three Cards
+
+### Card 1
+
+**Number:** `01`
+
+**Title:**  
+`Print your stall QR`
+
+**Copy:**  
+Create your stall, add what you sell and print the ready-made A4 poster.
+
+**Visual:**  
+QR poster preview or printer icon.
+
+---
+
+### Card 2
+
+**Number:** `02`
+
+**Title:**  
+`Customers scan and pay`
+
+**Copy:**  
+They choose what they are taking and pay by cash, PayID, card, Apple Pay or Google Pay. No app or account required.
+
+**Visual:**  
+Customer checkout phone UI.
+
+---
+
+### Card 3
+
+**Number:** `03`
+
+**Title:**  
+`You know instantly`
+
+**Copy:**  
+You receive a sale alert, the order is logged and your available stock updates automatically.
+
+**Visual:**  
+Owner notification and stock counter.
+
+## Section CTA
+
+`Create my free stall`
+
+### Microcopy
+
+`No card details required`
+
+---
+
+# 9. Product Proof Section
+
+## Goal
+
+Show that this is a real, complete product without adding too much page length.
+
+## Desktop Layout
+
+Large product-dashboard visual on one side and concise outcome copy on the other.
+
+Alternate the image direction from the hero.
+
+## Copy
+
+### Eyebrow
+
+`More than a payment QR`
+
+### Heading
+
+## Know what sold, what is left and when to restock.
+
+### Body
+
+Every confirmed sale appears in your Stallside dashboard. Stock counts fall automatically, and low-stock alerts help you restock before the next customer arrives.
+
+### Compact Benefit List
+
+Use tick icons:
+
+- Instant sale notifications
+- Live stock counts
+- Low-stock warnings
+- Orders and sales history
+- Pre-orders for collection days
+- Restock notifications for regular customers
+
+### Supporting Note
+
+`Every feature is included on Free. Pro only changes the Stallside card fee.`
+
+## Visual
+
+Use an actual dashboard mock-up showing:
+
+- Revenue
+- Orders
+- Product stock
+- Recent sales
+- Low-stock alert
+
+Do not use made-up metrics that could look like a customer claim. Label mock data as `Example dashboard` if necessary.
+
+---
+
+# 10. Trust and Objection Section
+
+## Heading
+
+## Made for the way honesty stalls already work
+
+## Intro
+
+Stallside does not replace the trust behind your stall. It gives honest customers more ways to pay and gives you a clearer record of what was taken.
+
+## Objection Cards
+
+Use three accordion items on mobile and three compact cards on desktop.
+
+### Objection 1
+
+**Question:**  
+`Do I need a card machine?`
+
+**Answer:**  
+No. Customers pay on their own phones. You only need to print and display your Stallside QR poster.
+
+---
+
+### Objection 2
+
+**Question:**  
+`Do customers need an app?`
+
+**Answer:**  
+No. They scan the QR with their phone camera, choose what they are taking and pay in their browser.
+
+---
+
+### Objection 3
+
+**Question:**  
+`What if I’m not technical?`
+
+**Answer:**  
+Setup is designed to take only a few minutes. Add your products, print the poster and place it at your stall.
+
+---
+
+### Objection 4
+
+**Question:**  
+`Won’t people just scan and not pay?`
+
+**Answer:**  
+Stallside works with the same honesty your stall already relies on. It makes paying easier for customers who intended to pay but arrived without enough cash, and logs each confirmed sale immediately.
+
+Keep this answer calm and practical. Do not over-defend the product.
+
+---
+
+# 11. Testimonial Section
+
+Use the existing genuine testimonial, presented more cleanly.
+
+## Layout
+
+One strong testimonial only. Avoid a fake-looking multi-review carousel.
+
+## Copy
+
+> “It was all so easy and fast to set up — your 10-minute setup was generous. I did it all in about three!”
+
+**Attribution:**  
+`Marnie · Melbourne, Australia`
+
+Optional supporting quote in smaller type:
+
+> “I was keen to try something that didn’t have so many fees — like PayID.”
+
+Only use this quote if it remains approved and accurately attributed.
+
+## Design
+
+- Rounded white card
+- Small five-star visual only if an actual five-star rating was given
+- Otherwise do not add stars
+- Include a subtle Australian location marker
+- Do not use a stock headshot
+
+---
+
+# 12. Pricing Reassurance
+
+## Goal
+
+Remove cost anxiety without turning the page into a pricing comparison page.
+
+## Layout
+
+A concise dark-green or softly tinted pricing card.
+
+## Copy
+
+### Eyebrow
+
+`Start without a monthly bill`
+
+### Heading
+
+## Free is A$0 per month — with every Stallside feature.
+
+### Body
+
+Cash and PayID have no Stallside platform fee. On the Free plan, successful card, Tap & Go and pay-later transactions carry a 2.5% Stallside fee, plus standard Stripe processing fees.
+
+You can absorb the Stallside fee or pass it on to customers at checkout. Upgrade to Pro later to remove the Stallside fee.
+
+### Included List
+
+- Unlimited products and options
+- Printable QR poster
+- Cash and PayID
+- Card, Apple Pay and Google Pay
+- Sale and low-stock alerts
+- Inventory and order tracking
+- Pre-orders
+- Stall branding
+
+### Primary CTA
+
+`Start free`
+
+### Microcopy
+
+`No card details · Cancel nothing · Upgrade only when it suits you`
+
+## Pricing Link
+
+Small text link beneath the card:
+
+`See full pricing`
+
+This may link to the homepage pricing anchor or dedicated pricing page, but it must not compete visually with the signup CTA.
+
+---
+
+# 13. Final CTA Section
+
+## Design
+
+Use a strong, simple closing block with a dark-green background and a subtle Stallside QR pattern or blurred farm-stall image.
+
+## Copy
+
+### Heading
+
+## Your stall, minus the missed sales.
+
+### Supporting Copy
+
+Set up your QR checkout in minutes and give every customer a way to pay.
+
+### Primary CTA
+
+`Create my free stall`
+
+### Reassurance
+
+`A$0 monthly on Free · No terminal · No card details`
+
+---
+
+# 14. Footer
+
+Keep the footer minimal.
+
+Include:
+
+- Stallside logo
+- `Pricing`
+- `Terms`
+- `Privacy`
+- `Contact`
+- `Owner login`
+
+Do not include all homepage navigation links.
+
+---
+
+# 15. Mobile Sticky CTA
+
+Show after the hero CTA scrolls out of view.
+
+## Layout
+
+Sticky bottom bar:
+
+- Left: `A$0/mo on Free`
+- Right: `Start free`
+
+Respect safe-area insets on iPhone.
+
+Do not show the sticky bar while:
+
+- The signup form is open
+- The user is already within the final CTA section
+- A cookie or consent interface would overlap it
+
+---
+
+# 16. Signup Behaviour
+
+The primary CTA should take the visitor directly to the shortest available account-creation flow.
+
+Preferred options, in order:
+
+1. Open a focused signup modal or drawer without leaving the landing page
+2. Link directly to the owner signup route
+3. Link to the main signup page with campaign parameters preserved
+
+Do not link the primary CTA to the homepage.
+
+## Recommended First-Step Fields
+
+Keep the first step minimal:
+
+- Email
+- Password, or passwordless magic link
+- Country preselected to Australia for this campaign
+
+Ask for stall name, products, payment setup and branding after account creation.
+
+Do not require Stripe connection before account creation.
+
+## Signup Button Copy
+
+Use:
+
+`Create free account`
+
+Avoid:
+
+- Submit
+- Register
+- Get started now
+- Start your journey
+
+## Signup Reassurance
+
+`No card details required. Set up your stall before connecting payments.`
+
+---
+
+# 17. Ad-to-Page Message Match
+
+The landing page must preserve these specific messages from the Meta ad:
+
+| Ad promise | Landing-page treatment |
+|---|---|
+| Customers drive past without cash | Hero headline |
+| Stall gets its own QR code | Hero visual and first “how it works” step |
+| Cash, PayID and card options | Hero/payment strip |
+| Instant alerts | Hero mock-up and product proof |
+| Stock updates automatically | Hero stock badge and proof section |
+| Pre-orders and restock alerts | Compact benefit list |
+| Own branding | Included in pricing list, not a full section |
+| No monthly fee | Hero chip, header reassurance and pricing section |
+| No terminal or extra hardware | Hero microcopy and objection section |
+| Small transaction fee only on a sale | Pricing section with exact wording |
+
+---
+
+# 18. Copy Rules
+
+## Tone
+
+Use Australian English.
+
+The tone should be:
+
+- Direct
+- Practical
+- Friendly
+- Plain-spoken
+- Confident without hype
+
+## Preferred Language
+
+Use:
+
+- stall
+- roadside stall
+- honesty stall
+- customer
+- scan
+- pay
+- sale alert
+- stock
+- print
+- free to start
+
+Avoid:
+
+- omnichannel
+- frictionless commerce
+- merchant ecosystem
+- monetise
+- revolutionary
+- seamless solution
+- transform your business
+- unlock growth
+- supercharge
+
+## Sentence Length
+
+Keep most paragraphs to two or three sentences. Avoid long text blocks.
+
+---
+
+# 19. Next.js Implementation
+
+## Suggested Component Structure
+
+```text
+app/
+  lp/
+    missed-sales/
+      page.tsx
+      metadata.ts
+      components/
+        LandingHeader.tsx
+        HeroSection.tsx
+        PaymentMethodsStrip.tsx
+        MissedSaleSection.tsx
+        HowItWorks.tsx
+        ProductProof.tsx
+        ObjectionSection.tsx
+        TestimonialCard.tsx
+        PricingReassurance.tsx
+        FinalCTA.tsx
+        MobileStickyCTA.tsx
+```
+
+Reuse existing homepage components and assets where practical, especially:
+
+- Stallside logo
+- Payment icons
+- Customer checkout UI
+- Owner notification UI
+- Dashboard UI
+- QR poster
+- Existing buttons and design tokens
+
+Do not import the full homepage navigation or footer.
+
+## Rendering
+
+Use a server component for the page shell. Use client components only for:
+
+- Sticky CTA visibility
+- Accordion behaviour
+- Signup modal
+- Small, purposeful animations
+- Tracking events
+
+## Images
+
+Use `next/image`.
+
+Requirements:
+
+- Correct width and height
+- Responsive `sizes`
+- Hero image priority
+- WebP or AVIF where supported
+- Avoid large uncompressed screenshots
+- Use actual UI assets at readable sizes
+
+## Performance Targets
+
+Aim for:
+
+- LCP under 2.5 seconds on mobile
+- CLS under 0.1
+- Minimal client-side JavaScript
+- No background video in the hero
+- No autoplay carousel
+- No blocking third-party scripts beyond required tracking
+
+---
+
+# 20. Motion
+
+Use subtle motion only:
+
+- Hero notification enters once
+- Stock count changes once
+- Cards rise slightly on hover
+- Payment strip may fade in
+
+Respect `prefers-reduced-motion`.
+
+Do not use:
+
+- Continuous bouncing buttons
+- Rotating payment logos
+- Auto-scrolling review carousels
+- Large parallax effects
+- Delayed entrance animations that hide key content
+
+---
+
+# 21. Tracking
+
+Preserve Meta campaign parameters through signup.
+
+## Recommended URL Parameters
+
+Use a consistent campaign structure, for example:
+
+```text
+utm_source=facebook
+utm_medium=paid_social
+utm_campaign=stallside_complete_rego
+utm_content=au_new_video
+```
+
+Do not use placeholder parameters such as `key1=value1`.
+
+## Required Events
+
+### Page View
+
+- `PageView`
+- GA4 `page_view`
+
+### Primary CTA Click
+
+Event: `landing_signup_click`
+
+Parameters:
+
+- `placement`: `header`, `hero`, `how_it_works`, `pricing`, `final`, `mobile_sticky`
+- `campaign`: `stallside_complete_rego`
+- `creative`: `au_new_video`
+
+### Signup Started
+
+- Meta standard event: `Lead` or the current signup-start event
+- GA4: `sign_up_start`
+
+### Signup Completed
+
+- Meta standard event: `CompleteRegistration`
+- GA4: `sign_up`
+
+### Secondary Events
+
+- `landing_how_it_works_click`
+- `landing_pricing_click`
+- `landing_objection_open`
+- `landing_signup_modal_open`
+
+Avoid firing `CompleteRegistration` on button click. Fire it only after account creation succeeds.
+
+---
+
+# 22. Accessibility
+
+- One H1 only
+- Logical heading order
+- Minimum AA colour contrast
+- 44px minimum tap targets
+- Visible keyboard focus states
+- Descriptive alt text for informative visuals
+- Empty alt text for decorative images
+- Accessible accordion semantics
+- Do not rely on colour alone
+- Payment logos must have accessible names
+- Signup errors must be announced and placed beside the relevant fields
+
+---
+
+# 23. SEO and Indexing
+
+This is a paid-campaign landing page, so organic discovery is secondary.
+
+Recommended metadata:
+
+```ts
+export const metadata = {
+  title: "Stop Missing Farm Stall Sales | Stallside",
+  description:
+    "Give your unattended stall a QR checkout so customers can pay by cash, PayID, card, Apple Pay or Google Pay. Start free with no terminal.",
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
+```
+
+Add a self-referencing canonical only if this route is intentionally indexable. Otherwise use `noindex,follow`.
+
+---
+
+# 24. Content to Remove From the Current Landing Page
+
+Remove or redesign:
+
+- The large standalone fear-based paragraph immediately after the hero
+- Dense prose about honesty and non-payment
+- Long feature lists without product visuals
+- Repetitive “free” claims without clear fee disclosure
+- Broad homepage-style messaging
+- Any large navigation menu
+- Multiple competing CTA labels
+- Generic image placement that does not explain the product
+- The weak transition from problem to “how it works”
+- Any text-only section that can be shown more clearly through UI
+- Any footer links that distract from signup
+
+Retain the useful core ideas, but present them through a more polished product-led page.
+
+---
+
+# 25. Exact Final Copy — Condensed Page Version
+
+This is the recommended copy in page order.
+
+---
+
+## Header
+
+**Reassurance:**  
+A$0 monthly on Free
+
+**CTA:**  
+Start free
+
+---
+
+## Hero
+
+**Eyebrow:**  
+Built for unattended stalls
+
+# Stop losing sales when customers don’t have cash.
+
+Give your stall one QR code so customers can choose what they are taking and pay on their phone — even when nobody is there.
+
+**CTA:**  
+Start free
+
+**Microcopy:**  
+No card details · No terminal · Setup takes minutes
+
+**Text link:**  
+See how it works ↓
+
+**Benefit chips:**
+
+- A$0 monthly on Free
+- No customer app
+- Instant sale alerts
+
+---
+
+## Payment Strip
+
+**Heading:**  
+Let customers pay the way they already prefer
+
+**Methods:**  
+Cash · PayID · Visa · Mastercard · American Express · Apple Pay · Google Pay · Link
+
+**Supporting copy:**  
+No card reader. Payments happen on the customer’s phone.
+
+---
+
+## Missed-Sale Section
+
+**Label:**  
+The sale you never see
+
+## Someone stops. Wants the eggs. Has no cash. Drives off.
+
+That is a sale your cash tin cannot record. Stallside gives them another way to pay before they leave — without adding a terminal, staff member or complicated checkout.
+
+- One QR poster per stall
+- Customers use their own phone
+- You are alerted as soon as they confirm or pay
+
+---
+
+## How It Works
+
+## Up and running in three simple steps
+
+Print the QR, place it at your stall and let Stallside handle the rest.
+
+### 01 — Print your stall QR
+
+Create your stall, add what you sell and print the ready-made A4 poster.
+
+### 02 — Customers scan and pay
+
+They choose what they are taking and pay by cash, PayID, card, Apple Pay or Google Pay. No app or account required.
+
+### 03 — You know instantly
+
+You receive a sale alert, the order is logged and your available stock updates automatically.
+
+**CTA:**  
+Create my free stall
+
+**Microcopy:**  
+No card details required
+
+---
+
+## Product Proof
+
+**Eyebrow:**  
+More than a payment QR
+
+## Know what sold, what is left and when to restock.
+
+Every confirmed sale appears in your Stallside dashboard. Stock counts fall automatically, and low-stock alerts help you restock before the next customer arrives.
+
+- Instant sale notifications
+- Live stock counts
+- Low-stock warnings
+- Orders and sales history
+- Pre-orders for collection days
+- Restock notifications for regular customers
+
+**Supporting note:**  
+Every feature is included on Free. Pro only changes the Stallside card fee.
+
+---
+
+## Objections
+
+## Made for the way honesty stalls already work
+
+Stallside does not replace the trust behind your stall. It gives honest customers more ways to pay and gives you a clearer record of what was taken.
+
+### Do I need a card machine?
+
+No. Customers pay on their own phones. You only need to print and display your Stallside QR poster.
+
+### Do customers need an app?
+
+No. They scan the QR with their phone camera, choose what they are taking and pay in their browser.
+
+### What if I’m not technical?
+
+Setup is designed to take only a few minutes. Add your products, print the poster and place it at your stall.
+
+### Won’t people just scan and not pay?
+
+Stallside works with the same honesty your stall already relies on. It makes paying easier for customers who intended to pay but arrived without enough cash, and logs each confirmed sale immediately.
+
+---
+
+## Testimonial
+
+> “It was all so easy and fast to set up — your 10-minute setup was generous. I did it all in about three!”
+
+Marnie · Melbourne, Australia
+
+---
+
+## Pricing
+
+**Eyebrow:**  
+Start without a monthly bill
+
+## Free is A$0 per month — with every Stallside feature.
+
+Cash and PayID have no Stallside platform fee. On the Free plan, successful card, Tap & Go and pay-later transactions carry a 2.5% Stallside fee, plus standard Stripe processing fees.
+
+You can absorb the Stallside fee or pass it on to customers at checkout. Upgrade to Pro later to remove the Stallside fee.
+
+- Unlimited products and options
+- Printable QR poster
+- Cash and PayID
+- Card, Apple Pay and Google Pay
+- Sale and low-stock alerts
+- Inventory and order tracking
+- Pre-orders
+- Stall branding
+
+**CTA:**  
+Start free
+
+**Microcopy:**  
+No card details · Upgrade only when it suits you
+
+**Text link:**  
+See full pricing
+
+---
+
+## Final CTA
+
+## Your stall, minus the missed sales.
+
+Set up your QR checkout in minutes and give every customer a way to pay.
+
+**CTA:**  
+Create my free stall
+
+**Reassurance:**  
+A$0 monthly on Free · No terminal · No card details

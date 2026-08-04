@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/lp/hero-stall.jpg",
+        source: "/lp/green-valley-eggs-stallside-stand.jpg",
         headers: [
           {
             key: "Cache-Control",
@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/lp/hero-stall.webp",
+        source: "/lp/green-valley-eggs-stallside-stand.webp",
         headers: [
           {
             key: "Cache-Control",
