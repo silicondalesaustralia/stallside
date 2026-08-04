@@ -8,6 +8,7 @@ declare global {
     gtag?: (...args: unknown[]) => void;
     rdt?: (...args: unknown[]) => void;
     sdAttribution?: {
+      identify?: (input: { email: string }) => void;
       trackConversion: (input: {
         conversionType: string;
         value?: number;
@@ -19,12 +20,20 @@ declare global {
 
 type Props = {
   userId: string;
+  email?: string | null;
 };
 
-function trackPerformLead() {
+function trackPerformLead(email: string | null | undefined) {
   try {
-    if (!window.sdAttribution?.trackConversion) return false;
-    window.sdAttribution.trackConversion({
+    const api = window.sdAttribution;
+    if (!api?.trackConversion) return false;
+
+    const normalized = email?.trim().toLowerCase();
+    if (normalized) {
+      api.identify?.({ email: normalized });
+    }
+
+    api.trackConversion({
       conversionType: "lead",
       value: 50,
       currency: "AUD",
@@ -36,7 +45,7 @@ function trackPerformLead() {
 }
 
 /** Fires Meta + GA + Reddit + Perform signup conversion once on the thank-you page. */
-export default function SignupCompleteConversion({ userId }: Props) {
+export default function SignupCompleteConversion({ userId, email }: Props) {
   useEffect(() => {
     try {
       window.fbq?.("track", "CompleteRegistration");
@@ -57,17 +66,38 @@ export default function SignupCompleteConversion({ userId }: Props) {
       /* ignore */
     }
 
+    const onceKey = `perform_lead_${userId}`;
+    try {
+      if (sessionStorage.getItem(onceKey) === "1") return;
+    } catch {
+      /* ignore */
+    }
+
+    const markOnce = () => {
+      try {
+        sessionStorage.setItem(onceKey, "1");
+      } catch {
+        /* ignore */
+      }
+    };
+
     // Perform script loads async - retry briefly so we don't miss the lead.
-    if (trackPerformLead()) return;
+    if (trackPerformLead(email)) {
+      markOnce();
+      return;
+    }
     let attempts = 0;
     const timer = window.setInterval(() => {
       attempts += 1;
-      if (trackPerformLead() || attempts >= 20) {
+      if (trackPerformLead(email)) {
+        markOnce();
         window.clearInterval(timer);
+        return;
       }
+      if (attempts >= 20) window.clearInterval(timer);
     }, 250);
     return () => window.clearInterval(timer);
-  }, [userId]);
+  }, [userId, email]);
 
   return null;
 }

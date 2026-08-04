@@ -3,6 +3,7 @@ import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 import SignupCompleteConversion from "@/components/SignupCompleteConversion";
 import { requireUser } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -12,10 +13,18 @@ export const metadata: Metadata = {
 
 export default async function SignupCompletePage() {
   const user = await requireUser();
+  const account =
+    user.email?.trim()
+      ? null
+      : await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { email: true },
+        });
+  const email = (user.email ?? account?.email ?? "").trim().toLowerCase();
 
   return (
     <main className="mx-auto flex min-h-full w-full max-w-md flex-1 flex-col justify-center px-6 py-16">
-      <SignupCompleteConversion userId={user.id} />
+      <SignupCompleteConversion userId={user.id} email={email || null} />
       <BrandLockup />
       <h1 className="mt-8 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
         You&apos;re in
