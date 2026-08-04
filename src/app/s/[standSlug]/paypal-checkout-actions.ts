@@ -9,9 +9,8 @@ import {
 import { loadStandCart, type CartItemInput } from "@/lib/checkout";
 import { isPayPalConfigured, isPayPalConnectAvailable } from "@/lib/paypal";
 import { createPayPalCheckoutOrder } from "@/lib/paypal-orders";
-import { PLATFORM_FEE_BPS } from "@/lib/constants";
-import { platformFeeCents } from "@/lib/money";
 import { appBaseUrl } from "@/lib/app-url";
+import { computeStallsideApplicationFee } from "@/lib/stallside-fee";
 
 export async function startPayPalCheckout(input: {
   standSlug: string;
@@ -45,10 +44,8 @@ export async function startPayPalCheckout(input: {
     }
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
-    const trackedFee = platformFeeCents(
-      totalCents,
-      owner.platformFeePercentBps || PLATFORM_FEE_BPS,
-    );
+    // Track Stallside fee for Free only; Pro / lifetime store 0.
+    const trackedFee = computeStallsideApplicationFee(totalCents, owner);
 
     const order = await prisma.order.create({
       data: {
