@@ -11,6 +11,7 @@ declare global {
       trackConversion: (input: {
         conversionType: string;
         value?: number;
+        currency?: string;
       }) => void;
     };
   }
@@ -25,7 +26,8 @@ function trackPerformLead() {
     if (!window.sdAttribution?.trackConversion) return false;
     window.sdAttribution.trackConversion({
       conversionType: "lead",
-      value: 0,
+      value: 50,
+      currency: "AUD",
     });
     return true;
   } catch {
