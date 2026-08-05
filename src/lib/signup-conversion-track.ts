@@ -3,6 +3,11 @@ import {
   type AdAttribution,
 } from "@/lib/ad-attribution";
 
+const PERFORM_ORG_ID = "59c53b3e-428d-4dd9-8b4d-5c34aa938818";
+const PERFORM_SITE_ID = "all";
+const PERFORM_CONVERT_URL =
+  "https://perform-by-silicondales.vercel.app/api/attribution/convert";
+
 export function ensureMetaFbc(attr: AdAttribution | null) {
   if (typeof document === "undefined") return;
   if (!attr?.fbc && !attr?.fbclid) return;
@@ -46,25 +51,72 @@ export function trackReddit(userId: string): boolean {
   }
 }
 
+/**
+ * Post Perform lead via fetch (not sendBeacon) so DevTools shows it and Meta
+ * pushback always gets clickIds + conversionId.
+ */
 export function trackPerformLead(
   userId: string,
   email: string | null | undefined,
   attr: AdAttribution | null,
 ): boolean {
   try {
-    const api = window.sdAttribution;
-    if (!api?.trackConversion) return false;
+    const identity = window.sdAttribution?.getIdentity?.();
+    const fromIdentity =
+      identity?.clickIds && typeof identity.clickIds === "object"
+        ? (identity.clickIds as Record<string, string>)
+        : {};
+    const clickIds = {
+      ...fromIdentity,
+      ...attributionToClickIds(attr),
+    };
+
     const normalized = email?.trim().toLowerCase();
-    if (normalized) api.identify?.({ email: normalized });
-    api.trackConversion({
+    if (normalized) {
+      window.sdAttribution?.identify?.({ email: normalized });
+    }
+
+    const visitorId = identity?.visitorId || `ss_${userId}`;
+    const sessionId =
+      identity?.sessionId ||
+      (typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `ss_sess_${Date.now()}`);
+
+    const payload = {
+      orgId: PERFORM_ORG_ID,
+      siteId: PERFORM_SITE_ID,
+      conversionId: `signup_${userId}`,
       conversionType: "lead",
+      occurredAt: new Date().toISOString(),
       value: 50,
       currency: "AUD",
-      conversionId: `signup_${userId}`,
-      clickIds: attributionToClickIds(attr),
+      visitorId,
+      sessionId,
+      clickIds,
+      orderKeys: [] as string[],
+      productIds: [] as string[],
+      metadata: {
+        pageUrl:
+          typeof window !== "undefined" ? window.location.href : undefined,
+        source: "signup_complete",
+        userId,
+      },
+    };
+
+    void fetch(PERFORM_CONVERT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      keepalive: true,
+      mode: "cors",
+    }).catch((error) => {
+      console.error("Perform convert failed", error);
     });
+
     return true;
-  } catch {
-    return true;
+  } catch (error) {
+    console.error("Perform lead track failed", error);
+    return false;
   }
 }

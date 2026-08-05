@@ -21,7 +21,12 @@ declare global {
     rdt?: (...args: unknown[]) => void;
     sdAttribution?: {
       identify?: (input: { email: string }) => void;
-      trackConversion: (input: {
+      getIdentity?: () => {
+        visitorId?: string;
+        sessionId?: string;
+        clickIds?: Record<string, string>;
+      };
+      trackConversion?: (input: {
         conversionType: string;
         value?: number;
         currency?: string;

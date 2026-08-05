@@ -8,7 +8,7 @@ import { APP_NAME } from "@/lib/constants";
 import { normalizeAttribution } from "@/lib/ad-attribution";
 
 export const metadata: Metadata = {
-  title: `Welcome · ${APP_NAME}`,
+  title: "Welcome",
   robots: { index: false, follow: false },
 };
 
