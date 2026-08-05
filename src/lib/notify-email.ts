@@ -1,5 +1,6 @@
 import { APP_NAME } from "@/lib/constants";
 import { cleanEnvSecret } from "@/lib/env";
+import { filterEmailsForActiveOwners } from "@/lib/owner-deleted";
 import { prisma } from "@/lib/prisma";
 
 /** Real inbox for contact/waitlist owner mail until hello@ has a mailbox. */
@@ -57,9 +58,10 @@ export async function sendOwnerEmail(
     kind?: string;
   },
 ) {
-  const recipients = (Array.isArray(to) ? to : [to])
+  const requested = (Array.isArray(to) ? to : [to])
     .map((email) => email.trim())
     .filter(Boolean);
+  const recipients = await filterEmailsForActiveOwners(requested);
   if (!recipients.length) return;
 
   const apiKey = cleanEnvSecret(process.env.RESEND_API_KEY);

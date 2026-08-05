@@ -7,8 +7,9 @@ import { adminDeleteOwner } from "./actions";
 const DELETES = [
   "Stallside subscription cancelled immediately (if any)",
   "Emails and push alerts stop",
-  "All stands, products, QR links, and order history removed",
-  "User login deleted from the database",
+  "Stands go offline (QR links stop working)",
+  "Login with this email is blocked",
+  "Account data is retained but the account stays closed",
 ] as const;
 
 export default function AdminDeleteOwnerButton({
@@ -29,9 +30,9 @@ export default function AdminDeleteOwnerButton({
     <div className="rounded-[var(--radius)] border border-[var(--gone)]/40 bg-[var(--panel)] p-4">
       <h2 className="text-lg font-semibold text-[var(--gone)]">Delete user</h2>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        Permanently wipe {businessName}
-        {email ? ` (${email})` : ""} from the database - same as Settings →
-        Delete account.
+        Soft-close {businessName}
+        {email ? ` (${email})` : ""} - same as Settings → Delete account. Data
+        is kept; they cannot sign in again.
       </p>
 
       {!open ? (

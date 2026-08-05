@@ -34,6 +34,9 @@ export async function requireOwner() {
   if (!owner) {
     redirect("/onboarding");
   }
+  if (owner.deletedAt) {
+    redirect("/login");
+  }
   return { user, owner };
 }
 

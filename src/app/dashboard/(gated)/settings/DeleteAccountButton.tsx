@@ -6,8 +6,9 @@ import { deleteAccount } from "./delete-account-actions";
 const DELETES = [
   "Your Stallside subscription is cancelled immediately (if you have one)",
   "All emails and phone push alerts stop",
-  "Every stand, product, QR link, and order history is permanently removed",
-  "Your login and account details are deleted",
+  "Your stands go offline (QR links stop working)",
+  "You can no longer sign in with this email",
+  "Your account data is retained on file but the account stays closed",
 ] as const;
 
 export default function DeleteAccountButton() {
@@ -29,7 +30,8 @@ export default function DeleteAccountButton() {
     <div className="rounded-[var(--radius)] border border-[var(--gone)]/40 bg-[var(--panel)] p-4">
       <h3 className="text-base font-semibold text-[var(--gone)]">Delete account</h3>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        Permanently close your Stallside account. This cannot be undone.
+        Close your Stallside account. You will not be able to sign in again
+        with this email.
       </p>
 
       {!open ? (

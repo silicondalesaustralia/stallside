@@ -9,6 +9,7 @@ import { safeCallbackUrl } from "@/lib/login-callback";
 import {
   getOpenLifetimeInvite,
 } from "@/lib/lifetime-invite";
+import { findClosedOwnerByEmail } from "@/lib/owner-deleted";
 
 function normalizeEmail(raw: FormDataEntryValue | null) {
   return String(raw ?? "")
@@ -16,18 +17,36 @@ function normalizeEmail(raw: FormDataEntryValue | null) {
     .toLowerCase();
 }
 
+function otpSendError(error: unknown): Error {
+  if (error instanceof Error && error.message === "ACCOUNT_CLOSED") {
+    return new Error(
+      "This account was closed and can no longer sign in. Contact support if you need help.",
+    );
+  }
+  console.error("Login OTP send failed", error);
+  return new Error("Could not send sign-in code. Try again in a moment.");
+}
+
 export async function requestLoginCode(formData: FormData) {
   const email = normalizeEmail(formData.get("email"));
   if (!email || !email.includes("@")) {
     throw new Error("Enter a valid email address.");
   }
-  const callbackUrl = safeCallbackUrl(String(formData.get("callbackUrl") ?? ""));
+  let callbackUrl = safeCallbackUrl(String(formData.get("callbackUrl") ?? ""));
+
+  // First-time sign-in via /login still needs the thank-you page for pixels.
+  const existing = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (!existing && (callbackUrl === "/dashboard" || !callbackUrl)) {
+    callbackUrl = "/signup-complete";
+  }
 
   try {
     await issueLoginOtp(email);
   } catch (error) {
-    console.error("Login OTP send failed", error);
-    throw new Error("Could not send sign-in code. Try again in a moment.");
+    throw otpSendError(error);
   }
 
   const codeQs = new URLSearchParams({ email });
@@ -83,6 +102,11 @@ export async function requestSignup(formData: FormData) {
   if (name.length < 2) {
     throw new Error("Enter your name.");
   }
+  if (await findClosedOwnerByEmail(email)) {
+    throw new Error(
+      "This account was closed and can no longer sign in. Contact support if you need help.",
+    );
+  }
 
   await prisma.signupIntent.upsert({
     where: { email },
@@ -93,8 +117,7 @@ export async function requestSignup(formData: FormData) {
   try {
     await issueLoginOtp(email);
   } catch (error) {
-    console.error("Signup OTP send failed", error);
-    throw new Error("Could not send sign-in code. Try again in a moment.");
+    throw otpSendError(error);
   }
 
   redirect(
@@ -115,6 +138,12 @@ export async function requestLifetimeSignup(formData: FormData) {
   }
   if (name.length < 2) {
     throw new Error("Enter your name.");
+  }
+
+  if (await findClosedOwnerByEmail(email)) {
+    throw new Error(
+      "This account was closed and can no longer sign in. Contact support if you need help.",
+    );
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });
@@ -138,8 +167,7 @@ export async function requestLifetimeSignup(formData: FormData) {
   try {
     await issueLoginOtp(email);
   } catch (error) {
-    console.error("Lifetime signup OTP send failed", error);
-    throw new Error("Could not send sign-in code. Try again in a moment.");
+    throw otpSendError(error);
   }
 
   redirect(

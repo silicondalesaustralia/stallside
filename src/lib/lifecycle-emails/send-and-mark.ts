@@ -21,7 +21,7 @@ export async function sendAndMarkTrialWelcome(ownerId: string) {
     where: { id: ownerId },
     include: { user: { select: { email: true, name: true } } },
   });
-  if (!owner || owner.trialWelcomeSentAt) return;
+  if (!owner || owner.deletedAt || owner.trialWelcomeSentAt) return;
   const to = recipientEmail(owner);
   if (!to) return;
 
@@ -45,7 +45,7 @@ export async function sendAndMarkCardWelcome(ownerId: string) {
     where: { id: ownerId },
     include: { user: { select: { email: true, name: true } } },
   });
-  if (!owner || owner.cardWelcomeSentAt) return;
+  if (!owner || owner.deletedAt || owner.cardWelcomeSentAt) return;
   const to = recipientEmail(owner);
   if (!to) return;
 
@@ -69,7 +69,7 @@ export async function sendAndMarkCancelFeedback(ownerId: string) {
     where: { id: ownerId },
     include: { user: { select: { email: true, name: true } } },
   });
-  if (!owner || owner.cancelFeedbackSentAt) return;
+  if (!owner || owner.deletedAt || owner.cancelFeedbackSentAt) return;
   if (owner.lifetimeAccess) return;
   const to = recipientEmail(owner);
   if (!to) return;
@@ -93,7 +93,7 @@ export async function maybeSendFirstTenOrdersEmail(ownerId: string) {
     where: { id: ownerId },
     include: { user: { select: { email: true, name: true } } },
   });
-  if (!owner || owner.firstTenOrdersEmailSentAt) return;
+  if (!owner || owner.deletedAt || owner.firstTenOrdersEmailSentAt) return;
 
   const count = await prisma.order.count({
     where: { ownerId, paymentStatus: { in: COUNTED_STATUSES } },

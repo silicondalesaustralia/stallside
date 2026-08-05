@@ -23,7 +23,42 @@ type Props = {
   email?: string | null;
 };
 
-function trackPerformLead(email: string | null | undefined) {
+const RETRY_MS = 250;
+const MAX_ATTEMPTS = 40;
+
+function trackMeta(): boolean {
+  try {
+    if (typeof window.fbq !== "function") return false;
+    window.fbq("track", "CompleteRegistration");
+    return true;
+  } catch {
+    return true;
+  }
+}
+
+function trackGa(): boolean {
+  try {
+    if (typeof window.gtag !== "function") return false;
+    window.gtag("event", "sign_up", { method: "email_otp" });
+    return true;
+  } catch {
+    return true;
+  }
+}
+
+function trackReddit(userId: string): boolean {
+  try {
+    if (typeof window.rdt !== "function") return false;
+    window.rdt("track", "Complete Rego", {
+      conversionId: `signup_${userId}`,
+    });
+    return true;
+  } catch {
+    return true;
+  }
+}
+
+function trackPerformLead(email: string | null | undefined): boolean {
   try {
     const api = window.sdAttribution;
     if (!api?.trackConversion) return false;
@@ -44,36 +79,26 @@ function trackPerformLead(email: string | null | undefined) {
   }
 }
 
-/** Fires Meta + GA + Reddit + Perform signup conversion once on the thank-you page. */
+/**
+ * Fires Meta + GA + Reddit + Perform signup conversion on the thank-you page.
+ * Retries until each pixel stub is available - OTP redirect often races afterInteractive scripts.
+ */
 export default function SignupCompleteConversion({ userId, email }: Props) {
   useEffect(() => {
-    try {
-      window.fbq?.("track", "CompleteRegistration");
-    } catch {
-      /* ignore */
-    }
-    try {
-      window.gtag?.("event", "sign_up", { method: "email_otp" });
-    } catch {
-      /* ignore */
-    }
-    try {
-      // Stable ID so pixel + CAPI can dedupe the same signup.
-      window.rdt?.("track", "Complete Rego", {
-        conversionId: `signup_${userId}`,
-      });
-    } catch {
-      /* ignore */
-    }
-
-    const onceKey = `perform_lead_${userId}`;
+    const onceKey = `signup_conversion_${userId}`;
     try {
       if (sessionStorage.getItem(onceKey) === "1") return;
     } catch {
       /* ignore */
     }
 
-    const markOnce = () => {
+    let metaDone = false;
+    let gaDone = false;
+    let redditDone = false;
+    let performDone = false;
+    let attempts = 0;
+
+    const markAllOnce = () => {
       try {
         sessionStorage.setItem(onceKey, "1");
       } catch {
@@ -81,21 +106,29 @@ export default function SignupCompleteConversion({ userId, email }: Props) {
       }
     };
 
-    // Perform script loads async - retry briefly so we don't miss the lead.
-    if (trackPerformLead(email)) {
-      markOnce();
-      return;
-    }
-    let attempts = 0;
+    const tick = () => {
+      if (!metaDone) metaDone = trackMeta();
+      if (!gaDone) gaDone = trackGa();
+      if (!redditDone) redditDone = trackReddit(userId);
+      if (!performDone) performDone = trackPerformLead(email);
+
+      if (metaDone && gaDone && redditDone && performDone) {
+        markAllOnce();
+        window.clearInterval(timer);
+      }
+    };
+
+    tick();
     const timer = window.setInterval(() => {
       attempts += 1;
-      if (trackPerformLead(email)) {
-        markOnce();
+      tick();
+      if (attempts >= MAX_ATTEMPTS) {
+        // Persist if anything fired so a refresh does not double-count those.
+        if (metaDone || gaDone || redditDone || performDone) markAllOnce();
         window.clearInterval(timer);
-        return;
       }
-      if (attempts >= 20) window.clearInterval(timer);
-    }, 250);
+    }, RETRY_MS);
+
     return () => window.clearInterval(timer);
   }, [userId, email]);
 

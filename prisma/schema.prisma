@@ -233,8 +233,12 @@ model Owner {
   lowStockAlerts            LowStockAlert[]
   pushDevices               PushDevice[]
   galleryStands             GalleryStand[]
+  /** Soft-close: data retained, login/emails/stands stopped. */
+  deletedAt                 DateTime?
   createdAt                 DateTime           @default(now())
   updatedAt                 DateTime           @updatedAt
+
+  @@index([deletedAt])
 }
 
 /** Public stand gallery - admin-curated + owner submissions */

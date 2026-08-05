@@ -10,12 +10,14 @@ import {
   sendAndMarkCardWelcome,
   sendAndMarkTrialWelcome,
 } from "@/lib/lifecycle-emails/send-and-mark";
+import { findClosedOwnerByEmail } from "@/lib/owner-deleted";
 
 /** Verify email code and return the Auth.js user (creating owner on first sign-in). */
 export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
   const email = emailRaw.trim().toLowerCase();
   const code = codeRaw.trim();
   if (!email.includes("@") || !code) return null;
+  if (await findClosedOwnerByEmail(email)) return null;
   if (!(await consumeLoginOtp(email, code))) return null;
 
   let user = await prisma.user.findUnique({ where: { email } });

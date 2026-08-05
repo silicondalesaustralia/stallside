@@ -5,7 +5,7 @@ import { assertNotImpersonating } from "@/lib/impersonation";
 import { requireOwner } from "@/lib/session";
 import { wipeOwnerAccount } from "@/lib/wipe-owner-account";
 
-/** Cancel Stripe subscription + Connect, wipe owner data, sign out. */
+/** Soft-close account: cancel billing, retain data, stop login/emails, sign out. */
 export async function deleteAccount() {
   const blocked = await assertNotImpersonating();
   if (blocked) return blocked;

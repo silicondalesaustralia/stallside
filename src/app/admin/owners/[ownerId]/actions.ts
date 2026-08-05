@@ -132,7 +132,7 @@ export async function cancelOwnerSubscription(ownerId: string) {
   revalidatePath("/admin");
 }
 
-/** Permanently delete owner + user (same wipe as Settings → Delete account). */
+/** Soft-close owner account (same as Settings → Delete account). */
 export async function adminDeleteOwner(ownerId: string) {
   const admin = await requireAdmin();
   const owner = await prisma.owner.findUnique({

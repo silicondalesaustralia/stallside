@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
+import { findClosedOwnerByEmail } from "@/lib/owner-deleted";
 import { sendOwnerEmail } from "@/lib/notify-email";
 
 const OTP_TTL_MS = 10 * 60 * 1000;
@@ -40,9 +41,14 @@ async function sendOtpEmail(email: string, code: string) {
 }
 
 export async function issueLoginOtp(email: string) {
+  const normalized = email.trim().toLowerCase();
+  if (await findClosedOwnerByEmail(normalized)) {
+    throw new Error("ACCOUNT_CLOSED");
+  }
+
   const code = String(crypto.randomInt(100000, 999999));
-  const identifier = otpIdentifier(email);
-  const token = hashOtp(email, code);
+  const identifier = otpIdentifier(normalized);
+  const token = hashOtp(normalized, code);
 
   await prisma.verificationToken.deleteMany({ where: { identifier } });
   await prisma.verificationToken.create({
@@ -52,7 +58,7 @@ export async function issueLoginOtp(email: string) {
       expires: new Date(Date.now() + OTP_TTL_MS),
     },
   });
-  await sendOtpEmail(email, code);
+  await sendOtpEmail(normalized, code);
 }
 
 /** Returns true if code matched and was consumed. */

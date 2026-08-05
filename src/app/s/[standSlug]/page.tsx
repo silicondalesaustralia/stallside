@@ -118,7 +118,7 @@ export default async function PublicStandPage({
           </p>
           {paymentBrands.length > 0 ? (
             <div className="mt-2 flex justify-center">
-              <PaymentIconRow brands={paymentBrands} className="gap-2" />
+              <PaymentIconRow brands={paymentBrands} className="w-full justify-center gap-2" />
             </div>
           ) : null}
           <StandCatalogGrid

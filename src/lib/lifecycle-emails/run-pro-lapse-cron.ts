@@ -15,6 +15,7 @@ export async function runProLapseCron(now: Date): Promise<{
 }> {
   const owners = await prisma.owner.findMany({
     where: {
+      deletedAt: null,
       lifetimeAccess: false,
       proLapsedAt: { not: null },
       subscriptionPlan: { in: ["free", "starter", "cash"] },
