@@ -64,7 +64,26 @@ export function trackReddit(userId: string): boolean {
   }
 }
 
-function buildPerformPayload(
+function readMetaCookie(name: "_fbp" | "_fbc"): string | undefined {
+  try {
+    const match = document.cookie.match(
+      new RegExp(`(?:^|; )${name}=([^;]*)`),
+    );
+    return match?.[1] ? decodeURIComponent(match[1]) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  const data = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+async function buildPerformPayload(
   userId: string,
   email: string | null | undefined,
   attr: AdAttribution | null,
@@ -74,14 +93,28 @@ function buildPerformPayload(
     identity?.clickIds && typeof identity.clickIds === "object"
       ? (identity.clickIds as Record<string, string>)
       : {};
-  const clickIds = {
+  const clickIds: Record<string, string> = {
     ...fromIdentity,
     ...attributionToClickIds(attr),
   };
 
+  const fbp = clickIds.fbp || readMetaCookie("_fbp");
+  const fbc = clickIds.fbc || readMetaCookie("_fbc") || attr?.fbc;
+  if (fbp) clickIds.fbp = fbp;
+  if (fbc) clickIds.fbc = fbc;
+  if (!clickIds.fbc && clickIds.fbclid) {
+    clickIds.fbc = `fb.1.${Date.now()}.${clickIds.fbclid}`;
+  }
+
   const normalized = email?.trim().toLowerCase();
+  let emailHash: string | undefined;
   if (normalized) {
     window.sdAttribution?.identify?.({ email: normalized });
+    try {
+      emailHash = await sha256Hex(normalized);
+    } catch {
+      emailHash = undefined;
+    }
   }
 
   const visitorId = identity?.visitorId || `ss_${userId}`;
@@ -101,6 +134,7 @@ function buildPerformPayload(
     currency: "AUD",
     visitorId,
     sessionId,
+    emailHash,
     clickIds,
     orderKeys: [] as string[],
     productIds: [] as string[],
@@ -119,7 +153,7 @@ export async function postPerformLead(
   attr: AdAttribution | null,
 ): Promise<boolean> {
   try {
-    const payload = buildPerformPayload(userId, email, attr);
+    const payload = await buildPerformPayload(userId, email, attr);
     const res = await fetch(PERFORM_CONVERT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
