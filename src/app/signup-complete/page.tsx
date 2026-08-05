@@ -14,15 +14,21 @@ export const metadata: Metadata = {
 
 export default async function SignupCompletePage() {
   const user = await requireUser();
-  const account = await prisma.user.findUnique({
-    where: { id: user.id },
-    select: {
-      email: true,
-      owner: { select: { adAttribution: true } },
-    },
-  });
-  const email = (user.email ?? account?.email ?? "").trim().toLowerCase();
-  const adAttribution = normalizeAttribution(account?.owner?.adAttribution);
+  let email = (user.email ?? "").trim().toLowerCase();
+  let adAttribution = null as ReturnType<typeof normalizeAttribution>;
+  try {
+    const account = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+        email: true,
+        owner: { select: { adAttribution: true } },
+      },
+    });
+    email = (email || account?.email || "").trim().toLowerCase();
+    adAttribution = normalizeAttribution(account?.owner?.adAttribution);
+  } catch (error) {
+    console.error("signup-complete: attribution lookup failed", error);
+  }
 
   return (
     <main className="mx-auto flex min-h-full w-full max-w-md flex-1 flex-col justify-center px-6 py-16">

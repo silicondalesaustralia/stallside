@@ -71,7 +71,10 @@ export async function requestLoginCode(formData: FormData) {
   redirect(`/login/code?${codeQs.toString()}`);
 }
 
-export async function verifyLoginCode(formData: FormData) {
+export async function verifyLoginCode(formData: FormData): Promise<
+  | { error: string; ok?: undefined; redirectTo?: undefined }
+  | { ok: true; redirectTo: string; error?: undefined }
+> {
   const email = normalizeEmail(formData.get("email"));
   const code = String(formData.get("code") ?? "").trim();
   const callbackUrl = safeCallbackUrl(String(formData.get("callbackUrl") ?? ""));
@@ -99,7 +102,8 @@ export async function verifyLoginCode(formData: FormData) {
     return { error: "Could not sign in. Try again." };
   }
 
-  redirect(callbackUrl);
+  // Client does a full navigation (Safari breaks on server-action redirects here).
+  return { ok: true, redirectTo: callbackUrl };
 }
 
 /** Signup: name + email → Free account intent, then email code. */

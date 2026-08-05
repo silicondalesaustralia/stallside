@@ -8,6 +8,15 @@ type LoginCodeFormProps = {
   callbackUrl?: string;
 };
 
+function isNextRedirect(error: unknown): boolean {
+  return (
+    !!error &&
+    typeof error === "object" &&
+    "digest" in error &&
+    String((error as { digest?: string }).digest).startsWith("NEXT_REDIRECT")
+  );
+}
+
 export default function LoginCodeForm({
   email,
   callbackUrl = "/dashboard",
@@ -20,17 +29,14 @@ export default function LoginCodeForm({
     startTransition(async () => {
       try {
         const result = await verifyLoginCode(formData);
-        if (result?.error) setMessage(result.error);
-      } catch (error) {
-        // signIn/redirect throws NEXT_REDIRECT - must rethrow or the browser stays put / errors.
-        if (
-          error &&
-          typeof error === "object" &&
-          "digest" in error &&
-          String((error as { digest?: string }).digest).startsWith("NEXT_REDIRECT")
-        ) {
-          throw error;
+        if (!result.ok) {
+          setMessage(result.error);
+          return;
         }
+        // Full page load so the session cookie is on the next document request.
+        window.location.assign(result.redirectTo);
+      } catch (error) {
+        if (isNextRedirect(error)) throw error;
         setMessage("Could not sign in. Try again.");
       }
     });
@@ -42,14 +48,7 @@ export default function LoginCodeForm({
       try {
         await requestLoginCode(formData);
       } catch (error) {
-        if (
-          error &&
-          typeof error === "object" &&
-          "digest" in error &&
-          String((error as { digest?: string }).digest).startsWith("NEXT_REDIRECT")
-        ) {
-          throw error;
-        }
+        if (isNextRedirect(error)) throw error;
         setMessage("Could not resend code. Try again.");
       }
     });
