@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AdAttributionFields from "@/components/AdAttributionFields";
 import BrandLockup from "@/components/BrandLockup";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import { APP_NAME } from "@/lib/constants";
@@ -95,6 +96,7 @@ export default async function LifetimeInvitePage({
       </ul>
 
       <form action={requestLifetimeSignup} className="mt-8 flex w-full flex-col gap-4">
+        <AdAttributionFields />
         <input type="hidden" name="inviteToken" value={token} />
         <label className="flex flex-col gap-2 text-sm">
           <span className="font-medium text-[var(--ink)]">Name</span>

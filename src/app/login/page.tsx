@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import AdAttributionFields from "@/components/AdAttributionFields";
 import BrandLockup from "@/components/BrandLockup";
 import { APP_NAME } from "@/lib/constants";
 import { auth } from "@/lib/auth";
@@ -28,6 +29,7 @@ export default async function LoginPage({
         We&apos;ll email a 6-digit code. Enter it here - no passwords, no App Store.
       </p>
       <form action={requestLoginCode} className="mt-8 flex w-full flex-col gap-4">
+        <AdAttributionFields />
         {callbackUrl !== "/dashboard" ? (
           <input type="hidden" name="callbackUrl" value={callbackUrl} />
         ) : null}

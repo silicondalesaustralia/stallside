@@ -11,6 +11,7 @@ import {
   sendAndMarkTrialWelcome,
 } from "@/lib/lifecycle-emails/send-and-mark";
 import { findClosedOwnerByEmail } from "@/lib/owner-deleted";
+import { normalizeAttribution } from "@/lib/ad-attribution";
 
 /** Verify email code and return the Auth.js user (creating owner on first sign-in). */
 export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
@@ -25,6 +26,7 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
     const intent = await prisma.signupIntent.findUnique({ where: { email } });
     const name = (intent?.name || email.split("@")[0] || "My stand").trim();
     const inviteToken = intent?.inviteToken?.trim() || null;
+    const adAttribution = normalizeAttribution(intent?.adAttribution);
 
     user = await prisma.user.create({
       data: {
@@ -43,17 +45,32 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
         userId: user.id,
       });
       if (claimed) {
-        owner = await createOwnerWithLifetime({ userId: user.id, name, email });
+        owner = await createOwnerWithLifetime({
+          userId: user.id,
+          name,
+          email,
+          adAttribution,
+        });
         lifetime = true;
       } else {
         console.warn("Lifetime invite could not be consumed; falling back to Free", {
           email,
           inviteToken,
         });
-        owner = await createOwnerWithTrial({ userId: user.id, name, email });
+        owner = await createOwnerWithTrial({
+          userId: user.id,
+          name,
+          email,
+          adAttribution,
+        });
       }
     } else {
-      owner = await createOwnerWithTrial({ userId: user.id, name, email });
+      owner = await createOwnerWithTrial({
+        userId: user.id,
+        name,
+        email,
+        adAttribution,
+      });
     }
 
     if (intent) {

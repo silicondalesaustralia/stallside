@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AdAttributionFields from "@/components/AdAttributionFields";
 import BrandLockup from "@/components/BrandLockup";
 import { APP_NAME } from "@/lib/constants";
 import { requestSignup } from "@/app/login/actions";
@@ -16,6 +17,7 @@ export default function SignupPage() {
         only - no card required. We&apos;ll send a 6-digit sign-in code.
       </p>
       <form action={requestSignup} className="mt-8 flex w-full flex-col gap-4">
+        <AdAttributionFields />
         <label className="flex flex-col gap-2 text-sm">
           <span className="font-medium text-[var(--ink)]">Name</span>
           <input

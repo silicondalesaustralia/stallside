@@ -1,7 +1,8 @@
 import { randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
-import { SubscriptionStatus } from "@/generated/prisma/client";
+import { Prisma, SubscriptionStatus } from "@/generated/prisma/client";
 import { appBaseUrl } from "@/lib/app-url";
+import type { AdAttribution } from "@/lib/ad-attribution";
 
 export function lifetimeInviteUrl(token: string): string {
   return `${appBaseUrl()}/invite/${token}`;
@@ -43,6 +44,7 @@ export async function createOwnerWithLifetime(input: {
   userId: string;
   name: string;
   email: string;
+  adAttribution?: AdAttribution | null;
 }) {
   const now = new Date();
   const displayName = input.name.trim() || "My stand";
@@ -58,6 +60,9 @@ export async function createOwnerWithLifetime(input: {
       monthlyFeeCents: 0,
       subscriptionStartedAt: now,
       trialEndsAt: null,
+      ...(input.adAttribution
+        ? { adAttribution: input.adAttribution as Prisma.InputJsonValue }
+        : {}),
     },
   });
 }

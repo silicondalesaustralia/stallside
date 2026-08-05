@@ -8,6 +8,10 @@ import "dotenv/config";
 import { createHash, randomUUID } from "crypto";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import {
+  attributionToClickIds,
+  normalizeAttribution,
+} from "../src/lib/ad-attribution";
 
 const ORG_ID = "59c53b3e-428d-4dd9-8b4d-5c34aa938818";
 const SITE_ID = "all";
@@ -40,7 +44,14 @@ async function main() {
         email: true,
         name: true,
         createdAt: true,
-        owner: { select: { id: true, businessName: true, createdAt: true } },
+        owner: {
+          select: {
+            id: true,
+            businessName: true,
+            createdAt: true,
+            adAttribution: true,
+          },
+        },
       },
     });
 
@@ -55,6 +66,8 @@ async function main() {
     const conversionId = `signup_backfill_${user.id}`;
     const visitorId = `backfill_${user.id}`;
     const sessionId = randomUUID();
+    const adAttribution = normalizeAttribution(user.owner?.adAttribution);
+    const clickIds = attributionToClickIds(adAttribution);
 
     const identifyPayload = {
       orgId: ORG_ID,
@@ -84,7 +97,7 @@ async function main() {
       emailHash,
       orderKeys: [],
       productIds: [],
-      clickIds: {},
+      clickIds,
       metadata: {
         pageUrl: "https://stallside.app/signup-complete",
         source: "backfill",
@@ -106,6 +119,8 @@ async function main() {
           },
           emailHash,
           conversionId,
+          clickIds,
+          adAttribution,
           dryRun,
         },
         null,

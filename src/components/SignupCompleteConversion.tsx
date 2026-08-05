@@ -1,6 +1,18 @@
 "use client";
 
 import { useEffect } from "react";
+import {
+  AD_ATTR_COOKIE,
+  mergeAttribution,
+  normalizeAttribution,
+  type AdAttribution,
+} from "@/lib/ad-attribution";
+import {
+  trackGa,
+  trackMeta,
+  trackPerformLead,
+  trackReddit,
+} from "@/lib/signup-conversion-track";
 
 declare global {
   interface Window {
@@ -13,6 +25,8 @@ declare global {
         conversionType: string;
         value?: number;
         currency?: string;
+        conversionId?: string;
+        clickIds?: Record<string, string>;
       }) => void;
     };
   }
@@ -21,69 +35,33 @@ declare global {
 type Props = {
   userId: string;
   email?: string | null;
+  adAttribution?: AdAttribution | null;
 };
 
 const RETRY_MS = 250;
 const MAX_ATTEMPTS = 40;
 
-function trackMeta(): boolean {
+function readCookieAttr(): AdAttribution | null {
   try {
-    if (typeof window.fbq !== "function") return false;
-    window.fbq("track", "CompleteRegistration");
-    return true;
+    const match = document.cookie.match(
+      new RegExp(`(?:^|; )${AD_ATTR_COOKIE}=([^;]*)`),
+    );
+    if (!match?.[1]) return null;
+    return normalizeAttribution(JSON.parse(decodeURIComponent(match[1])));
   } catch {
-    return true;
-  }
-}
-
-function trackGa(): boolean {
-  try {
-    if (typeof window.gtag !== "function") return false;
-    window.gtag("event", "sign_up", { method: "email_otp" });
-    return true;
-  } catch {
-    return true;
-  }
-}
-
-function trackReddit(userId: string): boolean {
-  try {
-    if (typeof window.rdt !== "function") return false;
-    window.rdt("track", "Complete Rego", {
-      conversionId: `signup_${userId}`,
-    });
-    return true;
-  } catch {
-    return true;
-  }
-}
-
-function trackPerformLead(email: string | null | undefined): boolean {
-  try {
-    const api = window.sdAttribution;
-    if (!api?.trackConversion) return false;
-
-    const normalized = email?.trim().toLowerCase();
-    if (normalized) {
-      api.identify?.({ email: normalized });
-    }
-
-    api.trackConversion({
-      conversionType: "lead",
-      value: 50,
-      currency: "AUD",
-    });
-    return true;
-  } catch {
-    return true;
+    return null;
   }
 }
 
 /**
  * Fires Meta + GA + Reddit + Perform signup conversion on the thank-you page.
- * Retries until each pixel stub is available - OTP redirect often races afterInteractive scripts.
+ * Retries until each pixel stub is available; always forwards stored fbclid.
  */
-export default function SignupCompleteConversion({ userId, email }: Props) {
+export default function SignupCompleteConversion({
+  userId,
+  email,
+  adAttribution,
+}: Props) {
   useEffect(() => {
     const onceKey = `signup_conversion_${userId}`;
     try {
@@ -92,6 +70,7 @@ export default function SignupCompleteConversion({ userId, email }: Props) {
       /* ignore */
     }
 
+    const attr = mergeAttribution(adAttribution, readCookieAttr());
     let metaDone = false;
     let gaDone = false;
     let redditDone = false;
@@ -107,11 +86,10 @@ export default function SignupCompleteConversion({ userId, email }: Props) {
     };
 
     const tick = () => {
-      if (!metaDone) metaDone = trackMeta();
+      if (!metaDone) metaDone = trackMeta(userId, attr);
       if (!gaDone) gaDone = trackGa();
       if (!redditDone) redditDone = trackReddit(userId);
-      if (!performDone) performDone = trackPerformLead(email);
-
+      if (!performDone) performDone = trackPerformLead(userId, email, attr);
       if (metaDone && gaDone && redditDone && performDone) {
         markAllOnce();
         window.clearInterval(timer);
@@ -123,14 +101,13 @@ export default function SignupCompleteConversion({ userId, email }: Props) {
       attempts += 1;
       tick();
       if (attempts >= MAX_ATTEMPTS) {
-        // Persist if anything fired so a refresh does not double-count those.
         if (metaDone || gaDone || redditDone || performDone) markAllOnce();
         window.clearInterval(timer);
       }
     }, RETRY_MS);
 
     return () => window.clearInterval(timer);
-  }, [userId, email]);
+  }, [userId, email, adAttribution]);
 
   return null;
 }

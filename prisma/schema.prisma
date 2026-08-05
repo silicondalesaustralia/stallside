@@ -93,6 +93,8 @@ model SignupIntent {
   name        String
   /** Free for Life invite token, if signing up via /invite/[token] */
   inviteToken String?
+  /** Meta/Google click ids + UTMs captured at signup (fbclid etc). */
+  adAttribution Json?
   createdAt   DateTime @default(now())
 }
 
@@ -235,6 +237,8 @@ model Owner {
   galleryStands             GalleryStand[]
   /** Soft-close: data retained, login/emails/stands stopped. */
   deletedAt                 DateTime?
+  /** Ad click ids + UTMs from first signup (for Perform/Meta pushback). */
+  adAttribution             Json?
   createdAt                 DateTime           @default(now())
   updatedAt                 DateTime           @updatedAt
 

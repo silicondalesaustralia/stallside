@@ -1,6 +1,7 @@
 import { COMPLIMENTARY_ACCESS_EMAILS } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
-import { Role, SubscriptionStatus } from "@/generated/prisma/client";
+import { Prisma, Role, SubscriptionStatus } from "@/generated/prisma/client";
+import type { AdAttribution } from "@/lib/ad-attribution";
 
 /**
  * Create an owner on Free: every feature, Stallside card fee applies.
@@ -10,6 +11,7 @@ export async function createOwnerWithTrial(input: {
   userId: string;
   name: string;
   email: string;
+  adAttribution?: AdAttribution | null;
 }) {
   const now = new Date();
   const displayName = input.name.trim() || "My stand";
@@ -24,6 +26,9 @@ export async function createOwnerWithTrial(input: {
       subscriptionStartedAt: now,
       trialEndsAt: null,
       monthlyFeeCents: 0,
+      ...(input.adAttribution
+        ? { adAttribution: input.adAttribution as Prisma.InputJsonValue }
+        : {}),
     },
   });
 }

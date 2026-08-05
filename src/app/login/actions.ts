@@ -10,6 +10,8 @@ import {
   getOpenLifetimeInvite,
 } from "@/lib/lifetime-invite";
 import { findClosedOwnerByEmail } from "@/lib/owner-deleted";
+import { attributionFromFormData } from "@/lib/ad-attribution";
+import type { Prisma } from "@/generated/prisma/client";
 
 function normalizeEmail(raw: FormDataEntryValue | null) {
   return String(raw ?? "")
@@ -41,6 +43,25 @@ export async function requestLoginCode(formData: FormData) {
   });
   if (!existing && (callbackUrl === "/dashboard" || !callbackUrl)) {
     callbackUrl = "/signup-complete";
+  }
+
+  // Capture fbclid even when first contact is /login, not /signup.
+  if (!existing) {
+    const adAttribution = attributionFromFormData(formData);
+    const name = email.split("@")[0] || "My stand";
+    await prisma.signupIntent.upsert({
+      where: { email },
+      create: {
+        email,
+        name,
+        ...(adAttribution
+          ? { adAttribution: adAttribution as Prisma.InputJsonValue }
+          : {}),
+      },
+      update: adAttribution
+        ? { adAttribution: adAttribution as Prisma.InputJsonValue }
+        : {},
+    });
   }
 
   try {
@@ -108,10 +129,24 @@ export async function requestSignup(formData: FormData) {
     );
   }
 
+  const adAttribution = attributionFromFormData(formData);
+
   await prisma.signupIntent.upsert({
     where: { email },
-    create: { email, name },
-    update: { name, inviteToken: null },
+    create: {
+      email,
+      name,
+      ...(adAttribution
+        ? { adAttribution: adAttribution as Prisma.InputJsonValue }
+        : {}),
+    },
+    update: {
+      name,
+      inviteToken: null,
+      ...(adAttribution
+        ? { adAttribution: adAttribution as Prisma.InputJsonValue }
+        : {}),
+    },
   });
 
   try {
@@ -158,10 +193,25 @@ export async function requestLifetimeSignup(formData: FormData) {
     );
   }
 
+  const adAttribution = attributionFromFormData(formData);
+
   await prisma.signupIntent.upsert({
     where: { email },
-    create: { email, name, inviteToken: token },
-    update: { name, inviteToken: token },
+    create: {
+      email,
+      name,
+      inviteToken: token,
+      ...(adAttribution
+        ? { adAttribution: adAttribution as Prisma.InputJsonValue }
+        : {}),
+    },
+    update: {
+      name,
+      inviteToken: token,
+      ...(adAttribution
+        ? { adAttribution: adAttribution as Prisma.InputJsonValue }
+        : {}),
+    },
   });
 
   try {
