@@ -16,7 +16,6 @@ export default function LpClosingCta() {
         </p>
         <div className="mt-8 flex flex-col items-center gap-3">
           <LpStartFreeLink
-            label="Create my free stall"
             placement="final"
             className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-pill)] bg-[var(--marigold)] px-6 py-3 text-base font-semibold text-[var(--field)] transition hover:brightness-105"
           />

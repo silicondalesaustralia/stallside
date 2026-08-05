@@ -17,9 +17,9 @@ export const dynamic = "force-static";
 export const revalidate = false;
 
 export const metadata: Metadata = {
-  title: "Stop Missing Farm Stall Sales | Stallside",
+  title: "Stop Missing Farm Stall Sales",
   description:
-    "Give your unattended stall a QR checkout so customers can pay by cash, PayID, card, Apple Pay or Google Pay. Start free with no terminal.",
+    "Give your unattended stall a QR checkout so customers can pay by cash, PayID, card, Apple Pay or Google Pay. Create a free stall with no terminal.",
   robots: { index: false, follow: true },
 };
 

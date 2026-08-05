@@ -49,7 +49,7 @@ export default function LpHowItWorks() {
         </ol>
 
         <div className="mt-8 flex flex-col items-start gap-2">
-          <LpStartFreeLink label="Create my free stall" placement="how_it_works" />
+          <LpStartFreeLink placement="how_it_works" />
           <p className="text-sm text-[var(--muted)]">No card details required</p>
         </div>
       </div>

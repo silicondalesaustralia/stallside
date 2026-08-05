@@ -6,7 +6,6 @@ const LINKS = [
   { href: "/terms", label: "Terms" },
   { href: "/privacy", label: "Privacy" },
   { href: "/contact", label: "Contact" },
-  { href: "/login", label: "Owner login" },
 ] as const;
 
 export default function LpFooter() {

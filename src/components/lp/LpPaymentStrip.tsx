@@ -1,15 +1,23 @@
 import CardNetworkIcon from "@/components/CardNetworkIcon";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 
-const ROW = [
-  { kind: "brand" as const, brand: "cash" as const, label: "Cash" },
-  { kind: "img" as const, src: "/brand/payid.png", label: "PayID" },
-  { kind: "network" as const, network: "visa" as const, label: "Visa" },
-  { kind: "network" as const, network: "mastercard" as const, label: "Mastercard" },
-  { kind: "network" as const, network: "amex" as const, label: "American Express" },
-  { kind: "brand" as const, brand: "apple" as const, label: "Apple Pay" },
-  { kind: "brand" as const, brand: "google" as const, label: "Google Pay" },
-  { kind: "img" as const, src: "/brand/link.png", label: "Link" },
+type RowItem =
+  | { kind: "brand"; brand: "cash" | "apple" | "google" | "klarna" | "zip"; label: string; note?: string }
+  | { kind: "network"; network: "visa" | "mastercard" | "amex"; label: string; note?: string }
+  | { kind: "img"; src: string; label: string; note?: string };
+
+const ROW: RowItem[] = [
+  { kind: "brand", brand: "cash", label: "Cash" },
+  { kind: "img", src: "/brand/payid.png", label: "PayID", note: "AU · free" },
+  { kind: "img", src: "/brand/payto.png", label: "PayTo", note: "AU" },
+  { kind: "network", network: "visa", label: "Visa" },
+  { kind: "network", network: "mastercard", label: "Mastercard" },
+  { kind: "network", network: "amex", label: "Amex" },
+  { kind: "brand", brand: "apple", label: "Apple Pay" },
+  { kind: "brand", brand: "google", label: "Google Pay" },
+  { kind: "img", src: "/brand/link.png", label: "Link" },
+  { kind: "brand", brand: "klarna", label: "Klarna" },
+  { kind: "brand", brand: "zip", label: "Zip" },
 ];
 
 export default function LpPaymentStrip() {
@@ -32,17 +40,27 @@ export default function LpPaymentStrip() {
                   <CardNetworkIcon network={item.network} className="h-5 w-8" />
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={item.src} alt="" className="h-5 w-auto max-w-[2.5rem] object-contain" />
+                  <img
+                    src={item.src}
+                    alt=""
+                    className="h-5 w-auto max-w-[2.5rem] object-contain"
+                  />
                 )}
               </span>
-              <span className="text-[11px] font-medium text-[var(--muted)]">
+              <span className="text-center text-[11px] font-medium text-[var(--muted)]">
                 {item.label}
+                {item.note ? (
+                  <span className="mt-0.5 block text-[10px] font-semibold text-[var(--leaf)]">
+                    {item.note}
+                  </span>
+                ) : null}
               </span>
             </li>
           ))}
         </ul>
         <p className="mt-4 text-center text-sm text-[var(--muted)]">
-          No card reader. Payments happen on the customer&apos;s phone.
+          No card reader. Payments happen on the customer&apos;s phone. PayID
+          is Australia-only and always free of Stallside fees.
         </p>
       </div>
     </section>

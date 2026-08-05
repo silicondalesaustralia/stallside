@@ -13,7 +13,7 @@ const DEFAULT_CLASS =
 
 /** Primary LP signup link - params patched by LpCtaParamScript. */
 export default function LpStartFreeLink({
-  label = "Start free",
+  label = "Create my free stall",
   className,
   placement,
 }: Props) {
