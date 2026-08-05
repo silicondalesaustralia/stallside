@@ -3,9 +3,22 @@ import {
   type AdAttribution,
 } from "@/lib/ad-attribution";
 
-const PERFORM_ORG_ID = "59c53b3e-428d-4dd9-8b4d-5c34aa938818";
-const PERFORM_SITE_ID = "all";
-const PERFORM_CONVERT_URL =
+declare global {
+  interface Window {
+    sdAttribution?: {
+      identify?: (input: { email: string }) => void;
+      getIdentity?: () => {
+        visitorId?: string;
+        sessionId?: string;
+        clickIds?: Record<string, string>;
+      };
+    };
+  }
+}
+
+export const PERFORM_ORG_ID = "59c53b3e-428d-4dd9-8b4d-5c34aa938818";
+export const PERFORM_SITE_ID = "all";
+export const PERFORM_CONVERT_URL =
   "https://perform-by-silicondales.vercel.app/api/attribution/convert";
 
 export function ensureMetaFbc(attr: AdAttribution | null) {
@@ -51,72 +64,78 @@ export function trackReddit(userId: string): boolean {
   }
 }
 
-/**
- * Post Perform lead via fetch (not sendBeacon) so DevTools shows it and Meta
- * pushback always gets clickIds + conversionId.
- */
-export function trackPerformLead(
+function buildPerformPayload(
   userId: string,
   email: string | null | undefined,
   attr: AdAttribution | null,
-): boolean {
+) {
+  const identity = window.sdAttribution?.getIdentity?.();
+  const fromIdentity =
+    identity?.clickIds && typeof identity.clickIds === "object"
+      ? (identity.clickIds as Record<string, string>)
+      : {};
+  const clickIds = {
+    ...fromIdentity,
+    ...attributionToClickIds(attr),
+  };
+
+  const normalized = email?.trim().toLowerCase();
+  if (normalized) {
+    window.sdAttribution?.identify?.({ email: normalized });
+  }
+
+  const visitorId = identity?.visitorId || `ss_${userId}`;
+  const sessionId =
+    identity?.sessionId ||
+    (typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `ss_sess_${Date.now()}`);
+
+  return {
+    orgId: PERFORM_ORG_ID,
+    siteId: PERFORM_SITE_ID,
+    conversionId: `signup_${userId}`,
+    conversionType: "lead",
+    occurredAt: new Date().toISOString(),
+    value: 50,
+    currency: "AUD",
+    visitorId,
+    sessionId,
+    clickIds,
+    orderKeys: [] as string[],
+    productIds: [] as string[],
+    metadata: {
+      pageUrl: window.location.href,
+      source: "signup_complete",
+      userId,
+    },
+  };
+}
+
+/** POST Perform lead; resolves true only after a 2xx response. */
+export async function postPerformLead(
+  userId: string,
+  email: string | null | undefined,
+  attr: AdAttribution | null,
+): Promise<boolean> {
   try {
-    const identity = window.sdAttribution?.getIdentity?.();
-    const fromIdentity =
-      identity?.clickIds && typeof identity.clickIds === "object"
-        ? (identity.clickIds as Record<string, string>)
-        : {};
-    const clickIds = {
-      ...fromIdentity,
-      ...attributionToClickIds(attr),
-    };
-
-    const normalized = email?.trim().toLowerCase();
-    if (normalized) {
-      window.sdAttribution?.identify?.({ email: normalized });
-    }
-
-    const visitorId = identity?.visitorId || `ss_${userId}`;
-    const sessionId =
-      identity?.sessionId ||
-      (typeof crypto !== "undefined" && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `ss_sess_${Date.now()}`);
-
-    const payload = {
-      orgId: PERFORM_ORG_ID,
-      siteId: PERFORM_SITE_ID,
-      conversionId: `signup_${userId}`,
-      conversionType: "lead",
-      occurredAt: new Date().toISOString(),
-      value: 50,
-      currency: "AUD",
-      visitorId,
-      sessionId,
-      clickIds,
-      orderKeys: [] as string[],
-      productIds: [] as string[],
-      metadata: {
-        pageUrl:
-          typeof window !== "undefined" ? window.location.href : undefined,
-        source: "signup_complete",
-        userId,
-      },
-    };
-
-    void fetch(PERFORM_CONVERT_URL, {
+    const payload = buildPerformPayload(userId, email, attr);
+    const res = await fetch(PERFORM_CONVERT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
       keepalive: true,
       mode: "cors",
-    }).catch((error) => {
-      console.error("Perform convert failed", error);
     });
-
+    const text = await res.text();
+    if (!res.ok) {
+      console.error("Perform convert failed", res.status, text.slice(0, 300));
+      return false;
+    }
+    console.info("[stallside] Perform convert ok", text.slice(0, 200));
     return true;
   } catch (error) {
-    console.error("Perform lead track failed", error);
+    console.error("Perform convert error", error);
     return false;
   }
 }

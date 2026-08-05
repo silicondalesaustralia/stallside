@@ -8,9 +8,9 @@ import {
   type AdAttribution,
 } from "@/lib/ad-attribution";
 import {
+  postPerformLead,
   trackGa,
   trackMeta,
-  trackPerformLead,
   trackReddit,
 } from "@/lib/signup-conversion-track";
 
@@ -26,13 +26,6 @@ declare global {
         sessionId?: string;
         clickIds?: Record<string, string>;
       };
-      trackConversion?: (input: {
-        conversionType: string;
-        value?: number;
-        currency?: string;
-        conversionId?: string;
-        clickIds?: Record<string, string>;
-      }) => void;
     };
   }
 }
@@ -45,8 +38,7 @@ type Props = {
 
 const RETRY_MS = 250;
 const MAX_ATTEMPTS = 40;
-/** Bump when convert transport changes so stale session locks cannot skip Perform. */
-const ONCE_VER = "v3";
+const ONCE_VER = "v4";
 
 function readCookieAttr(): AdAttribution | null {
   try {
@@ -77,8 +69,8 @@ function onceSet(key: string) {
 }
 
 /**
- * Fires Meta + GA + Reddit + Perform signup conversion on the thank-you page.
- * Each channel has its own once-key so a prior Meta fire cannot skip Perform.
+ * Fires Meta + GA + Reddit + Perform on the thank-you page.
+ * Perform only locks after a successful convert HTTP response.
  */
 export default function SignupCompleteConversion({
   userId,
@@ -86,21 +78,20 @@ export default function SignupCompleteConversion({
   adAttribution,
 }: Props) {
   useEffect(() => {
+    const attr = mergeAttribution(adAttribution, readCookieAttr());
     const metaKey = `signup_meta_${ONCE_VER}_${userId}`;
     const gaKey = `signup_ga_${ONCE_VER}_${userId}`;
     const redditKey = `signup_reddit_${ONCE_VER}_${userId}`;
     const performKey = `signup_perform_${ONCE_VER}_${userId}`;
 
-    const attr = mergeAttribution(adAttribution, readCookieAttr());
     let metaDone = onceGet(metaKey);
     let gaDone = onceGet(gaKey);
     let redditDone = onceGet(redditKey);
     let performDone = onceGet(performKey);
+    let performInFlight = false;
     let attempts = 0;
-
-    if (metaDone && gaDone && redditDone && performDone) return;
-
     let timer = 0;
+
     const tick = () => {
       if (!metaDone && trackMeta(userId, attr)) {
         metaDone = true;
@@ -114,9 +105,15 @@ export default function SignupCompleteConversion({
         redditDone = true;
         onceSet(redditKey);
       }
-      if (!performDone && trackPerformLead(userId, email, attr)) {
-        performDone = true;
-        onceSet(performKey);
+      if (!performDone && !performInFlight) {
+        performInFlight = true;
+        void postPerformLead(userId, email, attr).then((ok) => {
+          performInFlight = false;
+          if (ok) {
+            performDone = true;
+            onceSet(performKey);
+          }
+        });
       }
       if (metaDone && gaDone && redditDone && performDone && timer) {
         window.clearInterval(timer);
@@ -124,13 +121,11 @@ export default function SignupCompleteConversion({
     };
 
     tick();
-    if (!(metaDone && gaDone && redditDone && performDone)) {
-      timer = window.setInterval(() => {
-        attempts += 1;
-        tick();
-        if (attempts >= MAX_ATTEMPTS) window.clearInterval(timer);
-      }, RETRY_MS);
-    }
+    timer = window.setInterval(() => {
+      attempts += 1;
+      tick();
+      if (attempts >= MAX_ATTEMPTS) window.clearInterval(timer);
+    }, RETRY_MS);
 
     return () => {
       if (timer) window.clearInterval(timer);
