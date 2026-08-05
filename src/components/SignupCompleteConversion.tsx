@@ -20,7 +20,7 @@ declare global {
     gtag?: (...args: unknown[]) => void;
     rdt?: (...args: unknown[]) => void;
     sdAttribution?: {
-      identify?: (input: { email: string }) => void;
+      identify?: (input: { email?: string; emailHash?: string }) => void;
       getIdentity?: () => {
         visitorId?: string;
         sessionId?: string;
@@ -37,8 +37,8 @@ type Props = {
 };
 
 const RETRY_MS = 250;
-const MAX_ATTEMPTS = 40;
-const ONCE_VER = "v4";
+const MAX_ATTEMPTS = 60;
+const ONCE_VER = "v5";
 
 function readCookieAttr(): AdAttribution | null {
   try {
