@@ -45,6 +45,8 @@ type Props = {
 
 const RETRY_MS = 250;
 const MAX_ATTEMPTS = 40;
+/** Bump when convert transport changes so stale session locks cannot skip Perform. */
+const ONCE_VER = "v3";
 
 function readCookieAttr(): AdAttribution | null {
   try {
@@ -58,9 +60,25 @@ function readCookieAttr(): AdAttribution | null {
   }
 }
 
+function onceGet(key: string): boolean {
+  try {
+    return sessionStorage.getItem(key) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function onceSet(key: string) {
+  try {
+    sessionStorage.setItem(key, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
 /**
  * Fires Meta + GA + Reddit + Perform signup conversion on the thank-you page.
- * Retries until each pixel stub is available; always forwards stored fbclid.
+ * Each channel has its own once-key so a prior Meta fire cannot skip Perform.
  */
 export default function SignupCompleteConversion({
   userId,
@@ -68,35 +86,38 @@ export default function SignupCompleteConversion({
   adAttribution,
 }: Props) {
   useEffect(() => {
-    const onceKey = `signup_conversion_${userId}`;
-    try {
-      if (sessionStorage.getItem(onceKey) === "1") return;
-    } catch {
-      /* ignore */
-    }
+    const metaKey = `signup_meta_${ONCE_VER}_${userId}`;
+    const gaKey = `signup_ga_${ONCE_VER}_${userId}`;
+    const redditKey = `signup_reddit_${ONCE_VER}_${userId}`;
+    const performKey = `signup_perform_${ONCE_VER}_${userId}`;
 
     const attr = mergeAttribution(adAttribution, readCookieAttr());
-    let metaDone = false;
-    let gaDone = false;
-    let redditDone = false;
-    let performDone = false;
+    let metaDone = onceGet(metaKey);
+    let gaDone = onceGet(gaKey);
+    let redditDone = onceGet(redditKey);
+    let performDone = onceGet(performKey);
     let attempts = 0;
 
-    const markAllOnce = () => {
-      try {
-        sessionStorage.setItem(onceKey, "1");
-      } catch {
-        /* ignore */
-      }
-    };
+    if (metaDone && gaDone && redditDone && performDone) return;
 
     const tick = () => {
-      if (!metaDone) metaDone = trackMeta(userId, attr);
-      if (!gaDone) gaDone = trackGa();
-      if (!redditDone) redditDone = trackReddit(userId);
-      if (!performDone) performDone = trackPerformLead(userId, email, attr);
+      if (!metaDone && trackMeta(userId, attr)) {
+        metaDone = true;
+        onceSet(metaKey);
+      }
+      if (!gaDone && trackGa()) {
+        gaDone = true;
+        onceSet(gaKey);
+      }
+      if (!redditDone && trackReddit(userId)) {
+        redditDone = true;
+        onceSet(redditKey);
+      }
+      if (!performDone && trackPerformLead(userId, email, attr)) {
+        performDone = true;
+        onceSet(performKey);
+      }
       if (metaDone && gaDone && redditDone && performDone) {
-        markAllOnce();
         window.clearInterval(timer);
       }
     };
@@ -105,10 +126,7 @@ export default function SignupCompleteConversion({
     const timer = window.setInterval(() => {
       attempts += 1;
       tick();
-      if (attempts >= MAX_ATTEMPTS) {
-        if (metaDone || gaDone || redditDone || performDone) markAllOnce();
-        window.clearInterval(timer);
-      }
+      if (attempts >= MAX_ATTEMPTS) window.clearInterval(timer);
     }, RETRY_MS);
 
     return () => window.clearInterval(timer);
