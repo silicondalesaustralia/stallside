@@ -100,6 +100,7 @@ export default function SignupCompleteConversion({
 
     if (metaDone && gaDone && redditDone && performDone) return;
 
+    let timer = 0;
     const tick = () => {
       if (!metaDone && trackMeta(userId, attr)) {
         metaDone = true;
@@ -117,19 +118,23 @@ export default function SignupCompleteConversion({
         performDone = true;
         onceSet(performKey);
       }
-      if (metaDone && gaDone && redditDone && performDone) {
+      if (metaDone && gaDone && redditDone && performDone && timer) {
         window.clearInterval(timer);
       }
     };
 
     tick();
-    const timer = window.setInterval(() => {
-      attempts += 1;
-      tick();
-      if (attempts >= MAX_ATTEMPTS) window.clearInterval(timer);
-    }, RETRY_MS);
+    if (!(metaDone && gaDone && redditDone && performDone)) {
+      timer = window.setInterval(() => {
+        attempts += 1;
+        tick();
+        if (attempts >= MAX_ATTEMPTS) window.clearInterval(timer);
+      }, RETRY_MS);
+    }
 
-    return () => window.clearInterval(timer);
+    return () => {
+      if (timer) window.clearInterval(timer);
+    };
   }, [userId, email, adAttribution]);
 
   return null;
