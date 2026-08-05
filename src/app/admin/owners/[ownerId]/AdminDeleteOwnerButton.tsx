@@ -6,10 +6,10 @@ import { adminDeleteOwner } from "./actions";
 
 const DELETES = [
   "Stallside subscription cancelled immediately (if any)",
-  "Emails and push alerts stop",
+  "Marketing, sale, and alert emails stop (sign-in codes still work)",
+  "Push alerts stop",
   "Stands go offline (QR links stop working)",
-  "Login with this email is blocked",
-  "Account data is retained but the account stays closed",
+  "Account data is retained",
 ] as const;
 
 export default function AdminDeleteOwnerButton({
@@ -32,7 +32,7 @@ export default function AdminDeleteOwnerButton({
       <p className="mt-1 text-sm text-[var(--muted)]">
         Soft-close {businessName}
         {email ? ` (${email})` : ""} - same as Settings → Delete account. Data
-        is kept; they cannot sign in again.
+        is kept; they can still sign in, but emails and stands stop.
       </p>
 
       {!open ? (

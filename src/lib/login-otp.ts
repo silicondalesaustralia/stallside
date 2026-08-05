@@ -1,7 +1,6 @@
 import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
-import { findClosedOwnerByEmail } from "@/lib/owner-deleted";
 import { sendOwnerEmail } from "@/lib/notify-email";
 
 const OTP_TTL_MS = 10 * 60 * 1000;
@@ -42,9 +41,6 @@ async function sendOtpEmail(email: string, code: string) {
 
 export async function issueLoginOtp(email: string) {
   const normalized = email.trim().toLowerCase();
-  if (await findClosedOwnerByEmail(normalized)) {
-    throw new Error("ACCOUNT_CLOSED");
-  }
 
   const code = String(crypto.randomInt(100000, 999999));
   const identifier = otpIdentifier(normalized);

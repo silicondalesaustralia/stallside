@@ -5,7 +5,7 @@ export function ownerIsDeleted(owner: { deletedAt: Date | null }): boolean {
   return owner.deletedAt != null;
 }
 
-/** Lookup by login email - closed accounts must not receive OTP or sign in. */
+/** Lookup by login email - soft-closed owners (login still allowed; marketing mail stopped). */
 export async function findClosedOwnerByEmail(emailRaw: string) {
   const email = emailRaw.trim().toLowerCase();
   if (!email.includes("@")) return null;

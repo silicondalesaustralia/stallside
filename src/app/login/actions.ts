@@ -9,7 +9,6 @@ import { safeCallbackUrl } from "@/lib/login-callback";
 import {
   getOpenLifetimeInvite,
 } from "@/lib/lifetime-invite";
-import { findClosedOwnerByEmail } from "@/lib/owner-deleted";
 import { attributionFromFormData } from "@/lib/ad-attribution";
 import type { Prisma } from "@/generated/prisma/client";
 
@@ -20,11 +19,6 @@ function normalizeEmail(raw: FormDataEntryValue | null) {
 }
 
 function otpSendError(error: unknown): Error {
-  if (error instanceof Error && error.message === "ACCOUNT_CLOSED") {
-    return new Error(
-      "This account was closed and can no longer sign in. Contact support if you need help.",
-    );
-  }
   console.error("Login OTP send failed", error);
   return new Error("Could not send sign-in code. Try again in a moment.");
 }
@@ -123,11 +117,6 @@ export async function requestSignup(formData: FormData) {
   if (name.length < 2) {
     throw new Error("Enter your name.");
   }
-  if (await findClosedOwnerByEmail(email)) {
-    throw new Error(
-      "This account was closed and can no longer sign in. Contact support if you need help.",
-    );
-  }
 
   const adAttribution = attributionFromFormData(formData);
 
@@ -173,12 +162,6 @@ export async function requestLifetimeSignup(formData: FormData) {
   }
   if (name.length < 2) {
     throw new Error("Enter your name.");
-  }
-
-  if (await findClosedOwnerByEmail(email)) {
-    throw new Error(
-      "This account was closed and can no longer sign in. Contact support if you need help.",
-    );
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });

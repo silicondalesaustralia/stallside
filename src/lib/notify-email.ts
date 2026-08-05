@@ -61,7 +61,11 @@ export async function sendOwnerEmail(
   const requested = (Array.isArray(to) ? to : [to])
     .map((email) => email.trim())
     .filter(Boolean);
-  const recipients = await filterEmailsForActiveOwners(requested);
+  // OTP must still reach soft-closed owners so they can sign in.
+  const recipients =
+    options?.kind === "otp"
+      ? requested
+      : await filterEmailsForActiveOwners(requested);
   if (!recipients.length) return;
 
   const apiKey = cleanEnvSecret(process.env.RESEND_API_KEY);

@@ -9,8 +9,8 @@ export type WipeOwnerResult =
   | { error: string };
 
 /**
- * Soft-close an owner account: keep all Stallside data, stop login/emails/stands,
- * and cancel SaaS billing. Shared by self-serve and admin delete.
+ * Soft-close an owner account: keep all Stallside data, stop marketing/alert
+ * emails and stands, cancel SaaS billing. Login/OTP still allowed.
  */
 export async function wipeOwnerAccount(
   ownerId: string,

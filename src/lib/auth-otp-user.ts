@@ -10,15 +10,14 @@ import {
   sendAndMarkCardWelcome,
   sendAndMarkTrialWelcome,
 } from "@/lib/lifecycle-emails/send-and-mark";
-import { findClosedOwnerByEmail } from "@/lib/owner-deleted";
 import { normalizeAttribution } from "@/lib/ad-attribution";
+import { Prisma } from "@/generated/prisma/client";
 
 /** Verify email code and return the Auth.js user (creating owner on first sign-in). */
 export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
   const email = emailRaw.trim().toLowerCase();
   const code = codeRaw.trim();
   if (!email.includes("@") || !code) return null;
-  if (await findClosedOwnerByEmail(email)) return null;
   if (!(await consumeLoginOtp(email, code))) return null;
 
   let user = await prisma.user.findUnique({ where: { email } });
@@ -93,14 +92,30 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
       await sendAndMarkTrialWelcome(owner.id);
     }
   } else {
+    const intent = await prisma.signupIntent.findUnique({ where: { email } });
+    const adAttribution = normalizeAttribution(intent?.adAttribution);
     const owner = await prisma.owner.findUnique({ where: { userId: user.id } });
     if (!owner) {
       const created = await createOwnerWithTrial({
         userId: user.id,
         name: user.name || "My stand",
         email,
+        adAttribution,
       });
       await sendAndMarkTrialWelcome(created.id);
+    } else if (intent) {
+      // Re-signup with an existing (incl. soft-closed) account: store click ids
+      // and clear deletedAt so they can use the product again.
+      await prisma.owner.update({
+        where: { id: owner.id },
+        data: {
+          ...(adAttribution
+            ? { adAttribution: adAttribution as Prisma.InputJsonValue }
+            : {}),
+          ...(owner.deletedAt ? { deletedAt: null } : {}),
+        },
+      });
+      await prisma.signupIntent.delete({ where: { email } }).catch(() => null);
     }
   }
 
