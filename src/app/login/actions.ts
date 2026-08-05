@@ -83,20 +83,15 @@ export async function verifyLoginCode(formData: FormData) {
   }
 
   try {
-    await signIn("otp", {
+    const result = await signIn("otp", {
       email,
       code: code.replace(/\s+/g, ""),
-      redirectTo: callbackUrl,
+      redirect: false,
     });
-  } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "digest" in error &&
-      String((error as { digest?: string }).digest).startsWith("NEXT_REDIRECT")
-    ) {
-      throw error;
+    if (result?.error) {
+      return { error: "That code is wrong or expired. Request a new one." };
     }
+  } catch (error) {
     if (error instanceof AuthError) {
       return { error: "That code is wrong or expired. Request a new one." };
     }
@@ -104,7 +99,7 @@ export async function verifyLoginCode(formData: FormData) {
     return { error: "Could not sign in. Try again." };
   }
 
-  return { error: "Could not sign in. Try again." };
+  redirect(callbackUrl);
 }
 
 /** Signup: name + email → Free account intent, then email code. */

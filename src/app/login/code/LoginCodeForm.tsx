@@ -18,8 +18,21 @@ export default function LoginCodeForm({
   function onVerify(formData: FormData) {
     setMessage(null);
     startTransition(async () => {
-      const result = await verifyLoginCode(formData);
-      if (result?.error) setMessage(result.error);
+      try {
+        const result = await verifyLoginCode(formData);
+        if (result?.error) setMessage(result.error);
+      } catch (error) {
+        // signIn/redirect throws NEXT_REDIRECT - must rethrow or the browser stays put / errors.
+        if (
+          error &&
+          typeof error === "object" &&
+          "digest" in error &&
+          String((error as { digest?: string }).digest).startsWith("NEXT_REDIRECT")
+        ) {
+          throw error;
+        }
+        setMessage("Could not sign in. Try again.");
+      }
     });
   }
 
