@@ -45,11 +45,6 @@ export const LANDING_FAQS: FaqItem[] = [
       "On Free, Stallside charges 2.5% on card, Tap & Go (Apple Pay / Google Pay), and pay-later. Cash and PayID have no Stallside fee. You can absorb the Stallside fee or pass it on to customers (shown as a card fee line at checkout) in Settings → Card / Tap & Go. On Pro there is no Stallside cut. Stripe's own processing fees still apply either way (pay-later providers usually charge more than cards).",
   },
   {
-    question: "When is Pro cheaper than Free?",
-    answer:
-      "Pro may cost less once a stall processes around A$800 or more in card sales per month. The exact point depends on your sales and billing currency. This is a guide, not a guarantee.",
-  },
-  {
     question: "Are cash and PayID free?",
     answer:
       "Yes. Stallside does not charge a platform fee on cash payments or PayID transfers. PayID is currently available in Australia only.",
