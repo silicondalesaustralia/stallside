@@ -2,6 +2,11 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/legal";
 import { prisma } from "@/lib/prisma";
 import { isDemoStandSlug } from "@/lib/demo";
+import {
+  getAllArticles,
+  newsArticlePath,
+  newsIndexPath,
+} from "@/lib/farms-stand-news";
 import { isReservedProductSlug } from "@/lib/slug";
 import {
   standCatalogPath,
@@ -22,6 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/contact",
     "/privacy",
     "/terms",
+    newsIndexPath(),
   ] as const;
 
   const entries: MetadataRoute.Sitemap = marketing.map((path) => ({
@@ -30,6 +36,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: path === "" ? "weekly" : "monthly",
     priority: path === "" ? 1 : 0.6,
   }));
+
+  for (const article of getAllArticles()) {
+    entries.push({
+      url: `${SITE_URL}${newsArticlePath(article.slug)}`,
+      lastModified: new Date(article.updatedAt ?? article.publishedAt),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    });
+  }
 
   try {
     const stands = await prisma.stand.findMany({

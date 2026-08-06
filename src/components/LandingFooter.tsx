@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/about", label: "About" },
   { href: "/gallery", label: "Gallery" },
   { href: "/testimonials", label: "Testimonials" },
+  { href: "/farms-stand-news", label: "News" },
   { href: "/contact", label: "Contact" },
   { href: "/contact?subject=feature-request", label: "Feature request" },
   { href: "/terms", label: "Terms" },

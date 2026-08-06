@@ -99,7 +99,7 @@ export function webPageSchema(opts: {
   path: string;
   name: string;
   description: string;
-  type?: "WebPage" | "AboutPage" | "ContactPage";
+  type?: "WebPage" | "AboutPage" | "ContactPage" | "CollectionPage";
 }) {
   const type = opts.type ?? "WebPage";
   return {
@@ -135,7 +135,7 @@ export function marketingPageGraphSchema(opts: {
   path: string;
   name: string;
   description: string;
-  type?: "WebPage" | "AboutPage" | "ContactPage";
+  type?: "WebPage" | "AboutPage" | "ContactPage" | "CollectionPage";
 }) {
   return {
     "@context": "https://schema.org",
