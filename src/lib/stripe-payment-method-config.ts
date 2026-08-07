@@ -89,8 +89,9 @@ export function parseConnectPaymentMethods(
 
 export async function getDefaultPaymentMethodConfiguration(
   stripeAccountId: string,
+  stripeClient?: Stripe,
 ): Promise<Stripe.PaymentMethodConfiguration | null> {
-  const stripe = getStripe();
+  const stripe = stripeClient ?? getStripe();
   const list = await stripe.paymentMethodConfigurations.list(
     { limit: 20 },
     { stripeAccount: stripeAccountId },

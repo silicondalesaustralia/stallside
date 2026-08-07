@@ -163,7 +163,7 @@ export async function startCardCheckout(input: {
     const methodTypes = standCheckoutPaymentMethodTypes(Boolean(preOrderCart));
     const pmc = methodTypes
       ? null
-      : await getDefaultPaymentMethodConfiguration(stripeAccountId);
+      : await getDefaultPaymentMethodConfiguration(stripeAccountId, stripe);
     const session = await stripe.checkout.sessions.create(
       {
         ...sessionParams,
