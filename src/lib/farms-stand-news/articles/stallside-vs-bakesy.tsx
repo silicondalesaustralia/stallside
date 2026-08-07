@@ -72,7 +72,7 @@ export const stallsideVsBakesyArticle: NewsArticle = {
   citations: [
     {
       name: "Stallside pricing",
-      url: "https://stallside.app/#pricing",
+      url: "https://vendl.app/#pricing",
     },
     {
       name: "Bakesy pricing and plans",

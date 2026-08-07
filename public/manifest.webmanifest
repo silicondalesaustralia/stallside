@@ -1,6 +1,6 @@
 {
-  "name": "Stallside",
-  "short_name": "Stallside",
+  "name": "Vendl",
+  "short_name": "Vendl",
   "description": "Scan, pay, sold - farm stand checkout and alerts.",
   "start_url": "/dashboard",
   "display": "standalone",

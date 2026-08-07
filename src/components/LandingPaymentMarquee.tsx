@@ -1,5 +1,6 @@
 import CardNetworkIcon from "@/components/CardNetworkIcon";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
+import { APP_NAME } from "@/lib/constants";
 import { WORDMARK_BRANDS } from "@/lib/payment-brand-assets";
 import {
   LANDING_PAYMENT_MARKS,
@@ -73,7 +74,7 @@ export default function LandingPaymentMarquee() {
   return (
     <div
       className="ticker-tape payment-marquee relative overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--wash)]/70 py-4"
-      aria-label="Payment methods Stallside supports by region"
+      aria-label={`Payment methods ${APP_NAME} supports by region`}
     >
       <div className="payment-marquee-fade pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[var(--wash)] to-transparent" />
       <div className="payment-marquee-fade pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[var(--wash)] to-transparent" />

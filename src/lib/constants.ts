@@ -1,4 +1,4 @@
-export const APP_NAME = "Stallside";
+export const APP_NAME = "Vendl";
 export const APP_DOMAIN = "vendl.app";
 export const APP_TAGLINE = "Scan, Pay, Sold.";
 export const APP_POSITIONING =
@@ -7,10 +7,10 @@ export const APP_HERO_SUPPORT =
   "Print a QR, get paid, track every sale from your phone.";
 /** Browser tab + search title for the homepage */
 export const APP_SEO_TITLE =
-  "Stallside · Checkout For Unattended Farm Stands & Stalls";
+  "Vendl · Checkout For Unattended Farm Stands & Stalls";
 /** Meta description (~155 chars) */
 export const APP_SEO_DESCRIPTION =
-  "Free QR checkout for farm stands and honesty stalls. Cash and PayID free; card has a 2.5% Stallside fee - or go Pro to remove it.";
+  "Free QR checkout for farm stands and honesty stalls. Cash and PayID free; card has a 2.5% Vendl fee - or go Pro to remove it.";
 
 /** @deprecated legacy Cash tier list price - prefer cashPlanCents(currency) */
 export const CASH_PLAN_CENTS = 699;

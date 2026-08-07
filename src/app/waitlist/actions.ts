@@ -91,7 +91,7 @@ async function sendWaitlistEmails(
   try {
     await sendOwnerEmail(
       contactInbox(),
-      `[Stallside waitlist] ${name}`,
+      `[${APP_NAME} waitlist] ${name}`,
       `
         <p><strong>${safeName}</strong> &lt;${safeEmail}&gt; joined the Tap &amp; Go waitlist.</p>
       `,

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { APP_NAME } from "@/lib/constants";
 
 /** Homepage regions block - cash everywhere; digital methods by country. */
 export default function LandingRegionsSection() {
@@ -14,7 +15,7 @@ export default function LandingRegionsSection() {
           style={{ borderTopLeftRadius: 8 }}
         />
         <h2 className="max-w-2xl pl-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
-          Where can I use Stallside?
+          Where can I use {APP_NAME}?
         </h2>
         <div className="mt-6 max-w-3xl space-y-4 pl-3 text-base leading-relaxed text-[var(--muted)] sm:text-lg">
           <p>

@@ -8,7 +8,7 @@ type BrandMarkProps = {
   link?: boolean;
 };
 
-/** QR-finder bracket + seed - Stallside mark. Links home by default. */
+/** QR-finder bracket + seed - Vendl mark. Links home by default. */
 export default function BrandMark({
   className = "size-10",
   variant = "light",

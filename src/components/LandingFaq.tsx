@@ -1,3 +1,4 @@
+import { APP_NAME } from "@/lib/constants";
 import { LANDING_FAQS } from "@/lib/landing-faqs";
 
 export default function LandingFaq() {
@@ -14,7 +15,7 @@ export default function LandingFaq() {
         </h2>
       </div>
       <p className="mb-8 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        Straight answers about Stallside for anyone running an unattended stall.
+        Straight answers about {APP_NAME} for anyone running an unattended stall.
       </p>
 
       <dl className="divide-y divide-[var(--line)] border-y border-[var(--line)]">

@@ -1,4 +1,4 @@
-import { APP_NAME } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import {
   LEGAL_ABN,
   LEGAL_ADDRESS_LINE,
@@ -14,7 +14,7 @@ export default function TermsContent() {
           Agreement
         </h2>
         <p className="text-[var(--muted)]">
-          These Terms govern use of {APP_NAME} (stallside.app), a software service operated by{" "}
+          These Terms govern use of {APP_NAME} ({APP_DOMAIN}), a software service operated by{" "}
           {LEGAL_ENTITY} (ABN {LEGAL_ABN}), {LEGAL_ADDRESS_LINE}. By creating an account or using
           the service you agree to these Terms.
         </p>

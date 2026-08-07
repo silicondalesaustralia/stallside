@@ -1,7 +1,7 @@
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 import OwnerAuthLink from "@/components/OwnerAuthLink";
-import { APP_DOMAIN } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 
 const LINKS = [
   { href: "/demo", label: "Try Demo" },
@@ -68,7 +68,7 @@ export default function LandingFooter() {
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Stallside on ${social.label}`}
+                aria-label={`${APP_NAME} on ${social.label}`}
                 className="text-[var(--ink-on-dark)]/70 transition hover:text-[var(--ink-on-dark)]"
               >
                 <SocialIcon path={social.path} className="size-5" />

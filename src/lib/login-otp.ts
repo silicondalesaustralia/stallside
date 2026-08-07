@@ -24,7 +24,7 @@ async function sendOtpEmail(email: string, code: string) {
     <div style="font-family:system-ui,sans-serif;line-height:1.5;color:#182C1B">
       <p style="font-size:18px;font-weight:600">Your ${APP_NAME} sign-in code</p>
       <p style="font-size:32px;font-weight:700;letter-spacing:0.2em;margin:20px 0">${code}</p>
-      <p>Enter this code in Stallside. It expires in 10 minutes.</p>
+      <p>Enter this code in ${APP_NAME}. It expires in 10 minutes.</p>
     </div>
   `;
 

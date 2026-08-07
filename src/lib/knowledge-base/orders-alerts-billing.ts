@@ -19,7 +19,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
       { label: "Alert settings", href: "/dashboard/settings" },
     ],
     steps: [
-      "On your phone browser, go to stallside.app and tap Sign in (or Start free if you are new).",
+      "On your phone browser, go to vendl.app and tap Sign in (or Start free if you are new).",
       "Enter your email and tap Email me a code. Check your inbox for a 6-digit code.",
       "Type the code into Stallside on the same screen. Do not leave this browser window to complete sign-in.",
       "On iPhone: tap Share → Add to Home Screen → Add. Open Stallside from that new icon next time (not from a Safari tab).",

@@ -4,7 +4,7 @@ export const stallsideVsBakesySoftware: NewsComparedSoftware[] = [
   {
     id: "stallside",
     name: "Stallside",
-    url: "https://stallside.app",
+    url: "https://vendl.app",
     applicationSubCategory: "Point of Sale and Inventory Software",
     operatingSystem:
       "Web browser (iOS, Android, desktop) — no customer app required",
@@ -30,7 +30,7 @@ export const stallsideVsBakesySoftware: NewsComparedSoftware[] = [
         name: "Stallside Free",
         price: "0",
         priceCurrency: "AUD",
-        url: "https://stallside.app/#pricing",
+        url: "https://vendl.app/#pricing",
         description:
           "All Stallside features at $0/month. A 2.5% Stallside platform fee applies to card, Tap & Go and pay-later payments; cash and PayID carry no Stallside fee. Standard Stripe processing fees apply separately.",
       },
@@ -38,7 +38,7 @@ export const stallsideVsBakesySoftware: NewsComparedSoftware[] = [
         name: "Stallside Pro",
         price: "19.99",
         priceCurrency: "AUD",
-        url: "https://stallside.app/#pricing",
+        url: "https://vendl.app/#pricing",
         unitText: "per site per month",
         description:
           "Removes the 2.5% Stallside platform fee. Standard Stripe processing fees still apply. Also billed at US$14.99, £11.99 or €14.99 per site.",
