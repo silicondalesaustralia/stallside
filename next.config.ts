@@ -9,25 +9,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Permanent infrastructure: printed QR posters point at stallside.app/s/{slug}.
-  // Do not remove. Stage 1 uses permanent: false (307); flip to true (301) after rebrand is verified.
-  // Destination is www.vendl.app (not apex): many resolvers still NXDOMAIN-cache bare vendl.app
-  // from before the A record existed; www has been resolving and serves the same deployment.
+  // Printed QR posters use stallside.app/s/{slug}. Keep those on stallside (no host
+  // redirect) so they never depend on vendl DNS. Marketing host redirect lives in
+  // middleware so /s, /checkout, /api stay on stallside.
   async redirects() {
-    return [
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "stallside.app" }],
-        destination: "https://www.vendl.app/:path*",
-        permanent: false,
-      },
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "www.stallside.app" }],
-        destination: "https://www.vendl.app/:path*",
-        permanent: false,
-      },
-    ];
+    return [];
   },
   async headers() {
     return [

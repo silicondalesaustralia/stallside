@@ -7,8 +7,33 @@ import {
   sessionCookieName,
 } from "@/lib/auth-session";
 
+const STALLSIDE_HOSTS = new Set(["stallside.app", "www.stallside.app"]);
+
+/** Paths that must keep working on stallside (printed QR posters + checkout returns). */
+function keepOnStallside(pathname: string): boolean {
+  return (
+    pathname === "/s" ||
+    pathname.startsWith("/s/") ||
+    pathname.startsWith("/checkout/") ||
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/unsubscribe/") ||
+    pathname.startsWith("/_next/") ||
+    pathname === "/favicon.ico" ||
+    pathname === "/manifest.webmanifest" ||
+    pathname.includes(".")
+  );
+}
+
 /** Expose path for login callbackUrl; refresh Auth.js JWT cookie (sliding session). */
 export async function middleware(request: NextRequest) {
+  const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
+  if (STALLSIDE_HOSTS.has(host) && !keepOnStallside(request.nextUrl.pathname)) {
+    const dest = new URL(
+      `https://www.vendl.app${request.nextUrl.pathname}${request.nextUrl.search}`,
+    );
+    return NextResponse.redirect(dest, 307);
+  }
+
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-stallside-pathname", request.nextUrl.pathname);
   requestHeaders.set("x-stallside-search", request.nextUrl.search);
@@ -73,19 +98,8 @@ async function refreshSessionCookie(request: NextRequest, response: NextResponse
 }
 
 export const config = {
-  // Include marketing home so returning owners keep a fresh session cookie.
   matcher: [
-    "/",
-    "/login",
-    "/signup",
-    "/signup-complete",
-    "/invite/:path*",
-    "/about",
-    "/gallery",
-    "/testimonials",
-    "/contact",
-    "/dashboard/:path*",
-    "/onboarding",
-    "/admin/:path*",
+    // Host redirect + session refresh. Skip hashed Next static assets.
+    "/((?!_next/static|_next/image).*)",
   ],
 };
