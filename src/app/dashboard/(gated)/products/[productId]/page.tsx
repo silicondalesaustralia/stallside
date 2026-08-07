@@ -7,6 +7,7 @@ import { standProductPath } from "@/lib/stand-seo";
 import ProductEditForm from "./ProductEditForm";
 import ProductLifecycleActions from "../ProductLifecycleActions";
 import ProductOptionsEditor from "./ProductOptionsEditor";
+import { parsePriceTiers } from "@/lib/price-tiers";
 
 export default async function EditProductPage({
   params,
@@ -79,10 +80,14 @@ export default async function EditProductPage({
             collectionAt: product.collectionAt,
             collectionNote: product.collectionNote,
             showExactStock: product.showExactStock,
+            freshnessNote: product.freshnessNote,
+            priceTiers: parsePriceTiers(product.priceTiers),
+            hasOptions: product.optionGroups.length > 0,
           }}
         />
         <ProductOptionsEditor
           productId={product.id}
+          disabled={parsePriceTiers(product.priceTiers).length > 0}
           initial={product.optionGroups.map((g) => ({
             name: g.name,
             choices: g.choices.map((c) => ({

@@ -68,12 +68,31 @@ export default async function StandCartPage({
       : null;
 
   const products = stand.products.map((p) =>
-    mapPublicProduct(p, { showExactStock: stand.showExactStock }),
+    mapPublicProduct(p, {
+      showExactStock: stand.showExactStock,
+      showPublicScarcity: stand.showPublicScarcity,
+    }),
   );
 
   const branded = publicStandBranding(stand, stand.owner);
   const restockStandId =
     !isDemo && isRestockAlertsEnabled() ? stand.id : null;
+
+  const upsellProduct = stand.upsellProductId
+    ? stand.products.find((p) => p.id === stand.upsellProductId)
+    : null;
+  const upsell =
+    upsellProduct && upsellProduct.stockQuantity > 0
+      ? {
+          productId: upsellProduct.id,
+          name: upsellProduct.name,
+          priceCents:
+            stand.upsellPriceCents != null
+              ? stand.upsellPriceCents
+              : upsellProduct.priceCents,
+          stockQuantity: upsellProduct.stockQuantity,
+        }
+      : null;
 
   return (
     <main
@@ -113,6 +132,16 @@ export default async function StandCartPage({
         restockStandId={restockStandId}
         passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner)}
         stallsideFeeApplies={shouldChargeVendlFee(stand.owner)}
+        upsell={upsell}
+        firstOrder={
+          stand.firstOrderDiscountEnabled
+            ? {
+                enabled: true,
+                percent: stand.firstOrderDiscountPercent,
+                amountCents: stand.firstOrderDiscountAmountCents,
+              }
+            : null
+        }
       />
     </main>
   );

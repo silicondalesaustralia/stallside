@@ -7,6 +7,9 @@ import { updateStand } from "../actions";
 import StandBrandingFields, {
   type StandBrandingValues,
 } from "./StandBrandingFields";
+import StandConversionFields, {
+  type StandConversionValues,
+} from "./StandConversionFields";
 
 type StandFields = {
   id: string;
@@ -22,9 +25,13 @@ type StandFields = {
 export default function StandEditForm({
   stand,
   branding,
+  conversion,
+  products,
 }: {
   stand: StandFields;
   branding?: StandBrandingValues | null;
+  conversion?: StandConversionValues | null;
+  products?: { id: string; name: string; priceCents: number }[];
 }) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
@@ -125,6 +132,13 @@ export default function StandEditForm({
         <input type="checkbox" name="isActive" defaultChecked={stand.isActive} className="size-4" />
         Public checkout enabled
       </label>
+      {conversion && products ? (
+        <StandConversionFields
+          currency={stand.currency}
+          products={products}
+          values={conversion}
+        />
+      ) : null}
       {branding ? (
         <div className="border-t border-[var(--line)] pt-6">
           <h3 className="text-base font-semibold">Branding</h3>

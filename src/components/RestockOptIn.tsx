@@ -31,10 +31,10 @@ export default function RestockOptIn({
   return (
     <div className="mt-8 border-t border-[var(--line)] pt-6">
       <p className="text-base font-medium text-[var(--ink)]">
-        Want to know when this stand restocks?
+        Sold out fast last time — get notified when we&apos;re back
       </p>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        We&apos;ll email you when it does - nothing else.
+        We&apos;ll email you when this stand restocks — nothing else.
       </p>
       <form action={action} className="mt-4 flex flex-col gap-3">
         <input type="hidden" name="standId" value={standId} />

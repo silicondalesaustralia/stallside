@@ -19,9 +19,11 @@ function emptyGroup(): DraftGroup {
 export default function ProductOptionsEditor({
   productId,
   initial,
+  disabled,
 }: {
   productId: string;
   initial: { name: string; choices: { name: string; priceDeltaCents: number }[] }[];
+  disabled?: boolean;
 }) {
   const router = useRouter();
   const [groups, setGroups] = useState<DraftGroup[]>(() =>
@@ -65,13 +67,15 @@ export default function ProductOptionsEditor({
   }
 
   return (
-    <fieldset className="flex flex-col gap-3 rounded-lg border border-[var(--line)] p-4">
+    <fieldset
+      disabled={disabled}
+      className="flex flex-col gap-3 rounded-lg border border-[var(--line)] p-4"
+    >
       <legend className="px-1 text-sm font-semibold">Options (variants)</legend>
       <p className="text-sm text-[var(--muted)]">
-        Up to {MAX_OPTION_GROUPS} groups (e.g. Size, Flavour). Shared stock on
-        the product. Leave empty for no options. With one group, each choice
-        price is the full price (0 = use the product price). With multiple
-        groups, choice prices are add-ons on top of the product price.
+        {disabled
+          ? "Clear volume prices on this product before adding options."
+          : `Up to ${MAX_OPTION_GROUPS} groups (e.g. Size, Flavour). Shared stock on the product. Leave empty for no options. With one group, each choice price is the full price (0 = use the product price). With multiple groups, choice prices are add-ons on top of the product price.`}
       </p>
       {groups.map((group, gi) => (
         <div

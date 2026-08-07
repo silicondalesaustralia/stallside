@@ -3,6 +3,7 @@ import {
   formatOrderByLabel,
 } from "@/lib/pre-order";
 import type { PublicOptionGroup } from "@/lib/product-options";
+import { parsePriceTiers } from "@/lib/price-tiers";
 
 export type PreOrderDetailsData = {
   ordersCloseLabel: string | null;
@@ -25,6 +26,8 @@ export type PublicProductCard = {
   preOrderDetails: PreOrderDetailsData | null;
   optionGroups: PublicOptionGroup[];
   hasOptions: boolean;
+  freshnessNote: string | null;
+  priceTiers: { qty: number; totalCents: number }[];
 };
 
 function stockLabel(
@@ -32,6 +35,7 @@ function stockLabel(
   quantity: number,
   threshold: number,
   preOrder: { collectionAt: Date } | null,
+  showPublicScarcity: boolean,
 ): string {
   if (quantity <= 0) {
     return preOrder
@@ -44,11 +48,15 @@ function stockLabel(
   if (showExact) return `${quantity} left`;
   if (preOrder) {
     if (quantity <= threshold) {
-      return `Low stock for ${formatCollectionLabel(preOrder.collectionAt)}`;
+      return showPublicScarcity
+        ? `Only ${quantity} left for ${formatCollectionLabel(preOrder.collectionAt)}`
+        : `Low stock for ${formatCollectionLabel(preOrder.collectionAt)}`;
     }
     return `Available for ${formatCollectionLabel(preOrder.collectionAt)}`;
   }
-  if (quantity <= threshold) return "Low stock";
+  if (quantity <= threshold) {
+    return showPublicScarcity ? `Only ${quantity} left` : "Low stock";
+  }
   return "Available";
 }
 
@@ -67,13 +75,19 @@ export function mapPublicProduct(
     collectionAt: Date | null;
     collectionNote: string | null;
     showExactStock?: boolean;
+    freshnessNote?: string | null;
+    priceTiers?: unknown;
     optionGroups?: {
       id: string;
       name: string;
       choices: { id: string; name: string; priceDeltaCents: number }[];
     }[];
   },
-  opts: { showExactStock: boolean; now?: number },
+  opts: {
+    showExactStock: boolean;
+    showPublicScarcity?: boolean;
+    now?: number;
+  },
 ): PublicProductCard {
   const now = opts.now ?? Date.now();
   const isPre = Boolean(p.isPreOrder && p.collectionAt && p.orderByAt);
@@ -85,11 +99,13 @@ export function mapPublicProduct(
   const showExact = isPre
     ? Boolean(p.showExactStock)
     : opts.showExactStock;
+  const showPublicScarcity = opts.showPublicScarcity !== false;
   let label = stockLabel(
     showExact,
     p.stockQuantity,
     p.lowStockThreshold,
     isPre ? { collectionAt: p.collectionAt! } : null,
+    showPublicScarcity,
   );
   if (closed && p.stockQuantity > 0) {
     label = `Orders closed (${formatOrderByLabel(p.orderByAt!)})`;
@@ -114,6 +130,9 @@ export function mapPublicProduct(
     })),
   }));
 
+  const priceTiers =
+    optionGroups.length > 0 ? [] : parsePriceTiers(p.priceTiers);
+
   return {
     id: p.id,
     slug: p.slug,
@@ -129,6 +148,8 @@ export function mapPublicProduct(
     preOrderDetails,
     optionGroups,
     hasOptions: optionGroups.length > 0,
+    freshnessNote: p.freshnessNote?.trim() || null,
+    priceTiers,
   };
 }
 

@@ -7,10 +7,15 @@ import {
   PaymentStatus,
   ReceiptChannel,
 } from "@/generated/prisma/client";
-import { loadStandCart, type CartItemInput } from "@/lib/checkout";
+import {
+  loadStandCart,
+  orderItemCreates,
+  type CartItemInput,
+} from "@/lib/checkout";
 import { isDemoStandSlug } from "@/lib/demo";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
+import { stripeLineItemsFromCart } from "@/lib/stripe-cart-lines";
 import {
   computeVendlCheckoutFees,
   ownerPassesFeeToCustomer,
@@ -26,10 +31,28 @@ export async function startCardCheckout(input: {
   customerPhone?: string;
 }) {
   try {
-    const loaded = await loadStandCart(input.standSlug, input.items);
+    const customerName = (input.customerName ?? "").trim().slice(0, 120);
+    const customerEmail = (input.customerEmail ?? "")
+      .trim()
+      .toLowerCase()
+      .slice(0, 200);
+    const customerPhone = (input.customerPhone ?? "").trim().slice(0, 40) || null;
+
+    const loaded = await loadStandCart(input.standSlug, input.items, {
+      receiptEmail: customerEmail || null,
+      claimFirstOrder: Boolean(customerEmail),
+    });
     if ("error" in loaded) return { error: loaded.error };
 
-    const { stand, lineData, totalCents, preOrderCart } = loaded;
+    const {
+      stand,
+      lineData,
+      subtotalCents,
+      discountCents,
+      discountLabel,
+      totalCents,
+      preOrderCart,
+    } = loaded;
     const owner = stand.owner;
     const demo = isDemoStandSlug(stand.slug);
 
@@ -37,12 +60,6 @@ export async function startCardCheckout(input: {
       return { error: "Card is not enabled at this stand." };
     }
 
-    const customerName = (input.customerName ?? "").trim().slice(0, 120);
-    const customerEmail = (input.customerEmail ?? "")
-      .trim()
-      .toLowerCase()
-      .slice(0, 200);
-    const customerPhone = (input.customerPhone ?? "").trim().slice(0, 40) || null;
     if (preOrderCart && !customerName) {
       return { error: "Enter your name for collection." };
     }
@@ -89,7 +106,9 @@ export async function startCardCheckout(input: {
         orderNumber,
         paymentMethod: PaymentMethod.CARD,
         paymentStatus: PaymentStatus.PENDING,
-        subtotalCents: totalCents,
+        subtotalCents,
+        discountCents,
+        discountLabel,
         totalCents: chargeTotal,
         currency: stand.currency,
         platformFeeCents: applicationFee,
@@ -97,7 +116,7 @@ export async function startCardCheckout(input: {
           ? ReceiptChannel.EMAIL
           : ReceiptChannel.NONE,
         receiptEmail: customerEmail || null,
-        items: { create: lineData },
+        items: { create: orderItemCreates(lineData) },
         ...(preOrderCart
           ? {
               isPreOrder: true,
@@ -112,18 +131,19 @@ export async function startCardCheckout(input: {
     });
 
     const base = appBaseUrl();
-    const lineItems = lineData.map((line) => ({
-      quantity: line.quantity,
-      price_data: {
-        currency: stand.currency.toLowerCase(),
-        unit_amount: line.unitPriceCents,
-        product_data: {
-          name: line.optionsSnapshot
-            ? `${line.productNameSnapshot} (${line.optionsSnapshot})`
-            : line.productNameSnapshot,
-        },
-      },
-    }));
+    const lineItems = stripeLineItemsFromCart(lineData, stand.currency);
+    if (discountCents > 0 && lineItems.length > 0) {
+      let remaining = discountCents;
+      for (let i = lineItems.length - 1; i >= 0 && remaining > 0; i--) {
+        const amt = lineItems[i].price_data.unit_amount;
+        const cut = Math.min(amt, remaining);
+        lineItems[i].price_data.unit_amount = amt - cut;
+        remaining -= cut;
+        if (cut > 0 && discountLabel) {
+          lineItems[i].price_data.product_data.name += ` (${discountLabel})`;
+        }
+      }
+    }
     if (passOn && applicationFee > 0) {
       lineItems.push({
         quantity: 1,
@@ -137,7 +157,7 @@ export async function startCardCheckout(input: {
 
     const sessionParams = {
       mode: "payment" as const,
-      line_items: lineItems,
+      line_items: lineItems.filter((l) => l.price_data.unit_amount > 0),
       success_url: `${base}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/checkout/cancelled?order=${order.id}`,
       ...(customerEmail ? { customer_email: customerEmail } : {}),

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { isReservedProductSlug } from "@/lib/slug";
-import { mapPublicProduct } from "@/lib/public-product";
+import { formatMoney, mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { productMetadata, standCatalogPath } from "@/lib/stand-seo";
@@ -80,9 +80,15 @@ export default async function PublicProductPage({
   const branded = publicStandBranding(stand, stand.owner);
   const catalogProducts = stand.products
     .filter((p) => !p.isHidden)
-    .map((p) => mapPublicProduct(p, { showExactStock: stand.showExactStock }));
+    .map((p) =>
+      mapPublicProduct(p, {
+        showExactStock: stand.showExactStock,
+        showPublicScarcity: stand.showPublicScarcity,
+      }),
+    );
   const product = mapPublicProduct(productRow, {
     showExactStock: stand.showExactStock,
+    showPublicScarcity: stand.showPublicScarcity,
   });
 
   return (
@@ -117,6 +123,21 @@ export default async function PublicProductPage({
         {product.description ? (
           <p className="mt-3 text-lg leading-snug text-[var(--muted)]">
             {product.description}
+          </p>
+        ) : null}
+        {product.freshnessNote ? (
+          <p className="mt-2 text-base text-[var(--leaf-dark)]">
+            {product.freshnessNote}
+          </p>
+        ) : null}
+        {product.priceTiers.length > 0 ? (
+          <p className="mt-2 font-receipt text-sm text-[var(--muted)]">
+            {product.priceTiers
+              .map(
+                (t) =>
+                  `${t.qty} for ${formatMoney(t.totalCents, stand.currency)}`,
+              )
+              .join(" · ")}
           </p>
         ) : null}
         <ProductDetailActions

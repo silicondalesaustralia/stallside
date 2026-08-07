@@ -125,6 +125,20 @@ export default async function StandDetailPage({
           <div className="mt-4">
             <StandEditForm
               stand={stand}
+              products={stand.products.map((p) => ({
+                id: p.id,
+                name: p.name,
+                priceCents: p.priceCents,
+              }))}
+              conversion={{
+                upsellProductId: stand.upsellProductId,
+                upsellPriceCents: stand.upsellPriceCents,
+                firstOrderDiscountEnabled: stand.firstOrderDiscountEnabled,
+                firstOrderDiscountPercent: stand.firstOrderDiscountPercent,
+                firstOrderDiscountAmountCents:
+                  stand.firstOrderDiscountAmountCents,
+                showPublicScarcity: stand.showPublicScarcity,
+              }}
               branding={{
                 logoUrl: stand.logoUrl,
                 accentColor: stand.accentColor,

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { updateStandQrPrint } from "../../actions";
 import SignHtmlEditor from "@/components/SignHtmlEditor";
+import PosterBlockToggles from "./PosterBlockToggles";
 
 type PrintFields = {
   id: string;
@@ -12,6 +13,13 @@ type PrintFields = {
   locationLabel: string | null;
   qrSignMessage: string | null;
   qrCallout: string | null;
+  posterShowCta: boolean;
+  posterCtaText: string | null;
+  posterShowBundles: boolean;
+  posterShowFirstOrder: boolean;
+  posterShowInstructions: boolean;
+  posterShowFreshness: boolean;
+  posterShowHowItWorks: boolean;
 };
 
 export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
@@ -91,6 +99,18 @@ export default function QrPrintEditor({ stand }: { stand: PrintFields }) {
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
+
+      <PosterBlockToggles
+        values={{
+          posterShowCta: stand.posterShowCta,
+          posterCtaText: stand.posterCtaText,
+          posterShowBundles: stand.posterShowBundles,
+          posterShowFirstOrder: stand.posterShowFirstOrder,
+          posterShowInstructions: stand.posterShowInstructions,
+          posterShowFreshness: stand.posterShowFreshness,
+          posterShowHowItWorks: stand.posterShowHowItWorks,
+        }}
+      />
 
       {message ? <p className="text-sm text-[var(--muted)]">{message}</p> : null}
       <button

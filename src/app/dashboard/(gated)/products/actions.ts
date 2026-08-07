@@ -17,6 +17,8 @@ import {
   uniqueProductSlug,
 } from "@/lib/slug";
 import { archiveProduct } from "./product-lifecycle-actions";
+import { parseTiersFromForm } from "@/lib/price-tiers";
+import { Prisma } from "@/generated/prisma/client";
 
 const productSchema = z.object({
   standId: z.string().min(1),
@@ -213,9 +215,24 @@ export async function updateProduct(productId: string, formData: FormData) {
     const { owner, user } = await requireOwner();
     const product = await prisma.product.findFirst({
       where: { id: productId, ownerId: owner.id },
-      include: { stand: { select: { slug: true } } },
+      include: {
+        stand: { select: { slug: true } },
+        optionGroups: { select: { id: true } },
+      },
     });
     if (!product) return { error: "Product not found." };
+
+    const tiersParsed = parseTiersFromForm(formData);
+    if (!tiersParsed.ok) return { error: tiersParsed.error };
+    if (tiersParsed.tiers.length > 0 && product.optionGroups.length > 0) {
+      return {
+        error: "Clear product options before setting volume prices.",
+      };
+    }
+
+    const freshnessNote = String(formData.get("freshnessNote") ?? "")
+      .trim()
+      .slice(0, 80);
 
     const parsed = z
       .object({
@@ -299,6 +316,11 @@ export async function updateProduct(productId: string, formData: FormData) {
         imageUrl,
         priceCents,
         lowStockThreshold: parsed.data.lowStockThreshold,
+        freshnessNote: freshnessNote || null,
+        priceTiers:
+          tiersParsed.tiers.length > 0
+            ? tiersParsed.tiers
+            : Prisma.DbNull,
         ...pre.data,
       },
     });

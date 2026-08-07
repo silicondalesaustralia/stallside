@@ -6,6 +6,8 @@ import { useState, useTransition } from "react";
 import FilePickButton from "@/components/FilePickButton";
 import { updateProduct } from "../actions";
 import PreOrderFields from "../PreOrderFields";
+import ProductPriceTiersFields from "./ProductPriceTiersFields";
+import type { PriceTier } from "@/lib/price-tiers";
 
 type ProductFields = {
   id: string;
@@ -28,6 +30,9 @@ type ProductFields = {
   collectionAt: Date | null;
   collectionNote: string | null;
   showExactStock: boolean;
+  freshnessNote: string | null;
+  priceTiers: PriceTier[];
+  hasOptions: boolean;
 };
 
 export default function ProductEditForm({ product }: { product: ProductFields }) {
@@ -146,6 +151,21 @@ export default function ProductEditForm({ product }: { product: ProductFields })
           required
           inputMode="decimal"
           defaultValue={priceDefault}
+          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+        />
+      </label>
+      <ProductPriceTiersFields
+        currency={product.currency}
+        initial={product.priceTiers}
+        disabled={product.hasOptions}
+      />
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="font-medium">Freshness note (optional)</span>
+        <input
+          name="freshnessNote"
+          defaultValue={product.freshnessNote ?? ""}
+          maxLength={80}
+          placeholder="Laid this morning"
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>

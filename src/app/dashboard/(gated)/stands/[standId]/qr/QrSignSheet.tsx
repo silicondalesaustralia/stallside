@@ -21,6 +21,13 @@ export type QrSignSheetProps = {
   logoUrl?: string | null;
   accentColor?: string | null;
   secondaryColor?: string | null;
+  posterCtaText?: string | null;
+  showPosterCta?: boolean;
+  bundleLines?: string[];
+  firstOrderLine?: string | null;
+  freshnessLines?: string[];
+  showHowItWorks?: boolean;
+  showInstructions?: boolean;
 };
 
 const defaultMessage = "Scan to browse and pay at this stand.";
@@ -42,6 +49,13 @@ export default function QrSignSheet({
   logoUrl = null,
   accentColor = null,
   secondaryColor = null,
+  posterCtaText = null,
+  showPosterCta = false,
+  bundleLines = [],
+  firstOrderLine = null,
+  freshnessLines = [],
+  showHowItWorks = false,
+  showInstructions = true,
 }: QrSignSheetProps) {
   const compact = layout === "compact";
   const accentStyle = standAccentStyle(accentColor, secondaryColor);
@@ -101,6 +115,15 @@ export default function QrSignSheet({
         >
           {name}
         </h1>
+        {showPosterCta && posterCtaText ? (
+          <p
+            className={`font-[family-name:var(--font-display)] font-bold tracking-tight text-[var(--field)] ${
+              compact ? "mt-1.5 text-base" : "mt-6 text-2xl"
+            }`}
+          >
+            {posterCtaText}
+          </p>
+        ) : null}
         {qrCallout ? (
           <SafeSignHtml
             html={qrCallout}
@@ -113,18 +136,52 @@ export default function QrSignSheet({
       </div>
 
       <div className="qr-sign-body">
-        {qrSignMessage ? (
-          <SafeSignHtml
-            html={qrSignMessage}
-            allowStyles
-            className={`safe-sign-html text-[var(--muted)] ${compact ? "mt-0 text-sm" : "mt-6 text-lg"}`}
-          />
-        ) : (
-          <p className={`text-[var(--muted)] ${compact ? "mt-0 text-sm" : "mt-6 text-lg"}`}>
-            {defaultMessage}
+        {showInstructions ? (
+          qrSignMessage ? (
+            <SafeSignHtml
+              html={qrSignMessage}
+              allowStyles
+              className={`safe-sign-html text-[var(--muted)] ${compact ? "mt-0 text-sm" : "mt-6 text-lg"}`}
+            />
+          ) : (
+            <p className={`text-[var(--muted)] ${compact ? "mt-0 text-sm" : "mt-6 text-lg"}`}>
+              {defaultMessage}
+            </p>
+          )
+        ) : null}
+        {bundleLines.length > 0 ? (
+          <p
+            className={`font-receipt text-[var(--ink)] ${
+              compact ? "mt-1.5 text-sm" : "mt-4 text-base"
+            }`}
+          >
+            {bundleLines.join(" · ")}
           </p>
-        )}
-        {description ? (
+        ) : null}
+        {firstOrderLine ? (
+          <p
+            className={`font-semibold text-[var(--leaf-dark)] ${
+              compact ? "mt-1 text-sm" : "mt-3 text-base"
+            }`}
+          >
+            {firstOrderLine}
+          </p>
+        ) : null}
+        {freshnessLines.length > 0 ? (
+          <p
+            className={`text-[var(--muted)] ${compact ? "mt-1 text-xs" : "mt-2 text-sm"}`}
+          >
+            {freshnessLines.join(" · ")}
+          </p>
+        ) : null}
+        {showHowItWorks ? (
+          <p
+            className={`text-[var(--muted)] ${compact ? "mt-1 text-xs" : "mt-3 text-sm"}`}
+          >
+            Scan · Pick · Pay
+          </p>
+        ) : null}
+        {showInstructions && description ? (
           <SafeSignHtml
             html={description}
             allowStyles

@@ -10,16 +10,23 @@ import {
 import {
   decrementStockForOrder,
   loadStandCart,
+  orderItemCreates,
   type CartItemInput,
 } from "@/lib/checkout";
+import { normalizeReceiptEmail } from "@/lib/first-order-discount";
 import { notifySale } from "@/lib/notify";
 import { notifyTapAndGoInterest } from "@/lib/notify-tap-and-go";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 
+type CheckoutExtras = {
+  receiptEmail?: string | null;
+  claimFirstOrder?: boolean;
+};
+
 export async function confirmCashCheckout(input: {
   standSlug: string;
   items: CartItemInput[];
-}) {
+} & CheckoutExtras) {
   return confirmDeclaredCheckout({
     ...input,
     paymentMethod: PaymentMethod.CASH,
@@ -31,7 +38,7 @@ export async function confirmCashCheckout(input: {
 export async function confirmLocalTransferCheckout(input: {
   standSlug: string;
   items: CartItemInput[];
-}) {
+} & CheckoutExtras) {
   const loaded = await loadStandCart(input.standSlug, input.items);
   if ("error" in loaded) return { error: loaded.error };
 
@@ -64,19 +71,32 @@ async function confirmDeclaredCheckout(input: {
     | typeof InventorySource.ORDER_LOCAL_TRANSFER;
   reason: string;
   localTransferMethodId?: string;
-}) {
+} & CheckoutExtras) {
   try {
-    const loaded = await loadStandCart(input.standSlug, input.items);
+    const email = input.receiptEmail
+      ? normalizeReceiptEmail(input.receiptEmail)
+      : "";
+    const loaded = await loadStandCart(input.standSlug, input.items, {
+      receiptEmail: email || null,
+      claimFirstOrder: Boolean(input.claimFirstOrder && email),
+    });
     if ("error" in loaded) return { error: loaded.error };
 
-    const { stand, byId, items, lineData, totalCents, preOrderCart } = loaded;
+    const {
+      stand,
+      byId,
+      items,
+      lineData,
+      subtotalCents,
+      discountCents,
+      discountLabel,
+      totalCents,
+      preOrderCart,
+    } = loaded;
     if (preOrderCart) {
       return { error: "Pre-orders must be paid by card." };
     }
-    if (
-      input.paymentMethod === PaymentMethod.CASH &&
-      !stand.acceptCash
-    ) {
+    if (input.paymentMethod === PaymentMethod.CASH && !stand.acceptCash) {
       return { error: "Cash is not available at this stand." };
     }
     if (
@@ -98,12 +118,15 @@ async function confirmDeclaredCheckout(input: {
             paymentMethod: input.paymentMethod,
             paymentStatus: PaymentStatus.CUSTOMER_CONFIRMED,
             localTransferMethodId: input.localTransferMethodId ?? null,
-            subtotalCents: totalCents,
+            subtotalCents,
+            discountCents,
+            discountLabel,
             totalCents,
             currency: stand.currency,
             platformFeeCents: 0,
-            receiptChannel: ReceiptChannel.NONE,
-            items: { create: lineData },
+            receiptChannel: email ? ReceiptChannel.EMAIL : ReceiptChannel.NONE,
+            receiptEmail: email || null,
+            items: { create: orderItemCreates(lineData) },
           },
         });
 

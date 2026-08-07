@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { APP_DOMAIN } from "@/lib/constants";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
+import { parsePriceTiers } from "@/lib/price-tiers";
+import { formatMoney } from "@/lib/public-product";
 import QrPrintEditor from "./QrPrintEditor";
 import QrWorkspace from "./QrWorkspace";
 
@@ -17,6 +19,13 @@ export default async function StandQrPage({
   const { owner, user } = await requireOwner();
   const stand = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
+    include: {
+      products: {
+        where: { isArchived: false, isActive: true, isHidden: false },
+        orderBy: { sortOrder: "asc" },
+        take: 12,
+      },
+    },
   });
   if (!stand) notFound();
 
@@ -27,6 +36,35 @@ export default async function StandQrPage({
     ...owner,
     user: { email: user.email, role: user.role },
   });
+
+  const bundleLines: string[] = [];
+  if (stand.posterShowBundles) {
+    for (const p of stand.products) {
+      const tiers = parsePriceTiers(p.priceTiers);
+      if (!tiers.length) continue;
+      const parts = tiers.map(
+        (t) => `${t.qty}× ${formatMoney(t.totalCents, stand.currency)}`,
+      );
+      bundleLines.push(`${p.name}: ${parts.join(" · ")}`);
+    }
+  }
+
+  const freshnessLines = stand.posterShowFreshness
+    ? stand.products
+        .map((p) => p.freshnessNote?.trim())
+        .filter((n): n is string => Boolean(n))
+        .slice(0, 4)
+    : [];
+
+  let firstOrderLine: string | null = null;
+  if (stand.posterShowFirstOrder && stand.firstOrderDiscountEnabled) {
+    firstOrderLine =
+      stand.firstOrderDiscountAmountCents != null &&
+      stand.firstOrderDiscountAmountCents > 0
+        ? `First time? Get ${formatMoney(stand.firstOrderDiscountAmountCents, stand.currency)} off — enter your email at checkout.`
+        : `First time? Get ${stand.firstOrderDiscountPercent}% off — enter your email at checkout.`;
+  }
+
   const sheet = {
     name: stand.name,
     qrCallout: stand.qrCallout,
@@ -40,6 +78,13 @@ export default async function StandQrPage({
     logoUrl: stand.logoUrl,
     accentColor: stand.accentColor,
     secondaryColor: stand.secondaryColor,
+    showPosterCta: stand.posterShowCta,
+    posterCtaText: stand.posterCtaText,
+    bundleLines,
+    firstOrderLine,
+    freshnessLines,
+    showHowItWorks: stand.posterShowHowItWorks,
+    showInstructions: stand.posterShowInstructions,
   };
 
   return (

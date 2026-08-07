@@ -37,9 +37,9 @@ export async function sendRestockNotifications(input: {
     const unsubUrl = `${base}/unsubscribe/restock?token=${encodeURIComponent(sub.unsubToken)}`;
     const listUnsubUrl = `${base}/api/restock/unsubscribe?token=${encodeURIComponent(sub.unsubToken)}`;
     const html = `
-<p><strong>${safeName}</strong> has just restocked.</p>
+<p><strong>${safeName}</strong> just restocked — come grab what’s back.</p>
 ${messageHtml}
-<p><a href="${standUrl}">Visit the stand</a></p>
+<p><a href="${standUrl}">Buy now</a></p>
 <p style="font-size:13px;color:#5a6b5c;margin-top:24px">
   You asked ${APP_NAME} to email you when this stand restocks.
   <a href="${unsubUrl}">Unsubscribe</a>
@@ -48,7 +48,7 @@ ${messageHtml}
     try {
       await sendOwnerEmail(
         sub.email,
-        `${input.standName} has restocked`,
+        `${input.standName} just restocked — shop now`,
         html,
         {
           replyTo: `${APP_NAME} <hello@${APP_DOMAIN}>`,

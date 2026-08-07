@@ -8,6 +8,7 @@ type CartItem = {
   productId: string;
   quantity: number;
   choiceIds?: string[];
+  asUpsell?: boolean;
 };
 
 type PayPalButtonsApi = {

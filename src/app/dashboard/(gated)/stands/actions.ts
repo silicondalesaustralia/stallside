@@ -10,6 +10,7 @@ import { uniqueStandSlug } from "@/lib/slug";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { brandingDataFromForm } from "./stand-branding-from-form";
+import { dollarsToCents } from "@/lib/money";
 
 const standSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -110,6 +111,67 @@ export async function updateStand(standId: string, formData: FormData) {
     if (!brandingPatch.ok) return { error: brandingPatch.error };
   }
 
+  let conversionPatch: {
+    upsellProductId: string | null;
+    upsellPriceCents: number | null;
+    firstOrderDiscountEnabled: boolean;
+    firstOrderDiscountPercent: number;
+    firstOrderDiscountAmountCents: number | null;
+    showPublicScarcity: boolean;
+  } | null = null;
+  if (formData.get("includeConversion") === "1") {
+    const upsellProductId =
+      String(formData.get("upsellProductId") ?? "").trim() || null;
+    if (upsellProductId) {
+      const upsell = await prisma.product.findFirst({
+        where: {
+          id: upsellProductId,
+          standId: standId,
+          ownerId: owner.id,
+          isArchived: false,
+        },
+        select: { id: true },
+      });
+      if (!upsell) return { error: "Upsell product not found on this stand." };
+    }
+    let upsellPriceCents: number | null = null;
+    const upsellPriceRaw = String(formData.get("upsellPrice") ?? "").trim();
+    if (upsellPriceRaw) {
+      try {
+        upsellPriceCents = dollarsToCents(upsellPriceRaw);
+      } catch {
+        return { error: "Invalid upsell price." };
+      }
+    }
+    let firstOrderDiscountAmountCents: number | null = null;
+    const amountRaw = String(
+      formData.get("firstOrderDiscountAmount") ?? "",
+    ).trim();
+    if (amountRaw) {
+      try {
+        firstOrderDiscountAmountCents = dollarsToCents(amountRaw);
+      } catch {
+        return { error: "Invalid first-order amount." };
+      }
+    }
+    const percent = Number.parseInt(
+      String(formData.get("firstOrderDiscountPercent") ?? "10"),
+      10,
+    );
+    conversionPatch = {
+      upsellProductId,
+      upsellPriceCents,
+      firstOrderDiscountEnabled:
+        formData.get("firstOrderDiscountEnabled") === "on",
+      firstOrderDiscountPercent:
+        Number.isInteger(percent) && percent >= 0 && percent <= 100
+          ? percent
+          : 10,
+      firstOrderDiscountAmountCents,
+      showPublicScarcity: formData.get("showPublicScarcity") === "on",
+    };
+  }
+
   await prisma.stand.update({
     where: { id: standId },
     data: {
@@ -128,6 +190,7 @@ export async function updateStand(standId: string, formData: FormData) {
       showExactStock: parsed.data.showExactStock ?? false,
       isActive: parsed.data.isActive ?? true,
       ...(brandingPatch?.ok ? brandingPatch.data : {}),
+      ...(conversionPatch ?? {}),
     },
   });
 
@@ -184,6 +247,16 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
       locationLabel: parsed.data.locationLabel || null,
       qrSignMessage: signMessage || null,
       qrCallout: callout || null,
+      posterShowCta: formData.get("posterShowCta") === "on",
+      posterCtaText:
+        String(formData.get("posterCtaText") ?? "")
+          .trim()
+          .slice(0, 60) || null,
+      posterShowBundles: formData.get("posterShowBundles") === "on",
+      posterShowFirstOrder: formData.get("posterShowFirstOrder") === "on",
+      posterShowInstructions: formData.get("posterShowInstructions") === "on",
+      posterShowFreshness: formData.get("posterShowFreshness") === "on",
+      posterShowHowItWorks: formData.get("posterShowHowItWorks") === "on",
     },
   });
 

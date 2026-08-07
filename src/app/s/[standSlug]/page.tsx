@@ -73,7 +73,10 @@ export default async function PublicStandPage({
   );
 
   const products = stand.products.map((p) =>
-    mapPublicProduct(p, { showExactStock: stand.showExactStock }),
+    mapPublicProduct(p, {
+      showExactStock: stand.showExactStock,
+      showPublicScarcity: stand.showPublicScarcity,
+    }),
   );
 
   const branded = publicStandBranding(stand, stand.owner);

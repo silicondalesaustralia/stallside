@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { InventorySource, type Prisma } from "@/generated/prisma/client";
 import {
+  computeFirstOrderDiscount,
+  normalizeReceiptEmail,
+} from "@/lib/first-order-discount";
+import {
   CART_MIX_COLLECTION_DAYS,
   CART_MIX_TAKE_NOW_PREORDER,
 } from "@/lib/pre-order";
@@ -8,12 +12,16 @@ import {
   formatOptionsSnapshot,
   unitPriceWithOptions,
 } from "@/lib/product-options";
+import { parsePriceTiers, lineTotalWithTiers } from "@/lib/price-tiers";
 import { productLiveWhere } from "@/lib/product-visibility";
+import { PaymentStatus } from "@/generated/prisma/client";
 
 export type CartItemInput = {
   productId: string;
   quantity: number;
   choiceIds?: string[];
+  /** Use stand upsell price (ignore tiers) for this line. */
+  asUpsell?: boolean;
 };
 
 type Tx = Prisma.TransactionClient;
@@ -24,7 +32,62 @@ export type PreOrderCartMeta = {
   collectionNote: string | null;
 };
 
-export async function loadStandCart(standSlug: string, items: CartItemInput[]) {
+export type CartLineData = {
+  productId: string;
+  productNameSnapshot: string;
+  optionsSnapshot: string | null;
+  quantity: number;
+  unitPriceCents: number;
+  lineTotalCents: number;
+  usedTier: boolean;
+  usedUpsell: boolean;
+};
+
+/** True if this email already has a completed order at the stand. */
+export async function emailHasPriorOrderAtStand(
+  standId: string,
+  email: string,
+): Promise<boolean> {
+  const normalized = normalizeReceiptEmail(email);
+  if (!normalized) return true;
+  const prior = await prisma.order.findFirst({
+    where: {
+      standId,
+      receiptEmail: { equals: normalized, mode: "insensitive" },
+      paymentStatus: {
+        in: [PaymentStatus.CUSTOMER_CONFIRMED, PaymentStatus.PAID],
+      },
+    },
+    select: { id: true },
+  });
+  return Boolean(prior);
+}
+
+export function orderItemCreates(lineData: CartLineData[]) {
+  return lineData.map(
+    ({
+      productId,
+      productNameSnapshot,
+      optionsSnapshot,
+      quantity,
+      unitPriceCents,
+      lineTotalCents,
+    }) => ({
+      productId,
+      productNameSnapshot,
+      optionsSnapshot,
+      quantity,
+      unitPriceCents,
+      lineTotalCents,
+    }),
+  );
+}
+
+export async function loadStandCart(
+  standSlug: string,
+  items: CartItemInput[],
+  opts?: { receiptEmail?: string | null; claimFirstOrder?: boolean },
+) {
   if (!items.length) {
     return { error: "Add at least one item." as const };
   }
@@ -35,6 +98,7 @@ export async function loadStandCart(standSlug: string, items: CartItemInput[]) {
     choiceIds: Array.isArray(item.choiceIds)
       ? item.choiceIds.map(String)
       : [],
+    asUpsell: Boolean(item.asUpsell),
   }));
 
   const stand = await prisma.stand.findUnique({
@@ -79,6 +143,11 @@ export async function loadStandCart(standSlug: string, items: CartItemInput[]) {
     const product = byId.get(item.productId);
     if (!product) {
       return { error: "One or more products are unavailable." as const };
+    }
+    if (item.asUpsell) {
+      if (stand.upsellProductId !== item.productId) {
+        return { error: "Upsell is not available." as const };
+      }
     }
     const groups = product.optionGroups;
     if (groups.length > 0) {
@@ -134,16 +203,41 @@ export async function loadStandCart(standSlug: string, items: CartItemInput[]) {
     }
   }
 
-  const lineData = normalized.map((item) => {
+  const lineData: CartLineData[] = normalized.map((item) => {
     const product = byId.get(item.productId)!;
     const picked = product.optionGroups.map((g, i) => {
       const choice = g.choices.find((c) => c.id === item.choiceIds[i])!;
       return { name: g.name, choiceName: choice.name, delta: choice.priceDeltaCents };
     });
-    const unitPriceCents = unitPriceWithOptions(
+    const baseUnit = unitPriceWithOptions(
       product.priceCents,
       picked.map((p) => p.delta),
     );
+
+    if (item.asUpsell) {
+      const unit =
+        stand.upsellPriceCents != null && stand.upsellPriceCents >= 0
+          ? stand.upsellPriceCents
+          : product.priceCents;
+      return {
+        productId: product.id,
+        productNameSnapshot: product.name,
+        optionsSnapshot: formatOptionsSnapshot(
+          picked.map((p) => ({ name: p.name, choiceName: p.choiceName })),
+        ),
+        quantity: item.quantity,
+        unitPriceCents: unit,
+        lineTotalCents: unit * item.quantity,
+        usedTier: false,
+        usedUpsell: true,
+      };
+    }
+
+    const tiers =
+      product.optionGroups.length > 0
+        ? []
+        : parsePriceTiers(product.priceTiers);
+    const priced = lineTotalWithTiers(baseUnit, item.quantity, tiers);
     return {
       productId: product.id,
       productNameSnapshot: product.name,
@@ -151,13 +245,38 @@ export async function loadStandCart(standSlug: string, items: CartItemInput[]) {
         picked.map((p) => ({ name: p.name, choiceName: p.choiceName })),
       ),
       quantity: item.quantity,
-      unitPriceCents,
-      lineTotalCents: unitPriceCents * item.quantity,
+      unitPriceCents: priced.unitPriceCents,
+      lineTotalCents: priced.lineTotalCents,
+      usedTier: priced.usedTier,
+      usedUpsell: false,
     };
   });
-  const totalCents = lineData.reduce((sum, l) => sum + l.lineTotalCents, 0);
 
-  // Stock decrement uses aggregated qty per product
+  const subtotalCents = lineData.reduce((sum, l) => sum + l.lineTotalCents, 0);
+  const usedTier = lineData.some((l) => l.usedTier);
+
+  let discountCents = 0;
+  let discountLabel: string | null = null;
+  const email = opts?.receiptEmail
+    ? normalizeReceiptEmail(opts.receiptEmail)
+    : "";
+  if (opts?.claimFirstOrder && email && stand.firstOrderDiscountEnabled) {
+    const already = await emailHasPriorOrderAtStand(stand.id, email);
+    if (!already) {
+      const d = computeFirstOrderDiscount({
+        enabled: true,
+        percent: stand.firstOrderDiscountPercent,
+        amountCents: stand.firstOrderDiscountAmountCents,
+        subtotalCents,
+        usedTier,
+      });
+      discountCents = d.discountCents;
+      discountLabel = d.label;
+    }
+  }
+
+  const totalCents = Math.max(0, subtotalCents - discountCents);
+
   const stockItems = [...qtyByProduct.entries()].map(([productId, quantity]) => ({
     productId,
     quantity,
@@ -168,6 +287,9 @@ export async function loadStandCart(standSlug: string, items: CartItemInput[]) {
     byId,
     items: stockItems,
     lineData,
+    subtotalCents,
+    discountCents,
+    discountLabel,
     totalCents,
     preOrderCart,
   };

@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { parseOptionGroupsInput } from "@/lib/product-options";
+import { parsePriceTiers } from "@/lib/price-tiers";
+import { Prisma } from "@/generated/prisma/client";
 
 export async function saveProductOptions(
   productId: string,
@@ -19,6 +21,14 @@ export async function saveProductOptions(
 
     const parsed = parseOptionGroupsInput(rawGroups);
     if (!parsed.ok) return { error: parsed.error };
+    if (
+      parsed.groups.length > 0 &&
+      parsePriceTiers(product.priceTiers).length > 0
+    ) {
+      return {
+        error: "Clear volume prices before adding product options.",
+      };
+    }
 
     await prisma.$transaction(async (tx) => {
       await tx.productOptionGroup.deleteMany({ where: { productId: product.id } });
@@ -37,6 +47,12 @@ export async function saveProductOptions(
               })),
             },
           },
+        });
+      }
+      if (parsed.groups.length > 0) {
+        await tx.product.update({
+          where: { id: product.id },
+          data: { priceTiers: Prisma.DbNull },
         });
       }
     });

@@ -33,8 +33,13 @@ import {
   CART_MIX_TAKE_NOW_PREORDER,
 } from "@/lib/pre-order";
 import { cartLineKey, unitPriceWithOptions } from "@/lib/product-options";
+import {
+  formatTierSaving,
+  lineTotalWithTiers,
+} from "@/lib/price-tiers";
 import { standCatalogPath } from "@/lib/stand-seo";
 import PreOrderDetails from "./PreOrderDetails";
+import CartUpsellOffer from "./CartUpsellOffer";
 import { startCardCheckout } from "./digital-checkout-actions";
 
 type LocalTransferInfo = {
@@ -42,6 +47,19 @@ type LocalTransferInfo = {
   buttonLabel: string;
   aliasLabel: string;
   alias: string;
+};
+
+type UpsellOffer = {
+  productId: string;
+  name: string;
+  priceCents: number;
+  stockQuantity: number;
+};
+
+type FirstOrderOffer = {
+  enabled: boolean;
+  percent: number;
+  amountCents: number | null;
 };
 
 function stockTone(label: string) {
@@ -84,6 +102,8 @@ export default function StandCartCheckout({
   restockStandId,
   passFeeToCustomer = false,
   stallsideFeeApplies = false,
+  upsell = null,
+  firstOrder = null,
 }: {
   standSlug: string;
   currency: string;
@@ -99,6 +119,8 @@ export default function StandCartCheckout({
   restockStandId?: string | null;
   passFeeToCustomer?: boolean;
   stallsideFeeApplies?: boolean;
+  upsell?: UpsellOffer | null;
+  firstOrder?: FirstOrderOffer | null;
 }) {
   const [cartLines, setCartLines] = useState<CartLine[]>([]);
   const [hydrated, setHydrated] = useState(false);
@@ -144,20 +166,50 @@ export default function StandCartCheckout({
           })
           .filter(Boolean)
           .join(" · ");
-        const unitCents = unitPriceWithOptions(product.priceCents, deltas);
+        const baseUnit = unitPriceWithOptions(product.priceCents, deltas);
+        const asUpsell = Boolean(line.asUpsell);
+        let unitCents = baseUnit;
+        let lineTotalCents = baseUnit * line.quantity;
+        let usedTier = false;
+        let saveCents = 0;
+        if (asUpsell && upsell && upsell.productId === product.id) {
+          unitCents = upsell.priceCents;
+          lineTotalCents = unitCents * line.quantity;
+        } else {
+          const priced = lineTotalWithTiers(
+            baseUnit,
+            line.quantity,
+            product.priceTiers,
+          );
+          unitCents = priced.unitPriceCents;
+          lineTotalCents = priced.lineTotalCents;
+          usedTier = priced.usedTier;
+          if (usedTier) {
+            saveCents = formatTierSaving(
+              baseUnit,
+              line.quantity,
+              lineTotalCents,
+            );
+          }
+        }
         return {
-          key: cartLineKey(line.productId, line.choiceIds),
+          key: `${cartLineKey(line.productId, line.choiceIds)}${asUpsell ? "|u" : ""}`,
           product,
           quantity: line.quantity,
           choiceIds: line.choiceIds,
+          asUpsell,
           optionsLabel: labels || null,
           unitCents,
+          lineTotalCents,
+          usedTier,
+          saveCents,
         };
       })
       .filter((l): l is NonNullable<typeof l> => Boolean(l));
-  }, [products, cartLines]);
+  }, [products, cartLines, upsell]);
 
-  const total = lines.reduce((sum, l) => sum + l.unitCents * l.quantity, 0);
+  const subtotal = lines.reduce((sum, l) => sum + l.lineTotalCents, 0);
+  const total = subtotal;
   const cardFeeCents =
     stallsideFeeApplies && passFeeToCustomer && total > 0
       ? stallsidePassOnFeeCents(total)
@@ -167,7 +219,18 @@ export default function StandCartCheckout({
     productId: l.product.id,
     quantity: l.quantity,
     choiceIds: l.choiceIds,
+    asUpsell: l.asUpsell || undefined,
   }));
+  const showUpsell =
+    Boolean(upsell) &&
+    step === "cart" &&
+    upsell!.stockQuantity > 0 &&
+    !lines.some((l) => l.product.id === upsell!.productId);
+  const firstOrderHint = firstOrder?.enabled
+    ? firstOrder.amountCents != null && firstOrder.amountCents > 0
+      ? `First visit? Enter email for ${formatMoney(firstOrder.amountCents, currency)} off`
+      : `First visit? Enter email for ${firstOrder.percent}% off`
+    : null;
   const preOrderOnly =
     lines.length > 0 && lines.every((l) => l.product.isPreOrder);
   const hasMixedCart =
@@ -223,7 +286,13 @@ export default function StandCartCheckout({
   function payCash() {
     setError(null);
     startTransition(async () => {
-      const result = await confirmCashCheckout({ standSlug, items: payload });
+      const email = customerEmail.trim();
+      const result = await confirmCashCheckout({
+        standSlug,
+        items: payload,
+        receiptEmail: email || null,
+        claimFirstOrder: Boolean(firstOrder?.enabled && email),
+      });
       if ("error" in result && result.error) {
         setError(result.error);
         return;
@@ -235,9 +304,12 @@ export default function StandCartCheckout({
   function payLocalTransfer() {
     setError(null);
     startTransition(async () => {
+      const email = customerEmail.trim();
       const result = await confirmLocalTransferCheckout({
         standSlug,
         items: payload,
+        receiptEmail: email || null,
+        claimFirstOrder: Boolean(firstOrder?.enabled && email),
       });
       if ("error" in result && result.error) {
         setError(result.error);
@@ -263,7 +335,7 @@ export default function StandCartCheckout({
         standSlug,
         items: payload,
         customerName: preOrderOnly ? customerName.trim() : undefined,
-        customerEmail: preOrderOnly ? customerEmail.trim() : undefined,
+        customerEmail: customerEmail.trim() || undefined,
         customerPhone: preOrderOnly ? customerPhone.trim() : undefined,
       });
       if ("error" in result && result.error) {
@@ -373,9 +445,25 @@ export default function StandCartCheckout({
                 {line.product.preOrderDetails ? (
                   <PreOrderDetails details={line.product.preOrderDetails} />
                 ) : null}
+                {line.product.freshnessNote ? (
+                  <p className="mt-1 text-sm text-[var(--muted)]">
+                    {line.product.freshnessNote}
+                  </p>
+                ) : null}
                 <p className="mt-2 font-receipt text-lg">
-                  {formatMoney(line.unitCents, currency)}
+                  {formatMoney(line.lineTotalCents, currency)}
+                  {line.quantity > 1 && !line.usedTier
+                    ? ` · ${formatMoney(line.unitCents, currency)} each`
+                    : null}
                 </p>
+                {line.usedTier && line.saveCents > 0 ? (
+                  <p className="mt-1 text-sm text-[var(--leaf-dark)]">
+                    Volume price — save {formatMoney(line.saveCents, currency)}
+                  </p>
+                ) : null}
+                {line.asUpsell ? (
+                  <p className="mt-1 text-sm text-[var(--muted)]">Add-on</p>
+                ) : null}
                 <p
                   className={`mt-1.5 font-receipt text-base ${stockTone(line.product.label)}`}
                 >
@@ -415,6 +503,25 @@ export default function StandCartCheckout({
         ))}
       </ul>
 
+      {showUpsell && upsell ? (
+        <CartUpsellOffer
+          name={upsell.name}
+          priceCents={upsell.priceCents}
+          currency={currency}
+          onAdd={() => {
+            persist([
+              ...cartLines,
+              {
+                productId: upsell.productId,
+                quantity: 1,
+                choiceIds: [],
+                asUpsell: true,
+              },
+            ]);
+          }}
+        />
+      ) : null}
+
       {hasMixedCart ? (
         <p className="text-lg text-[var(--gone)]">{CART_MIX_TAKE_NOW_PREORDER}</p>
       ) : error ? (
@@ -445,6 +552,7 @@ export default function StandCartCheckout({
           pending={pending}
           showDemoCardHint={Boolean(demoRegion)}
           preOrderOnly={preOrderOnly}
+          firstOrderHint={firstOrderHint}
           customerName={customerName}
           customerEmail={customerEmail}
           customerPhone={customerPhone}

@@ -9,6 +9,8 @@ export type CartLine = {
   quantity: number;
   /** One choice id per option group, in group sort order. */
   choiceIds: string[];
+  /** Priced via stand upsell override (ignore tiers). */
+  asUpsell?: boolean;
 };
 
 /** @deprecated Prefer CartLine[]; kept for gradual migration. */
@@ -67,7 +69,12 @@ function normalizeLines(raw: unknown): CartLine[] {
         ? (line as CartLine).choiceIds.map(String)
         : [];
       if (!productId || !Number.isInteger(quantity) || quantity <= 0) continue;
-      out.push({ productId, quantity, choiceIds });
+      out.push({
+        productId,
+        quantity,
+        choiceIds,
+        asUpsell: Boolean((line as CartLine).asUpsell),
+      });
     }
     return out;
   }

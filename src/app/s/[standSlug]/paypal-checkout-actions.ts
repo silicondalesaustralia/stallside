@@ -6,7 +6,11 @@ import {
   PaymentStatus,
   ReceiptChannel,
 } from "@/generated/prisma/client";
-import { loadStandCart, type CartItemInput } from "@/lib/checkout";
+import {
+  loadStandCart,
+  orderItemCreates,
+  type CartItemInput,
+} from "@/lib/checkout";
 import { isPayPalConfigured, isPayPalConnectAvailable } from "@/lib/paypal";
 import { createPayPalCheckoutOrder } from "@/lib/paypal-orders";
 import { appBaseUrl } from "@/lib/app-url";
@@ -15,16 +19,29 @@ import { computeVendlApplicationFee } from "@/lib/stallside-fee";
 export async function startPayPalCheckout(input: {
   standSlug: string;
   items: CartItemInput[];
+  customerEmail?: string;
 }) {
   try {
     if (!isPayPalConfigured() || !isPayPalConnectAvailable()) {
       return { error: "PayPal is not available yet." };
     }
 
-    const loaded = await loadStandCart(input.standSlug, input.items);
+    const email = (input.customerEmail ?? "").trim().toLowerCase();
+    const loaded = await loadStandCart(input.standSlug, input.items, {
+      receiptEmail: email || null,
+      claimFirstOrder: Boolean(email),
+    });
     if ("error" in loaded) return { error: loaded.error };
 
-    const { stand, lineData, totalCents, preOrderCart } = loaded;
+    const {
+      stand,
+      lineData,
+      subtotalCents,
+      discountCents,
+      discountLabel,
+      totalCents,
+      preOrderCart,
+    } = loaded;
     if (preOrderCart) {
       return { error: "Pre-orders must be paid by card." };
     }
@@ -44,7 +61,6 @@ export async function startPayPalCheckout(input: {
     }
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
-    // Track Vendl fee for Free only; Pro / lifetime store 0.
     const trackedFee = computeVendlApplicationFee(totalCents, owner);
 
     const order = await prisma.order.create({
@@ -54,12 +70,15 @@ export async function startPayPalCheckout(input: {
         orderNumber,
         paymentMethod: PaymentMethod.PAYPAL,
         paymentStatus: PaymentStatus.PENDING,
-        subtotalCents: totalCents,
+        subtotalCents,
+        discountCents,
+        discountLabel,
         totalCents,
         currency: stand.currency,
         platformFeeCents: trackedFee,
-        receiptChannel: ReceiptChannel.NONE,
-        items: { create: lineData },
+        receiptChannel: email ? ReceiptChannel.EMAIL : ReceiptChannel.NONE,
+        receiptEmail: email || null,
+        items: { create: orderItemCreates(lineData) },
       },
     });
 

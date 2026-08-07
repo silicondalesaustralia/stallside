@@ -297,7 +297,25 @@ model Stand {
   acceptCard         Boolean              @default(true)
   acceptPayPal       Boolean              @default(false)
   showExactStock     Boolean              @default(false)
+  /** Show “Only N left” when stock ≤ lowStockThreshold (public). */
+  showPublicScarcity Boolean              @default(true)
   isActive           Boolean              @default(true)
+  /** Stand-level cart upsell product (optional). */
+  upsellProductId    String?
+  /** Optional override price when added via upsell card. */
+  upsellPriceCents   Int?
+  firstOrderDiscountEnabled Boolean        @default(false)
+  /** Percent off first order (used when amount cents unset). */
+  firstOrderDiscountPercent Int            @default(10)
+  /** Fixed amount off; if set, wins over percent. */
+  firstOrderDiscountAmountCents Int?
+  posterShowCta      Boolean              @default(true)
+  posterCtaText      String?
+  posterShowBundles  Boolean              @default(true)
+  posterShowFirstOrder Boolean            @default(true)
+  posterShowInstructions Boolean          @default(true)
+  posterShowFreshness Boolean             @default(false)
+  posterShowHowItWorks Boolean            @default(false)
   /** Owner logo for public stall + QR poster (Pro). */
   logoUrl            String?
   /** Hex accent e.g. #2e7d3f - overrides --leaf on public stall + QR. */
@@ -364,6 +382,10 @@ model Product {
   collectionNote     String?
   /** When pre-order: show remaining slots publicly (e.g. "3 left"). */
   showExactStock     Boolean              @default(false)
+  /** Optional provenance line e.g. "Laid this morning". */
+  freshnessNote      String?
+  /** Exact-qty totals: [{ "qty": 2, "totalCents": 900 }, ...] — XOR with optionGroups. */
+  priceTiers         Json?
   optionGroups       ProductOptionGroup[]
   orderItems         OrderItem[]
   inventoryAdjustments InventoryAdjustment[]
@@ -416,6 +438,9 @@ model Order {
   localTransferMethodId   String?
   subtotalCents           Int
   totalCents              Int
+  /** First-order (or other) discount applied to this order. */
+  discountCents           Int               @default(0)
+  discountLabel           String?
   currency                String
   platformFeeCents        Int               @default(0)
   stripeCheckoutSessionId String?

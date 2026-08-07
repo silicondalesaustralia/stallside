@@ -13,6 +13,7 @@ type CartItem = {
   productId: string;
   quantity: number;
   choiceIds?: string[];
+  asUpsell?: boolean;
 };
 
 type CheckoutPayStepProps = {
@@ -35,6 +36,8 @@ type CheckoutPayStepProps = {
   showDemoCardHint?: boolean;
   /** Pre-order carts: card only + name/email/phone. */
   preOrderOnly?: boolean;
+  /** Offer first-order discount when email provided. */
+  firstOrderHint?: string | null;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -65,6 +68,7 @@ export default function CheckoutPayStep({
   pending,
   showDemoCardHint = false,
   preOrderOnly = false,
+  firstOrderHint = null,
   customerName,
   customerEmail,
   customerPhone,
@@ -98,6 +102,18 @@ export default function CheckoutPayStep({
           onCustomerEmail={onCustomerEmail}
           onCustomerPhone={onCustomerPhone}
         />
+      ) : firstOrderHint ? (
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="font-medium">{firstOrderHint}</span>
+          <input
+            type="email"
+            autoComplete="email"
+            value={customerEmail}
+            onChange={(e) => onCustomerEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 text-base"
+          />
+        </label>
       ) : null}
       {showCash ? (
         <button
