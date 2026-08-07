@@ -9,6 +9,24 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Permanent infrastructure: printed QR posters point at stallside.app/s/{slug}.
+  // Do not remove. Stage 1 uses permanent: false (307); flip to true (301) after rebrand is verified.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "stallside.app" }],
+        destination: "https://vendl.app/:path*",
+        permanent: false,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.stallside.app" }],
+        destination: "https://vendl.app/:path*",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {
