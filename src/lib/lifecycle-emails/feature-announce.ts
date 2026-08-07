@@ -11,7 +11,7 @@ import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 type Recipient = { to: string; name: string };
 
 export const FEATURE_ANNOUNCE_SUBJECT =
-  "[NEW FEATURES] @ Stallside: Pricing Model Change & More Features Added";
+  "[NEW FEATURES] @ Vendl: Pricing Model Change & More Features Added";
 
 export function featureAnnounceHtml(name: string): string {
   const L = lifecycleLinks();
@@ -29,14 +29,14 @@ export function featureAnnounceHtml(name: string): string {
       Later on larger orders (Zip, Klarna), pre-orders and Collections,
       stand branding and social links, restock notify emails, product options,
       hide/archive/duplicate, and the card-demand counter.</p>
-      <p>On Free, Stallside takes <strong>2.5%</strong> on card, Tap &amp; Go,
+      <p>On Free, Vendl takes <strong>2.5%</strong> on card, Tap &amp; Go,
       and pay-later. Cash and PayID stay free. Standard Stripe processing fees
       apply separately.</p>
-      <p><strong>Stallside Pro</strong> is the same product with
-      <strong>no Stallside transaction fee</strong> on card, Tap &amp; Go, and
+      <p><strong>Vendl Pro</strong> is the same product with
+      <strong>no Vendl transaction fee</strong> on card, Tap &amp; Go, and
       pay-later. Standard Stripe processing fees still apply. From A$19.99 /
       US$14.99 / £11.99 / €14.99 per site / month.</p>
-      <p>Upgrade to Pro anytime to remove the Stallside fee.
+      <p>Upgrade to Pro anytime to remove the Vendl fee.
       <a href="${L.billing}">Settings → Billing</a>.</p>
 
       <p><strong>Also live</strong></p>
@@ -49,7 +49,7 @@ export function featureAnnounceHtml(name: string): string {
         <li><strong>Stand branding</strong> - logo, colours, and social links on
         the stall and QR poster (Free and Pro).</li>
         <li><strong>Restock list</strong> - customers opt in after checkout; you
-        hit Notify customers and Stallside emails them (Free and Pro). You never
+        hit Notify customers and Vendl emails them (Free and Pro). You never
         see their addresses.</li>
         <li><strong>Card-demand counter</strong> - when Tap &amp; Go isn&apos;t on yet,
         shoppers can tap “I'd have paid by card” so you see demand on the

@@ -4,7 +4,7 @@ import { requireOwner } from "@/lib/session";
 import { isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { billingRegionDisplay } from "@/lib/saas-pricing";
-import { shouldChargeStallsideFee } from "@/lib/stallside-fee";
+import { shouldChargeVendlFee } from "@/lib/stallside-fee";
 import { listConnectPaymentMethodToggles } from "@/lib/stripe-payment-method-config";
 import { ensureRegionalConnectCapabilities } from "@/lib/stripe-connect-capabilities";
 import { stripeConnectCountry } from "@/lib/stripe-connect-country";
@@ -21,7 +21,7 @@ export default async function StripeSettingsPage({
 }) {
   const { owner } = await requireOwner();
   const params = await searchParams;
-  const feeApplies = shouldChargeStallsideFee(owner);
+  const feeApplies = shouldChargeVendlFee(owner);
 
   if (
     (params.return === "1" || params.refresh === "1") &&
@@ -124,7 +124,7 @@ export default async function StripeSettingsPage({
         <PassFeeToggle passFeeToCustomer={owner.passFeeToCustomer} />
       ) : (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          Stallside Pro: no Stallside transaction fee on card sales. Standard
+          Vendl Pro: no Vendl transaction fee on card sales. Standard
           Stripe processing fees still apply.
         </p>
       )}

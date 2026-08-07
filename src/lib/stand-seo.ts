@@ -20,7 +20,7 @@ export function catalogMetadata(input: {
   locationLabel?: string | null;
   logoUrl?: string | null;
 }): Metadata {
-  const title = `${input.standName} · Stallside`;
+  const title = `${input.standName} · Vendl`;
   const description = input.locationLabel
     ? `Shop ${input.standName} at ${input.locationLabel}. Browse and pay at the stall.`
     : `Shop ${input.standName}. Browse and pay at the stall.`;

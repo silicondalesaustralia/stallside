@@ -53,7 +53,7 @@ export async function createPayPalCheckoutOrder(input: {
         intent: "CAPTURE",
         purchase_units: [purchaseUnit],
         application_context: {
-          brand_name: "Stallside",
+          brand_name: "Vendl",
           // Prefer login in sandbox; live allows login or guest card.
           landing_page:
             (process.env.PAYPAL_MODE || "sandbox").toLowerCase() === "live"

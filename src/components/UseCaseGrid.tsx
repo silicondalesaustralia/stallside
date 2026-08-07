@@ -68,7 +68,7 @@ export default function UseCaseGrid() {
       </ul>
 
       <p className="mt-8 text-center text-sm text-[var(--muted)]">
-        If nobody&apos;s standing there, Stallside works.
+        If nobody&apos;s standing there, Vendl works.
       </p>
     </section>
   );

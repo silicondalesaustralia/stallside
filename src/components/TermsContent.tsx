@@ -38,7 +38,7 @@ export default function TermsContent() {
         </h2>
         <p className="text-[var(--muted)]">
           Paid plans are billed as described at signup or in your dashboard. Free is
-          $0/mo with all features. Stallside Pro removes the Stallside card fee for a
+          $0/mo with all features. Vendl Pro removes the Vendl card fee for a
           monthly subscription. You are responsible for applicable taxes.
           Refunds are handled case-by-case unless required by Australian Consumer Law.
         </p>
@@ -50,19 +50,19 @@ export default function TermsContent() {
         </h2>
         <p className="text-[var(--muted)]">
           On the Free plan, card, Tap &amp; Go (including Apple Pay and Google Pay),
-          and pay-later payments carry a Stallside fee of 2.5% on all
+          and pay-later payments carry a Vendl fee of 2.5% on all
           transactions, in addition to the payment processor&apos;s own fees. Cash and
-          PayID payments carry no Stallside fee. This fee is removed on the Pro plan
+          PayID payments carry no Vendl fee. This fee is removed on the Pro plan
           and for Free for Life accounts, so there is no absorb / pass-on choice when
-          no Stallside fee applies.
+          no Vendl fee applies.
         </p>
         <p className="text-[var(--muted)]">
           On Free, stall owners may choose in Settings → Card / Tap &amp; Go to pass
-          this Stallside fee on to their customers at checkout (shown as a clear card
+          this Vendl fee on to their customers at checkout (shown as a clear card
           fee line), or to absorb it themselves so the customer pays the listed price.
           Owners who choose to pass the fee to customers are solely responsible for
           ensuring that any such surcharge complies with the card-surcharging laws
-          applicable in their location. Stallside is not responsible for an owner&apos;s
+          applicable in their location. Vendl is not responsible for an owner&apos;s
           compliance with local surcharging regulations.
         </p>
       </section>

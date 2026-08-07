@@ -76,7 +76,7 @@ async function main() {
       occurredAt,
       visitorId,
       sessionId,
-      pageUrl: "https://stallside.app/signup-complete",
+      pageUrl: "https://vendl.app/signup-complete",
       metadata: {
         emailHash,
         identifySource: "backfill",
@@ -99,7 +99,7 @@ async function main() {
       productIds: [],
       clickIds,
       metadata: {
-        pageUrl: "https://stallside.app/signup-complete",
+        pageUrl: "https://vendl.app/signup-complete",
         source: "backfill",
         userId: user.id,
         email,

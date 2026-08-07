@@ -7,7 +7,7 @@ export type CardNetwork = "visa" | "mastercard" | "amex";
 export type LandingPaymentMark = {
   id: string;
   label: string;
-  /** Region badge; omit for methods offered across Stallside regions. */
+  /** Region badge; omit for methods offered across Vendl regions. */
   region?: PaymentRegion;
   brand?: PaymentBrand;
   network?: CardNetwork;

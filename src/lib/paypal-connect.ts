@@ -28,7 +28,7 @@ export async function createPartnerReferralLink(input: {
     tracking_id: input.trackingId,
     partner_config_override: {
       return_url: `${base}/paypal/connect-return`,
-      return_url_description: "Return to Stallside",
+      return_url_description: "Return to Vendl",
       show_add_credit_card: true,
     },
     operations: [

@@ -40,7 +40,7 @@ async function main() {
       await prisma.owner.create({
         data: {
           userId: user.id,
-          businessName: "Stallside Platform",
+          businessName: "Vendl Platform",
           contactEmail: email,
         },
       });

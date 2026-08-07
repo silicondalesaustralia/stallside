@@ -64,7 +64,7 @@ export default async function SettingsPage() {
         <h2 className="text-lg font-semibold">Alerts</h2>
         <p className="text-sm text-[var(--muted)]">
           Sales and low-stock alerts. Low-stock phone push uses a 6-hour cooldown per
-          product. Add Stallside to your Home Screen for reliable phone push.
+          product. Add Vendl to your Home Screen for reliable phone push.
         </p>
         <AlertSettingsForm
           contactEmail={owner.contactEmail}
@@ -75,13 +75,13 @@ export default async function SettingsPage() {
       </section>
 
       <section className="space-y-3 text-sm">
-        <h2 className="text-lg font-semibold">Stallside subscription</h2>
+        <h2 className="text-lg font-semibold">Vendl subscription</h2>
         <p>{subscriptionLine}</p>
         <p>
           Billing region: <strong>{billingRegion}</strong>
         </p>
         <p className="text-[var(--muted)]">
-          Pays Stallside for the app. Also sets your Stripe Connect country for
+          Pays Vendl for the app. Also sets your Stripe Connect country for
           Card / Tap &amp; Go. Separate from stand display currency.
         </p>
         <Link
@@ -109,7 +109,7 @@ export default async function SettingsPage() {
         <p className="text-[var(--muted)]">
           Connect Stripe for card, Apple Pay, Google Pay, and Buy Now Pay Later
           on larger orders. Funds go to your account. Free includes a 2.5%
-          Stallside fee on card sales unless you upgrade to Pro.
+          Vendl fee on card sales unless you upgrade to Pro.
         </p>
         <Link
           href="/dashboard/settings/stripe"

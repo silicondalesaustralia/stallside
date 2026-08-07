@@ -23,7 +23,7 @@ export default function PayPalWarnings({
         </li>
         <li>
           PayPal&apos;s merchant fee comes out of your proceeds (owner-direct).
-          Stallside does not take a Connect cut.
+          Vendl does not take a Connect cut.
           {feeHint ? (
             <>
               {" "}

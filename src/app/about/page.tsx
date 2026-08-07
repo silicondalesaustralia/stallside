@@ -7,7 +7,7 @@ import { marketingPageGraphSchema } from "@/lib/schema";
 
 const title = "About";
 const description =
-  "It started with a kid, some chooks, and a roadside table. Stallside began about 500 metres from our front door.";
+  "It started with a kid, some chooks, and a roadside table. Vendl began about 500 metres from our front door.";
 
 export const metadata: Metadata = {
   title,

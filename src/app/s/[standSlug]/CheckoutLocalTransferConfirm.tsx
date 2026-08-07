@@ -52,7 +52,7 @@ export default function CheckoutLocalTransferConfirm({
       </div>
       <p className="text-lg leading-snug text-[var(--muted)]">
         Open your banking app, pay the exact amount, then come back and confirm.
-        This marks the sale as paid; the payment is not verified by Stallside.
+        This marks the sale as paid; the payment is not verified by Vendl.
       </p>
       <button
         type="button"

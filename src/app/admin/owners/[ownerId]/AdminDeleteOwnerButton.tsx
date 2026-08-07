@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { adminDeleteOwner } from "./actions";
 
 const DELETES = [
-  "Stallside subscription cancelled immediately (if any)",
+  "Vendl subscription cancelled immediately (if any)",
   "Marketing, sale, and alert emails stop (sign-in codes still work)",
   "Push alerts stop",
   "Stands go offline (QR links stop working)",

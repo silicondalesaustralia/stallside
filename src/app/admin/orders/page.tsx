@@ -1,7 +1,7 @@
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
-import { shouldChargeStallsideFee } from "@/lib/stallside-fee";
+import { shouldChargeVendlFee } from "@/lib/stallside-fee";
 
 export default async function AdminOrdersPage() {
   await requireAdmin();
@@ -31,7 +31,7 @@ export default async function AdminOrdersPage() {
         <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
           {orders.map((order) => {
             // Free only; Pro / lifetime / platform-admin complimentary → $0.
-            const feeCents = shouldChargeStallsideFee(order.owner, {
+            const feeCents = shouldChargeVendlFee(order.owner, {
               email: order.owner.user.email,
               role: order.owner.user.role,
             })

@@ -17,7 +17,7 @@ export default function PreOrdersSection() {
         <strong className="font-semibold text-[var(--ink)]">Collections</strong>
         : mark Ready, then Collected. Optional exact slots on the stall (e.g.
         &ldquo;3 left&rdquo;). Buyer name and email come with the paid order;
-        message them from Stallside when plans change.
+        message them from Vendl when plans change.
       </p>
     </LandingFeatureCallout>
   );

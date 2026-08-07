@@ -20,7 +20,7 @@ export const CARD_PLAN_CENTS = 1999;
 export const MONTHLY_FEE_CENTS = CASH_PLAN_CENTS;
 /** @deprecated Free uses STALLSIDE_FEE_*; kept for old call sites */
 export const PLATFORM_FEE_BPS = 0;
-/** Stallside fee on Free plan Stripe card / Tap & Go (2.5%) */
+/** Vendl fee on Free plan Stripe card / Tap & Go (2.5%) */
 export const STALLSIDE_FEE_BPS = 250;
 export const LOW_STOCK_ALERT_COOLDOWN_HOURS = 6;
 /** Owner emails with free forever app access (ignore subscription status). */

@@ -1,4 +1,4 @@
-# Stallside - iPhone push (Capacitor) without Firebase
+# Vendl - iPhone push (Capacitor) without Firebase
 
 Capacitor on iOS gives an **APNs** device token. We send iOS pushes via **Apple Push Notification service** directly. Firebase is only needed later for Android.
 
@@ -10,7 +10,7 @@ Bundle ID: `com.myfarmstand.owner`
 
 1. [developer.apple.com](https://developer.apple.com) → **Certificates, Identifiers & Profiles**
 2. **Identifiers** → App ID `com.myfarmstand.owner` → enable **Push Notifications**
-3. **Keys** → **+** → name `Stallside APNs` → enable **Apple Push Notifications service (APNs)** → Continue → Register
+3. **Keys** → **+** → name `Vendl APNs` → enable **Apple Push Notifications service (APNs)** → Continue → Register
 4. **Download the `.p8` once** (you can’t download it again). Note **Key ID** and your **Team ID** (top-right membership).
 
 ---
@@ -37,7 +37,7 @@ Redeploy Vercel after saving.
 
 ```bash
 cd /Users/jonosmmachine/Documents/Cursor/MyFarmStand
-CAPACITOR_SERVER_URL=https://stallside.app npx cap sync ios
+CAPACITOR_SERVER_URL=https://vendl.app npx cap sync ios
 npm run cap:ios
 ```
 
@@ -55,7 +55,7 @@ In Xcode:
 
 1. Sign in with magic link (Resend)
 2. Stay on `/dashboard` - app requests notification permission → **Allow**
-3. Safari/Xcode console should show `[Stallside] push token registered with server`
+3. Safari/Xcode console should show `[Vendl] push token registered with server`
 4. In Neon / Prisma Studio, `PushDevice` should have an `ios` row for your owner
 
 ---
@@ -75,6 +75,6 @@ Expect: banner + sound on the iPhone (app backgrounded is the clearest test).
 | `registrationError` | Paid Apple Developer account? Push enabled on App ID? Physical device? |
 | Token registers, no ding | `APNS_*` on Vercel? Sandbox vs production mismatch? Redeployed? |
 | `BadDeviceToken` | Debug install needs `APNS_USE_SANDBOX=true` |
-| No permission prompt | Delete app, reinstall, or Settings → Stallside → Notifications |
+| No permission prompt | Delete app, reinstall, or Settings → Vendl → Notifications |
 
 Email alerts still work independently of push.

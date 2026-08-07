@@ -27,7 +27,7 @@ function billingCurrencyOf(owner: SubscriptionSummaryOwner): BillingCurrency {
 
 function paidPlanLabel(plan: string | null | undefined): string {
   const p = normalizeSubscriptionPlan(plan);
-  if (p === "pro" || p === "pro_paypal") return "Stallside Pro";
+  if (p === "pro" || p === "pro_paypal") return "Vendl Pro";
   return "Free";
 }
 
@@ -61,7 +61,7 @@ function statusLabel(status: string): string {
   }
 }
 
-/** One-line Stallside subscription summary for Settings (and similar). */
+/** One-line Vendl subscription summary for Settings (and similar). */
 export function stallsideSubscriptionSummary(
   owner: SubscriptionSummaryOwner,
   access?: ComplimentaryAccessInput,

@@ -1,16 +1,16 @@
-# Stallside vs Bakesy: Which Is Better for Unattended Payments, Pre-Orders and Inventory?
+# Vendl vs Bakesy: Which Is Better for Unattended Payments, Pre-Orders and Inventory?
 
 Farm stands, roadside stalls, home bakeries and preorder businesses often need the same basic capabilities: a way to display products, collect payments, manage orders and avoid selling stock that is no longer available.
 
-However, [Stallside](https://stallside.app) and [Bakesy](https://bakesy.app) are built for different primary users.
+However, [Vendl](https://vendl.app) and [Bakesy](https://bakesy.app) are built for different primary users.
 
-**[Stallside](https://stallside.app)** is built for unattended selling. A customer scans a QR code at a physical stand, selects what they are taking and pays using their own phone. It can also support paid pre-orders and collection workflows, making it suitable for both take-now stand sales and planned collection orders.
+**[Vendl](https://vendl.app)** is built for unattended selling. A customer scans a QR code at a physical stand, selects what they are taking and pays using their own phone. It can also support paid pre-orders and collection workflows, making it suitable for both take-now stand sales and planned collection orders.
 
 **[Bakesy](https://bakesy.app)** is built primarily for home bakers. Customers can visit a hosted shop, submit order requests or use instant checkout on eligible plans, while the baker manages invoices, availability, fulfilment and customer communication.
 
 The clearest distinction is this:
 
-**Stallside is the stronger fit for stand holders, roadside sellers and unattended collection points.**
+**Vendl is the stronger fit for stand holders, roadside sellers and unattended collection points.**
 
 **Bakesy is more relevant when the business is mainly a bakery that needs custom order forms, invoices and production scheduling.**
 
@@ -32,7 +32,7 @@ It compares:
 
 The key question is not simply whether you sell baked goods, produce, eggs, flowers or other products. The key question is **how your customers buy**.
 
-If customers arrive at a stand, scan a code, choose products and pay, Stallside is the more directly aligned option.
+If customers arrive at a stand, scan a code, choose products and pay, Vendl is the more directly aligned option.
 
 If customers request a custom cake, provide event details, wait for an invoice and coordinate fulfilment, Bakesy may be more relevant.
 
@@ -53,9 +53,9 @@ This comparison is for:
 * Sellers managing limited daily stock.
 * Makers who need paid reservations before collection.
 
-## Stallside vs Bakesy at a Glance
+## Vendl vs Bakesy at a Glance
 
-### Choose [Stallside](https://stallside.app) when:
+### Choose [Vendl](https://vendl.app) when:
 
 * You run an unattended physical stand.
 * Customers need QR-based self-checkout.
@@ -84,7 +84,7 @@ This comparison is for:
 
 ## High-Level Verdict
 
-**Stallside is the better choice for stand holders, roadside sellers, honesty-box operators and unattended collection businesses.**
+**Vendl is the better choice for stand holders, roadside sellers, honesty-box operators and unattended collection businesses.**
 
 It is built around the real customer behaviour that happens at a stand: scan, select, pay and leave. It also supports paid pre-orders, which means it can handle both spontaneous take-now purchases and planned collection orders.
 
@@ -92,21 +92,21 @@ It is built around the real customer behaviour that happens at a stand: scan, se
 
 It is strongest when a customer needs to describe what they want, submit details, receive an invoice or coordinate a made-to-order bakery purchase.
 
-For a stand holder, Stallside is the more natural fit.
+For a stand holder, Vendl is the more natural fit.
 
 For a baker who mostly takes custom celebration cake orders, Bakesy may be more relevant.
 
-For a baker selling fixed-price loaves, cookies, pastries or boxes from an unattended table, Stallside may still be the better option because it supports self-checkout and stock-based selling.
+For a baker selling fixed-price loaves, cookies, pastries or boxes from an unattended table, Vendl may still be the better option because it supports self-checkout and stock-based selling.
 
 ## Core Features and Functionality
 
-## Stallside Core Features
+## Vendl Core Features
 
-[Stallside](https://stallside.app) is designed for physical locations where no employee is present to operate a checkout.
+[Vendl](https://vendl.app) is designed for physical locations where no employee is present to operate a checkout.
 
 The owner adds products, inventory and payment options, then displays a QR poster at the stand. Customers scan the QR code with their phone camera, choose the products they are taking and complete or confirm payment in the browser.
 
-Stallside supports:
+Vendl supports:
 
 * QR-based self-checkout.
 * Cash self-confirmation.
@@ -127,15 +127,15 @@ Stallside supports:
 * Custom stall branding.
 * Social and website links.
 
-A major advantage for stand holders is that Stallside is not only a payment link or a basic order form. It is built around the combination of unattended checkout, inventory, payment confirmation and owner notifications.
+A major advantage for stand holders is that Vendl is not only a payment link or a basic order form. It is built around the combination of unattended checkout, inventory, payment confirmation and owner notifications.
 
-![Stallside scan-pay-sold workflow with customer checkout and owner sale alerts](/news/stallside-vs-bakesy/stallside.png)
+![Vendl scan-pay-sold workflow with customer checkout and owner sale alerts](/news/vendl-vs-bakesy/vendl.png)
 
-You can see the workflow without signing up by using the [Stallside demo stall](https://stallside.app/demo).
+You can see the workflow without signing up by using the [Vendl demo stall](https://vendl.app/demo).
 
 ## Unattended Checkout
 
-A typical Stallside customer can:
+A typical Vendl customer can:
 
 1. Arrive at the stand.
 2. Scan the QR code.
@@ -149,7 +149,7 @@ The owner receives a sale notification, and the product's stock count is reduced
 
 This workflow fits the way stand customers actually behave. They are usually not trying to submit a detailed enquiry or wait for an invoice. They want to take eggs, flowers, produce, bread, firewood or another available item and pay quickly.
 
-Stallside is particularly suitable for:
+Vendl is particularly suitable for:
 
 * Eggs.
 * Fresh produce.
@@ -168,7 +168,7 @@ Stallside is particularly suitable for:
 
 ## Pre-Orders and Collection
 
-Stallside can also support paid pre-orders for businesses that produce, bake, harvest or pack to demand.
+Vendl can also support paid pre-orders for businesses that produce, bake, harvest or pack to demand.
 
 Owners can configure:
 
@@ -193,7 +193,7 @@ This is useful for:
 * Limited stock releases.
 * Farm-gate collection days.
 
-This matters because Stallside is not limited to one type of purchase. It can support both:
+This matters because Vendl is not limited to one type of purchase. It can support both:
 
 * **Take-now sales** — the customer is physically at the stand and buys what is available.
 * **Pre-orders** — the customer pays ahead for later collection.
@@ -238,7 +238,7 @@ Its Premium plan adds:
 
 Bakesy is strongest when the order requires customer input, discussion or manual handling before fulfilment. Full plan inclusions are published on the [Bakesy pricing page](https://www.bakesy.app/pricing).
 
-![Bakesy app showing upcoming bakery orders and payment balances](/news/stallside-vs-bakesy/bakesy.png)
+![Bakesy app showing upcoming bakery orders and payment balances](/news/vendl-vs-bakesy/bakesy.png)
 
 ## Custom Bakery Order Management
 
@@ -258,23 +258,23 @@ This is a different workflow from unattended checkout.
 
 A customer ordering a custom cake may need to submit a request, wait for confirmation and receive an invoice. Bakesy is built for that type of bakery administration, and you can see how the customer side looks in a [sample Bakesy shop](https://shop.bakesy.app/b/cakes-bakes-bakery).
 
-By contrast, a customer buying a loaf, a six-pack of cupcakes, a tray of cookies or a sourdough subscription from a collection point may not need a custom bakery form. In that case, Stallside may be more efficient because it supports product selection, payment and inventory in one self-service flow.
+By contrast, a customer buying a loaf, a six-pack of cupcakes, a tray of cookies or a sourdough subscription from a collection point may not need a custom bakery form. In that case, Vendl may be more efficient because it supports product selection, payment and inventory in one self-service flow.
 
 ## Instant Checkout and Inventory
 
-Bakesy Premium includes Instant Checkout and inventory management. This makes Premium the most relevant Bakesy plan to compare with Stallside.
+Bakesy Premium includes Instant Checkout and inventory management. This makes Premium the most relevant Bakesy plan to compare with Vendl.
 
 However, the purpose is still different.
 
 Bakesy's checkout sits inside a bakery storefront and order-management system.
 
-Stallside's checkout is designed for customers who are physically standing at an unattended sales location or reserving products for collection.
+Vendl's checkout is designed for customers who are physically standing at an unattended sales location or reserving products for collection.
 
 For stand holders, the distinction is important. Inventory management is not just a back-office feature. It is part of the sales experience because stock availability affects what customers can take from the stand.
 
 ## Core Functionality Verdict
 
-Choose **[Stallside](https://stallside.app)** for:
+Choose **[Vendl](https://vendl.app)** for:
 
 * Farm stands.
 * Roadside stalls.
@@ -301,9 +301,9 @@ Choose **[Bakesy](https://bakesy.app)** for:
 
 ## Ease of Use and Onboarding
 
-## Stallside Onboarding
+## Vendl Onboarding
 
-A typical [Stallside setup](https://stallside.app/signup) involves:
+A typical [Vendl setup](https://vendl.app/signup) involves:
 
 1. Creating the stall.
 2. Adding products.
@@ -317,7 +317,7 @@ Customers do not need to download an app or create an account. They scan the QR 
 
 This is a major advantage for unattended selling. A stand customer may be passing by, buying quickly or using the system for the first time. Requiring an account or app would create friction.
 
-Stallside is easiest to operate when:
+Vendl is easiest to operate when:
 
 * Products have clear prices.
 * Inventory is countable.
@@ -347,7 +347,7 @@ This setup is useful when each order contains detailed customer requirements. It
 
 ## Ease-of-Use Verdict
 
-**Stallside is easier and more relevant for self-service retail.**
+**Vendl is easier and more relevant for self-service retail.**
 
 Its workflow is built around the stand transaction: scan, select and pay.
 
@@ -355,17 +355,17 @@ Its workflow is built around the stand transaction: scan, select and pay.
 
 Its workflow is built around requests, forms, invoices, dates and customer communication.
 
-For stand holders, Stallside is the more practical option.
+For stand holders, Vendl is the more practical option.
 
 For bakers whose main challenge is custom order management, Bakesy may be more relevant.
 
 ## Pricing and Value for Money
 
-## Stallside Pricing
+## Vendl Pricing
 
-[Stallside](https://stallside.app/#pricing) offers Free and Pro plans.
+[Vendl](https://vendl.app/#pricing) offers Free and Pro plans.
 
-Both plans include Stallside's core feature set, including:
+Both plans include Vendl's core feature set, including:
 
 * Unlimited products.
 * Product options and variants.
@@ -380,15 +380,15 @@ Both plans include Stallside's core feature set, including:
 * Analytics.
 * Restock notifications.
 
-The key difference between Stallside Free and Stallside Pro is the Stallside platform fee on eligible digital transactions.
+The key difference between Vendl Free and Vendl Pro is the Vendl platform fee on eligible digital transactions.
 
-## Stallside Free
+## Vendl Free
 
 **Price: $0 per month**
 
-Stallside Free includes the core features needed to run an unattended stand, including inventory and pre-orders.
+Vendl Free includes the core features needed to run an unattended stand, including inventory and pre-orders.
 
-A 2.5% Stallside platform fee applies to successful card, Tap & Go and pay-later payments, and standard Stripe processing fees apply separately. Cash and PayID payments carry no Stallside fee. Owners can absorb the platform fee or pass it on to customers at checkout.
+A 2.5% Vendl platform fee applies to successful card, Tap & Go and pay-later payments, and standard Stripe processing fees apply separately. Cash and PayID payments carry no Vendl fee. Owners can absorb the platform fee or pass it on to customers at checkout.
 
 This plan is particularly valuable for:
 
@@ -399,21 +399,21 @@ This plan is particularly valuable for:
 * Sellers who want to avoid fixed monthly software costs.
 * Stand holders who want inventory and pre-orders without upgrading first.
 
-The most important point is that Stallside does not require a monthly subscription before a stand holder can access the core unattended-selling workflow.
+The most important point is that Vendl does not require a monthly subscription before a stand holder can access the core unattended-selling workflow.
 
-## Stallside Pro
+## Vendl Pro
 
 **Price: A$19.99 per month per site (also available at US$14.99, £11.99 and €14.99 depending on billing currency)**
 
-Stallside Pro is designed for sellers who want to remove the 2.5% Stallside platform fee from card, Tap & Go and pay-later transactions and use a predictable subscription model. Standard Stripe processing fees still apply.
+Vendl Pro is designed for sellers who want to remove the 2.5% Vendl platform fee from card, Tap & Go and pay-later transactions and use a predictable subscription model. Standard Stripe processing fees still apply.
 
-Pro includes the same core functionality as Free. The upgrade is mainly about transaction-fee structure, not unlocking the core product features. Stallside notes that Pro tends to work out cheaper once a stall processes roughly A$800 or more in card sales each month, though the exact crossover depends on your sales mix and billing currency.
+Pro includes the same core functionality as Free. The upgrade is mainly about transaction-fee structure, not unlocking the core product features. Vendl notes that Pro tends to work out cheaper once a stall processes roughly A$800 or more in card sales each month, though the exact crossover depends on your sales mix and billing currency.
 
-That means stand holders can start with Stallside Free, test the workflow, and then decide whether Pro better suits their sales volume and payment mix.
+That means stand holders can start with Vendl Free, test the workflow, and then decide whether Pro better suits their sales volume and payment mix.
 
-## Stallside Value Assessment
+## Vendl Value Assessment
 
-Stallside provides strong value for stand holders because the features that matter most to unattended selling are included from the start:
+Vendl provides strong value for stand holders because the features that matter most to unattended selling are included from the start:
 
 * QR checkout.
 * Inventory.
@@ -472,7 +472,7 @@ Bakesy Premium includes everything in Standard, plus:
 * Discount codes.
 * Tips for US customers.
 
-Businesses comparing Bakesy directly with Stallside should usually look at Bakesy Premium, because that is where Bakesy's inventory and instant checkout features become available.
+Businesses comparing Bakesy directly with Vendl should usually look at Bakesy Premium, because that is where Bakesy's inventory and instant checkout features become available.
 
 ## Bakesy Value Assessment
 
@@ -497,11 +497,11 @@ However, for unattended stand holders, Bakesy's bakery-specific tools may not so
 
 ## Direct Pricing Comparison
 
-| Pricing factor            |                                                        Stallside Free |                                                                                Stallside Pro |                 Bakesy Standard |                           Bakesy Premium |
+| Pricing factor            |                                                        Vendl Free |                                                                                Vendl Pro |                 Bakesy Standard |                           Bakesy Premium |
 | ------------------------- | ---------------------------------------------------------------------: | --------------------------------------------------------------------------------------------: | ------------------------------: | ---------------------------------------: |
 | Monthly price             |                                                                    $0 |                                                             A$19.99 per site (US$14.99 / £11.99 / €14.99) |                     US$9.99 |                                 US$17.99 |
 | Free trial                |                                                   Free plan available |                                                         Free plan available before upgrading |                         30 days |                                  30 days |
-| Primary pricing model     | 2.5% Stallside fee on card, Tap & Go and pay-later; cash and PayID free | Subscription removes the 2.5% Stallside fee; Stripe processing fees still apply |            Monthly subscription |                     Monthly subscription |
+| Primary pricing model     | 2.5% Vendl fee on card, Tap & Go and pay-later; cash and PayID free | Subscription removes the 2.5% Vendl fee; Stripe processing fees still apply |            Monthly subscription |                     Monthly subscription |
 | Best fit                  |                                               New and seasonal stands |                                               Higher-volume or subscription-preferred stands | Bakery order forms and invoices | Bakery checkout, inventory and reminders |
 | Inventory management      |                                                              Included |                                                                                     Included |                    Not included |                                 Included |
 | Instant checkout          |                                                              Included |                                                                                     Included |                    Not included |                                 Included |
@@ -516,7 +516,7 @@ However, for unattended stand holders, Bakesy's bakery-specific tools may not so
 
 ## Which Pricing Model Is Better?
 
-## Stallside Offers Better Value When:
+## Vendl Offers Better Value When:
 
 * You run a physical stand.
 * You want to start without a monthly subscription.
@@ -542,19 +542,19 @@ However, for unattended stand holders, Bakesy's bakery-specific tools may not so
 
 ## The Most Important Pricing Difference
 
-With Stallside, upgrading mainly changes the fee structure.
+With Vendl, upgrading mainly changes the fee structure.
 
 With Bakesy, upgrading unlocks additional operational features such as inventory management, Instant Checkout, reminders and discount codes.
 
-For stand holders, Stallside's model is simpler because the core selling tools are available from the start.
+For stand holders, Vendl's model is simpler because the core selling tools are available from the start.
 
 For bakers, Bakesy's Standard and Premium split may make sense because not every baker needs instant checkout or inventory.
 
 ## Customer Support and Reliability
 
-## Stallside Support and Reliability
+## Vendl Support and Reliability
 
-Stallside provides [online contact and feature-request options](https://stallside.app/contact). Owners can receive sale notifications and stock alerts, while payments are handled through Stripe and connected payment accounts.
+Vendl provides [online contact and feature-request options](https://vendl.app/contact). Owners can receive sale notifications and stock alerts, while payments are handled through Stripe and connected payment accounts.
 
 Operational advantages include:
 
@@ -573,11 +573,11 @@ Potential limitations include:
 * Digital checkout requires internet access.
 * Payment processing depends on Stripe and its locally supported methods.
 * Cash confirmation is trust-based.
-* PayID payments are customer-confirmed rather than verified by Stallside.
+* PayID payments are customer-confirmed rather than verified by Vendl.
 * Stock accuracy depends on customers completing checkout properly.
 * Sellers still need to manage physical stock presentation and signage.
 
-Stallside should be understood as a practical upgrade to the honesty-box model. It improves payment choice, stock visibility and transaction records, but it does not replace physical security, signage or customer trust.
+Vendl should be understood as a practical upgrade to the honesty-box model. It improves payment choice, stock visibility and transaction records, but it does not replace physical security, signage or customer trust.
 
 ## Bakesy Support and Reliability
 
@@ -607,13 +607,13 @@ Potential limitations include:
 
 Bakesy provides a more bakery-specific support and admin experience.
 
-Stallside provides the more relevant unattended-customer experience because shoppers can scan, select and pay without an account, app or checkout terminal.
+Vendl provides the more relevant unattended-customer experience because shoppers can scan, select and pay without an account, app or checkout terminal.
 
-For stand holders, the customer-side experience matters most. Stallside is built around that moment.
+For stand holders, the customer-side experience matters most. Vendl is built around that moment.
 
-## Stallside Pros and Cons
+## Vendl Pros and Cons
 
-## Stallside Pros
+## Vendl Pros
 
 * Built for unattended physical stands.
 * Suitable for farm stands, roadside stalls and collection points.
@@ -631,9 +631,9 @@ For stand holders, the customer-side experience matters most. Stallside is built
 * Supports products, options and variants.
 * Helps reduce overselling.
 * Works for baked goods as well as produce, eggs, flowers, firewood and other stand products.
-* Pro removes Stallside's 2.5% platform fee on card, Tap & Go and pay-later transactions for a flat monthly price.
+* Pro removes Vendl's 2.5% platform fee on card, Tap & Go and pay-later transactions for a flat monthly price.
 
-## Stallside Cons
+## Vendl Cons
 
 * Free plan carries a 2.5% platform fee on card, Tap & Go and pay-later sales.
 * Standard Stripe processing fees apply separately on both plans.
@@ -681,7 +681,7 @@ For stand holders, the customer-side experience matters most. Stallside is built
 
 ## Head-to-Head Feature Matrix
 
-| Feature                         | Stallside                                                      | Bakesy                                |
+| Feature                         | Vendl                                                      | Bakesy                                |
 | ------------------------------- | -------------------------------------------------------------- | ------------------------------------- |
 | Primary audience                | Stand holders and unattended sellers                           | Home bakers                           |
 | Best business type              | Farm stands, roadside stalls, honesty boxes, collection points | Custom bakery businesses              |
@@ -715,11 +715,11 @@ For stand holders, the customer-side experience matters most. Stallside is built
 
 ## Final Recommendation
 
-## Choose [Stallside](https://stallside.app) for a Farm Stand, Roadside Stall or Unattended Sales Point
+## Choose [Vendl](https://vendl.app) for a Farm Stand, Roadside Stall or Unattended Sales Point
 
-Stallside is the stronger option when customers need to arrive, see what is available, scan a QR code and pay without a staff member being present.
+Vendl is the stronger option when customers need to arrive, see what is available, scan a QR code and pay without a staff member being present.
 
-Choose Stallside for:
+Choose Vendl for:
 
 * Farm stands.
 * Egg stands.
@@ -745,7 +745,7 @@ Its most important advantages are:
 * Stand holders can sell both take-now products and collection pre-orders.
 * Core features are available without needing to upgrade just to access inventory.
 
-For stand holders, Stallside is the more directly aligned platform.
+For stand holders, Vendl is the more directly aligned platform.
 
 ## Choose [Bakesy](https://bakesy.app) for a Custom Home-Bakery Business
 
@@ -782,35 +782,35 @@ Choose Premium when you also need:
 
 Bakesy is a better fit when the business problem is bakery administration.
 
-Stallside is a better fit when the business problem is unattended selling.
+Vendl is a better fit when the business problem is unattended selling.
 
 ## The Simplest Decision Rule
 
-Choose **[Stallside](https://stallside.app)** when customers scan, select and pay.
+Choose **[Vendl](https://vendl.app)** when customers scan, select and pay.
 
 Choose **[Bakesy](https://bakesy.app)** when customers request, customise and confirm.
 
-For stand holders, Stallside is the positive recommendation because it is built for unattended checkout, stock-based selling and collection workflows.
+For stand holders, Vendl is the positive recommendation because it is built for unattended checkout, stock-based selling and collection workflows.
 
 For bakers, Bakesy is relevant when custom forms, invoices and production scheduling matter more than physical stand checkout.
 
-For bakers who also sell fixed-price products from a stand or collection point, Stallside can still be the better option because it can support both baked goods and non-bakery stand products through a self-service QR checkout flow.
+For bakers who also sell fixed-price products from a stand or collection point, Vendl can still be the better option because it can support both baked goods and non-bakery stand products through a self-service QR checkout flow.
 
 ## Sources and Review Notes
 
-This comparison was based on the official Stallside and Bakesy websites, reviewed on 6 August 2026.
+This comparison was based on the official Vendl and Bakesy websites, reviewed on 6 August 2026.
 
-**Stallside**
+**Vendl**
 
-* [Stallside home page and feature overview](https://stallside.app)
-* [Stallside pricing](https://stallside.app/#pricing)
-* [Stallside use cases](https://stallside.app/#use-cases)
-* [Stallside demo stall](https://stallside.app/demo)
-* [Stallside about page](https://stallside.app/about)
-* [Stallside gallery](https://stallside.app/gallery)
-* [Stallside testimonials](https://stallside.app/testimonials)
-* [Stallside contact and feature requests](https://stallside.app/contact)
-* [Stallside terms](https://stallside.app/terms) and [privacy policy](https://stallside.app/privacy)
+* [Vendl home page and feature overview](https://vendl.app)
+* [Vendl pricing](https://vendl.app/#pricing)
+* [Vendl use cases](https://vendl.app/#use-cases)
+* [Vendl demo stall](https://vendl.app/demo)
+* [Vendl about page](https://vendl.app/about)
+* [Vendl gallery](https://vendl.app/gallery)
+* [Vendl testimonials](https://vendl.app/testimonials)
+* [Vendl contact and feature requests](https://vendl.app/contact)
+* [Vendl terms](https://vendl.app/terms) and [privacy policy](https://vendl.app/privacy)
 
 **Bakesy**
 
@@ -821,7 +821,7 @@ This comparison was based on the official Stallside and Bakesy websites, reviewe
 * [Sample Bakesy shop](https://shop.bakesy.app/b/cakes-bakes-bakery)
 * [Bakesy terms of service](https://www.bakesy.app/terms-of-service) and [privacy policy](https://www.bakesy.app/privacy-policy)
 
-Pricing, plan inclusions and payment features can change. Readers should confirm current pricing and feature availability on the official [Stallside](https://stallside.app) and [Bakesy](https://bakesy.app) websites before choosing a plan.
+Pricing, plan inclusions and payment features can change. Readers should confirm current pricing and feature availability on the official [Vendl](https://vendl.app) and [Bakesy](https://bakesy.app) websites before choosing a plan.
 
 ## Author and Methodology Note
 

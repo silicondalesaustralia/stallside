@@ -13,7 +13,13 @@ const nextConfig: NextConfig = {
   // redirect) so they never depend on vendl DNS. Marketing host redirect lives in
   // middleware so /s, /checkout, /api stay on stallside.
   async redirects() {
-    return [];
+    return [
+      {
+        source: "/farms-stand-news/stallside-vs-bakesy",
+        destination: "/farms-stand-news/vendl-vs-bakesy",
+        permanent: true,
+      },
+    ];
   },
   async headers() {
     return [

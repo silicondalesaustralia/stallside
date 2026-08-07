@@ -4,7 +4,7 @@ import { Prisma, Role, SubscriptionStatus } from "@/generated/prisma/client";
 import type { AdAttribution } from "@/lib/ad-attribution";
 
 /**
- * Create an owner on Free: every feature, Stallside card fee applies.
+ * Create an owner on Free: every feature, Vendl card fee applies.
  * Upgrade anytime to Pro to waive the fee.
  */
 export async function createOwnerWithTrial(input: {

@@ -9,7 +9,7 @@ import { localTransferForCurrency } from "@/lib/local-transfer";
 
 /**
  * After Pro → Free, ensure every stand still has a usable checkout method.
- * Free still supports Tap & Go (with Stallside fee) - do not turn card off.
+ * Free still supports Tap & Go (with Vendl fee) - do not turn card off.
  * Force Cash only when the stand would otherwise have nothing.
  */
 export async function ensureStandsHaveStarterPaymentMethod(ownerId: string) {
@@ -58,10 +58,10 @@ export async function ensureStandsHaveStarterPaymentMethod(ownerId: string) {
        <p>We turned on <strong>Cash</strong> for:
        ${forced.map((n) => escapeHtml(n)).join(", ")}
        so customers scanning your QR can still check out.</p>
-       <p>Tap &amp; Go still works on Free (Stallside fee 2.5%). You can change
+       <p>Tap &amp; Go still works on Free (Vendl fee 2.5%). You can change
        payment methods under My stands, or
        <a href="${billingHref}">upgrade to Pro</a>
-       to remove the Stallside transaction fee.</p>`,
+       to remove the Vendl transaction fee.</p>`,
       { kind: "pro_lapse_cash_fallback" },
     );
   } catch (error) {

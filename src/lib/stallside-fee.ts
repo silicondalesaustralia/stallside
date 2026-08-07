@@ -42,11 +42,11 @@ function isComplimentaryFeeWaiver(
 }
 
 /**
- * Stallside fee applies on Free only.
+ * Vendl fee applies on Free only.
  * Waived for lifetime, paid Pro, and platform-admin / complimentary accounts
  * (admin stays fee-free even when the plan is switched to Free for testing).
  */
-export function shouldChargeStallsideFee(
+export function shouldChargeVendlFee(
   owner: FeeOwner,
   access?: FeeAccess,
 ): boolean {
@@ -70,13 +70,13 @@ export function ownerPassesFeeToCustomer(owner: FeeOwner): boolean {
   return Boolean(owner.passFeeToCustomer);
 }
 
-/** Absorb mode: fee on item subtotal. Pass-on: use computeStallsideCheckoutFees. */
-export function computeStallsideApplicationFee(
+/** Absorb mode: fee on item subtotal. Pass-on: use computeVendlCheckoutFees. */
+export function computeVendlApplicationFee(
   itemTotalCents: number,
   owner: FeeOwner,
   access?: FeeAccess,
 ): number {
-  if (!shouldChargeStallsideFee(owner, access)) return 0;
+  if (!shouldChargeVendlFee(owner, access)) return 0;
   if (ownerPassesFeeToCustomer(owner)) {
     return stallsidePassOnFeeCents(itemTotalCents);
   }
@@ -84,12 +84,12 @@ export function computeStallsideApplicationFee(
 }
 
 /** Shared checkout fee math for server + cart preview. */
-export function computeStallsideCheckoutFees(
+export function computeVendlCheckoutFees(
   subtotalCents: number,
   owner: FeeOwner,
   access?: FeeAccess,
 ): { applicationFeeCents: number; chargeTotalCents: number } {
-  if (!shouldChargeStallsideFee(owner, access) || subtotalCents <= 0) {
+  if (!shouldChargeVendlFee(owner, access) || subtotalCents <= 0) {
     return { applicationFeeCents: 0, chargeTotalCents: Math.max(0, subtotalCents) };
   }
   if (ownerPassesFeeToCustomer(owner)) {

@@ -29,7 +29,7 @@ function assertCardTier(
   if (
     !ownerHasProAccess(owner, { email: user.email, role: user.role })
   ) {
-    throw new Error("PayPal requires Stallside Pro.");
+    throw new Error("PayPal requires Vendl Pro.");
   }
 }
 

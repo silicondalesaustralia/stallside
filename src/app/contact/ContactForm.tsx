@@ -33,10 +33,10 @@ export default function ContactForm({
   return (
     <form action={action} className="space-y-4">
       <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>
-        <label htmlFor="stallside_hp">Leave blank</label>
+        <label htmlFor="vendl_hp">Leave blank</label>
         <input
-          id="stallside_hp"
-          name="stallside_hp"
+          id="vendl_hp"
+          name="vendl_hp"
           type="text"
           tabIndex={-1}
           autoComplete="off"

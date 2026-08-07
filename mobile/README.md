@@ -1,4 +1,4 @@
-# Stallside Owner (store shell)
+# Vendl Owner (store shell)
 
 Native Android/iOS projects wrap the hosted Next.js owner app for App Store / Play listing.
 
@@ -20,11 +20,11 @@ npm run cap:ios
 Production:
 
 ```bash
-CAPACITOR_SERVER_URL=https://stallside.app npx cap sync
+CAPACITOR_SERVER_URL=https://vendl.app npx cap sync
 ```
 
 ## Store listing notes
 
 - Bundle ID: `com.myfarmstand.owner` (unchanged for now)
-- App display name: Stallside
+- App display name: Vendl
 - Audience: farm stand owners

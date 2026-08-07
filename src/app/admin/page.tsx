@@ -45,7 +45,7 @@ export default async function AdminOverviewPage({
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">SaaS admin</h1>
           <p className="mt-1 text-[var(--muted)]">
-            Subscriptions, owners, and Stallside revenue in AUD (live FX from
+            Subscriptions, owners, and Vendl revenue in AUD (live FX from
             Stripe charge currencies), not stand checkout sales.
           </p>
         </div>

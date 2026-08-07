@@ -1,4 +1,4 @@
-# Stallside Meta Ad Landing Page Build Brief
+# Vendl Meta Ad Landing Page Build Brief
 
 > **Live route:** `/lp/missed-sales`  
 > CTAs link to `/signup` (params preserved) → OTP → `/signup-complete` for conversion pixels. No signup modal in v1.
@@ -6,7 +6,7 @@
 ## Page
 
 **Route:** `/lp/missed-sales`  
-**Primary objective:** Create a Stallside account  
+**Primary objective:** Create a Vendl account  
 **Traffic source:** Cold Meta traffic from the “AU New Video” ad  
 **Primary audience:** Australian farm-stall, roadside-stall, honesty-box and small unattended-stall owners  
 **Primary CTA:** `Start free`  
@@ -21,7 +21,7 @@ The landing page must continue the exact conversation started by the ad:
 
 > Customers drive past because they do not have cash.
 
-The page should immediately show that Stallside fixes this with:
+The page should immediately show that Vendl fixes this with:
 
 - One printable QR code
 - No customer app
@@ -73,7 +73,7 @@ The page should feel:
 - Mobile-first
 - Fast and uncluttered
 
-Use the existing Stallside visual system from the homepage, but simplify it for conversion.
+Use the existing Vendl visual system from the homepage, but simplify it for conversion.
 
 ## Visual Style
 
@@ -85,7 +85,7 @@ Use:
 - Subtle gradients
 - Light green-tinted backgrounds
 - Strong dark-green headings
-- Warm amber accents from the Stallside logo
+- Warm amber accents from the Vendl logo
 - Real product UI mock-ups
 - Crisp payment icons
 - Simple line icons
@@ -106,7 +106,7 @@ Avoid:
 
 ## Suggested Palette
 
-Reuse the actual Stallside brand tokens where available. If the current codebase does not expose them, use these as a close fallback:
+Reuse the actual Vendl brand tokens where available. If the current codebase does not expose them, use these as a close fallback:
 
 - Deep green: `#123D2A`
 - Primary green: `#1F6A45`
@@ -142,7 +142,7 @@ Recommended sizes:
 
 Use a very slim header.
 
-**Left:** Stallside logo  
+**Left:** Vendl logo  
 **Right:** Primary CTA button
 
 Do not include the full homepage navigation.
@@ -256,7 +256,7 @@ Create a clean, layered product demonstration rather than using a generic image 
 Recommended composition:
 
 1. A real roadside egg or produce stall photo as the base
-2. A clearly visible Stallside QR poster attached to the stall
+2. A clearly visible Vendl QR poster attached to the stall
 3. A customer phone mock-up showing:
    - stall name
    - product selection
@@ -338,7 +338,7 @@ Use a soft amber or pale green card.
 
 ### Body
 
-That is a sale your cash tin cannot record. Stallside gives them another way to pay before they leave — without adding a terminal, staff member or complicated checkout.
+That is a sale your cash tin cannot record. Vendl gives them another way to pay before they leave — without adding a terminal, staff member or complicated checkout.
 
 ### Supporting Proof Points
 
@@ -364,7 +364,7 @@ On mobile, stack vertically.
 
 ## Supporting Copy
 
-Print the QR, place it at your stall and let Stallside handle the rest.
+Print the QR, place it at your stall and let Vendl handle the rest.
 
 ## Three Cards
 
@@ -445,7 +445,7 @@ Alternate the image direction from the hero.
 
 ### Body
 
-Every confirmed sale appears in your Stallside dashboard. Stock counts fall automatically, and low-stock alerts help you restock before the next customer arrives.
+Every confirmed sale appears in your Vendl dashboard. Stock counts fall automatically, and low-stock alerts help you restock before the next customer arrives.
 
 ### Compact Benefit List
 
@@ -460,7 +460,7 @@ Use tick icons:
 
 ### Supporting Note
 
-`Every feature is included on Free. Pro only changes the Stallside card fee.`
+`Every feature is included on Free. Pro only changes the Vendl card fee.`
 
 ## Visual
 
@@ -484,7 +484,7 @@ Do not use made-up metrics that could look like a customer claim. Label mock dat
 
 ## Intro
 
-Stallside does not replace the trust behind your stall. It gives honest customers more ways to pay and gives you a clearer record of what was taken.
+Vendl does not replace the trust behind your stall. It gives honest customers more ways to pay and gives you a clearer record of what was taken.
 
 ## Objection Cards
 
@@ -496,7 +496,7 @@ Use three accordion items on mobile and three compact cards on desktop.
 `Do I need a card machine?`
 
 **Answer:**  
-No. Customers pay on their own phones. You only need to print and display your Stallside QR poster.
+No. Customers pay on their own phones. You only need to print and display your Vendl QR poster.
 
 ---
 
@@ -526,7 +526,7 @@ Setup is designed to take only a few minutes. Add your products, print the poste
 `Won’t people just scan and not pay?`
 
 **Answer:**  
-Stallside works with the same honesty your stall already relies on. It makes paying easier for customers who intended to pay but arrived without enough cash, and logs each confirmed sale immediately.
+Vendl works with the same honesty your stall already relies on. It makes paying easier for customers who intended to pay but arrived without enough cash, and logs each confirmed sale immediately.
 
 Keep this answer calm and practical. Do not over-defend the product.
 
@@ -581,13 +581,13 @@ A concise dark-green or softly tinted pricing card.
 
 ### Heading
 
-## Free is A$0 per month — with every Stallside feature.
+## Free is A$0 per month — with every Vendl feature.
 
 ### Body
 
-Cash and PayID have no Stallside platform fee. On the Free plan, successful card, Tap & Go and pay-later transactions carry a 2.5% Stallside fee, plus standard Stripe processing fees.
+Cash and PayID have no Vendl platform fee. On the Free plan, successful card, Tap & Go and pay-later transactions carry a 2.5% Vendl fee, plus standard Stripe processing fees.
 
-You can absorb the Stallside fee or pass it on to customers at checkout. Upgrade to Pro later to remove the Stallside fee.
+You can absorb the Vendl fee or pass it on to customers at checkout. Upgrade to Pro later to remove the Vendl fee.
 
 ### Included List
 
@@ -622,7 +622,7 @@ This may link to the homepage pricing anchor or dedicated pricing page, but it m
 
 ## Design
 
-Use a strong, simple closing block with a dark-green background and a subtle Stallside QR pattern or blurred farm-stall image.
+Use a strong, simple closing block with a dark-green background and a subtle Vendl QR pattern or blurred farm-stall image.
 
 ## Copy
 
@@ -650,7 +650,7 @@ Keep the footer minimal.
 
 Include:
 
-- Stallside logo
+- Vendl logo
 - `Pricing`
 - `Terms`
 - `Privacy`
@@ -817,7 +817,7 @@ app/
 
 Reuse existing homepage components and assets where practical, especially:
 
-- Stallside logo
+- Vendl logo
 - Payment icons
 - Customer checkout UI
 - Owner notification UI
@@ -963,7 +963,7 @@ Recommended metadata:
 
 ```ts
 export const metadata = {
-  title: "Stop Missing Farm Stall Sales | Stallside",
+  title: "Stop Missing Farm Stall Sales | Vendl",
   description:
     "Give your unattended stall a QR checkout so customers can pay by cash, PayID, card, Apple Pay or Google Pay. Start free with no terminal.",
   robots: {
@@ -1059,7 +1059,7 @@ The sale you never see
 
 ## Someone stops. Wants the eggs. Has no cash. Drives off.
 
-That is a sale your cash tin cannot record. Stallside gives them another way to pay before they leave — without adding a terminal, staff member or complicated checkout.
+That is a sale your cash tin cannot record. Vendl gives them another way to pay before they leave — without adding a terminal, staff member or complicated checkout.
 
 - One QR poster per stall
 - Customers use their own phone
@@ -1071,7 +1071,7 @@ That is a sale your cash tin cannot record. Stallside gives them another way to 
 
 ## Up and running in three simple steps
 
-Print the QR, place it at your stall and let Stallside handle the rest.
+Print the QR, place it at your stall and let Vendl handle the rest.
 
 ### 01 — Print your stall QR
 
@@ -1100,7 +1100,7 @@ More than a payment QR
 
 ## Know what sold, what is left and when to restock.
 
-Every confirmed sale appears in your Stallside dashboard. Stock counts fall automatically, and low-stock alerts help you restock before the next customer arrives.
+Every confirmed sale appears in your Vendl dashboard. Stock counts fall automatically, and low-stock alerts help you restock before the next customer arrives.
 
 - Instant sale notifications
 - Live stock counts
@@ -1110,7 +1110,7 @@ Every confirmed sale appears in your Stallside dashboard. Stock counts fall auto
 - Restock notifications for regular customers
 
 **Supporting note:**  
-Every feature is included on Free. Pro only changes the Stallside card fee.
+Every feature is included on Free. Pro only changes the Vendl card fee.
 
 ---
 
@@ -1118,11 +1118,11 @@ Every feature is included on Free. Pro only changes the Stallside card fee.
 
 ## Made for the way honesty stalls already work
 
-Stallside does not replace the trust behind your stall. It gives honest customers more ways to pay and gives you a clearer record of what was taken.
+Vendl does not replace the trust behind your stall. It gives honest customers more ways to pay and gives you a clearer record of what was taken.
 
 ### Do I need a card machine?
 
-No. Customers pay on their own phones. You only need to print and display your Stallside QR poster.
+No. Customers pay on their own phones. You only need to print and display your Vendl QR poster.
 
 ### Do customers need an app?
 
@@ -1134,7 +1134,7 @@ Setup is designed to take only a few minutes. Add your products, print the poste
 
 ### Won’t people just scan and not pay?
 
-Stallside works with the same honesty your stall already relies on. It makes paying easier for customers who intended to pay but arrived without enough cash, and logs each confirmed sale immediately.
+Vendl works with the same honesty your stall already relies on. It makes paying easier for customers who intended to pay but arrived without enough cash, and logs each confirmed sale immediately.
 
 ---
 
@@ -1151,11 +1151,11 @@ Marnie · Melbourne, Australia
 **Eyebrow:**  
 Start without a monthly bill
 
-## Free is A$0 per month — with every Stallside feature.
+## Free is A$0 per month — with every Vendl feature.
 
-Cash and PayID have no Stallside platform fee. On the Free plan, successful card, Tap & Go and pay-later transactions carry a 2.5% Stallside fee, plus standard Stripe processing fees.
+Cash and PayID have no Vendl platform fee. On the Free plan, successful card, Tap & Go and pay-later transactions carry a 2.5% Vendl fee, plus standard Stripe processing fees.
 
-You can absorb the Stallside fee or pass it on to customers at checkout. Upgrade to Pro later to remove the Stallside fee.
+You can absorb the Vendl fee or pass it on to customers at checkout. Upgrade to Pro later to remove the Vendl fee.
 
 - Unlimited products and options
 - Printable QR poster

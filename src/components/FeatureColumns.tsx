@@ -16,7 +16,7 @@ const OWNER_FREE = [
 
 const OWNER_PRO = [
   CARD_PLAN_HARDWARE_BLURB,
-  "Same features as Free - no Stallside card fee",
+  "Same features as Free - no Vendl card fee",
   "Paid straight to your Stripe account: no cash box to empty, count, or bank",
 ] as const;
 
@@ -108,7 +108,7 @@ export default function FeatureColumns() {
           What you get
         </h2>
         <p className="mt-3 max-w-2xl pl-3 text-base text-[var(--muted)] sm:text-lg">
-          Free and Pro share every feature. The only difference is the Stallside
+          Free and Pro share every feature. The only difference is the Vendl
           card fee. Shoppers get a simple scan-and-pay stall.
         </p>
       </div>
@@ -121,7 +121,7 @@ export default function FeatureColumns() {
       />
       <FeatureBlock
         eyebrow="For owners"
-        title="Pro - no Stallside fee"
+        title="Pro - no Vendl fee"
         accent="marigold"
         items={OWNER_PRO}
       />

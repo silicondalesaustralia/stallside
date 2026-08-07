@@ -10,7 +10,7 @@ import { loadStandCart, type CartItemInput } from "@/lib/checkout";
 import { isPayPalConfigured, isPayPalConnectAvailable } from "@/lib/paypal";
 import { createPayPalCheckoutOrder } from "@/lib/paypal-orders";
 import { appBaseUrl } from "@/lib/app-url";
-import { computeStallsideApplicationFee } from "@/lib/stallside-fee";
+import { computeVendlApplicationFee } from "@/lib/stallside-fee";
 
 export async function startPayPalCheckout(input: {
   standSlug: string;
@@ -44,8 +44,8 @@ export async function startPayPalCheckout(input: {
     }
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
-    // Track Stallside fee for Free only; Pro / lifetime store 0.
-    const trackedFee = computeStallsideApplicationFee(totalCents, owner);
+    // Track Vendl fee for Free only; Pro / lifetime store 0.
+    const trackedFee = computeVendlApplicationFee(totalCents, owner);
 
     const order = await prisma.order.create({
       data: {

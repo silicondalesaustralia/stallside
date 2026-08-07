@@ -19,7 +19,7 @@ async function main() {
   const privateKey = process.env.VAPID_PRIVATE_KEY?.trim() ?? "";
   const connectionString = process.env.DATABASE_URL;
 
-  console.log("\n=== Stallside web push test ===\n");
+  console.log("\n=== Vendl web push test ===\n");
   console.log(`Email: ${email}`);
   console.log(`VAPID public:  ${publicKey ? `set (${publicKey.length} chars)` : "MISSING"}`);
   console.log(`VAPID private: ${privateKey ? `set (${privateKey.length} chars)` : "MISSING"}`);
@@ -66,7 +66,7 @@ async function main() {
 FAIL: No PushDevice rows for this owner - nothing to send to.
 
 On the phone:
-  1. Open Stallside from the Home Screen icon (iPhone requires this)
+  1. Open Vendl from the Home Screen icon (iPhone requires this)
   2. Settings → Phone push alerts ON → Save → Allow notifications
   3. Re-run: npm run push:test -- ${email}
 `);
@@ -79,7 +79,7 @@ On the phone:
 
     webpush.setVapidDetails(`mailto:${LEGAL_EMAIL}`, publicKey, privateKey);
 
-    const title = "Stallside test push";
+    const title = "Vendl test push";
     const body = `Sent at ${new Date().toLocaleString()}`;
     let ok = 0;
     let failed = 0;

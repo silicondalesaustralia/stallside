@@ -13,7 +13,7 @@ let stripeClient: Stripe | null = null;
 
 /**
  * Single Stripe *platform* account powers both:
- * - Billing: owners pay Stallside (Pro subscription)
+ * - Billing: owners pay Vendl (Pro subscription)
  * - Connect: owners receive stand customer payments
  */
 export function getStripe(): Stripe {

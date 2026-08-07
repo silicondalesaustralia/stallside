@@ -22,7 +22,7 @@ export default function LpProductProof() {
             Know what sold, what is left and when to restock.
           </h2>
           <p className="mt-4 text-base leading-relaxed text-[var(--muted)] sm:text-lg">
-            Every confirmed sale appears in your Stallside dashboard. Stock
+            Every confirmed sale appears in your Vendl dashboard. Stock
             counts fall automatically, and low-stock alerts help you restock
             before the next customer arrives.
           </p>
@@ -37,7 +37,7 @@ export default function LpProductProof() {
             ))}
           </ul>
           <p className="mt-5 text-sm font-medium text-[var(--field)]">
-            Every feature is included on Free. Pro only changes the Stallside
+            Every feature is included on Free. Pro only changes the Vendl
             card fee.
           </p>
         </div>

@@ -25,10 +25,10 @@ export async function sendProLapseDay23(r: Recipient) {
       <p><strong>You still have:</strong> every Free feature - cash &amp; PayID
       (Australia only), Tap &amp; Go, pre-orders, branding, restock emails,
       products, stock, QR posters, alerts, and the card-demand counter.</p>
-      <p><strong>Pro brings:</strong> no Stallside transaction fee on
+      <p><strong>Pro brings:</strong> no Vendl transaction fee on
       your card, Tap &amp; Go, and pay-later sales. Standard Stripe processing
       fees still apply.</p>
-      ${ctaButton(L.billingPro, "See Stallside Pro")}
+      ${ctaButton(L.billingPro, "See Vendl Pro")}
       <p>Questions? <strong>hello@${APP_DOMAIN}</strong></p>
     `,
   );
@@ -55,23 +55,23 @@ export async function sendProLapseDay45(
          ${restockN > 0 ? `<strong>${restockN}</strong> regulars are on your restock list.` : ""}
          </p>
          <p>Those features work on Free and Pro. <strong>Pro</strong> only changes
-         one thing: no Stallside transaction fee on card, Tap &amp; Go, and
+         one thing: no Vendl transaction fee on card, Tap &amp; Go, and
          pay-later. Standard Stripe processing fees still apply.</p>`
       : `<p>Free still includes Tap &amp; Go, restock emails, and every other feature.
-         <strong>Pro</strong> removes the Stallside card fee (2.5%) so you pay one
+         <strong>Pro</strong> removes the Vendl card fee (2.5%) so you pay one
          predictable monthly price. Standard Stripe processing fees still apply.</p>`;
   const html = emailShell(
-    "Remove the Stallside fee with Pro",
+    "Remove the Vendl fee with Pro",
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>A quick check-in from ${APP_NAME}.</p>
       ${statsLine}
-      ${ctaButton(L.billingPro, "See Stallside Pro")}
+      ${ctaButton(L.billingPro, "See Vendl Pro")}
     `,
   );
   await send(
     r.to,
-    `Remove the Stallside fee with ${APP_NAME} Pro`,
+    `Remove the Vendl fee with ${APP_NAME} Pro`,
     html,
     "lifecycle_pro_lapse_day45",
   );

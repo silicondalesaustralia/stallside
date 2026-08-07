@@ -5,12 +5,12 @@ export default function LpHeroVisual() {
       <figure className="overflow-hidden rounded-[var(--radius)] border border-[var(--line)] bg-[#2a3a2e] shadow-[0_18px_40px_-12px_rgb(23_54_31_/_0.45)]">
         <picture>
           <source
-            srcSet="/lp/green-valley-eggs-stallside-stand.webp"
+            srcSet="/lp/green-valley-eggs-vendl-stand.webp"
             type="image/webp"
           />
           <img
-            src="/lp/green-valley-eggs-stallside-stand.jpg"
-            alt="Green Valley Eggs roadside stall with eggs, honey, and a Stallside QR poster"
+            src="/lp/green-valley-eggs-vendl-stand.jpg"
+            alt="Green Valley Eggs roadside stall with eggs, honey, and a Vendl QR poster"
             width={819}
             height={1024}
             fetchPriority="high"

@@ -13,7 +13,7 @@ export default function TrustSection() {
         <div className="mt-6 max-w-3xl space-y-4 text-base leading-relaxed text-[var(--muted)] sm:text-lg">
           <p>
             Roadside stalls have always worked on trust, and they work. Your customers already want
-            to pay; sometimes they just don&apos;t have the cash. Stallside is for exactly those
+            to pay; sometimes they just don&apos;t have the cash. Vendl is for exactly those
             moments: a tap instead of a rummage for coins. Same honesty box, more ways to drop the
             money in.
           </p>

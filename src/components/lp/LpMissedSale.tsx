@@ -17,7 +17,7 @@ export default function LpMissedSale() {
           Someone stops. Wants the eggs. Has no cash. Drives off.
         </h2>
         <p className="mt-4 max-w-3xl text-base leading-relaxed text-[var(--muted)] sm:text-lg">
-          That is a sale your cash tin cannot record. Stallside gives them
+          That is a sale your cash tin cannot record. Vendl gives them
           another way to pay before they leave - without adding a terminal,
           staff member or complicated checkout.
         </p>

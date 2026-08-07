@@ -1,7 +1,7 @@
 const OBJECTIONS = [
   {
     q: "Do I need a card machine?",
-    a: "No. Customers pay on their own phones. You only need to print and display your Stallside QR poster.",
+    a: "No. Customers pay on their own phones. You only need to print and display your Vendl QR poster.",
   },
   {
     q: "Do customers need an app?",
@@ -13,7 +13,7 @@ const OBJECTIONS = [
   },
   {
     q: "Won't people just scan and not pay?",
-    a: "Stallside works with the same honesty your stall already relies on. It makes paying easier for customers who intended to pay but arrived without enough cash, and logs each confirmed sale immediately.",
+    a: "Vendl works with the same honesty your stall already relies on. It makes paying easier for customers who intended to pay but arrived without enough cash, and logs each confirmed sale immediately.",
   },
 ] as const;
 
@@ -25,7 +25,7 @@ export default function LpObjections() {
           Made for the way honesty stalls already work
         </h2>
         <p className="mt-3 max-w-3xl text-base leading-relaxed text-[var(--muted)] sm:text-lg">
-          Stallside does not replace the trust behind your stall. It gives
+          Vendl does not replace the trust behind your stall. It gives
           honest customers more ways to pay and gives you a clearer record of
           what was taken.
         </p>

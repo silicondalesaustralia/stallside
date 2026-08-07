@@ -7,7 +7,7 @@ export default function AboutStory() {
   return (
     <div className="space-y-10 text-base leading-relaxed text-[var(--muted)] sm:text-lg">
       <section className="space-y-5">
-        <p>Stallside began about 500 metres from our front door.</p>
+        <p>Vendl began about 500 metres from our front door.</p>
         <p>
           My daughter is ten. She keeps chooks, and like a lot of kids in rural Australia, she
           set up a little stall at the road to sell the eggs: a table, a handwritten sign, a
@@ -17,7 +17,7 @@ export default function AboutStory() {
         </p>
         <AboutPhotoPair
           {...ABOUT_STAND_PHOTOS}
-          caption="Her stall, still at the road - now with a Stallside QR on it."
+          caption="Her stall, still at the road - now with a Vendl QR on it."
         />
         <p>
           But two things kept going wrong, and they&apos;re the reason this exists.
@@ -53,7 +53,7 @@ export default function AboutStory() {
           people to pay by card too, for the ones with no cash.
         </p>
         <p>
-          That&apos;s still the whole idea. Stallside is a QR code on the stall and an app on your
+          That&apos;s still the whole idea. Vendl is a QR code on the stall and an app on your
           phone. Customers scan, take what they&apos;re after, and pay. You get a message the
           moment something sells, your stock counts itself down, and you get a nudge before you
           run out. No one has to stand at the table. The honesty stays; the guessing goes.
@@ -80,7 +80,7 @@ export default function AboutStory() {
           selling, and you can&apos;t take a payment when someone&apos;s got no cash.
         </p>
         <p>
-          So Stallside is for any of it. If you leave something out to sell and trust people to
+          So Vendl is for any of it. If you leave something out to sell and trust people to
           pay, it&apos;s for you.
         </p>
       </section>
@@ -100,7 +100,7 @@ export default function AboutStory() {
           for the record, are still selling.
         </p>
         <p className="pt-2 text-[var(--ink)]">
-          From the Stallside team, regional Australia
+          From the Vendl team, regional Australia
         </p>
       </section>
 

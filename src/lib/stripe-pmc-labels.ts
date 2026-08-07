@@ -53,13 +53,13 @@ export const PMC_METHOD_SORT_ORDER = [
   "paypal",
 ];
 
-/** Never surface these in Stallside toggles or marketing. */
+/** Never surface these in Vendl toggles or marketing. */
 export const BLOCKED_PMC_METHODS: ReadonlySet<string> = new Set([
   "afterpay_clearpay",
 ]);
 
 /**
- * Stallside-relevant Stripe Checkout methods by billing currency.
+ * Vendl-relevant Stripe Checkout methods by billing currency.
  * Stripe PMC objects include every global method; we only surface these.
  */
 const REGION_PMC_METHODS: Record<string, readonly string[]> = {

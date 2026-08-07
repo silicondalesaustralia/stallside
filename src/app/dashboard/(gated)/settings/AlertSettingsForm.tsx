@@ -93,14 +93,14 @@ export default function AlertSettingsForm({
         <span>
           <span className="font-medium">Phone push alerts</span>
           <span className="mt-0.5 block text-[var(--muted)]">
-            Sales, low stock, and sold out on this phone. Add Stallside to your Home
+            Sales, low stock, and sold out on this phone. Add Vendl to your Home
             Screen first, then allow notifications when prompted.
           </span>
         </span>
       </label>
       {needsHomeScreen ? (
         <p className="rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-[var(--muted)]">
-          On iPhone: tap Share → <strong>Add to Home Screen</strong>, open Stallside
+          On iPhone: tap Share → <strong>Add to Home Screen</strong>, open Vendl
           from that icon, then tap Enable this phone.
         </p>
       ) : null}

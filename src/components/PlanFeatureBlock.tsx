@@ -26,7 +26,7 @@ export default function PlanFeatureBlock({
       <div className="space-y-2">
         <PaymentIconRow brands={cardPaymentBrands(currency)} />
         <p className="text-sm text-[var(--muted)]">
-          Every Stallside feature, with no monthly fee.
+          Every Vendl feature, with no monthly fee.
         </p>
         <p className="text-sm font-semibold text-[var(--marigold)]">
           {FREE_PLAN_FEE_BLURB}
@@ -48,7 +48,7 @@ export default function PlanFeatureBlock({
       <PaymentIconRow brands={cardPaymentBrands(currency)} />
       <p className="text-sm text-[var(--muted)]">{CARD_PLAN_BLURB}</p>
       <p className="text-sm font-semibold text-[var(--marigold)]">
-        No Stallside fee on card, Tap &amp; Go or pay-later payments. Standard
+        No Vendl fee on card, Tap &amp; Go or pay-later payments. Standard
         Stripe processing fees still apply.
       </p>
       <p className="text-sm font-semibold text-[var(--marigold)]">

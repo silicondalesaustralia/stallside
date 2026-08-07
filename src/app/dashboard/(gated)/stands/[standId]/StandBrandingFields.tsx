@@ -63,7 +63,7 @@ export default function StandBrandingFields({
           />
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" name="clearAccent" className="size-4" />
-            Stallside default
+            Vendl default
           </label>
         </div>
       </label>
@@ -78,7 +78,7 @@ export default function StandBrandingFields({
           />
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" name="clearSecondary" className="size-4" />
-            Stallside default
+            Vendl default
           </label>
         </div>
       </label>

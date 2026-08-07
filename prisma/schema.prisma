@@ -175,7 +175,7 @@ model Owner {
   stripeOnboardingComplete  Boolean            @default(false)
   stripeChargesEnabled      Boolean            @default(false)
   stripePayoutsEnabled      Boolean            @default(false)
-  /** Platform Billing customer (Stallside SaaS subscription) */
+  /** Platform Billing customer (Vendl SaaS subscription) */
   stripeCustomerId          String?
   /** Platform Billing subscription id */
   stripeSubscriptionId      String?
@@ -191,7 +191,7 @@ model Owner {
   /** Free Pro forever (invite or admin grant). */
   lifetimeAccess            Boolean            @default(false)
   monthlyFeeCents           Int                @default(0)
-  /** Free plan: pass Stallside card fee to customer (default absorb). */
+  /** Free plan: pass Vendl card fee to customer (default absorb). */
   passFeeToCustomer         Boolean            @default(false)
   /** Currency of the SaaS subscription (AUD/USD/GBP/EUR) */
   billingCurrency           String             @default("AUD")

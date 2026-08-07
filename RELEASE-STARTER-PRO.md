@@ -7,7 +7,7 @@ Source of truth: [SUBSCRIPTIONS-AND-PAYMENTS.md](./SUBSCRIPTIONS-AND-PAYMENTS.md
 
 ## Headline
 
-**Free ($0/mo, all features, Stallside card fee) / Stallside Pro (no Stallside fee).**  
+**Free ($0/mo, all features, Vendl card fee) / Vendl Pro (no Vendl fee).**  
 The dashboard never locks. New owners start on Free from day one - there is no app Pro trial.
 
 ---
@@ -16,11 +16,11 @@ The dashboard never locks. New owners start on Free from day one - there is no a
 
 | Plan | Price | Notes |
 |------|--------|--------|
-| **Free** | $0/mo | All features. Stallside fee 2.5% on card / Tap & Go / pay-later. Cash and PayID free. Absorb or pass on the fee. Stripe processing fees still apply. |
-| **Stallside Pro** | AUD $19.99 / USD $14.99 / GBP £11.99 / EUR €14.99 per site / month | Same features; no Stallside fee. Stripe Billing Checkout. |
+| **Free** | $0/mo | All features. Vendl fee 2.5% on card / Tap & Go / pay-later. Cash and PayID free. Absorb or pass on the fee. Stripe processing fees still apply. |
+| **Vendl Pro** | AUD $19.99 / USD $14.99 / GBP £11.99 / EUR €14.99 per site / month | Same features; no Vendl fee. Stripe Billing Checkout. |
 
 - No signup trial. Upgrade anytime from Settings → Billing.
-- Lifetime / complimentary invites map to Pro **features**; complimentary does not waive the Stallside fee unless lifetime.
+- Lifetime / complimentary invites map to Pro **features**; complimentary does not waive the Vendl fee unless lifetime.
 - Cash plan is **no longer sold**.
 - Annual / multi-site pricing: **not** in this release.
 
@@ -29,7 +29,7 @@ The dashboard never locks. New owners start on Free from day one - there is no a
 ## Access & gating
 
 - Dashboard is never payment-locked.
-- Stallside fee waived for lifetime and paid Pro only (`shouldChargeStallsideFee`).
+- Vendl fee waived for lifetime and paid Pro only (`shouldChargeVendlFee`).
 - On Pro lapse: if a stand would have no payment method, **Cash is force-enabled** and the owner is emailed.
 
 ---
@@ -47,7 +47,7 @@ The dashboard never locks. New owners start on Free from day one - there is no a
 ## Marketing / copy / KB
 
 - Homepage: Free + Pro.
-- Knowledge base billing article: Free and Stallside Pro (no trial).
+- Knowledge base billing article: Free and Vendl Pro (no trial).
 
 ---
 

@@ -26,7 +26,7 @@ export default function LpHowItWorks() {
           Up and running in three simple steps
         </h2>
         <p className="mt-3 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-          Print the QR, place it at your stall and let Stallside handle the rest.
+          Print the QR, place it at your stall and let Vendl handle the rest.
         </p>
 
         <ol className="mt-8 grid gap-4 md:grid-cols-3">

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-/** True when this owner has soft-closed their Stallside account. */
+/** True when this owner has soft-closed their Vendl account. */
 export function ownerIsDeleted(owner: { deletedAt: Date | null }): boolean {
   return owner.deletedAt != null;
 }

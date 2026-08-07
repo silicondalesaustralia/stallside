@@ -60,7 +60,7 @@ export default function LpPaymentStrip() {
         </ul>
         <p className="mt-4 text-center text-sm text-[var(--muted)]">
           No card reader. Payments happen on the customer&apos;s phone. PayID
-          is Australia-only and always free of Stallside fees.
+          is Australia-only and always free of Vendl fees.
         </p>
       </div>
     </section>

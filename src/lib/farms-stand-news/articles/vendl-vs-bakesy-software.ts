@@ -1,16 +1,16 @@
 import type { NewsComparedSoftware } from "../types";
 
-export const stallsideVsBakesySoftware: NewsComparedSoftware[] = [
+export const vendlVsBakesySoftware: NewsComparedSoftware[] = [
   {
-    id: "stallside",
-    name: "Stallside",
+    id: "vendl",
+    name: "Vendl",
     url: "https://vendl.app",
     applicationSubCategory: "Point of Sale and Inventory Software",
     operatingSystem:
       "Web browser (iOS, Android, desktop) — no customer app required",
     description:
       "QR self-checkout, inventory and paid pre-orders for unattended farm stands, roadside stalls, honesty boxes and collection points.",
-    listLabel: "Stallside — best for unattended stands and collection points",
+    listLabel: "Vendl — best for unattended stands and collection points",
     featureList: [
       "QR-based unattended self-checkout",
       "Live stock tracking and low-stock alerts",
@@ -27,21 +27,21 @@ export const stallsideVsBakesySoftware: NewsComparedSoftware[] = [
     ],
     offers: [
       {
-        name: "Stallside Free",
+        name: "Vendl Free",
         price: "0",
         priceCurrency: "AUD",
         url: "https://vendl.app/#pricing",
         description:
-          "All Stallside features at $0/month. A 2.5% Stallside platform fee applies to card, Tap & Go and pay-later payments; cash and PayID carry no Stallside fee. Standard Stripe processing fees apply separately.",
+          "All Vendl features at $0/month. A 2.5% Vendl platform fee applies to card, Tap & Go and pay-later payments; cash and PayID carry no Vendl fee. Standard Stripe processing fees apply separately.",
       },
       {
-        name: "Stallside Pro",
+        name: "Vendl Pro",
         price: "19.99",
         priceCurrency: "AUD",
         url: "https://vendl.app/#pricing",
         unitText: "per site per month",
         description:
-          "Removes the 2.5% Stallside platform fee. Standard Stripe processing fees still apply. Also billed at US$14.99, £11.99 or €14.99 per site.",
+          "Removes the 2.5% Vendl platform fee. Standard Stripe processing fees still apply. Also billed at US$14.99, £11.99 or €14.99 per site.",
       },
     ],
   },

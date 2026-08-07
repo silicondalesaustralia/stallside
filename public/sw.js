@@ -1,7 +1,7 @@
-/* Stallside owner push service worker - push display only */
+/* Vendl owner push service worker - push display only */
 
 self.addEventListener("push", (event) => {
-  let title = "Stallside";
+  let title = "Vendl";
   let body = "You have a new alert.";
   let data = {};
   try {

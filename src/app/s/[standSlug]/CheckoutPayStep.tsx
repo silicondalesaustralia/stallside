@@ -27,7 +27,7 @@ type CheckoutPayStepProps = {
   items: CartItem[];
   /** Cart total for card-demand logging. */
   subtotalCents?: number;
-  /** Pass-on Stallside fee (0 when absorb or Pro). */
+  /** Pass-on Vendl fee (0 when absorb or Pro). */
   cardFeeCents?: number;
   cardTotalCents?: number;
   localTransferLabel: string | null;

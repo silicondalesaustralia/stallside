@@ -106,7 +106,7 @@ export default function PrivacyContent() {
         <p className="text-[var(--muted)]">
           We retain account and transaction data while your account is active and for a reasonable
           period afterward for billing, disputes, and legal requirements. You can delete your
-          account anytime in Settings → Delete account (this cancels any Stallside subscription and
+          account anytime in Settings → Delete account (this cancels any Vendl subscription and
           removes your stands and related data). You may also request access to or correction of
           personal information we hold about you by emailing {LEGAL_EMAIL}.
         </p>

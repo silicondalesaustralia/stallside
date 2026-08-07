@@ -8,7 +8,7 @@ import { marketingPageGraphSchema } from "@/lib/schema";
 
 const title = "Farm Stand News";
 const description =
-  "News, guides, and updates for farm stand and honesty stall owners from Stallside.";
+  "News, guides, and updates for farm stand and honesty stall owners from Vendl.";
 
 export const metadata: Metadata = {
   title,

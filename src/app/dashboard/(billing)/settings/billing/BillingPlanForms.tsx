@@ -51,7 +51,7 @@ export default function BillingPlanForms({
         action={startProPlanCheckout}
         className="space-y-3 rounded-2xl border-2 border-[var(--leaf)] bg-[var(--panel)] p-4"
       >
-        <p className="text-sm font-semibold text-[var(--leaf)]">Stallside Pro</p>
+        <p className="text-sm font-semibold text-[var(--leaf)]">Vendl Pro</p>
         <p className="font-receipt text-2xl font-semibold text-[var(--marigold)]">
           From {formatMoney(cardPlanCents(currency), currency)}
           <span className="text-sm font-normal text-[var(--muted)]"> /mo</span>

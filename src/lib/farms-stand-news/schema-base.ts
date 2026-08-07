@@ -6,10 +6,10 @@ import {
 import { SITE_URL } from "@/lib/legal";
 
 export const NEWS_SOCIAL_SAME_AS = [
-  "https://www.facebook.com/Stallsideapp",
-  "https://www.instagram.com/stallsideapp/",
-  "https://www.youtube.com/@Stallside",
-  "https://www.tiktok.com/@stallsideapp",
+  "https://www.facebook.com/vendlapp",
+  "https://www.instagram.com/vendlapp/",
+  "https://www.youtube.com/@vendlapp",
+  "https://www.tiktok.com/@vendlapp",
 ] as const;
 
 export function absoluteUrl(pathOrUrl: string) {

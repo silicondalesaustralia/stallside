@@ -6,7 +6,7 @@ Replaces **Section 6.5 ("What you get")** of the original brief. Everything in R
 
 ## The problem
 
-Stallside has a lot of features. The current section lists six of them flat, at equal weight, which does two unhelpful things: it competes with the hook for attention, and it makes a deep product look like a shallow one by showing an arbitrary slice of it.
+Vendl has a lot of features. The current section lists six of them flat, at equal weight, which does two unhelpful things: it competes with the hook for attention, and it makes a deep product look like a shallow one by showing an arbitrary slice of it.
 
 A single-hook landing page needs the hook to dominate. But feature depth still does real work here — it's what separates "a QR code generator" from "software worth signing up for." The answer isn't to list more or list less. It's to **split the section into two tiers with deliberately different visual weight.**
 

@@ -23,10 +23,10 @@ export async function sendTrialWelcome(r: Recipient) {
       <p>Hi ${greetName(r.name)},</p>
       <p>Thanks for joining ${APP_NAME}. Glad you&apos;re here.</p>
       <p><strong>Free is $0/mo with every feature</strong> - cash, PayID (Australia only),
-      Tap &amp; Go, pre-orders, branding, restock emails, and more. Stallside fee is
+      Tap &amp; Go, pre-orders, branding, restock emails, and more. Vendl fee is
       2.5% on card, Tap &amp; Go, and pay-later; cash and PayID stay free.
       Standard Stripe processing fees apply separately. Upgrade to Pro anytime to
-      remove the Stallside fee.</p>
+      remove the Vendl fee.</p>
       <p><strong>Start here</strong></p>
       <ol>
         <li>Create your first stand</li>

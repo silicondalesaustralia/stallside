@@ -19,14 +19,14 @@ export function platformFeeCents(orderTotalCents: number, bps: number): number {
   return Math.round((orderTotalCents * bps) / 10_000);
 }
 
-/** Stallside platform fee: 2.5% of amount (Free plan Stripe sales only). */
+/** Vendl platform fee: 2.5% of amount (Free plan Stripe sales only). */
 export function stallsideFeeCents(amountCents: number): number {
   if (amountCents <= 0) return 0;
   return Math.round((amountCents * STALLSIDE_FEE_BPS) / 10_000);
 }
 
 /**
- * Exact gross-up when passing the Stallside fee to the customer:
+ * Exact gross-up when passing the Vendl fee to the customer:
  * charge = round(subtotal / (1 - 0.025)).
  */
 export function stallsidePassOnChargeCents(subtotalCents: number): number {

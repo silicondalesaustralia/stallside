@@ -14,7 +14,7 @@ async function send(to: string, subject: string, html: string, kind: string) {
   await sendOwnerEmail(to, subject, html, { replyTo: emailReplyTo(), kind });
 }
 
-/** Paid Stallside Pro welcome (DB field still cardWelcomeSentAt). */
+/** Paid Vendl Pro welcome (DB field still cardWelcomeSentAt). */
 export async function sendCardWelcome(r: Recipient) {
   const L = lifecycleLinks();
   const html = emailShell(
@@ -22,7 +22,7 @@ export async function sendCardWelcome(r: Recipient) {
     `
       <p>Hi ${greetName(r.name)},</p>
       <p>Welcome to <strong>${APP_NAME} Pro</strong>. Same features as Free - and
-      <strong>no Stallside transaction fee</strong> on card, Tap &amp; Go, or
+      <strong>no Vendl transaction fee</strong> on card, Tap &amp; Go, or
       pay-later. Standard Stripe processing fees still apply.</p>
       <p>If Tap &amp; Go isn&apos;t live yet:</p>
       <ol>

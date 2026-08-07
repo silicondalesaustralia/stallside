@@ -15,7 +15,7 @@ const FEATURES = [
   "Tap & Go - card, Apple Pay, and Google Pay",
   "PayPal when Connect is live",
   "Stock tracking, QR posters, sale and low-stock alerts",
-  "No terminal. No hardware. Lifetime Free for Life includes no Stallside card fee",
+  "No terminal. No hardware. Lifetime Free for Life includes no Vendl card fee",
   "Payouts straight to your Stripe account",
 ] as const;
 
@@ -59,7 +59,7 @@ export default async function LifetimeInvitePage({
         Pro-for-life
       </h1>
       <p className="mt-2 text-[var(--muted)]">
-        You&apos;ve been invited to Stallside Pro forever - Tap &amp; Go, pre-orders,
+        You&apos;ve been invited to Vendl Pro forever - Tap &amp; Go, pre-orders,
         branding, and everything else Pro includes, with no subscription. Name and
         email only. We&apos;ll send a 6-digit sign-in code.
       </p>

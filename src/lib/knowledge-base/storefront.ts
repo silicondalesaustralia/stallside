@@ -21,7 +21,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
       "Take-now and pre-order items cannot share one checkout. Different collection days also need separate checkouts.",
       "After payment, the buyer gets an email with order details. You get a sale alert with their name and email.",
       "Open Collections to see paid pre-orders by collection day. Mark each order Ready, then Collected when they pick up.",
-      "On Collections or Orders, tap the customer email to send them a message (subject + body) from Stallside. On Collections, use Email all on a collection day to message everyone picking up that day at once.",
+      "On Collections or Orders, tap the customer email to send them a message (subject + body) from Vendl. On Collections, use Email all on a collection day to message everyone picking up that day at once.",
     ],
   },
   {
@@ -36,7 +36,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
     steps: [
       "Branding is available on Free and Pro. Open My stands → your stand → Branding.",
       "Upload a logo (JPEG, PNG, or WebP). It appears on the public stall header and on your QR poster.",
-      "Pick a primary colour for buttons and a secondary colour for prices and stock labels. Use Stallside default to clear a custom colour.",
+      "Pick a primary colour for buttons and a secondary colour for prices and stock labels. Use Vendl default to clear a custom colour.",
       "Add Instagram, Facebook, TikTok, YouTube, or website links. Leave a field blank to hide that icon.",
       "Save branding, then open your public stall link (or scan the QR) to check the logo, colours, and social icons.",
       "Print or refresh the QR sign after changing the logo so the poster matches.",

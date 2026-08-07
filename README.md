@@ -1,8 +1,8 @@
-# Stallside
+# Vendl
 
-QR self-checkout and inventory for unmanned farm stands. Domain: **[stallside.app](https://stallside.app)**
+QR self-checkout and inventory for unmanned farm stands. Domain: **[vendl.app](https://vendl.app)**
 
-Repo: [silicondalesaustralia/stallside](https://github.com/silicondalesaustralia/stallside)
+Repo: [silicondalesaustralia/vendl](https://github.com/silicondalesaustralia/vendl)
 
 ## Stack
 
@@ -27,14 +27,14 @@ See `PILOT-GO-LIVE.md` for the sequenced checklist.
 Import this repo into Vercel (Next.js). Production env must include at least:
 
 - `DATABASE_URL`
-- `NEXT_PUBLIC_APP_URL=https://stallside.app`
-- `AUTH_SECRET` / `AUTH_URL=https://stallside.app`
+- `NEXT_PUBLIC_APP_URL=https://vendl.app`
+- `AUTH_SECRET` / `AUTH_URL=https://vendl.app`
 - `RESEND_API_KEY` + `EMAIL_FROM` (required in prod)
 - Stripe test keys first, then live
 
 Build runs `prisma migrate deploy` then `next build`.
 
-Point DNS for `stallside.app` at Vercel. Do not pilot QR posters on `*.vercel.app`.
+Point DNS for `vendl.app` at Vercel. Do not pilot QR posters on `*.vercel.app`.
 
 ## Product decisions (MVP)
 
@@ -47,7 +47,7 @@ Point DNS for `stallside.app` at Vercel. Do not pilot QR posters on `*.vercel.ap
 ## Owner mobile shell
 
 ```bash
-CAPACITOR_SERVER_URL=https://stallside.app npx cap sync ios
+CAPACITOR_SERVER_URL=https://vendl.app npx cap sync ios
 npm run cap:ios
 ```
 
@@ -57,7 +57,7 @@ Local Simulator: `CAPACITOR_SERVER_URL=http://127.0.0.1:3000`
 
 1. Add `STRIPE_SECRET_KEY` + webhook secret
 2. Owner: **Settings → Manage Stripe connection**
-3. Prod webhook: `https://stallside.app/api/stripe/webhook` (`checkout.session.completed`)
+3. Prod webhook: `https://vendl.app/api/stripe/webhook` (`checkout.session.completed`)
 
 ## Platform admin
 

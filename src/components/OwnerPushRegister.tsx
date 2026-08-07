@@ -22,7 +22,7 @@ export default function OwnerPushRegister({
 
     void registerOwnerWebPush().then((result) => {
       if ("error" in result) {
-        console.warn("[Stallside] web push register:", result.error);
+        console.warn("[Vendl] web push register:", result.error);
       }
     });
   }, [pushAlertsEnabled]);

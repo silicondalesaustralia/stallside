@@ -66,7 +66,7 @@ export async function registerOwnerWebPush(): Promise<{ ok: true } | { error: st
   if (Capacitor.isNativePlatform()) {
     return {
       error:
-        "Open Stallside from the Home Screen Safari icon for phone push (not the native app shell).",
+        "Open Vendl from the Home Screen Safari icon for phone push (not the native app shell).",
     };
   }
   if (!webPushSupported()) {
@@ -75,7 +75,7 @@ export async function registerOwnerWebPush(): Promise<{ ok: true } | { error: st
   if (isIosSafari() && !isInstalledWebApp()) {
     return {
       error:
-        "On iPhone, open Stallside from the Home Screen icon first, then enable push.",
+        "On iPhone, open Vendl from the Home Screen icon first, then enable push.",
     };
   }
 

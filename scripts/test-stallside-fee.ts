@@ -7,8 +7,8 @@ import {
   stallsidePassOnFeeCents,
 } from "../src/lib/money";
 import {
-  computeStallsideCheckoutFees,
-  shouldChargeStallsideFee,
+  computeVendlCheckoutFees,
+  shouldChargeVendlFee,
 } from "../src/lib/stallside-fee";
 
 describe("stallsideFeeCents (2.5% only)", () => {
@@ -41,7 +41,7 @@ describe("pass-on gross-up", () => {
   });
 });
 
-describe("computeStallsideCheckoutFees", () => {
+describe("computeVendlCheckoutFees", () => {
   const free = {
     subscriptionPlan: "free",
     subscriptionStatus: SubscriptionStatus.NONE,
@@ -67,33 +67,33 @@ describe("computeStallsideCheckoutFees", () => {
   };
 
   it("Free absorb: charge subtotal, fee 13¢ on A$5", () => {
-    const r = computeStallsideCheckoutFees(500, free);
+    const r = computeVendlCheckoutFees(500, free);
     assert.equal(r.chargeTotalCents, 500);
     assert.equal(r.applicationFeeCents, 13);
   });
 
   it("Free pass-on: charge 513, fee 13 on A$5", () => {
-    const r = computeStallsideCheckoutFees(500, freePassOn);
+    const r = computeVendlCheckoutFees(500, freePassOn);
     assert.equal(r.chargeTotalCents, 513);
     assert.equal(r.applicationFeeCents, 13);
   });
 
-  it("Pro: no Stallside fee", () => {
-    assert.equal(shouldChargeStallsideFee(pro), false);
-    const r = computeStallsideCheckoutFees(500, pro);
+  it("Pro: no Vendl fee", () => {
+    assert.equal(shouldChargeVendlFee(pro), false);
+    const r = computeVendlCheckoutFees(500, pro);
     assert.equal(r.applicationFeeCents, 0);
     assert.equal(r.chargeTotalCents, 500);
   });
 
-  it("lifetime: no Stallside fee", () => {
-    const r = computeStallsideCheckoutFees(500, lifetime);
+  it("lifetime: no Vendl fee", () => {
+    const r = computeVendlCheckoutFees(500, lifetime);
     assert.equal(r.applicationFeeCents, 0);
     assert.equal(r.chargeTotalCents, 500);
   });
 
-  it("platform-admin on Free for testing: no Stallside fee", () => {
-    assert.equal(shouldChargeStallsideFee(adminTestingFree), false);
-    const r = computeStallsideCheckoutFees(500, adminTestingFree);
+  it("platform-admin on Free for testing: no Vendl fee", () => {
+    assert.equal(shouldChargeVendlFee(adminTestingFree), false);
+    const r = computeVendlCheckoutFees(500, adminTestingFree);
     assert.equal(r.applicationFeeCents, 0);
     assert.equal(r.chargeTotalCents, 500);
   });

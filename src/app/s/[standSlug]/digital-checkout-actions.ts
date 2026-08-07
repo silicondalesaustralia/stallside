@@ -12,7 +12,7 @@ import { isDemoStandSlug } from "@/lib/demo";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
 import {
-  computeStallsideCheckoutFees,
+  computeVendlCheckoutFees,
   ownerPassesFeeToCustomer,
 } from "@/lib/stallside-fee";
 import { standCheckoutPaymentMethodTypes } from "@/lib/stripe-checkout-methods";
@@ -77,7 +77,7 @@ export async function startCardCheckout(input: {
       demoStripe?.stripeAccountId ?? owner.stripeAccountId!;
 
     const { applicationFeeCents: applicationFee, chargeTotalCents: chargeTotal } =
-      computeStallsideCheckoutFees(totalCents, owner);
+      computeVendlCheckoutFees(totalCents, owner);
     const passOn = applicationFee > 0 && ownerPassesFeeToCustomer(owner);
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
@@ -170,7 +170,7 @@ export async function startCardCheckout(input: {
         ...(methodTypes ? { payment_method_types: methodTypes } : {}),
         ...(!methodTypes
           ? {
-              // Stallside does not offer Afterpay (unsupported for many stands).
+              // Vendl does not offer Afterpay (unsupported for many stands).
               excluded_payment_method_types: ["afterpay_clearpay"],
             }
           : {}),

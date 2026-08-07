@@ -3,12 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { shouldChargeStallsideFee } from "@/lib/stallside-fee";
+import { shouldChargeVendlFee } from "@/lib/stallside-fee";
 
 export async function updatePassFeeToCustomer(passFeeToCustomer: boolean) {
   const { owner } = await requireOwner();
-  if (!shouldChargeStallsideFee(owner)) {
-    return { error: "No Stallside card fee on this plan." };
+  if (!shouldChargeVendlFee(owner)) {
+    return { error: "No Vendl card fee on this plan." };
   }
 
   await prisma.owner.update({

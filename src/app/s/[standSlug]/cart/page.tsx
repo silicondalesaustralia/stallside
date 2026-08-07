@@ -12,7 +12,7 @@ import { standCatalogPath } from "@/lib/stand-seo";
 import { productLiveWhere } from "@/lib/product-visibility";
 import {
   ownerPassesFeeToCustomer,
-  shouldChargeStallsideFee,
+  shouldChargeVendlFee,
 } from "@/lib/stallside-fee";
 import StandCartCheckout from "../StandCartCheckout";
 import StandStoreHeader from "../StandStoreHeader";
@@ -112,7 +112,7 @@ export default async function StandCartPage({
         demoRegion={demoRegion}
         restockStandId={restockStandId}
         passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner)}
-        stallsideFeeApplies={shouldChargeStallsideFee(stand.owner)}
+        stallsideFeeApplies={shouldChargeVendlFee(stand.owner)}
       />
     </main>
   );

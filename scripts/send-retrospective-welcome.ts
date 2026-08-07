@@ -1,6 +1,6 @@
 /**
  * Retrospectively send Day 0 welcome to all owners (ignores trialWelcomeSentAt).
- * Usage: NEXT_PUBLIC_APP_URL=https://stallside.app npx tsx scripts/send-retrospective-welcome.ts
+ * Usage: NEXT_PUBLIC_APP_URL=https://vendl.app npx tsx scripts/send-retrospective-welcome.ts
  */
 import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client";

@@ -3,47 +3,47 @@ import { join } from "node:path";
 import NewsMarkdown from "@/components/NewsMarkdown";
 import { SITE_URL } from "@/lib/legal";
 import type { NewsArticle } from "../types";
-import { stallsideVsBakesyFaqs } from "./stallside-vs-bakesy-faqs";
-import { stallsideVsBakesySoftware } from "./stallside-vs-bakesy-software";
+import { vendlVsBakesyFaqs } from "./vendl-vs-bakesy-faqs";
+import { vendlVsBakesySoftware } from "./vendl-vs-bakesy-software";
 
 function Content() {
   const source = readFileSync(
-    join(process.cwd(), "content/news/stallside-vs-bakesy.md"),
+    join(process.cwd(), "content/news/vendl-vs-bakesy.md"),
     "utf8",
   );
   return <NewsMarkdown source={source} />;
 }
 
-export const stallsideVsBakesyArticle: NewsArticle = {
-  slug: "stallside-vs-bakesy",
+export const vendlVsBakesyArticle: NewsArticle = {
+  slug: "vendl-vs-bakesy",
   title:
-    "Stallside vs Bakesy: Which Is Better for Unattended Payments, Pre-Orders and Inventory?",
+    "Vendl vs Bakesy: Which Is Better for Unattended Payments, Pre-Orders and Inventory?",
   seoTitle:
-    "Stallside vs Bakesy: Unattended Payments, Pre-Orders & Inventory",
+    "Vendl vs Bakesy: Unattended Payments, Pre-Orders & Inventory",
   seoDescription:
-    "Stallside vs Bakesy compared on unattended QR checkout, inventory, paid pre-orders, collection management, payment methods and pricing. Stallside suits unattended stands; Bakesy suits custom bakery order management.",
+    "Vendl vs Bakesy compared on unattended QR checkout, inventory, paid pre-orders, collection management, payment methods and pricing. Vendl suits unattended stands; Bakesy suits custom bakery order management.",
   excerpt:
     "A workflow-based comparison for stand holders, roadside sellers and home bakers choosing between unattended QR checkout and bakery order software.",
   publishedAt: "2026-08-06T09:00:00+10:00",
   updatedAt: "2026-08-06T09:00:00+10:00",
   author: {
-    slug: "stallside",
-    name: "Stallside",
+    slug: "vendl",
+    name: "Vendl",
     bio: "Comparisons and guides for farm stand, roadside stall and unattended retail sellers.",
     jobTitle: "Editorial",
     url: `${SITE_URL}/about`,
     sameAs: [
-      "https://www.facebook.com/Stallsideapp",
-      "https://www.instagram.com/stallsideapp/",
+      "https://www.facebook.com/vendlapp",
+      "https://www.instagram.com/vendlapp/",
     ],
   },
   image: {
-    src: "/news/stallside-vs-bakesy/stallside.png",
-    alt: "Stallside scan-pay-sold workflow with customer checkout and owner sale alerts",
+    src: "/news/vendl-vs-bakesy/vendl.png",
+    alt: "Vendl scan-pay-sold workflow with customer checkout and owner sale alerts",
     width: 1024,
     height: 341,
     caption:
-      "Comparing Stallside and Bakesy for unattended stand checkout, pre-orders and inventory",
+      "Comparing Vendl and Bakesy for unattended stand checkout, pre-orders and inventory",
   },
   featuredImagePlacement: "body-only",
   alternativeHeadline:
@@ -55,7 +55,7 @@ export const stallsideVsBakesyArticle: NewsArticle = {
     "Home Bakery",
   ],
   keywords:
-    "Stallside vs Bakesy, unattended QR checkout, farm stand payment app, honesty box payments, home bakery software, paid pre-orders, stall inventory management",
+    "Vendl vs Bakesy, unattended QR checkout, farm stand payment app, honesty box payments, home bakery software, paid pre-orders, stall inventory management",
   wordCount: 4936,
   speakableSelectors: [".post-title", ".post-verdict"],
   mentions: [
@@ -71,7 +71,7 @@ export const stallsideVsBakesyArticle: NewsArticle = {
   ],
   citations: [
     {
-      name: "Stallside pricing",
+      name: "Vendl pricing",
       url: "https://vendl.app/#pricing",
     },
     {
@@ -95,7 +95,7 @@ export const stallsideVsBakesyArticle: NewsArticle = {
       cssSelector: ".feature-matrix",
     },
   ],
-  comparedSoftware: stallsideVsBakesySoftware,
-  faqs: stallsideVsBakesyFaqs,
+  comparedSoftware: vendlVsBakesySoftware,
+  faqs: vendlVsBakesyFaqs,
   Content,
 };

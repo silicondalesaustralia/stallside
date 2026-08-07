@@ -16,7 +16,7 @@ export default function RestockCustomersSection() {
         restocks - nothing else. You restock, hit{" "}
         <strong className="font-semibold text-[var(--ink)]">Notify customers</strong>
         , and they hear you&apos;re back. You never see their addresses;
-        Stallside sends on your behalf.
+        Vendl sends on your behalf.
       </p>
     </LandingFeatureCallout>
   );

@@ -65,7 +65,7 @@ export default function RestockOptIn({
         ) : null}
       </form>
       <p className="mt-3 text-xs text-[var(--muted)]">
-        Your email stays with Stallside.{" "}
+        Your email stays with Vendl.{" "}
         <Link href="/privacy" className="underline">
           Privacy
         </Link>

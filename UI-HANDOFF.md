@@ -1,6 +1,6 @@
-# Stallside - UI improvement handoff
+# Vendl - UI improvement handoff
 
-> **Rebrand:** Product name is **Stallside** (`stallside.app`). See `rebrand-ui-direction.md` for tokens, fonts, and layout. Flow constraints below still apply.
+> **Rebrand:** Product name is **Vendl** (`vendl.app`). See `rebrand-ui-direction.md` for tokens, fonts, and layout. Flow constraints below still apply.
 
 Give this file to another agent whose job is to **improve UI/UX only**. Backend flows exist; do not redesign product logic unless a UI change requires minor wiring.
 

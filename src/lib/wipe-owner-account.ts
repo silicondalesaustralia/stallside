@@ -9,7 +9,7 @@ export type WipeOwnerResult =
   | { error: string };
 
 /**
- * Soft-close an owner account: keep all Stallside data, stop marketing/alert
+ * Soft-close an owner account: keep all Vendl data, stop marketing/alert
  * emails and stands, cancel SaaS billing. Login/OTP still allowed.
  */
 export async function wipeOwnerAccount(

@@ -1,4 +1,4 @@
-# Stallside - Subscriptions & Payments (agent handoff)
+# Vendl - Subscriptions & Payments (agent handoff)
 
 > **Status: TARGET STATE.** This document describes the Starter/Pro model we are moving to.
 > Sections marked **[CURRENT]** describe live behaviour that is unchanged. Sections marked
@@ -11,7 +11,7 @@ Two separate Stripe concerns share one platform account.
 
 | Layer | Who pays whom | Mechanism |
 |-------|----------------|-----------|
-| **SaaS subscription** | Stand owner → Stallside | Stripe Billing (Checkout + Customer Portal + webhooks) |
+| **SaaS subscription** | Stand owner → Vendl | Stripe Billing (Checkout + Customer Portal + webhooks) |
 | **Stand checkout** | Shopper → stand owner | Stripe Connect Express (Card / Tap & Go), or honesty-box Cash / AUD PayID |
 
 Platform take on stand sales: **`PLATFORM_FEE_BPS = 0`** (`src/lib/constants.ts`). SaaS fee is the monthly plan only. **[CURRENT]**
@@ -30,14 +30,14 @@ Two tiers. **Starter is free forever for every account, with no trial and no car
 Per site / month. List prices remain **fixed per currency** (not live FX).
 Source: `src/lib/saas-pricing.ts`. Marketing copy: `src/lib/plan-copy.ts`.
 
-Naming: the free tier is **Stallside** / "Starter" in the billing UI; the paid tier is **Stallside Pro**.
+Naming: the free tier is **Vendl** / "Starter" in the billing UI; the paid tier is **Vendl Pro**.
 Never describe Starter as a trial, a free plan "to get going", or anything implying it expires.
 Preferred descriptor in copy: **free forever**.
 
 ### Starter (free forever)
 
 - Cash at the stand (customer self-confirms)
-- **PayID** bank transfer (Australia / AUD only) - customer confirms; Stallside does not verify
+- **PayID** bank transfer (Australia / AUD only) - customer confirms; Vendl does not verify
 - Unlimited products, **product options / variants**, real stock counts
 - Printable QR poster
 - Sale alerts + low-stock alerts (email / push)
@@ -73,7 +73,7 @@ giving anything away. Quantity-break pricing, if built, also belongs on Starter.
 ### No Pro trial **[CURRENT]**
 
 There is **no app Pro trial**. New owners start on **Free** from day one (all features;
-Stallside card fee applies). Upgrade to Pro anytime to waive the fee.
+Vendl card fee applies). Upgrade to Pro anytime to waive the fee.
 Cron `src/app/api/cron/lifecycle/route.ts` runs Pro lapse Day 23 / Day 45 only
 (legacy `/api/cron/trial-reminders` aliases it). Trial sequence emails are retired.
 
@@ -147,7 +147,7 @@ either collapses into the normal dashboard or is repurposed as a Pro-preview wra
 
 ---
 
-## 3. Stripe - SaaS subscriptions (owner → Stallside)
+## 3. Stripe - SaaS subscriptions (owner → Vendl)
 
 ### Flow **[CHANGE]**
 
@@ -202,7 +202,7 @@ string comparison against old values anywhere in the codebase after it lands.
 ## 4. Pro lapse behaviour **[CURRENT]**
 
 There is no app trial sequence. For cancelled / lapsed Pro, use the Pro lapse emails
-(`sendProLapseDay*`) so the owner knows they are on Free again and the Stallside card fee applies.
+(`sendProLapseDay*`) so the owner knows they are on Free again and the Vendl card fee applies.
 
 **A silent downgrade reads as a broken product.**
 
@@ -239,7 +239,7 @@ must be handled carefully:
 - Give every opt-in email a working unsubscribe, including from Starter stands.
 - **[OPEN] Stale-list handling.** If a stand sits on Starter for a long stretch, subscribers are
   waiting on a message that never comes. Options: age out opt-ins after N months, or send a
-  single "this stand hasn't restocked in a while - still interested?" from Stallside. Decide
+  single "this stand hasn't restocked in a while - still interested?" from Vendl. Decide
   before the list can plausibly get old; not a launch blocker.
 
 Owner-side: surface the count prominently - *"40 regulars are waiting to hear when you restock.
@@ -346,7 +346,7 @@ DEMO_STAND_SLUG_AU / DEMO_STAND_SLUG_US
 ### PayID (AUD)
 
 - Local transfer method; owner stores PayID alias
-- Customer copies alias, pays in banking app, confirms in Stallside
+- Customer copies alias, pays in banking app, confirms in Vendl
 - **Not verified** by the app (`src/lib/local-transfer.ts`)
 - **Stays on Starter.** Costs nothing, is the AU differentiator, and means a free Australian
   stand can still capture the no-cash customer.
@@ -365,7 +365,7 @@ edge case in §8.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Stallside platform Stripe account                          │
+│  Vendl platform Stripe account                          │
 │                                                             │
 │  A) Billing: Owner pays monthly Pro subscription            │
 │     Checkout + Portal + webhooks → Owner.* subscription*    │
@@ -376,9 +376,9 @@ edge case in §8.
 │     → funds to owner; PLATFORM_FEE_BPS = 0                  │
 └─────────────────────────────────────────────────────────────┘
 
-Signup ──► FREE ($0/mo, all features, Stallside card fee)
+Signup ──► FREE ($0/mo, all features, Vendl card fee)
               │
-              └─ upgrade anytime ──► PRO (no Stallside fee)
+              └─ upgrade anytime ──► PRO (no Vendl fee)
                               └── cancel / lapse ──► FREE again
                               (freeze, never delete - §5)
 ```
@@ -478,5 +478,5 @@ Do this in Stripe Dashboard before/while deploying (app will not silently cancel
 2. Email those owners: Starter is now free forever; they can cancel Cash or take a Pro credit offer.
 3. Cancel Cash subs in Portal/Dashboard only after they confirm (or apply N months Pro coupon).
 4. Keep Cash Price IDs in env until every legacy sub is closed.
-5. Rename Stripe Product display name to **Stallside Pro** (Price IDs can stay).
+5. Rename Stripe Product display name to **Vendl Pro** (Price IDs can stay).
 6. Optionally set `STRIPE_PRICE_ID_PRO_*` to the same values as `STRIPE_PRICE_ID_CARD_*`.

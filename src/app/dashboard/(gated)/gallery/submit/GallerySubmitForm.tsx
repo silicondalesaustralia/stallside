@@ -82,7 +82,7 @@ export default function GallerySubmitForm({
       <label className="flex items-start gap-2 text-sm">
         <input type="checkbox" name="consent" required className="mt-1 size-4" />
         <span>
-          I own this photo and allow Stallside to show it publicly in the stand gallery.
+          I own this photo and allow Vendl to show it publicly in the stand gallery.
         </span>
       </label>
       {state.error ? (

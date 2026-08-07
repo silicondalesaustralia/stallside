@@ -35,7 +35,7 @@ export default function CardDemandProof() {
           </p>
           <p className="mt-3 max-w-lg text-sm text-[var(--muted)]">
             Connect Stripe and the next one can actually pay. Pro removes the
-            Stallside card fee.
+            Vendl card fee.
           </p>
         </div>
 

@@ -73,7 +73,7 @@ export function softwareApplicationSchema() {
         "@type": "Offer",
         price: (CARD_PLAN_BY_CURRENCY[currency] / 100).toFixed(2),
         priceCurrency: currency,
-        description: "Stallside Pro per site, billed monthly",
+        description: "Vendl Pro per site, billed monthly",
       })),
     ],
     provider: { "@id": `${SITE_URL}/#organization` },

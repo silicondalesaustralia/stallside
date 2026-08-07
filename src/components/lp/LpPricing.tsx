@@ -16,15 +16,15 @@ export default function LpPricing() {
           Start free. Pay only when a card sale is made.
         </p>
         <h2 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight sm:text-3xl">
-          A$0 per month, with every Stallside feature.
+          A$0 per month, with every Vendl feature.
         </h2>
         <p className="mt-4 text-sm leading-relaxed text-[var(--ink-on-dark)]/85 sm:text-base">
-          Cash and PayID have no Stallside fee. Card, Tap &amp; Go and pay-later
-          sales on Free include a 2.5% Stallside fee, plus standard Stripe
+          Cash and PayID have no Vendl fee. Card, Tap &amp; Go and pay-later
+          sales on Free include a 2.5% Vendl fee, plus standard Stripe
           processing fees.
         </p>
         <p className="mt-3 text-sm leading-relaxed text-[var(--ink-on-dark)]/85 sm:text-base">
-          You can absorb the Stallside fee or pass it on to customers. Upgrade
+          You can absorb the Vendl fee or pass it on to customers. Upgrade
           to Pro later to remove it.
         </p>
         <ul className="mt-6 space-y-2">

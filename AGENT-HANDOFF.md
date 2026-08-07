@@ -1,8 +1,8 @@
-# Stallside - agent handoff (current state)
+# Vendl - agent handoff (current state)
 
-Give this to another agent continuing the project. Repo folder may still be named `MyFarmStand`; product name is **Stallside**, domain **`stallside.app`**.
+Give this to another agent continuing the project. Repo folder may still be named `MyFarmStand`; product name is **Vendl**, domain **`vendl.app`**.
 
-**GitHub:** [silicondalesaustralia/stallside](https://github.com/silicondalesaustralia/stallside) - remote is `origin` via SSH (`git@github.com:silicondalesaustralia/stallside.git`). Pilot checklist: `PILOT-GO-LIVE.md`.
+**GitHub:** [silicondalesaustralia/vendl](https://github.com/silicondalesaustralia/vendl) - remote is `origin` via SSH (`git@github.com:silicondalesaustralia/vendl.git`). Pilot checklist: `PILOT-GO-LIVE.md`.
 
 ---
 
@@ -24,7 +24,7 @@ QR self-checkout + inventory SaaS for **unmanned farm stands / honesty stalls**.
 
 | Decision | Choice |
 |----------|--------|
-| Name / domain | Stallside / `stallside.app` |
+| Name / domain | Vendl / `vendl.app` |
 | Tagline | `Scan. Pay. Fresh.` |
 | SaaS | $9.99/mo (`MONTHLY_FEE_CENTS = 999`), unlimited stands/products |
 | Platform fee | **2% on card only** (`PLATFORM_FEE_BPS = 200`) - tracked in DB; **no** Stripe Connect application fee in MVP |
@@ -62,7 +62,7 @@ npx prisma migrate deploy   # or migrate dev
 npm run dev                 # http://localhost:3000
 ```
 
-Magic links (no `RESEND_API_KEY`): printed in the terminal as `[Stallside magic link]`. Simulator helper: `/login/check-email` has a paste box.
+Magic links (no `RESEND_API_KEY`): printed in the terminal as `[Vendl magic link]`. Simulator helper: `/login/check-email` has a paste box.
 
 Promote admin:
 
@@ -98,7 +98,7 @@ Use `127.0.0.1`, not Android’s `10.0.2.2`, for Simulator. ATS allows local net
 ## 6. What is already built
 
 ### Public
-- Landing `/` - Stallside brand (field green hero, wordmark animation, checkout phone mock)
+- Landing `/` - Vendl brand (field green hero, wordmark animation, checkout phone mock)
 - Login + check-email paste helper
 - Onboarding (business name / contact)
 - Customer checkout `/s/[standSlug]` - cart, sticky bar, cash confirm + card → Stripe Checkout
@@ -129,8 +129,8 @@ Use `127.0.0.1`, not Android’s `10.0.2.2`, for Simulator. ATS allows local net
 - Without Resend/FCM keys: logs to server console
 
 ### Native / brand assets
-- App display name **Stallside** (iOS/Android/Capacitor)
-- App icons updated to Stallside mark (iOS 1024, Android densities)
+- App display name **Vendl** (iOS/Android/Capacitor)
+- App icons updated to Vendl mark (iOS 1024, Android densities)
 - Brand assets under `public/brand/`
 
 ### Migrations present
@@ -213,10 +213,10 @@ Design direction (rebrand): see user Downloads `rebrand-ui-direction.md` if avai
 ## 11. Success criteria for a continuing agent
 
 - Product behavior stays: QR → cash or Tap & Go; owner manages stands/stock; admin desktop-only.
-- Brand stays Stallside (field green + marigold sparingly).
+- Brand stays Vendl (field green + marigold sparingly).
 - Sale and low-stock notifications keep working (email always; push when configured).
 - Build stays green; Capacitor still opens hosted owner web at `/login`.
 
 ---
 
-*Generated as a snapshot handoff of the Stallside MVP as of the Stallside rebrand + notifications work. Prefer the codebase over this doc if they disagree.*
+*Generated as a snapshot handoff of the Vendl MVP as of the Vendl rebrand + notifications work. Prefer the codebase over this doc if they disagree.*

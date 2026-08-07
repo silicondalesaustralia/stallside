@@ -32,7 +32,7 @@ async function ensureStripeCustomer(ownerId: string, email: string | null) {
   return customer.id;
 }
 
-/** Stallside Pro - billed from day one. */
+/** Vendl Pro - billed from day one. */
 export async function startProPlanCheckout(formData: FormData) {
   const { owner, user } = await requireOwner();
   if (!isStripeProBillingConfigured()) {

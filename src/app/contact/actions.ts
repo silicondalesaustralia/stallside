@@ -21,7 +21,7 @@ export async function submitContact(
   formData: FormData,
 ): Promise<ContactState> {
   // Obscure name: "company" is autofilled by password managers → fake success, no email.
-  const honeypot = asTrimmedString(formData.get("stallside_hp"));
+  const honeypot = asTrimmedString(formData.get("vendl_hp"));
   if (honeypot) {
     return { ok: true };
   }

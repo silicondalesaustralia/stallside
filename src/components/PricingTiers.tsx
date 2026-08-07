@@ -53,20 +53,20 @@ export default function PricingTiers() {
         </h2>
       </div>
       <p className="mb-8 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        Start free with every Stallside feature. Cash and PayID stay free. On
+        Start free with every Vendl feature. Cash and PayID stay free. On
         card, Tap &amp; Go and pay-later transactions, Free charges a 2.5%
-        Stallside fee in addition to standard Stripe processing fees. Pass the
-        Stallside fee on to customers or absorb it yourself. Upgrade to Pro to
-        remove the Stallside fee.
+        Vendl fee in addition to standard Stripe processing fees. Pass the
+        Vendl fee on to customers or absorb it yourself. Upgrade to Pro to
+        remove the Vendl fee.
       </p>
 
       <p className="mb-2 text-sm font-semibold text-[var(--field)]">
-        Where Can I Use Stallside?
+        Where Can I Use Vendl?
       </p>
       <div
         className="mb-6 flex flex-wrap gap-2"
         role="group"
-        aria-label="Where Can I Use Stallside?"
+        aria-label="Where Can I Use Vendl?"
       >
         {BILLING_REGIONS.map(({ currency: code, label }) => (
           <button
@@ -108,7 +108,7 @@ export default function PricingTiers() {
         </div>
 
         <div className="rounded-[var(--radius)] border-2 border-[var(--leaf)] bg-[var(--panel)] p-5 sm:p-6">
-          <p className="text-sm font-semibold text-[var(--leaf)]">Stallside Pro</p>
+          <p className="text-sm font-semibold text-[var(--leaf)]">Vendl Pro</p>
           <p className="mt-3 font-receipt text-3xl font-semibold text-[var(--marigold)] sm:text-4xl">
             {formatMoney(cardPlanCents(currency), currency)}
             <span className="text-base font-normal text-[var(--muted)]">
@@ -117,7 +117,7 @@ export default function PricingTiers() {
             </span>
           </p>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            No Stallside transaction fee. Standard Stripe processing fees still
+            No Vendl transaction fee. Standard Stripe processing fees still
             apply.
           </p>
           <div className="mt-4">

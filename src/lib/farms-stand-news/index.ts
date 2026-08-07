@@ -1,11 +1,11 @@
 import type { NewsArticle } from "./types";
-import { stallsideVsBakesyArticle } from "./articles/stallside-vs-bakesy";
+import { vendlVsBakesyArticle } from "./articles/vendl-vs-bakesy";
 
 export type { NewsArticle, NewsArticleMeta, NewsArticleImage, NewsAuthor } from "./types";
 export { newsArticleGraphSchema } from "./schema";
 export { newsIndexPath, newsArticlePath } from "./paths";
 
-const articles: NewsArticle[] = [stallsideVsBakesyArticle];
+const articles: NewsArticle[] = [vendlVsBakesyArticle];
 
 function byPublishedDesc(a: NewsArticle, b: NewsArticle) {
   return Date.parse(b.publishedAt) - Date.parse(a.publishedAt);

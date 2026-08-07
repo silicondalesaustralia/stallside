@@ -24,10 +24,10 @@ export async function sendCancellationFeedback(input: {
       <p>Sorry to see you leave <strong>${APP_NAME} Pro</strong>. Your account stays on
       <strong>Free ($0/mo)</strong> - stands, products, QR posters, and order
       history remain. Nothing locks. Every feature still works.</p>
-      <p><strong>What changes:</strong> the Stallside fee of <strong>2.5%</strong>
+      <p><strong>What changes:</strong> the Vendl fee of <strong>2.5%</strong>
       now applies on card, Tap &amp; Go, and pay-later sales. Cash and PayID stay free.
       Standard Stripe processing fees still apply. In Settings → Card / Tap &amp; Go
-      you can absorb that Stallside fee or pass it on to customers.</p>
+      you can absorb that Vendl fee or pass it on to customers.</p>
       <p>If you have a minute, what worked, what didn&apos;t, or what would have made
       you stay helps us improve:</p>
       <p style="margin:24px 0">
@@ -37,7 +37,7 @@ export async function sendCancellationFeedback(input: {
         </a>
       </p>
       ${ctaButton(L.billingPro, "Upgrade to Pro anytime")}
-      <p>Upgrade anytime to waive the Stallside card fee again.</p>
+      <p>Upgrade anytime to waive the Vendl card fee again.</p>
     `,
   );
 

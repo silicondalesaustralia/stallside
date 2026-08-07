@@ -20,7 +20,7 @@ export default function BnplExplainer({
       </p>
       {showPayTo ? (
         <p className="text-[var(--muted)]">
-          PayTo can take a moment to clear. Stallside waits for Stripe&apos;s
+          PayTo can take a moment to clear. Vendl waits for Stripe&apos;s
           confirmation webhook before marking the sale paid and updating stock.
         </p>
       ) : null}
@@ -28,8 +28,8 @@ export default function BnplExplainer({
         Pay-later providers charge a higher processing fee than cards, taken
         from your payment the same way a card fee is.
         {isPro
-          ? " On Pro there is no Stallside fee on these sales."
-          : " On Free, the Stallside 2.5% fee applies as usual."}
+          ? " On Pro there is no Vendl fee on these sales."
+          : " On Free, the Vendl 2.5% fee applies as usual."}
       </p>
     </section>
   );

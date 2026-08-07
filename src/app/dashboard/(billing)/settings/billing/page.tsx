@@ -56,7 +56,7 @@ export default async function BillingSettingsPage({
   const planLabel = freeForever
     ? "Lifetime FREE - All features"
     : planNorm === "pro" || planNorm === "pro_paypal"
-      ? "Stallside Pro"
+      ? "Vendl Pro"
       : "Free plan";
   const feeCents =
     freeForever || planNorm === "free"
@@ -72,11 +72,11 @@ export default async function BillingSettingsPage({
         </Link>
       </p>
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Stallside billing</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Vendl billing</h1>
         <p className="mt-2 text-[var(--muted)]">
           Free is $0/mo with all features. Card, Tap &amp; Go and pay-later carry
-          a 2.5% Stallside fee (plus standard Stripe processing fees). Pro removes
-          the Stallside fee. This is what you pay Stallside - not stand customer
+          a 2.5% Vendl fee (plus standard Stripe processing fees). Pro removes
+          the Vendl fee. This is what you pay Vendl - not stand customer
           payments.
         </p>
       </div>

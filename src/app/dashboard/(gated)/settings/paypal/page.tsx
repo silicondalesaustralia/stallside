@@ -80,7 +80,7 @@ export default async function PayPalSettingsPage({
       <div className={connectAvailable ? undefined : "opacity-55"}>
         <h1 className="text-3xl font-semibold tracking-tight">PayPal Connect</h1>
         <p className="mt-2 text-[var(--muted)]">
-          Connect PayPal so customers can pay after scanning your Stallside QR.
+          Connect PayPal so customers can pay after scanning your Vendl QR.
         </p>
       </div>
 
@@ -98,7 +98,7 @@ export default async function PayPalSettingsPage({
             : "Marketplace Connect is disabled (PAYPAL_CONNECT_MODE=direct)."}{" "}
           Until Partner API is approved, use{" "}
           <strong>Use platform PayPal (direct test)</strong> below - funds go to
-          the Stallside PayPal Business account linked in env.
+          the Vendl PayPal Business account linked in env.
         </p>
       ) : null}
 
@@ -117,7 +117,7 @@ export default async function PayPalSettingsPage({
 
       {!cardTier ? (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          PayPal is on Stallside Pro. Your account does not have Pro access
+          PayPal is on Vendl Pro. Your account does not have Pro access
           yet.
         </p>
       ) : null}
