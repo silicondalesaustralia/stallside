@@ -1,4 +1,4 @@
-import { APP_NAME } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import { sendOwnerEmail } from "@/lib/notify-email";
 import {
   ctaButton,
@@ -35,7 +35,7 @@ export async function sendCardWelcome(r: Recipient) {
       <a href="${L.billingGuide}">Billing</a></p>
       <p>Missing a payment type your customers use?
       <a href="${L.featureRequest}">Request a feature</a>.</p>
-      <p>Anything odd in setup? <strong>hello@stallside.app</strong>.</p>
+      <p>Anything odd in setup? <strong>hello@${APP_DOMAIN}</strong>.</p>
     `,
   );
   await send(

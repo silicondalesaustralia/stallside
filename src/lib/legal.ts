@@ -2,7 +2,7 @@ import { APP_DOMAIN } from "@/lib/constants";
 
 export const LEGAL_ENTITY = "Saltbush Investment Trust";
 export const LEGAL_ABN = "21 226 814 942";
-export const LEGAL_EMAIL = "hello@stallside.app";
+export const LEGAL_EMAIL = `hello@${APP_DOMAIN}`;
 
 export const LEGAL_ADDRESS = {
   streetAddress: "41B Luck Street",

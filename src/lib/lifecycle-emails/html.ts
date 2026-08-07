@@ -1,4 +1,4 @@
-import { APP_NAME } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import { cleanEnvSecret } from "@/lib/env";
 import { appBaseUrl } from "@/lib/app-url";
 
@@ -12,10 +12,14 @@ export function escapeHtml(value: string): string {
 
 export function emailReplyTo(): string {
   const configured = cleanEnvSecret(process.env.CONTACT_EMAIL)?.toLowerCase();
-  if (configured && !configured.endsWith("@stallside.app")) {
+  if (
+    configured &&
+    !configured.endsWith(`@${APP_DOMAIN}`) &&
+    !configured.endsWith("@stallside.app")
+  ) {
     return configured;
   }
-  return `${APP_NAME} <hello@stallside.app>`;
+  return `${APP_NAME} <hello@${APP_DOMAIN}>`;
 }
 
 export function emailShell(title: string, bodyHtml: string): string {

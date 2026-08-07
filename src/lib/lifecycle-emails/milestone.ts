@@ -1,4 +1,4 @@
-import { APP_NAME } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import { sendOwnerEmail } from "@/lib/notify-email";
 import {
   ctaButton,
@@ -24,7 +24,7 @@ export async function sendFirstTenOrdersEmail(input: {
       ${ctaButton(L.gallerySubmit, "Share your stand")}
       <p>You&apos;ll need a photo of the stand, a stand name, and a location (town / region
       is enough - no street address required).</p>
-      <p>Questions? <strong>hello@stallside.app</strong></p>
+      <p>Questions? <strong>hello@${APP_DOMAIN}</strong></p>
     `,
   );
   await sendOwnerEmail(

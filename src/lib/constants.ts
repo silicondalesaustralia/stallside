@@ -1,5 +1,5 @@
 export const APP_NAME = "Stallside";
-export const APP_DOMAIN = "stallside.app";
+export const APP_DOMAIN = "vendl.app";
 export const APP_TAGLINE = "Scan, Pay, Sold.";
 export const APP_POSITIONING =
   "Take payment at any unattended stand: produce, firewood, flowers, car parks, and anything else you leave out to sell.";

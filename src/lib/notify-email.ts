@@ -1,4 +1,4 @@
-import { APP_NAME } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import { cleanEnvSecret } from "@/lib/env";
 import { filterEmailsForActiveOwners } from "@/lib/owner-deleted";
 import { prisma } from "@/lib/prisma";
@@ -6,10 +6,16 @@ import { prisma } from "@/lib/prisma";
 /** Real inbox for contact/waitlist owner mail until hello@ has a mailbox. */
 const OWNER_INBOX = "jono@silicondales.com";
 
+function isBrandAddressWithoutMailbox(email: string): boolean {
+  return (
+    email.endsWith(`@${APP_DOMAIN}`) || email.endsWith("@stallside.app")
+  );
+}
+
 export function contactInbox(): string {
   const configured = cleanEnvSecret(process.env.CONTACT_EMAIL)?.toLowerCase();
   // Public brand address (hello@) has no mailbox yet - Resend accepts it then it vanishes.
-  if (!configured || configured.endsWith("@stallside.app")) {
+  if (!configured || isBrandAddressWithoutMailbox(configured)) {
     if (configured) {
       console.warn(
         `[${APP_NAME}] Ignoring CONTACT_EMAIL=${configured}; using ${OWNER_INBOX}`,
@@ -87,7 +93,7 @@ export async function sendOwnerEmail(
 
   const from =
     cleanEnvSecret(process.env.EMAIL_FROM) ||
-    `${APP_NAME} <hello@stallside.app>`;
+    `${APP_NAME} <hello@${APP_DOMAIN}>`;
   const body: {
     from: string;
     to: string[];

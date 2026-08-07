@@ -3,7 +3,7 @@
 import { sendOwnerEmail } from "@/lib/notify-email";
 import { isContactSubject } from "@/lib/contact-subjects";
 
-/** Deliver here until hello@stallside.app has a real mailbox. */
+/** Deliver here until hello@vendl.app has a real mailbox. */
 const CONTACT_TO = "jono@silicondales.com";
 
 export type ContactState = {

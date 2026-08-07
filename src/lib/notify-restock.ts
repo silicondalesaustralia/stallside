@@ -1,4 +1,4 @@
-import { APP_NAME } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import { appBaseUrl } from "@/lib/app-url";
 import { prisma } from "@/lib/prisma";
 import { sendOwnerEmail } from "@/lib/notify-email";
@@ -51,7 +51,7 @@ ${messageHtml}
         `${input.standName} has restocked`,
         html,
         {
-          replyTo: `${APP_NAME} <hello@stallside.app>`,
+          replyTo: `${APP_NAME} <hello@${APP_DOMAIN}>`,
           kind: "restock",
           headers: {
             "List-Unsubscribe": `<${listUnsubUrl}>`,
