@@ -12,6 +12,8 @@ import { ownerHasProAccess } from "@/lib/owner-trial";
 import Link from "next/link";
 import OrderDeleteButton from "./OrderDeleteButton";
 import OrderCustomerEmail from "../collections/OrderCustomerEmail";
+import NoBusinessYet from "@/components/NoBusinessYet";
+import { resolveSelectedBusiness } from "@/lib/selected-business";
 
 export default async function OrdersPage({
   searchParams,
@@ -19,6 +21,7 @@ export default async function OrdersPage({
   searchParams: Promise<{ range?: string; from?: string; to?: string }>;
 }) {
   const { owner, user } = await requireOwner();
+  const { selected } = await resolveSelectedBusiness(owner.id);
   const params = await searchParams;
   const window = resolveDateWindow(params);
   const cardTier = ownerHasProAccess(owner, {
@@ -26,10 +29,23 @@ export default async function OrdersPage({
     role: user.role,
   });
 
+  if (!selected) {
+    return (
+      <main className="flex flex-col gap-8">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Orders</h1>
+        </div>
+        <NoBusinessYet />
+      </main>
+    );
+  }
+
+  const standScope = { ownerId: owner.id, standId: selected.id };
+
   const [currentOrders, previousOrders, listedOrders] = await Promise.all([
     prisma.order.findMany({
       where: {
-        ownerId: owner.id,
+        ...standScope,
         createdAt: { gte: window.start, lte: window.end },
         paymentStatus: { in: COUNTED_STATUSES },
       },
@@ -43,7 +59,7 @@ export default async function OrdersPage({
     }),
     prisma.order.findMany({
       where: {
-        ownerId: owner.id,
+        ...standScope,
         createdAt: { gte: window.prevStart, lte: window.prevEnd },
         paymentStatus: { in: COUNTED_STATUSES },
       },
@@ -56,7 +72,7 @@ export default async function OrdersPage({
     }),
     prisma.order.findMany({
       where: {
-        ownerId: owner.id,
+        ...standScope,
         createdAt: { gte: window.start, lte: window.end },
       },
       orderBy: { createdAt: "desc" },
@@ -74,7 +90,8 @@ export default async function OrdersPage({
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Orders</h1>
         <p className="mt-1 text-[var(--muted)]">
-          {window.label} - cash, PayID, card, and PayPal sales at your stands.
+          {selected.name} · {window.label} - cash, PayID, card, and PayPal
+          sales.
         </p>
         {cardTier ? (
           <p className="mt-2 text-sm md:hidden">

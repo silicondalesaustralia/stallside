@@ -150,7 +150,7 @@ Use `127.0.0.1`, not Android’s `10.0.2.2`, for Simulator. ATS allows local net
 | `/s/[standSlug]` | Customer checkout |
 | `/checkout/success`, `/checkout/cancelled` | Card return |
 | `/dashboard/*` | Owner app |
-| `/dashboard/stands/[standId]/qr` | Print poster |
+| `/dashboard/businesses/[standId]/qr` | Print poster |
 | `/dashboard/settings/stripe` | Connect |
 | `/admin/*` | Platform admin |
 | `/api/auth/[...nextauth]` | Auth |

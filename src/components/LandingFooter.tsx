@@ -5,8 +5,9 @@ import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 
 const LINKS = [
   { href: "/demo", label: "Try Demo" },
-  { href: "/#pricing", label: "Pricing" },
-  { href: "/#use-cases", label: "Use cases" },
+  { href: "/stall", label: "Stall" },
+  { href: "/pre-orders", label: "Pre-orders" },
+  { href: "/pricing", label: "Pricing" },
   { href: "/about", label: "About" },
   { href: "/gallery", label: "Gallery" },
   { href: "/testimonials", label: "Testimonials" },

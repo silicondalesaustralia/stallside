@@ -8,11 +8,14 @@ import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesSeriesChart from "@/components/SalesSeriesChart";
 import StarterUpgradeSignals from "@/components/StarterUpgradeSignals";
 import TapAndGoSetupCard from "@/components/TapAndGoSetupCard";
+import NoBusinessYet from "@/components/NoBusinessYet";
+import PreOrdersCrossSellBanner from "./PreOrdersCrossSellBanner";
 import { resolveDateWindow } from "@/lib/date-range";
 import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { buildSalesSeries } from "@/lib/sales-series";
 import { productDashboardWhere } from "@/lib/product-visibility";
+import { resolveSelectedBusiness } from "@/lib/selected-business";
 
 export default async function DashboardPage({
   searchParams,
@@ -20,6 +23,7 @@ export default async function DashboardPage({
   searchParams: Promise<{ range?: string; from?: string; to?: string }>;
 }) {
   const { owner, user } = await requireOwner();
+  const { selected } = await resolveSelectedBusiness(owner.id);
   const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
@@ -29,6 +33,21 @@ export default async function DashboardPage({
   const monthStart = new Date();
   monthStart.setUTCDate(1);
   monthStart.setUTCHours(0, 0, 0, 0);
+
+  if (!selected) {
+    return (
+      <main className="flex flex-col gap-8">
+        <div>
+          <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
+            {owner.businessName}
+          </h1>
+        </div>
+        <NoBusinessYet />
+      </main>
+    );
+  }
+
+  const standScope = { ownerId: owner.id, standId: selected.id };
 
   const [
     standRows,
@@ -40,69 +59,68 @@ export default async function DashboardPage({
     cardInterests,
     restockSubscriberCount,
   ] = await Promise.all([
-      prisma.stand.findMany({
-        where: { ownerId: owner.id },
-        orderBy: { name: "asc" },
-        select: { id: true, name: true, slug: true },
-      }),
-      prisma.product.count({
-        where: { ownerId: owner.id, ...productDashboardWhere },
-      }),
-      prisma.order.findMany({
-        where: {
-          ownerId: owner.id,
-          createdAt: { gte: window.start, lte: window.end },
-          paymentStatus: { in: COUNTED_STATUSES },
-        },
-        select: {
-          totalCents: true,
-          paymentMethod: true,
-          currency: true,
-          createdAt: true,
-        },
-      }),
-      prisma.order.findMany({
-        where: {
-          ownerId: owner.id,
-          createdAt: { gte: window.prevStart, lte: window.prevEnd },
-          paymentStatus: { in: COUNTED_STATUSES },
-        },
-        select: {
-          totalCents: true,
-          paymentMethod: true,
-          currency: true,
-          createdAt: true,
-        },
-      }),
-      prisma.product.findMany({
-        where: { ownerId: owner.id, ...productDashboardWhere },
-        include: { stand: true },
-        orderBy: { stockQuantity: "asc" },
-      }),
-      prisma.order.findMany({
-        where: { ownerId: owner.id },
-        orderBy: { createdAt: "desc" },
-        take: 8,
-        include: { stand: true },
-      }),
-      cardTier
-        ? Promise.resolve([])
-        : prisma.cardInterest.findMany({
-            where: {
-              stand: { ownerId: owner.id },
-              createdAt: { gte: monthStart },
-            },
-            select: { subtotalCents: true, currency: true },
-          }),
-      cardTier
-        ? Promise.resolve(0)
-        : prisma.restockSubscriber.count({
-            where: {
-              stand: { ownerId: owner.id },
-              unsubscribedAt: null,
-            },
-          }),
-    ]);
+    prisma.stand.findMany({
+      where: { id: selected.id, ownerId: owner.id },
+      select: { id: true, name: true, slug: true },
+    }),
+    prisma.product.count({
+      where: { ...standScope, ...productDashboardWhere },
+    }),
+    prisma.order.findMany({
+      where: {
+        ...standScope,
+        createdAt: { gte: window.start, lte: window.end },
+        paymentStatus: { in: COUNTED_STATUSES },
+      },
+      select: {
+        totalCents: true,
+        paymentMethod: true,
+        currency: true,
+        createdAt: true,
+      },
+    }),
+    prisma.order.findMany({
+      where: {
+        ...standScope,
+        createdAt: { gte: window.prevStart, lte: window.prevEnd },
+        paymentStatus: { in: COUNTED_STATUSES },
+      },
+      select: {
+        totalCents: true,
+        paymentMethod: true,
+        currency: true,
+        createdAt: true,
+      },
+    }),
+    prisma.product.findMany({
+      where: { ...standScope, ...productDashboardWhere },
+      include: { stand: true },
+      orderBy: { stockQuantity: "asc" },
+    }),
+    prisma.order.findMany({
+      where: standScope,
+      orderBy: { createdAt: "desc" },
+      take: 8,
+      include: { stand: true },
+    }),
+    cardTier
+      ? Promise.resolve([])
+      : prisma.cardInterest.findMany({
+          where: {
+            standId: selected.id,
+            createdAt: { gte: monthStart },
+          },
+          select: { subtotalCents: true, currency: true },
+        }),
+    cardTier
+      ? Promise.resolve(0)
+      : prisma.restockSubscriber.count({
+          where: {
+            standId: selected.id,
+            unsubscribedAt: null,
+          },
+        }),
+  ]);
 
   const current = summarizeOrders(currentOrders);
   const previous = summarizeOrders(previousOrders);
@@ -115,8 +133,18 @@ export default async function DashboardPage({
   const lowStock = catalog
     .filter((p) => p.stockQuantity <= p.lowStockThreshold)
     .slice(0, 8);
+  const hasPreOrderProduct = catalog.some((p) => p.isPreOrder);
+  const soldOutTakeNow = catalog.filter(
+    (p) => !p.isPreOrder && p.stockQuantity <= 0,
+  ).length;
+  const showPreOrdersCrossSell =
+    !owner.preOrdersCrossSellDismissedAt &&
+    !hasPreOrderProduct &&
+    soldOutTakeNow >= 1;
   const ordersHref = `/dashboard/orders?range=${window.key}${
-    window.key === "custom" ? `&from=${window.fromParam}&to=${window.toParam}` : ""
+    window.key === "custom"
+      ? `&from=${window.fromParam}&to=${window.toParam}`
+      : ""
   }`;
 
   return (
@@ -124,18 +152,21 @@ export default async function DashboardPage({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
-            {owner.businessName}
+            {selected.name}
           </h1>
-          <p className="mt-1 text-[var(--muted)]">{window.label} stand activity</p>
+          <p className="mt-1 text-[var(--muted)]">
+            {window.label} activity
+          </p>
         </div>
         <Link
-          href="/dashboard/stands/new"
-          className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
+          href={`/dashboard/businesses/${selected.id}`}
+          className="rounded-[var(--radius-pill)] border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
         >
-          New stand
+          Business setup
         </Link>
       </div>
 
+      {showPreOrdersCrossSell ? <PreOrdersCrossSellBanner /> : null}
       <DateRangeFilter
         pathname="/dashboard"
         activeKey={window.key}

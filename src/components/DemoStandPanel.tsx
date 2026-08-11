@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
-import QrSignSheet from "@/app/dashboard/(gated)/stands/[standId]/qr/QrSignSheet";
-import type { DemoRegion } from "@/lib/demo";
+import QrSignSheet from "@/app/dashboard/(gated)/businesses/[standId]/qr/QrSignSheet";
+import type { DemoProduct } from "@/lib/demo";
 
 export default function DemoStandPanel({
   name,
-  region,
+  product,
   qrCallout,
   qrSignMessage,
   description,
@@ -16,7 +16,7 @@ export default function DemoStandPanel({
   paymentBrands,
 }: {
   name: string;
-  region: DemoRegion;
+  product: DemoProduct;
   qrCallout: string | null;
   qrSignMessage: string | null;
   description: string | null;
@@ -43,7 +43,7 @@ export default function DemoStandPanel({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Link
-          href={`/demo/phone?region=${region}`}
+          href={`/demo/phone?product=${product}`}
           className="inline-flex flex-1 items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]"
         >
           Try checkout on phone as a customer

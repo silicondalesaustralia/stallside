@@ -8,7 +8,7 @@ const appUrl =
 
 const config: CapacitorConfig = {
   appId: "com.myfarmstand.owner",
-  appName: "Vendl",
+  appName: "Vendl.app",
   webDir: "mobile/www",
   server: {
     // Owner shell loads the hosted Next.js app (not a static export).

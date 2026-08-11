@@ -36,14 +36,23 @@ type CheckoutPayStepProps = {
   showDemoCardHint?: boolean;
   /** Pre-order carts: card only + name/email/phone. */
   preOrderOnly?: boolean;
+  deliverOnly?: boolean;
   /** Offer first-order discount when email provided. */
   firstOrderHint?: string | null;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
+  deliveryAddressLine1?: string;
+  deliverySuburb?: string;
+  deliveryPostcode?: string;
+  deliveryNotes?: string;
   onCustomerName: (v: string) => void;
   onCustomerEmail: (v: string) => void;
   onCustomerPhone: (v: string) => void;
+  onDeliveryAddressLine1?: (v: string) => void;
+  onDeliverySuburb?: (v: string) => void;
+  onDeliveryPostcode?: (v: string) => void;
+  onDeliveryNotes?: (v: string) => void;
   onCash: () => void;
   onLocalTransfer: () => void;
   onCard: () => void;
@@ -68,13 +77,22 @@ export default function CheckoutPayStep({
   pending,
   showDemoCardHint = false,
   preOrderOnly = false,
+  deliverOnly = false,
   firstOrderHint = null,
   customerName,
   customerEmail,
   customerPhone,
+  deliveryAddressLine1 = "",
+  deliverySuburb = "",
+  deliveryPostcode = "",
+  deliveryNotes = "",
   onCustomerName,
   onCustomerEmail,
   onCustomerPhone,
+  onDeliveryAddressLine1,
+  onDeliverySuburb,
+  onDeliveryPostcode,
+  onDeliveryNotes,
   onCash,
   onLocalTransfer,
   onCard,
@@ -101,6 +119,15 @@ export default function CheckoutPayStep({
           onCustomerName={onCustomerName}
           onCustomerEmail={onCustomerEmail}
           onCustomerPhone={onCustomerPhone}
+          deliver={deliverOnly}
+          deliveryAddressLine1={deliveryAddressLine1}
+          deliverySuburb={deliverySuburb}
+          deliveryPostcode={deliveryPostcode}
+          deliveryNotes={deliveryNotes}
+          onDeliveryAddressLine1={onDeliveryAddressLine1}
+          onDeliverySuburb={onDeliverySuburb}
+          onDeliveryPostcode={onDeliveryPostcode}
+          onDeliveryNotes={onDeliveryNotes}
         />
       ) : firstOrderHint ? (
         <label className="flex flex-col gap-1 text-sm">
@@ -155,7 +182,12 @@ export default function CheckoutPayStep({
             disabled={
               pending ||
               (preOrderOnly &&
-                (!customerName.trim() || !customerEmail.trim()))
+                (!customerName.trim() ||
+                  !customerEmail.trim() ||
+                  (deliverOnly &&
+                    (!deliveryAddressLine1.trim() ||
+                      !deliverySuburb.trim() ||
+                      !deliveryPostcode.trim()))))
             }
             onClick={onCard}
             className="flex flex-col gap-3 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4 text-left disabled:opacity-50"

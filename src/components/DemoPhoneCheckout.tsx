@@ -3,7 +3,7 @@
 import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DemoPhoneFrame from "@/components/DemoPhoneFrame";
-import type { DemoRegion } from "@/lib/demo";
+import type { DemoProduct } from "@/lib/demo";
 import {
   DEMO_SALE_CHANNEL,
   isDemoSalePayload,
@@ -15,12 +15,12 @@ export default function DemoPhoneCheckout({
   checkoutUrl,
   standName,
   standSlug,
-  region,
+  product,
 }: {
   checkoutUrl: string;
   standName: string;
   standSlug: string;
-  region: DemoRegion;
+  product: DemoProduct;
 }) {
   const router = useRouter();
 
@@ -34,9 +34,9 @@ export default function DemoPhoneCheckout({
         currency: payload.currency,
         productSummary: payload.productSummary,
       });
-      router.push(`/demo/owner?region=${region}`);
+      router.push(`/demo/owner?product=${product}`);
     },
-    [standSlug, region, router],
+    [standSlug, product, router],
   );
 
   useEffect(() => {

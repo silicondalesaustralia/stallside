@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import LpStartFreeLink from "@/components/lp/LpStartFreeLink";
 
-export default function LpMobileStickyCta() {
+type Props = {
+  ctaLabel?: string;
+  signupHref?: string;
+};
+
+export default function LpMobileStickyCta({ ctaLabel, signupHref }: Props) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -33,6 +38,8 @@ export default function LpMobileStickyCta() {
         <p className="text-sm font-medium text-[var(--muted)]">A$0/mo on Free</p>
         <LpStartFreeLink
           placement="mobile_sticky"
+          label={ctaLabel}
+          href={signupHref}
           className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-2.5 text-sm font-semibold text-white"
         />
       </div>

@@ -19,6 +19,16 @@ const nextConfig: NextConfig = {
         destination: "/farms-stand-news/vendl-vs-bakesy",
         permanent: true,
       },
+      {
+        source: "/dashboard/stands",
+        destination: "/dashboard/businesses",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/stands/:path*",
+        destination: "/dashboard/businesses/:path*",
+        permanent: true,
+      },
     ];
   },
   async headers() {

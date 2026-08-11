@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import PaymentIconRow from "@/components/PaymentIconRow";
-import { demoRegionForStandSlug, isDemoStandSlug } from "@/lib/demo";
+import { isDemoStandSlug } from "@/lib/demo";
 import { mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import { standSocialFromStand } from "@/lib/stand-social";
 import { catalogMetadata } from "@/lib/stand-seo";
-import { productCatalogWhere } from "@/lib/product-visibility";
+import { businessPageProductWhere } from "@/lib/product-visibility";
 import StandCatalogGrid from "./StandCatalogGrid";
 import StandGoToCartBar from "./StandGoToCartBar";
 import StandSocialLinks from "./StandSocialLinks";
@@ -53,7 +53,7 @@ export default async function PublicStandPage({
     where: { slug },
     include: {
       products: {
-        where: productCatalogWhere,
+        where: businessPageProductWhere,
         orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
         include: {
           optionGroups: {
@@ -68,9 +68,7 @@ export default async function PublicStandPage({
 
   if (!stand || !stand.isActive) notFound();
 
-  const isDemo = Boolean(
-    isDemoStandSlug(stand.slug) ? demoRegionForStandSlug(stand.slug) : null,
-  );
+  const isDemo = isDemoStandSlug(stand.slug);
 
   const products = stand.products.map((p) =>
     mapPublicProduct(p, {

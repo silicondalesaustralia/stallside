@@ -1,5 +1,4 @@
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
-import type { DemoRegion } from "@/lib/demo";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { stripeCheckoutBrandsForCurrency } from "@/lib/payment-brand-assets";
 import { isDemoCardReady } from "@/lib/stripe-demo";
@@ -83,16 +82,14 @@ export function standOffersCard(
 
 /**
  * Brands for the public /demo QR sign.
- * Cash + PayID (AU) + Card only - wallets need a real device/account and aren’t demoable.
+ * Cash + PayID (AUD) + Card only - wallets need a real device/account and aren’t demoable.
  */
 export function demoSignPaymentBrands(
   stand: StandPaymentFlags & { slug: string },
   _owner: OwnerPaymentReady,
-  region?: DemoRegion | null,
 ): PaymentBrand[] {
   const brands: PaymentBrand[] = ["cash"];
-  const aud =
-    region === "au" || stand.currency.trim().toUpperCase() === "AUD";
+  const aud = stand.currency.trim().toUpperCase() === "AUD";
   if (aud) brands.push("payid");
   brands.push(
     ...stripeCheckoutBrandsForCurrency(aud ? "AUD" : stand.currency),

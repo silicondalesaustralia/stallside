@@ -2,35 +2,57 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
-import {
-  productDashboardWhere,
-} from "@/lib/product-visibility";
+import { productDashboardWhere } from "@/lib/product-visibility";
 import ProductLifecycleActions from "./ProductLifecycleActions";
 import RestockNotifyPanel from "./RestockNotifyPanel";
 import { loadRestockPanels } from "./load-restock-panels";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
+import ProductsTabs, {
+  isProductTabId,
+  type ProductTabId,
+} from "./ProductsTabs";
+import NoBusinessYet from "@/components/NoBusinessYet";
+import { resolveSelectedBusiness } from "@/lib/selected-business";
 
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string }>;
+  searchParams: Promise<{ view?: string; tab?: string }>;
 }) {
   const { user, owner } = await requireOwner();
-  const { view } = await searchParams;
+  const { selected } = await resolveSelectedBusiness(owner.id);
+  const { view, tab: tabParam } = await searchParams;
   const showArchived = view === "archived";
+  const tab: ProductTabId = isProductTabId(tabParam) ? tabParam : "standard";
+  const isPreOrder = tab === "preorder";
+
+  if (!selected) {
+    return (
+      <main className="flex flex-col gap-8">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Products</h1>
+        </div>
+        <NoBusinessYet />
+      </main>
+    );
+  }
 
   const products = await prisma.product.findMany({
     where: {
       ownerId: owner.id,
+      standId: selected.id,
+      preOrderEligible: isPreOrder,
+      isHidden: false,
       ...(showArchived ? { isArchived: true } : productDashboardWhere),
     },
     include: { stand: true },
-    orderBy: [{ standId: "asc" }, { sortOrder: "asc" }, { name: "asc" }],
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
   });
 
   const showRestock =
     !showArchived &&
+    tab === "standard" &&
     isRestockAlertsEnabled() &&
     ownerHasProAccess(owner, {
       email: user.email,
@@ -38,7 +60,17 @@ export default async function ProductsPage({
       lifetimeAccess: owner.lifetimeAccess,
     });
 
-  const restockPanels = showRestock ? await loadRestockPanels(owner.id) : [];
+  const restockPanels = showRestock
+    ? await loadRestockPanels(owner.id, selected.id)
+    : [];
+
+  function listHref(nextView?: "archived") {
+    const params = new URLSearchParams();
+    if (tab !== "standard") params.set("tab", tab);
+    if (nextView) params.set("view", nextView);
+    const qs = params.toString();
+    return qs ? `/dashboard/products?${qs}` : "/dashboard/products";
+  }
 
   return (
     <main className="flex flex-col gap-8">
@@ -46,11 +78,15 @@ export default async function ProductsPage({
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Products</h1>
           <p className="mt-1 text-[var(--muted)]">
-            Name products as you sell them - e.g. Dozen eggs, 500g steak.
+            {selected.name}
+            {" · "}
+            {isPreOrder
+              ? "Products available for pre-order pages. Collection day is set on each page."
+              : "Name products as you sell them - e.g. Dozen eggs, 500g steak."}
           </p>
           <p className="mt-3 flex flex-wrap gap-3 text-sm">
             <Link
-              href="/dashboard/products"
+              href={listHref()}
               className={
                 !showArchived
                   ? "font-semibold text-[var(--ink)]"
@@ -60,7 +96,7 @@ export default async function ProductsPage({
               Active
             </Link>
             <Link
-              href="/dashboard/products?view=archived"
+              href={listHref("archived")}
               className={
                 showArchived
                   ? "font-semibold text-[var(--ink)]"
@@ -72,12 +108,38 @@ export default async function ProductsPage({
           </p>
         </div>
         <Link
-          href="/dashboard/products/new"
+          href={
+            isPreOrder
+              ? "/dashboard/pre-order-pages/new"
+              : `/dashboard/products/new?standId=${selected.id}`
+          }
           className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
         >
-          Add product
+          {isPreOrder ? "New pre-order page" : "Add product"}
         </Link>
       </div>
+
+      <ProductsTabs active={tab} view={view} />
+
+      {isPreOrder && !showArchived ? (
+        <p className="text-sm text-[var(--muted)]">
+          Group several products on one shareable link:{" "}
+          <Link
+            href="/dashboard/pre-order-pages"
+            className="font-medium text-[var(--leaf-dark)] underline"
+          >
+            Pre-order pages
+          </Link>
+          . Or{" "}
+          <Link
+            href={`/dashboard/products/new?standId=${selected.id}`}
+            className="font-medium text-[var(--leaf-dark)] underline"
+          >
+            add a single pre-order product
+          </Link>
+          .
+        </p>
+      ) : null}
 
       {restockPanels.length > 0 ? (
         <section className="flex flex-col gap-3">
@@ -94,7 +156,9 @@ export default async function ProductsPage({
 
       {products.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">
-          {showArchived ? "No archived products." : "No products yet."}
+          {showArchived
+            ? `No archived ${isPreOrder ? "pre-order" : "standard"} products.`
+            : `No ${isPreOrder ? "pre-order" : "standard"} products yet.`}
         </p>
       ) : (
         <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
@@ -114,9 +178,12 @@ export default async function ProductsPage({
                   ) : null}
                 </p>
                 <p className="mt-1 text-[var(--muted)]">
-                  {product.stand.name} ·{" "}
-                  {formatMoney(product.priceCents, product.currency)} ·{" "}
-                  {product.stockQuantity} in stock
+                  {formatMoney(product.priceCents, product.currency)}
+                  {product.costCents != null
+                    ? ` · profit ${formatMoney(product.priceCents - product.costCents, product.currency)}`
+                    : null}{" "}
+                  · {product.stockQuantity} in stock
+                  {product.sku ? ` · SKU ${product.sku}` : null}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-4">

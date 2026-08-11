@@ -103,6 +103,6 @@ export async function disconnectStripe() {
 
   revalidatePath("/dashboard/settings");
   revalidatePath("/dashboard/settings/stripe");
-  revalidatePath("/dashboard/stands");
+  revalidatePath("/dashboard/businesses");
   redirect("/dashboard/settings/stripe?disconnected=1");
 }

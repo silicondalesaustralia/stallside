@@ -20,12 +20,20 @@ const ROW: RowItem[] = [
   { kind: "brand", brand: "zip", label: "Zip" },
 ];
 
-export default function LpPaymentStrip() {
+type Props = {
+  heading?: string;
+  footnote?: string;
+};
+
+export default function LpPaymentStrip({
+  heading = "Let customers pay the way they already prefer",
+  footnote = "No card reader. Payments happen on the customer's phone. PayID is Australia-only and always free of Vendl fees.",
+}: Props) {
   return (
     <section className="px-5 pb-10 sm:px-6 sm:pb-12">
       <div className="mx-auto max-w-6xl rounded-[var(--radius)] border border-[var(--line)] bg-white px-5 py-6 shadow-sm sm:px-8 sm:py-7">
         <p className="text-center text-sm font-semibold text-[var(--field)] sm:text-base">
-          Let customers pay the way they already prefer
+          {heading}
         </p>
         <ul className="mt-5 flex gap-4 overflow-x-auto pb-1 sm:flex-wrap sm:justify-center sm:overflow-visible">
           {ROW.map((item) => (
@@ -58,10 +66,7 @@ export default function LpPaymentStrip() {
             </li>
           ))}
         </ul>
-        <p className="mt-4 text-center text-sm text-[var(--muted)]">
-          No card reader. Payments happen on the customer&apos;s phone. PayID
-          is Australia-only and always free of Vendl fees.
-        </p>
+        <p className="mt-4 text-center text-sm text-[var(--muted)]">{footnote}</p>
       </div>
     </section>
   );

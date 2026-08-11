@@ -80,17 +80,17 @@ export default function LandingHero() {
             {APP_HERO_SUPPORT}
           </p>
           <p className="mt-2 max-w-xl text-sm leading-snug text-[var(--ink-on-dark)]/60 sm:text-base xl:text-sm">
-            The honesty stall, upgraded. Pay however your customers want.
+            Your stall, upgraded. Customers pay the way they already pay.
           </p>
 
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm xl:mt-3">
             <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]">
               <span className="size-2 rounded-full bg-[var(--leaf)]" aria-hidden />
-              Cash - live today
+              Cash and card
             </span>
             <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]">
               <span className="size-2 rounded-full bg-[var(--leaf)]" aria-hidden />
-              Tap &amp; Go - live
+              Local methods in your region
             </span>
           </div>
 

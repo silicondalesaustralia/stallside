@@ -1,0 +1,221 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import PreOrderAddonFields from "@/components/PreOrderAddonFields";
+import PreOrderFields from "../products/PreOrderFields";
+import {
+  createPreOrderPage,
+  updatePreOrderPage,
+} from "./actions";
+
+type ProductOpt = {
+  id: string;
+  name: string;
+  priceCents: number;
+  hasOptions: boolean;
+};
+
+type PageValues = {
+  id?: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  isActive: boolean;
+  hideOnBusinessPage: boolean;
+  orderByAt: Date;
+  collectionAt: Date;
+  collectionNote: string | null;
+  showExactStock: boolean;
+  paymentTiming: "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE" | "PAY_NOW";
+  depositPercent: number | null;
+  handoverMode: "COLLECT" | "DELIVER";
+  productIds: string[];
+  preOrderUpsellName: string | null;
+  preOrderUpsellPriceCents: number | null;
+  preOrderUpsellDiscountKind: string | null;
+  preOrderUpsellDiscountValue: number | null;
+};
+
+export default function PreOrderPageForm({
+  products,
+  stripeConnected,
+  currency,
+  values,
+}: {
+  products: ProductOpt[];
+  stripeConnected: boolean;
+  currency: string;
+  values?: PageValues;
+}) {
+  const router = useRouter();
+  const [message, setMessage] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  const editing = Boolean(values?.id);
+  const selected = new Set(values?.productIds ?? []);
+
+  function onSubmit(formData: FormData) {
+    const payload = new FormData();
+    for (const [key, value] of formData.entries()) {
+      payload.append(key, value);
+    }
+    setMessage(null);
+    startTransition(async () => {
+      try {
+        const result = editing
+          ? await updatePreOrderPage(values!.id!, payload)
+          : await createPreOrderPage(payload);
+        if (result && "error" in result && result.error) {
+          setMessage(result.error);
+          return;
+        }
+        if (editing) {
+          setMessage("Saved.");
+          router.refresh();
+        }
+      } catch (error) {
+        console.error("Pre-order page save failed", error);
+        setMessage("Could not save. Try again.");
+      }
+    });
+  }
+
+  return (
+    <form action={onSubmit} className="flex max-w-lg flex-col gap-4">
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="font-medium">Page title</span>
+        <input
+          name="title"
+          required
+          maxLength={120}
+          defaultValue={values?.title ?? ""}
+          placeholder="Pre-order Monday 17 Mar"
+          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+        />
+      </label>
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="font-medium">URL slug (optional)</span>
+        <input
+          name="slug"
+          defaultValue={values?.slug ?? ""}
+          placeholder="auto from title"
+          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 font-receipt"
+        />
+      </label>
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="font-medium">Description (optional)</span>
+        <input
+          name="description"
+          defaultValue={values?.description ?? ""}
+          maxLength={500}
+          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+        />
+      </label>
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          name="isActive"
+          defaultChecked={values?.isActive ?? true}
+          className="size-4"
+        />
+        Page is live
+      </label>
+      <label className="flex items-start gap-3 rounded-lg border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+        <input
+          type="checkbox"
+          name="hideOnBusinessPage"
+          defaultChecked={values?.hideOnBusinessPage ?? true}
+          className="mt-0.5 size-4"
+        />
+        <span>
+          <span className="font-medium">Hide on business page</span>
+          <span className="mt-1 block text-[var(--muted)]">
+            Keep these products off the main business catalog and business QR.
+            Customers use this page&apos;s link or QR instead.
+          </span>
+        </span>
+      </label>
+
+      <PreOrderFields
+        forceOn
+        stripeConnected={stripeConnected}
+        defaultIsPreOrder
+        defaultOrderByAt={values?.orderByAt ?? null}
+        defaultCollectionAt={values?.collectionAt ?? null}
+        defaultCollectionNote={values?.collectionNote ?? null}
+        defaultShowExactStock={values?.showExactStock ?? false}
+        defaultDepositRequired={
+          values?.paymentTiming === "DEPOSIT_THEN_BALANCE"
+        }
+        defaultDepositPercent={values?.depositPercent ?? 30}
+        defaultHandoverMode={values?.handoverMode ?? "COLLECT"}
+      />
+
+      <fieldset className="flex flex-col gap-2 rounded-lg border border-[var(--line)] p-4">
+        <legend className="px-1 text-sm font-medium">Products on this page</legend>
+        <p className="text-sm text-[var(--muted)]">
+          Only products marked “Available for pre-order pages” appear here.
+          They share this page&apos;s collection day. Items with options open
+          their own product page for choices.
+        </p>
+        {products.length === 0 ? (
+          <p className="text-sm text-[var(--warn)]">
+            Mark products as available for pre-order pages on the product
+            editor, then come back.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {products.map((p) => (
+              <label
+                key={p.id}
+                className="flex items-start gap-2 text-sm"
+              >
+                <input
+                  type="checkbox"
+                  name="productIds"
+                  value={p.id}
+                  defaultChecked={selected.has(p.id)}
+                  className="mt-0.5 size-4"
+                />
+                <span>
+                  {p.name}
+                  {p.hasOptions ? (
+                    <span className="text-[var(--muted)]"> (has options)</span>
+                  ) : null}
+                </span>
+              </label>
+            ))}
+          </ul>
+        )}
+      </fieldset>
+
+      <PreOrderAddonFields
+        currency={currency}
+        name={values?.preOrderUpsellName ?? null}
+        priceCents={values?.preOrderUpsellPriceCents ?? null}
+        discountKind={values?.preOrderUpsellDiscountKind ?? null}
+        discountValue={values?.preOrderUpsellDiscountValue ?? null}
+        intro="Optional cart add-on for this page. Offered when the cart is this pre-order sheet. Inherits collection day and payment settings."
+      />
+
+      {message ? (
+        <p
+          className={`text-sm ${
+            message === "Saved."
+              ? "text-[var(--leaf-dark)]"
+              : "text-[var(--warn)]"
+          }`}
+        >
+          {message}
+        </p>
+      ) : null}
+      <button
+        type="submit"
+        disabled={pending || !stripeConnected}
+        className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60"
+      >
+        {pending ? "Saving…" : editing ? "Save page" : "Create page"}
+      </button>
+    </form>
+  );
+}

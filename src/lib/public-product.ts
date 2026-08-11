@@ -28,6 +28,17 @@ export type PublicProductCard = {
   hasOptions: boolean;
   freshnessNote: string | null;
   priceTiers: { qty: number; totalCents: number }[];
+  handoverMode: "COLLECT" | "DELIVER";
+  paymentTiming: "PAY_NOW" | "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE";
+  depositPercent: number | null;
+  /** When this product is in the cart, offer this product as upsell. */
+  upsellProductId: string | null;
+  upsellPriceCents: number | null;
+  preOrderUpsellName: string | null;
+  preOrderUpsellPriceCents: number | null;
+  preOrderUpsellDiscountKind: string | null;
+  preOrderUpsellDiscountValue: number | null;
+  preOrderUpsellProductId: string | null;
 };
 
 function stockLabel(
@@ -77,6 +88,16 @@ export function mapPublicProduct(
     showExactStock?: boolean;
     freshnessNote?: string | null;
     priceTiers?: unknown;
+    paymentTiming?: "PAY_NOW" | "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE";
+    depositPercent?: number | null;
+    handoverMode?: "COLLECT" | "DELIVER";
+    upsellProductId?: string | null;
+    upsellPriceCents?: number | null;
+    preOrderUpsellName?: string | null;
+    preOrderUpsellPriceCents?: number | null;
+    preOrderUpsellDiscountKind?: string | null;
+    preOrderUpsellDiscountValue?: number | null;
+    preOrderUpsellProductId?: string | null;
     optionGroups?: {
       id: string;
       name: string;
@@ -133,6 +154,12 @@ export function mapPublicProduct(
   const priceTiers =
     optionGroups.length > 0 ? [] : parsePriceTiers(p.priceTiers);
 
+  const paymentTiming = isPre
+    ? p.paymentTiming === "DEPOSIT_THEN_BALANCE"
+      ? "DEPOSIT_THEN_BALANCE"
+      : "PAY_UPFRONT"
+    : "PAY_NOW";
+
   return {
     id: p.id,
     slug: p.slug,
@@ -150,6 +177,19 @@ export function mapPublicProduct(
     hasOptions: optionGroups.length > 0,
     freshnessNote: p.freshnessNote?.trim() || null,
     priceTiers,
+    handoverMode: p.handoverMode === "DELIVER" ? "DELIVER" : "COLLECT",
+    paymentTiming,
+    depositPercent:
+      paymentTiming === "DEPOSIT_THEN_BALANCE"
+        ? (p.depositPercent ?? 30)
+        : null,
+    upsellProductId: p.upsellProductId ?? null,
+    upsellPriceCents: p.upsellPriceCents ?? null,
+    preOrderUpsellName: p.preOrderUpsellName ?? null,
+    preOrderUpsellPriceCents: p.preOrderUpsellPriceCents ?? null,
+    preOrderUpsellDiscountKind: p.preOrderUpsellDiscountKind ?? null,
+    preOrderUpsellDiscountValue: p.preOrderUpsellDiscountValue ?? null,
+    preOrderUpsellProductId: p.preOrderUpsellProductId ?? null,
   };
 }
 

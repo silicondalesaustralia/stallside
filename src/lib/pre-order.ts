@@ -1,4 +1,11 @@
-/** Parse pre-order fields from product forms. Card-tier only. */
+/** Parse pre-order fields from product forms. Card-tier only. Client-safe (no Prisma). */
+
+export type PaymentTimingValue =
+  | "PAY_NOW"
+  | "PAY_UPFRONT"
+  | "DEPOSIT_THEN_BALANCE";
+
+export type HandoverModeValue = "COLLECT" | "DELIVER";
 
 export type PreOrderParsed =
   | {
@@ -7,6 +14,9 @@ export type PreOrderParsed =
       collectionAt: null;
       collectionNote: null;
       showExactStock: false;
+      paymentTiming: "PAY_NOW";
+      depositPercent: null;
+      handoverMode: "COLLECT";
     }
   | {
       isPreOrder: true;
@@ -14,6 +24,9 @@ export type PreOrderParsed =
       collectionAt: Date;
       collectionNote: string | null;
       showExactStock: boolean;
+      paymentTiming: "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE";
+      depositPercent: number | null;
+      handoverMode: HandoverModeValue;
     };
 
 function parseDateTimeLocal(raw: string): Date | null {
@@ -47,7 +60,9 @@ export function parsePreOrderFromForm(
   cardTier: boolean,
   stripeConnected: boolean,
 ): { ok: true; data: PreOrderParsed } | { ok: false; error: string } {
-  const flagged = formData.get("isPreOrder") === "on" || formData.get("isPreOrder") === "true";
+  const flagged =
+    formData.get("isPreOrder") === "on" ||
+    formData.get("isPreOrder") === "true";
   if (!flagged) {
     return {
       ok: true,
@@ -57,6 +72,9 @@ export function parsePreOrderFromForm(
         collectionAt: null,
         collectionNote: null,
         showExactStock: false,
+        paymentTiming: "PAY_NOW",
+        depositPercent: null,
+        handoverMode: "COLLECT",
       },
     };
   }
@@ -68,7 +86,9 @@ export function parsePreOrderFromForm(
     };
   }
   const orderByAt = parseDateTimeLocal(String(formData.get("orderByAt") ?? ""));
-  const collectionAt = parseDateTimeLocal(String(formData.get("collectionAt") ?? ""));
+  const collectionAt = parseDateTimeLocal(
+    String(formData.get("collectionAt") ?? ""),
+  );
   if (!orderByAt || !collectionAt) {
     return { ok: false, error: "Set order-by and collection times." };
   }
@@ -83,6 +103,26 @@ export function parsePreOrderFromForm(
   const showExactStock =
     formData.get("preOrderShowExactStock") === "on" ||
     formData.get("preOrderShowExactStock") === "true";
+
+  const depositMode =
+    formData.get("depositRequired") === "on" ||
+    formData.get("depositRequired") === "true" ||
+    formData.get("paymentTiming") === "DEPOSIT_THEN_BALANCE";
+  let depositPercent: number | null = null;
+  let paymentTiming: "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE" = "PAY_UPFRONT";
+  if (depositMode) {
+    const pctRaw = Number(formData.get("depositPercent") ?? 30);
+    if (!Number.isFinite(pctRaw) || pctRaw < 1 || pctRaw > 99) {
+      return { ok: false, error: "Deposit percent must be between 1 and 99." };
+    }
+    depositPercent = Math.round(pctRaw);
+    paymentTiming = "DEPOSIT_THEN_BALANCE";
+  }
+
+  const handoverRaw = String(formData.get("handoverMode") ?? "COLLECT");
+  const handoverMode: HandoverModeValue =
+    handoverRaw === "DELIVER" ? "DELIVER" : "COLLECT";
+
   return {
     ok: true,
     data: {
@@ -91,6 +131,9 @@ export function parsePreOrderFromForm(
       collectionAt,
       collectionNote: noteRaw ? noteRaw.slice(0, 200) : null,
       showExactStock,
+      paymentTiming,
+      depositPercent,
+      handoverMode,
     },
   };
 }
@@ -121,3 +164,6 @@ export const CART_MIX_TAKE_NOW_PREORDER =
 export const CART_MIX_COLLECTION_DAYS =
   "Pre-order items in one checkout must share the same collection day.";
 
+/** Shown when cart mixes incompatible payment/handover settings. */
+export const CART_MIX_PREORDER_SETTINGS =
+  "Pre-order items in one checkout must share the same payment and delivery settings.";

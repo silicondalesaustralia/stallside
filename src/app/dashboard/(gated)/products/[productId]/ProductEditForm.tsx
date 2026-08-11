@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import FilePickButton from "@/components/FilePickButton";
 import { updateProduct } from "../actions";
-import PreOrderFields from "../PreOrderFields";
 import ProductPriceTiersFields from "./ProductPriceTiersFields";
+import ProductUpsellFields from "./ProductUpsellFields";
+import ProductOwnerMetaFields from "../ProductOwnerMetaFields";
 import type { PriceTier } from "@/lib/price-tiers";
 
 type ProductFields = {
@@ -18,27 +19,32 @@ type ProductFields = {
   seoTitle: string | null;
   seoDescription: string | null;
   priceCents: number;
+  costCents: number | null;
+  sku: string | null;
+  upc: string | null;
   currency: string;
   lowStockThreshold: number;
+  standId: string;
   standName: string;
   standSlug: string;
   publicUrl: string;
   cardTier: boolean;
-  stripeConnected: boolean;
-  isPreOrder: boolean;
-  orderByAt: Date | null;
-  collectionAt: Date | null;
-  collectionNote: string | null;
-  showExactStock: boolean;
+  preOrderEligible: boolean;
   freshnessNote: string | null;
   priceTiers: PriceTier[];
   hasOptions: boolean;
+  upsellProductId: string | null;
+  upsellPriceCents: number | null;
+  siblingProducts: { id: string; name: string; priceCents: number }[];
 };
 
 export default function ProductEditForm({ product }: { product: ProductFields }) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [preOrderEligible, setPreOrderEligible] = useState(
+    product.preOrderEligible,
+  );
   const [pending, startTransition] = useTransition();
   const save = updateProduct.bind(null, product.id);
   const priceDefault = (product.priceCents / 100).toFixed(2);
@@ -69,6 +75,31 @@ export default function ProductEditForm({ product }: { product: ProductFields })
   return (
     <form action={onSubmit} className="flex flex-col gap-4">
       <p className="text-sm text-[var(--muted)]">Stand: {product.standName}</p>
+      {product.cardTier ? (
+        <label className="flex items-start gap-3 rounded-lg border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+          <input
+            type="checkbox"
+            name="preOrderEligible"
+            checked={preOrderEligible}
+            onChange={(e) => setPreOrderEligible(e.target.checked)}
+            className="mt-0.5 size-4"
+          />
+          <span>
+            <span className="font-medium">Available for pre-order pages</span>
+            <span className="mt-1 block text-[var(--muted)]">
+              Lets you add this product to a{" "}
+              <Link
+                href="/dashboard/pre-order-pages"
+                className="text-[var(--leaf-dark)] underline"
+              >
+                pre-order page
+              </Link>
+              . Collection day and pre-order add-ons are set on the page, not
+              here.
+            </span>
+          </span>
+        </label>
+      ) : null}
       <div className="rounded-lg border border-[var(--line)] bg-[var(--panel)] p-3 text-sm">
         <p className="font-medium">Public page</p>
         <p className="mt-1 break-all text-[var(--muted)]">{product.publicUrl}</p>
@@ -154,11 +185,27 @@ export default function ProductEditForm({ product }: { product: ProductFields })
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
+      <ProductOwnerMetaFields
+        currency={product.currency}
+        sku={product.sku}
+        upc={product.upc}
+        costCents={product.costCents}
+        priceCents={product.priceCents}
+      />
       <ProductPriceTiersFields
         currency={product.currency}
         initial={product.priceTiers}
         disabled={product.hasOptions}
       />
+      {!preOrderEligible ? (
+        <ProductUpsellFields
+          currency={product.currency}
+          businessId={product.standId}
+          products={product.siblingProducts}
+          upsellProductId={product.upsellProductId}
+          upsellPriceCents={product.upsellPriceCents}
+        />
+      ) : null}
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Freshness note (optional)</span>
         <input
@@ -198,24 +245,6 @@ export default function ProductEditForm({ product }: { product: ProductFields })
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      {product.cardTier ? (
-        <PreOrderFields
-          key={[
-            product.isPreOrder ? "1" : "0",
-            product.showExactStock ? "1" : "0",
-            product.orderByAt?.toISOString() ?? "",
-            product.collectionAt?.toISOString() ?? "",
-            product.collectionNote ?? "",
-            product.stripeConnected ? "1" : "0",
-          ].join("|")}
-          stripeConnected={product.stripeConnected}
-          defaultIsPreOrder={product.isPreOrder}
-          defaultOrderByAt={product.orderByAt}
-          defaultCollectionAt={product.collectionAt}
-          defaultCollectionNote={product.collectionNote}
-          defaultShowExactStock={product.showExactStock}
-        />
-      ) : null}
       {message ? (
         <p
           className={`text-sm ${

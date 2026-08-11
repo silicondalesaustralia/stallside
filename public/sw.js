@@ -1,7 +1,7 @@
 /* Vendl owner push service worker - push display only */
 
 self.addEventListener("push", (event) => {
-  let title = "Vendl";
+  let title = "Vendl.app";
   let body = "You have a new alert.";
   let data = {};
   try {

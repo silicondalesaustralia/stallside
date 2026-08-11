@@ -10,6 +10,7 @@ import { isStripeBillingConfigured } from "@/lib/stripe";
 import DashboardStat from "@/components/DashboardStat";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import SaasSeriesChart from "@/components/SaasSeriesChart";
+import { medianSignupToFirstLiveMs } from "@/lib/signup-timing";
 
 export default async function AdminOverviewPage({
   searchParams,
@@ -24,7 +25,7 @@ export default async function AdminOverviewPage({
     to: params.to,
   });
 
-  const [saas, series, recent] = await Promise.all([
+  const [saas, series, recent, medianLiveMs] = await Promise.all([
     getSaasStats(),
     getSaasSeries(window.start, window.end),
     prisma.owner.findMany({
@@ -35,9 +36,16 @@ export default async function AdminOverviewPage({
         stands: { select: { name: true }, take: 3 },
       },
     }),
+    medianSignupToFirstLiveMs(),
   ]);
 
   const billingReady = isStripeBillingConfigured();
+  const medianLiveLabel =
+    medianLiveMs == null
+      ? "n/a"
+      : medianLiveMs < 60_000
+        ? `${Math.round(medianLiveMs / 1000)}s`
+        : `${(medianLiveMs / 60_000).toFixed(1)}m`;
 
   return (
     <main className="flex flex-col gap-10">
@@ -47,6 +55,13 @@ export default async function AdminOverviewPage({
           <p className="mt-1 text-[var(--muted)]">
             Subscriptions, owners, and Vendl revenue in AUD (live FX from
             Stripe charge currencies), not stand checkout sales.
+          </p>
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            Median signup → first live product:{" "}
+            <strong>{medianLiveLabel}</strong>
+            {medianLiveMs != null && medianLiveMs > 60_000
+              ? " (over 60s - fix setup before new verticals)"
+              : ""}
           </p>
         </div>
         <div className="flex flex-wrap gap-3 text-sm">

@@ -8,8 +8,6 @@ import { prisma } from "@/lib/prisma";
 import { dollarsToCents } from "@/lib/money";
 import { InventorySource } from "@/generated/prisma/client";
 import { notifyLowStockForProducts } from "@/lib/notify";
-import { ownerHasProAccess } from "@/lib/owner-trial";
-import { parsePreOrderFromForm } from "@/lib/pre-order";
 import { uploadProductImage } from "@/lib/product-image-upload";
 import {
   isReservedProductSlug,
@@ -19,6 +17,12 @@ import {
 import { archiveProduct } from "./product-lifecycle-actions";
 import { parseTiersFromForm } from "@/lib/price-tiers";
 import { Prisma } from "@/generated/prisma/client";
+import { markFirstProductLive } from "@/lib/signup-timing";
+import {
+  addonDefaultsFromProduct,
+  upsertPreOrderAddonProduct,
+} from "@/lib/preorder-upsell-addon";
+import { parseProductOwnerMeta } from "@/lib/product-owner-meta";
 
 const productSchema = z.object({
   standId: z.string().min(1),
@@ -49,7 +53,7 @@ async function productSlugExists(
 }
 
 export async function createProduct(formData: FormData) {
-  const { owner, user } = await requireOwner();
+  const { owner } = await requireOwner();
   const parsed = productSchema.safeParse({
     standId: formData.get("standId"),
     name: formData.get("name"),
@@ -77,15 +81,7 @@ export async function createProduct(formData: FormData) {
     return { error: "Stand not found." };
   }
 
-  const cardTier = ownerHasProAccess(owner, {
-    email: user.email,
-    role: user.role,
-  });
-  const stripeConnected = Boolean(
-    owner.stripeAccountId && owner.stripeChargesEnabled,
-  );
-  const pre = parsePreOrderFromForm(formData, cardTier, stripeConnected);
-  if (!pre.ok) return { error: pre.error };
+  const preOrderEligible = formData.get("preOrderEligible") === "on";
 
   let priceCents: number;
   try {
@@ -93,6 +89,9 @@ export async function createProduct(formData: FormData) {
   } catch {
     return { error: "Invalid price." };
   }
+
+  const ownerMeta = parseProductOwnerMeta(formData);
+  if (!ownerMeta.ok) return { error: ownerMeta.error };
 
   const slugBase = parsed.data.slug?.trim() || parsed.data.name;
   const slug = await uniqueProductSlug(stand.id, slugBase, (sid, s) =>
@@ -109,13 +108,17 @@ export async function createProduct(formData: FormData) {
       seoTitle: parsed.data.seoTitle || null,
       seoDescription: parsed.data.seoDescription || null,
       priceCents,
+      sku: ownerMeta.data.sku,
+      upc: ownerMeta.data.upc,
+      costCents: ownerMeta.data.costCents,
       currency: stand.currency,
       stockQuantity: parsed.data.stockQuantity,
       lowStockThreshold: parsed.data.lowStockThreshold,
       isActive: true,
       isHidden: false,
       isArchived: false,
-      ...pre.data,
+      preOrderEligible,
+      isPreOrder: false,
     },
   });
 
@@ -146,6 +149,8 @@ export async function createProduct(formData: FormData) {
       },
     });
   }
+
+  await markFirstProductLive(owner.id);
 
   revalidatePath("/dashboard/products");
   revalidatePath(`/s/${stand.slug}`);
@@ -212,7 +217,7 @@ export async function adjustInventory(formData: FormData) {
 
 export async function updateProduct(productId: string, formData: FormData) {
   try {
-    const { owner, user } = await requireOwner();
+    const { owner } = await requireOwner();
     const product = await prisma.product.findFirst({
       where: { id: productId, ownerId: owner.id },
       include: {
@@ -262,16 +267,6 @@ export async function updateProduct(productId: string, formData: FormData) {
       };
     }
 
-    const cardTier = ownerHasProAccess(owner, {
-      email: user.email,
-      role: user.role,
-    });
-    const stripeConnected = Boolean(
-      owner.stripeAccountId && owner.stripeChargesEnabled,
-    );
-    const pre = parsePreOrderFromForm(formData, cardTier, stripeConnected);
-    if (!pre.ok) return { error: pre.error };
-
     let priceCents: number;
     try {
       priceCents = dollarsToCents(parsed.data.price);
@@ -305,6 +300,62 @@ export async function updateProduct(productId: string, formData: FormData) {
       }
     }
 
+    const upsellProductId =
+      String(formData.get("upsellProductId") ?? "").trim() || null;
+    if (upsellProductId) {
+      if (upsellProductId === product.id) {
+        return { error: "A product cannot upsell itself." };
+      }
+      const upsell = await prisma.product.findFirst({
+        where: {
+          id: upsellProductId,
+          standId: product.standId,
+          ownerId: owner.id,
+          isArchived: false,
+          isHidden: false,
+        },
+        select: { id: true },
+      });
+      if (!upsell) return { error: "Upsell product not found on this business." };
+    }
+    let upsellPriceCents: number | null = null;
+    const upsellPriceRaw = String(formData.get("upsellPrice") ?? "").trim();
+    if (upsellPriceRaw) {
+      try {
+        upsellPriceCents = dollarsToCents(upsellPriceRaw);
+      } catch {
+        return { error: "Invalid upsell price." };
+      }
+    }
+
+    const ownerMeta = parseProductOwnerMeta(formData);
+    if (!ownerMeta.ok) return { error: ownerMeta.error };
+
+    const preOrderEligible = formData.get("preOrderEligible") === "on";
+    if (!preOrderEligible) {
+      const onPage = await prisma.preOrderPageProduct.findFirst({
+        where: { productId: product.id },
+        select: { id: true },
+      });
+      if (onPage) {
+        return {
+          error:
+            "Remove this product from its pre-order page(s) before turning off pre-order availability.",
+        };
+      }
+    }
+
+    if (product.preOrderUpsellProductId) {
+      await upsertPreOrderAddonProduct({
+        standId: product.standId,
+        ownerId: owner.id,
+        existingProductId: product.preOrderUpsellProductId,
+        name: null,
+        priceCents: null,
+        defaults: addonDefaultsFromProduct(product),
+      });
+    }
+
     await prisma.product.update({
       where: { id: product.id },
       data: {
@@ -315,19 +366,42 @@ export async function updateProduct(productId: string, formData: FormData) {
         seoDescription: parsed.data.seoDescription || null,
         imageUrl,
         priceCents,
+        sku: ownerMeta.data.sku,
+        upc: ownerMeta.data.upc,
+        costCents: ownerMeta.data.costCents,
         lowStockThreshold: parsed.data.lowStockThreshold,
         freshnessNote: freshnessNote || null,
+        upsellProductId: preOrderEligible ? null : upsellProductId,
+        upsellPriceCents: preOrderEligible ? null : upsellPriceCents,
+        preOrderEligible,
+        ...(preOrderEligible
+          ? {}
+          : {
+              isPreOrder: false,
+              orderByAt: null,
+              collectionAt: null,
+              collectionNote: null,
+              paymentTiming: "PAY_NOW" as const,
+              depositPercent: null,
+              handoverMode: "COLLECT" as const,
+            }),
+        preOrderUpsellName: null,
+        preOrderUpsellPriceCents: null,
+        preOrderUpsellDiscountKind: null,
+        preOrderUpsellDiscountValue: null,
+        preOrderUpsellProductId: null,
         priceTiers:
           tiersParsed.tiers.length > 0
             ? tiersParsed.tiers
             : Prisma.DbNull,
-        ...pre.data,
       },
     });
 
     revalidatePath("/dashboard/products");
     revalidatePath("/dashboard/inventory");
     revalidatePath(`/dashboard/products/${product.id}`);
+    revalidatePath(`/dashboard/businesses/${product.standId}`);
+    revalidatePath("/dashboard/pre-order-pages");
     revalidatePath(`/s/${product.stand.slug}`);
     revalidatePath(`/s/${product.stand.slug}/${slug}`);
     return { ok: true as const };

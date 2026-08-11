@@ -44,7 +44,7 @@ function revalidateProductPaths(opts: {
   revalidatePath("/dashboard/products");
   revalidatePath("/dashboard/inventory");
   revalidatePath(`/dashboard/products/${opts.productId}`);
-  revalidatePath(`/dashboard/stands/${opts.standId}`);
+  revalidatePath(`/dashboard/businesses/${opts.standId}`);
   revalidatePath(`/s/${opts.standSlug}`);
   revalidatePath(`/s/${opts.standSlug}/${opts.slug}`);
 }
@@ -71,6 +71,9 @@ export async function duplicateProduct(productId: string) {
       seoTitle: source.seoTitle,
       seoDescription: source.seoDescription,
       priceCents: source.priceCents,
+      costCents: source.costCents,
+      sku: source.sku,
+      upc: source.upc,
       currency: source.currency,
       stockQuantity: source.stockQuantity,
       lowStockThreshold: source.lowStockThreshold,
@@ -83,6 +86,9 @@ export async function duplicateProduct(productId: string) {
       collectionAt: source.collectionAt,
       collectionNote: source.collectionNote,
       showExactStock: source.showExactStock,
+      paymentTiming: source.paymentTiming,
+      depositPercent: source.depositPercent,
+      handoverMode: source.handoverMode,
       optionGroups: {
         create: source.optionGroups.map((g, gi) => ({
           name: g.name,

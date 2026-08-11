@@ -11,9 +11,14 @@ export type RestockPanelData = {
 
 export async function loadRestockPanels(
   ownerId: string,
+  standId?: string,
 ): Promise<RestockPanelData[]> {
   const stands = await prisma.stand.findMany({
-    where: { ownerId, isActive: true },
+    where: {
+      ownerId,
+      isActive: true,
+      ...(standId ? { id: standId } : {}),
+    },
     select: { id: true, name: true },
     orderBy: { name: "asc" },
   });

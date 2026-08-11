@@ -4,6 +4,11 @@ import { sendOwnerEmail } from "@/lib/notify-email";
 import { escapeHtml } from "@/lib/lifecycle-emails/html";
 import { formatCollectionLabel } from "@/lib/pre-order";
 import { prisma } from "@/lib/prisma";
+import {
+  HandoverMode,
+  PaymentStatus,
+  PaymentTiming,
+} from "@/generated/prisma/client";
 
 /** Email the buyer a receipt / pre-order confirmation after payment. */
 export async function notifyOrderCustomer(orderId: string) {
@@ -22,11 +27,23 @@ export async function notifyOrderCustomer(orderId: string) {
     .join("");
   const collect =
     order.isPreOrder && order.collectionAt
-      ? `<p><strong>Collect:</strong> ${escapeHtml(formatCollectionLabel(order.collectionAt))}</p>`
+      ? `<p><strong>${
+          order.handoverMode === HandoverMode.DELIVER ? "Delivery" : "Collect"
+        }:</strong> ${escapeHtml(formatCollectionLabel(order.collectionAt))}</p>`
+      : "";
+  const address =
+    order.handoverMode === HandoverMode.DELIVER && order.deliveryAddressLine1
+      ? `<p>${escapeHtml(order.deliveryAddressLine1)}, ${escapeHtml(order.deliverySuburb ?? "")} ${escapeHtml(order.deliveryPostcode ?? "")}</p>`
       : "";
   const note = order.collectionNote
     ? `<p>${escapeHtml(order.collectionNote)}</p>`
     : "";
+  const depositBit =
+    order.paymentTiming === PaymentTiming.DEPOSIT_THEN_BALANCE &&
+    order.depositCents != null &&
+    order.paymentStatus !== PaymentStatus.PAID
+      ? `<p>Deposit paid: ${escapeHtml(formatMoney(order.depositCents, order.currency))}. Balance ${escapeHtml(formatMoney(order.balanceCents ?? 0, order.currency))} charged before handover.</p>`
+      : "";
   const greet = order.customerName
     ? `Hi ${escapeHtml(order.customerName)},`
     : "Hi,";
@@ -41,7 +58,7 @@ export async function notifyOrderCustomer(orderId: string) {
      <p>Thanks for your order at <strong>${escapeHtml(order.stand.name)}</strong>.</p>
      <p><strong>Order ${escapeHtml(order.orderNumber)}</strong> · ${escapeHtml(total)}</p>
      <ul>${lines}</ul>
-     ${collect}${note}
+     ${collect}${address}${note}${depositBit}
      <p style="font-size:12px;color:#56684F">Keep this email for your records.</p>`,
     { kind: "order_customer" },
   );

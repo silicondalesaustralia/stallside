@@ -3,10 +3,12 @@ import Link from "next/link";
 import DemoPhoneCheckout from "@/components/DemoPhoneCheckout";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import {
-  DEMO_REGIONS,
-  demoStandSlugForRegion,
-  isDemoRegion,
-  type DemoRegion,
+  DEMO_PRODUCTS,
+  demoCustomerUrlForProduct,
+  demoPreOrderPageSlug,
+  demoStandSlugForProduct,
+  isDemoProduct,
+  type DemoProduct,
 } from "@/lib/demo";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
@@ -21,14 +23,14 @@ export const metadata: Metadata = {
 export default async function DemoPhonePage({
   searchParams,
 }: {
-  searchParams: Promise<{ region?: string }>;
+  searchParams: Promise<{ product?: string }>;
 }) {
   const params = await searchParams;
-  const region: DemoRegion | null = isDemoRegion(params.region)
-    ? params.region
+  const product: DemoProduct | null = isDemoProduct(params.product)
+    ? params.product
     : null;
 
-  if (!region) {
+  if (!product) {
     return (
       <MarketingPageShell>
         <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
@@ -38,11 +40,11 @@ export default async function DemoPhonePage({
             </Link>
           </p>
           <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
-            Pick a country first
+            Pick a product first
           </h1>
           <p className="mt-3 text-[var(--muted)]">
-            Choose Australia, USA, or Rest of world on the demo page, then open
-            the phone checkout.
+            Choose Stall or Pre-orders on the demo page, then open the phone
+            checkout.
           </p>
           <Link
             href="/demo"
@@ -55,8 +57,8 @@ export default async function DemoPhonePage({
     );
   }
 
-  const regionMeta = DEMO_REGIONS.find((r) => r.id === region);
-  const slug = demoStandSlugForRegion(region);
+  const productMeta = DEMO_PRODUCTS.find((p) => p.id === product);
+  const slug = demoStandSlugForProduct(product);
   const stand = slug
     ? await prisma.stand.findUnique({
         where: { slug },
@@ -68,22 +70,27 @@ export default async function DemoPhonePage({
     <MarketingPageShell>
       <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
         <p className="text-sm text-[var(--muted)]">
-          <Link href={`/demo?region=${region}`} className="underline">
-            Back to QR sign
+          <Link href={`/demo?product=${product}`} className="underline">
+            Back to demo
           </Link>
         </p>
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
           Phone checkout
         </h1>
         <p className="mt-2 text-base text-[var(--muted)]">
-          {regionMeta?.standName ?? "Demo stand"} · {regionMeta?.label}
+          {stand?.name ?? productMeta?.label ?? "Demo"} · {productMeta?.label}
         </p>
 
         <div className="mt-8">
           {!slug ? (
             <SetupHint
               title="Demo stand not configured"
-              body={`Set ${regionMeta?.envKey ?? "DEMO_STAND_SLUG_*"} in the environment.`}
+              body={`Set ${productMeta?.envKey ?? "DEMO_*_STAND_SLUG"} in the environment.`}
+            />
+          ) : product === "preorder" && !demoPreOrderPageSlug() ? (
+            <SetupHint
+              title="Demo pre-order page not configured"
+              body="Set DEMO_PREORDER_PAGE_SLUG to the public pre-order page slug."
             />
           ) : !stand || !stand.isActive ? (
             <SetupHint
@@ -92,10 +99,14 @@ export default async function DemoPhonePage({
             />
           ) : (
             <DemoPhoneCheckout
-              checkoutUrl={standCheckoutUrl(stand.slug)}
+              checkoutUrl={
+                product === "preorder"
+                  ? demoCustomerUrlForProduct(product)!
+                  : standCheckoutUrl(stand.slug)
+              }
               standName={stand.name}
               standSlug={stand.slug}
-              region={region}
+              product={product}
             />
           )}
         </div>

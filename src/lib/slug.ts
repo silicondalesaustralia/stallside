@@ -1,4 +1,4 @@
-const RESERVED_PRODUCT_SLUGS = new Set(["cart", "checkout"]);
+const RESERVED_PRODUCT_SLUGS = new Set(["cart", "checkout", "pre"]);
 
 export function slugify(input: string): string {
   return input

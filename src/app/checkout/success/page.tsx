@@ -18,7 +18,7 @@ export default async function CheckoutSuccessPage({
   const {
     message,
     demoStandSlug,
-    demoRegion,
+    demoProduct,
     demoTotalCents,
     demoCurrency,
     restock,
@@ -64,9 +64,9 @@ export default async function CheckoutSuccessPage({
             </ul>
           </div>
         ) : null}
-        {demoStandSlug && demoRegion ? (
+        {demoStandSlug && demoProduct ? (
           <DemoCheckoutSuccessRedirect
-            region={demoRegion}
+            product={demoProduct}
             standSlug={demoStandSlug}
             via="card"
             totalCents={demoTotalCents}
@@ -80,7 +80,7 @@ export default async function CheckoutSuccessPage({
           />
         ) : null}
       </div>
-      {demoStandSlug && demoRegion ? null : (
+      {demoStandSlug && demoProduct ? null : (
         <Link
           href="/"
           className="mt-8 inline-flex w-full items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-6 py-4 text-lg font-semibold text-[var(--ink)]"

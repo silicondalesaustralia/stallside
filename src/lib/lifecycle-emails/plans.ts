@@ -27,7 +27,7 @@ export async function sendCardWelcome(r: Recipient) {
       <p>If Tap &amp; Go isn&apos;t live yet:</p>
       <ol>
         <li><a href="${L.stripe}">Connect Stripe</a> (finish onboarding so charges are enabled)</li>
-        <li>Turn Card / Tap &amp; Go on for each stand under My stands</li>
+        <li>Turn Card / Tap &amp; Go on for each business under My Businesses</li>
         <li>Confirm your QR is posted, then do a small test checkout</li>
       </ol>
       ${ctaButton(L.stripe, "Open Stripe settings")}

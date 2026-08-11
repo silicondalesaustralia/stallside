@@ -1,16 +1,19 @@
 export const APP_NAME = "Vendl";
+/** Home-screen / lock-screen name on sale and stock pushes */
+export const APP_DISPLAY_NAME = "Vendl.app";
 export const APP_DOMAIN = "vendl.app";
-export const APP_TAGLINE = "Scan, Pay, Sold.";
+export const APP_TAGLINE = "Sell now, or sell ahead.";
 export const APP_POSITIONING =
-  "Take payment at any unattended stand: produce, firewood, flowers, car parks, and anything else you leave out to sell.";
+  "Vendl turns a printed QR into a checkout - for what's on your stall today, and what people want ordered for later.";
 export const APP_HERO_SUPPORT =
-  "Print a QR, get paid, track every sale from your phone.";
+  "Live in a minute. Cash and card from the start - plus other payment methods available in your region.";
 /** Browser tab + search title for the homepage */
 export const APP_SEO_TITLE =
-  "Vendl · Checkout For Unattended Farm Stands & Stalls";
+  "Vendl · Stall checkout & pre-orders. No website needed.";
 /** Meta description (~155 chars) */
 export const APP_SEO_DESCRIPTION =
-  "Free QR checkout for farm stands and honesty stalls. Cash and PayID free; card has a 2.5% Vendl fee - or go Pro to remove it.";
+  "QR checkout for unattended stalls and standalone pre-orders. No website needed. Cash, card, and local payment methods - make lists, deposits, collection days.";
+
 
 /** @deprecated legacy Cash tier list price - prefer cashPlanCents(currency) */
 export const CASH_PLAN_CENTS = 699;

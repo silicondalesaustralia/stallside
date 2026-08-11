@@ -54,7 +54,7 @@ export default function DashboardPanels({
               {standRows.map((stand) => (
                 <li key={stand.id}>
                   <Link
-                    href={`/dashboard/stands/${stand.id}/qr`}
+                    href={`/dashboard/businesses/${stand.id}/qr`}
                     className="flex items-center justify-between gap-3 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-4 text-sm font-semibold transition hover:border-[var(--leaf)]"
                   >
                     <span>{stand.name}</span>

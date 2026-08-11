@@ -3,6 +3,7 @@ import {
   InventorySource,
   PaymentMethod,
   PaymentStatus,
+  PaymentTiming,
 } from "@/generated/prisma/client";
 import { notifySale } from "@/lib/notify";
 import { notifyOrderCustomer } from "@/lib/notify-order-customer";
@@ -11,12 +12,16 @@ import { decrementStockForOrder } from "@/lib/checkout";
 export async function fulfillPaidCardOrder(
   orderId: string,
   paymentIntentId?: string | null,
+  paymentMethodId?: string | null,
 ) {
   return fulfillPaidOnlineOrder(orderId, {
     method: PaymentMethod.CARD,
     source: InventorySource.ORDER_CARD,
     reason: "Card sale",
-    patch: { stripePaymentIntentId: paymentIntentId ?? undefined },
+    patch: {
+      stripePaymentIntentId: paymentIntentId ?? undefined,
+      stripePaymentMethodId: paymentMethodId ?? undefined,
+    },
   });
 }
 
@@ -40,6 +45,7 @@ async function fulfillPaidOnlineOrder(
     reason: string;
     patch: {
       stripePaymentIntentId?: string;
+      stripePaymentMethodId?: string;
       paypalCaptureId?: string;
     };
   },
@@ -49,7 +55,11 @@ async function fulfillPaidOnlineOrder(
     include: { items: true },
   });
   if (!order) return { error: "Order not found." as const };
-  if (order.paymentStatus === PaymentStatus.PAID) {
+  if (
+    order.paymentStatus === PaymentStatus.PAID ||
+    order.paymentStatus === PaymentStatus.DEPOSIT_PAID ||
+    order.paymentStatus === PaymentStatus.BALANCE_DUE
+  ) {
     return { orderNumber: order.orderNumber, alreadyPaid: true as const };
   }
   if (order.paymentMethod !== options.method) {
@@ -65,6 +75,14 @@ async function fulfillPaidOnlineOrder(
     quantity: i.quantity,
   }));
 
+  const isDeposit =
+    order.paymentTiming === PaymentTiming.DEPOSIT_THEN_BALANCE &&
+    (order.balanceCents ?? 0) > 0;
+
+  const nextStatus = isDeposit
+    ? PaymentStatus.DEPOSIT_PAID
+    : PaymentStatus.PAID;
+
   try {
     await prisma.$transaction(
       async (tx) => {
@@ -75,14 +93,18 @@ async function fulfillPaidOnlineOrder(
           standId: order.standId,
           orderId: order.id,
           source: options.source,
-          reason: options.reason,
+          reason: isDeposit ? "Deposit reserved" : options.reason,
         });
         await tx.order.update({
           where: { id: order.id },
           data: {
-            paymentStatus: PaymentStatus.PAID,
+            paymentStatus: nextStatus,
             stripePaymentIntentId:
-              options.patch.stripePaymentIntentId ?? order.stripePaymentIntentId,
+              options.patch.stripePaymentIntentId ??
+              order.stripePaymentIntentId,
+            stripePaymentMethodId:
+              options.patch.stripePaymentMethodId ??
+              order.stripePaymentMethodId,
             paypalCaptureId:
               options.patch.paypalCaptureId ?? order.paypalCaptureId,
           },

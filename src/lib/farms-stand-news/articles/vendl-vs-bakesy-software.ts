@@ -7,10 +7,10 @@ export const vendlVsBakesySoftware: NewsComparedSoftware[] = [
     url: "https://vendl.app",
     applicationSubCategory: "Point of Sale and Inventory Software",
     operatingSystem:
-      "Web browser (iOS, Android, desktop) — no customer app required",
+      "Web browser (iOS, Android, desktop) - no customer app required",
     description:
       "QR self-checkout, inventory and paid pre-orders for unattended farm stands, roadside stalls, honesty boxes and collection points.",
-    listLabel: "Vendl — best for unattended stands and collection points",
+    listLabel: "Vendl - best for unattended stands and collection points",
     featureList: [
       "QR-based unattended self-checkout",
       "Live stock tracking and low-stock alerts",
@@ -53,7 +53,7 @@ export const vendlVsBakesySoftware: NewsComparedSoftware[] = [
     operatingSystem: "iOS, Android, Web",
     description:
       "All-in-one order management, hosted shop and invoicing software for home bakers and made-to-order bakery businesses.",
-    listLabel: "Bakesy — best for custom home-bakery order management",
+    listLabel: "Bakesy - best for custom home-bakery order management",
     featureList: [
       "Hosted Bakesy Shop website",
       "Custom customer order forms",

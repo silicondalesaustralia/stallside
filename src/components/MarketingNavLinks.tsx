@@ -1,11 +1,10 @@
 import Link from "next/link";
 
 const LINKS = [
-  { href: "/about", label: "About" },
-  { href: "/gallery", label: "Gallery" },
-  { href: "/testimonials", label: "Testimonials" },
-  { href: "/farms-stand-news", label: "News" },
-  { href: "/#pricing", label: "Pricing" },
+  { href: "/stall", label: "Stall" },
+  { href: "/pre-orders", label: "Pre-orders" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/demo", label: "Demo" },
 ] as const;
 
 export default function MarketingNavLinks({

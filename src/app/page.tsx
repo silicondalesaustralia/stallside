@@ -11,7 +11,7 @@ import LandingPaymentMethods from "@/components/LandingPaymentMethods";
 import LandingRegionsSection from "@/components/LandingRegionsSection";
 import NetworkVision from "@/components/NetworkVision";
 import PricingTiers from "@/components/PricingTiers";
-import PreOrdersSection from "@/components/PreOrdersSection";
+import ProductFork from "@/components/ProductFork";
 import RestockCustomersSection from "@/components/RestockCustomersSection";
 import StandBrandingSection from "@/components/StandBrandingSection";
 import TrustSection from "@/components/TrustSection";
@@ -31,11 +31,11 @@ export default function HomePage() {
     <main className="relative flex min-h-full flex-1 flex-col">
       <JsonLd data={homeGraphSchema(LANDING_FAQS)} />
       <LandingHero />
+      <ProductFork />
+      <TrustSection />
       <HowItWorksFlow />
       <LandingAnalyticsPreview />
       <UseCaseGrid />
-      <TrustSection />
-      <PreOrdersSection />
       <LandingPaymentMethods />
       <LandingRegionsSection />
       <RestockCustomersSection />

@@ -5,7 +5,7 @@ import Link from "next/link";
 import DemoOwnerPhoneScreen from "@/components/DemoOwnerPhoneScreen";
 import DemoPhoneFrame from "@/components/DemoPhoneFrame";
 import DemoSaleBanner from "@/components/DemoSaleBanner";
-import type { DemoRegion } from "@/lib/demo";
+import type { DemoProduct } from "@/lib/demo";
 import {
   consumePendingDemoSale,
   DEMO_SALE_CHANNEL,
@@ -14,11 +14,11 @@ import {
 } from "@/lib/demo-sale-message";
 
 export default function DemoOwnerPhone({
-  region,
+  product,
   standName,
   standSlug,
 }: {
-  region: DemoRegion;
+  product: DemoProduct;
   standName: string;
   standSlug: string;
 }) {
@@ -109,16 +109,16 @@ export default function DemoOwnerPhone({
 
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link
-          href={`/demo/phone?region=${region}`}
+          href={`/demo/phone?product=${product}`}
           className="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
         >
           Try another sale
         </Link>
         <Link
-          href={`/demo?region=${region}`}
+          href={`/demo?product=${product}`}
           className="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] px-5 py-3 text-sm font-semibold text-[var(--field)]"
         >
-          Back to QR sign
+          Back to demo
         </Link>
       </div>
     </div>

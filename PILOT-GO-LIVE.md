@@ -88,7 +88,7 @@ Do all of this on the iPhone, in the field, as a real owner would. Note anything
 - [ ] Create stand: name, currency (AUD), `qrSignMessage`.
 - [ ] Add real products: eggs - real price, real stock count, sensible `lowStockThreshold` (set it 1-2 above current stock so we can *deliberately* trip the low-stock alert during testing).
 - [ ] Confirm exact-stock display is OFF (default) → customer sees `Available` / `Low stock` / `Sold out`.
-- [ ] Generate + download the QR poster from `/dashboard/stands/[standId]/qr`.
+- [ ] Generate + download the QR poster from `/dashboard/businesses/[standId]/qr`.
 - [ ] **Check the printed QR resolves to `https://vendl.app/s/{slug}`** - not localhost, not vercel.app. Scan it with a phone camera before printing.
 - [ ] Print, laminate (it will rain), fix to the stall.
 

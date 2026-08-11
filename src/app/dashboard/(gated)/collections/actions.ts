@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import { CollectionStatus, PaymentStatus } from "@/generated/prisma/client";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-const NEXT: Record<CollectionStatus, CollectionStatus | null> = {
+import { orderFullyPaidForCollection } from "@/lib/deposit-order";
+
+const NEXT: Partial<Record<CollectionStatus, CollectionStatus | null>> = {
   ORDERED: CollectionStatus.READY,
   READY: CollectionStatus.COLLECTED,
   COLLECTED: null,
@@ -18,11 +20,22 @@ export async function advanceCollectionStatus(orderId: string) {
       id: orderId,
       ownerId: owner.id,
       isPreOrder: true,
-      paymentStatus: PaymentStatus.PAID,
     },
   });
   if (!order || !order.collectionStatus) {
     return { error: "Order not found." };
+  }
+
+  if (!orderFullyPaidForCollection(order.paymentStatus)) {
+    return {
+      error:
+        "Balance must clear before this order can be marked ready or collected.",
+    };
+  }
+
+  // Only advance packing after full payment (PAID).
+  if (order.paymentStatus !== PaymentStatus.PAID && order.paymentStatus !== PaymentStatus.CUSTOMER_CONFIRMED) {
+    return { error: "Order is not fully paid." };
   }
 
   const next = NEXT[order.collectionStatus];

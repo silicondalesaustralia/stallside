@@ -79,10 +79,10 @@ Defined in `src/app/globals.css`:
 | Route | File | Notes |
 |-------|------|-------|
 | `/dashboard` | `…/dashboard/page.tsx` | Today’s sales, low stock, QR shortcuts |
-| `/dashboard/stands` | `…/stands/page.tsx` | “My stands” list + QR & print links |
-| `/dashboard/stands/new` | `…/stands/new/page.tsx` | Create stand |
-| `/dashboard/stands/[standId]` | `…/stands/[standId]/page.tsx` | Edit + QR preview |
-| `/dashboard/stands/[standId]/qr` | `…/stands/[standId]/qr/*` | Print / download QR |
+| `/dashboard/businesses` | `…/businesses/page.tsx` | “My Businesses” list + QR & print links |
+| `/dashboard/businesses/new` | `…/businesses/new/page.tsx` | Create business |
+| `/dashboard/businesses/[standId]` | `…/businesses/[standId]/page.tsx` | Edit + QR preview |
+| `/dashboard/businesses/[standId]/qr` | `…/businesses/[standId]/qr/*` | Print / download QR |
 | `/dashboard/products` | `…/products/*` | Catalog |
 | `/dashboard/inventory` | `…/inventory/*` | Field restock - mobile-critical |
 | `/dashboard/orders` | `…/orders/page.tsx` | Sales list |

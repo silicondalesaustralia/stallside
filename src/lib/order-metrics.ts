@@ -3,6 +3,9 @@ import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
 export const COUNTED_STATUSES: PaymentStatus[] = [
   PaymentStatus.PAID,
   PaymentStatus.CUSTOMER_CONFIRMED,
+  PaymentStatus.DEPOSIT_PAID,
+  PaymentStatus.BALANCE_DUE,
+  PaymentStatus.BALANCE_FAILED,
 ];
 
 export type OrderMetricRow = {

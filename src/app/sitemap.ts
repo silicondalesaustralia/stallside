@@ -12,7 +12,7 @@ import {
   standCatalogPath,
   standProductPath,
 } from "@/lib/stand-seo";
-import { productCatalogWhere } from "@/lib/product-visibility";
+import { businessPageProductWhere } from "@/lib/product-visibility";
 
 /** Refresh storefront URLs hourly so new stands/products show up for crawlers. */
 export const revalidate = 3600;
@@ -21,6 +21,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
   const marketing = [
     "",
+    "/stall",
+    "/pre-orders",
+    "/pre-orders/bakers",
+    "/pre-orders/farm-stalls",
+    "/pre-orders/firewood",
+    "/stall/farm-gate",
+    "/stall/honesty-parking",
+    "/stall/campsites",
+    "/stall/community-fridges",
+    "/pricing",
     "/about",
     "/gallery",
     "/testimonials",
@@ -53,7 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         slug: true,
         updatedAt: true,
         products: {
-          where: productCatalogWhere,
+          where: businessPageProductWhere,
           select: { slug: true, updatedAt: true },
         },
       },

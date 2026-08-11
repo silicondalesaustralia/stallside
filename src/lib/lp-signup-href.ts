@@ -40,6 +40,6 @@ export function lpSignupHref(
 
 /**
  * Tiny inline script: rewrites [data-lp-cta] hrefs from location.search.
- * Keeps the page fully static while preserving fbclid/utm_* on click.
+ * Keeps existing query on the link (e.g. vertical=) and merges tracking params.
  */
-export const LP_CTA_PARAM_SCRIPT = `(function(){try{var F={fbclid:1,gclid:1,ttclid:1,msclkid:1,li_fat_id:1};var q=new URLSearchParams(location.search);var o=new URLSearchParams();q.forEach(function(v,k){var l=k.toLowerCase();if(F[l]||l.indexOf("utm_")==0)o.set(k,v)});if(!o.has("utm_content"))o.set("utm_content","${DEFAULT_UTM_CONTENT}");var h="/signup?"+o.toString();document.querySelectorAll("[data-lp-cta]").forEach(function(a){a.setAttribute("href",h)})}catch(e){}})();`;
+export const LP_CTA_PARAM_SCRIPT = `(function(){try{var F={fbclid:1,gclid:1,ttclid:1,msclkid:1,li_fat_id:1};var q=new URLSearchParams(location.search);document.querySelectorAll("[data-lp-cta]").forEach(function(a){var raw=a.getAttribute("href")||"/signup";var u;try{u=new URL(raw,location.origin)}catch(e){u=new URL("/signup",location.origin)}var o=new URLSearchParams(u.search);q.forEach(function(v,k){var l=k.toLowerCase();if(F[l]||l.indexOf("utm_")==0)o.set(k,v)});if(!o.has("utm_content"))o.set("utm_content","${DEFAULT_UTM_CONTENT}");a.setAttribute("href",u.pathname+"?"+o.toString())})}catch(e){}})();`;

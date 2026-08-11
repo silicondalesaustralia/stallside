@@ -2,13 +2,32 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import InventoryAdjustForm from "./InventoryAdjustForm";
 import { productDashboardWhere } from "@/lib/product-visibility";
+import NoBusinessYet from "@/components/NoBusinessYet";
+import { resolveSelectedBusiness } from "@/lib/selected-business";
 
 export default async function InventoryPage() {
   const { owner } = await requireOwner();
+  const { selected } = await resolveSelectedBusiness(owner.id);
+
+  if (!selected) {
+    return (
+      <main className="flex flex-col gap-8">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Inventory</h1>
+        </div>
+        <NoBusinessYet />
+      </main>
+    );
+  }
+
   const products = await prisma.product.findMany({
-    where: { ownerId: owner.id, ...productDashboardWhere },
+    where: {
+      ownerId: owner.id,
+      standId: selected.id,
+      ...productDashboardWhere,
+    },
     include: { stand: true },
-    orderBy: [{ stand: { name: "asc" } }, { name: "asc" }],
+    orderBy: [{ name: "asc" }],
   });
 
   return (
@@ -16,7 +35,8 @@ export default async function InventoryPage() {
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Inventory</h1>
         <p className="mt-1 text-[var(--muted)]">
-          Restock, correct counts, or log cash sales made without QR.
+          {selected.name} - restock, correct counts, or log cash sales made
+          without QR.
         </p>
       </div>
       {products.length === 0 ? (
@@ -31,9 +51,10 @@ export default async function InventoryPage() {
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <div>
                   <p className="font-medium">{product.name}</p>
-                  <p className="text-sm text-[var(--muted)]">{product.stand.name}</p>
                 </div>
-                <p className="text-lg font-semibold">{product.stockQuantity} in stock</p>
+                <p className="text-lg font-semibold">
+                  {product.stockQuantity} in stock
+                </p>
               </div>
               <div className="mt-4">
                 <InventoryAdjustForm productId={product.id} />

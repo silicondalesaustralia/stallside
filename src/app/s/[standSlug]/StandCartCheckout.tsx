@@ -17,7 +17,13 @@ import {
   notifyDemoSale,
   storePendingDemoSale,
 } from "@/lib/demo-sale-message";
-import type { DemoRegion } from "@/lib/demo";
+import type { DemoProduct } from "@/lib/demo";
+import {
+  resolveCartUpsell,
+  type CartUpsellOffer as CartUpsellConfig,
+  type PagePreOrderUpsell,
+} from "@/lib/cart-upsell";
+import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/public-product";
 import { stallsidePassOnFeeCents } from "@/lib/money";
@@ -47,13 +53,6 @@ type LocalTransferInfo = {
   buttonLabel: string;
   aliasLabel: string;
   alias: string;
-};
-
-type UpsellOffer = {
-  productId: string;
-  name: string;
-  priceCents: number;
-  stockQuantity: number;
 };
 
 type FirstOrderOffer = {
@@ -98,11 +97,13 @@ export default function StandCartCheckout({
   paypalMerchantId,
   paypalSandbox,
   localTransfer,
-  demoRegion,
+  demoProduct,
   restockStandId,
   passFeeToCustomer = false,
   stallsideFeeApplies = false,
   upsell = null,
+  preOrderUpsell = null,
+  pagePreOrderUpsells = [],
   firstOrder = null,
 }: {
   standSlug: string;
@@ -115,11 +116,14 @@ export default function StandCartCheckout({
   paypalMerchantId: string | null;
   paypalSandbox: boolean;
   localTransfer: LocalTransferInfo | null;
-  demoRegion?: DemoRegion | null;
+  demoProduct?: DemoProduct | null;
   restockStandId?: string | null;
   passFeeToCustomer?: boolean;
   stallsideFeeApplies?: boolean;
-  upsell?: UpsellOffer | null;
+  /** Stand-level default; product-level upsells on PublicProductCard win when set. */
+  upsell?: CartUpsellConfig | null;
+  preOrderUpsell?: CartUpsellConfig | null;
+  pagePreOrderUpsells?: PagePreOrderUpsell[];
   firstOrder?: FirstOrderOffer | null;
 }) {
   const [cartLines, setCartLines] = useState<CartLine[]>([]);
@@ -135,6 +139,10 @@ export default function StandCartCheckout({
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [deliveryAddressLine1, setDeliveryAddressLine1] = useState("");
+  const [deliverySuburb, setDeliverySuburb] = useState("");
+  const [deliveryPostcode, setDeliveryPostcode] = useState("");
+  const [deliveryNotes, setDeliveryNotes] = useState("");
 
   const productIds = products.map((p) => p.id).join(",");
 
@@ -172,8 +180,42 @@ export default function StandCartCheckout({
         let lineTotalCents = baseUnit * line.quantity;
         let usedTier = false;
         let saveCents = 0;
-        if (asUpsell && upsell && upsell.productId === product.id) {
-          unitCents = upsell.priceCents;
+        if (asUpsell) {
+          let priced = false;
+          for (const cl of cartLines) {
+            if (cl.asUpsell) continue;
+            const trigger = products.find((p) => p.id === cl.productId);
+            if (trigger?.preOrderUpsellProductId === product.id) {
+              const list =
+                trigger.preOrderUpsellPriceCents ?? product.priceCents;
+              unitCents = resolveAddonPricing(
+                list,
+                trigger.preOrderUpsellDiscountKind,
+                trigger.preOrderUpsellDiscountValue,
+              ).saleCents;
+              priced = true;
+              break;
+            }
+            if (trigger?.upsellProductId === product.id) {
+              unitCents = trigger.upsellPriceCents ?? product.priceCents;
+              priced = true;
+              break;
+            }
+          }
+          if (!priced) {
+            const pageOffer = pagePreOrderUpsells.find(
+              (o) => o.productId === product.id,
+            );
+            if (pageOffer) {
+              unitCents = pageOffer.priceCents;
+              priced = true;
+            }
+          }
+          if (!priced && preOrderUpsell?.productId === product.id) {
+            unitCents = preOrderUpsell.priceCents;
+          } else if (!priced && upsell?.productId === product.id) {
+            unitCents = upsell.priceCents;
+          }
           lineTotalCents = unitCents * line.quantity;
         } else {
           const priced = lineTotalWithTiers(
@@ -206,7 +248,7 @@ export default function StandCartCheckout({
         };
       })
       .filter((l): l is NonNullable<typeof l> => Boolean(l));
-  }, [products, cartLines, upsell]);
+  }, [products, cartLines, upsell, preOrderUpsell, pagePreOrderUpsells]);
 
   const subtotal = lines.reduce((sum, l) => sum + l.lineTotalCents, 0);
   const total = subtotal;
@@ -221,11 +263,18 @@ export default function StandCartCheckout({
     choiceIds: l.choiceIds,
     asUpsell: l.asUpsell || undefined,
   }));
-  const showUpsell =
-    Boolean(upsell) &&
-    step === "cart" &&
-    upsell!.stockQuantity > 0 &&
-    !lines.some((l) => l.product.id === upsell!.productId);
+  const activeUpsell = useMemo(
+    () =>
+      resolveCartUpsell({
+        cartLines,
+        products,
+        standUpsell: upsell,
+        pagePreOrderUpsells,
+        standPreOrderUpsell: preOrderUpsell,
+      }),
+    [cartLines, products, upsell, preOrderUpsell, pagePreOrderUpsells],
+  );
+  const showUpsell = Boolean(activeUpsell) && step === "cart";
   const firstOrderHint = firstOrder?.enabled
     ? firstOrder.amountCents != null && firstOrder.amountCents > 0
       ? `First visit? Enter email for ${formatMoney(firstOrder.amountCents, currency)} off`
@@ -233,6 +282,8 @@ export default function StandCartCheckout({
     : null;
   const preOrderOnly =
     lines.length > 0 && lines.every((l) => l.product.isPreOrder);
+  const deliverOnly =
+    preOrderOnly && lines.every((l) => l.product.handoverMode === "DELIVER");
   const hasMixedCart =
     lines.some((l) => l.product.isPreOrder) &&
     lines.some((l) => !l.product.isPreOrder);
@@ -269,13 +320,13 @@ export default function StandCartCheckout({
   function finishOk(via: "cash" | "local_transfer") {
     persist([]);
     const sale = { standSlug, via, totalCents: total, currency };
-    if (demoRegion) {
+    if (demoProduct) {
       storePendingDemoSale(sale);
       if (isEmbeddedCheckout()) {
         notifyDemoSale(sale);
         return;
       }
-      window.location.href = `/demo/owner?region=${demoRegion}`;
+      window.location.href = `/demo/owner?product=${demoProduct}`;
       return;
     }
     setPaidVia(via);
@@ -323,11 +374,24 @@ export default function StandCartCheckout({
     setError(null);
     setCardTabHint(false);
     if (preOrderOnly && !customerName.trim()) {
-      setError("Enter your name for collection.");
+      setError(
+        deliverOnly
+          ? "Enter your name for delivery."
+          : "Enter your name for collection.",
+      );
       return;
     }
     if (preOrderOnly && !customerEmail.trim()) {
       setError("Enter your email for order details.");
+      return;
+    }
+    if (
+      deliverOnly &&
+      (!deliveryAddressLine1.trim() ||
+        !deliverySuburb.trim() ||
+        !deliveryPostcode.trim())
+    ) {
+      setError("Enter a delivery address.");
       return;
     }
     startTransition(async () => {
@@ -337,6 +401,12 @@ export default function StandCartCheckout({
         customerName: preOrderOnly ? customerName.trim() : undefined,
         customerEmail: customerEmail.trim() || undefined,
         customerPhone: preOrderOnly ? customerPhone.trim() : undefined,
+        deliveryAddressLine1: deliverOnly
+          ? deliveryAddressLine1.trim()
+          : undefined,
+        deliverySuburb: deliverOnly ? deliverySuburb.trim() : undefined,
+        deliveryPostcode: deliverOnly ? deliveryPostcode.trim() : undefined,
+        deliveryNotes: deliverOnly ? deliveryNotes.trim() : undefined,
       });
       if ("error" in result && result.error) {
         setError(result.error);
@@ -458,7 +528,7 @@ export default function StandCartCheckout({
                 </p>
                 {line.usedTier && line.saveCents > 0 ? (
                   <p className="mt-1 text-sm text-[var(--leaf-dark)]">
-                    Volume price — save {formatMoney(line.saveCents, currency)}
+                    Volume price - save {formatMoney(line.saveCents, currency)}
                   </p>
                 ) : null}
                 {line.asUpsell ? (
@@ -503,16 +573,17 @@ export default function StandCartCheckout({
         ))}
       </ul>
 
-      {showUpsell && upsell ? (
+      {showUpsell && activeUpsell ? (
         <CartUpsellOffer
-          name={upsell.name}
-          priceCents={upsell.priceCents}
+          name={activeUpsell.name}
+          priceCents={activeUpsell.priceCents}
+          compareAtCents={activeUpsell.compareAtCents}
           currency={currency}
           onAdd={() => {
             persist([
               ...cartLines,
               {
-                productId: upsell.productId,
+                productId: activeUpsell.productId,
                 quantity: 1,
                 choiceIds: [],
                 asUpsell: true,
@@ -532,7 +603,7 @@ export default function StandCartCheckout({
           Stripe Checkout opened in a new tab.
         </p>
       ) : null}
-      {step === "cart" && demoRegion && cardEnabled ? <DemoCardHint /> : null}
+      {step === "cart" && demoProduct && cardEnabled ? <DemoCardHint /> : null}
 
       {step === "pay" ? (
         <CheckoutPayStep
@@ -550,15 +621,24 @@ export default function StandCartCheckout({
           cardTotalCents={cardTotalCents}
           localTransferLabel={localTransfer?.buttonLabel ?? null}
           pending={pending}
-          showDemoCardHint={Boolean(demoRegion)}
+          showDemoCardHint={Boolean(demoProduct)}
           preOrderOnly={preOrderOnly}
+          deliverOnly={deliverOnly}
           firstOrderHint={firstOrderHint}
           customerName={customerName}
           customerEmail={customerEmail}
           customerPhone={customerPhone}
+          deliveryAddressLine1={deliveryAddressLine1}
+          deliverySuburb={deliverySuburb}
+          deliveryPostcode={deliveryPostcode}
+          deliveryNotes={deliveryNotes}
           onCustomerName={setCustomerName}
           onCustomerEmail={setCustomerEmail}
           onCustomerPhone={setCustomerPhone}
+          onDeliveryAddressLine1={setDeliveryAddressLine1}
+          onDeliverySuburb={setDeliverySuburb}
+          onDeliveryPostcode={setDeliveryPostcode}
+          onDeliveryNotes={setDeliveryNotes}
           onCash={() => setStep("cash-confirm")}
           onLocalTransfer={() => setStep("lt-confirm")}
           onCard={payCard}

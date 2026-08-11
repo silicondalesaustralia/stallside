@@ -3,9 +3,9 @@
 import { useState, useTransition } from "react";
 import FilePickButton from "@/components/FilePickButton";
 import { createProduct } from "../actions";
-import PreOrderFields from "../PreOrderFields";
+import ProductOwnerMetaFields from "../ProductOwnerMetaFields";
 
-type StandOption = { id: string; name: string };
+type StandOption = { id: string; name: string; currency: string };
 
 function isNextRedirect(error: unknown): boolean {
   return (
@@ -19,11 +19,13 @@ function isNextRedirect(error: unknown): boolean {
 export default function NewProductForm({
   stands,
   defaultStandId,
+  defaultCurrency,
   cardTier,
   stripeConnected,
 }: {
   stands: StandOption[];
   defaultStandId?: string;
+  defaultCurrency: string;
   cardTier: boolean;
   stripeConnected: boolean;
 }) {
@@ -110,6 +112,13 @@ export default function NewProductForm({
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
+      <ProductOwnerMetaFields
+        currency={defaultCurrency}
+        sku={null}
+        upc={null}
+        costCents={null}
+        priceCents={0}
+      />
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">
           {cardTier ? "Starting stock / max pre-orders" : "Starting stock"}
@@ -149,7 +158,22 @@ export default function NewProductForm({
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      {cardTier ? <PreOrderFields stripeConnected={stripeConnected} /> : null}
+      {cardTier ? (
+        <label className="flex items-start gap-3 rounded-lg border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+          <input
+            type="checkbox"
+            name="preOrderEligible"
+            className="mt-0.5 size-4"
+          />
+          <span>
+            <span className="font-medium">Available for pre-order pages</span>
+            <span className="mt-1 block text-[var(--muted)]">
+              You can add this product to a pre-order page after saving.
+              Collection day is set on the page.
+            </span>
+          </span>
+        </label>
+      ) : null}
       {message ? (
         <p className="text-sm text-[var(--warn)]">{message}</p>
       ) : null}

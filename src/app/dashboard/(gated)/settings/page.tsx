@@ -6,7 +6,6 @@ import { stallsideSubscriptionSummary } from "@/lib/stallside-subscription-summa
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
-import AlertSettingsForm from "./AlertSettingsForm";
 import BusinessNameForm from "./BusinessNameForm";
 import DeleteAccountButton from "./DeleteAccountButton";
 
@@ -23,7 +22,9 @@ export default async function SettingsPage() {
     <main className="flex max-w-xl flex-col gap-8">
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
-        <p className="mt-1 text-[var(--muted)]">Account and billing for your farm stand business.</p>
+        <p className="mt-1 text-[var(--muted)]">
+          Account and billing for your Vendl account (all businesses).
+        </p>
       </div>
 
       <section className="space-y-3 text-sm">
@@ -48,9 +49,22 @@ export default async function SettingsPage() {
       </section>
 
       <section className="space-y-2 text-sm">
+        <h2 className="text-lg font-semibold">Notifications</h2>
+        <p className="text-[var(--muted)]">
+          Sales and low-stock alerts live under Notifications.
+        </p>
+        <Link
+          href="/dashboard/notifications"
+          className="inline-flex text-[var(--leaf-dark)] underline"
+        >
+          Open notifications
+        </Link>
+      </section>
+
+      <section className="space-y-2 text-sm">
         <h2 className="text-lg font-semibold">Owner guides</h2>
         <p className="text-[var(--muted)]">
-          How-tos for stands, QR, stock, alerts, and billing.
+          How-tos for businesses, QR, stock, alerts, and billing.
         </p>
         <Link
           href="/dashboard/knowledge"
@@ -58,20 +72,6 @@ export default async function SettingsPage() {
         >
           Open guides
         </Link>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Alerts</h2>
-        <p className="text-sm text-[var(--muted)]">
-          Sales and low-stock alerts. Low-stock phone push uses a 6-hour cooldown per
-          product. Add Vendl to your Home Screen for reliable phone push.
-        </p>
-        <AlertSettingsForm
-          contactEmail={owner.contactEmail}
-          emailAlertsEnabled={owner.emailAlertsEnabled}
-          pushAlertsEnabled={owner.pushAlertsEnabled}
-          alertEmails={owner.alertEmails}
-        />
       </section>
 
       <section className="space-y-3 text-sm">

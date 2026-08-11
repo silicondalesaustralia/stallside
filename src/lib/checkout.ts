@@ -6,6 +6,7 @@ import {
 } from "@/lib/first-order-discount";
 import {
   CART_MIX_COLLECTION_DAYS,
+  CART_MIX_PREORDER_SETTINGS,
   CART_MIX_TAKE_NOW_PREORDER,
 } from "@/lib/pre-order";
 import {
@@ -14,7 +15,12 @@ import {
 } from "@/lib/product-options";
 import { parsePriceTiers, lineTotalWithTiers } from "@/lib/price-tiers";
 import { productLiveWhere } from "@/lib/product-visibility";
-import { PaymentStatus } from "@/generated/prisma/client";
+import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
+import {
+  HandoverMode,
+  PaymentStatus,
+  PaymentTiming,
+} from "@/generated/prisma/client";
 
 export type CartItemInput = {
   productId: string;
@@ -30,6 +36,9 @@ export type PreOrderCartMeta = {
   isPreOrder: true;
   collectionAt: Date;
   collectionNote: string | null;
+  paymentTiming: PaymentTiming;
+  depositPercent: number | null;
+  handoverMode: HandoverMode;
 };
 
 export type CartLineData = {
@@ -128,6 +137,33 @@ export async function loadStandCart(
   let preOrderCart: PreOrderCartMeta | null = null;
   let sawTakeNow = false;
 
+  const nonUpsellIds = normalized
+    .filter((n) => !n.asUpsell)
+    .map((n) => n.productId);
+  const activePages = await prisma.preOrderPage.findMany({
+    where: {
+      standId: stand.id,
+      isActive: true,
+      OR: [
+        { preOrderUpsellProductId: { in: productIds } },
+        { items: { some: { productId: { in: nonUpsellIds } } } },
+      ],
+    },
+    select: {
+      preOrderUpsellProductId: true,
+      preOrderUpsellName: true,
+      preOrderUpsellPriceCents: true,
+      preOrderUpsellDiscountKind: true,
+      preOrderUpsellDiscountValue: true,
+      items: { select: { productId: true } },
+    },
+  });
+  const pageUpsellByProductId = new Map(
+    activePages
+      .filter((p) => p.preOrderUpsellProductId && p.preOrderUpsellName)
+      .map((p) => [p.preOrderUpsellProductId!, p]),
+  );
+
   const qtyByProduct = new Map<string, number>();
   for (const item of normalized) {
     qtyByProduct.set(
@@ -145,7 +181,19 @@ export async function loadStandCart(
       return { error: "One or more products are unavailable." as const };
     }
     if (item.asUpsell) {
-      if (stand.upsellProductId !== item.productId) {
+      const allowedByStand =
+        stand.upsellProductId === item.productId ||
+        stand.preOrderUpsellProductId === item.productId;
+      const allowedByPage = pageUpsellByProductId.has(item.productId);
+      const allowedByProduct = normalized.some((n) => {
+        if (n.asUpsell) return false;
+        const trigger = byId.get(n.productId);
+        return (
+          trigger?.upsellProductId === item.productId ||
+          trigger?.preOrderUpsellProductId === item.productId
+        );
+      });
+      if (!allowedByStand && !allowedByPage && !allowedByProduct) {
         return { error: "Upsell is not available." as const };
       }
     }
@@ -173,6 +221,7 @@ export async function loadStandCart(
   }
 
   for (const item of normalized) {
+    if (item.asUpsell) continue;
     const product = byId.get(item.productId)!;
     if (product.isPreOrder) {
       if (!product.orderByAt || !product.collectionAt) {
@@ -184,15 +233,33 @@ export async function loadStandCart(
       if (sawTakeNow) {
         return { error: CART_MIX_TAKE_NOW_PREORDER } as const;
       }
+      const timing =
+        product.paymentTiming === PaymentTiming.DEPOSIT_THEN_BALANCE
+          ? PaymentTiming.DEPOSIT_THEN_BALANCE
+          : PaymentTiming.PAY_UPFRONT;
+      const depositPercent =
+        timing === PaymentTiming.DEPOSIT_THEN_BALANCE
+          ? (product.depositPercent ?? 30)
+          : null;
       if (preOrderCart) {
         if (preOrderCart.collectionAt.getTime() !== product.collectionAt.getTime()) {
           return { error: CART_MIX_COLLECTION_DAYS } as const;
+        }
+        if (
+          preOrderCart.paymentTiming !== timing ||
+          preOrderCart.handoverMode !== product.handoverMode ||
+          preOrderCart.depositPercent !== depositPercent
+        ) {
+          return { error: CART_MIX_PREORDER_SETTINGS } as const;
         }
       } else {
         preOrderCart = {
           isPreOrder: true,
           collectionAt: product.collectionAt,
           collectionNote: product.collectionNote,
+          paymentTiming: timing,
+          depositPercent,
+          handoverMode: product.handoverMode,
         };
       }
     } else {
@@ -215,13 +282,80 @@ export async function loadStandCart(
     );
 
     if (item.asUpsell) {
-      const unit =
-        stand.upsellPriceCents != null && stand.upsellPriceCents >= 0
-          ? stand.upsellPriceCents
-          : product.priceCents;
+      const trigger = normalized.find((n) => {
+        if (n.asUpsell) return false;
+        const t = byId.get(n.productId);
+        return (
+          t?.upsellProductId === item.productId ||
+          t?.preOrderUpsellProductId === item.productId
+        );
+      });
+      let unit = product.priceCents;
+      let displayName = product.name;
+      const pageOffer = pageUpsellByProductId.get(item.productId);
+      if (
+        pageOffer &&
+        nonUpsellIds.every((id) =>
+          pageOffer.items.some((i) => i.productId === id),
+        )
+      ) {
+        if (pageOffer.preOrderUpsellName) {
+          displayName = pageOffer.preOrderUpsellName;
+        }
+        if (
+          pageOffer.preOrderUpsellPriceCents != null &&
+          pageOffer.preOrderUpsellPriceCents >= 0
+        ) {
+          unit = resolveAddonPricing(
+            pageOffer.preOrderUpsellPriceCents,
+            pageOffer.preOrderUpsellDiscountKind,
+            pageOffer.preOrderUpsellDiscountValue,
+          ).saleCents;
+        }
+      } else if (trigger) {
+        const triggerProduct = byId.get(trigger.productId)!;
+        if (triggerProduct.preOrderUpsellProductId === item.productId) {
+          if (triggerProduct.preOrderUpsellName) {
+            displayName = triggerProduct.preOrderUpsellName;
+          }
+          if (
+            triggerProduct.preOrderUpsellPriceCents != null &&
+            triggerProduct.preOrderUpsellPriceCents >= 0
+          ) {
+            unit = resolveAddonPricing(
+              triggerProduct.preOrderUpsellPriceCents,
+              triggerProduct.preOrderUpsellDiscountKind,
+              triggerProduct.preOrderUpsellDiscountValue,
+            ).saleCents;
+          }
+        } else if (
+          triggerProduct.upsellPriceCents != null &&
+          triggerProduct.upsellPriceCents >= 0
+        ) {
+          unit = triggerProduct.upsellPriceCents;
+        }
+      } else if (stand.preOrderUpsellProductId === item.productId) {
+        if (stand.preOrderUpsellName) displayName = stand.preOrderUpsellName;
+        if (
+          stand.preOrderUpsellPriceCents != null &&
+          stand.preOrderUpsellPriceCents >= 0
+        ) {
+          unit = resolveAddonPricing(
+            stand.preOrderUpsellPriceCents,
+            stand.preOrderUpsellDiscountKind,
+            stand.preOrderUpsellDiscountValue,
+          ).saleCents;
+        }
+      } else if (
+        stand.upsellProductId === item.productId &&
+        stand.upsellPriceCents != null &&
+        stand.upsellPriceCents >= 0
+      ) {
+        unit = stand.upsellPriceCents;
+      }
       return {
         productId: product.id,
-        productNameSnapshot: product.name,
+        productNameSnapshot: displayName,
         optionsSnapshot: formatOptionsSnapshot(
           picked.map((p) => ({ name: p.name, choiceName: p.choiceName })),
         ),

@@ -14,6 +14,10 @@ import {
   CART_MIX_TAKE_NOW_PREORDER,
 } from "@/lib/pre-order";
 import { unitPriceWithOptions } from "@/lib/product-options";
+import {
+  formatTierSaving,
+  lineTotalWithTiers,
+} from "@/lib/price-tiers";
 import { standCartPath } from "@/lib/stand-seo";
 import ProductMultiChoiceQty from "./ProductMultiChoiceQty";
 import PreOrderDetails from "./PreOrderDetails";
@@ -81,6 +85,34 @@ export default function ProductDetailActions({
     });
     return unitPriceWithOptions(product.priceCents, deltas);
   }, [product, selected]);
+
+  const displayPrice = useMemo(() => {
+    if (product.priceTiers.length === 0) {
+      return {
+        labelCents: unitCents,
+        lineTotalCents: unitCents * qty,
+        usedTier: false,
+        saveCents: 0,
+      };
+    }
+    const priced = lineTotalWithTiers(
+      product.priceCents,
+      qty,
+      product.priceTiers,
+    );
+    return {
+      labelCents: priced.lineTotalCents,
+      lineTotalCents: priced.lineTotalCents,
+      usedTier: priced.usedTier,
+      saveCents: priced.usedTier
+        ? formatTierSaving(
+            product.priceCents,
+            qty,
+            priced.lineTotalCents,
+          )
+        : 0,
+    };
+  }, [product.priceCents, product.priceTiers, qty, unitCents]);
 
   const multiPickCount = useMemo(
     () => Object.values(perChoiceQty).reduce((s, n) => s + n, 0),
@@ -156,9 +188,21 @@ export default function ProductDetailActions({
         <PreOrderDetails details={product.preOrderDetails} />
       ) : null}
       {!singleGroup ? (
-        <p className="font-receipt text-2xl text-[var(--stand-secondary,var(--ok))]">
-          {formatMoney(unitCents, currency)}
-        </p>
+        <div>
+          <p className="font-receipt text-2xl text-[var(--stand-secondary,var(--ok))]">
+            {formatMoney(displayPrice.labelCents, currency)}
+            {product.priceTiers.length > 0 && qty > 1 ? (
+              <span className="ml-2 text-base text-[var(--muted)]">
+                for {qty}
+              </span>
+            ) : null}
+          </p>
+          {displayPrice.usedTier && displayPrice.saveCents > 0 ? (
+            <p className="mt-1 text-sm font-medium text-[var(--ok)]">
+              Save {formatMoney(displayPrice.saveCents, currency)} vs each
+            </p>
+          ) : null}
+        </div>
       ) : null}
       <p className={`font-receipt text-base ${stockTone(product.label)}`}>
         ● {product.label}

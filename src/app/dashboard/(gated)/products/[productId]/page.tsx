@@ -19,7 +19,22 @@ export default async function EditProductPage({
   const product = await prisma.product.findFirst({
     where: { id: productId, ownerId: owner.id },
     include: {
-      stand: { select: { name: true, slug: true } },
+      stand: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          products: {
+            where: {
+              isArchived: false,
+              isHidden: false,
+              NOT: { id: productId },
+            },
+            orderBy: { sortOrder: "asc" },
+            select: { id: true, name: true, priceCents: true },
+          },
+        },
+      },
       optionGroups: {
         orderBy: { sortOrder: "asc" },
         include: { choices: { orderBy: { sortOrder: "asc" } } },
@@ -29,9 +44,6 @@ export default async function EditProductPage({
   if (!product) notFound();
 
   const cardTier = true;
-  const stripeConnected = Boolean(
-    owner.stripeAccountId && owner.stripeChargesEnabled,
-  );
   const path = standProductPath(product.stand.slug, product.slug);
 
   return (
@@ -68,21 +80,23 @@ export default async function EditProductPage({
             seoTitle: product.seoTitle,
             seoDescription: product.seoDescription,
             priceCents: product.priceCents,
+            costCents: product.costCents,
+            sku: product.sku,
+            upc: product.upc,
             currency: product.currency,
             lowStockThreshold: product.lowStockThreshold,
+            standId: product.stand.id,
             standName: product.stand.name,
             standSlug: product.stand.slug,
             publicUrl: `${SITE_URL}${path}`,
             cardTier,
-            stripeConnected,
-            isPreOrder: product.isPreOrder,
-            orderByAt: product.orderByAt,
-            collectionAt: product.collectionAt,
-            collectionNote: product.collectionNote,
-            showExactStock: product.showExactStock,
+            preOrderEligible: product.preOrderEligible,
             freshnessNote: product.freshnessNote,
             priceTiers: parsePriceTiers(product.priceTiers),
             hasOptions: product.optionGroups.length > 0,
+            upsellProductId: product.upsellProductId,
+            upsellPriceCents: product.upsellPriceCents,
+            siblingProducts: product.stand.products,
           }}
         />
         <ProductOptionsEditor

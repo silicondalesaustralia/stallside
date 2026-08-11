@@ -59,7 +59,7 @@ export async function ensureStandsHaveStarterPaymentMethod(ownerId: string) {
        ${forced.map((n) => escapeHtml(n)).join(", ")}
        so customers scanning your QR can still check out.</p>
        <p>Tap &amp; Go still works on Free (Vendl fee 2.5%). You can change
-       payment methods under My stands, or
+       payment methods under My Businesses, or
        <a href="${billingHref}">upgrade to Pro</a>
        to remove the Vendl transaction fee.</p>`,
       { kind: "pro_lapse_cash_fallback" },

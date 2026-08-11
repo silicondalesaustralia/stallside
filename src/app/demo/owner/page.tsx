@@ -3,10 +3,10 @@ import Link from "next/link";
 import DemoOwnerPhone from "@/components/DemoOwnerPhone";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import {
-  DEMO_REGIONS,
-  demoStandSlugForRegion,
-  isDemoRegion,
-  type DemoRegion,
+  DEMO_PRODUCTS,
+  demoStandSlugForProduct,
+  isDemoProduct,
+  type DemoProduct,
 } from "@/lib/demo";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
@@ -20,14 +20,14 @@ export const metadata: Metadata = {
 export default async function DemoOwnerPage({
   searchParams,
 }: {
-  searchParams: Promise<{ region?: string }>;
+  searchParams: Promise<{ product?: string }>;
 }) {
   const params = await searchParams;
-  const region: DemoRegion | null = isDemoRegion(params.region)
-    ? params.region
+  const product: DemoProduct | null = isDemoProduct(params.product)
+    ? params.product
     : null;
 
-  if (!region) {
+  if (!product) {
     return (
       <MarketingPageShell>
         <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
@@ -37,10 +37,11 @@ export default async function DemoOwnerPage({
             </Link>
           </p>
           <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
-            Pick a country first
+            Pick a product first
           </h1>
           <p className="mt-3 text-[var(--muted)]">
-            Complete a demo checkout, or choose a region on the demo page.
+            Complete a demo checkout, or choose Stall or Pre-orders on the demo
+            page.
           </p>
           <Link
             href="/demo"
@@ -53,8 +54,8 @@ export default async function DemoOwnerPage({
     );
   }
 
-  const regionMeta = DEMO_REGIONS.find((r) => r.id === region);
-  const slug = demoStandSlugForRegion(region);
+  const productMeta = DEMO_PRODUCTS.find((p) => p.id === product);
+  const slug = demoStandSlugForProduct(product);
   const stand = slug
     ? await prisma.stand.findUnique({
         where: { slug },
@@ -66,7 +67,7 @@ export default async function DemoOwnerPage({
     <MarketingPageShell>
       <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
         <p className="text-sm text-[var(--muted)]">
-          <Link href={`/demo/phone?region=${region}`} className="underline">
+          <Link href={`/demo/phone?product=${product}`} className="underline">
             Back to customer checkout
           </Link>
         </p>
@@ -74,14 +75,14 @@ export default async function DemoOwnerPage({
           Owner alert
         </h1>
         <p className="mt-2 text-base text-[var(--muted)]">
-          {regionMeta?.standName ?? "Demo stand"} · {regionMeta?.label}
+          {stand?.name ?? productMeta?.label ?? "Demo"} · {productMeta?.label}
         </p>
 
         <div className="mt-8">
           {!slug ? (
             <SetupHint
               title="Demo stand not configured"
-              body={`Set ${regionMeta?.envKey ?? "DEMO_STAND_SLUG_*"} in the environment.`}
+              body={`Set ${productMeta?.envKey ?? "DEMO_*_STAND_SLUG"} in the environment.`}
             />
           ) : !stand || !stand.isActive ? (
             <SetupHint
@@ -90,7 +91,7 @@ export default async function DemoOwnerPage({
             />
           ) : (
             <DemoOwnerPhone
-              region={region}
+              product={product}
               standName={stand.name}
               standSlug={stand.slug}
             />

@@ -6,6 +6,8 @@ type Props = {
   label?: string;
   className?: string;
   placement?: string;
+  /** Base signup href; tracking params merged by LpCtaParamScript. */
+  href?: string;
 };
 
 const DEFAULT_CLASS =
@@ -16,10 +18,11 @@ export default function LpStartFreeLink({
   label = "Create my free stall",
   className,
   placement,
+  href = LP_DEFAULT_SIGNUP_HREF,
 }: Props) {
   return (
     <a
-      href={LP_DEFAULT_SIGNUP_HREF}
+      href={href}
       data-lp-cta
       data-placement={placement}
       className={className ?? DEFAULT_CLASS}

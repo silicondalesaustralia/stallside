@@ -1,4 +1,8 @@
-import type { CollectionStatus } from "@/generated/prisma/client";
+import type {
+  CollectionStatus,
+  HandoverMode,
+  PaymentStatus,
+} from "@/generated/prisma/client";
 import CollectionStatusButton from "./CollectionStatusButton";
 import CollectionDayEmailAll from "./CollectionDayEmailAll";
 import OrderCustomerEmail from "./OrderCustomerEmail";
@@ -11,6 +15,12 @@ type CollectionOrder = {
   receiptEmail: string | null;
   collectionNote: string | null;
   collectionStatus: CollectionStatus | null;
+  paymentStatus: PaymentStatus;
+  handoverMode: HandoverMode;
+  deliveryAddressLine1: string | null;
+  deliverySuburb: string | null;
+  deliveryPostcode: string | null;
+  balanceCents: number | null;
   stand: { name: string };
   items: {
     id: string;
@@ -19,6 +29,14 @@ type CollectionOrder = {
     optionsSnapshot: string | null;
   }[];
 };
+
+function balanceHold(status: PaymentStatus): boolean {
+  return (
+    status === "DEPOSIT_PAID" ||
+    status === "BALANCE_DUE" ||
+    status === "BALANCE_FAILED"
+  );
+}
 
 export default function CollectionDaySection({
   dayKey,
@@ -64,6 +82,26 @@ export default function CollectionDaySection({
                   {order.customerPhone}
                 </p>
               ) : null}
+              {order.handoverMode === "DELIVER" && order.deliveryAddressLine1 ? (
+                <p className="text-sm text-[var(--muted)]">
+                  {[
+                    order.deliveryAddressLine1,
+                    order.deliverySuburb,
+                    order.deliveryPostcode,
+                  ]
+                    .filter(Boolean)
+                    .join(", ")}
+                </p>
+              ) : null}
+              {balanceHold(order.paymentStatus) ? (
+                <p className="mt-1 text-sm font-medium text-[var(--warn)]">
+                  Balance pending
+                  {order.paymentStatus === "BALANCE_FAILED"
+                    ? " (charge failed)"
+                    : ""}{" "}
+                  - hold handover
+                </p>
+              ) : null}
               {order.receiptEmail ? (
                 <div className="mt-1">
                   <OrderCustomerEmail
@@ -93,10 +131,14 @@ export default function CollectionDaySection({
               ) : null}
             </div>
             <div className="print:hidden">
-              <CollectionStatusButton
-                orderId={order.id}
-                status={order.collectionStatus ?? "ORDERED"}
-              />
+              {balanceHold(order.paymentStatus) ? (
+                <p className="text-sm text-[var(--muted)]">Awaiting balance</p>
+              ) : (
+                <CollectionStatusButton
+                  orderId={order.id}
+                  status={order.collectionStatus ?? "ORDERED"}
+                />
+              )}
             </div>
             <p className="hidden text-sm font-medium print:block">
               {order.collectionStatus ?? "ORDERED"}

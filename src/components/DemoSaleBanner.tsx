@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { APP_NAME } from "@/lib/constants";
+import { APP_DISPLAY_NAME } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
 
 export default function DemoSaleBanner({
@@ -66,7 +66,7 @@ export default function DemoSaleBanner({
                 frosted ? "text-white" : "text-[var(--ink)]"
               }`}
             >
-              {APP_NAME}
+              {APP_DISPLAY_NAME}
             </p>
             <p
               className={`shrink-0 text-[11px] ${

@@ -37,11 +37,35 @@ async function handleCheckoutCompleted(
 
   const orderId = session.metadata?.orderId;
   if (orderId && session.payment_status === "paid") {
-    const paymentIntent =
+    let paymentIntentId =
       typeof session.payment_intent === "string"
         ? session.payment_intent
-        : session.payment_intent?.id;
-    await fulfillPaidCardOrder(orderId, paymentIntent);
+        : session.payment_intent?.id ?? null;
+    let paymentMethodId: string | null = null;
+
+    const stripeAccount =
+      session.metadata?.stripeAccountId ||
+      (typeof session.metadata?.stripeAccountId === "string"
+        ? session.metadata.stripeAccountId
+        : null);
+    if (paymentIntentId && stripeAccount) {
+      try {
+        const stripe = stripeClientForLivemode(livemode) ?? getStripe();
+        const pi = await stripe.paymentIntents.retrieve(
+          paymentIntentId,
+          { expand: ["payment_method"] },
+          { stripeAccount },
+        );
+        paymentIntentId = pi.id;
+        const pm = pi.payment_method;
+        paymentMethodId =
+          typeof pm === "string" ? pm : pm && "id" in pm ? pm.id : null;
+      } catch (error) {
+        console.error("Could not expand payment intent for deposit vault", error);
+      }
+    }
+
+    await fulfillPaidCardOrder(orderId, paymentIntentId, paymentMethodId);
   }
 }
 

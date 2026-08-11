@@ -4,8 +4,8 @@ export function lifecycleLinks() {
   const base = appBaseUrl();
   return {
     base,
-    newStand: `${base}/dashboard/stands/new`,
-    stands: `${base}/dashboard/stands`,
+    newStand: `${base}/dashboard/businesses/new`,
+    stands: `${base}/dashboard/businesses`,
     knowledge: `${base}/dashboard/knowledge`,
     firstStand: `${base}/dashboard/knowledge/first-stand`,
     customerPayments: `${base}/dashboard/knowledge/customer-payments`,

@@ -1,6 +1,6 @@
 {
-  "name": "Vendl",
-  "short_name": "Vendl",
+  "name": "Vendl.app",
+  "short_name": "Vendl.app",
   "description": "Scan, pay, sold - farm stand checkout and alerts.",
   "start_url": "/dashboard",
   "display": "standalone",

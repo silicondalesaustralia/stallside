@@ -1,7 +1,50 @@
+import type { ReactNode } from "react";
+import { highlightBrandInHeadline } from "@/components/lp/highlightBrandInHeadline";
 import LpHeroVisual from "@/components/lp/LpHeroVisual";
 import LpStartFreeLink from "@/components/lp/LpStartFreeLink";
+import LpUpsellHighlight from "@/components/lp/LpUpsellHighlight";
 
-export default function LpHero() {
+const DEFAULTS = {
+  eyebrow: "Built for unattended stalls",
+  headline: "You Will Make More Sales At Your Farm Stand With Vendl",
+  support:
+    "Give your stall one QR code so customers can choose what they are taking and pay on their phone - even when nobody is there.",
+  chips: ["A$0 monthly on Free", "No customer app", "Instant sale alerts"],
+  ctaLabel: "Create my free stall",
+  secondaryLabel: "See how it works ↓",
+  secondaryHref: "#how-it-works",
+  upsellLabel: "Cart upsell built in",
+  upsellDetail:
+    "Offer one more item at checkout - grow the basket without another app.",
+} as const;
+
+type Props = {
+  eyebrow?: string;
+  headline?: string;
+  support?: string;
+  chips?: string[];
+  ctaLabel?: string;
+  signupHref?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
+  visual?: ReactNode;
+  upsellLabel?: string | null;
+  upsellDetail?: string | null;
+};
+
+export default function LpHero({
+  eyebrow = DEFAULTS.eyebrow,
+  headline = DEFAULTS.headline,
+  support = DEFAULTS.support,
+  chips = [...DEFAULTS.chips],
+  ctaLabel = DEFAULTS.ctaLabel,
+  signupHref,
+  secondaryLabel = DEFAULTS.secondaryLabel,
+  secondaryHref = DEFAULTS.secondaryHref,
+  visual,
+  upsellLabel = DEFAULTS.upsellLabel,
+  upsellDetail = DEFAULTS.upsellDetail,
+}: Props) {
   return (
     <section className="relative overflow-hidden bg-[var(--panel)] px-5 pb-10 pt-6 sm:px-6 sm:pb-14 sm:pt-8">
       <div
@@ -11,44 +54,48 @@ export default function LpHero() {
       <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[48%_52%] lg:gap-10">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">
-            Built for unattended stalls
+            {eyebrow}
           </p>
           <h1 className="mt-3 font-[family-name:var(--font-display)] text-[2.4rem] font-bold leading-[1.1] tracking-tight text-[var(--field)] sm:text-5xl lg:text-[clamp(3rem,5vw,4.5rem)]">
-            Stop losing sales when customers don&apos;t have cash.
+            {highlightBrandInHeadline(headline)}
           </h1>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--muted)] sm:text-lg">
-            Give your stall one QR code so customers can choose what they are
-            taking and pay on their phone - even when nobody is there.
+            {support}
           </p>
+          {upsellLabel && upsellDetail ? (
+            <LpUpsellHighlight label={upsellLabel} detail={upsellDetail} />
+          ) : null}
 
           <div id="lp-hero-cta" className="mt-7 flex flex-col items-start gap-3">
-            <LpStartFreeLink placement="hero" />
+            <LpStartFreeLink
+              placement="hero"
+              label={ctaLabel}
+              href={signupHref}
+            />
             <p className="text-sm text-[var(--muted)]">
-              No card details · No terminal · Setup takes minutes
+              No card details · Setup takes minutes
             </p>
             <a
-              href="#how-it-works"
+              href={secondaryHref}
               className="text-sm font-semibold text-[var(--leaf-dark)] underline-offset-2 hover:underline"
             >
-              See how it works ↓
+              {secondaryLabel}
             </a>
           </div>
 
           <ul className="mt-6 flex flex-wrap gap-2">
-            {["A$0 monthly on Free", "No customer app", "Instant sale alerts"].map(
-              (chip) => (
-                <li
-                  key={chip}
-                  className="rounded-[var(--radius-pill)] border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-semibold text-[var(--ink)] shadow-sm sm:text-sm"
-                >
-                  {chip}
-                </li>
-              ),
-            )}
+            {chips.map((chip) => (
+              <li
+                key={chip}
+                className="rounded-[var(--radius-pill)] border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-semibold text-[var(--ink)] shadow-sm sm:text-sm"
+              >
+                {chip}
+              </li>
+            ))}
           </ul>
         </div>
 
-        <LpHeroVisual />
+        {visual ?? <LpHeroVisual />}
       </div>
     </section>
   );

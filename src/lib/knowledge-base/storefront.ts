@@ -32,9 +32,9 @@ export const storefrontArticles: KnowledgeArticle[] = [
     videoUrl: null,
     omitVideo: true,
     related: ["pre-orders", "first-stand", "customer-payments"],
-    ctas: [{ label: "My stands", href: "/dashboard/stands" }],
+    ctas: [{ label: "My Businesses", href: "/dashboard/businesses" }],
     steps: [
-      "Branding is available on Free and Pro. Open My stands → your stand → Branding.",
+      "Branding is available on Free and Pro. Open My Businesses → your business → Branding.",
       "Upload a logo (JPEG, PNG, or WebP). It appears on the public stall header and on your QR poster.",
       "Pick a primary colour for buttons and a secondary colour for prices and stock labels. Use Vendl default to clear a custom colour.",
       "Add Instagram, Facebook, TikTok, YouTube, or website links. Leave a field blank to hide that icon.",

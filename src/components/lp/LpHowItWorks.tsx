@@ -1,6 +1,6 @@
 import LpStartFreeLink from "@/components/lp/LpStartFreeLink";
 
-const STEPS = [
+const DEFAULT_STEPS = [
   {
     n: "01",
     title: "Print your stall QR",
@@ -18,19 +18,35 @@ const STEPS = [
   },
 ] as const;
 
-export default function LpHowItWorks() {
+type Step = { n: string; title: string; body: string };
+
+type Props = {
+  heading?: string;
+  support?: string;
+  steps?: Step[];
+  ctaLabel?: string;
+  signupHref?: string;
+};
+
+export default function LpHowItWorks({
+  heading = "Up and running in three simple steps",
+  support = "Print the QR, place it at your stall and let Vendl handle the rest.",
+  steps = [...DEFAULT_STEPS],
+  ctaLabel,
+  signupHref,
+}: Props) {
   return (
     <section id="how-it-works" className="scroll-mt-24 bg-[var(--wash)] px-5 py-12 sm:px-6 sm:py-16">
       <div className="mx-auto max-w-6xl">
         <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--field)] sm:text-3xl lg:text-[clamp(2rem,3vw,3rem)]">
-          Up and running in three simple steps
+          {heading}
         </h2>
         <p className="mt-3 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-          Print the QR, place it at your stall and let Vendl handle the rest.
+          {support}
         </p>
 
         <ol className="mt-8 grid gap-4 md:grid-cols-3">
-          {STEPS.map((step) => (
+          {steps.map((step) => (
             <li
               key={step.n}
               className="rounded-[var(--radius)] border border-[var(--line)] bg-white p-5 shadow-sm sm:p-6"
@@ -49,7 +65,11 @@ export default function LpHowItWorks() {
         </ol>
 
         <div className="mt-8 flex flex-col items-start gap-2">
-          <LpStartFreeLink placement="how_it_works" />
+          <LpStartFreeLink
+            placement="how_it_works"
+            label={ctaLabel}
+            href={signupHref}
+          />
           <p className="text-sm text-[var(--muted)]">No card details required</p>
         </div>
       </div>

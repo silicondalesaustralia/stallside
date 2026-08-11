@@ -1,4 +1,4 @@
-import { demoRegionForStandSlug, isDemoStandSlug, type DemoRegion } from "@/lib/demo";
+import { demoProductForStandSlug, isDemoStandSlug, type DemoProduct } from "@/lib/demo";
 import type { RestockOptInProps } from "./restock-opt-in-gate";
 
 export type PreOrderSuccessInfo = {
@@ -11,7 +11,7 @@ export type PreOrderSuccessInfo = {
 export type SuccessPageState = {
   message: string;
   demoStandSlug: string | null;
-  demoRegion: DemoRegion | null;
+  demoProduct: DemoProduct | null;
   demoTotalCents?: number;
   demoCurrency?: string;
   restock: RestockOptInProps | null;
@@ -21,7 +21,7 @@ export type SuccessPageState = {
 export const emptySuccessState = (): SuccessPageState => ({
   message: "Thanks - your payment is being confirmed.",
   demoStandSlug: null,
-  demoRegion: null,
+  demoProduct: null,
   restock: null,
   preOrder: null,
 });
@@ -36,7 +36,7 @@ export function applyDemo(
 ) {
   if (!order?.stand || !isDemoStandSlug(order.stand.slug)) return;
   state.demoStandSlug = order.stand.slug;
-  state.demoRegion = demoRegionForStandSlug(order.stand.slug);
+  state.demoProduct = demoProductForStandSlug(order.stand.slug);
   state.demoTotalCents = order.totalCents;
   state.demoCurrency = order.currency;
 }

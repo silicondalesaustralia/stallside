@@ -48,7 +48,7 @@ export function appendComparisonNodes(
     graph.push({
       "@type": "ItemList",
       "@id": `${postUrl}#comparison`,
-      name: `${article.title} — platforms compared`,
+      name: `${article.title} - platforms compared`,
       itemListOrder: "https://schema.org/ItemListUnordered",
       numberOfItems: compared.length,
       itemListElement: compared.map((app, index) => ({

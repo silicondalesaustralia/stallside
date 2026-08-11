@@ -27,6 +27,12 @@ enum PaymentStatus {
   CANCELLED
   REFUNDED
   EXPIRED
+  /** Deposit captured; balance still owed. */
+  DEPOSIT_PAID
+  /** Balance charge scheduled / due. */
+  BALANCE_DUE
+  /** Off-session balance charge failed (dunning). */
+  BALANCE_FAILED
 }
 
 enum ReceiptChannel {
@@ -71,6 +77,19 @@ enum CollectionStatus {
   ORDERED
   READY
   COLLECTED
+}
+
+/** When money moves relative to goods. */
+enum PaymentTiming {
+  PAY_NOW
+  PAY_UPFRONT
+  DEPOSIT_THEN_BALANCE
+}
+
+/** How goods reach the buyer. */
+enum HandoverMode {
+  COLLECT
+  DELIVER
 }
 
 model User {
@@ -230,6 +249,7 @@ model Owner {
   platformFeePercentBps     Int                @default(200)
   stands                    Stand[]
   products                  Product[]
+  preOrderPages             PreOrderPage[]
   orders                    Order[]
   inventoryAdjustments      InventoryAdjustment[]
   lowStockAlerts            LowStockAlert[]
@@ -239,6 +259,10 @@ model Owner {
   deletedAt                 DateTime?
   /** Ad click ids + UTMs from first signup (for Perform/Meta pushback). */
   adAttribution             Json?
+  /** First catalogue product went live (signup→live timing). */
+  firstProductLiveAt        DateTime?
+  /** Stall→pre-orders contextual cross-sell dismissed. */
+  preOrdersCrossSellDismissedAt DateTime?
   createdAt                 DateTime           @default(now())
   updatedAt                 DateTime           @updatedAt
 
@@ -300,10 +324,18 @@ model Stand {
   /** Show “Only N left” when stock ≤ lowStockThreshold (public). */
   showPublicScarcity Boolean              @default(true)
   isActive           Boolean              @default(true)
-  /** Stand-level cart upsell product (optional). */
+  /** Stand-level cart upsell product (optional) - take-now carts. */
   upsellProductId    String?
   /** Optional override price when added via upsell card. */
   upsellPriceCents   Int?
+  /** Pre-order cart add-on (name + price); linked hidden product. */
+  preOrderUpsellName String?
+  preOrderUpsellPriceCents Int?
+  /** PERCENT | AMOUNT - off the list price for customer display. */
+  preOrderUpsellDiscountKind String?
+  /** Percent 1–100, or cents off when AMOUNT. */
+  preOrderUpsellDiscountValue Int?
+  preOrderUpsellProductId String?
   firstOrderDiscountEnabled Boolean        @default(false)
   /** Percent off first order (used when amount cents unset). */
   firstOrderDiscountPercent Int            @default(10)
@@ -328,7 +360,10 @@ model Stand {
   tiktokUrl          String?
   youtubeUrl         String?
   websiteUrl         String?
+  /** Vertical config key: bakers | farm-stalls | firewood | … */
+  verticalSlug       String?
   products           Product[]
+  preOrderPages      PreOrderPage[]
   orders             Order[]
   inventoryAdjustments InventoryAdjustment[]
   lowStockAlerts     LowStockAlert[]
@@ -365,6 +400,12 @@ model Product {
   seoTitle           String?
   seoDescription     String?
   priceCents         Int
+  /** Owner-only unit cost; profit = priceCents - costCents when set. */
+  costCents          Int?
+  /** Owner-only stock-keeping unit. */
+  sku                String?
+  /** Owner-only barcode / UPC. */
+  upc                String?
   currency           String               @default("AUD")
   stockQuantity      Int                  @default(0)
   lowStockThreshold  Int                  @default(5)
@@ -375,18 +416,36 @@ model Product {
   /** Archived from selling; restorable. Not shown publicly. */
   isArchived         Boolean              @default(false)
   sortOrder          Int                  @default(0)
-  /** Card-tier pay-upfront pre-order; stockQuantity is the cap. */
+  /** Card-tier pay-upfront pre-order; stockQuantity is the cap. Synced from pre-order pages. */
   isPreOrder         Boolean              @default(false)
+  /** Owner opted this catalogue product into pre-order pages. */
+  preOrderEligible   Boolean              @default(false)
   orderByAt          DateTime?
   collectionAt       DateTime?
   collectionNote     String?
   /** When pre-order: show remaining slots publicly (e.g. "3 left"). */
   showExactStock     Boolean              @default(false)
+  /** Defaults for new pre-order checkouts from this product. */
+  paymentTiming      PaymentTiming        @default(PAY_NOW)
+  /** 1–99 when paymentTiming is DEPOSIT_THEN_BALANCE. */
+  depositPercent     Int?
+  handoverMode       HandoverMode         @default(COLLECT)
   /** Optional provenance line e.g. "Laid this morning". */
   freshnessNote      String?
+  /** Cart upsell offered when this product is in the cart (overrides stand-level). */
+  upsellProductId    String?
+  /** Optional override price when added via this product's upsell. */
+  upsellPriceCents   Int?
+  /** Pre-order add-on for carts that include this product. */
+  preOrderUpsellName String?
+  preOrderUpsellPriceCents Int?
+  preOrderUpsellDiscountKind String?
+  preOrderUpsellDiscountValue Int?
+  preOrderUpsellProductId String?
   /** Exact-qty totals: [{ "qty": 2, "totalCents": 900 }, ...] — XOR with optionGroups. */
   priceTiers         Json?
   optionGroups       ProductOptionGroup[]
+  preOrderPageItems  PreOrderPageProduct[]
   orderItems         OrderItem[]
   inventoryAdjustments InventoryAdjustment[]
   lowStockAlerts     LowStockAlert[]
@@ -395,6 +454,52 @@ model Product {
 
   @@unique([standId, slug])
   @@index([standId, isActive])
+}
+
+/** Multi-product pre-order sheet: one link, shared collection day. */
+model PreOrderPage {
+  id               String               @id @default(cuid())
+  standId          String
+  stand            Stand                @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId          String
+  owner            Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title            String
+  slug             String
+  description      String?
+  isActive         Boolean              @default(true)
+  /** When true, page products stay off the business catalog and business QR. */
+  hideOnBusinessPage Boolean            @default(true)
+  orderByAt        DateTime
+  collectionAt     DateTime
+  collectionNote   String?
+  showExactStock   Boolean              @default(false)
+  paymentTiming    PaymentTiming        @default(PAY_UPFRONT)
+  depositPercent   Int?
+  handoverMode     HandoverMode         @default(COLLECT)
+  /** Page-level cart add-on for this pre-order sheet. */
+  preOrderUpsellName String?
+  preOrderUpsellPriceCents Int?
+  preOrderUpsellDiscountKind String?
+  preOrderUpsellDiscountValue Int?
+  preOrderUpsellProductId String?
+  items            PreOrderPageProduct[]
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@unique([standId, slug])
+  @@index([standId, isActive])
+}
+
+model PreOrderPageProduct {
+  id             String       @id @default(cuid())
+  preOrderPageId String
+  preOrderPage   PreOrderPage @relation(fields: [preOrderPageId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sortOrder      Int          @default(0)
+
+  @@unique([preOrderPageId, productId])
+  @@index([productId])
 }
 
 /** Named option group on a product (e.g. Size, Flavour). Max 3 per product in app. */
@@ -455,6 +560,24 @@ model Order {
   customerName            String?
   customerPhone           String?
   collectionStatus        CollectionStatus?
+  paymentTiming           PaymentTiming     @default(PAY_NOW)
+  handoverMode            HandoverMode      @default(COLLECT)
+  /** Amount charged as deposit (cents). */
+  depositCents            Int?
+  /** Remaining balance owed (cents). */
+  balanceCents            Int?
+  /** When to charge the balance (usually delivery/collection day). */
+  balanceDueAt            DateTime?
+  /** Saved card on connected account for off-session balance. */
+  stripePaymentMethodId   String?
+  balancePaymentIntentId  String?
+  /** Off-session balance charge attempts (dunning). */
+  balanceRetryCount       Int               @default(0)
+  balanceLastFailedAt     DateTime?
+  deliveryAddressLine1    String?
+  deliverySuburb          String?
+  deliveryPostcode        String?
+  deliveryNotes           String?
   items                   OrderItem[]
   inventoryAdjustments    InventoryAdjustment[]
   createdAt               DateTime          @default(now())
@@ -463,6 +586,7 @@ model Order {
   @@index([ownerId, createdAt])
   @@index([standId, createdAt])
   @@index([standId, collectionAt, collectionStatus])
+  @@index([paymentStatus, balanceDueAt])
 }
 
 model OrderItem {
