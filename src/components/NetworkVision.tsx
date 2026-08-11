@@ -8,7 +8,7 @@ export default function NetworkVision() {
           </p>
           <p className="mt-3 text-sm leading-relaxed text-[var(--ink-on-dark)]/70 sm:text-base">
             Produce, firewood, flowers, car parks - shoppers scan, pick, and pay
-            at that stand. Cash, PayID, and Tap &amp; Go on Free; Pro just
+            at that stand. Cash, card, and local payment methods on Free; Pro just
             removes the Vendl card fee. No shared network wallet; each sale
             goes to that stall owner.
           </p>

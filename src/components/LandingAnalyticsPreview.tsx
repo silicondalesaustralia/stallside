@@ -75,7 +75,7 @@ export default function LandingAnalyticsPreview() {
             previous={PREV_ORDERS}
           />
           <DashboardStat
-            label="Cash / PayID"
+            label="Cash / local pay"
             value={formatMoney(CURRENT_CASH, "AUD")}
             current={CURRENT_CASH}
             previous={PREV_CASH}

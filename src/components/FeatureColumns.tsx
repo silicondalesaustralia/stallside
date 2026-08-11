@@ -3,12 +3,12 @@ import {
   CARD_PLAN_HARDWARE_BLURB,
   CARD_PLAN_RESTOCK_BLURB,
   FREE_PLAN_FEE_BLURB,
-  STARTER_PLAN_FEATURES,
+  starterPlanFeatures,
 } from "@/lib/plan-copy";
 
 const OWNER_FREE = [
   FREE_PLAN_FEE_BLURB,
-  ...STARTER_PLAN_FEATURES,
+  ...starterPlanFeatures("USD"),
   CARD_PLAN_RESTOCK_BLURB,
   ...CARD_PLAN_FEATURES,
   "Add to your phone Home Screen for push alerts - no App Store install",
@@ -24,8 +24,8 @@ const CUSTOMER_LIVE = [
   "Scan with your phone camera. No app.",
   "See what's there and what's left.",
   "Choose options like size or flavour when a product offers them",
-  "Pay cash and PayID (Australia only), then confirm - the owner knows.",
-  "Tap & Go - card, Apple Pay, Google Pay on your phone",
+  "Pay cash, card, or a local method, then confirm - the owner knows.",
+  "Card, Apple Pay, and Google Pay on their phone",
   "Buy Now, Pay Later (Zip, Klarna) on larger orders",
   "When card isn't on, tap “I'd have paid by card” so the owner sees demand",
   "Pre-order and pay by card to reserve for a collection day",

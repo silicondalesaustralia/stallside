@@ -15,7 +15,7 @@ export default function ProductFork() {
             Leave your goods out. People scan, pay, take.
           </p>
           <p className="text-sm text-[var(--muted)]">
-            Cash, PayID, card. Instant sale alerts.
+            Cash, card, and local payment methods. Instant sale alerts.
           </p>
           <span className="mt-auto text-sm font-semibold text-[var(--leaf-dark)]">
             See how stalls work →

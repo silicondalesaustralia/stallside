@@ -8,14 +8,14 @@ export default function TrustSection() {
           style={{ borderTopLeftRadius: 8 }}
         />
         <h2 className="max-w-2xl pl-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
-          Built on the honesty you already run on
+          Built for the way you already sell
         </h2>
         <div className="mt-6 max-w-3xl space-y-4 text-base leading-relaxed text-[var(--muted)] sm:text-lg">
           <p>
-            Roadside stalls have always worked on trust, and they work. Your customers already want
+            Unattended stalls have always worked on trust, and they work. Your customers already want
             to pay; sometimes they just don&apos;t have the cash. Vendl is for exactly those
-            moments: a tap instead of a rummage for coins. Same honesty box, more ways to drop the
-            money in.
+            moments: a tap instead of a rummage for coins. Same stall, more ways to pay - cash, card,
+            and the methods people already use in your region.
           </p>
           <p>
             Every sale is logged the moment it happens, with an instant alert and live stock, so you

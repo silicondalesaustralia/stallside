@@ -20,7 +20,7 @@ export function cardPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
 
 /** Free plan fee note (card / Tap & Go only). */
 export const FREE_PLAN_FEE_BLURB =
-  "A 2.5% Vendl fee applies to card, Tap & Go and pay-later payments. Standard Stripe processing fees apply separately. Cash and PayID remain free.";
+  "A 2.5% Vendl fee applies to card, wallets and pay-later payments. Standard Stripe processing fees apply separately. Cash and local bank payments remain free.";
 
 /** Absorb vs pass-on - Free only (Pro has no Vendl fee). */
 export const FREE_PLAN_PASS_FEE_FEATURE =

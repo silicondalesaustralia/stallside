@@ -77,8 +77,8 @@ export default function HowItWorksFlow() {
         </div>
 
         <p className="mt-8 text-center text-sm text-[var(--muted)]">
-          Shown: cash on Free. Customers scan free - no app, no account. Card /
-          Tap &amp; Go and PayID follow the same flow on Free and Pro.
+          Shown: cash on Free. Customers scan free - no app, no account. Card,
+          wallets, and local payment methods follow the same flow on Free and Pro.
         </p>
 
         <div className="mt-10 border-t border-[var(--line)] pt-8">
