@@ -1,10 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import type { PublicProductCard } from "@/lib/public-product";
-import { formatMoney } from "@/lib/public-product";
 import {
   addToStandCart,
   productQtyInCart,
@@ -14,13 +12,9 @@ import {
   CART_MIX_COLLECTION_DAYS,
   CART_MIX_TAKE_NOW_PREORDER,
 } from "@/lib/pre-order";
-import {
-  formatTierSaving,
-  lineTotalWithTiers,
-} from "@/lib/price-tiers";
-import { standCartPath, standProductPath } from "@/lib/stand-seo";
-import QtyStepper from "../../QtyStepper";
+import { standCartPath } from "@/lib/stand-seo";
 import PreOrderDetails from "../../PreOrderDetails";
+import PreOrderPageProductRow from "./PreOrderPageProductRow";
 
 function cartConflictMessage(
   product: PublicProductCard,
@@ -129,76 +123,16 @@ export default function PreOrderPageOrder({
           const remaining =
             product.stockQuantity -
             productQtyInCart(readStandCartLines(standSlug), product.id);
-          const qty = qtys[product.id] ?? 0;
-          const priced =
-            product.priceTiers.length > 0 && qty > 0
-              ? lineTotalWithTiers(
-                  product.priceCents,
-                  qty,
-                  product.priceTiers,
-                )
-              : null;
-          const labelCents = priced
-            ? priced.lineTotalCents
-            : product.priceCents;
-          const saveCents =
-            priced?.usedTier
-              ? formatTierSaving(
-                  product.priceCents,
-                  qty,
-                  priced.lineTotalCents,
-                )
-              : 0;
           return (
-            <li key={product.id} className="flex flex-col gap-3 py-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="font-medium">{product.name}</p>
-                  <p className="mt-1 font-receipt text-lg text-[var(--stand-secondary,var(--ok))]">
-                    {formatMoney(labelCents, currency)}
-                    {product.priceTiers.length > 0 && qty > 1 ? (
-                      <span className="ml-2 text-sm text-[var(--muted)]">
-                        for {qty}
-                      </span>
-                    ) : null}
-                  </p>
-                  {saveCents > 0 ? (
-                    <p className="mt-0.5 text-sm font-medium text-[var(--ok)]">
-                      Save {formatMoney(saveCents, currency)} vs each
-                    </p>
-                  ) : null}
-                  {product.priceTiers.length > 0 ? (
-                    <p className="mt-1 font-receipt text-sm text-[var(--muted)]">
-                      {product.priceTiers
-                        .map(
-                          (t) =>
-                            `${t.qty} for ${formatMoney(t.totalCents, currency)}`,
-                        )
-                        .join(" · ")}
-                    </p>
-                  ) : null}
-                  <p className="mt-1 text-sm text-[var(--muted)]">
-                    {product.label}
-                  </p>
-                </div>
-                {product.hasOptions ? (
-                  <Link
-                    href={standProductPath(standSlug, product.slug)}
-                    className="rounded-[var(--radius-pill)] border border-[var(--leaf)] px-4 py-2 text-sm font-semibold text-[var(--leaf-dark)]"
-                  >
-                    Choose options
-                  </Link>
-                ) : product.soldOut || remaining <= 0 ? (
-                  <p className="text-sm text-[var(--gone)]">Sold out</p>
-                ) : (
-                  <QtyStepper
-                    value={qty}
-                    max={Math.max(0, remaining)}
-                    onChange={(n) => setQty(product.id, n)}
-                  />
-                )}
-              </div>
-            </li>
+            <PreOrderPageProductRow
+              key={product.id}
+              standSlug={standSlug}
+              currency={currency}
+              product={product}
+              qty={qtys[product.id] ?? 0}
+              remaining={remaining}
+              onQty={(n) => setQty(product.id, n)}
+            />
           );
         })}
       </ul>

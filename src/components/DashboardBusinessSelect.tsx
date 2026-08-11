@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { selectBusiness } from "@/app/dashboard/select-business-action";
 import type { BusinessOption } from "@/lib/selected-business";
@@ -14,6 +14,7 @@ export default function DashboardBusinessSelect({
   selectedId: string | null;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [pending, startTransition] = useTransition();
 
   if (businesses.length === 0) {
@@ -37,7 +38,7 @@ export default function DashboardBusinessSelect({
           onChange={(e) => {
             const id = e.target.value;
             startTransition(async () => {
-              const result = await selectBusiness(id);
+              const result = await selectBusiness(id, pathname);
               if (result && "error" in result) return;
               router.refresh();
             });

@@ -2,6 +2,10 @@ import { appBaseUrl } from "@/lib/app-url";
 import { cleanEnvSecret } from "@/lib/env";
 import { preOrderPagePath } from "@/lib/preorder-page";
 
+/** Test-card pre-order demo: https://vendl.app/s/green-valley-baked-goods/pre/pre-order-bread-27-may-2027 */
+export const DEFAULT_DEMO_PREORDER_STAND_SLUG = "green-valley-baked-goods";
+export const DEFAULT_DEMO_PREORDER_PAGE_SLUG = "pre-order-bread-27-may-2027";
+
 export type DemoProduct = "stall" | "preorder";
 
 export const DEMO_PRODUCTS: {
@@ -31,16 +35,14 @@ export function isDemoProduct(
 }
 
 export function demoStandSlugForProduct(product: DemoProduct): string | null {
-  const entry = DEMO_PRODUCTS.find((p) => p.id === product);
-  if (!entry) return null;
-  const slug = cleanEnvSecret(process.env[entry.envKey]);
+  if (product === "preorder") return DEFAULT_DEMO_PREORDER_STAND_SLUG;
+  const slug = cleanEnvSecret(process.env.DEMO_STALL_STAND_SLUG);
   return slug ? slug.toLowerCase() : null;
 }
 
-/** Public pre-order page slug for the pre-orders demo (under DEMO_PREORDER_STAND_SLUG). */
-export function demoPreOrderPageSlug(): string | null {
-  const slug = cleanEnvSecret(process.env.DEMO_PREORDER_PAGE_SLUG);
-  return slug ? slug.toLowerCase() : null;
+/** Public pre-order page slug for the pre-orders demo. */
+export function demoPreOrderPageSlug(): string {
+  return DEFAULT_DEMO_PREORDER_PAGE_SLUG;
 }
 
 /** Absolute customer URL for the selected demo product. */
@@ -57,12 +59,12 @@ export function demoCustomerUrlForProduct(
   return `${appBaseUrl()}/s/${standSlug}`;
 }
 
-/** All configured demo stand slugs (for checkout routing / admin stats). */
+/** Instrumented demo stands (test card + success redirect). */
 export function demoStandSlugs(): Set<string> {
-  const keys = ["DEMO_STALL_STAND_SLUG", "DEMO_PREORDER_STAND_SLUG"] as const;
-  const slugs = keys
-    .map((key) => cleanEnvSecret(process.env[key])?.toLowerCase())
-    .filter((s): s is string => Boolean(s));
+  const slugs = [
+    cleanEnvSecret(process.env.DEMO_STALL_STAND_SLUG)?.toLowerCase(),
+    demoStandSlugForProduct("preorder"),
+  ].filter((s): s is string => Boolean(s));
   return new Set(slugs);
 }
 
