@@ -6,6 +6,8 @@ type RowItem =
   | { kind: "network"; network: "visa" | "mastercard" | "amex"; label: string; note?: string }
   | { kind: "img"; src: string; label: string; note?: string };
 
+const AU_ONLY = new Set(["PayID", "PayTo", "Zip"]);
+
 const ROW: RowItem[] = [
   { kind: "brand", brand: "cash", label: "Cash" },
   { kind: "img", src: "/brand/payid.png", label: "PayID", note: "AU · free" },
@@ -23,12 +25,21 @@ const ROW: RowItem[] = [
 type Props = {
   heading?: string;
   footnote?: string;
+  market?: "au" | "uk";
 };
+
+const AU_FOOTNOTE =
+  "No card reader. Payments happen on the customer's phone. PayID is Australia-only and always free of Vendl fees.";
+const UK_FOOTNOTE =
+  "No card reader. Payments happen on the customer's phone.";
 
 export default function LpPaymentStrip({
   heading = "Let customers pay the way they already prefer",
-  footnote = "No card reader. Payments happen on the customer's phone. PayID is Australia-only and always free of Vendl fees.",
+  footnote,
+  market = "au",
 }: Props) {
+  const items = market === "uk" ? ROW.filter((item) => !AU_ONLY.has(item.label)) : ROW;
+  const note = footnote ?? (market === "uk" ? UK_FOOTNOTE : AU_FOOTNOTE);
   return (
     <section className="px-5 pb-10 sm:px-6 sm:pb-12">
       <div className="mx-auto max-w-6xl rounded-[var(--radius)] border border-[var(--line)] bg-white px-5 py-6 shadow-sm sm:px-8 sm:py-7">
@@ -36,7 +47,7 @@ export default function LpPaymentStrip({
           {heading}
         </p>
         <ul className="mt-5 flex gap-4 overflow-x-auto pb-1 sm:flex-wrap sm:justify-center sm:overflow-visible">
-          {ROW.map((item) => (
+          {items.map((item) => (
             <li
               key={item.label}
               className="flex shrink-0 flex-col items-center gap-1.5"
@@ -66,7 +77,7 @@ export default function LpPaymentStrip({
             </li>
           ))}
         </ul>
-        <p className="mt-4 text-center text-sm text-[var(--muted)]">{footnote}</p>
+        <p className="mt-4 text-center text-sm text-[var(--muted)]">{note}</p>
       </div>
     </section>
   );

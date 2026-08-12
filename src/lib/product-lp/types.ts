@@ -48,6 +48,14 @@ export type ProductLpContent = {
   heroUpsellDetail?: string;
   /** Show payment-brand strip under the hero (default true). */
   showPaymentStrip?: boolean;
+  /** UK ads LPs drop PayID / PayTo / Zip. */
+  paymentMarket?: "au" | "uk";
+  /** Override hardcoded AUD amounts in bakers / collage heroes. */
+  heroPrices?: {
+    taken: string;
+    compareAt: string;
+    price: string;
+  };
 
   problemEyebrow: string;
   problemHeadline: string;

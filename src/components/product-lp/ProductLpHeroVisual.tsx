@@ -4,6 +4,12 @@ import FirewoodHeroVisual from "@/components/product-lp/FirewoodHeroVisual";
 import LpHeroVisual from "@/components/lp/LpHeroVisual";
 import LpUpsellOfferBadge from "@/components/lp/LpUpsellOfferBadge";
 
+type HeroPrices = {
+  taken: string;
+  compareAt: string;
+  price: string;
+};
+
 type Props = {
   variant:
     | "stall"
@@ -12,6 +18,7 @@ type Props = {
     | "bakers"
     | "firewood"
     | "farmStalls";
+  prices?: HeroPrices;
 };
 
 function MakeListPanel({ variant }: { variant: "makeList" | "delivery" }) {
@@ -80,9 +87,17 @@ function MakeListPanel({ variant }: { variant: "makeList" | "delivery" }) {
   );
 }
 
-export default function ProductLpHeroVisual({ variant }: Props) {
+export default function ProductLpHeroVisual({ variant, prices }: Props) {
   if (variant === "stall") return <LpHeroVisual />;
-  if (variant === "bakers") return <BakersHeroVisual />;
+  if (variant === "bakers") {
+    return (
+      <BakersHeroVisual
+        taken={prices?.taken}
+        compareAt={prices?.compareAt}
+        price={prices?.price}
+      />
+    );
+  }
   if (variant === "firewood") return <FirewoodHeroVisual />;
   if (variant === "farmStalls") return <FarmStallsHeroVisual />;
   return <MakeListPanel variant={variant} />;

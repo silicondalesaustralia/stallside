@@ -1,7 +1,17 @@
 import LpUpsellOfferBadge from "@/components/lp/LpUpsellOfferBadge";
 
+type Props = {
+  taken?: string;
+  compareAt?: string;
+  price?: string;
+};
+
 /** Hero collage for bakers product / ads LPs using demo rye + cookie photos. */
-export default function BakersHeroVisual() {
+export default function BakersHeroVisual({
+  taken = "A$612 taken",
+  compareAt = "A$15.00",
+  price = "A$11.00",
+}: Props) {
   return (
     <div className="relative mx-auto w-full max-w-md lg:max-w-lg">
       <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--line)] bg-white shadow-[0_18px_40px_-12px_rgb(23_54_31_/_0.45)]">
@@ -42,7 +52,7 @@ export default function BakersHeroVisual() {
           <div className="flex items-baseline justify-between gap-3 text-sm">
             <span className="text-[var(--muted)]">Friday bake · make</span>
             <span className="font-semibold tabular-nums text-[var(--field)]">
-              A$612 taken
+              {taken}
             </span>
           </div>
           <ul className="grid grid-cols-3 gap-2 text-center">
@@ -66,8 +76,8 @@ export default function BakersHeroVisual() {
           </ul>
           <LpUpsellOfferBadge
             title="Add a bag of cookies?"
-            compareAt="A$15.00"
-            price="A$11.00"
+            compareAt={compareAt}
+            price={price}
           />
         </div>
       </div>

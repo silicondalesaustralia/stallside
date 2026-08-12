@@ -36,11 +36,18 @@ export default function ProductLpPage({
         ctaLabel={cta}
         signupHref={href}
         secondaryLabel={content.secondaryLabel}
-        visual={<ProductLpHeroVisual variant={content.heroVisual} />}
+        visual={
+          <ProductLpHeroVisual
+            variant={content.heroVisual}
+            prices={content.heroPrices}
+          />
+        }
         upsellLabel={content.heroUpsellLabel ?? null}
         upsellDetail={content.heroUpsellDetail ?? null}
       />
-      {content.showPaymentStrip !== false ? <LpPaymentStrip /> : null}
+      {content.showPaymentStrip !== false ? (
+        <LpPaymentStrip market={content.paymentMarket} />
+      ) : null}
       <LpTrustStrip
         heading={content.stripHeading}
         items={content.stripItems}
