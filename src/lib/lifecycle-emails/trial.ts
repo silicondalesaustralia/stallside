@@ -14,29 +14,31 @@ async function send(to: string, subject: string, html: string, kind: string) {
   await sendOwnerEmail(to, subject, html, { replyTo: emailReplyTo(), kind });
 }
 
-/** Welcome email for new Free owners. */
+/** Welcome email for new Free owners (stall + pre-orders). */
 export async function sendTrialWelcome(r: Recipient) {
   const L = lifecycleLinks();
   const html = emailShell(
     `Welcome to ${APP_NAME}`,
     `
       <p>Hi ${greetName(r.name)},</p>
-      <p>Thanks for joining ${APP_NAME}. Glad you&apos;re here.</p>
-      <p><strong>Free is $0/mo with every feature</strong> - cash, PayID (Australia only),
-      Tap &amp; Go, pre-orders, branding, restock emails, and more. Vendl fee is
-      2.5% on card, Tap &amp; Go, and pay-later; cash and PayID stay free.
-      Standard Stripe processing fees apply separately. Upgrade to Pro anytime to
-      remove the Vendl fee.</p>
+      <p>Thanks for joining ${APP_NAME}.</p>
+      <p><strong>Free includes every feature</strong> - stall checkout,
+      pre-orders, cart upsells, payments, branding, and more.</p>
       <p><strong>Start here</strong></p>
       <ol>
-        <li>Create your first stand</li>
-        <li>Add a product and stock</li>
-        <li>Print your QR sign</li>
-        <li>Connect Stripe if you want Tap &amp; Go</li>
+        <li>Create your first business</li>
+        <li>Add what you sell</li>
+        <li>Share your link, or print a QR for the stall</li>
+        <li>Connect Stripe if you want card payments</li>
       </ol>
-      ${ctaButton(L.newStand, "Create your first stand")}
-      <p><a href="${L.billing}">See Pro pricing</a> · <a href="${L.knowledge}">Guides</a></p>
+      ${ctaButton(L.newStand, "Get started")}
+      <p><a href="${L.knowledge}">Guides</a></p>
     `,
   );
-  await send(r.to, `Welcome to ${APP_NAME} - let’s get your stand live`, html, "lifecycle_welcome");
+  await send(
+    r.to,
+    `Welcome to ${APP_NAME} - let’s get you live`,
+    html,
+    "lifecycle_welcome",
+  );
 }

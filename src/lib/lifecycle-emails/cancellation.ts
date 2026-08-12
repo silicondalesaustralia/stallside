@@ -21,13 +21,13 @@ export async function sendCancellationFeedback(input: {
     title,
     `
       <p>Hi ${greetName(input.name ?? "")},</p>
-      <p>Sorry to see you leave <strong>${APP_NAME} Pro</strong>. Your account stays on
-      <strong>Free ($0/mo)</strong> - stands, products, QR posters, and order
-      history remain. Nothing locks. Every feature still works.</p>
+      <p>Sorry to see you leave <strong>${APP_NAME} Pro</strong>. Your account
+      stays on <strong>Free ($0/mo)</strong>. Businesses, products, pages, and
+      order history stay put. Nothing locks. Every feature still works.</p>
       <p><strong>What changes:</strong> the Vendl fee of <strong>2.5%</strong>
-      now applies on card, Tap &amp; Go, and pay-later sales. Cash and PayID stay free.
-      Standard Stripe processing fees still apply. In Settings → Card / Tap &amp; Go
-      you can absorb that Vendl fee or pass it on to customers.</p>
+      now applies on card, Tap &amp; Go, and pay-later. Standard Stripe
+      processing fees still apply. In Settings → Card / Tap &amp; Go you can
+      absorb that Vendl fee or pass it on to customers.</p>
       <p>If you have a minute, what worked, what didn&apos;t, or what would have made
       you stay helps us improve:</p>
       <p style="margin:24px 0">

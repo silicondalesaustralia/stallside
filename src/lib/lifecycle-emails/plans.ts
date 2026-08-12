@@ -21,14 +21,16 @@ export async function sendCardWelcome(r: Recipient) {
     `You're on ${APP_NAME} Pro`,
     `
       <p>Hi ${greetName(r.name)},</p>
-      <p>Welcome to <strong>${APP_NAME} Pro</strong>. Same features as Free - and
+      <p>Welcome to <strong>${APP_NAME} Pro</strong>. Same features as Free -
+      stall checkout, pre-orders, cart upsells, and the rest - with
       <strong>no Vendl transaction fee</strong> on card, Tap &amp; Go, or
       pay-later. Standard Stripe processing fees still apply.</p>
-      <p>If Tap &amp; Go isn&apos;t live yet:</p>
+      <p>To take card payments:</p>
       <ol>
         <li><a href="${L.stripe}">Connect Stripe</a> (finish onboarding so charges are enabled)</li>
-        <li>Turn Card / Tap &amp; Go on for each business under My Businesses</li>
-        <li>Confirm your QR is posted, then do a small test checkout</li>
+        <li>Turn on the payments you want under My Businesses</li>
+        <li>Share your pre-order link, or post your stall QR</li>
+        <li>Place a small test order</li>
       </ol>
       ${ctaButton(L.stripe, "Open Stripe settings")}
       <p>Guides: <a href="${L.customerPayments}">Customer payments</a> ·

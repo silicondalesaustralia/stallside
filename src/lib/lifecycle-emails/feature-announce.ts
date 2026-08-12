@@ -20,40 +20,33 @@ export function featureAnnounceHtml(name: string): string {
     `
       <p>Hi ${greetName(name)},</p>
       <p>Quick update from ${APP_NAME}: plans are simpler, checkout got stronger.
-      Free plans now get everything - this makes it better no matter the size of
-      your stall!</p>
+      Free now includes everything - whether you sell at a stall or take
+      pre-orders.</p>
 
       <p><strong>Plans (the important bit)</strong></p>
-      <p><strong>Free</strong> is $0/mo with <strong>every feature</strong>: cash,
-      PayID (Australia), Tap &amp; Go (card, Apple Pay, Google Pay), Buy Now Pay
-      Later on larger orders (Zip, Klarna), pre-orders and Collections,
-      stand branding and social links, restock notify emails, product options,
-      hide/archive/duplicate, and the card-demand counter.</p>
+      <p><strong>Free</strong> is $0/mo with <strong>every feature</strong>:
+      stall QR checkout, pre-orders, cart upsells and add-ons, Tap &amp; Go,
+      pay-later, branding, restock emails, and more.</p>
       <p>On Free, Vendl takes <strong>2.5%</strong> on card, Tap &amp; Go,
-      and pay-later. Cash and PayID stay free. Standard Stripe processing fees
-      apply separately.</p>
+      and pay-later. Standard Stripe processing fees apply separately.</p>
       <p><strong>Vendl Pro</strong> is the same product with
       <strong>no Vendl transaction fee</strong> on card, Tap &amp; Go, and
-      pay-later. Standard Stripe processing fees still apply. From A$19.99 /
-      US$14.99 / £11.99 / €14.99 per site / month.</p>
+      pay-later. From A$19.99 / US$14.99 / £11.99 / €14.99 per site / month.</p>
       <p>Upgrade to Pro anytime to remove the Vendl fee.
       <a href="${L.billing}">Settings → Billing</a>.</p>
 
       <p><strong>Also live</strong></p>
       <ul>
-        <li><strong>Buy Now, Pay Later</strong> - Zip and Klarna show
-        automatically on larger orders at Stripe Checkout (where Stripe supports
-        them).</li>
-        <li><strong>Pre-orders</strong> - pay by card to reserve for a collection
-        day; track Ready → Collected; Email all for a day.</li>
-        <li><strong>Stand branding</strong> - logo, colours, and social links on
-        the stall and QR poster (Free and Pro).</li>
-        <li><strong>Restock list</strong> - customers opt in after checkout; you
-        hit Notify customers and Vendl emails them (Free and Pro). You never
-        see their addresses.</li>
-        <li><strong>Card-demand counter</strong> - when Tap &amp; Go isn&apos;t on yet,
-        shoppers can tap “I'd have paid by card” so you see demand on the
-        dashboard.</li>
+        <li><strong>Cart upsells</strong> - offer an extra item at checkout
+        (stall or the same collection day) without a second payment.</li>
+        <li><strong>Pre-orders</strong> - share a link, take card payment, bake
+        or pack from a make list.</li>
+        <li><strong>Stall checkout</strong> - one QR so customers pay on their
+        phone. No terminal.</li>
+        <li><strong>Buy Now, Pay Later</strong> - Zip and Klarna on larger
+        Stripe Checkout orders where Stripe supports them.</li>
+        <li><strong>Branding</strong> - logo, colours, and social links on your
+        public page and QR poster.</li>
       </ul>
 
       ${ctaButton(`${L.base}/dashboard`, "Open your dashboard")}
@@ -61,9 +54,8 @@ export function featureAnnounceHtml(name: string): string {
       <a href="${L.billing}">Billing</a> ·
       <a href="${L.stripe}">Card / Tap &amp; Go</a></p>
 
-      <p>Questions or something missing for your stall? Reply to this email or
-      <a href="${L.featureRequest}">request a feature</a> - we build for real
-      stands.</p>
+      <p>Questions or something missing? Reply or
+      <a href="${L.featureRequest}">request a feature</a>.</p>
       <p>Thanks for being with ${APP_NAME}.</p>
     `,
   );

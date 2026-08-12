@@ -4,9 +4,16 @@ import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 type RowItem =
   | { kind: "brand"; brand: "cash" | "apple" | "google" | "klarna" | "zip"; label: string; note?: string }
   | { kind: "network"; network: "visa" | "mastercard" | "amex"; label: string; note?: string }
-  | { kind: "img"; src: string; label: string; note?: string };
+  | { kind: "img"; src: string; label: string; note?: string; wide?: boolean };
 
 const AU_ONLY = new Set(["PayID", "PayTo", "Zip"]);
+const PAY_BY_BANK: RowItem = {
+  kind: "img",
+  src: "/brand/paybybank.png",
+  label: "Pay by Bank",
+  note: "UK",
+  wide: true,
+};
 
 const ROW: RowItem[] = [
   { kind: "brand", brand: "cash", label: "Cash" },
@@ -31,14 +38,15 @@ type Props = {
 const AU_FOOTNOTE =
   "No card reader. Payments happen on the customer's phone. PayID is Australia-only and always free of Vendl fees.";
 const UK_FOOTNOTE =
-  "No card reader. Payments happen on the customer's phone.";
+  "No card reader. Payments happen on the customer's phone. Pay by Bank is available in the UK via Stripe.";
 
 export default function LpPaymentStrip({
   heading = "Let customers pay the way they already prefer",
   footnote,
   market = "au",
 }: Props) {
-  const items = market === "uk" ? ROW.filter((item) => !AU_ONLY.has(item.label)) : ROW;
+  const items =
+    market === "uk" ? ukPaymentRow() : ROW;
   const note = footnote ?? (market === "uk" ? UK_FOOTNOTE : AU_FOOTNOTE);
   return (
     <section className="px-5 pb-10 sm:px-6 sm:pb-12">
@@ -52,7 +60,11 @@ export default function LpPaymentStrip({
               key={item.label}
               className="flex shrink-0 flex-col items-center gap-1.5"
             >
-              <span className="flex h-10 w-14 items-center justify-center rounded-lg border border-[var(--line)] bg-[var(--wash)] text-[var(--ink)]">
+              <span
+                className={`flex h-10 items-center justify-center rounded-lg border border-[var(--line)] bg-[var(--wash)] text-[var(--ink)] ${
+                  item.kind === "img" && item.wide ? "w-24 px-1" : "w-14"
+                }`}
+              >
                 {item.kind === "brand" ? (
                   <PaymentBrandIcon brand={item.brand} className="size-6" />
                 ) : item.kind === "network" ? (
@@ -62,7 +74,11 @@ export default function LpPaymentStrip({
                   <img
                     src={item.src}
                     alt=""
-                    className="h-5 w-auto max-w-[2.5rem] object-contain"
+                    className={
+                      item.wide
+                        ? "h-7 w-auto max-w-[5.5rem] object-contain"
+                        : "h-5 w-auto max-w-[2.5rem] object-contain"
+                    }
                   />
                 )}
               </span>
@@ -81,4 +97,14 @@ export default function LpPaymentStrip({
       </div>
     </section>
   );
+}
+
+function ukPaymentRow(): RowItem[] {
+  const out: RowItem[] = [];
+  for (const item of ROW) {
+    if (AU_ONLY.has(item.label)) continue;
+    out.push(item);
+    if (item.label === "Cash") out.push(PAY_BY_BANK);
+  }
+  return out;
 }
