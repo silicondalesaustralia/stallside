@@ -39,12 +39,10 @@ function balanceHold(status: PaymentStatus): boolean {
 }
 
 export default function CollectionDaySection({
-  dayKey,
   label,
   itemCount,
   orders,
 }: {
-  dayKey: string;
   label: string;
   itemCount: number;
   orders: CollectionOrder[];
@@ -61,7 +59,7 @@ export default function CollectionDaySection({
         </p>
         <div className="mt-2">
           <CollectionDayEmailAll
-            collectionDayKey={dayKey}
+            orderIds={orders.map((order) => order.id)}
             dayLabel={label}
             recipientCount={emailCount}
           />

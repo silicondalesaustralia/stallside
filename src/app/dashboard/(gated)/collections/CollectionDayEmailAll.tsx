@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { sendCollectionDayCustomerEmails } from "./email-actions";
+import { sendCollectionGroupCustomerEmails } from "./email-actions";
 
 export default function CollectionDayEmailAll({
-  collectionDayKey,
+  orderIds,
   dayLabel,
   recipientCount,
 }: {
-  collectionDayKey: string;
+  orderIds: string[];
   dayLabel: string;
   recipientCount: number;
 }) {
@@ -55,7 +55,7 @@ export default function CollectionDayEmailAll({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={5}
-          placeholder="Same message goes to everyone collecting this day."
+          placeholder="Same message goes to everyone on this pre-order page."
           className="w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
@@ -67,8 +67,8 @@ export default function CollectionDayEmailAll({
           onClick={() => {
             setStatus(null);
             startTransition(async () => {
-              const result = await sendCollectionDayCustomerEmails({
-                collectionDayKey,
+              const result = await sendCollectionGroupCustomerEmails({
+                orderIds,
                 subject: subject.trim(),
                 message: message.trim(),
               });

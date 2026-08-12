@@ -29,21 +29,25 @@ export default function CollectionListPrintSheet({
   days,
   brand,
   showBrand,
+  printId,
+  sheetTitle,
 }: {
   days: PrintDayGroup[];
   brand: PrintBrand;
   showBrand: boolean;
+  printId: string;
+  sheetTitle?: string;
 }) {
   return (
-    <div className="collections-print-list hidden">
-      <header className="mb-6 border-b border-black pb-3">
+    <div className="collections-print-list" data-print-id={printId}>
+      <div className="mb-6 border-b border-black pb-3">
         {showBrand ? <CollectionPrintBrand brand={brand} /> : null}
         <p
           className={`text-sm text-black/70 ${showBrand ? "mt-2" : "text-base font-semibold text-black"}`}
         >
-          Collections run sheet
+          {sheetTitle ?? "Collections run sheet"}
         </p>
-      </header>
+      </div>
 
       {days.map((day) => (
         <section key={day.key} className="mb-8 break-inside-avoid">

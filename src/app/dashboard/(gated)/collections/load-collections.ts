@@ -49,6 +49,7 @@ export async function loadCollectionOrders(ownerId: string, standId: string) {
       items: {
         select: {
           id: true,
+          productId: true,
           quantity: true,
           productNameSnapshot: true,
           optionsSnapshot: true,

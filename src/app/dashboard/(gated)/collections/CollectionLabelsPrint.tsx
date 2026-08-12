@@ -23,16 +23,18 @@ export default function CollectionLabelsPrint({
   template,
   brand,
   showBrand,
+  printId,
 }: {
   orders: PrintLabelOrder[];
   template: LabelSheetTemplate;
   brand: PrintBrand;
   showBrand: boolean;
+  printId: string;
 }) {
   const pages = chunkForSheet(orders, template.perSheet);
 
   return (
-    <div className="collections-print-labels hidden">
+    <div className="collections-print-labels" data-print-id={printId}>
       {pages.map((pageOrders, pageIndex) => (
         <div
           key={pageIndex}

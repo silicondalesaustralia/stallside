@@ -29,6 +29,7 @@ export type CollectionOrderView = {
   stand: { name: string };
   items: {
     id: string;
+    productId?: string;
     quantity: number;
     productNameSnapshot: string;
     optionsSnapshot: string | null;

@@ -3,17 +3,23 @@ import { formatMoney } from "@/lib/money";
 import { formatCollectionLabel } from "@/lib/pre-order";
 import { toPrintLabelOrders } from "./to-print-label-orders";
 import type { PrintDayGroup } from "./CollectionListPrintSheet";
-import { dayMakeListMeta, groupCollectionDays } from "./group-collections";
-import type { CollectionOrder } from "./load-collections";
+import {
+  dayMakeListMeta,
+  groupCollectionDays,
+  type CollectionOrderView,
+} from "./group-collections";
 
-export function buildCollectionsPrintPayload(orders: CollectionOrder[]) {
+export function buildCollectionsPrintPayload(
+  orders: CollectionOrderView[],
+  pageTitle?: string,
+) {
   const days = groupCollectionDays(orders);
 
   const printDays: PrintDayGroup[] = days.map((day) => {
     const { skus, suburbs } = dayMakeListMeta(day.orders);
     return {
       key: day.key,
-      label: day.label,
+      label: pageTitle ? `${pageTitle} · ${day.label}` : day.label,
       takenLabel: formatMoney(day.takenCents, day.currency),
       windowClosed: day.windowClosed,
       itemCount: day.itemCount,

@@ -12,31 +12,32 @@ export default function CollectionPrintBrand({
   brand: PrintBrand;
   compact?: boolean;
 }) {
-  const logoH = compact ? "6mm" : "10mm";
-  const gap = compact ? "1.5mm" : "3mm";
-  const nameSize = compact ? "8pt" : "14pt";
+  const logoH = compact ? 22 : 40;
+  const logoMaxW = compact ? 72 : 120;
 
   return (
     <div
-      className="flex items-center overflow-hidden"
-      style={{ gap, maxHeight: logoH }}
+      className="collections-print-brand flex items-center"
+      style={{ gap: compact ? 6 : 12 }}
     >
       {brand.logoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={brand.logoUrl}
           alt=""
+          width={logoMaxW}
+          height={logoH}
           style={{
-            height: logoH,
+            height: `${logoH}px`,
             width: "auto",
-            maxWidth: compact ? "18mm" : "28mm",
+            maxWidth: `${logoMaxW}px`,
             objectFit: "contain",
           }}
         />
       ) : null}
       <span
         className="truncate font-semibold leading-tight"
-        style={{ fontSize: nameSize }}
+        style={{ fontSize: compact ? "8pt" : "14pt" }}
       >
         {brand.name}
       </span>

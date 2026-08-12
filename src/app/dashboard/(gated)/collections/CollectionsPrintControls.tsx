@@ -13,14 +13,17 @@ import CollectionListPrintSheet, {
   type PrintDayGroup,
 } from "./CollectionListPrintSheet";
 import type { PrintBrand } from "./CollectionPrintBrand";
-
-const PRINT_ATTR = "data-collections-print";
+import { clearCollectionPrint, runCollectionPrint } from "./run-collection-print";
 
 export default function CollectionsPrintControls({
+  printId,
+  sheetTitle,
   days,
   labelOrders,
   brand,
 }: {
+  printId: string;
+  sheetTitle?: string;
   days: PrintDayGroup[];
   labelOrders: PrintLabelOrder[];
   brand: PrintBrand;
@@ -29,23 +32,15 @@ export default function CollectionsPrintControls({
   const [includeBrand, setIncludeBrand] = useState(true);
 
   useEffect(() => {
-    function clear() {
-      document.documentElement.removeAttribute(PRINT_ATTR);
-    }
-    window.addEventListener("afterprint", clear);
-    return () => window.removeEventListener("afterprint", clear);
+    window.addEventListener("afterprint", clearCollectionPrint);
+    return () => window.removeEventListener("afterprint", clearCollectionPrint);
   }, []);
-
-  function print(mode: "list" | "labels") {
-    document.documentElement.setAttribute(PRINT_ATTR, mode);
-    requestAnimationFrame(() => window.print());
-  }
 
   const sheet = LABEL_SHEETS[sheetId];
 
   return (
     <>
-      <div className="flex w-full flex-col gap-3 rounded-lg border border-[var(--line)] bg-[var(--panel)] p-3 print:hidden sm:max-w-md">
+      <div className="collections-screen-only flex w-full flex-col gap-3 rounded-lg border border-[var(--line)] bg-[var(--wash)] p-3">
         <label className="flex flex-col gap-1 text-sm">
           <span className="font-medium">Label sheet</span>
           <select
@@ -81,30 +76,37 @@ export default function CollectionsPrintControls({
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => print("list")}
-            className="rounded-lg border border-[var(--line)] px-4 py-2 text-sm font-semibold hover:border-[var(--leaf)]"
+            onClick={() => runCollectionPrint(printId, "list")}
+            className="rounded-lg border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold hover:border-[var(--leaf)]"
           >
             Print list
           </button>
           <button
             type="button"
-            onClick={() => print("labels")}
-            className="rounded-lg border border-[var(--line)] px-3 py-2 text-sm font-medium hover:border-[var(--leaf)]"
+            onClick={() => runCollectionPrint(printId, "labels")}
+            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm font-medium hover:border-[var(--leaf)]"
           >
             Print labels
           </button>
         </div>
         <p className="text-xs text-[var(--muted)]">
-          Print at 100% / Actual size. Do not use Fit to page.
+          Prints this pre-order page only. Use 100% / Actual size.
         </p>
+        {brand.logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={brand.logoUrl} alt="" className="sr-only" />
+        ) : null}
       </div>
 
       <CollectionListPrintSheet
+        printId={printId}
+        sheetTitle={sheetTitle}
         days={days}
         brand={brand}
         showBrand={includeBrand}
       />
       <CollectionLabelsPrint
+        printId={printId}
         orders={labelOrders}
         template={sheet}
         brand={brand}

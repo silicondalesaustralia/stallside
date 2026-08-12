@@ -67,9 +67,9 @@ export async function sendOrderCustomerEmail(input: {
   return { ok: true as const };
 }
 
-/** YYYY-MM-DD from collectionAt.toISOString() - matches Collections grouping. */
-export async function sendCollectionDayCustomerEmails(input: {
-  collectionDayKey: string;
+/** Email paid customers on a specific Collections group (one pre-order page). */
+export async function sendCollectionGroupCustomerEmails(input: {
+  orderIds: string[];
   subject: string;
   message: string;
 }) {
@@ -80,20 +80,17 @@ export async function sendCollectionDayCustomerEmails(input: {
   if (!subject || !message) {
     return { error: "Subject and message are required." };
   }
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.collectionDayKey)) {
-    return { error: "Invalid collection day." };
+  const orderIds = [...new Set(input.orderIds)].slice(0, 200);
+  if (orderIds.length === 0) {
+    return { error: "No orders selected." };
   }
-
-  const start = new Date(`${input.collectionDayKey}T00:00:00.000Z`);
-  const end = new Date(start);
-  end.setUTCDate(end.getUTCDate() + 1);
 
   const orders = await prisma.order.findMany({
     where: {
+      id: { in: orderIds },
       ownerId: owner.id,
       isPreOrder: true,
       paymentStatus: PaymentStatus.PAID,
-      collectionAt: { gte: start, lt: end },
     },
     include: {
       stand: { select: { name: true } },
@@ -104,7 +101,7 @@ export async function sendCollectionDayCustomerEmails(input: {
 
   const withEmail = orders.filter((o) => o.receiptEmail);
   if (withEmail.length === 0) {
-    return { error: "No customer emails for this collection day." };
+    return { error: "No customer emails for this pre-order page." };
   }
 
   const replyTo =

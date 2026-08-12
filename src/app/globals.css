@@ -383,6 +383,16 @@ html.nav-busy * {
   text-align: center;
 }
 
+/* Off-canvas so logos still load before print (display:none skips images). */
+.collections-print-list,
+.collections-print-labels {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  width: 210mm;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-letter,
   .hero-bracket,
@@ -431,27 +441,46 @@ html.nav-busy * {
     display: none !important;
   }
 
-  html[data-collections-print="list"] .collections-print-list {
-    display: block !important;
+  html[data-collections-print] details {
+    border: none !important;
+    background: transparent !important;
+  }
+
+  html[data-collections-print="list"] .collections-print-list.is-print-target {
+    position: static !important;
+    left: auto !important;
+    width: auto !important;
     padding: 12mm 14mm;
     color: #000 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  html[data-collections-print="list"] .collections-print-labels {
+  html[data-collections-print="list"] .collections-print-labels,
+  html[data-collections-print="list"]
+    .collections-print-list:not(.is-print-target) {
     display: none !important;
   }
 
-  html[data-collections-print="labels"] .collections-print-labels {
-    display: block !important;
+  html[data-collections-print="labels"]
+    .collections-print-labels.is-print-target {
+    position: static !important;
+    left: auto !important;
+    width: auto !important;
     color: #000 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  html[data-collections-print="labels"] .collections-print-list {
+  html[data-collections-print="labels"] .collections-print-list,
+  html[data-collections-print="labels"]
+    .collections-print-labels:not(.is-print-target) {
     display: none !important;
+  }
+
+  .collections-print-brand img {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .collections-label-page {
