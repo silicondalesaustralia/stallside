@@ -425,4 +425,47 @@ html.nav-busy * {
   .qr-print-sheet img {
     max-width: 90mm !important;
   }
+
+  /* Collections: hide on-screen UI when printing list or labels */
+  html[data-collections-print] .collections-screen-only {
+    display: none !important;
+  }
+
+  html[data-collections-print="list"] .collections-print-list {
+    display: block !important;
+    padding: 12mm 14mm;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  html[data-collections-print="list"] .collections-print-labels {
+    display: none !important;
+  }
+
+  html[data-collections-print="labels"] .collections-print-labels {
+    display: block !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  html[data-collections-print="labels"] .collections-print-list {
+    display: none !important;
+  }
+
+  .collections-label-page {
+    break-after: page;
+    page-break-after: always;
+    overflow: hidden;
+  }
+
+  .collections-label-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .collections-label-page[data-cut-guides="1"] .collections-label-cell {
+    outline: 0.3pt dashed rgba(0, 0, 0, 0.35);
+  }
 }

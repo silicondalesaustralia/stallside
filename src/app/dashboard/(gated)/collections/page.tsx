@@ -1,16 +1,14 @@
-import { HandoverMode } from "@/generated/prisma/client";
 import { requireOwner } from "@/lib/session";
-import { formatCollectionLabel } from "@/lib/pre-order";
 import { formatMoney } from "@/lib/money";
+import { prisma } from "@/lib/prisma";
 import CollectionDaySection from "./CollectionDaySection";
-import CollectionsPrintButton from "./CollectionsPrintButton";
+import CollectionsPrintControls from "./CollectionsPrintControls";
 import MakeListSection from "./MakeListSection";
-import OrderLabelsPrint from "./OrderLabelsPrint";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
+import { buildCollectionsPrintPayload } from "./build-print-payload";
 import {
   dayMakeListMeta,
-  groupCollectionDays,
   loadCollectionOrders,
 } from "./load-collections";
 
@@ -29,30 +27,43 @@ export default async function CollectionsPage() {
     );
   }
 
-  const orders = await loadCollectionOrders(owner.id, selected.id);
-  const days = groupCollectionDays(orders);
+  const [orders, standBrand] = await Promise.all([
+    loadCollectionOrders(owner.id, selected.id),
+    prisma.stand.findFirst({
+      where: { id: selected.id, ownerId: owner.id },
+      select: { name: true, logoUrl: true },
+    }),
+  ]);
+  const { days, printDays, labelOrders } = buildCollectionsPrintPayload(orders);
+  const brand = {
+    name: standBrand?.name ?? selected.name,
+    logoUrl: standBrand?.logoUrl ?? null,
+  };
 
   return (
     <main className="flex flex-col gap-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
+        <div className="collections-screen-only">
           <h1 className="text-3xl font-semibold tracking-tight">Collections</h1>
-          <p className="mt-1 text-[var(--muted)] print:hidden">
+          <p className="mt-1 text-[var(--muted)]">
             {selected.name} - make list first, then pack by customer.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2 print:hidden">
-          {days.length > 0 ? <CollectionsPrintButton /> : null}
-          {days.length > 0 ? <OrderLabelsPrint /> : null}
-        </div>
+        {days.length > 0 ? (
+          <CollectionsPrintControls
+            days={printDays}
+            labelOrders={labelOrders}
+            brand={brand}
+          />
+        ) : null}
       </div>
 
       {days.length === 0 ? (
-        <p className="text-[var(--muted)]">
+        <p className="collections-screen-only text-[var(--muted)]">
           No paid pre-orders upcoming or in the last 14 days.
         </p>
       ) : (
-        <div className="flex flex-col gap-10">
+        <div className="collections-screen-only flex flex-col gap-10">
           {days.map((day) => {
             const { skus, suburbs } = dayMakeListMeta(day.orders);
             return (
@@ -76,45 +87,6 @@ export default async function CollectionsPage() {
           })}
         </div>
       )}
-
-      <div className="hidden print:block" id="order-labels">
-        {orders.map((order) => (
-          <div
-            key={order.id}
-            className="mb-4 break-inside-avoid border border-black p-4 text-sm"
-          >
-            <p className="font-bold">{order.customerName ?? "Customer"}</p>
-            <p>
-              {order.handoverMode === HandoverMode.DELIVER
-                ? "Delivery"
-                : "Collect"}{" "}
-              {order.collectionAt
-                ? formatCollectionLabel(order.collectionAt)
-                : ""}
-            </p>
-            {order.handoverMode === HandoverMode.DELIVER ? (
-              <p>
-                {[
-                  order.deliveryAddressLine1,
-                  order.deliverySuburb,
-                  order.deliveryPostcode,
-                ]
-                  .filter(Boolean)
-                  .join(", ")}
-              </p>
-            ) : null}
-            <ul className="mt-2">
-              {order.items.map((item) => (
-                <li key={item.id}>
-                  {item.quantity}× {item.productNameSnapshot}
-                  {item.optionsSnapshot ? ` (${item.optionsSnapshot})` : ""}
-                </li>
-              ))}
-            </ul>
-            <p className="mt-2 text-xs">{order.orderNumber}</p>
-          </div>
-        ))}
-      </div>
     </main>
   );
 }
