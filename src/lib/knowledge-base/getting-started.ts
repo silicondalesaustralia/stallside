@@ -7,7 +7,14 @@ export const gettingStartedArticles: KnowledgeArticle[] = [
     summary:
       "Create a stand, add a product, print a QR, and run a test cash checkout.",
     videoUrl: "https://www.youtube.com/watch?v=qJeoTruQKMQ",
-    related: ["sign-in-phone", "alerts-push", "customer-payments", "pre-orders", "stand-branding"],
+    related: [
+      "sign-in-phone",
+      "alerts-push",
+      "customer-payments",
+      "pre-order-pages",
+      "pre-orders",
+      "stand-branding",
+    ],
     ctas: [
       { label: "New Business", href: "/dashboard/businesses/new" },
       { label: "Add product", href: "/dashboard/products/new" },

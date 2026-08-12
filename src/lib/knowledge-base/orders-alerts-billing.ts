@@ -40,7 +40,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
       "Settings → Alerts: email alerts, phone push alerts, Enable this phone, and alert emails",
     imageWidth: 1024,
     imageHeight: 759,
-    related: ["sign-in-phone", "first-stand"],
+    related: ["sign-in-phone", "first-stand", "restock-emails"],
     ctas: [{ label: "Alert settings", href: "/dashboard/settings" }],
     steps: [
       "Open Settings → Alerts. Turn Email alerts on to get sale, low stock, sold out, and related emails.",
@@ -76,7 +76,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
       "Connect Stripe so customers pay by card, Apple Pay, or Google Pay - separate from your Vendl subscription. PayPal coming soon.",
     videoUrl: "https://youtu.be/keo53YG_Nks",
     comingSoon: false,
-    related: ["billing", "first-stand", "pre-orders"],
+    related: ["billing", "first-stand", "pre-orders", "pre-order-pages"],
     ctas: [
       { label: "Connect Stripe", href: "/dashboard/settings/stripe" },
       { label: "Billing", href: "/dashboard/settings/billing" },

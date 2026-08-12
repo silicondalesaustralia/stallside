@@ -2,6 +2,7 @@ import type { KnowledgeArticle, KnowledgeCategory } from "./types";
 import { gettingStartedArticles } from "./getting-started";
 import { ordersAlertsBillingArticles } from "./orders-alerts-billing";
 import { storefrontArticles } from "./storefront";
+import { sellingMoreArticles } from "./selling-more";
 
 export type { KnowledgeArticle, KnowledgeCategory, KnowledgeCta } from "./types";
 
@@ -9,8 +10,13 @@ export const knowledgeCategories: KnowledgeCategory[] = [
   { id: "getting-started", title: "Getting started", articles: gettingStartedArticles },
   {
     id: "storefront",
-    title: "Pre-orders & branding",
+    title: "Pre-orders & collections",
     articles: storefrontArticles,
+  },
+  {
+    id: "selling-more",
+    title: "Selling more",
+    articles: sellingMoreArticles,
   },
   {
     id: "alerts",
