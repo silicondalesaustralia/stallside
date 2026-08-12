@@ -1,10 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { updateStandQrPrint } from "../../actions";
-import SignHtmlEditor from "@/components/SignHtmlEditor";
 import PosterBlockToggles from "./PosterBlockToggles";
+
+const SignHtmlEditor = dynamic(() => import("@/components/SignHtmlEditor"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-36 animate-pulse rounded-lg border border-[var(--line)] bg-[var(--wash)]" />
+  ),
+});
 
 type PrintFields = {
   id: string;

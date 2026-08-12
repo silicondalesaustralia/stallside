@@ -1,7 +1,7 @@
-import { auth } from "@/lib/auth";
+import { getAuthSession } from "@/lib/session";
 
 export async function getSessionImpersonator() {
-  const session = await auth();
+  const session = await getAuthSession();
   return session?.impersonator ?? null;
 }
 

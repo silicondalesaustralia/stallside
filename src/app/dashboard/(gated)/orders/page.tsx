@@ -77,7 +77,27 @@ export default async function OrdersPage({
       },
       orderBy: { createdAt: "desc" },
       take: 100,
-      include: { stand: true, items: true },
+      select: {
+        id: true,
+        orderNumber: true,
+        totalCents: true,
+        currency: true,
+        createdAt: true,
+        paymentMethod: true,
+        localTransferMethodId: true,
+        paymentStatus: true,
+        customerName: true,
+        customerPhone: true,
+        receiptEmail: true,
+        stand: { select: { name: true } },
+        items: {
+          select: {
+            quantity: true,
+            productNameSnapshot: true,
+            optionsSnapshot: true,
+          },
+        },
+      },
     }),
   ]);
 

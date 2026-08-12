@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
@@ -33,10 +34,12 @@ export async function writeSelectedBusinessCookie(standId: string) {
 }
 
 /** Stands for owner + resolved selection (cookie, else first by name). */
-export async function resolveSelectedBusiness(ownerId: string): Promise<{
+export const resolveSelectedBusiness = cache(async (
+  ownerId: string,
+): Promise<{
   businesses: BusinessOption[];
   selected: BusinessOption | null;
-}> {
+}> => {
   const businesses = await prisma.stand.findMany({
     where: { ownerId },
     orderBy: { name: "asc" },
@@ -49,4 +52,4 @@ export async function resolveSelectedBusiness(ownerId: string): Promise<{
   const selected =
     businesses.find((b) => b.id === cookieId) ?? businesses[0] ?? null;
   return { businesses, selected };
-}
+});

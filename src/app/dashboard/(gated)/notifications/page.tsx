@@ -10,8 +10,8 @@ export default async function NotificationsPage() {
         <h1 className="text-3xl font-semibold tracking-tight">Notifications</h1>
         <p className="mt-1 text-[var(--muted)]">
           Sales and low-stock alerts for your account (all businesses). Low-stock
-          phone push uses a 6-hour cooldown per product. Add Vendl to your Home
-          Screen for reliable phone push.
+          phone push uses a 6-hour cooldown per product. On iPhone, open Vendl
+          from the Home Screen icon, then tap Enable phone alerts and Allow.
         </p>
       </div>
       <AlertSettingsForm

@@ -38,18 +38,6 @@ export default async function ProductsPage({
     );
   }
 
-  const products = await prisma.product.findMany({
-    where: {
-      ownerId: owner.id,
-      standId: selected.id,
-      preOrderEligible: isPreOrder,
-      isHidden: false,
-      ...(showArchived ? { isArchived: true } : productDashboardWhere),
-    },
-    include: { stand: true },
-    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-  });
-
   const showRestock =
     !showArchived &&
     tab === "standard" &&
@@ -60,9 +48,32 @@ export default async function ProductsPage({
       lifetimeAccess: owner.lifetimeAccess,
     });
 
-  const restockPanels = showRestock
-    ? await loadRestockPanels(owner.id, selected.id)
-    : [];
+  const [products, restockPanels] = await Promise.all([
+    prisma.product.findMany({
+      where: {
+        ownerId: owner.id,
+        standId: selected.id,
+        preOrderEligible: isPreOrder,
+        isHidden: false,
+        ...(showArchived ? { isArchived: true } : productDashboardWhere),
+      },
+      select: {
+        id: true,
+        name: true,
+        isHidden: true,
+        isArchived: true,
+        priceCents: true,
+        currency: true,
+        costCents: true,
+        stockQuantity: true,
+        sku: true,
+      },
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    }),
+    showRestock
+      ? loadRestockPanels(owner.id, selected.id)
+      : Promise.resolve([]),
+  ]);
 
   function listHref(nextView?: "archived") {
     const params = new URLSearchParams();

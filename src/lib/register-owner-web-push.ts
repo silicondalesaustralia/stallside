@@ -1,17 +1,10 @@
 "use client";
 
 import { Capacitor } from "@capacitor/core";
-
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const raw = atob(base64);
-  const output = new Uint8Array(raw.length);
-  for (let i = 0; i < raw.length; i += 1) {
-    output[i] = raw.charCodeAt(i);
-  }
-  return output;
-}
+import {
+  urlBase64ToUint8Array,
+  waitForServiceWorker,
+} from "@/lib/web-push-browser";
 
 function webPushSupported() {
   return (
@@ -88,8 +81,10 @@ export async function registerOwnerWebPush(): Promise<{ ok: true } | { error: st
   }
 
   try {
-    const registration = await navigator.serviceWorker.register("/sw.js");
-    await navigator.serviceWorker.ready;
+    const registration = await navigator.serviceWorker.register("/sw.js", {
+      scope: "/",
+    });
+    await waitForServiceWorker(registration);
     let subscription = await registration.pushManager.getSubscription();
     if (!subscription) {
       subscription = await registration.pushManager.subscribe({
@@ -108,6 +103,10 @@ export async function registerOwnerWebPush(): Promise<{ ok: true } | { error: st
     });
     if (!res.ok) {
       return { error: "Could not save this device for push." };
+    }
+    const test = await fetch("/api/push/test", { method: "POST" });
+    if (!test.ok) {
+      console.warn("[Vendl] test push failed", test.status);
     }
     return { ok: true };
   } catch (error) {

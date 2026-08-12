@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import DashboardNav from "@/components/DashboardNav";
 import ImpersonationBanner from "@/components/ImpersonationBanner";
-import OwnerPushRegister from "@/components/OwnerPushRegister";
+import OwnerPushRegister from "@/components/OwnerPushRegisterLazy";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
-import { auth } from "@/lib/auth";
 import { requireOwner } from "@/lib/session";
 import { paidAccessDaysRemaining } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
@@ -17,9 +16,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { owner, user } = await requireOwner();
-  const session = await auth();
-  const impersonator = session?.impersonator;
+  const { owner, user, impersonator } = await requireOwner();
   const access = { email: user.email, role: user.role };
   const paidDays = paidAccessDaysRemaining(owner, access);
   const { businesses, selected } = await resolveSelectedBusiness(owner.id);

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -12,8 +13,11 @@ export function isPlatformAdminEmail(email: string | null | undefined): boolean 
   return (PLATFORM_ADMIN_EMAILS as readonly string[]).includes(normalized);
 }
 
-export async function requireUser() {
-  const session = await auth();
+/** One auth() lookup per request (layout + pages share this). */
+export const getAuthSession = cache(async () => auth());
+
+export const requireUser = cache(async () => {
+  const session = await getAuthSession();
   if (!session?.user?.id) {
     const h = await headers();
     const path = h.get("x-stallside-pathname") ?? "/dashboard";
@@ -24,23 +28,37 @@ export async function requireUser() {
     );
   }
   return session.user;
-}
+});
 
-export async function requireOwner() {
-  const user = await requireUser();
+export const requireOwner = cache(async () => {
+  const session = await getAuthSession();
+  if (!session?.user?.id) {
+    const h = await headers();
+    const path = h.get("x-stallside-pathname") ?? "/dashboard";
+    const search = h.get("x-stallside-search") ?? "";
+    const callbackUrl = safeCallbackUrl(`${path}${search}`);
+    redirect(
+      `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`,
+    );
+  }
+  const user = session.user;
   const owner = await prisma.owner.findUnique({
     where: { userId: user.id },
   });
   if (!owner) {
     redirect("/onboarding");
   }
-  return { user, owner };
-}
+  return {
+    user,
+    owner,
+    impersonator: session.impersonator ?? null,
+  };
+});
 
-export async function requireAdmin() {
+export const requireAdmin = cache(async () => {
   const user = await requireUser();
   if (user.role !== Role.ADMIN || !isPlatformAdminEmail(user.email)) {
     redirect("/dashboard");
   }
   return user;
-}
+});

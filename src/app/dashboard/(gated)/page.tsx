@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
-import { formatMoney } from "@/lib/money";
-import DashboardStat from "@/components/DashboardStat";
+import DashboardHomeStats from "@/components/DashboardHomeStats";
 import DashboardPanels from "@/components/DashboardPanels";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesSeriesChart from "@/components/SalesSeriesChart";
@@ -11,11 +9,11 @@ import TapAndGoSetupCard from "@/components/TapAndGoSetupCard";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import PreOrdersCrossSellBanner from "./PreOrdersCrossSellBanner";
 import { resolveDateWindow } from "@/lib/date-range";
-import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
+import { summarizeOrders } from "@/lib/order-metrics";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { buildSalesSeries } from "@/lib/sales-series";
-import { productDashboardWhere } from "@/lib/product-visibility";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
+import { loadDashboardHomeData } from "./load-dashboard-home";
 
 export default async function DashboardPage({
   searchParams,
@@ -47,100 +45,37 @@ export default async function DashboardPage({
     );
   }
 
-  const standScope = { ownerId: owner.id, standId: selected.id };
+  const data = await loadDashboardHomeData({
+    ownerId: owner.id,
+    standId: selected.id,
+    window,
+    monthStart,
+    loadUpgradeSignals: !cardTier,
+  });
 
-  const [
-    standRows,
-    products,
-    currentOrders,
-    previousOrders,
-    catalog,
-    recent,
-    cardInterests,
-    restockSubscriberCount,
-  ] = await Promise.all([
-    prisma.stand.findMany({
-      where: { id: selected.id, ownerId: owner.id },
-      select: { id: true, name: true, slug: true },
-    }),
-    prisma.product.count({
-      where: { ...standScope, ...productDashboardWhere },
-    }),
-    prisma.order.findMany({
-      where: {
-        ...standScope,
-        createdAt: { gte: window.start, lte: window.end },
-        paymentStatus: { in: COUNTED_STATUSES },
-      },
-      select: {
-        totalCents: true,
-        paymentMethod: true,
-        currency: true,
-        createdAt: true,
-      },
-    }),
-    prisma.order.findMany({
-      where: {
-        ...standScope,
-        createdAt: { gte: window.prevStart, lte: window.prevEnd },
-        paymentStatus: { in: COUNTED_STATUSES },
-      },
-      select: {
-        totalCents: true,
-        paymentMethod: true,
-        currency: true,
-        createdAt: true,
-      },
-    }),
-    prisma.product.findMany({
-      where: { ...standScope, ...productDashboardWhere },
-      include: { stand: true },
-      orderBy: { stockQuantity: "asc" },
-    }),
-    prisma.order.findMany({
-      where: standScope,
-      orderBy: { createdAt: "desc" },
-      take: 8,
-      include: { stand: true },
-    }),
-    cardTier
-      ? Promise.resolve([])
-      : prisma.cardInterest.findMany({
-          where: {
-            standId: selected.id,
-            createdAt: { gte: monthStart },
-          },
-          select: { subtotalCents: true, currency: true },
-        }),
-    cardTier
-      ? Promise.resolve(0)
-      : prisma.restockSubscriber.count({
-          where: {
-            standId: selected.id,
-            unsubscribedAt: null,
-          },
-        }),
-  ]);
-
-  const current = summarizeOrders(currentOrders);
-  const previous = summarizeOrders(previousOrders);
-  const series = buildSalesSeries(currentOrders, window.start, window.end);
+  const current = summarizeOrders(data.currentOrders);
+  const previous = summarizeOrders(data.previousOrders);
+  const series = buildSalesSeries(data.currentOrders, window.start, window.end);
   const previousSeries = buildSalesSeries(
-    previousOrders,
+    data.previousOrders,
     window.prevStart,
     window.prevEnd,
   );
-  const lowStock = catalog
-    .filter((p) => p.stockQuantity <= p.lowStockThreshold)
-    .slice(0, 8);
-  const hasPreOrderProduct = catalog.some((p) => p.isPreOrder);
-  const soldOutTakeNow = catalog.filter(
-    (p) => !p.isPreOrder && p.stockQuantity <= 0,
-  ).length;
+  const standName = selected.name;
+  const lowStock = data.lowStockRows.map((p) => ({
+    id: p.id,
+    name: p.name,
+    stockQuantity: Number(p.stockQuantity),
+    stand: { name: standName },
+  }));
+  const recent = data.recent.map((order) => ({
+    ...order,
+    stand: { name: standName },
+  }));
   const showPreOrdersCrossSell =
     !owner.preOrdersCrossSellDismissedAt &&
-    !hasPreOrderProduct &&
-    soldOutTakeNow >= 1;
+    !data.hasPreOrderProduct &&
+    data.soldOutTakeNow >= 1;
   const ordersHref = `/dashboard/orders?range=${window.key}${
     window.key === "custom"
       ? `&from=${window.fromParam}&to=${window.toParam}`
@@ -154,9 +89,7 @@ export default async function DashboardPage({
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
             {selected.name}
           </h1>
-          <p className="mt-1 text-[var(--muted)]">
-            {window.label} activity
-          </p>
+          <p className="mt-1 text-[var(--muted)]">{window.label} activity</p>
         </div>
         <Link
           href={`/dashboard/businesses/${selected.id}`}
@@ -182,42 +115,17 @@ export default async function DashboardPage({
 
       {!cardTier ? (
         <StarterUpgradeSignals
-          cardInterestCount={cardInterests.length}
-          cardInterestCents={cardInterests.reduce(
+          cardInterestCount={data.cardInterests.length}
+          cardInterestCents={data.cardInterests.reduce(
             (s, r) => s + r.subtotalCents,
             0,
           )}
-          currency={cardInterests[0]?.currency ?? current.currency}
-          restockSubscriberCount={restockSubscriberCount}
+          currency={data.cardInterests[0]?.currency ?? current.currency}
+          restockSubscriberCount={data.restockSubscriberCount}
         />
       ) : null}
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <DashboardStat
-          label="Sales"
-          value={formatMoney(current.salesCents, current.currency)}
-          current={current.salesCents}
-          previous={previous.salesCents}
-        />
-        <DashboardStat
-          label="Cash / PayID"
-          value={formatMoney(current.cashCents, current.currency)}
-          current={current.cashCents}
-          previous={previous.cashCents}
-        />
-        <DashboardStat
-          label="Card / PayPal"
-          value={formatMoney(current.digitalCents, current.currency)}
-          current={current.digitalCents}
-          previous={previous.digitalCents}
-        />
-        <DashboardStat
-          label="Orders"
-          value={String(current.orderCount)}
-          current={current.orderCount}
-          previous={previous.orderCount}
-        />
-      </section>
+      <DashboardHomeStats current={current} previous={previous} />
 
       <SalesSeriesChart
         points={series}
@@ -227,10 +135,10 @@ export default async function DashboardPage({
       />
 
       <DashboardPanels
-        stands={standRows.length}
-        products={products}
+        stands={1}
+        products={data.products}
         stripeConnected={owner.stripeChargesEnabled}
-        standRows={standRows}
+        standRows={[{ id: selected.id, name: selected.name }]}
         lowStock={lowStock}
         recent={recent}
         ordersHref={ordersHref}

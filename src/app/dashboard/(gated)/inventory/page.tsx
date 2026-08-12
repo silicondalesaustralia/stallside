@@ -26,7 +26,7 @@ export default async function InventoryPage() {
       standId: selected.id,
       ...productDashboardWhere,
     },
-    include: { stand: true },
+    select: { id: true, name: true, stockQuantity: true },
     orderBy: [{ name: "asc" }],
   });
 
