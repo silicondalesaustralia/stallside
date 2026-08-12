@@ -8,7 +8,7 @@ type Props = {
 
 /** Hero collage for bakers product / ads LPs using demo rye + cookie photos. */
 export default function BakersHeroVisual({
-  taken = "A$612 taken",
+  taken = "A$340 taken",
   compareAt = "A$15.00",
   price = "A$11.00",
 }: Props) {
@@ -57,9 +57,9 @@ export default function BakersHeroVisual({
           </div>
           <ul className="grid grid-cols-3 gap-2 text-center">
             {[
-              { label: "Rye", value: "12" },
-              { label: "Cookies", value: "24" },
-              { label: "Orders", value: "31" },
+              { label: "Sourdough", value: "24" },
+              { label: "Cookies", value: "12" },
+              { label: "Orders", value: "28" },
             ].map((s) => (
               <li
                 key={s.label}

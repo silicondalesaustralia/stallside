@@ -37,10 +37,10 @@ function MakeListPanel({ variant }: { variant: "makeList" | "delivery" }) {
           { label: "Kyneton", value: "3 stops" },
         ]
       : [
-          { label: "Sourdough", value: "40" },
-          { label: "Rye", value: "12" },
-          { label: "Focaccia", value: "8" },
-          { label: "Taken", value: "A$612" },
+          { label: "Sourdough", value: "24" },
+          { label: "Cookies", value: "12" },
+          { label: "Focaccia", value: "6" },
+          { label: "Taken", value: "A$340" },
         ];
   const upsell =
     variant === "delivery"
