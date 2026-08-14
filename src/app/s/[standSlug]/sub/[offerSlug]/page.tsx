@@ -75,9 +75,14 @@ export default async function PublicSubscriptionOfferPage({
 
   const { stand } = offer;
   const branded = publicStandBranding(stand, stand.owner);
-  const cardOk =
-    standOffersCard(stand, stand.owner) && Boolean(offer.stripePriceId);
+  const cardEnabled = standOffersCard(stand, stand.owner);
+  const cardOk = cardEnabled && Boolean(offer.stripePriceId);
   const day = weekdayLabel(offer.collectionWeekday);
+  const unavailableReason = !cardEnabled
+    ? "This stand cannot take card payments yet."
+    : !offer.stripePriceId
+      ? "This offer is not ready for signup yet. The owner needs to save it again after Stripe is connected."
+      : "Card subscriptions are not available for this offer right now.";
 
   return (
     <div
@@ -123,9 +128,7 @@ export default async function PublicSubscriptionOfferPage({
             }))}
           />
         ) : (
-          <p className="text-sm text-[var(--warn)]">
-            Card subscriptions are not available for this offer right now.
-          </p>
+          <p className="text-sm text-[var(--warn)]">{unavailableReason}</p>
         )}
       </main>
     </div>

@@ -74,6 +74,14 @@ export default async function EditSubscriptionOfferPage({
         </p>
       </div>
 
+      {!offer.stripePriceId ? (
+        <p className="rounded-lg border border-[var(--warn)]/40 bg-[var(--warn)]/10 px-3 py-2 text-sm">
+          Stripe price not synced yet — public signup is blocked. Click{" "}
+          <strong>Save offer</strong> to create the Connect price (needs live
+          Stripe + Connect charges enabled).
+        </p>
+      ) : null}
+
       <SubscriptionOfferForm
         products={products}
         stripeConnected={stripeConnected}

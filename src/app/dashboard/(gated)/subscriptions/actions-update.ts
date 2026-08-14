@@ -97,6 +97,7 @@ export async function updateSubscriptionOffer(
     priceCents !== existing.priceCents ||
     interval !== existing.interval ||
     title !== existing.title;
+  const needsStripeSync = !existing.stripePriceId || priceChanged;
 
   await prisma.$transaction(async (tx) => {
     await tx.subscriptionOfferProduct.deleteMany({
@@ -129,7 +130,7 @@ export async function updateSubscriptionOffer(
   });
 
   if (
-    priceChanged &&
+    needsStripeSync &&
     isStripeConfigured() &&
     owner.stripeAccountId &&
     owner.stripeChargesEnabled
