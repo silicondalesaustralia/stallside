@@ -389,6 +389,7 @@ model Stand {
   restockSubscribers RestockSubscriber[]
   restockNotifications RestockNotification[]
   cardInterests      CardInterest[]
+  channelInterests   ChannelInterest[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 }
@@ -402,6 +403,24 @@ model CardInterest {
   currency      String
   createdAt     DateTime @default(now())
 
+  @@index([standId, createdAt])
+}
+
+enum ChannelInterestKind {
+  PREORDER
+  SUBSCRIPTION
+}
+
+/** Shopper asked the stall to offer pre-orders or subscriptions. */
+model ChannelInterest {
+  id        String               @id @default(cuid())
+  standId   String
+  stand     Stand                @relation(fields: [standId], references: [id], onDelete: Cascade)
+  kind      ChannelInterestKind
+  email     String
+  createdAt DateTime             @default(now())
+
+  @@unique([standId, kind, email])
   @@index([standId, createdAt])
 }
 

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import BrandMark from "@/components/BrandMark";
 import StandCartLink from "./StandCartLink";
+import StandStoreLinks from "./StandStoreLinks";
+import StandStoreMenu from "./StandStoreMenu";
 
 export default function StandStoreHeader({
   standName,
@@ -17,13 +19,9 @@ export default function StandStoreHeader({
 }) {
   return (
     <header className="relative flex flex-col gap-3">
-      {backHref ? (
-        <p className="text-sm">
-          <Link href={backHref} className="font-medium text-[var(--leaf-dark)] underline">
-            {backLabel ?? "← Back"}
-          </Link>
-        </p>
-      ) : null}
+      <div className="absolute left-0 top-0 z-10 sm:hidden">
+        <StandStoreMenu standSlug={standSlug} />
+      </div>
       <div className="absolute right-0 top-0 z-10">
         <StandCartLink standSlug={standSlug} />
       </div>
@@ -41,7 +39,20 @@ export default function StandStoreHeader({
         <h1 className="mt-3 font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--field)] sm:text-3xl">
           {standName}
         </h1>
+        <div className="mt-3 hidden sm:block">
+          <StandStoreLinks
+            standSlug={standSlug}
+            className="flex justify-center gap-4 text-sm font-medium"
+          />
+        </div>
       </div>
+      {backHref ? (
+        <p className="text-center text-sm">
+          <Link href={backHref} className="font-medium text-[var(--leaf-dark)] underline">
+            {backLabel ?? "← Back"}
+          </Link>
+        </p>
+      ) : null}
     </header>
   );
 }

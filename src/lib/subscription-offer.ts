@@ -2,6 +2,10 @@ import { SITE_URL } from "@/lib/legal";
 
 export type ShopperInterval = "WEEKLY" | "FORTNIGHTLY" | "MONTHLY";
 
+export function subscriptionOffersPath(standSlug: string) {
+  return `/s/${standSlug}/sub`;
+}
+
 export function subscriptionOfferPath(standSlug: string, offerSlug: string) {
   return `/s/${standSlug}/sub/${offerSlug}`;
 }
