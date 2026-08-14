@@ -3,7 +3,6 @@ export const primaryLinks = [
   { href: "/dashboard/products", label: "Products" },
   { href: "/dashboard/orders", label: "Orders" },
   { href: "/dashboard/collections", label: "Collections" },
-  { href: "/dashboard/inventory", label: "Inventory" },
 ] as const;
 
 export const secondaryLinks = [
@@ -23,6 +22,6 @@ export const mobileTabs = [
 ] as const;
 
 export function dashLinkActive(pathname: string, href: string) {
-  if (href === "/dashboard") return pathname === "/dashboard";
+  if (href === "/dashboard" || href === "/admin") return pathname === href;
   return pathname.startsWith(href);
 }

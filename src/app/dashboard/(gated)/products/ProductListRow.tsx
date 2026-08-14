@@ -48,14 +48,6 @@ export default function ProductListRow({
             >
               Edit
             </Link>
-            {!product.isArchived ? (
-              <Link
-                href="/dashboard/inventory"
-                className="text-center text-sm font-semibold text-[var(--leaf-dark)]"
-              >
-                Adjust stock
-              </Link>
-            ) : null}
             <ProductLifecycleActions
               productId={product.id}
               productName={product.name}

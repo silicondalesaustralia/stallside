@@ -29,7 +29,7 @@ export default async function AdminOwnersPage() {
       {owners.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">No owners yet.</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="dash-card overflow-x-auto p-4">
           <table className="w-full min-w-[720px] border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-[var(--line)] text-xs uppercase tracking-wide text-[var(--muted)]">

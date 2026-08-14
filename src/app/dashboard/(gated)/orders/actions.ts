@@ -37,7 +37,7 @@ export async function deleteOrder(orderId: string) {
   });
 
   revalidatePath("/dashboard/orders");
-  revalidatePath("/dashboard/inventory");
+  revalidatePath("/dashboard/products");
   revalidatePath("/dashboard");
   return { ok: true as const };
 }

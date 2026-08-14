@@ -1,4 +1,5 @@
 import { createSignupCoupon } from "@/app/admin/billing/actions";
+import { dashCtaClass } from "@/components/DashPrimaryCta";
 
 export default function AdminCouponForm({ disabled }: { disabled: boolean }) {
   return (
@@ -61,7 +62,7 @@ export default function AdminCouponForm({ disabled }: { disabled: boolean }) {
       <button
         type="submit"
         disabled={disabled}
-        className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 font-semibold text-white disabled:opacity-50"
+        className={`${dashCtaClass} disabled:opacity-50`}
       >
         Create promotion code
       </button>

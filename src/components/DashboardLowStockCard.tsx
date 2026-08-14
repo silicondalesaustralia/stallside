@@ -30,7 +30,12 @@ export default function DashboardLowStockCard({
         <ul className="mt-3 space-y-1 text-sm">
           {items.slice(0, 3).map((p) => (
             <li key={p.id} className="flex justify-between gap-3">
-              <span className="truncate">{p.name}</span>
+              <Link
+                href={`/dashboard/products/${p.id}`}
+                className="truncate underline-offset-2 hover:underline"
+              >
+                {p.name}
+              </Link>
               <span className="font-receipt text-[var(--warn)]">
                 {p.stockQuantity} left
               </span>
@@ -40,7 +45,7 @@ export default function DashboardLowStockCard({
       )}
       <div className="mt-4 flex justify-center">
         <Link
-          href="/dashboard/inventory"
+          href="/dashboard/products"
           className="rounded-full bg-white px-4 py-2 text-[13px] font-bold text-[var(--ink)] outline outline-[var(--line)]"
         >
           Details

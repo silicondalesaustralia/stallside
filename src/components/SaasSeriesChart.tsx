@@ -68,7 +68,7 @@ export default function SaasSeriesChart({
   }
 
   return (
-    <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-4">
+    <div className="dash-card p-5">
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3">
         <h2 className="text-lg font-semibold">{title}</h2>
         <p className="text-sm text-[var(--muted)]">Peak {max}</p>

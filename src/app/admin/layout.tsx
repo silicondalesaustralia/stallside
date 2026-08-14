@@ -13,9 +13,13 @@ export default async function AdminLayout({
 }) {
   await requireAdmin();
   return (
-    <div className="flex min-h-full flex-1 flex-col bg-[var(--wash)]">
+    <div className="flex min-h-full flex-1 bg-[var(--wash)]">
       <AdminNav />
-      <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</div>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="mx-auto w-full max-w-[86rem] flex-1 px-4 py-6 md:px-6 md:py-8">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }

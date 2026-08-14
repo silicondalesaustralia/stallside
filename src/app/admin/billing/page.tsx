@@ -30,7 +30,7 @@ export default async function AdminBillingPage() {
   }
 
   return (
-    <main className="flex max-w-2xl flex-col gap-10">
+    <main className="flex max-w-3xl flex-col gap-8">
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">
           Billing &amp; coupons
@@ -40,7 +40,7 @@ export default async function AdminBillingPage() {
         </p>
       </div>
 
-      <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+      <section className="dash-card space-y-3 p-5 text-sm">
         <h2 className="text-lg font-semibold">Cash plan prices</h2>
         <ul className="space-y-1">
           {BILLING_CURRENCIES.map((currency) => {
@@ -93,17 +93,17 @@ export default async function AdminBillingPage() {
         </p>
       </section>
 
-      <section className="space-y-3">
+      <section className="dash-card space-y-3 p-5">
         <h2 className="text-lg font-semibold">Create signup coupon</h2>
         <AdminCouponForm disabled={!configured} />
       </section>
 
-      <section className="space-y-2">
+      <section className="dash-card space-y-2 p-5">
         <h2 className="text-lg font-semibold">Promotion codes</h2>
         {promos.length === 0 ? (
           <p className="text-sm text-[var(--muted)]">None yet.</p>
         ) : (
-          <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)] text-sm">
+          <ul className="divide-y divide-[var(--line)] text-sm">
             {promos.map((p) => (
               <li key={p.id} className="flex justify-between gap-3 py-2">
                 <span>

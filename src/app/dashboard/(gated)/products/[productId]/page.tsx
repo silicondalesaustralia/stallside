@@ -7,6 +7,7 @@ import { standProductPath } from "@/lib/stand-seo";
 import ProductEditForm from "./ProductEditForm";
 import ProductLifecycleActions from "../ProductLifecycleActions";
 import ProductOptionsEditor from "./ProductOptionsEditor";
+import ProductStockCard from "./ProductStockCard";
 import { parsePriceTiers } from "@/lib/price-tiers";
 
 export default async function EditProductPage({
@@ -102,6 +103,10 @@ export default async function EditProductPage({
           upsellPriceCents: product.upsellPriceCents,
           siblingProducts: product.stand.products,
         }}
+      />
+      <ProductStockCard
+        productId={product.id}
+        stockQuantity={product.stockQuantity}
       />
       <ProductOptionsEditor
         productId={product.id}

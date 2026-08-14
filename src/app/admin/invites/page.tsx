@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { inviteHasSeats, lifetimeInviteUrl } from "@/lib/lifetime-invite";
 import { createLifetimeInviteAction } from "./actions";
 import InviteCopyLink from "@/components/InviteCopyLink";
+import { dashCtaClass } from "@/components/DashPrimaryCta";
 
 export default async function AdminInvitesPage({
   searchParams,
@@ -39,7 +40,7 @@ export default async function AdminInvitesPage({
 
       <form
         action={createLifetimeInviteAction}
-        className="flex flex-col gap-3 rounded-[var(--radius)] border border-[var(--line)] bg-white p-4 sm:flex-row sm:items-end"
+        className="dash-card flex flex-col gap-3 p-5 sm:flex-row sm:items-end"
       >
         <label className="flex w-full flex-col gap-1.5 text-sm sm:w-28">
           <span className="font-medium">Seats</span>
@@ -64,14 +65,14 @@ export default async function AdminInvitesPage({
         </label>
         <button
           type="submit"
-          className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
+          className={dashCtaClass}
         >
           Create invite link
         </button>
       </form>
 
       {createdUrl ? (
-        <div className="rounded-[var(--radius)] border border-[var(--leaf)] bg-[var(--panel)] p-4">
+        <div className="dash-card p-5 outline-[var(--leaf)]">
           <p className="text-sm font-semibold text-[var(--field)]">
             New invite ready - copy and post it
           </p>
@@ -82,7 +83,7 @@ export default async function AdminInvitesPage({
       {invites.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">No invites yet.</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="dash-card overflow-x-auto p-4">
           <table className="w-full min-w-[720px] border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-[var(--line)] text-xs uppercase tracking-wide text-[var(--muted)]">

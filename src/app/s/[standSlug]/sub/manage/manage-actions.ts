@@ -1,6 +1,6 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { ShopperSubStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { appBaseUrl } from "@/lib/stripe";
@@ -26,6 +26,10 @@ async function loadManagedSub(token: string) {
   });
 }
 
+function refreshManage(slug: string, token: string) {
+  revalidatePath(subscriptionManagePath(slug, token));
+}
+
 export async function skipNextShopperCycle(formData: FormData) {
   const token = String(formData.get("token") ?? "");
   const sub = await loadManagedSub(token);
@@ -40,6 +44,7 @@ export async function skipNextShopperCycle(formData: FormData) {
     where: { id: sub.id },
     data: { skipNextCycle: true },
   });
+  refreshManage(sub.stand.slug, token);
   return { ok: true as const, message: "Next cycle will be skipped." };
 }
 
@@ -47,7 +52,7 @@ export async function pauseShopperSubscription(formData: FormData) {
   const token = String(formData.get("token") ?? "");
   const sub = await loadManagedSub(token);
   if (!sub?.stripeSubscriptionId || !sub.owner.stripeAccountId) {
-    return { error: "Subscription not found." };
+    return { error: "This subscription is not linked to Stripe yet." };
   }
   try {
     await pauseShopperStripeSubscription({
@@ -61,6 +66,7 @@ export async function pauseShopperSubscription(formData: FormData) {
         pausedAt: new Date(),
       },
     });
+    refreshManage(sub.stand.slug, token);
     return { ok: true as const, message: "Subscription paused." };
   } catch (error) {
     console.error("Pause shopper sub failed", error);
@@ -72,7 +78,7 @@ export async function resumeShopperSubscription(formData: FormData) {
   const token = String(formData.get("token") ?? "");
   const sub = await loadManagedSub(token);
   if (!sub?.stripeSubscriptionId || !sub.owner.stripeAccountId) {
-    return { error: "Subscription not found." };
+    return { error: "This subscription is not linked to Stripe yet." };
   }
   try {
     await resumeShopperStripeSubscription({
@@ -86,6 +92,7 @@ export async function resumeShopperSubscription(formData: FormData) {
         pausedAt: null,
       },
     });
+    refreshManage(sub.stand.slug, token);
     return { ok: true as const, message: "Subscription resumed." };
   } catch (error) {
     console.error("Resume shopper sub failed", error);
@@ -96,12 +103,11 @@ export async function resumeShopperSubscription(formData: FormData) {
 export async function openShopperBillingPortal(formData: FormData) {
   const token = String(formData.get("token") ?? "");
   const sub = await loadManagedSub(token);
-  if (
-    !sub?.stripeCustomerId ||
-    !sub.owner.stripeAccountId ||
-    !sub.owner.stripeChargesEnabled
-  ) {
+  if (!sub?.owner.stripeAccountId || !sub.owner.stripeChargesEnabled) {
     return { error: "Billing portal is not available." };
+  }
+  if (!sub.stripeCustomerId) {
+    return { error: "No Stripe customer on this subscription yet." };
   }
   const returnUrl = `${appBaseUrl()}${subscriptionManagePath(sub.stand.slug, token)}`;
   try {
@@ -110,7 +116,8 @@ export async function openShopperBillingPortal(formData: FormData) {
       stripeCustomerId: sub.stripeCustomerId,
       returnUrl,
     });
-    redirect(session.url);
+    if (!session.url) return { error: "Could not open billing portal." };
+    return { ok: true as const, url: session.url };
   } catch (error) {
     console.error("Shopper portal failed", error);
     return { error: "Could not open billing portal." };

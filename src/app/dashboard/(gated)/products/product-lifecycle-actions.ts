@@ -42,7 +42,6 @@ function revalidateProductPaths(opts: {
   slug: string;
 }) {
   revalidatePath("/dashboard/products");
-  revalidatePath("/dashboard/inventory");
   revalidatePath(`/dashboard/products/${opts.productId}`);
   revalidatePath(`/dashboard/businesses/${opts.standId}`);
   revalidatePath(`/s/${opts.standSlug}`);

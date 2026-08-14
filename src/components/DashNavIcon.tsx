@@ -37,9 +37,6 @@ const ICONS: Record<string, React.ReactNode> = {
   "/dashboard/collections": (
     <Icon d="M5 11h14l-1.5 8H6.5L5 11zM8 11 10 5h4l2 6" />
   ),
-  "/dashboard/inventory": (
-    <Icon d="M4 5h16v4H4zM4 11h16v4H4zM4 17h16v4H4z" />
-  ),
   "/dashboard/pre-order-pages": (
     <Icon d="M6 4h12v16H6zM6 9h12M10 13h4" extra={<path d="M9 2v4M15 2v4" />} />
   ),
@@ -54,6 +51,27 @@ const ICONS: Record<string, React.ReactNode> = {
   ),
   "/dashboard/settings": (
     <Icon d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM12 3v2M12 19v2M4.9 6.5l1.7 1M17.4 16.5l1.7 1M3 12h2M19 12h2M4.9 17.5l1.7-1M17.4 7.5l1.7-1" />
+  ),
+  "/admin": (
+    <Icon d="M4 19V5h16v14zM8 9h8M8 13h5" />
+  ),
+  "/admin/owners": (
+    <Icon d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zM4 20c1.5-3 4-5 8-5s6.5 2 8 5" />
+  ),
+  "/admin/invites": (
+    <Icon d="M4 6h16v12H4zM4 6l8 7 8-7" />
+  ),
+  "/admin/billing": (
+    <Icon d="M4 8h16v10H4zM4 8l2-3h12l2 3M8 13h4" />
+  ),
+  "/admin/gallery": (
+    <Icon d="M4 5h16v14H4zM8 14l3-3 3 3 2-2 4 4" extra={<path d="M8 9h.01" />} />
+  ),
+  "/admin/stands": (
+    <Icon d="M5 20V10l7-5 7 5v10M9 20v-6h6v6" />
+  ),
+  "/admin/orders": (
+    <Icon d="M7 3h10v18H7zM10 7h4M10 11h4M10 15h3" />
   ),
 };
 

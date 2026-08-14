@@ -28,7 +28,7 @@ export default async function AdminOrdersPage() {
       {orders.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">No orders yet.</p>
       ) : (
-        <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
+        <ul className="dash-card divide-y divide-[var(--line)] px-5">
           {orders.map((order) => {
             // Free only; Pro / lifetime / platform-admin complimentary → $0.
             const feeCents = shouldChargeVendlFee(order.owner, {

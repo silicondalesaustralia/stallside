@@ -7,6 +7,7 @@ import { getSaasStats } from "@/lib/admin-saas-stats";
 import { getSaasSeries } from "@/lib/admin-saas-series";
 import { resolveDateWindow } from "@/lib/date-range";
 import { isStripeBillingConfigured } from "@/lib/stripe";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
 import DashboardStat from "@/components/DashboardStat";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import SaasSeriesChart from "@/components/SaasSeriesChart";
@@ -48,40 +49,39 @@ export default async function AdminOverviewPage({
         : `${(medianLiveMs / 60_000).toFixed(1)}m`;
 
   return (
-    <main className="flex flex-col gap-10">
+    <main className="flex flex-col gap-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">SaaS admin</h1>
+          <p className="text-sm font-medium text-[var(--muted)]">Platform</p>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight">
+            SaaS overview
+          </h1>
           <p className="mt-1 text-[var(--muted)]">
-            Subscriptions, owners, and Vendl revenue in AUD (live FX from
-            Stripe charge currencies), not stand checkout sales.
+            Subscriptions and Vendl revenue in AUD — not stall checkout sales.
           </p>
           <p className="mt-1 text-sm text-[var(--muted)]">
             Median signup → first live product:{" "}
             <strong>{medianLiveLabel}</strong>
             {medianLiveMs != null && medianLiveMs > 60_000
-              ? " (over 60s - fix setup before new verticals)"
+              ? " (over 60s — fix setup before new verticals)"
               : ""}
           </p>
         </div>
-        <div className="flex flex-wrap gap-3 text-sm">
-          <Link
-            href="/admin/invites"
-            className="rounded-lg bg-[var(--leaf)] px-3 py-2 font-semibold text-white"
-          >
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <DashPrimaryCta href="/admin/invites">
             Free for Life invites
-          </Link>
+          </DashPrimaryCta>
           <Link
             href="/admin/billing"
-            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2 font-semibold"
+            className="rounded-full border border-[var(--line)] bg-white px-4 py-2.5 font-semibold"
           >
-            Billing &amp; coupons
+            Billing
           </Link>
           <Link
             href="/admin/owners"
-            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2 font-semibold"
+            className="rounded-full border border-[var(--line)] bg-white px-4 py-2.5 font-semibold"
           >
-            All subscribers
+            Subscribers
           </Link>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default async function AdminOverviewPage({
         />
       </section>
 
-      <section>
+      <section className="dash-card p-5">
         <h2 className="text-lg font-semibold">Recent owners</h2>
         <AdminRecentOwners owners={recent} />
       </section>

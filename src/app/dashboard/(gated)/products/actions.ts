@@ -210,8 +210,9 @@ export async function adjustInventory(formData: FormData) {
     }
   }
 
-  revalidatePath("/dashboard/inventory");
+  revalidatePath(`/dashboard/products/${product.id}`);
   revalidatePath("/dashboard/products");
+  revalidatePath("/dashboard");
   return { ok: true as const };
 }
 
@@ -398,7 +399,6 @@ export async function updateProduct(productId: string, formData: FormData) {
     });
 
     revalidatePath("/dashboard/products");
-    revalidatePath("/dashboard/inventory");
     revalidatePath(`/dashboard/products/${product.id}`);
     revalidatePath(`/dashboard/businesses/${product.standId}`);
     revalidatePath("/dashboard/pre-order-pages");

@@ -1,10 +1,11 @@
 import {
   addGalleryStand,
 } from "@/app/admin/gallery/actions";
+import { dashCtaClass } from "@/components/DashPrimaryCta";
 
 export default function AdminGalleryAddForm() {
   return (
-    <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4">
+    <section className="dash-card space-y-3 p-5">
       <h2 className="text-lg font-semibold">Add stand</h2>
       <form
         action={addGalleryStand}
@@ -42,7 +43,7 @@ export default function AdminGalleryAddForm() {
         />
         <button
           type="submit"
-          className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 font-semibold text-white"
+          className={dashCtaClass}
         >
           Add &amp; publish
         </button>

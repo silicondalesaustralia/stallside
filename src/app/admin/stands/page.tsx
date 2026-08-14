@@ -21,7 +21,7 @@ export default async function AdminStandsPage() {
       {stands.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">No stands yet.</p>
       ) : (
-        <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
+        <ul className="dash-card divide-y divide-[var(--line)] px-5">
           {stands.map((stand) => (
             <li key={stand.id} className="py-4 text-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">

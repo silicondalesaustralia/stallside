@@ -36,7 +36,7 @@ export default async function AdminOwnerDetailPage({
   const syncLtvAction = syncOwnerLtvFromStripe.bind(null, owner.id);
 
   return (
-    <main className="flex max-w-2xl flex-col gap-8">
+    <main className="flex flex-col gap-8">
       <p className="text-sm text-[var(--muted)]">
         <Link href="/admin/owners" className="underline">
           Subscribers
@@ -49,7 +49,7 @@ export default async function AdminOwnerDetailPage({
         <p className="mt-1 text-[var(--muted)]">{owner.user.email}</p>
       </div>
 
-      <section className="space-y-2 text-sm rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4">
+      <section className="dash-card space-y-2 p-5 text-sm">
         <p>
           Owner ID: <code className="text-xs">{owner.id}</code>
         </p>
@@ -97,7 +97,7 @@ export default async function AdminOwnerDetailPage({
         </p>
       </section>
 
-      <section className="space-y-3">
+      <section className="dash-card space-y-3 p-5">
         <h2 className="text-lg font-semibold">Apply signup coupon</h2>
         <p className="text-sm text-[var(--muted)]">
           Applies an active Stripe promotion code to their current subscription.
@@ -119,7 +119,7 @@ export default async function AdminOwnerDetailPage({
         </form>
       </section>
 
-      <section className="space-y-3">
+      <section className="dash-card space-y-3 p-5">
         <h2 className="text-lg font-semibold">Support</h2>
         <p className="text-sm text-[var(--muted)]">
           Open their owner dashboard to check settings and troubleshoot. An amber

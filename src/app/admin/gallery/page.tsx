@@ -26,7 +26,7 @@ export default async function AdminGalleryPage() {
 
       <AdminGalleryAddForm />
 
-      <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
+      <ul className="dash-card divide-y divide-[var(--line)] px-5">
         {stands.map((stand) => (
           <li key={stand.id} className="flex flex-col gap-3 py-4 sm:flex-row sm:gap-4">
             <div className="relative h-28 w-24 shrink-0 overflow-hidden bg-[var(--panel)]">

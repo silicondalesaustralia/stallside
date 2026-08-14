@@ -44,12 +44,6 @@ export default function DashboardMobileNav({
                     {link.label}
                   </Link>
                 ))}
-                <Link
-                  href="/dashboard/inventory"
-                  className="rounded-lg px-2 py-2 text-sm text-[var(--ink)] hover:bg-[var(--wash)]"
-                >
-                  Inventory
-                </Link>
               </div>
             </div>
           </details>

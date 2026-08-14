@@ -25,7 +25,7 @@ export default async function AdminRecentOwners({
   const fx = await audRatesFromMarket();
 
   return (
-    <ul className="mt-3 divide-y divide-[var(--line)] border-y border-[var(--line)] text-sm">
+    <ul className="mt-3 divide-y divide-[var(--line)] text-sm">
       {owners.map((owner) => (
         <li
           key={owner.id}

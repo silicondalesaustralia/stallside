@@ -178,12 +178,6 @@ export default function ProductEditForm({
         <button type="submit" disabled={pending} className={dashCtaClass}>
           {pending ? "Saving…" : "Save changes"}
         </button>
-        <Link
-          href="/dashboard/inventory"
-          className="rounded-full border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-bold"
-        >
-          Adjust stock
-        </Link>
       </div>
     </form>
   );
