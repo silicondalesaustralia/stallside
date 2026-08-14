@@ -1,5 +1,6 @@
 import { PaymentStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import type { CollectionOrderView } from "./group-collections";
 
 export { groupCollectionDays, dayMakeListMeta } from "./group-collections";
 
@@ -46,6 +47,12 @@ export async function loadCollectionOrders(ownerId: string, standId: string) {
       currency: true,
       createdAt: true,
       stand: { select: { name: true } },
+      shopperSubscription: {
+        select: {
+          offerId: true,
+          offer: { select: { title: true } },
+        },
+      },
       items: {
         select: {
           id: true,
@@ -62,3 +69,33 @@ export async function loadCollectionOrders(ownerId: string, standId: string) {
 export type CollectionOrder = Awaited<
   ReturnType<typeof loadCollectionOrders>
 >[number];
+
+/** Flatten Prisma join into the Collections view shape. */
+export function toCollectionOrderView(
+  order: CollectionOrder,
+): CollectionOrderView {
+  return {
+    id: order.id,
+    orderNumber: order.orderNumber,
+    customerName: order.customerName,
+    customerPhone: order.customerPhone,
+    receiptEmail: order.receiptEmail,
+    collectionAt: order.collectionAt,
+    collectionNote: order.collectionNote,
+    collectionStatus: order.collectionStatus,
+    paymentStatus: order.paymentStatus,
+    paymentTiming: order.paymentTiming,
+    handoverMode: order.handoverMode,
+    deliveryAddressLine1: order.deliveryAddressLine1,
+    deliverySuburb: order.deliverySuburb,
+    deliveryPostcode: order.deliveryPostcode,
+    balanceCents: order.balanceCents,
+    depositCents: order.depositCents,
+    totalCents: order.totalCents,
+    currency: order.currency,
+    stand: order.stand,
+    subscriptionOfferId: order.shopperSubscription?.offerId ?? null,
+    subscriptionOfferTitle: order.shopperSubscription?.offer.title ?? null,
+    items: order.items,
+  };
+}

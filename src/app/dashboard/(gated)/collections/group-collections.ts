@@ -27,6 +27,9 @@ export type CollectionOrderView = {
   totalCents: number;
   currency: string;
   stand: { name: string };
+  /** Present when this order came from a shopper subscription cycle. */
+  subscriptionOfferId?: string | null;
+  subscriptionOfferTitle?: string | null;
   items: {
     id: string;
     productId?: string;

@@ -1,6 +1,7 @@
 import { PaymentStatus, PaymentTiming } from "@/generated/prisma/client";
 import { formatCollectionLabel } from "@/lib/pre-order";
 import type { CollectionOrderView } from "./group-collections";
+import type { CollectionSubscriptionOfferRef } from "./load-subscription-offers";
 
 export type CollectionPageRef = {
   id: string;
@@ -39,7 +40,8 @@ function scoreOrderToPage(
   const at = order.collectionAt;
   if (!at) return 0;
   const sameDay =
-    at.toISOString().slice(0, 10) === page.collectionAt.toISOString().slice(0, 10);
+    at.toISOString().slice(0, 10) ===
+    page.collectionAt.toISOString().slice(0, 10);
   if (!sameDay) return 0;
   const sameInstant = at.getTime() === page.collectionAt.getTime();
   const pageProducts = new Set(page.productIds);
@@ -61,8 +63,12 @@ function toGroup(
     (sum, order) => sum + order.items.reduce((s, i) => s + i.quantity, 0),
     0,
   );
-  const takenCents = orders.reduce((sum, order) => sum + takenCentsFor(order), 0);
-  const at = collectionAt ?? orders.find((o) => o.collectionAt)?.collectionAt ?? null;
+  const takenCents = orders.reduce(
+    (sum, order) => sum + takenCentsFor(order),
+    0,
+  );
+  const at =
+    collectionAt ?? orders.find((o) => o.collectionAt)?.collectionAt ?? null;
   return {
     key,
     title,
@@ -75,30 +81,78 @@ function toGroup(
   };
 }
 
-/** Assign paid pre-orders to pre-order pages (collection time + products). */
+function groupSubscriptionOrders(
+  orders: CollectionOrderView[],
+  offers: CollectionSubscriptionOfferRef[],
+): { groups: CollectionPageGroup[]; remaining: CollectionOrderView[] } {
+  const byOffer = new Map<string, CollectionOrderView[]>();
+  const remaining: CollectionOrderView[] = [];
+  const titleById = new Map(offers.map((o) => [o.id, o.title]));
+
+  for (const order of orders) {
+    const offerId = order.subscriptionOfferId;
+    if (!offerId) {
+      remaining.push(order);
+      continue;
+    }
+    const list = byOffer.get(offerId) ?? [];
+    list.push(order);
+    byOffer.set(offerId, list);
+  }
+
+  const groups = [...byOffer.entries()]
+    .map(([offerId, list]) => {
+      const title =
+        titleById.get(offerId) ??
+        list[0]?.subscriptionOfferTitle ??
+        "Subscription";
+      return toGroup(
+        `sub-${offerId}`,
+        `Subscription · ${title}`,
+        list[0]?.collectionAt ?? null,
+        list,
+      );
+    })
+    .sort((a, b) => {
+      const aAt = a.orders[0]?.collectionAt?.getTime() ?? 0;
+      const bAt = b.orders[0]?.collectionAt?.getTime() ?? 0;
+      return aAt - bAt;
+    });
+
+  return { groups, remaining };
+}
+
+/** Assign paid pre-orders to subscription offers + pre-order pages. */
 export function groupCollectionPages(
   orders: CollectionOrderView[],
   pages: CollectionPageRef[],
+  offers: CollectionSubscriptionOfferRef[] = [],
 ): CollectionPageGroup[] {
+  const { groups: subGroups, remaining } = groupSubscriptionOrders(
+    orders,
+    offers,
+  );
+
   if (pages.length === 0) {
     const byDay = new Map<string, CollectionOrderView[]>();
-    for (const order of orders) {
+    for (const order of remaining) {
       const key = order.collectionAt?.toISOString().slice(0, 10) ?? "unknown";
       const list = byDay.get(key) ?? [];
       list.push(order);
       byDay.set(key, list);
     }
-    return [...byDay.entries()].map(([key, list]) => {
+    const dayGroups = [...byDay.entries()].map(([key, list]) => {
       const at = list[0]?.collectionAt ?? null;
       const title = at ? formatCollectionLabel(at) : "Pre-orders";
       return toGroup(key, title, at, list);
     });
+    return [...subGroups, ...dayGroups];
   }
 
   const assigned = new Map<string, CollectionOrderView[]>();
   const unmatched: CollectionOrderView[] = [];
 
-  for (const order of orders) {
+  for (const order of remaining) {
     let bestId: string | null = null;
     let bestScore = 0;
     for (const page of pages) {
@@ -117,7 +171,7 @@ export function groupCollectionPages(
     assigned.set(bestId, list);
   }
 
-  const groups = pages
+  const pageGroups = pages
     .filter((page) => assigned.has(page.id))
     .sort((a, b) => a.collectionAt.getTime() - b.collectionAt.getTime())
     .map((page) =>
@@ -125,7 +179,7 @@ export function groupCollectionPages(
     );
 
   if (unmatched.length > 0) {
-    groups.push(
+    pageGroups.push(
       toGroup(
         "other",
         "Other pre-orders",
@@ -134,5 +188,5 @@ export function groupCollectionPages(
       ),
     );
   }
-  return groups;
+  return [...subGroups, ...pageGroups];
 }
