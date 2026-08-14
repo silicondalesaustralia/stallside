@@ -92,6 +92,21 @@ enum HandoverMode {
   DELIVER
 }
 
+/** Cadence for owner-built shopper subscriptions (Connect Billing). */
+enum ShopperSubInterval {
+  WEEKLY
+  FORTNIGHTLY
+  MONTHLY
+}
+
+enum ShopperSubStatus {
+  INCOMPLETE
+  ACTIVE
+  PAST_DUE
+  PAUSED
+  CANCELLED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -250,6 +265,8 @@ model Owner {
   stands                    Stand[]
   products                  Product[]
   preOrderPages             PreOrderPage[]
+  subscriptionOffers        SubscriptionOffer[]
+  shopperSubscriptions      ShopperSubscription[]
   orders                    Order[]
   inventoryAdjustments      InventoryAdjustment[]
   lowStockAlerts            LowStockAlert[]
@@ -364,6 +381,8 @@ model Stand {
   verticalSlug       String?
   products           Product[]
   preOrderPages      PreOrderPage[]
+  subscriptionOffers SubscriptionOffer[]
+  shopperSubscriptions ShopperSubscription[]
   orders             Order[]
   inventoryAdjustments InventoryAdjustment[]
   lowStockAlerts     LowStockAlert[]
@@ -446,6 +465,7 @@ model Product {
   priceTiers         Json?
   optionGroups       ProductOptionGroup[]
   preOrderPageItems  PreOrderPageProduct[]
+  subscriptionOfferItems SubscriptionOfferProduct[]
   orderItems         OrderItem[]
   inventoryAdjustments InventoryAdjustment[]
   lowStockAlerts     LowStockAlert[]
@@ -454,6 +474,87 @@ model Product {
 
   @@unique([standId, slug])
   @@index([standId, isActive])
+}
+
+/** Recurring box / membership basket built from catalog products. */
+model SubscriptionOffer {
+  id                 String                     @id @default(cuid())
+  standId            String
+  stand              Stand                      @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId            String
+  owner              Owner                      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title              String
+  slug               String
+  description        String?
+  isActive           Boolean                    @default(true)
+  interval           ShopperSubInterval         @default(WEEKLY)
+  handoverMode       HandoverMode               @default(COLLECT)
+  /** 0=Sun … 6=Sat; next collection weekday for COLLECT. */
+  collectionWeekday  Int?
+  collectionNote     String?
+  /** Snapshot total of line prices (qty × product.priceCents). */
+  priceCents         Int
+  currency           String                     @default("AUD")
+  /** Stripe Product on the connected account. */
+  stripeProductId    String?
+  /** Stripe Price on the connected account (recurring). */
+  stripePriceId      String?
+  items              SubscriptionOfferProduct[]
+  subscriptions      ShopperSubscription[]
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  @@unique([standId, slug])
+  @@index([standId, isActive])
+}
+
+model SubscriptionOfferProduct {
+  id                 String            @id @default(cuid())
+  subscriptionOfferId String
+  subscriptionOffer  SubscriptionOffer @relation(fields: [subscriptionOfferId], references: [id], onDelete: Cascade)
+  productId          String
+  product            Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity           Int               @default(1)
+  sortOrder          Int               @default(0)
+
+  @@unique([subscriptionOfferId, productId])
+  @@index([productId])
+}
+
+/** Shopper enrolled in an offer; Stripe Customer/Sub live on Connect account. */
+model ShopperSubscription {
+  id                     String            @id @default(cuid())
+  offerId                String
+  offer                  SubscriptionOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  standId                String
+  stand                  Stand             @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId                String
+  owner                  Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  status                 ShopperSubStatus  @default(INCOMPLETE)
+  customerName           String
+  customerEmail          String
+  customerPhone          String?
+  deliveryAddressLine1   String?
+  deliverySuburb         String?
+  deliveryPostcode       String?
+  deliveryNotes          String?
+  stripeCustomerId       String?
+  stripeSubscriptionId   String?
+  /** Opaque token for manage / portal / skip / pause links. */
+  manageToken            String            @unique
+  skipNextCycle          Boolean           @default(false)
+  pausedAt               DateTime?
+  cancelAtPeriodEnd      Boolean           @default(false)
+  currentPeriodEndsAt    DateTime?
+  nextCollectionAt       DateTime?
+  orders                 Order[]
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+
+  @@unique([stripeSubscriptionId])
+  @@index([standId, status])
+  @@index([ownerId, createdAt])
+  @@index([offerId])
 }
 
 /** Multi-product pre-order sheet: one link, shared collection day. */
@@ -578,6 +679,11 @@ model Order {
   deliverySuburb          String?
   deliveryPostcode        String?
   deliveryNotes           String?
+  /** Set when this order was created from a shopper subscription invoice. */
+  shopperSubscriptionId   String?
+  shopperSubscription     ShopperSubscription? @relation(fields: [shopperSubscriptionId], references: [id], onDelete: SetNull)
+  /** Connect invoice id — idempotency for subscription cycle orders. */
+  stripeInvoiceId         String?           @unique
   items                   OrderItem[]
   inventoryAdjustments    InventoryAdjustment[]
   createdAt               DateTime          @default(now())
@@ -587,6 +693,7 @@ model Order {
   @@index([standId, createdAt])
   @@index([standId, collectionAt, collectionStatus])
   @@index([paymentStatus, balanceDueAt])
+  @@index([shopperSubscriptionId])
 }
 
 model OrderItem {

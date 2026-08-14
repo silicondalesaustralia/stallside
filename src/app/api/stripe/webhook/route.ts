@@ -14,15 +14,26 @@ import { fulfillPaidCardOrder } from "@/lib/fulfill-paid-order";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { prisma } from "@/lib/prisma";
 import { PaymentStatus } from "@/generated/prisma/client";
+import {
+  handleShopperCheckoutCompleted,
+  handleShopperInvoiceFailed,
+  handleShopperInvoicePaid,
+  handleShopperSubscriptionEvent,
+} from "@/lib/shopper-subscription-webhook";
 
 export const runtime = "nodejs";
 
 async function handleCheckoutCompleted(
   session: Stripe.Checkout.Session,
   livemode: boolean,
+  connectedAccountId: string | undefined,
 ) {
   if (session.mode === "subscription") {
-    // Demo uses test payment Checkout only - ignore test SaaS events.
+    const shopper = await handleShopperCheckoutCompleted(
+      session,
+      connectedAccountId,
+    );
+    if (shopper) return;
     if (!livemode) return;
     const subscriptionId =
       typeof session.subscription === "string"
@@ -44,10 +55,9 @@ async function handleCheckoutCompleted(
     let paymentMethodId: string | null = null;
 
     const stripeAccount =
+      connectedAccountId ||
       session.metadata?.stripeAccountId ||
-      (typeof session.metadata?.stripeAccountId === "string"
-        ? session.metadata.stripeAccountId
-        : null);
+      null;
     if (paymentIntentId && stripeAccount) {
       try {
         const stripe = stripeClientForLivemode(livemode) ?? getStripe();
@@ -100,19 +110,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
+  const connectedAccountId =
+    typeof event.account === "string" ? event.account : undefined;
+
   try {
     if (event.type === "checkout.session.completed") {
       await handleCheckoutCompleted(
         event.data.object as Stripe.Checkout.Session,
         event.livemode,
+        connectedAccountId,
       );
     }
 
     if (event.type === "checkout.session.async_payment_succeeded") {
-      // PayTo and other delayed methods: funds clear here, not on session.completed.
       await handleCheckoutCompleted(
         event.data.object as Stripe.Checkout.Session,
         event.livemode,
+        connectedAccountId,
       );
     }
 
@@ -143,17 +157,26 @@ export async function POST(req: NextRequest) {
     }
 
     if (
-      event.livemode &&
-      (event.type === "customer.subscription.updated" ||
-        event.type === "customer.subscription.deleted")
+      event.type === "customer.subscription.updated" ||
+      event.type === "customer.subscription.deleted"
     ) {
-      await syncOwnerFromSubscription(
-        event.data.object as Stripe.Subscription,
-      );
+      const sub = event.data.object as Stripe.Subscription;
+      const shopper = await handleShopperSubscriptionEvent(sub);
+      if (!shopper && event.livemode && !connectedAccountId) {
+        await syncOwnerFromSubscription(sub);
+      }
     }
 
-    if (event.livemode && event.type === "invoice.paid") {
-      await recordSubscriptionInvoicePaid(
+    if (event.type === "invoice.paid") {
+      const invoice = event.data.object as Stripe.Invoice;
+      const shopper = await handleShopperInvoicePaid(invoice);
+      if (!shopper && event.livemode && !connectedAccountId) {
+        await recordSubscriptionInvoicePaid(invoice);
+      }
+    }
+
+    if (event.type === "invoice.payment_failed") {
+      await handleShopperInvoiceFailed(
         event.data.object as Stripe.Invoice,
       );
     }

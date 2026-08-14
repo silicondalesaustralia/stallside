@@ -10,6 +10,7 @@ const opsLinks = [
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/products", label: "Products" },
   { href: "/dashboard/pre-order-pages", label: "Pre-order pages" },
+  { href: "/dashboard/subscriptions", label: "Subscriptions" },
   { href: "/dashboard/inventory", label: "Inventory" },
   { href: "/dashboard/orders", label: "Orders" },
   { href: "/dashboard/collections", label: "Collections" },
