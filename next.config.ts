@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/pricing",
+        destination: "/",
+        permanent: true,
+      },
+      {
         source: "/farms-stand-news/stallside-vs-bakesy",
         destination: "/farms-stand-news/vendl-vs-bakesy",
         permanent: true,

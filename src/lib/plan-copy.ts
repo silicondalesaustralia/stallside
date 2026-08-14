@@ -6,6 +6,9 @@ import { sharedPlanFeatures } from "@/lib/shared-plan-features";
 export {
   sharedPaymentFeatures,
   sharedPlanFeatures,
+  sharedNonPaymentFeatures,
+  REGIONAL_PAYMENTS_SUMMARY,
+  SHARED_PAYMENT_FEATURES,
 } from "@/lib/shared-plan-features";
 
 export function cashPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
@@ -27,16 +30,12 @@ export const FREE_PLAN_PASS_FEE_FEATURE =
   "Absorb the Vendl fee or pass it on to customers at checkout from Settings → Card / Tap & Go";
 
 /** Free ($0/mo) blurb. */
-export function cashPlanBlurb(currency: BillingCurrency): string {
-  return currency === "AUD"
-    ? "Every Vendl feature, with no monthly fee. A 2.5% Vendl fee applies to card, Tap & Go and pay-later; cash and PayID stay free. Absorb or pass on that fee."
-    : "Every Vendl feature, with no monthly fee. A 2.5% Vendl fee applies to card, Tap & Go and pay-later; cash stays free. Absorb or pass on that fee.";
+export function cashPlanBlurb(_currency?: BillingCurrency): string {
+  return "Every Vendl feature, with no monthly fee. A 2.5% Vendl fee applies to card, Tap & Go and pay-later; cash and local bank payments stay free. Absorb or pass on that fee.";
 }
 
-export function cashPlanExtraBlurb(currency: BillingCurrency): string | null {
-  return currency === "AUD"
-    ? "PayID (Australia only) lands in your account with no Vendl fee."
-    : null;
+export function cashPlanExtraBlurb(_currency?: BillingCurrency): string | null {
+  return "Local bank methods by region: PayID & PayTo (Australia), Pay by Bank (UK & Europe), Cash App (US).";
 }
 
 /** @deprecated Prefer FREE_PLAN_FEE_BLURB / STARTER_PLAN_BLURB. */
@@ -58,9 +57,10 @@ export const CARD_PLAN_HARDWARE_BLURB =
 export const CARD_PLAN_BILLING_BLURB =
   "Paid directly to your connected Stripe account. Standard Stripe processing fees still apply.";
 
-/** Fee-focused bullets on the Free pricing card. */
-const FREE_FEE_FEATURES_CORE = [
+/** Fee-focused bullets on the Free pricing card - region-agnostic. */
+const FREE_FEE_FEATURES = [
   "Cash at the stand - customer self-confirms",
+  "Local bank methods by region: PayID & PayTo (Australia), Pay by Bank (UK & Europe), Cash App (US)",
   "Tap & Go - card, Apple Pay and Google Pay",
   "Pay-later payments where supported",
   "2.5% Vendl fee on successful card, Tap & Go and pay-later payments",
@@ -68,21 +68,11 @@ const FREE_FEE_FEATURES_CORE = [
   FREE_PLAN_PASS_FEE_FEATURE,
 ] as const;
 
-const FREE_PAYID_FEATURE =
-  "PayID bank transfer - Australia only, with no Vendl fee" as const;
-
-/** Free fee/payment bullets for pricing cards - PayID only when region is Australia. */
+/** Free fee/payment bullets for pricing cards. */
 export function starterPlanFeatures(
-  currency: BillingCurrency,
+  _currency?: BillingCurrency,
 ): readonly string[] {
-  if (currency === "AUD") {
-    return [
-      FREE_FEE_FEATURES_CORE[0],
-      FREE_PAYID_FEATURE,
-      ...FREE_FEE_FEATURES_CORE.slice(1),
-    ];
-  }
-  return FREE_FEE_FEATURES_CORE;
+  return FREE_FEE_FEATURES;
 }
 
 /** @deprecated Prefer sharedPlanFeatures(currency). Default Australia. */
@@ -91,10 +81,15 @@ export const SHARED_PLAN_FEATURES = sharedPlanFeatures("AUD");
 /** @deprecated Prefer sharedPlanFeatures for marketing. */
 export const CARD_PLAN_FEATURES = [
   "Pre-orders - customers pay to reserve, with an order-by deadline and collection day",
+  "Shopper subscriptions - weekly, fortnightly, or monthly recurring boxes",
+  "Cart upsells, pre-order add-ons, and first-order discounts",
+  "Volume and bundle pricing (e.g. 2 for $9)",
+  "Product options / variants - up to 3 groups with 12 choices each",
   "Collections - track paid pre-orders by day and mark Ready, then Collected",
   "Buyer details on pre-order - name, email, optional phone, plus a confirmation email",
   "Message customers from Collections or Orders (compose subject and body in Vendl)",
-  "Optional exact pre-order slots on your public stall (e.g. “3 left”)",
+  "Optional exact pre-order slots and “Only N left” scarcity on your stall",
+  "Product freshness notes and provenance lines",
   "Stand branding - your logo and colours on the stall and QR poster",
   "Social links - Instagram, Facebook, TikTok, YouTube, or your website on the stall",
 ] as const;

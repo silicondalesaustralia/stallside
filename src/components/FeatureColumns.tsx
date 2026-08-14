@@ -1,16 +1,12 @@
 import {
-  CARD_PLAN_FEATURES,
   CARD_PLAN_HARDWARE_BLURB,
-  CARD_PLAN_RESTOCK_BLURB,
   FREE_PLAN_FEE_BLURB,
-  starterPlanFeatures,
+  sharedPlanFeatures,
 } from "@/lib/plan-copy";
 
 const OWNER_FREE = [
   FREE_PLAN_FEE_BLURB,
-  ...starterPlanFeatures("USD"),
-  CARD_PLAN_RESTOCK_BLURB,
-  ...CARD_PLAN_FEATURES,
+  ...sharedPlanFeatures(),
   "Add to your phone Home Screen for push alerts - no App Store install",
 ] as const;
 
@@ -29,6 +25,7 @@ const CUSTOMER_LIVE = [
   "Buy Now, Pay Later (Zip, Klarna) on larger orders",
   "When card isn't on, tap “I'd have paid by card” so the owner sees demand",
   "Pre-order and pay by card to reserve for a collection day",
+  "Subscribe to a weekly, fortnightly, or monthly box",
   "See when orders close, when to collect, and how many slots are left",
   "Get a confirmation email with your order details",
   "Opt in to hear when the stand restocks",

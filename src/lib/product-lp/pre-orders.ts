@@ -138,7 +138,7 @@ export const PRE_ORDERS_HUB: ProductLpContent = {
     "Buyer confirmation emails",
     "Printable order labels",
   ],
-  pricingFullHref: "/pricing",
+  pricingFullHref: "/#pricing",
   closingHeadline: "Orders in. Guesswork out.",
   closingSupport: "Share a link today. Open a make list on your next production day.",
   closingNote: "A$0 monthly on Free · No website required",

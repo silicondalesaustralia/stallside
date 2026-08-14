@@ -8,6 +8,13 @@ import { APP_NAME, APP_HERO_SUPPORT, APP_POSITIONING, APP_TAGLINE } from "@/lib/
 
 const WORDMARK = APP_NAME.toLowerCase();
 
+const FOR_AUDIENCE = [
+  "Farm stands",
+  "Bakers",
+  "Produce sellers",
+  "Anyone who needs easy unattended payments, pre-orders or subscriptions",
+] as const;
+
 export default function LandingHero() {
   return (
     <section className="relative overflow-hidden bg-[var(--field)] text-[var(--ink-on-dark)]">
@@ -80,8 +87,24 @@ export default function LandingHero() {
             {APP_HERO_SUPPORT}
           </p>
           <p className="mt-2 max-w-xl text-sm leading-snug text-[var(--ink-on-dark)]/60 sm:text-base xl:text-sm">
-            Your stall, upgraded. Customers pay the way they already pay.
+            Fewer missed sales. Bigger baskets. Recurring revenue.
           </p>
+          <div className="mt-4 max-w-xl xl:mt-3">
+            <p className="text-sm font-semibold text-[var(--ink-on-dark)]/80">
+              For:
+            </p>
+            <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm leading-snug text-[var(--ink-on-dark)]/75">
+              {FOR_AUDIENCE.map((item) => (
+                <li key={item} className="inline-flex items-center gap-2">
+                  <span
+                    className="size-1.5 shrink-0 rounded-full bg-[var(--marigold)]"
+                    aria-hidden
+                  />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm xl:mt-3">
             <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]">
@@ -90,7 +113,7 @@ export default function LandingHero() {
             </span>
             <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]">
               <span className="size-2 rounded-full bg-[var(--leaf)]" aria-hidden />
-              Local methods in your region
+              Every payment method in your region
             </span>
           </div>
 

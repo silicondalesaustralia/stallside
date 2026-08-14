@@ -123,7 +123,7 @@ export const STALL_HUB: ProductLpContent = {
     "Restock notifications",
     "Your own stall branding",
   ],
-  pricingFullHref: "/pricing",
+  pricingFullHref: "/#pricing",
   closingHeadline: "Your stall, minus the missed sales.",
   closingSupport:
     "Set up your QR checkout in minutes and give every customer a way to pay.",

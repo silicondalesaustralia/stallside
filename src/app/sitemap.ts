@@ -30,7 +30,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/stall/honesty-parking",
     "/stall/campsites",
     "/stall/community-fridges",
-    "/pricing",
     "/about",
     "/gallery",
     "/testimonials",

@@ -1,50 +1,48 @@
 import type { BillingCurrency } from "@/lib/saas-pricing";
-import {
-  humanizePmcMethod,
-  regionalPmcMethodList,
-} from "@/lib/stripe-pmc-labels";
 
 const BEFORE = [
-  "Unlimited products and product options / variants",
-  "Real stock counts and printable QR posters",
+  "Unlimited products and product options / variants (up to 3 groups, 12 choices each)",
+  "Volume and bundle pricing (e.g. 2 for $9)",
+  "Real stock counts, “Only N left” scarcity, and printable QR posters",
+  "Product freshness notes and provenance lines",
 ] as const;
 
+/** Same payment story on every page - region called out only as examples. */
+export const SHARED_PAYMENT_FEATURES = [
+  "Cash self-confirmation",
+  "Card / Tap & Go, Apple Pay, Google Pay, and wallets",
+  "Local bank methods by region: PayID & PayTo (Australia), Pay by Bank (UK & Europe), Cash App (US)",
+  "Pay-later where supported (Klarna, Zip, Affirm, and more)",
+] as const;
+
+/** @deprecated Prefer SHARED_PAYMENT_FEATURES. */
+export const REGIONAL_PAYMENTS_SUMMARY = SHARED_PAYMENT_FEATURES[2];
+
 const AFTER = [
-  "Sale alerts, low-stock alerts, email and push notifications",
+  "Sale alerts, low-stock and out-of-stock alerts, email and push notifications",
   "Orders and inventory dashboard",
   "Card-demand counter",
   "Customer restock notifications",
   "Pre-orders with order-by deadlines and collection days",
+  "Shopper subscriptions - weekly, fortnightly, or monthly recurring boxes",
+  "Cart upsells, pre-order add-ons, and first-order discounts",
   "Collections - Ready and Collected, buyer messaging",
   "Stall branding - logo, colours, social and website links",
 ] as const;
 
-const PMC_FEATURE_LABEL: Record<string, string> = {
-  card: "Card / Tap & Go payments",
-  apple_pay: "Apple Pay",
-  google_pay: "Google Pay",
-  link: "Link by Stripe",
-  cashapp: "Cash App",
-  payto: "PayTo",
-  klarna: "Klarna",
-  zip: "Zip",
-  affirm: "Affirm",
-  ideal: "iDEAL",
-  bancontact: "Bancontact",
-  sepa_debit: "SEPA Direct Debit",
-};
-
-/** Region payment bullets for the shared Free/Pro feature list. */
-export function sharedPaymentFeatures(currency: BillingCurrency): string[] {
-  const features = ["Cash self-confirmation"];
-  if (currency === "AUD") features.push("PayID bank transfer");
-  for (const method of regionalPmcMethodList(currency)) {
-    features.push(PMC_FEATURE_LABEL[method] ?? humanizePmcMethod(method));
-  }
-  return features;
+/**
+ * @deprecated Payment list is region-agnostic now. Currency arg kept for call-site compatibility.
+ */
+export function sharedPaymentFeatures(_currency?: BillingCurrency): string[] {
+  return [...SHARED_PAYMENT_FEATURES];
 }
 
-/** Shared Free/Pro features - payment lines follow selected region. */
-export function sharedPlanFeatures(currency: BillingCurrency): string[] {
-  return [...BEFORE, ...sharedPaymentFeatures(currency), ...AFTER];
+/** Non-payment features shared on Free and Pro. */
+export function sharedNonPaymentFeatures(): string[] {
+  return [...BEFORE, ...AFTER];
+}
+
+/** Shared Free/Pro features - payments are region-agnostic on every page. */
+export function sharedPlanFeatures(_currency?: BillingCurrency): string[] {
+  return [...BEFORE, ...SHARED_PAYMENT_FEATURES, ...AFTER];
 }

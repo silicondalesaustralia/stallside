@@ -82,7 +82,7 @@ const REGION_PMC_METHODS: Record<string, readonly string[]> = {
     "zip",
     "affirm",
   ],
-  GBP: ["card", "apple_pay", "google_pay", "link", "klarna"],
+  GBP: ["card", "apple_pay", "google_pay", "link", "klarna", "pay_by_bank"],
   EUR: [
     "card",
     "apple_pay",
@@ -92,6 +92,7 @@ const REGION_PMC_METHODS: Record<string, readonly string[]> = {
     "ideal",
     "bancontact",
     "sepa_debit",
+    "pay_by_bank",
   ],
 };
 
