@@ -41,7 +41,9 @@ export default function ChannelInterestForm({
     <form action={onSubmit} className="mt-4 flex flex-col gap-3">
       <label className="flex flex-col gap-1.5 text-sm">
         <span className="font-medium">
-          I would be interested in {label} if you made them available
+          Add your email here and tap &ldquo;Tell the stall owner&rdquo; to let them know
+          you&apos;re interested in {label}. This way you won&apos;t miss out when they
+          become available!
         </span>
         <input
           type="email"
@@ -57,7 +59,7 @@ export default function ChannelInterestForm({
         disabled={pending}
         className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
       >
-        {pending ? "Sending…" : "Tell the stall"}
+        {pending ? "Sending…" : "Tell the stall owner"}
       </button>
       {error ? <p className="text-sm text-[var(--gone)]">{error}</p> : null}
     </form>

@@ -47,5 +47,22 @@ export async function notifyChannelInterest(params: {
   await sendOwnerEmail(recipients, `[${APP_NAME}] ${title}`, html, {
     kind: "channel_interest",
   });
+
+  // Create in-app notification
+  await prisma.notification.create({
+    data: {
+      ownerId: stand.ownerId,
+      standId: stand.id,
+      type: "CHANNEL_INTEREST",
+      title: `Customer wants ${label}`,
+      message: `${params.email} is interested in ${label} at ${stand.name}`,
+      metadata: {
+        email: params.email,
+        kind: params.kind,
+        dashHref,
+      },
+    },
+  });
+
   return { ok: true as const };
 }

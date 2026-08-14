@@ -15,9 +15,11 @@ import type { BusinessOption } from "@/lib/selected-business";
 export default function DashboardMobileNav({
   businesses,
   selectedBusinessId,
+  unreadNotifications,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
+  unreadNotifications?: number;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -89,16 +91,21 @@ export default function DashboardMobileNav({
         <ul className="mx-auto grid max-w-lg grid-cols-5 gap-0.5 px-1 py-2">
           {mobileTabs.map((tab) => {
             const active = dashLinkActive(pathname, tab.href);
+            const badge =
+              tab.href === "/dashboard/notifications" ? unreadNotifications : 0;
             return (
               <li key={tab.href}>
                 <Link
                   href={tab.href}
-                  className={`flex flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium sm:text-[11px] ${
+                  className={`relative flex flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium sm:text-[11px] ${
                     active
                       ? "text-[var(--ink-on-dark)]"
                       : "text-[var(--ink-on-dark)]/55"
                   }`}
                 >
+                  {badge && badge > 0 ? (
+                    <span className="absolute right-1 top-1 size-2 rounded-full bg-[var(--gone)]" />
+                  ) : null}
                   <span
                     className={`size-1.5 rounded-full ${
                       active ? "bg-[var(--marigold)]" : "bg-transparent"

@@ -50,5 +50,21 @@ export async function sendStockAlert(input: {
         channel: input.channel,
       },
     });
+
+    // Create in-app notification
+    await prisma.notification.create({
+      data: {
+        ownerId: input.owner.id,
+        standId: input.standId,
+        type: input.type === "sold_out" ? "OUT_OF_STOCK" : "LOW_STOCK",
+        title: input.title,
+        message: input.body,
+        metadata: {
+          productId: input.product.id,
+          stockQuantity: input.product.stockQuantity,
+          threshold: input.product.lowStockThreshold,
+        },
+      },
+    });
   }
 }

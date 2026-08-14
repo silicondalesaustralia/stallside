@@ -9,9 +9,11 @@ const STORAGE_KEY = "vendl-dash-sidebar";
 export default function DashboardNav({
   businesses,
   selectedBusinessId,
+  unreadNotifications,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
+  unreadNotifications?: number;
 }) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -33,6 +35,7 @@ export default function DashboardNav({
       selectedBusinessId={selectedBusinessId}
       collapsed={collapsed}
       onToggle={onToggle}
+      unreadNotifications={unreadNotifications}
     />
   );
 }

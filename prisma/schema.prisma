@@ -272,6 +272,7 @@ model Owner {
   lowStockAlerts            LowStockAlert[]
   pushDevices               PushDevice[]
   galleryStands             GalleryStand[]
+  notifications             Notification[]
   /** Soft-close: data retained, login/emails/stands stopped. */
   deletedAt                 DateTime?
   /** Ad click ids + UTMs from first signup (for Perform/Meta pushback). */
@@ -390,6 +391,7 @@ model Stand {
   restockNotifications RestockNotification[]
   cardInterests      CardInterest[]
   channelInterests   ChannelInterest[]
+  notifications      Notification[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 }
@@ -811,4 +813,36 @@ model EmailSendLog {
 
   @@index([createdAt])
   @@index([kind, createdAt])
+}
+
+enum NotificationType {
+  CHANNEL_INTEREST
+  LOW_STOCK
+  OUT_OF_STOCK
+  RESTOCK
+  NEW_ORDER
+  SUBSCRIPTION_PAUSED
+  SUBSCRIPTION_CANCELLED
+  PAYMENT_FAILED
+  OTHER
+}
+
+/** In-app notifications for business owners. */
+model Notification {
+  id        String           @id @default(cuid())
+  ownerId   String
+  owner     Owner            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  standId   String?
+  stand     Stand?           @relation(fields: [standId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  /** JSON metadata specific to notification type (email, productId, orderId, etc.) */
+  metadata  Json?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([ownerId, isRead, createdAt])
+  @@index([standId, createdAt])
 }

@@ -17,10 +17,12 @@ function NavItem({
   href,
   label,
   collapsed,
+  badge,
 }: {
   href: string;
   label: string;
   collapsed: boolean;
+  badge?: number;
 }) {
   const pathname = usePathname();
   const active = dashLinkActive(pathname, href);
@@ -36,10 +38,22 @@ function NavItem({
           : "text-[var(--ink-on-dark)]/70 hover:bg-white/10 hover:text-[var(--ink-on-dark)]"
       }`}
     >
-      <span className={active ? "text-[var(--marigold)]" : undefined}>
+      <span className={`relative ${active ? "text-[var(--marigold)]" : undefined}`}>
         <DashNavIcon href={href} />
+        {badge && badge > 0 ? (
+          <span className="absolute -right-1 -top-1 size-2 rounded-full bg-[var(--gone)]" />
+        ) : null}
       </span>
-      {collapsed ? null : <span className="truncate text-sm">{label}</span>}
+      {collapsed ? null : (
+        <span className="flex flex-1 items-center justify-between gap-2">
+          <span className="truncate text-sm">{label}</span>
+          {badge && badge > 0 ? (
+            <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
+              {badge > 9 ? "9+" : badge}
+            </span>
+          ) : null}
+        </span>
+      )}
     </Link>
   );
 }
@@ -49,11 +63,13 @@ export default function DashboardSidebar({
   selectedBusinessId,
   collapsed,
   onToggle,
+  unreadNotifications,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
   collapsed: boolean;
   onToggle: () => void;
+  unreadNotifications?: number;
 }) {
   return (
     <aside
@@ -98,6 +114,11 @@ export default function DashboardSidebar({
             href={link.href}
             label={link.label}
             collapsed={collapsed}
+            badge={
+              link.href === "/dashboard/notifications"
+                ? unreadNotifications
+                : undefined
+            }
           />
         ))}
       </nav>
