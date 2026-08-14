@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import CardDemandProof from "@/components/CardDemandProof";
 import FeatureColumns from "@/components/FeatureColumns";
 import HowItWorksFlow from "@/components/HowItWorksFlow";
 import JsonLd from "@/components/JsonLd";
-import CardDemandProof from "@/components/CardDemandProof";
-import LandingAnalyticsPreview from "@/components/LandingAnalyticsPreview";
 import LandingFaq from "@/components/LandingFaq";
 import LandingFooter from "@/components/LandingFooter";
 import LandingHero from "@/components/LandingHero";
 import LandingPaymentMethods from "@/components/LandingPaymentMethods";
 import LandingRegionsSection from "@/components/LandingRegionsSection";
+import MarketingDashboardSection from "@/components/MarketingDashboardSection";
 import NetworkVision from "@/components/NetworkVision";
 import PricingTiers from "@/components/PricingTiers";
 import ProductFork from "@/components/ProductFork";
@@ -34,7 +34,7 @@ export default function HomePage() {
       <ProductFork />
       <TrustSection />
       <HowItWorksFlow />
-      <LandingAnalyticsPreview />
+      <MarketingDashboardSection />
       <UseCaseGrid />
       <LandingPaymentMethods />
       <LandingRegionsSection />

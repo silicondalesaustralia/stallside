@@ -11,6 +11,7 @@ import LpPricing from "@/components/lp/LpPricing";
 import LpProductProof from "@/components/lp/LpProductProof";
 import LpTestimonial from "@/components/lp/LpTestimonial";
 import LpTrustStrip from "@/components/lp/LpTrustStrip";
+import MarketingDashboardSection from "@/components/MarketingDashboardSection";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import ProductLpHeroVisual from "@/components/product-lp/ProductLpHeroVisual";
 import type { ProductLpContent } from "@/lib/product-lp/types";
@@ -25,6 +26,7 @@ export default function ProductLpPage({
 }) {
   const cta = content.ctaLabel;
   const href = content.signupHref;
+  const dashCurrency = content.paymentMarket === "uk" ? "GBP" : "AUD";
 
   const body = (
     <main className="flex min-h-full flex-1 flex-col bg-[var(--panel)] pb-20 md:pb-0">
@@ -42,8 +44,7 @@ export default function ProductLpPage({
             prices={content.heroPrices}
           />
         }
-        upsellLabel={content.heroUpsellLabel ?? null}
-        upsellDetail={content.heroUpsellDetail ?? null}
+        featurePoints={content.heroFeaturePoints}
       />
       {content.showPaymentStrip !== false ? (
         <LpPaymentStrip market={content.paymentMarket} />
@@ -73,6 +74,14 @@ export default function ProductLpPage({
         steps={content.steps}
         ctaLabel={cta}
         signupHref={href}
+      />
+      <MarketingDashboardSection
+        currency={dashCurrency}
+        standName={
+          content.paymentMarket === "uk"
+            ? "River Mill Bakery"
+            : "Green Valley Eggs"
+        }
       />
       <LpProductProof
         eyebrow={content.proofEyebrow}

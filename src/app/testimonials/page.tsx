@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
+import MarketingDashboardSection from "@/components/MarketingDashboardSection";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import { APP_NAME } from "@/lib/constants";
 import { marketingPageGraphSchema } from "@/lib/schema";
@@ -66,6 +67,7 @@ export default function TestimonialsPage() {
           .
         </p>
       </main>
+      <MarketingDashboardSection />
     </MarketingPageShell>
   );
 }

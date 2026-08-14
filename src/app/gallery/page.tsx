@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
+import MarketingDashboardSection from "@/components/MarketingDashboardSection";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import { APP_NAME } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
@@ -81,6 +82,7 @@ export default async function GalleryPage() {
           </ul>
         )}
       </main>
+      <MarketingDashboardSection />
     </MarketingPageShell>
   );
 }

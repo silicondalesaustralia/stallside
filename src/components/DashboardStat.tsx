@@ -24,7 +24,7 @@ export default function DashboardStat({
       <p className="text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
         {label}
       </p>
-      <p className="mt-3 text-center font-receipt text-2xl font-semibold tracking-tight tabular-nums sm:text-3xl">
+      <p className="mt-3 max-w-full truncate text-center font-receipt text-xl font-semibold tracking-tight tabular-nums sm:text-2xl lg:text-3xl">
         {value}
       </p>
       {typeof current === "number" && typeof previous === "number" ? (
@@ -35,8 +35,8 @@ export default function DashboardStat({
     </>
   );
 
-  const className = `group relative flex min-w-0 flex-1 flex-col items-center justify-center dash-card px-4 py-5 ${
-    href ? "dash-card-click" : ""
+  const className = `group relative flex min-w-0 flex-col items-center justify-center overflow-hidden dash-card px-3 py-5 sm:px-4 ${
+    href ? "dash-card-click flex-1" : "w-full"
   }`;
 
   if (href) {

@@ -31,6 +31,20 @@ export const STALL_HUB: ProductLpContent = {
   heroUpsellLabel: "Cart upsell built in",
   heroUpsellDetail:
     "Offer one more item at checkout - grow the basket without another app.",
+  heroFeaturePoints: [
+    {
+      icon: "upsell",
+      label: "Cart upsells that grow the basket",
+      detail:
+        "Offer one more item at checkout - grow the average order without another app.",
+    },
+    {
+      icon: "subscription",
+      label: "Subscriptions for recurring boxes",
+      detail:
+        "Weekly, fortnightly, or monthly boxes - predictable revenue without chasing DMs.",
+    },
+  ],
   problemEyebrow: "The sale you never see",
   problemHeadline: "Someone stops. Wants what you left out. Has no cash. Drives off.",
   problemBody:

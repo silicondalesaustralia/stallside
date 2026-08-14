@@ -46,6 +46,12 @@ export type ProductLpContent = {
   /** Above-the-fold upsell callout under the hero support text. */
   heroUpsellLabel?: string;
   heroUpsellDetail?: string;
+  /** Icon feature points under the hero headline (upsell, subscriptions, etc.). */
+  heroFeaturePoints?: {
+    icon: "upsell" | "subscription";
+    label: string;
+    detail: string;
+  }[];
   /** Show payment-brand strip under the hero (default true). */
   showPaymentStrip?: boolean;
   /** UK ads LPs drop PayID / PayTo / Zip. */

@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
 import { highlightBrandInHeadline } from "@/components/lp/highlightBrandInHeadline";
+import LpHeroFeaturePoints, {
+  DEFAULT_HERO_FEATURE_POINTS,
+  type LpHeroFeaturePoint,
+} from "@/components/lp/LpHeroFeaturePoints";
 import LpHeroVisual from "@/components/lp/LpHeroVisual";
 import LpStartFreeLink from "@/components/lp/LpStartFreeLink";
-import LpUpsellHighlight from "@/components/lp/LpUpsellHighlight";
 
 const DEFAULTS = {
   eyebrow: "Built for unattended stalls",
@@ -13,9 +16,6 @@ const DEFAULTS = {
   ctaLabel: "Create my free stall",
   secondaryLabel: "See how it works ↓",
   secondaryHref: "#how-it-works",
-  upsellLabel: "Cart upsell built in",
-  upsellDetail:
-    "Offer one more item at checkout - grow the basket without another app.",
 } as const;
 
 type Props = {
@@ -28,8 +28,7 @@ type Props = {
   secondaryLabel?: string;
   secondaryHref?: string;
   visual?: ReactNode;
-  upsellLabel?: string | null;
-  upsellDetail?: string | null;
+  featurePoints?: LpHeroFeaturePoint[] | null;
 };
 
 export default function LpHero({
@@ -42,9 +41,10 @@ export default function LpHero({
   secondaryLabel = DEFAULTS.secondaryLabel,
   secondaryHref = DEFAULTS.secondaryHref,
   visual,
-  upsellLabel = DEFAULTS.upsellLabel,
-  upsellDetail = DEFAULTS.upsellDetail,
+  featurePoints,
 }: Props) {
+  const points = featurePoints ?? DEFAULT_HERO_FEATURE_POINTS;
+
   return (
     <section className="relative overflow-hidden bg-[var(--panel)] px-5 pb-10 pt-6 sm:px-6 sm:pb-14 sm:pt-8">
       <div
@@ -59,12 +59,10 @@ export default function LpHero({
           <h1 className="mt-3 font-[family-name:var(--font-display)] text-[2.4rem] font-bold leading-[1.1] tracking-tight text-[var(--field)] sm:text-5xl lg:text-[clamp(3rem,5vw,4.5rem)]">
             {highlightBrandInHeadline(headline)}
           </h1>
+          <LpHeroFeaturePoints points={points} />
           <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--muted)] sm:text-lg">
             {support}
           </p>
-          {upsellLabel && upsellDetail ? (
-            <LpUpsellHighlight label={upsellLabel} detail={upsellDetail} />
-          ) : null}
 
           <div id="lp-hero-cta" className="mt-7 flex flex-col items-start gap-3">
             <LpStartFreeLink

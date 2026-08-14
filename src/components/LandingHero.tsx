@@ -1,19 +1,40 @@
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 import HeroCheckoutDemo from "@/components/HeroCheckoutDemo";
+import {
+  LandingHeroIconChip,
+  type LandingHeroIconName,
+} from "@/components/LandingHeroIconChip";
+import LpHeroFeaturePoints, {
+  DEFAULT_HERO_FEATURE_POINTS,
+} from "@/components/lp/LpHeroFeaturePoints";
 import MarketingNavLinks from "@/components/MarketingNavLinks";
 import OwnerAuthLink from "@/components/OwnerAuthLink";
 import StartFreeNavLink from "@/components/StartFreeNavLink";
-import { APP_NAME, APP_HERO_SUPPORT, APP_POSITIONING, APP_TAGLINE } from "@/lib/constants";
+import {
+  APP_NAME,
+  APP_HERO_SUPPORT,
+  APP_POSITIONING,
+  APP_TAGLINE,
+} from "@/lib/constants";
 
 const WORDMARK = APP_NAME.toLowerCase();
 
-const FOR_AUDIENCE = [
-  "Farm stands",
-  "Bakers",
-  "Produce sellers",
-  "Anyone who needs easy unattended payments, pre-orders or subscriptions",
-] as const;
+const FOR_AUDIENCE: { label: string; icon: LandingHeroIconName }[] = [
+  { label: "Farm stands", icon: "farm" },
+  { label: "Bakers", icon: "baker" },
+  { label: "Produce sellers", icon: "produce" },
+  {
+    label:
+      "Anyone who needs easy unattended payments, pre-orders or subscriptions",
+    icon: "anyone",
+  },
+];
+
+const PAYMENT_POINTS: { label: string; icon: LandingHeroIconName }[] = [
+  { label: "Cash and card", icon: "cashCard" },
+  { label: "Every payment method in your region", icon: "payments" },
+];
 
 export default function LandingHero() {
   return (
@@ -80,6 +101,9 @@ export default function LandingHero() {
           <p className="mt-3 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-[var(--ink-on-dark)] sm:mt-4 sm:text-2xl xl:mt-3 xl:text-xl">
             {APP_TAGLINE}
           </p>
+          <div className="mt-4 rounded-xl bg-[var(--panel)] p-1 shadow-sm">
+            <LpHeroFeaturePoints points={DEFAULT_HERO_FEATURE_POINTS} />
+          </div>
           <p className="mt-3 max-w-xl text-base leading-snug text-[var(--ink-on-dark)]/75 xl:mt-2 xl:text-sm">
             {APP_POSITIONING}
           </p>
@@ -93,29 +117,26 @@ export default function LandingHero() {
             <p className="text-sm font-semibold text-[var(--ink-on-dark)]/80">
               For:
             </p>
-            <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm leading-snug text-[var(--ink-on-dark)]/75">
+            <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2.5 text-sm leading-snug text-[var(--ink-on-dark)]/75">
               {FOR_AUDIENCE.map((item) => (
-                <li key={item} className="inline-flex items-center gap-2">
-                  <span
-                    className="size-1.5 shrink-0 rounded-full bg-[var(--marigold)]"
-                    aria-hidden
-                  />
-                  <span>{item}</span>
-                </li>
+                <LandingHeroIconChip
+                  key={item.label}
+                  label={item.label}
+                  icon={item.icon}
+                />
               ))}
             </ul>
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm xl:mt-3">
-            <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]">
-              <span className="size-2 rounded-full bg-[var(--leaf)]" aria-hidden />
-              Cash and card
-            </span>
-            <span className="inline-flex items-center gap-2 font-medium text-[var(--ink-on-dark)]">
-              <span className="size-2 rounded-full bg-[var(--leaf)]" aria-hidden />
-              Every payment method in your region
-            </span>
-          </div>
+          <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-2.5 text-sm font-medium text-[var(--ink-on-dark)] xl:mt-3">
+            {PAYMENT_POINTS.map((item) => (
+              <LandingHeroIconChip
+                key={item.label}
+                label={item.label}
+                icon={item.icon}
+              />
+            ))}
+          </ul>
 
           <div className="mt-5 flex flex-wrap gap-3 xl:mt-4">
             <Link

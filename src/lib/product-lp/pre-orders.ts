@@ -43,6 +43,20 @@ export const PRE_ORDERS_HUB: ProductLpContent = {
   heroUpsellLabel: "Pre-order cart add-ons",
   heroUpsellDetail:
     "Offer “get this right now at a discount” on the same collection day - without a second checkout.",
+  heroFeaturePoints: [
+    {
+      icon: "upsell",
+      label: "Cart upsells that grow the basket",
+      detail:
+        "Offer one more item at checkout - grow the average order without another app.",
+    },
+    {
+      icon: "subscription",
+      label: "Subscriptions for recurring boxes",
+      detail:
+        "Weekly, fortnightly, or monthly boxes - predictable revenue without chasing DMs.",
+    },
+  ],
   problemEyebrow: "The spreadsheet trap",
   problemHeadline: "Comments on a Facebook post. A bank transfer. A half-finished sheet.",
   problemBody:
@@ -297,6 +311,20 @@ export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
     closingSupport: "Start free. Share your first window this week.",
     closingNote: "A$0 monthly on Free · No website",
     heroVisual: "bakers",
+    heroFeaturePoints: [
+      {
+        icon: "upsell",
+        label: "Cart add-ons that grow the basket",
+        detail:
+          "Offer jam, cookies, or a second loaf at checkout on the same collection day.",
+      },
+      {
+        icon: "subscription",
+        label: "Subscriptions for recurring boxes",
+        detail:
+          "Weekly or fortnightly bread boxes - predictable revenue without chasing DMs.",
+      },
+    ],
   }),
 
   "farm-stalls": preDoorway({

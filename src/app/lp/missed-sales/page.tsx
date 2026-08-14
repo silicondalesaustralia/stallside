@@ -12,6 +12,7 @@ import LpPaymentStrip from "@/components/lp/LpPaymentStrip";
 import LpPricing from "@/components/lp/LpPricing";
 import LpProductProof from "@/components/lp/LpProductProof";
 import LpTestimonial from "@/components/lp/LpTestimonial";
+import MarketingDashboardSection from "@/components/MarketingDashboardSection";
 
 export const dynamic = "force-static";
 export const revalidate = false;
@@ -31,6 +32,7 @@ export default function MissedSalesLpPage() {
       <LpPaymentStrip />
       <LpMissedSale />
       <LpHowItWorks />
+      <MarketingDashboardSection />
       <LpProductProof />
       <LpObjections />
       <LpTestimonial />

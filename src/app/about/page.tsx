@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AboutStory from "@/components/AboutStory";
 import JsonLd from "@/components/JsonLd";
+import MarketingDashboardSection from "@/components/MarketingDashboardSection";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import { APP_NAME } from "@/lib/constants";
 import { marketingPageGraphSchema } from "@/lib/schema";
@@ -34,6 +35,7 @@ export default function AboutPage() {
           <AboutStory />
         </div>
       </main>
+      <MarketingDashboardSection />
     </MarketingPageShell>
   );
 }
