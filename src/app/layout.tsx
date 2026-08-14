@@ -14,7 +14,9 @@ import "./globals.css";
 const display = Bricolage_Grotesque({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  // Variable font only — discrete weight woff2 URLs on gstatic currently 404
+  // and break Turbopack production builds.
+  axes: ["opsz"],
 });
 
 const body = DM_Sans({
