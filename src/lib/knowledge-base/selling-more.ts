@@ -72,4 +72,34 @@ export const sellingMoreArticles: KnowledgeArticle[] = [
       "There is a cooldown between sends so you do not spam the same list. Sale and low-stock alerts to you stay under Settings → Alerts.",
     ],
   },
+  {
+    slug: "subscriptions",
+    title: "Shopper subscriptions (recurring boxes)",
+    summary:
+      "Sell a weekly, fortnightly, or monthly box on card via Stripe. Each paid cycle becomes a Collections order.",
+    videoUrl: null,
+    omitVideo: true,
+    related: [
+      "customer-payments",
+      "collections-day",
+      "pre-orders",
+      "email-customers",
+    ],
+    ctas: [
+      { label: "New subscription", href: "/dashboard/subscriptions/new" },
+      { label: "Connect Stripe", href: "/dashboard/settings/stripe" },
+    ],
+    steps: [
+      "Connect Stripe first (Settings → Stripe) so charges are enabled. Shoppers pay by card only — cash and PayID are not used for subscriptions. Available on Free and Pro.",
+      "Add the products that go in the box under Products, with the catalogue prices you want. The offer price is the sum of those products × quantity, then synced to Stripe.",
+      "Open Subscriptions → New subscription. Name the offer (e.g. Weekly veg box), pick Weekly, Fortnightly, or Monthly, and choose Collect or Deliver.",
+      "Optionally set a collection weekday and a short note (gate fridge, delivery window). Leave weekday blank to use the same day as billing.",
+      "Tick the products in the box and set quantities. Save. If the list shows “needs Stripe sync”, open the offer and save again after Stripe is connected.",
+      "Copy the public enrol link from the offer (or Subscriptions list) and share it — Instagram, email, or a dedicated QR. It is separate from take-now stall checkout and from one-off pre-order pages.",
+      "The shopper enters name, email, and phone (plus address if you deliver), then pays in Stripe Checkout. Billing repeats until they skip, pause, or cancel.",
+      "Each successful cycle creates a paid order, drops stock, and emails you and the shopper. Pack and mark Ready / Collected under Collections — subscription cycles sit in their own groups, not mixed with a pre-order page.",
+      "Shoppers get a manage link: skip the next cycle (no Collections order or stock drop for that invoice), pause billing, resume, update card, or cancel. You can see subscribers on the offer page. Turn Offer is live off to stop new sign-ups; existing subscribers keep billing until they cancel.",
+      "Test with a cheap product first. Changing products or prices on a live offer updates what new cycles charge after Stripe sync — tell current subscribers if the box contents change.",
+    ],
+  },
 ];

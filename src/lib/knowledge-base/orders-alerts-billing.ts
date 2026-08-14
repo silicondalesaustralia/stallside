@@ -76,7 +76,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
       "Connect Stripe so customers pay by card, Apple Pay, or Google Pay - separate from your Vendl subscription. PayPal coming soon.",
     videoUrl: "https://youtu.be/keo53YG_Nks",
     comingSoon: false,
-    related: ["billing", "first-stand", "pre-orders", "pre-order-pages"],
+    related: ["billing", "first-stand", "pre-orders", "pre-order-pages", "subscriptions"],
     ctas: [
       { label: "Connect Stripe", href: "/dashboard/settings/stripe" },
       { label: "Billing", href: "/dashboard/settings/billing" },

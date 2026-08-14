@@ -13,6 +13,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
       "collections-day",
       "email-customers",
       "customer-payments",
+      "subscriptions",
     ],
     ctas: [
       { label: "Pre-order pages", href: "/dashboard/pre-order-pages" },
@@ -59,7 +60,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
       "See what to produce, pack by customer, mark Ready and Collected, and print labels.",
     videoUrl: null,
     omitVideo: true,
-    related: ["pre-orders", "pre-order-pages", "email-customers"],
+    related: ["pre-orders", "pre-order-pages", "email-customers", "subscriptions"],
     ctas: [{ label: "Collections", href: "/dashboard/collections" }],
     steps: [
       "Open Collections after paid pre-orders start coming in. Days are grouped by collection or delivery date.",

@@ -13,6 +13,7 @@ export const gettingStartedArticles: KnowledgeArticle[] = [
       "customer-payments",
       "pre-order-pages",
       "pre-orders",
+      "subscriptions",
       "stand-branding",
     ],
     ctas: [
