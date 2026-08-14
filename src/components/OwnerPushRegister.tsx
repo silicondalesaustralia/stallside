@@ -5,6 +5,7 @@ import EnablePushBanner from "@/components/EnablePushBanner";
 import {
   isInstalledWebApp,
   isIosSafari,
+  isMobilePhone,
   registerOwnerWebPush,
 } from "@/lib/register-owner-web-push";
 
@@ -29,6 +30,8 @@ export default function OwnerPushRegister({
         if (!cancelled) void registerOwnerPush();
         return;
       }
+
+      if (!isMobilePhone()) return;
 
       const ios = isIosSafari();
       const installed = isInstalledWebApp();

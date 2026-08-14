@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
+import DashboardChannelCard from "@/components/DashboardChannelCard";
+import DashboardGreeting from "@/components/DashboardGreeting";
 import DashboardHomeStats from "@/components/DashboardHomeStats";
+import DashboardLowStockCard from "@/components/DashboardLowStockCard";
+import DashboardNextCard from "@/components/DashboardNextCard";
 import DashboardPanels from "@/components/DashboardPanels";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesSeriesChart from "@/components/SalesSeriesChart";
-import StarterUpgradeSignals from "@/components/StarterUpgradeSignals";
-import TapAndGoSetupCard from "@/components/TapAndGoSetupCard";
 import NoBusinessYet from "@/components/NoBusinessYet";
-import PreOrdersCrossSellBanner from "./PreOrdersCrossSellBanner";
 import { resolveDateWindow } from "@/lib/date-range";
 import { summarizeOrders } from "@/lib/order-metrics";
 import { ownerHasProAccess } from "@/lib/owner-trial";
@@ -35,11 +36,7 @@ export default async function DashboardPage({
   if (!selected) {
     return (
       <main className="flex flex-col gap-8">
-        <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
-            {owner.businessName}
-          </h1>
-        </div>
+        <DashboardGreeting standName={owner.businessName} />
         <NoBusinessYet />
       </main>
     );
@@ -66,7 +63,6 @@ export default async function DashboardPage({
     id: p.id,
     name: p.name,
     stockQuantity: Number(p.stockQuantity),
-    stand: { name: standName },
   }));
   const recent = data.recent.map((order) => ({
     ...order,
@@ -81,68 +77,100 @@ export default async function DashboardPage({
       ? `&from=${window.fromParam}&to=${window.toParam}`
       : ""
   }`;
+  const cardInterestCount = data.cardInterests.length;
+  const restockN = data.restockSubscriberCount;
+  const upgradeLabel =
+    !cardTier && cardInterestCount > 0
+      ? "Card demand this month"
+      : !cardTier && restockN > 0
+        ? "Restock list growing"
+        : null;
 
   return (
-    <main className="flex flex-col gap-10">
+    <main className="flex flex-col gap-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
-            {selected.name}
-          </h1>
-          <p className="mt-1 text-[var(--muted)]">{window.label} activity</p>
-        </div>
-        <Link
-          href={`/dashboard/businesses/${selected.id}`}
-          className="rounded-[var(--radius-pill)] border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
-        >
-          Business setup
-        </Link>
+        <DashboardGreeting standName={standName} />
+        <DateRangeFilter
+          pathname="/dashboard"
+          activeKey={window.key}
+          from={window.fromParam}
+          to={window.toParam}
+        />
       </div>
 
-      {showPreOrdersCrossSell ? <PreOrdersCrossSellBanner /> : null}
-      <DateRangeFilter
-        pathname="/dashboard"
-        activeKey={window.key}
-        from={window.fromParam}
-        to={window.toParam}
-      />
-
-      <TapAndGoSetupCard
-        cardTier={cardTier}
-        stripeConnected={owner.stripeChargesEnabled}
-        stripeStarted={Boolean(owner.stripeAccountId)}
-      />
-
-      {!cardTier ? (
-        <StarterUpgradeSignals
-          cardInterestCount={data.cardInterests.length}
-          cardInterestCents={data.cardInterests.reduce(
-            (s, r) => s + r.subtotalCents,
-            0,
-          )}
-          currency={data.cardInterests[0]?.currency ?? current.currency}
-          restockSubscriberCount={data.restockSubscriberCount}
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
+        <DashboardHomeStats
+          current={current}
+          previous={previous}
+          ordersHref={ordersHref}
         />
-      ) : null}
+        <div className="min-h-[154px] flex-1">
+          <SalesSeriesChart
+            points={series}
+            previousPoints={previousSeries}
+            currency={current.currency}
+            title={`${window.label} vs prior`}
+          />
+        </div>
+      </div>
 
-      <DashboardHomeStats current={current} previous={previous} />
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
+        <DashboardNextCard
+          stripeConnected={owner.stripeChargesEnabled}
+          stripeStarted={Boolean(owner.stripeAccountId)}
+          products={data.products}
+          orderCount={current.orderCount}
+          showPreOrders={showPreOrdersCrossSell}
+          upgradeHref={upgradeLabel ? "/dashboard/settings/billing" : null}
+          upgradeLabel={upgradeLabel}
+          qrHref={`/dashboard/businesses/${selected.id}/qr`}
+        />
+        <DashboardLowStockCard items={lowStock} />
+      </div>
 
-      <SalesSeriesChart
-        points={series}
-        previousPoints={previousSeries}
-        currency={current.currency}
-        title={`${window.label} vs prior period`}
-      />
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
+        <DashboardChannelCard
+          title="Pre-orders"
+          count={data.preOrderPageCount}
+          unit={data.preOrderPageCount === 1 ? "page" : "pages"}
+          empty="No pre-order pages yet. Share a link for collection day."
+          href="/dashboard/pre-order-pages"
+          ctaHref="/dashboard/pre-order-pages/new"
+          cta="+ New pre-order page"
+        />
+        <DashboardChannelCard
+          title="Subscriptions"
+          count={data.subscriptionOfferCount}
+          unit={
+            data.subscriptionOfferCount === 1 ? "offer" : "offers"
+          }
+          empty="No subscription offers yet. Recurring boxes on card."
+          detail={
+            data.activeShopperSubs === 1
+              ? "1 live box"
+              : `${data.activeShopperSubs} live boxes`
+          }
+          href="/dashboard/subscriptions"
+          ctaHref="/dashboard/subscriptions/new"
+          cta="+ New subscription"
+        />
+      </div>
 
       <DashboardPanels
         stands={1}
         products={data.products}
         stripeConnected={owner.stripeChargesEnabled}
         standRows={[{ id: selected.id, name: selected.name }]}
-        lowStock={lowStock}
         recent={recent}
         ordersHref={ordersHref}
       />
+
+      <Link
+        href={`/dashboard/businesses/${selected.id}`}
+        className="self-start text-sm font-semibold text-[var(--muted)] underline hover:text-[var(--ink)]"
+      >
+        Business setup
+      </Link>
     </main>
   );
 }

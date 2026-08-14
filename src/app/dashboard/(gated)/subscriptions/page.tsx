@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import {
@@ -43,12 +44,9 @@ export default async function SubscriptionsListPage() {
             Stripe Connect.
           </p>
         </div>
-        <Link
-          href="/dashboard/subscriptions/new"
-          className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
-        >
-          New subscription
-        </Link>
+        <DashPrimaryCta href="/dashboard/subscriptions/new">
+          + New subscription
+        </DashPrimaryCta>
       </div>
 
       {offers.length === 0 ? (

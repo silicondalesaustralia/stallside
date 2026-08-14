@@ -6,12 +6,10 @@ import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesSeriesChart from "@/components/SalesSeriesChart";
 import { resolveDateWindow } from "@/lib/date-range";
 import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
-import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
 import { buildSalesSeries } from "@/lib/sales-series";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import Link from "next/link";
-import OrderDeleteButton from "./OrderDeleteButton";
-import OrderCustomerEmail from "../collections/OrderCustomerEmail";
+import OrderListRow from "./OrderListRow";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 
@@ -32,9 +30,9 @@ export default async function OrdersPage({
   if (!selected) {
     return (
       <main className="flex flex-col gap-8">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Orders</h1>
-        </div>
+        <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+          Orders
+        </h1>
         <NoBusinessYet />
       </main>
     );
@@ -106,12 +104,14 @@ export default async function OrdersPage({
   const series = buildSalesSeries(currentOrders, window.start, window.end);
 
   return (
-    <main className="flex flex-col gap-8">
+    <main className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Orders</h1>
+        <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+          Orders
+        </h1>
         <p className="mt-1 text-[var(--muted)]">
-          {selected.name} · {window.label} - cash, PayID, card, and PayPal
-          sales.
+          {listedOrders.length} order{listedOrders.length === 1 ? "" : "s"} ·{" "}
+          {selected.name} · {window.label}
         </p>
         {cardTier ? (
           <p className="mt-2 text-sm md:hidden">
@@ -132,7 +132,7 @@ export default async function OrdersPage({
         to={window.toParam}
       />
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <DashboardStat
           label="Sales"
           value={formatMoney(current.salesCents, current.currency)}
@@ -164,56 +164,9 @@ export default async function OrdersPage({
       {listedOrders.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">No orders in this range.</p>
       ) : (
-        <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
+        <ul className="flex flex-col gap-3">
           {listedOrders.map((order) => (
-            <li key={order.id} className="py-4 text-sm">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="font-medium">
-                      {order.orderNumber} · {order.stand.name}
-                    </p>
-                    <p>{formatMoney(order.totalCents, order.currency)}</p>
-                  </div>
-                  <p className="mt-1 text-[var(--muted)]">
-                    {order.createdAt.toLocaleString()} ·{" "}
-                    {orderPaymentLabel(
-                      order.paymentMethod,
-                      order.localTransferMethodId,
-                    )}{" "}
-                    · {paymentStatusNote(order.paymentStatus)}
-                    {order.customerName ? ` · ${order.customerName}` : ""}
-                    {order.customerPhone ? ` · ${order.customerPhone}` : ""}
-                  </p>
-                  {order.receiptEmail ? (
-                    <div className="mt-1">
-                      <OrderCustomerEmail
-                        orderId={order.id}
-                        email={order.receiptEmail}
-                        defaultSubject={`${order.stand.name} · order ${order.orderNumber}`}
-                      />
-                    </div>
-                  ) : null}
-                  <p className="mt-2 text-[var(--muted)]">
-                    {order.items
-                      .map(
-                        (item) =>
-                          `${item.quantity}× ${item.productNameSnapshot}${
-                            item.optionsSnapshot
-                              ? ` (${item.optionsSnapshot})`
-                              : ""
-                          }`,
-                      )
-                      .join(", ")}
-                  </p>
-                </div>
-                <OrderDeleteButton
-                  orderId={order.id}
-                  orderNumber={order.orderNumber}
-                  restoresStock={COUNTED_STATUSES.includes(order.paymentStatus)}
-                />
-              </div>
-            </li>
+            <OrderListRow key={order.id} order={order} />
           ))}
         </ul>
       )}

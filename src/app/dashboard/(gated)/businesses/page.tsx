@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
 
 export default async function StandsPage() {
   const { owner } = await requireOwner();
@@ -19,12 +20,9 @@ export default async function StandsPage() {
             Open a business anytime to edit details or print its QR code.
           </p>
         </div>
-        <Link
-          href="/dashboard/businesses/new"
-          className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
-        >
-          New Business
-        </Link>
+        <DashPrimaryCta href="/dashboard/businesses/new">
+          + New business
+        </DashPrimaryCta>
       </div>
 
       {stands.length === 0 ? (

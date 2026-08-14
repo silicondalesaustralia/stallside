@@ -7,7 +7,7 @@ export default function NewStandPage() {
   const verticals = listPreOrderVerticals();
 
   return (
-    <main className="mx-auto max-w-lg">
+    <main className="flex flex-col gap-6">
       <h1 className="text-3xl font-semibold tracking-tight">New Business</h1>
       <p className="mt-2 text-[var(--muted)]">
         Choose stall checkout or pre-orders, give it a name, and go live.

@@ -51,7 +51,7 @@ export default function ProductOwnerMetaFields({
       : null;
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-[var(--line)] bg-[var(--panel)] p-4">
+    <div className="flex flex-col gap-3">
       <div>
         <h3 className="text-base font-semibold">Owner details</h3>
         <p className="mt-1 text-sm text-[var(--muted)]">

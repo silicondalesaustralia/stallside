@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { formatMoney } from "@/lib/money";
 import { productDashboardWhere } from "@/lib/product-visibility";
-import ProductLifecycleActions from "./ProductLifecycleActions";
 import RestockNotifyPanel from "./RestockNotifyPanel";
 import { loadRestockPanels } from "./load-restock-panels";
 import { ownerHasProAccess } from "@/lib/owner-trial";
@@ -12,7 +10,9 @@ import ProductsTabs, {
   isProductTabId,
   type ProductTabId,
 } from "./ProductsTabs";
+import ProductListRow from "./ProductListRow";
 import NoBusinessYet from "@/components/NoBusinessYet";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 
 export default async function ProductsPage({
@@ -30,9 +30,9 @@ export default async function ProductsPage({
   if (!selected) {
     return (
       <main className="flex flex-col gap-8">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Products</h1>
-        </div>
+        <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+          Products
+        </h1>
         <NoBusinessYet />
       </main>
     );
@@ -84,85 +84,72 @@ export default async function ProductsPage({
   }
 
   return (
-    <main className="flex flex-col gap-8">
+    <main className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Products</h1>
+          <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+            Products
+          </h1>
           <p className="mt-1 text-[var(--muted)]">
-            {selected.name}
-            {" · "}
-            {isPreOrder
-              ? "Products available for pre-order pages. Collection day is set on each page."
-              : "Name products as you sell them - e.g. Dozen eggs, 500g steak."}
-          </p>
-          <p className="mt-3 flex flex-wrap gap-3 text-sm">
-            <Link
-              href={listHref()}
-              className={
-                !showArchived
-                  ? "font-semibold text-[var(--ink)]"
-                  : "text-[var(--leaf-dark)] underline"
-              }
-            >
-              Active
-            </Link>
-            <Link
-              href={listHref("archived")}
-              className={
-                showArchived
-                  ? "font-semibold text-[var(--ink)]"
-                  : "text-[var(--leaf-dark)] underline"
-              }
-            >
-              Archived
-            </Link>
+            {products.length} {isPreOrder ? "pre-order" : ""} product
+            {products.length === 1 ? "" : "s"}
+            {showArchived ? " archived" : " in progress"} · {selected.name}
           </p>
         </div>
-        <Link
+        <DashPrimaryCta
           href={
             isPreOrder
               ? "/dashboard/pre-order-pages/new"
               : `/dashboard/products/new?standId=${selected.id}`
           }
-          className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
         >
-          {isPreOrder ? "New pre-order page" : "Add product"}
+          {isPreOrder ? "+ New pre-order page" : "+ Add product"}
+        </DashPrimaryCta>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <ProductsTabs active={tab} view={view} />
+        <Link
+          href={listHref()}
+          className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
+            !showArchived
+              ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
+              : "bg-white text-[var(--ink)] outline outline-[var(--line)]"
+          }`}
+        >
+          Active
+        </Link>
+        <Link
+          href={listHref("archived")}
+          className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
+            showArchived
+              ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
+              : "bg-white text-[var(--ink)] outline outline-[var(--line)]"
+          }`}
+        >
+          Archived
         </Link>
       </div>
 
-      <ProductsTabs active={tab} view={view} />
-
       {isPreOrder && !showArchived ? (
         <p className="text-sm text-[var(--muted)]">
-          Group several products on one shareable link:{" "}
+          Group several products on one shareable{" "}
           <Link
             href="/dashboard/pre-order-pages"
             className="font-medium text-[var(--leaf-dark)] underline"
           >
-            Pre-order pages
-          </Link>
-          . Or{" "}
-          <Link
-            href={`/dashboard/products/new?standId=${selected.id}`}
-            className="font-medium text-[var(--leaf-dark)] underline"
-          >
-            add a single pre-order product
+            pre-order page
           </Link>
           .
         </p>
       ) : null}
 
       {restockPanels.length > 0 ? (
-        <section className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold tracking-tight">
-            Restock alerts
-          </h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {restockPanels.map((panel) => (
-              <RestockNotifyPanel key={panel.standId} {...panel} />
-            ))}
-          </div>
-        </section>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {restockPanels.map((panel) => (
+            <RestockNotifyPanel key={panel.standId} {...panel} />
+          ))}
+        </div>
       ) : null}
 
       {products.length === 0 ? (
@@ -172,54 +159,9 @@ export default async function ProductsPage({
             : `No ${isPreOrder ? "pre-order" : "standard"} products yet.`}
         </p>
       ) : (
-        <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
+        <ul className="flex flex-col gap-3">
           {products.map((product) => (
-            <li
-              key={product.id}
-              className="flex flex-wrap items-center justify-between gap-3 py-4 text-sm"
-            >
-              <div>
-                <p className="font-medium">
-                  {product.name}
-                  {product.isHidden && !product.isArchived ? (
-                    <span className="ml-2 text-[var(--muted)]">(hidden)</span>
-                  ) : null}
-                  {product.isArchived ? (
-                    <span className="ml-2 text-[var(--muted)]">(archived)</span>
-                  ) : null}
-                </p>
-                <p className="mt-1 text-[var(--muted)]">
-                  {formatMoney(product.priceCents, product.currency)}
-                  {product.costCents != null
-                    ? ` · profit ${formatMoney(product.priceCents - product.costCents, product.currency)}`
-                    : null}{" "}
-                  · {product.stockQuantity} in stock
-                  {product.sku ? ` · SKU ${product.sku}` : null}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-4">
-                <Link
-                  href={`/dashboard/products/${product.id}`}
-                  className="text-[var(--leaf-dark)] underline"
-                >
-                  Edit
-                </Link>
-                {!product.isArchived ? (
-                  <Link
-                    href="/dashboard/inventory"
-                    className="text-[var(--leaf-dark)] underline"
-                  >
-                    Adjust stock
-                  </Link>
-                ) : null}
-                <ProductLifecycleActions
-                  productId={product.id}
-                  productName={product.name}
-                  isHidden={product.isHidden}
-                  isArchived={product.isArchived}
-                />
-              </div>
-            </li>
+            <ProductListRow key={product.id} product={product} />
           ))}
         </ul>
       )}

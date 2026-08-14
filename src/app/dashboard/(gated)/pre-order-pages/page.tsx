@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { formatCollectionLabel } from "@/lib/pre-order";
@@ -40,12 +41,9 @@ export default async function PreOrderPagesListPage() {
             collection day.
           </p>
         </div>
-        <Link
-          href="/dashboard/pre-order-pages/new"
-          className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
-        >
-          New pre-order page
-        </Link>
+        <DashPrimaryCta href="/dashboard/pre-order-pages/new">
+          + New pre-order page
+        </DashPrimaryCta>
       </div>
 
       {pages.length === 0 ? (

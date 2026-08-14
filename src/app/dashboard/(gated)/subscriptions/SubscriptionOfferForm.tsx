@@ -62,9 +62,9 @@ export default function SubscriptionOfferForm({
   }
 
   return (
-    <form action={onSubmit} className="flex max-w-lg flex-col gap-4">
+    <form action={onSubmit} className="grid w-full gap-4 lg:grid-cols-2">
       {!stripeConnected ? (
-        <p className="rounded-lg border border-[var(--warn)]/40 bg-[var(--warn)]/10 px-3 py-2 text-sm">
+        <p className="rounded-lg border border-[var(--warn)]/40 bg-[var(--warn)]/10 px-3 py-2 text-sm lg:col-span-2">
           Connect Stripe under Settings to publish card subscriptions.
         </p>
       ) : null}
@@ -160,7 +160,7 @@ export default function SubscriptionOfferForm({
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      <fieldset className="flex flex-col gap-2 rounded-lg border border-[var(--line)] p-4">
+      <fieldset className="flex flex-col gap-2 rounded-lg border border-[var(--line)] p-4 lg:col-span-2">
         <legend className="px-1 text-sm font-medium">
           Products in the box ({currency})
         </legend>
@@ -198,6 +198,7 @@ export default function SubscriptionOfferForm({
           </ul>
         )}
       </fieldset>
+      <div className="flex flex-wrap items-center gap-3 lg:col-span-2">
       {message ? (
         <p className="text-sm text-[var(--warn)]">{message}</p>
       ) : null}
@@ -208,6 +209,7 @@ export default function SubscriptionOfferForm({
       >
         {pending ? "Saving…" : editing ? "Save offer" : "Create offer"}
       </button>
+      </div>
     </form>
   );
 }

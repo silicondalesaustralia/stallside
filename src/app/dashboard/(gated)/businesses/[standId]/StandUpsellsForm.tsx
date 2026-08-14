@@ -46,7 +46,7 @@ export default function StandUpsellsForm({
   }
 
   return (
-    <form action={onSubmit} className="flex max-w-lg flex-col gap-4">
+    <form action={onSubmit} className="flex w-full flex-col gap-4">
       <input type="hidden" name="section" value="conversion" />
       <StandConversionFields
         currency={currency}

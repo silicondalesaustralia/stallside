@@ -15,8 +15,11 @@
   --warn: #c77400;
   --gone: #8a2e2e;
   --radius: 20px;
+  --radius-card: 24px;
   --radius-sm: 8px;
   --radius-pill: 999px;
+  --dash-shadow:
+    0 0 36px -20px rgb(23 54 31 / 0.28), 0 14px 44px -28px rgb(23 54 31 / 0.28);
   --pad-md: 16px;
   --pad-lg: 28px;
   --background: var(--wash);
@@ -93,6 +96,26 @@ html.nav-busy * {
 .font-receipt {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
+}
+
+.dash-card {
+  border-radius: var(--radius-card);
+  background: var(--panel);
+  box-shadow: var(--dash-shadow);
+  outline: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+.dash-card-click {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dash-card-click:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 40px -20px rgb(23 54 31 / 0.34),
+    0 16px 48px -30px rgb(23 54 31 / 0.34);
 }
 
 @keyframes hero-rise {

@@ -31,6 +31,20 @@ export function isIosSafari() {
   return iOS && webkit && !chromium;
 }
 
+/** Phones only. Desktop Chrome can do web push; stall alerts are for a phone. */
+export function isMobilePhone() {
+  if (typeof window === "undefined") return false;
+  const uaData = navigator as Navigator & {
+    userAgentData?: { mobile?: boolean };
+  };
+  if (typeof uaData.userAgentData?.mobile === "boolean") {
+    return uaData.userAgentData.mobile;
+  }
+  return /iPhone|iPod|Android.+Mobile|Windows Phone|webOS/i.test(
+    navigator.userAgent,
+  );
+}
+
 async function fetchVapidPublicKey(): Promise<string | { error: string }> {
   const fromEnv = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim();
   if (fromEnv) return fromEnv;

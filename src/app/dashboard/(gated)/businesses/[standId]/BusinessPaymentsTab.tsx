@@ -28,7 +28,7 @@ export default function BusinessPaymentsTab({
   cardTier: boolean;
 }) {
   return (
-    <div className="flex max-w-lg flex-col gap-3">
+    <div className="flex w-full flex-col gap-3">
       <p className="text-sm text-[var(--muted)]">
         Choose how customers can pay on this business&apos;s checkout.
       </p>

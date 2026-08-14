@@ -42,7 +42,7 @@ export default function OrderDeleteButton({
         type="button"
         onClick={onDelete}
         disabled={pending}
-        className="text-sm font-semibold text-[var(--gone)] underline disabled:opacity-60"
+        className="rounded-full bg-[var(--gone)]/10 px-3 py-1.5 text-sm font-semibold text-[var(--gone)] disabled:opacity-60"
       >
         {pending ? "Deleting…" : "Delete"}
       </button>

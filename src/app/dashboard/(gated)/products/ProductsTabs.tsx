@@ -20,10 +20,7 @@ export default function ProductsTabs({
 }) {
   const archived = view === "archived";
   return (
-    <nav
-      className="flex gap-1 overflow-x-auto border-b border-[var(--line)]"
-      aria-label="Product type"
-    >
+    <nav className="flex flex-wrap gap-2" aria-label="Product type">
       {PRODUCT_TABS.map((tab) => {
         const selected = tab.id === active;
         const params = new URLSearchParams();
@@ -34,10 +31,10 @@ export default function ProductsTabs({
           <Link
             key={tab.id}
             href={qs ? `/dashboard/products?${qs}` : "/dashboard/products"}
-            className={`shrink-0 border-b-2 px-3 py-2.5 text-sm font-medium transition ${
+            className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
               selected
-                ? "border-[var(--leaf)] text-[var(--field)]"
-                : "border-transparent text-[var(--muted)] hover:text-[var(--ink)]"
+                ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
+                : "bg-white text-[var(--ink)] outline outline-[var(--line)] hover:bg-[var(--wash)]"
             }`}
           >
             {tab.label}

@@ -1,0 +1,38 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+export default function DashboardGreeting({
+  standName,
+}: {
+  standName: string;
+}) {
+  const [hello, setHello] = useState("Welcome back");
+  const [when, setWhen] = useState("");
+
+  useEffect(() => {
+    const now = new Date();
+    const h = now.getHours();
+    setHello(
+      h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening",
+    );
+    setWhen(
+      now.toLocaleDateString(undefined, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }),
+    );
+  }, []);
+
+  return (
+    <div>
+      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+        {when || "Today"}
+      </p>
+      <h1 className="mt-1 font-[family-name:var(--font-display)] text-[30px] font-bold leading-tight tracking-tight text-[var(--field)]">
+        {hello}, {standName}
+      </h1>
+    </div>
+  );
+}

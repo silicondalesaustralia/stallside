@@ -1,4 +1,4 @@
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma, ShopperSubStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { COUNTED_STATUSES } from "@/lib/order-metrics";
 import { productDashboardWhere } from "@/lib/product-visibility";
@@ -37,6 +37,9 @@ export async function loadDashboardHomeData(args: {
     recent,
     cardInterests,
     restockSubscriberCount,
+    preOrderPageCount,
+    subscriptionOfferCount,
+    activeShopperSubs,
   ] = await Promise.all([
     prisma.product.count({ where: productScope }),
     prisma.order.findMany({
@@ -99,6 +102,11 @@ export async function loadDashboardHomeData(args: {
           where: { standId, unsubscribedAt: null },
         })
       : Promise.resolve(0),
+    prisma.preOrderPage.count({ where: { ownerId, standId } }),
+    prisma.subscriptionOffer.count({ where: { ownerId, standId } }),
+    prisma.shopperSubscription.count({
+      where: { ownerId, standId, status: ShopperSubStatus.ACTIVE },
+    }),
   ]);
 
   return {
@@ -111,5 +119,8 @@ export async function loadDashboardHomeData(args: {
     recent,
     cardInterests,
     restockSubscriberCount,
+    preOrderPageCount,
+    subscriptionOfferCount,
+    activeShopperSubs,
   };
 }

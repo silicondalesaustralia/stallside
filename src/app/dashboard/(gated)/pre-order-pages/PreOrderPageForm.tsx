@@ -81,7 +81,7 @@ export default function PreOrderPageForm({
   }
 
   return (
-    <form action={onSubmit} className="flex max-w-lg flex-col gap-4">
+    <form action={onSubmit} className="grid w-full gap-4 lg:grid-cols-2">
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Page title</span>
         <input
@@ -136,6 +136,7 @@ export default function PreOrderPageForm({
         </span>
       </label>
 
+      <div className="lg:col-span-2">
       <PreOrderFields
         forceOn
         stripeConnected={stripeConnected}
@@ -150,8 +151,9 @@ export default function PreOrderPageForm({
         defaultDepositPercent={values?.depositPercent ?? 30}
         defaultHandoverMode={values?.handoverMode ?? "COLLECT"}
       />
+      </div>
 
-      <fieldset className="flex flex-col gap-2 rounded-lg border border-[var(--line)] p-4">
+      <fieldset className="flex flex-col gap-2 rounded-lg border border-[var(--line)] p-4 lg:col-span-2">
         <legend className="px-1 text-sm font-medium">Products on this page</legend>
         <p className="text-sm text-[var(--muted)]">
           Only products marked “Available for pre-order pages” appear here.
@@ -189,6 +191,7 @@ export default function PreOrderPageForm({
         )}
       </fieldset>
 
+      <div className="lg:col-span-2">
       <PreOrderAddonFields
         currency={currency}
         name={values?.preOrderUpsellName ?? null}
@@ -197,7 +200,9 @@ export default function PreOrderPageForm({
         discountValue={values?.preOrderUpsellDiscountValue ?? null}
         intro="Optional cart add-on for this page. Offered when the cart is this pre-order sheet. Inherits collection day and payment settings."
       />
+      </div>
 
+      <div className="flex flex-wrap items-center gap-3 lg:col-span-2">
       {message ? (
         <p
           className={`text-sm ${
@@ -216,6 +221,7 @@ export default function PreOrderPageForm({
       >
         {pending ? "Saving…" : editing ? "Save page" : "Create page"}
       </button>
+      </div>
     </form>
   );
 }

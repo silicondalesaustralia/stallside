@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { updateAlertSettings } from "./actions";
+import EnableThisPhoneButton from "./EnableThisPhoneButton";
 import {
-  isInstalledWebApp,
-  isIosSafari,
+  isMobilePhone,
   registerOwnerWebPush,
   unregisterOwnerWebPush,
 } from "@/lib/register-owner-web-push";
@@ -24,11 +24,6 @@ export default function AlertSettingsForm({
 }: AlertSettingsFormProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const [needsHomeScreen, setNeedsHomeScreen] = useState(false);
-
-  useEffect(() => {
-    setNeedsHomeScreen(isIosSafari() && !isInstalledWebApp());
-  }, []);
 
   function onSubmit(formData: FormData) {
     setMessage(null);
@@ -41,6 +36,12 @@ export default function AlertSettingsForm({
       }
 
       if (wantPush) {
+        if (!isMobilePhone()) {
+          setMessage(
+            "Alert settings saved. Enable push on your phone to get stall alerts there.",
+          );
+          return;
+        }
         const push = await registerOwnerWebPush();
         if ("error" in push) {
           setMessage(`Saved, but phone push failed: ${push.error}`);
@@ -93,26 +94,12 @@ export default function AlertSettingsForm({
         <span>
           <span className="font-medium">Phone push alerts</span>
           <span className="mt-0.5 block text-[var(--muted)]">
-            Sales, low stock, and sold out on this phone. Add Vendl to your Home
-            Screen first, then allow notifications when prompted.
+            Sales, low stock, and sold out on your phone. Enable push from the
+            phone itself — not from a laptop or desktop.
           </span>
         </span>
       </label>
-      {needsHomeScreen ? (
-        <p className="rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-[var(--muted)]">
-          On iPhone: tap Share → <strong>Add to Home Screen</strong>, open Vendl
-          from that icon, then tap Enable this phone.
-        </p>
-      ) : null}
-
-      <button
-        type="button"
-        disabled={pending}
-        onClick={enableThisPhone}
-        className="w-fit rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold disabled:opacity-60"
-      >
-        {pending ? "Working…" : "Enable this phone"}
-      </button>
+      <EnableThisPhoneButton pending={pending} onEnable={enableThisPhone} />
 
       <div>
         <p className="font-medium">Alert emails</p>

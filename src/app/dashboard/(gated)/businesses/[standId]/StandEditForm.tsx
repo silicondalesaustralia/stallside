@@ -45,7 +45,7 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
   }
 
   return (
-    <form action={onSubmit} className="flex max-w-lg flex-col gap-4">
+    <form action={onSubmit} className="grid w-full gap-4 sm:grid-cols-2">
       <input type="hidden" name="section" value="details" />
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Business name</span>
@@ -68,7 +68,7 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
         />
         <span className="text-[var(--muted)]">Appears in /s/your-slug</span>
       </label>
-      <label className="flex flex-col gap-2 text-sm">
+      <label className="flex flex-col gap-2 text-sm sm:col-span-2">
         <span className="font-medium">Instructions for customers</span>
         <textarea
           name="description"
@@ -120,6 +120,7 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
         />
         Public checkout enabled
       </label>
+      <div className="flex flex-wrap items-center gap-3 sm:col-span-2">
       {message ? (
         <p
           className={`text-sm ${
@@ -138,6 +139,7 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
       >
         {pending ? "Saving…" : "Save details"}
       </button>
+      </div>
     </form>
   );
 }

@@ -19,7 +19,7 @@ export default async function SettingsPage() {
   const billingRegion = billingRegionDisplay(owner.billingCurrency);
 
   return (
-    <main className="flex max-w-xl flex-col gap-8">
+    <main className="flex w-full max-w-3xl flex-col gap-8">
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
         <p className="mt-1 text-[var(--muted)]">

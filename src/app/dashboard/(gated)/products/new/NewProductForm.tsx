@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 import FilePickButton from "@/components/FilePickButton";
+import DashFormSection from "@/components/DashFormSection";
+import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { createProduct } from "../actions";
 import ProductOwnerMetaFields from "../ProductOwnerMetaFields";
 
@@ -16,12 +18,14 @@ function isNextRedirect(error: unknown): boolean {
   );
 }
 
+const inputClass =
+  "rounded-lg border border-[var(--line)] bg-white px-3 py-2.5";
+
 export default function NewProductForm({
   stands,
   defaultStandId,
   defaultCurrency,
   cardTier,
-  stripeConnected,
 }: {
   stands: StandOption[];
   defaultStandId?: string;
@@ -55,135 +59,102 @@ export default function NewProductForm({
   }
 
   return (
-    <form action={onSubmit} className="mt-8 flex flex-col gap-4">
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Stand</span>
-        <select
-          name="standId"
-          defaultValue={defaultStandId ?? stands[0]?.id}
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        >
-          {stands.map((stand) => (
-            <option key={stand.id} value={stand.id}>
-              {stand.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Product name</span>
-        <input
-          name="name"
-          required
-          placeholder="Dozen eggs"
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">URL slug (optional)</span>
-        <input
-          name="slug"
-          placeholder="auto from name"
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 font-receipt"
-        />
-      </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Description (optional)</span>
-        <input
-          name="description"
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Product image (optional)</span>
-        <FilePickButton
-          name="image"
-          accept="image/jpeg,image/png,image/webp"
-          label="Choose image"
-        />
-      </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Price</span>
-        <input
-          name="price"
-          required
-          inputMode="decimal"
-          placeholder="6.00"
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
-      <ProductOwnerMetaFields
-        currency={defaultCurrency}
-        sku={null}
-        upc={null}
-        costCents={null}
-        priceCents={0}
-      />
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">
-          {cardTier ? "Starting stock / max pre-orders" : "Starting stock"}
-        </span>
-        <input
-          name="stockQuantity"
-          type="number"
-          min={0}
-          defaultValue={0}
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Low-stock threshold</span>
-        <input
-          name="lowStockThreshold"
-          type="number"
-          min={0}
-          defaultValue={5}
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">SEO title (optional)</span>
-        <input
-          name="seoTitle"
-          maxLength={120}
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">SEO description (optional)</span>
-        <textarea
-          name="seoDescription"
-          maxLength={300}
-          rows={2}
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
-      {cardTier ? (
-        <label className="flex items-start gap-3 rounded-lg border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
-          <input
-            type="checkbox"
-            name="preOrderEligible"
-            className="mt-0.5 size-4"
-          />
-          <span>
-            <span className="font-medium">Available for pre-order pages</span>
-            <span className="mt-1 block text-[var(--muted)]">
-              You can add this product to a pre-order page after saving.
-              Collection day is set on the page.
-            </span>
-          </span>
+    <form action={onSubmit} className="grid gap-5 lg:grid-cols-2">
+      <DashFormSection title="Details">
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="font-medium">Stand</span>
+          <select
+            name="standId"
+            defaultValue={defaultStandId ?? stands[0]?.id}
+            className={inputClass}
+          >
+            {stands.map((stand) => (
+              <option key={stand.id} value={stand.id}>
+                {stand.name}
+              </option>
+            ))}
+          </select>
         </label>
-      ) : null}
-      {message ? (
-        <p className="text-sm text-[var(--warn)]">{message}</p>
-      ) : null}
-      <button
-        type="submit"
-        disabled={pending}
-        className="mt-2 rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60"
-      >
-        {pending ? "Saving…" : "Save product"}
-      </button>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="flex flex-col gap-2 text-sm sm:col-span-2">
+            <span className="font-medium">Product name</span>
+            <input name="name" required placeholder="Dozen eggs" className={inputClass} />
+          </label>
+          <label className="flex flex-col gap-2 text-sm">
+            <span className="font-medium">URL slug (optional)</span>
+            <input name="slug" placeholder="auto from name" className={`${inputClass} font-receipt`} />
+          </label>
+          <label className="flex flex-col gap-2 text-sm">
+            <span className="font-medium">Product image</span>
+            <FilePickButton
+              name="image"
+              accept="image/jpeg,image/png,image/webp"
+              label="Choose image"
+            />
+          </label>
+        </div>
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="font-medium">Description (optional)</span>
+          <input name="description" className={inputClass} />
+        </label>
+      </DashFormSection>
+
+      <DashFormSection title="Price & stock">
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="font-medium">Price</span>
+          <input name="price" required inputMode="decimal" placeholder="6.00" className={inputClass} />
+        </label>
+        <ProductOwnerMetaFields
+          currency={defaultCurrency}
+          sku={null}
+          upc={null}
+          costCents={null}
+          priceCents={0}
+        />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="flex flex-col gap-2 text-sm">
+            <span className="font-medium">
+              {cardTier ? "Starting stock / max pre-orders" : "Starting stock"}
+            </span>
+            <input name="stockQuantity" type="number" min={0} defaultValue={0} className={inputClass} />
+          </label>
+          <label className="flex flex-col gap-2 text-sm">
+            <span className="font-medium">Low-stock threshold</span>
+            <input name="lowStockThreshold" type="number" min={0} defaultValue={5} className={inputClass} />
+          </label>
+        </div>
+        {cardTier ? (
+          <label className="flex items-start gap-3 text-sm">
+            <input type="checkbox" name="preOrderEligible" className="mt-0.5 size-4" />
+            <span>
+              <span className="font-medium">Available for pre-order pages</span>
+              <span className="mt-1 block text-[var(--muted)]">
+                You can add this to a pre-order page after saving.
+              </span>
+            </span>
+          </label>
+        ) : null}
+      </DashFormSection>
+
+      <DashFormSection title="Search" span>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="flex flex-col gap-2 text-sm">
+            <span className="font-medium">SEO title (optional)</span>
+            <input name="seoTitle" maxLength={120} className={inputClass} />
+          </label>
+          <label className="flex flex-col gap-2 text-sm">
+            <span className="font-medium">SEO description (optional)</span>
+            <textarea name="seoDescription" maxLength={300} rows={2} className={inputClass} />
+          </label>
+        </div>
+      </DashFormSection>
+
+      <div className="flex flex-wrap items-center gap-3 lg:col-span-2">
+        {message ? <p className="text-sm text-[var(--warn)]">{message}</p> : null}
+        <button type="submit" disabled={pending} className={dashCtaClass}>
+          {pending ? "Saving…" : "Save product"}
+        </button>
+      </div>
     </form>
   );
 }

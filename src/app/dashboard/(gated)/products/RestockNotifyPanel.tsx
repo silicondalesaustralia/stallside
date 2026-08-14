@@ -28,7 +28,7 @@ export default function RestockNotifyPanel({
   const disabled = subscriberCount === 0 || Boolean(cooldownMessage) || pending;
 
   return (
-    <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-4">
+    <div className="dash-card p-4">
       <p className="text-sm font-medium text-[var(--ink)]">{standName}</p>
       <p className="mt-1 text-sm text-[var(--muted)]">
         {subscriberCount === 0

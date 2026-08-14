@@ -49,7 +49,7 @@ export default async function NewPreOrderPagePage() {
   );
 
   return (
-    <main className="mx-auto max-w-lg">
+    <main className="flex flex-col gap-6">
       <p className="text-sm text-[var(--muted)]">
         <Link href="/dashboard/pre-order-pages" className="underline">
           Pre-order pages

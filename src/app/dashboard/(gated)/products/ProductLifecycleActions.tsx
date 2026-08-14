@@ -73,7 +73,7 @@ export default function ProductLifecycleActions({
             <button
               type="button"
               disabled={pending}
-              className="font-semibold text-[var(--warn)] underline disabled:opacity-60"
+              className="rounded-full bg-[var(--gone)]/10 px-3 py-1.5 text-sm font-semibold text-[var(--gone)] disabled:opacity-60"
               onClick={() => {
                 if (
                   !window.confirm(

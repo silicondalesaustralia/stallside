@@ -2,6 +2,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import InventoryAdjustForm from "./InventoryAdjustForm";
 import { productDashboardWhere } from "@/lib/product-visibility";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 
@@ -32,12 +33,19 @@ export default async function InventoryPage() {
 
   return (
     <main className="flex flex-col gap-8">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Inventory</h1>
-        <p className="mt-1 text-[var(--muted)]">
-          {selected.name} - restock, correct counts, or log cash sales made
-          without QR.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+            Inventory
+          </h1>
+          <p className="mt-1 text-[var(--muted)]">
+            {selected.name} - restock, correct counts, or log cash sales made
+            without QR.
+          </p>
+        </div>
+        <DashPrimaryCta href={`/dashboard/products/new?standId=${selected.id}`}>
+          + Add product
+        </DashPrimaryCta>
       </div>
       {products.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">Add products first.</p>

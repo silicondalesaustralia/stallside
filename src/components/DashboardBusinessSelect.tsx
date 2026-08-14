@@ -9,19 +9,26 @@ import type { BusinessOption } from "@/lib/selected-business";
 export default function DashboardBusinessSelect({
   businesses,
   selectedId,
+  tone = "light",
 }: {
   businesses: BusinessOption[];
   selectedId: string | null;
+  tone?: "light" | "dark";
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const [pending, startTransition] = useTransition();
+  const dark = tone === "dark";
 
   if (businesses.length === 0) {
     return (
       <Link
         href="/dashboard/businesses/new"
-        className="text-sm font-medium text-[var(--leaf-dark)] underline"
+        className={
+          dark
+            ? "text-sm font-medium text-[var(--marigold)] underline"
+            : "text-sm font-medium text-[var(--leaf-dark)] underline"
+        }
       >
         Create a business
       </Link>
@@ -29,9 +36,15 @@ export default function DashboardBusinessSelect({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 text-sm">
-      <label className="flex items-center gap-2">
-        <span className="font-medium text-[var(--ink)]">My Businesses</span>
+    <div className="flex flex-col gap-2 text-sm">
+      <label className="flex flex-col gap-1">
+        <span
+          className={`text-[11px] font-bold uppercase tracking-[0.12em] ${
+            dark ? "text-[var(--ink-on-dark)]/55" : "text-[var(--ink)]"
+          }`}
+        >
+          Business
+        </span>
         <select
           value={selectedId ?? businesses[0].id}
           disabled={pending}
@@ -43,7 +56,11 @@ export default function DashboardBusinessSelect({
               router.refresh();
             });
           }}
-          className="max-w-[14rem] rounded-lg border border-[var(--line)] bg-white px-2 py-1.5 text-sm"
+          className={
+            dark
+              ? "w-full rounded-lg border border-white/15 bg-white/10 px-2 py-1.5 text-sm text-[var(--ink-on-dark)]"
+              : "rounded-lg border border-[var(--line)] bg-white px-2 py-1.5 text-sm"
+          }
         >
           {businesses.map((b) => (
             <option key={b.id} value={b.id}>
@@ -58,7 +75,11 @@ export default function DashboardBusinessSelect({
             ? `/dashboard/businesses/${selectedId}`
             : "/dashboard/businesses"
         }
-        className="text-[var(--muted)] underline hover:text-[var(--ink)]"
+        className={
+          dark
+            ? "text-xs text-[var(--ink-on-dark)]/60 underline hover:text-[var(--ink-on-dark)]"
+            : "text-[var(--muted)] underline hover:text-[var(--ink)]"
+        }
       >
         Manage
       </Link>

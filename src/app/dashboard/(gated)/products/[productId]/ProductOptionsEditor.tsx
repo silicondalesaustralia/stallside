@@ -69,7 +69,7 @@ export default function ProductOptionsEditor({
   return (
     <fieldset
       disabled={disabled}
-      className="flex flex-col gap-3 rounded-lg border border-[var(--line)] p-4"
+      className="dash-card flex flex-col gap-3 p-5"
     >
       <legend className="px-1 text-sm font-semibold">Options (variants)</legend>
       <p className="text-sm text-[var(--muted)]">

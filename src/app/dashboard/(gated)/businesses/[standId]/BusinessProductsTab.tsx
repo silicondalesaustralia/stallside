@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
 import { formatMoney } from "@/lib/money";
 
 type ProductRow = {
@@ -19,17 +20,14 @@ export default function BusinessProductsTab({
   currency: string;
 }) {
   return (
-    <div className="flex max-w-xl flex-col gap-4">
+    <div className="flex w-full flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <p className="text-sm text-[var(--muted)]">
           What customers can buy on this business&apos;s checkout page.
         </p>
-        <Link
-          href={`/dashboard/products/new?standId=${standId}`}
-          className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
-        >
-          Add product
-        </Link>
+        <DashPrimaryCta href={`/dashboard/products/new?standId=${standId}`}>
+          + Add product
+        </DashPrimaryCta>
       </div>
       {products.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">

@@ -25,20 +25,31 @@ export default function CollectionPageCard({
 
   return (
     <details
-      className="rounded-xl border border-[var(--line)] bg-[var(--panel)]"
+      className="dash-card overflow-hidden"
       open={defaultOpen}
     >
-      <summary className="collections-screen-only cursor-pointer list-none px-4 py-4 marker:content-none [&::-webkit-details-marker]:hidden">
-        <div className="flex items-start justify-between gap-3">
+      <summary className="collections-screen-only cursor-pointer list-none px-5 py-4 marker:content-none [&::-webkit-details-marker]:hidden">
+        <div className="relative flex items-start justify-between gap-3 pl-3">
+          <span
+            aria-hidden
+            className="absolute inset-y-0 left-0 w-1.5 rounded-full bg-[var(--field)]"
+          />
           <div>
-            <p className="text-lg font-semibold">{group.title}</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
+              {group.collectionLabel}
+              {group.windowClosed ? " · Window closed" : ""}
+            </p>
+            <p className="mt-1 font-[family-name:var(--font-display)] text-lg font-bold">
+              {group.title}
+            </p>
             <p className="mt-1 text-sm text-[var(--muted)]">
-              {group.collectionLabel} · {group.orders.length} order
+              {group.orders.length} order
               {group.orders.length === 1 ? "" : "s"} · {takenLabel} taken
-              {group.windowClosed ? " · window closed" : ""}
             </p>
           </div>
-          <span className="mt-1 text-sm text-[var(--muted)]">Open</span>
+          <span className="mt-1 rounded-full bg-[var(--field)] px-3 py-1.5 text-sm font-bold text-[var(--ink-on-dark)]">
+            Open
+          </span>
         </div>
       </summary>
       <div className="collections-screen-only flex flex-col gap-6 border-t border-[var(--line)] px-4 py-4">

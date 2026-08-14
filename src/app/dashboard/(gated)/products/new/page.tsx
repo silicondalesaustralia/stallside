@@ -38,8 +38,10 @@ export default async function NewProductPage({
     stands.find((s) => s.id === defaultId)?.currency ?? stands[0].currency;
 
   return (
-    <main className="mx-auto max-w-lg">
-      <h1 className="text-3xl font-semibold tracking-tight">Add product</h1>
+    <main className="flex flex-col gap-6">
+      <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+        Add product
+      </h1>
       <NewProductForm
         stands={stands}
         defaultStandId={defaultId}

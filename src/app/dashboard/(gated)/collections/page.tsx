@@ -45,10 +45,12 @@ export default async function CollectionsPage() {
   return (
     <main className="flex flex-col gap-8">
       <div className="collections-screen-only">
-        <h1 className="text-3xl font-semibold tracking-tight">Collections</h1>
+        <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+          Collections
+        </h1>
         <p className="mt-1 text-[var(--muted)]">
-          {selected.name} — one container per pre-order page or subscription.
-          Open to pack, email, and print.
+          {groups.length} page{groups.length === 1 ? "" : "s"} in progress ·{" "}
+          {selected.name}
         </p>
       </div>
 

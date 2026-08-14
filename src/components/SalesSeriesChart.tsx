@@ -68,7 +68,7 @@ export default function SalesSeriesChart({
       : max;
 
   return (
-    <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-4">
+    <div className="dash-card flex h-full flex-col p-4">
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3">
         <h2 className="text-lg font-semibold">{title}</h2>
         <p className="text-sm text-[var(--muted)]">
