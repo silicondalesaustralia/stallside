@@ -36,9 +36,11 @@ export async function submitChannelInterest(formData: FormData) {
       error && typeof error === "object" && "code" in error
         ? String(error.code)
         : "";
-    if (code === "P2002") return { ok: true as const };
-    console.error("Channel interest save failed", error);
-    return { error: "Could not send. Try again." };
+    // Duplicate interest: still notify so the owner sees a fresh alert.
+    if (code !== "P2002") {
+      console.error("Channel interest save failed", error);
+      return { error: "Could not send. Try again." };
+    }
   }
 
   try {
@@ -47,6 +49,7 @@ export async function submitChannelInterest(formData: FormData) {
     return { ok: true as const };
   } catch (error) {
     console.error("Channel interest notify failed", error);
+    // Interest may already be saved; surface success so the shopper isn't stuck.
     return { ok: true as const };
   }
 }

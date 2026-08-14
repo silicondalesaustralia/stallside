@@ -24,7 +24,7 @@ export default async function DashboardLayout({
   const { businesses, selected } = await resolveSelectedBusiness(owner.id);
 
   const unreadNotifications = await prisma.notification.count({
-    where: { ownerId: owner.id, isRead: false },
+    where: { ownerId: owner.id, status: "OPEN" },
   });
 
   return (

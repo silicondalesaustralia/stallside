@@ -9,19 +9,19 @@ export default async function NotificationsPage() {
   const notifications = await prisma.notification.findMany({
     where: { ownerId: owner.id },
     include: { stand: true },
-    orderBy: [{ isRead: false as any }, { createdAt: "desc" }],
+    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
     take: 100,
   });
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const openCount = notifications.filter((n) => n.status === "OPEN").length;
 
   return (
     <div className="mx-auto max-w-4xl">
-      <NotificationsHeader unreadCount={unreadCount} />
+      <NotificationsHeader unreadCount={openCount} />
 
       {notifications.length === 0 ? (
         <div className="dash-card rounded-2xl p-8 text-center">
-          <p className="text-[var(--ink-subtle)]">No notifications yet.</p>
+          <p className="text-[var(--muted)]">No notifications yet.</p>
         </div>
       ) : (
         <NotificationsList notifications={notifications} />

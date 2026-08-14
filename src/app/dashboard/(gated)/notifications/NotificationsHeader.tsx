@@ -23,8 +23,8 @@ export default function NotificationsHeader({
           Notifications
         </h1>
         {unreadCount > 0 ? (
-          <p className="mt-1 text-sm text-[var(--ink-subtle)]">
-            {unreadCount} unread notification{unreadCount === 1 ? "" : "s"}
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            {unreadCount} open notification{unreadCount === 1 ? "" : "s"}
           </p>
         ) : null}
       </div>
@@ -35,7 +35,7 @@ export default function NotificationsHeader({
           disabled={pending}
           className="text-sm font-medium text-[var(--leaf)] hover:underline disabled:opacity-50"
         >
-          Mark all as read
+          Mark all closed
         </button>
       ) : null}
     </div>

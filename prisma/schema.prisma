@@ -827,22 +827,30 @@ enum NotificationType {
   OTHER
 }
 
+enum NotificationStatus {
+  OPEN
+  ACTIONED
+  CLOSED
+}
+
 /** In-app notifications for business owners. */
 model Notification {
-  id        String           @id @default(cuid())
+  id        String             @id @default(cuid())
   ownerId   String
-  owner     Owner            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner     Owner              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   standId   String?
-  stand     Stand?           @relation(fields: [standId], references: [id], onDelete: Cascade)
+  stand     Stand?             @relation(fields: [standId], references: [id], onDelete: Cascade)
   type      NotificationType
+  status    NotificationStatus @default(OPEN)
   title     String
   message   String
   /** JSON metadata specific to notification type (email, productId, orderId, etc.) */
   metadata  Json?
-  isRead    Boolean          @default(false)
+  isRead    Boolean            @default(false)
   readAt    DateTime?
-  createdAt DateTime         @default(now())
+  createdAt DateTime           @default(now())
 
+  @@index([ownerId, status, createdAt])
   @@index([ownerId, isRead, createdAt])
   @@index([standId, createdAt])
 }
