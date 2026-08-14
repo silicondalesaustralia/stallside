@@ -47,7 +47,11 @@ export async function resolveCheckoutSuccess(params: {
   order_id?: string;
   paypal?: string;
   token?: string;
+  sub?: string;
 }): Promise<SuccessPageState> {
+  if (params.sub) {
+    return resolveShopperSubSuccess(params.sub, params.session_id);
+  }
   if (params.session_id) return resolveStripeSuccess(params.session_id);
   if (
     (params.paypal === "1" || params.token) &&
@@ -57,6 +61,49 @@ export async function resolveCheckoutSuccess(params: {
     return resolvePayPalSuccess(params.order_id, params.token);
   }
   return emptySuccessState();
+}
+
+async function resolveShopperSubSuccess(
+  shopperSubscriptionId: string,
+  checkoutSessionId?: string,
+): Promise<SuccessPageState> {
+  const state = emptySuccessState();
+  try {
+    const { syncShopperSubFromSuccessSession } = await import(
+      "@/lib/shopper-subscription-webhook"
+    );
+    const ok = await syncShopperSubFromSuccessSession({
+      shopperSubscriptionId,
+      checkoutSessionId,
+    });
+    const row = await prisma.shopperSubscription.findUnique({
+      where: { id: shopperSubscriptionId },
+      include: {
+        offer: { select: { title: true, collectionNote: true } },
+        stand: { select: { name: true } },
+      },
+    });
+    if (!row) {
+      state.message = "Subscription not found.";
+      return state;
+    }
+    state.message = ok
+      ? `You're subscribed to ${row.offer.title} from ${row.stand.name}. Check your email for the manage link.`
+      : "Payment received — your subscription will activate shortly.";
+    if (row.offer.collectionNote) {
+      state.preOrder = {
+        collectionLabel: "Each billing cycle",
+        collectionNote: row.offer.collectionNote,
+        customerName: row.customerName,
+        items: [],
+      };
+    }
+  } catch (error) {
+    console.error("Shopper subscription success sync failed", error);
+    state.message =
+      "Payment received — your subscription will activate shortly.";
+  }
+  return state;
 }
 
 async function resolveStripeSuccess(

@@ -12,6 +12,7 @@ export default async function CheckoutSuccessPage({
     order_id?: string;
     paypal?: string;
     token?: string;
+    sub?: string;
   }>;
 }) {
   const params = await searchParams;

@@ -32,6 +32,32 @@ export default async function EditSubscriptionOfferPage({
   });
   if (!offer) notFound();
 
+  // Heal Checkout that paid but webhook never activated the row.
+  if (owner.stripeAccountId) {
+    const { healIncompleteShopperSubscription } = await import(
+      "@/lib/shopper-subscription-activate"
+    );
+    const incomplete = offer.subscriptions.filter(
+      (s) => s.status === "INCOMPLETE",
+    );
+    for (const sub of incomplete) {
+      try {
+        await healIncompleteShopperSubscription({
+          shopperSubscriptionId: sub.id,
+          stripeAccountId: owner.stripeAccountId,
+        });
+      } catch (error) {
+        console.error("Heal incomplete shopper sub failed", sub.id, error);
+      }
+    }
+  }
+
+  const subscriptions = await prisma.shopperSubscription.findMany({
+    where: { offerId: offer.id },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
+
   const products = await prisma.product.findMany({
     where: {
       standId: offer.standId,
@@ -103,11 +129,11 @@ export default async function EditSubscriptionOfferPage({
 
       <section className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold">Subscribers</h2>
-        {offer.subscriptions.length === 0 ? (
+        {subscriptions.length === 0 ? (
           <p className="text-sm text-[var(--muted)]">No subscribers yet.</p>
         ) : (
           <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)] text-sm">
-            {offer.subscriptions.map((sub) => (
+            {subscriptions.map((sub) => (
               <li
                 key={sub.id}
                 className="flex flex-wrap items-center justify-between gap-2 py-3"

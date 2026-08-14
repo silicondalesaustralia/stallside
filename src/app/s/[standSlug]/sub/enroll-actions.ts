@@ -105,7 +105,7 @@ export async function startShopperSubscriptionCheckout(input: {
       stripeAccountId: owner.stripeAccountId,
       priceId: offer.stripePriceId,
       customerEmail,
-      successUrl: `${base}/checkout/success?sub=${shopperSub.id}`,
+      successUrl: `${base}/checkout/success?sub=${shopperSub.id}&session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${base}${path}?cancelled=1`,
       applicationFeePercent: feePercent,
       metadata: {

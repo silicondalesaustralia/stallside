@@ -35,8 +35,19 @@ export async function fulfillShopperSubscriptionInvoice(
   const subscriptionId = subscriptionIdFromInvoice(invoice);
   if (!subscriptionId) return;
 
+  const metaSubId =
+    invoice.metadata?.shopperSubscriptionId ??
+    invoice.parent?.subscription_details?.metadata?.shopperSubscriptionId;
+
   const sub = await prisma.shopperSubscription.findFirst({
-    where: { stripeSubscriptionId: subscriptionId },
+    where: metaSubId
+      ? {
+          OR: [
+            { stripeSubscriptionId: subscriptionId },
+            { id: String(metaSubId) },
+          ],
+        }
+      : { stripeSubscriptionId: subscriptionId },
     include: {
       offer: {
         include: {
@@ -49,6 +60,16 @@ export async function fulfillShopperSubscriptionInvoice(
     },
   });
   if (!sub) return;
+
+  if (!sub.stripeSubscriptionId) {
+    await prisma.shopperSubscription.update({
+      where: { id: sub.id },
+      data: {
+        stripeSubscriptionId: subscriptionId,
+        status: ShopperSubStatus.ACTIVE,
+      },
+    });
+  }
 
   if (sub.skipNextCycle) {
     await prisma.shopperSubscription.update({
