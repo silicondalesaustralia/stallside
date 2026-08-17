@@ -1,5 +1,6 @@
 import ChangeBadge from "@/components/ChangeBadge";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 export default function DashboardStat({
   label,
@@ -9,7 +10,7 @@ export default function DashboardStat({
   previous,
 }: {
   label: string;
-  value: string;
+  value: ReactNode;
   href?: string;
   current?: number;
   previous?: number;
@@ -24,9 +25,9 @@ export default function DashboardStat({
       <p className="text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
         {label}
       </p>
-      <p className="mt-3 max-w-full truncate text-center font-receipt text-xl font-semibold tracking-tight tabular-nums sm:text-2xl lg:text-3xl">
+      <div className="mt-3 max-w-full text-center font-receipt text-xl font-semibold tracking-tight tabular-nums sm:text-2xl lg:text-3xl">
         {value}
-      </p>
+      </div>
       {typeof current === "number" && typeof previous === "number" ? (
         <div className="mt-1 flex justify-center">
           <ChangeBadge current={current} previous={previous} />

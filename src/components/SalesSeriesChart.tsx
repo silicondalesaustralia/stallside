@@ -1,16 +1,24 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import SalesChannelFilterBar, {
+  CHANNEL_META,
+} from "@/components/SalesChannelFilterBar";
+import SalesSeriesChartPlot from "@/components/SalesSeriesChartPlot";
 import { formatMoney } from "@/lib/money";
+import type { ChannelFilterMode } from "@/lib/use-channel-filter";
 import type {
   ChannelSalesSeries,
   SalesChannel,
   SeriesPoint,
 } from "@/lib/sales-series";
-import SalesChannelFilterBar, {
-  CHANNEL_META,
-} from "@/components/SalesChannelFilterBar";
-import SalesSeriesChartPlot from "@/components/SalesSeriesChartPlot";
+import { useMemo } from "react";
+
+type FilterControls = {
+  mode: ChannelFilterMode;
+  enabled: Record<SalesChannel, boolean>;
+  setAll: () => void;
+  toggleChannel: (key: SalesChannel) => void;
+};
 
 export default function SalesSeriesChart({
   points,
@@ -18,19 +26,21 @@ export default function SalesSeriesChart({
   channels,
   currency,
   title = "Sales over time",
+  filter,
 }: {
   points?: SeriesPoint[];
   previousPoints?: SeriesPoint[];
   channels?: ChannelSalesSeries;
   currency: string;
   title?: string;
+  filter?: FilterControls;
 }) {
-  const [mode, setMode] = useState<"all" | "channels">("all");
-  const [enabled, setEnabled] = useState<Record<SalesChannel, boolean>>({
+  const mode = filter?.mode ?? "all";
+  const enabled = filter?.enabled ?? {
     subscription: true,
     preorder: true,
     stand: true,
-  });
+  };
 
   const activeLines = useMemo(() => {
     if (!channels) {
@@ -46,8 +56,7 @@ export default function SalesSeriesChart({
     }));
   }, [channels, enabled, mode, points]);
 
-  const showPrevious =
-    Boolean(previousPoints?.length) && mode === "all";
+  const showPrevious = Boolean(previousPoints?.length) && mode === "all";
   const max = Math.max(
     ...activeLines.flatMap((l) => l.points.map((p) => p.cents)),
     ...(showPrevious && previousPoints
@@ -60,25 +69,6 @@ export default function SalesSeriesChart({
       ? 0
       : max;
 
-  function toggleChannel(key: SalesChannel) {
-    if (mode === "all") {
-      setMode("channels");
-      setEnabled({
-        subscription: key === "subscription",
-        preorder: key === "preorder",
-        stand: key === "stand",
-      });
-      return;
-    }
-    setEnabled((prev) => {
-      const next = { ...prev, [key]: !prev[key] };
-      if (!next.subscription && !next.preorder && !next.stand) {
-        return { ...prev, [key]: true };
-      }
-      return next;
-    });
-  }
-
   return (
     <div className="dash-card flex h-full flex-col p-4">
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3">
@@ -88,12 +78,12 @@ export default function SalesSeriesChart({
         </p>
       </div>
 
-      {channels ? (
+      {channels && filter ? (
         <SalesChannelFilterBar
           mode={mode}
           enabled={enabled}
-          onAll={() => setMode("all")}
-          onToggle={toggleChannel}
+          onAll={filter.setAll}
+          onToggle={filter.toggleChannel}
         />
       ) : null}
 

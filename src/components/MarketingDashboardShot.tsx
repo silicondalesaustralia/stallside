@@ -2,6 +2,7 @@ import DashboardGreeting from "@/components/DashboardGreeting";
 import DashboardLowStockCard from "@/components/DashboardLowStockCard";
 import DashboardStat from "@/components/DashboardStat";
 import MarketingDashboardSidebar from "@/components/MarketingDashboardSidebar";
+import PaymentMethodValue from "@/components/PaymentMethodValue";
 import SalesSeriesChart from "@/components/SalesSeriesChart";
 import { formatMoney } from "@/lib/money";
 import type { SeriesPoint } from "@/lib/sales-series";
@@ -30,8 +31,6 @@ const SALES = SERIES.reduce((s, p) => s + p.cents, 0);
 const PREV_SALES = PREV.reduce((s, p) => s + p.cents, 0);
 const ORDERS = 64;
 const PREV_ORDERS = 51;
-const CARD = 78600;
-const PREV_CARD = 61200;
 
 const LOW_STOCK = [
   { id: "eggs", name: "1 × Dozen Eggs", stockQuantity: 3 },
@@ -94,10 +93,8 @@ export default function MarketingDashboardShot({
                 previous={PREV_ORDERS}
               />
               <DashboardStat
-                label="Card / PayPal"
-                value={formatMoney(CARD, currency)}
-                current={CARD}
-                previous={PREV_CARD}
+                label="Payment Method"
+                value={<PaymentMethodValue hasCash hasCheckout />}
               />
             </div>
             <div className="min-h-[154px] min-w-0 xl:flex-1">

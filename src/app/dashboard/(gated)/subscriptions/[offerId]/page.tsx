@@ -5,12 +5,12 @@ import { prisma } from "@/lib/prisma";
 import {
   intervalLabel,
   subscriptionOfferPath,
-  subscriptionManageUrl,
 } from "@/lib/subscription-offer";
 import { formatMoney } from "@/lib/money";
 import { SITE_URL } from "@/lib/legal";
 import { productCatalogWhere } from "@/lib/product-visibility";
 import SubscriptionOfferForm from "../SubscriptionOfferForm";
+import SubscriptionSubscribersList from "../SubscriptionSubscribersList";
 
 export default async function EditSubscriptionOfferPage({
   params,
@@ -139,32 +139,10 @@ export default async function EditSubscriptionOfferPage({
         {subscriptions.length === 0 ? (
           <p className="text-sm text-[var(--muted)]">No subscribers yet.</p>
         ) : (
-          <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)] text-sm">
-            {subscriptions.map((sub) => (
-              <li
-                key={sub.id}
-                className="flex flex-wrap items-center justify-between gap-2 py-3"
-              >
-                <div>
-                  <p className="font-medium">{sub.customerName}</p>
-                  <p className="text-[var(--muted)]">
-                    {sub.customerEmail} · {sub.status.toLowerCase()}
-                    {sub.nextCollectionAt
-                      ? ` · next ${sub.nextCollectionAt.toLocaleDateString()}`
-                      : ""}
-                  </p>
-                </div>
-                <a
-                  href={subscriptionManageUrl(offer.stand.slug, sub.manageToken)}
-                  className="text-[var(--leaf-dark)] underline"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Manage link
-                </a>
-              </li>
-            ))}
-          </ul>
+          <SubscriptionSubscribersList
+            standSlug={offer.stand.slug}
+            subscriptions={subscriptions}
+          />
         )}
       </section>
     </main>

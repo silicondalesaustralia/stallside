@@ -1,12 +1,9 @@
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { formatMoney } from "@/lib/money";
-import DashboardStat from "@/components/DashboardStat";
 import DateRangeFilter from "@/components/DateRangeFilter";
-import SalesSeriesChart from "@/components/SalesSeriesChart";
+import SalesAnalyticsPanel from "@/components/SalesAnalyticsPanel";
 import { resolveDateWindow } from "@/lib/date-range";
-import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
-import { buildChannelSalesSeries } from "@/lib/sales-series";
+import { COUNTED_STATUSES } from "@/lib/order-metrics";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import Link from "next/link";
 import OrderListRow from "./OrderListRow";
@@ -39,6 +36,14 @@ export default async function OrdersPage({
   }
 
   const standScope = { ownerId: owner.id, standId: selected.id };
+  const metricSelect = {
+    totalCents: true,
+    paymentMethod: true,
+    currency: true,
+    createdAt: true,
+    isPreOrder: true,
+    shopperSubscriptionId: true,
+  } as const;
 
   const [currentOrders, previousOrders, listedOrders] = await Promise.all([
     prisma.order.findMany({
@@ -47,14 +52,7 @@ export default async function OrdersPage({
         createdAt: { gte: window.start, lte: window.end },
         paymentStatus: { in: COUNTED_STATUSES },
       },
-      select: {
-        totalCents: true,
-        paymentMethod: true,
-        currency: true,
-        createdAt: true,
-        isPreOrder: true,
-        shopperSubscriptionId: true,
-      },
+      select: metricSelect,
       orderBy: { createdAt: "asc" },
     }),
     prisma.order.findMany({
@@ -63,14 +61,7 @@ export default async function OrdersPage({
         createdAt: { gte: window.prevStart, lte: window.prevEnd },
         paymentStatus: { in: COUNTED_STATUSES },
       },
-      select: {
-        totalCents: true,
-        paymentMethod: true,
-        currency: true,
-        createdAt: true,
-        isPreOrder: true,
-        shopperSubscriptionId: true,
-      },
+      select: metricSelect,
     }),
     prisma.order.findMany({
       where: {
@@ -105,13 +96,13 @@ export default async function OrdersPage({
     }),
   ]);
 
-  const current = summarizeOrders(currentOrders);
-  const previous = summarizeOrders(previousOrders);
-  const channelSeries = buildChannelSalesSeries(
-    currentOrders,
-    window.start,
-    window.end,
-  );
+  const serialize = (
+    orders: typeof currentOrders,
+  ) =>
+    orders.map((o) => ({
+      ...o,
+      createdAt: o.createdAt.toISOString(),
+    }));
 
   return (
     <main className="flex flex-col gap-6">
@@ -142,36 +133,15 @@ export default async function OrdersPage({
         to={window.toParam}
       />
 
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <DashboardStat
-          label="Sales"
-          value={formatMoney(current.salesCents, current.currency)}
-          current={current.salesCents}
-          previous={previous.salesCents}
-        />
-        <DashboardStat
-          label="Cash / PayID"
-          value={formatMoney(current.cashCents, current.currency)}
-          current={current.cashCents}
-          previous={previous.cashCents}
-        />
-        <DashboardStat
-          label="Card / PayPal"
-          value={formatMoney(current.digitalCents, current.currency)}
-          current={current.digitalCents}
-          previous={previous.digitalCents}
-        />
-        <DashboardStat
-          label="Orders"
-          value={String(current.orderCount)}
-          current={current.orderCount}
-          previous={previous.orderCount}
-        />
-      </section>
-
-      <SalesSeriesChart
-        channels={channelSeries}
-        currency={current.currency}
+      <SalesAnalyticsPanel
+        currentOrders={serialize(currentOrders)}
+        previousOrders={serialize(previousOrders)}
+        rangeStart={window.start.toISOString()}
+        rangeEnd={window.end.toISOString()}
+        prevStart={window.prevStart.toISOString()}
+        prevEnd={window.prevEnd.toISOString()}
+        chartTitle="Sales over time"
+        layout="orders"
       />
 
       {listedOrders.length === 0 ? (

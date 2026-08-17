@@ -2,19 +2,34 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import DashboardChannelCard from "@/components/DashboardChannelCard";
 import DashboardGreeting from "@/components/DashboardGreeting";
-import DashboardHomeStats from "@/components/DashboardHomeStats";
 import DashboardLowStockCard from "@/components/DashboardLowStockCard";
 import DashboardNextCard from "@/components/DashboardNextCard";
 import DashboardPanels from "@/components/DashboardPanels";
 import DateRangeFilter from "@/components/DateRangeFilter";
-import SalesSeriesChart from "@/components/SalesSeriesChart";
+import SalesAnalyticsPanel from "@/components/SalesAnalyticsPanel";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveDateWindow } from "@/lib/date-range";
 import { summarizeOrders } from "@/lib/order-metrics";
 import { ownerHasProAccess } from "@/lib/owner-trial";
-import { buildChannelSalesSeries, buildSalesSeries } from "@/lib/sales-series";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { loadDashboardHomeData } from "./load-dashboard-home";
+import type { PaymentMethod } from "@/generated/prisma/client";
+
+function serializeOrders(
+  orders: {
+    totalCents: number;
+    paymentMethod: PaymentMethod;
+    currency: string;
+    createdAt: Date;
+    isPreOrder: boolean;
+    shopperSubscriptionId: string | null;
+  }[],
+) {
+  return orders.map((o) => ({
+    ...o,
+    createdAt: o.createdAt.toISOString(),
+  }));
+}
 
 export default async function DashboardPage({
   searchParams,
@@ -51,17 +66,6 @@ export default async function DashboardPage({
   });
 
   const current = summarizeOrders(data.currentOrders);
-  const previous = summarizeOrders(data.previousOrders);
-  const channelSeries = buildChannelSalesSeries(
-    data.currentOrders,
-    window.start,
-    window.end,
-  );
-  const previousSeries = buildSalesSeries(
-    data.previousOrders,
-    window.prevStart,
-    window.prevEnd,
-  );
   const standName = selected.name;
   const lowStock = data.lowStockRows.map((p) => ({
     id: p.id,
@@ -102,21 +106,17 @@ export default async function DashboardPage({
         />
       </div>
 
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
-        <DashboardHomeStats
-          current={current}
-          previous={previous}
-          ordersHref={ordersHref}
-        />
-        <div className="min-h-[154px] flex-1">
-          <SalesSeriesChart
-            channels={channelSeries}
-            previousPoints={previousSeries}
-            currency={current.currency}
-            title={`${window.label} vs prior`}
-          />
-        </div>
-      </div>
+      <SalesAnalyticsPanel
+        currentOrders={serializeOrders(data.currentOrders)}
+        previousOrders={serializeOrders(data.previousOrders)}
+        rangeStart={window.start.toISOString()}
+        rangeEnd={window.end.toISOString()}
+        prevStart={window.prevStart.toISOString()}
+        prevEnd={window.prevEnd.toISOString()}
+        chartTitle={`${window.label} vs prior`}
+        ordersHref={ordersHref}
+        layout="home"
+      />
 
       <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
         <DashboardNextCard

@@ -1,14 +1,16 @@
 import DashboardStat from "@/components/DashboardStat";
+import PaymentMethodValue from "@/components/PaymentMethodValue";
 import { formatMoney } from "@/lib/money";
 
 type Summary = {
   salesCents: number;
-  cashCents: number;
-  digitalCents: number;
   orderCount: number;
   currency: string;
+  hasCash: boolean;
+  hasCheckout: boolean;
 };
 
+/** Static stats for marketing/demo shots (no live channel filter). */
 export default function DashboardHomeStats({
   current,
   previous,
@@ -35,11 +37,14 @@ export default function DashboardHomeStats({
         previous={previous.orderCount}
       />
       <DashboardStat
-        label="Card / PayPal"
+        label="Payment Method"
         href={ordersHref}
-        value={formatMoney(current.digitalCents, current.currency)}
-        current={current.digitalCents}
-        previous={previous.digitalCents}
+        value={
+          <PaymentMethodValue
+            hasCash={current.hasCash}
+            hasCheckout={current.hasCheckout}
+          />
+        }
       />
     </div>
   );
