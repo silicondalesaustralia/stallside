@@ -41,8 +41,8 @@ export type OrderSummary = {
   digitalCents: number;
   orderCount: number;
   currency: string;
-  hasCash: boolean;
-  hasCheckout: boolean;
+  cashOrderCount: number;
+  checkoutOrderCount: number;
 };
 
 function isCashLike(method: string) {
@@ -54,18 +54,18 @@ export function summarizeOrders(orders: OrderMetricRow[]): OrderSummary {
   let cashCents = 0;
   let digitalCents = 0;
   let currency = "AUD";
-  let hasCash = false;
-  let hasCheckout = false;
+  let cashOrderCount = 0;
+  let checkoutOrderCount = 0;
 
   for (const order of orders) {
     currency = order.currency || currency;
     salesCents += order.totalCents;
     if (isCashLike(order.paymentMethod)) {
       cashCents += order.totalCents;
-      hasCash = true;
+      cashOrderCount += 1;
     } else {
       digitalCents += order.totalCents;
-      hasCheckout = true;
+      checkoutOrderCount += 1;
     }
   }
 
@@ -75,8 +75,8 @@ export function summarizeOrders(orders: OrderMetricRow[]): OrderSummary {
     digitalCents,
     orderCount: orders.length,
     currency,
-    hasCash,
-    hasCheckout,
+    cashOrderCount,
+    checkoutOrderCount,
   };
 }
 

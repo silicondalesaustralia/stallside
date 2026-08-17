@@ -3,7 +3,7 @@ export function CashMethodIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="size-5"
+      className="size-4 shrink-0 sm:size-5"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -21,7 +21,7 @@ export function CheckoutMethodIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="size-5"
+      className="size-4 shrink-0 sm:size-5"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -37,30 +37,34 @@ export function CheckoutMethodIcon() {
 }
 
 export default function PaymentMethodValue({
-  hasCash,
-  hasCheckout,
+  cashOrderCount,
+  checkoutOrderCount,
 }: {
-  hasCash: boolean;
-  hasCheckout: boolean;
+  cashOrderCount: number;
+  checkoutOrderCount: number;
 }) {
-  if (!hasCash && !hasCheckout) {
+  if (cashOrderCount === 0 && checkoutOrderCount === 0) {
     return <span className="text-[var(--muted)]">—</span>;
   }
 
   return (
-    <span className="inline-flex flex-wrap items-center justify-center gap-3 font-sans text-base font-semibold tracking-normal sm:text-lg">
-      {hasCash ? (
-        <span className="inline-flex items-center gap-1.5 text-[var(--field)]">
-          <CashMethodIcon />
-          <span>Cash</span>
+    <span className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-sans text-sm font-semibold tracking-normal sm:text-base">
+      <span className="inline-flex items-center gap-1.5 text-[var(--field)]">
+        <CashMethodIcon />
+        <span>
+          Cash{" "}
+          <span className="font-receipt tabular-nums">{cashOrderCount}</span>
         </span>
-      ) : null}
-      {hasCheckout ? (
-        <span className="inline-flex items-center gap-1.5 text-[var(--field)]">
-          <CheckoutMethodIcon />
-          <span>Checkout</span>
+      </span>
+      <span className="inline-flex items-center gap-1.5 text-[var(--field)]">
+        <CheckoutMethodIcon />
+        <span>
+          Checkout{" "}
+          <span className="font-receipt tabular-nums">
+            {checkoutOrderCount}
+          </span>
         </span>
-      ) : null}
+      </span>
     </span>
   );
 }

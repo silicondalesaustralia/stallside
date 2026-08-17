@@ -94,7 +94,12 @@ export default function MarketingDashboardShot({
               />
               <DashboardStat
                 label="Payment Method"
-                value={<PaymentMethodValue hasCash hasCheckout />}
+                value={
+                  <PaymentMethodValue
+                    cashOrderCount={18}
+                    checkoutOrderCount={46}
+                  />
+                }
               />
             </div>
             <div className="min-h-[154px] min-w-0 xl:flex-1">

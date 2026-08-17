@@ -6,8 +6,8 @@ type Summary = {
   salesCents: number;
   orderCount: number;
   currency: string;
-  hasCash: boolean;
-  hasCheckout: boolean;
+  cashOrderCount: number;
+  checkoutOrderCount: number;
 };
 
 /** Static stats for marketing/demo shots (no live channel filter). */
@@ -41,8 +41,8 @@ export default function DashboardHomeStats({
         href={ordersHref}
         value={
           <PaymentMethodValue
-            hasCash={current.hasCash}
-            hasCheckout={current.hasCheckout}
+            cashOrderCount={current.cashOrderCount}
+            checkoutOrderCount={current.checkoutOrderCount}
           />
         }
       />

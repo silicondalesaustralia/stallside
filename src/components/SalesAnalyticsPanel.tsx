@@ -105,8 +105,8 @@ export default function SalesAnalyticsPanel({
         href={ordersHref}
         value={
           <PaymentMethodValue
-            hasCash={current.hasCash}
-            hasCheckout={current.hasCheckout}
+            cashOrderCount={current.cashOrderCount}
+            checkoutOrderCount={current.checkoutOrderCount}
           />
         }
       />
