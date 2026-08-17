@@ -9,6 +9,7 @@ import {
 } from "@/lib/subscription-offer";
 import { formatMoney } from "@/lib/money";
 import { SITE_URL } from "@/lib/legal";
+import { productCatalogWhere } from "@/lib/product-visibility";
 import SubscriptionOfferForm from "../SubscriptionOfferForm";
 
 export default async function EditSubscriptionOfferPage({
@@ -58,11 +59,17 @@ export default async function EditSubscriptionOfferPage({
     take: 50,
   });
 
+  const selectedProductIds = offer.items.map((item) => item.productId);
   const products = await prisma.product.findMany({
     where: {
       standId: offer.standId,
       ownerId: owner.id,
-      isArchived: false,
+      OR: [
+        productCatalogWhere,
+        ...(selectedProductIds.length
+          ? [{ id: { in: selectedProductIds } }]
+          : []),
+      ],
     },
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     select: { id: true, name: true, priceCents: true },

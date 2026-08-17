@@ -6,7 +6,7 @@ import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesSeriesChart from "@/components/SalesSeriesChart";
 import { resolveDateWindow } from "@/lib/date-range";
 import { COUNTED_STATUSES, summarizeOrders } from "@/lib/order-metrics";
-import { buildSalesSeries } from "@/lib/sales-series";
+import { buildChannelSalesSeries } from "@/lib/sales-series";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import Link from "next/link";
 import OrderListRow from "./OrderListRow";
@@ -52,6 +52,8 @@ export default async function OrdersPage({
         paymentMethod: true,
         currency: true,
         createdAt: true,
+        isPreOrder: true,
+        shopperSubscriptionId: true,
       },
       orderBy: { createdAt: "asc" },
     }),
@@ -66,6 +68,8 @@ export default async function OrdersPage({
         paymentMethod: true,
         currency: true,
         createdAt: true,
+        isPreOrder: true,
+        shopperSubscriptionId: true,
       },
     }),
     prisma.order.findMany({
@@ -87,6 +91,8 @@ export default async function OrdersPage({
         customerName: true,
         customerPhone: true,
         receiptEmail: true,
+        isPreOrder: true,
+        shopperSubscriptionId: true,
         stand: { select: { name: true } },
         items: {
           select: {
@@ -101,7 +107,11 @@ export default async function OrdersPage({
 
   const current = summarizeOrders(currentOrders);
   const previous = summarizeOrders(previousOrders);
-  const series = buildSalesSeries(currentOrders, window.start, window.end);
+  const channelSeries = buildChannelSalesSeries(
+    currentOrders,
+    window.start,
+    window.end,
+  );
 
   return (
     <main className="flex flex-col gap-6">
@@ -159,7 +169,10 @@ export default async function OrdersPage({
         />
       </section>
 
-      <SalesSeriesChart points={series} currency={current.currency} />
+      <SalesSeriesChart
+        channels={channelSeries}
+        currency={current.currency}
+      />
 
       {listedOrders.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">No orders in this range.</p>

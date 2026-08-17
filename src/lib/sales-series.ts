@@ -1,24 +1,45 @@
 export type SeriesPoint = { label: string; cents: number };
 
-/** Bucket paid sales into chart points for the selected window. */
-export function buildSalesSeries(
-  orders: { totalCents: number; createdAt: Date }[],
+export type SalesChannel = "subscription" | "preorder" | "stand";
+
+export type ChannelOrderRow = {
+  totalCents: number;
+  createdAt: Date;
+  isPreOrder: boolean;
+  shopperSubscriptionId: string | null;
+};
+
+export type ChannelSalesSeries = {
+  all: SeriesPoint[];
+  subscription: SeriesPoint[];
+  preorder: SeriesPoint[];
+  stand: SeriesPoint[];
+};
+
+export function orderSalesChannel(order: {
+  isPreOrder: boolean;
+  shopperSubscriptionId: string | null;
+}): SalesChannel {
+  if (order.shopperSubscriptionId) return "subscription";
+  if (order.isPreOrder) return "preorder";
+  return "stand";
+}
+
+function emptyBuckets(
   start: Date,
   end: Date,
-): SeriesPoint[] {
+): { buckets: SeriesPoint[]; span: "hour" | "day" | "week" } {
   const spanMs = end.getTime() - start.getTime();
   const dayMs = 24 * 60 * 60 * 1000;
 
   if (spanMs <= dayMs + 1000) {
-    const buckets = Array.from({ length: 24 }, (_, hour) => ({
-      label: `${hour}:00`,
-      cents: 0,
-    }));
-    for (const order of orders) {
-      const hour = order.createdAt.getHours();
-      buckets[hour].cents += order.totalCents;
-    }
-    return buckets;
+    return {
+      span: "hour",
+      buckets: Array.from({ length: 24 }, (_, hour) => ({
+        label: `${hour}:00`,
+        cents: 0,
+      })),
+    };
   }
 
   if (spanMs <= 45 * dayMs) {
@@ -32,33 +53,74 @@ export function buildSalesSeries(
         cents: 0,
       });
     }
-    for (const order of orders) {
-      const idx = Math.floor(
-        (startOfLocalDay(order.createdAt).getTime() - startOfLocalDay(start).getTime()) /
-          dayMs,
-      );
-      if (idx >= 0 && idx < buckets.length) buckets[idx].cents += order.totalCents;
-    }
-    return buckets;
+    return { span: "day", buckets };
   }
 
-  const weeks: SeriesPoint[] = [];
+  const buckets: SeriesPoint[] = [];
   let cursor = startOfLocalDay(start);
   while (cursor <= end) {
-    weeks.push({
+    buckets.push({
       label: `${cursor.getDate()}/${cursor.getMonth() + 1}`,
       cents: 0,
     });
     cursor = addDays(cursor, 7);
   }
+  return { span: "week", buckets };
+}
+
+function bucketIndex(
+  createdAt: Date,
+  start: Date,
+  span: "hour" | "day" | "week",
+  length: number,
+): number {
+  const dayMs = 24 * 60 * 60 * 1000;
+  if (span === "hour") return createdAt.getHours();
+  const idx = Math.floor(
+    (startOfLocalDay(createdAt).getTime() - startOfLocalDay(start).getTime()) /
+      (span === "week" ? 7 * dayMs : dayMs),
+  );
+  if (idx < 0 || idx >= length) return -1;
+  return idx;
+}
+
+/** Bucket paid sales into chart points for the selected window. */
+export function buildSalesSeries(
+  orders: { totalCents: number; createdAt: Date }[],
+  start: Date,
+  end: Date,
+): SeriesPoint[] {
+  const { buckets, span } = emptyBuckets(start, end);
   for (const order of orders) {
-    const idx = Math.floor(
-      (startOfLocalDay(order.createdAt).getTime() - startOfLocalDay(start).getTime()) /
-        (7 * dayMs),
-    );
-    if (idx >= 0 && idx < weeks.length) weeks[idx].cents += order.totalCents;
+    const idx = bucketIndex(order.createdAt, start, span, buckets.length);
+    if (idx >= 0) buckets[idx].cents += order.totalCents;
   }
-  return weeks;
+  return buckets;
+}
+
+/** All + per-channel series sharing the same time buckets. */
+export function buildChannelSalesSeries(
+  orders: ChannelOrderRow[],
+  start: Date,
+  end: Date,
+): ChannelSalesSeries {
+  const { buckets, span } = emptyBuckets(start, end);
+  const all = buckets.map((b) => ({ ...b }));
+  const subscription = buckets.map((b) => ({ ...b }));
+  const preorder = buckets.map((b) => ({ ...b }));
+  const stand = buckets.map((b) => ({ ...b }));
+
+  for (const order of orders) {
+    const idx = bucketIndex(order.createdAt, start, span, buckets.length);
+    if (idx < 0) continue;
+    all[idx].cents += order.totalCents;
+    const channel = orderSalesChannel(order);
+    if (channel === "subscription") subscription[idx].cents += order.totalCents;
+    else if (channel === "preorder") preorder[idx].cents += order.totalCents;
+    else stand[idx].cents += order.totalCents;
+  }
+
+  return { all, subscription, preorder, stand };
 }
 
 function startOfLocalDay(d: Date) {

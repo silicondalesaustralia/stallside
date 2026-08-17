@@ -2,7 +2,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
-import { productLiveWhere } from "@/lib/product-visibility";
+import { productCatalogWhere } from "@/lib/product-visibility";
 import SubscriptionOfferForm from "../SubscriptionOfferForm";
 
 export default async function NewSubscriptionOfferPage() {
@@ -20,7 +20,7 @@ export default async function NewSubscriptionOfferPage() {
   }
 
   const products = await prisma.product.findMany({
-    where: { standId: selected.id, ownerId: owner.id, ...productLiveWhere },
+    where: { standId: selected.id, ownerId: owner.id, ...productCatalogWhere },
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     select: { id: true, name: true, priceCents: true },
   });

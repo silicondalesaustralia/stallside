@@ -12,7 +12,7 @@ import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveDateWindow } from "@/lib/date-range";
 import { summarizeOrders } from "@/lib/order-metrics";
 import { ownerHasProAccess } from "@/lib/owner-trial";
-import { buildSalesSeries } from "@/lib/sales-series";
+import { buildChannelSalesSeries, buildSalesSeries } from "@/lib/sales-series";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { loadDashboardHomeData } from "./load-dashboard-home";
 
@@ -52,7 +52,11 @@ export default async function DashboardPage({
 
   const current = summarizeOrders(data.currentOrders);
   const previous = summarizeOrders(data.previousOrders);
-  const series = buildSalesSeries(data.currentOrders, window.start, window.end);
+  const channelSeries = buildChannelSalesSeries(
+    data.currentOrders,
+    window.start,
+    window.end,
+  );
   const previousSeries = buildSalesSeries(
     data.previousOrders,
     window.prevStart,
@@ -106,7 +110,7 @@ export default async function DashboardPage({
         />
         <div className="min-h-[154px] flex-1">
           <SalesSeriesChart
-            points={series}
+            channels={channelSeries}
             previousPoints={previousSeries}
             currency={current.currency}
             title={`${window.label} vs prior`}

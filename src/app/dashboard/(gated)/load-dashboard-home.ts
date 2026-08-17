@@ -25,6 +25,8 @@ export async function loadDashboardHomeData(args: {
     paymentMethod: true,
     currency: true,
     createdAt: true,
+    isPreOrder: true,
+    shopperSubscriptionId: true,
   } as const;
 
   const [

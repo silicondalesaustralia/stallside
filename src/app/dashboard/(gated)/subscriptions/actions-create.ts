@@ -131,6 +131,7 @@ export async function createSubscriptionOffer(formData: FormData) {
       standId: stand.id,
       ownerId: owner.id,
       isArchived: false,
+      isHidden: false,
     },
   });
   if (products.length !== rows.length) {

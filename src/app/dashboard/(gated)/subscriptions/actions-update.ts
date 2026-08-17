@@ -63,6 +63,7 @@ export async function updateSubscriptionOffer(
       standId: existing.standId,
       ownerId: owner.id,
       isArchived: false,
+      isHidden: false,
     },
   });
   if (products.length !== rows.length) {
