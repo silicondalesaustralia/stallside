@@ -101,9 +101,6 @@ export default function LandingHero() {
           <p className="mt-3 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-[var(--ink-on-dark)] sm:mt-4 sm:text-2xl xl:mt-3 xl:text-xl">
             {APP_TAGLINE}
           </p>
-          <div className="mt-4 rounded-xl bg-[var(--panel)] p-1 shadow-sm">
-            <LpHeroFeaturePoints points={DEFAULT_HERO_FEATURE_POINTS} />
-          </div>
           <p className="mt-3 max-w-xl text-base leading-snug text-[var(--ink-on-dark)]/75 xl:mt-2 xl:text-sm">
             {APP_POSITIONING}
           </p>
@@ -156,6 +153,9 @@ export default function LandingHero() {
 
         <div className="min-w-0">
           <HeroCheckoutDemo />
+          <div className="mt-4 rounded-xl bg-[var(--panel)] p-1 shadow-sm">
+            <LpHeroFeaturePoints points={DEFAULT_HERO_FEATURE_POINTS} />
+          </div>
         </div>
       </div>
     </section>
