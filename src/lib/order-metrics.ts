@@ -1,20 +1,31 @@
-import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
 import {
   orderSalesChannel,
   type SalesChannel,
 } from "@/lib/sales-series";
 
-export const COUNTED_STATUSES: PaymentStatus[] = [
-  PaymentStatus.PAID,
-  PaymentStatus.CUSTOMER_CONFIRMED,
-  PaymentStatus.DEPOSIT_PAID,
-  PaymentStatus.BALANCE_DUE,
-  PaymentStatus.BALANCE_FAILED,
+export type CountedPaymentStatus =
+  | "PAID"
+  | "CUSTOMER_CONFIRMED"
+  | "DEPOSIT_PAID"
+  | "BALANCE_DUE"
+  | "BALANCE_FAILED";
+
+/** Statuses that count toward sales charts / totals. Mutable for Prisma `in` filters. */
+export const COUNTED_STATUSES: CountedPaymentStatus[] = [
+  "PAID",
+  "CUSTOMER_CONFIRMED",
+  "DEPOSIT_PAID",
+  "BALANCE_DUE",
+  "BALANCE_FAILED",
 ];
+
+export function isCountedPaymentStatus(status: string): boolean {
+  return COUNTED_STATUSES.includes(status as CountedPaymentStatus);
+}
 
 export type OrderMetricRow = {
   totalCents: number;
-  paymentMethod: PaymentMethod;
+  paymentMethod: string;
   currency: string;
   createdAt: Date;
 };
@@ -34,6 +45,10 @@ export type OrderSummary = {
   hasCheckout: boolean;
 };
 
+function isCashLike(method: string) {
+  return method === "CASH" || method === "LOCAL_TRANSFER";
+}
+
 export function summarizeOrders(orders: OrderMetricRow[]): OrderSummary {
   let salesCents = 0;
   let cashCents = 0;
@@ -45,10 +60,7 @@ export function summarizeOrders(orders: OrderMetricRow[]): OrderSummary {
   for (const order of orders) {
     currency = order.currency || currency;
     salesCents += order.totalCents;
-    if (
-      order.paymentMethod === PaymentMethod.CASH ||
-      order.paymentMethod === PaymentMethod.LOCAL_TRANSFER
-    ) {
+    if (isCashLike(order.paymentMethod)) {
       cashCents += order.totalCents;
       hasCash = true;
     } else {

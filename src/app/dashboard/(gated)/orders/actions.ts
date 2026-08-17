@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { PaymentStatus } from "@/generated/prisma/client";
 import { COUNTED_STATUSES } from "@/lib/order-metrics";
 
-const RESTORE_STATUSES: PaymentStatus[] = COUNTED_STATUSES;
+const RESTORE_STATUSES = COUNTED_STATUSES as PaymentStatus[];
 
 export async function deleteOrder(orderId: string) {
   const { owner } = await requireOwner();

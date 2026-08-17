@@ -1,7 +1,7 @@
 import DashListCard from "@/components/DashListCard";
 import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
 import { formatMoney } from "@/lib/money";
-import { COUNTED_STATUSES } from "@/lib/order-metrics";
+import { COUNTED_STATUSES, isCountedPaymentStatus } from "@/lib/order-metrics";
 import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
 import OrderCustomerBadge from "./OrderCustomerBadge";
 import OrderDeleteButton from "./OrderDeleteButton";
@@ -104,7 +104,7 @@ export default function OrderListRow({ order }: { order: OrderRow }) {
           <OrderDeleteButton
             orderId={order.id}
             orderNumber={order.orderNumber}
-            restoresStock={COUNTED_STATUSES.includes(order.paymentStatus)}
+            restoresStock={isCountedPaymentStatus(order.paymentStatus)}
           />
         </div>
       </DashListCard>
