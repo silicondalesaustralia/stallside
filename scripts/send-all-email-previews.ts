@@ -19,6 +19,7 @@ import {
   FEATURE_ANNOUNCE_SUBJECT,
   featureAnnounceHtml,
 } from "../src/lib/lifecycle-emails/feature-announce";
+import { trialWelcomeHtml } from "../src/lib/lifecycle-emails/trial";
 
 const to = (process.argv[2] || "jono@silicondales.com").trim().toLowerCase();
 const name = "Jono";
@@ -154,18 +155,8 @@ function buildJobs(): Job[] {
       label: "Welcome (Free signup)",
       kind: "lifecycle_welcome",
       replyTo: emailReplyTo(),
-      subject: `Welcome to ${APP_NAME} - let’s get your stand live`,
-      html: emailShell(
-        `Welcome to ${APP_NAME}`,
-        `
-          <p>Hi ${greetName(name)},</p>
-          <p>Thanks for joining ${APP_NAME}. Glad you&apos;re here.</p>
-          <p><strong>Free is $0/mo with every feature</strong> - cash, PayID (Australia only),
-          Tap &amp; Go, pre-orders, branding, restock emails, and more.</p>
-          ${ctaButton(L.newStand, "Create your first stand")}
-          <p><a href="${L.billing}">See Pro pricing</a> · <a href="${L.knowledge}">Guides</a></p>
-        `,
-      ),
+      subject: `Welcome to ${APP_NAME} - let’s get you live`,
+      html: trialWelcomeHtml(name),
     },
     {
       label: "Pro welcome",

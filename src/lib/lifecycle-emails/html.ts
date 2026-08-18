@@ -38,14 +38,35 @@ export function emailShell(title: string, bodyHtml: string): string {
   `;
 }
 
+const CTA_LINK_STYLE =
+  "background:#2E7D3F;color:#fff;padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block";
+
+function ctaLink(href: string, label: string): string {
+  return `<a href="${href}" style="${CTA_LINK_STYLE}">${escapeHtml(label)}</a>`;
+}
+
 export function ctaButton(href: string, label: string): string {
   return `
     <p style="margin:24px 0">
-      <a href="${href}"
-         style="background:#2E7D3F;color:#fff;padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block">
-        ${escapeHtml(label)}
-      </a>
+      ${ctaLink(href, label)}
     </p>
+  `;
+}
+
+/** Side-by-side CTAs. Table layout stays inline in most mail clients. */
+export function ctaButtonRow(
+  buttons: Array<{ href: string; label: string }>,
+): string {
+  const cells = buttons
+    .map(
+      (button, i) =>
+        `<td style="padding:${i === 0 ? "0 10px 0 0" : "0"}">${ctaLink(button.href, button.label)}</td>`,
+    )
+    .join("");
+  return `
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0">
+      <tr>${cells}</tr>
+    </table>
   `;
 }
 
