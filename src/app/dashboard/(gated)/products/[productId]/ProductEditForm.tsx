@@ -18,11 +18,16 @@ const inputClass =
 
 export default function ProductEditForm({
   product,
+  initialImageError,
 }: {
   product: ProductFields;
+  initialImageError?: string | null;
 }) {
   const router = useRouter();
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(
+    initialImageError ?? null,
+  );
+  const [imageBusy, setImageBusy] = useState(false);
   const [preOrderEligible, setPreOrderEligible] = useState(
     product.preOrderEligible,
   );
@@ -31,6 +36,10 @@ export default function ProductEditForm({
   const priceDefault = (product.priceCents / 100).toFixed(2);
 
   function onSubmit(formData: FormData) {
+    if (imageBusy) {
+      setMessage("Wait for the photo to finish preparing, then save.");
+      return;
+    }
     const payload = new FormData();
     for (const [key, value] of formData.entries()) {
       payload.append(key, value);
@@ -63,6 +72,7 @@ export default function ProductEditForm({
           freshnessNote={product.freshnessNote}
           description={product.description}
           imageUrl={product.imageUrl}
+          onImageBusyChange={setImageBusy}
         />
       </DashFormSection>
 
@@ -177,8 +187,8 @@ export default function ProductEditForm({
             {message}
           </p>
         ) : null}
-        <button type="submit" disabled={pending} className={dashCtaClass}>
-          {pending ? "Saving…" : "Save changes"}
+        <button type="submit" disabled={pending || imageBusy} className={dashCtaClass}>
+          {pending ? "Saving…" : imageBusy ? "Preparing photo…" : "Save changes"}
         </button>
       </div>
     </form>

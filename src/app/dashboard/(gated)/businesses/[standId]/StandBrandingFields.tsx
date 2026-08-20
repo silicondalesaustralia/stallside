@@ -2,6 +2,10 @@
 
 import FilePickButton from "@/components/FilePickButton";
 import StandSocialFields from "./StandSocialFields";
+import {
+  LOGO_IMAGE_MAX_BYTES,
+  PRODUCT_IMAGE_HINT,
+} from "@/lib/image-upload-limits";
 
 export type StandBrandingValues = {
   logoUrl: string | null;
@@ -48,10 +52,10 @@ export default function StandBrandingFields({
         <span className="font-medium">Logo</span>
         <FilePickButton
           name="logo"
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
           label="Choose logo"
-          maxBytes={2 * 1024 * 1024}
-          hint="JPEG, PNG, or WebP · under 2 MB (large photos are resized)"
+          maxBytes={LOGO_IMAGE_MAX_BYTES}
+          hint={PRODUCT_IMAGE_HINT}
         />
       </label>
       <label className="flex flex-col gap-2 text-sm">

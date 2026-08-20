@@ -6,6 +6,10 @@ import {
   type GallerySubmitState,
 } from "@/app/dashboard/(gated)/gallery/submit/actions";
 import FilePickButton from "@/components/FilePickButton";
+import {
+  GALLERY_IMAGE_MAX_BYTES,
+  PRODUCT_IMAGE_HINT,
+} from "@/lib/image-upload-limits";
 
 type StandOption = { id: string; name: string };
 
@@ -73,10 +77,10 @@ export default function GallerySubmitForm({
         <span className="font-medium">Photo</span>
         <FilePickButton
           name="photo"
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
           label="Choose photo"
-          maxBytes={5 * 1024 * 1024}
-          hint="JPEG, PNG, or WebP · under 5 MB (large photos are resized)"
+          maxBytes={GALLERY_IMAGE_MAX_BYTES}
+          hint={PRODUCT_IMAGE_HINT}
         />
       </label>
       <label className="flex items-start gap-2 text-sm">

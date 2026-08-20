@@ -1,4 +1,8 @@
 import FilePickButton from "@/components/FilePickButton";
+import {
+  PRODUCT_IMAGE_HINT,
+  PRODUCT_IMAGE_MAX_BYTES,
+} from "@/lib/image-upload-limits";
 
 const inputClass =
   "rounded-lg border border-[var(--line)] bg-white px-3 py-2.5";
@@ -9,12 +13,14 @@ export default function ProductDetailsFields({
   freshnessNote,
   description,
   imageUrl,
+  onImageBusyChange,
 }: {
   name: string;
   slug: string;
   freshnessNote: string | null;
   description: string | null;
   imageUrl: string | null;
+  onImageBusyChange?: (busy: boolean) => void;
 }) {
   return (
     <>
@@ -66,10 +72,11 @@ export default function ProductDetailsFields({
           <span className="font-medium">Product image</span>
           <FilePickButton
             name="image"
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
             label="Choose image"
-            maxBytes={2 * 1024 * 1024}
-            hint="JPEG, PNG, or WebP · under 2 MB (large photos are resized)"
+            maxBytes={PRODUCT_IMAGE_MAX_BYTES}
+            hint={PRODUCT_IMAGE_HINT}
+            onBusyChange={onImageBusyChange}
           />
         </label>
       </div>

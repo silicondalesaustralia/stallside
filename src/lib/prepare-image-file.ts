@@ -7,16 +7,25 @@ function mbLabel(maxBytes: number): string {
   return Number.isInteger(mb) ? `${mb} MB` : `${mb.toFixed(1)} MB`;
 }
 
-/** Shrink camera photos so they fit upload limits (canvas JPEG). */
+function needsTranscode(type: string, size: number, maxBytes: number): boolean {
+  if (size <= 0 || size > maxBytes) return true;
+  return !ALLOWED.has(type);
+}
+
+/** Shrink / convert camera photos so they fit upload limits (canvas JPEG). */
 export async function prepareImageFile(
   file: File,
   maxBytes: number,
 ): Promise<File> {
   const type = file.type || "application/octet-stream";
-  if (ALLOWED.has(type) && file.size > 0 && file.size <= maxBytes) {
+  if (!needsTranscode(type, file.size, maxBytes)) {
     return file;
   }
-  if (!type.startsWith("image/") && !ALLOWED.has(type)) {
+  if (
+    type !== "application/octet-stream" &&
+    !type.startsWith("image/") &&
+    !ALLOWED.has(type)
+  ) {
     throw new Error("Use a JPEG, PNG, or WebP image.");
   }
 
@@ -24,7 +33,9 @@ export async function prepareImageFile(
   try {
     bitmap = await createImageBitmap(file);
   } catch {
-    throw new Error("Could not read that image. Try JPEG or PNG.");
+    throw new Error(
+      "Could not read that image. On iPhone, choose “Most Compatible” or export as JPEG.",
+    );
   }
 
   try {

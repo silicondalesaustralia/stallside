@@ -1,10 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Product/logo allow 2 MB; gallery allows 5 MB. Default Server Action limit is 1 MB.
+  // Default Server Action body limit is 1 MB; uploads need headroom for multipart.
   experimental: {
     serverActions: {
-      bodySizeLimit: "6mb",
+      bodySizeLimit: 6 * 1024 * 1024,
     },
   },
   images: {

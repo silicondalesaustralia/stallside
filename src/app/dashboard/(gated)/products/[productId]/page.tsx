@@ -12,10 +12,13 @@ import { parsePriceTiers } from "@/lib/price-tiers";
 
 export default async function EditProductPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ productId: string }>;
+  searchParams: Promise<{ imageError?: string }>;
 }) {
   const { productId } = await params;
+  const { imageError } = await searchParams;
   const { owner } = await requireOwner();
   const product = await prisma.product.findFirst({
     where: { id: productId, ownerId: owner.id },
@@ -103,6 +106,7 @@ export default async function EditProductPage({
           upsellPriceCents: product.upsellPriceCents,
           siblingProducts: product.stand.products,
         }}
+        initialImageError={imageError ?? null}
       />
       <ProductStockCard
         productId={product.id}

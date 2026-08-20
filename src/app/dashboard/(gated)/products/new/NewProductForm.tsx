@@ -6,6 +6,10 @@ import DashFormSection from "@/components/DashFormSection";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { createProduct } from "../actions";
 import ProductOwnerMetaFields from "../ProductOwnerMetaFields";
+import {
+  PRODUCT_IMAGE_HINT,
+  PRODUCT_IMAGE_MAX_BYTES,
+} from "@/lib/image-upload-limits";
 
 type StandOption = { id: string; name: string; currency: string };
 
@@ -34,9 +38,14 @@ export default function NewProductForm({
   stripeConnected: boolean;
 }) {
   const [message, setMessage] = useState<string | null>(null);
+  const [imageBusy, setImageBusy] = useState(false);
   const [pending, startTransition] = useTransition();
 
   function onSubmit(formData: FormData) {
+    if (imageBusy) {
+      setMessage("Wait for the photo to finish preparing, then save.");
+      return;
+    }
     const payload = new FormData();
     for (const [key, value] of formData.entries()) {
       payload.append(key, value);
@@ -88,10 +97,11 @@ export default function NewProductForm({
             <span className="font-medium">Product image</span>
             <FilePickButton
               name="image"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
               label="Choose image"
-              maxBytes={2 * 1024 * 1024}
-              hint="JPEG, PNG, or WebP · under 2 MB (large photos are resized)"
+              maxBytes={PRODUCT_IMAGE_MAX_BYTES}
+              hint={PRODUCT_IMAGE_HINT}
+              onBusyChange={setImageBusy}
             />
           </label>
         </div>
@@ -153,8 +163,8 @@ export default function NewProductForm({
 
       <div className="flex flex-wrap items-center gap-3 lg:col-span-2">
         {message ? <p className="text-sm text-[var(--warn)]">{message}</p> : null}
-        <button type="submit" disabled={pending} className={dashCtaClass}>
-          {pending ? "Saving…" : "Save product"}
+        <button type="submit" disabled={pending || imageBusy} className={dashCtaClass}>
+          {pending ? "Saving…" : imageBusy ? "Preparing photo…" : "Save product"}
         </button>
       </div>
     </form>

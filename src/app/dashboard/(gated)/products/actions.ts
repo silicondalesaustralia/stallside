@@ -132,6 +132,13 @@ export async function createProduct(formData: FormData) {
       });
     } catch (error) {
       console.error("Product image upload failed", error);
+      revalidatePath("/dashboard/products");
+      revalidatePath(`/s/${stand.slug}`);
+      redirect(
+        `/dashboard/products/${product.id}?imageError=${encodeURIComponent(
+          error instanceof Error ? error.message : "Image upload failed.",
+        )}`,
+      );
     }
   }
 

@@ -1,7 +1,7 @@
 import { put } from "@vercel/blob";
 import { cleanEnvSecret } from "@/lib/env";
+import { PRODUCT_IMAGE_MAX_BYTES } from "@/lib/image-upload-limits";
 
-const MAX_BYTES = 2 * 1024 * 1024;
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export async function uploadProductImage(
@@ -20,8 +20,8 @@ export async function uploadProductImage(
   if (!ALLOWED.has(type)) {
     throw new Error("Use a JPEG, PNG, or WebP image.");
   }
-  if (file.size <= 0 || file.size > MAX_BYTES) {
-    throw new Error("Image must be under 2 MB.");
+  if (file.size <= 0 || file.size > PRODUCT_IMAGE_MAX_BYTES) {
+    throw new Error("Image is too large after processing. Try another photo.");
   }
 
   const safeName = file.name.replace(/[^\w.\-]+/g, "_").slice(0, 80) || "product";
