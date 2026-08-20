@@ -12,6 +12,7 @@ const prisma = new PrismaClient({
 
 const emailFields = [
   "trialWelcomeSentAt",
+  "creatorDay3SentAt",
   "trialDay7SentAt",
   "trialDay14SentAt",
   "trialDay23SentAt",

@@ -5,6 +5,7 @@
 import "dotenv/config";
 import {
   sendTrialWelcome,
+  sendCreatorDay3,
   sendCardWelcome,
   sendProLapseDay23,
   sendProLapseDay45,
@@ -19,22 +20,23 @@ const recipient = { to, name, businessName: "Jono's Stand" };
 
 const jobs: Array<{ label: string; run: () => Promise<void> }> = [
   { label: "1. Welcome (Free signup)", run: () => sendTrialWelcome(recipient) },
-  { label: "2. Pro welcome (after subscribe)", run: () => sendCardWelcome(recipient) },
-  { label: "3. Pro lapse Day 23", run: () => sendProLapseDay23(recipient) },
+  { label: "2. Creator Day 3", run: () => sendCreatorDay3(recipient) },
+  { label: "3. Pro welcome (after subscribe)", run: () => sendCardWelcome(recipient) },
+  { label: "4. Pro lapse Day 23", run: () => sendProLapseDay23(recipient) },
   {
-    label: "4. Pro lapse Day 45",
+    label: "5. Pro lapse Day 45",
     run: () => sendProLapseDay45(recipient, { cardInterestCount: 12, restockCount: 8 }),
   },
   {
-    label: "5. First 10 orders milestone",
+    label: "6. First 10 orders milestone",
     run: () => sendFirstTenOrdersEmail({ to, name }),
   },
   {
-    label: "6. Cancel feedback",
+    label: "7. Cancel feedback",
     run: () => sendCancellationFeedback({ to, name }),
   },
   {
-    label: "7. Feature announce",
+    label: "8. Feature announce",
     run: () => sendFeatureAnnounce(recipient),
   },
 ];

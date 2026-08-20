@@ -1,4 +1,5 @@
 export { sendTrialWelcome } from "@/lib/lifecycle-emails/trial";
+export { sendCreatorDay3 } from "@/lib/lifecycle-emails/creator-intro";
 export { sendCardWelcome } from "@/lib/lifecycle-emails/plans";
 export {
   sendProLapseDay23,

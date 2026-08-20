@@ -237,6 +237,8 @@ model Owner {
   /** Day 30 trial-ended email (lifecycle sequence) */
   trialReminderSentAt       DateTime?
   trialWelcomeSentAt        DateTime?
+  /** Personal note from Jono, 3 days after signup. */
+  creatorDay3SentAt         DateTime?
   trialDay7SentAt           DateTime?
   trialDay14SentAt          DateTime?
   trialDay23SentAt          DateTime?

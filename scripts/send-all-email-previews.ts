@@ -20,6 +20,10 @@ import {
   featureAnnounceHtml,
 } from "../src/lib/lifecycle-emails/feature-announce";
 import { trialWelcomeHtml } from "../src/lib/lifecycle-emails/trial";
+import {
+  CREATOR_DAY3_SUBJECT,
+  creatorDay3Html,
+} from "../src/lib/lifecycle-emails/creator-intro";
 
 const to = (process.argv[2] || "jono@silicondales.com").trim().toLowerCase();
 const name = "Jono";
@@ -157,6 +161,13 @@ function buildJobs(): Job[] {
       replyTo: emailReplyTo(),
       subject: `Welcome to ${APP_NAME} - let’s get you live`,
       html: trialWelcomeHtml(name),
+    },
+    {
+      label: "Creator Day 3",
+      kind: "lifecycle_creator_day3",
+      replyTo: "jono@silicondales.com",
+      subject: CREATOR_DAY3_SUBJECT,
+      html: creatorDay3Html(name),
     },
     {
       label: "Pro welcome",
