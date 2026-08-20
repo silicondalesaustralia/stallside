@@ -50,6 +50,8 @@ export default function StandBrandingFields({
           name="logo"
           accept="image/jpeg,image/png,image/webp"
           label="Choose logo"
+          maxBytes={2 * 1024 * 1024}
+          hint="JPEG, PNG, or WebP · under 2 MB (large photos are resized)"
         />
       </label>
       <label className="flex flex-col gap-2 text-sm">

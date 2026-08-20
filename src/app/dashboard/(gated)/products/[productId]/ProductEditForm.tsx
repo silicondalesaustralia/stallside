@@ -47,7 +47,9 @@ export default function ProductEditForm({
         router.refresh();
       } catch (error) {
         console.error("Product save failed", error);
-        setMessage("Could not save product. Try again.");
+        setMessage(
+          error instanceof Error ? error.message : "Could not save product. Try again.",
+        );
       }
     });
   }

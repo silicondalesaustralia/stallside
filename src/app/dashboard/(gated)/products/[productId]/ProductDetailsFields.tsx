@@ -68,6 +68,8 @@ export default function ProductDetailsFields({
             name="image"
             accept="image/jpeg,image/png,image/webp"
             label="Choose image"
+            maxBytes={2 * 1024 * 1024}
+            hint="JPEG, PNG, or WebP · under 2 MB (large photos are resized)"
           />
         </label>
       </div>
