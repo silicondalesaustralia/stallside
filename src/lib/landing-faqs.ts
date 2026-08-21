@@ -57,7 +57,12 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "How does QR checkout work?",
     answer:
-      "You print a QR poster for each stand. Shoppers open it on their phone and select items. When paying cash they confirm cash and PayID (Australia only) at the stand and you are alerted. When paying digitally they use the same Stripe checkout (card, Apple Pay, Google Pay, and on larger orders Zip or Klarna). Stock updates either way.",
+      "You print a QR poster for each stand. On the QR setup page you choose cart type: Product cart (browse named items and stock) or Customer Choice (shoppers enter dollar amounts as they pick things up, then pay the total — no catalogue). Same payment methods either way. When paying cash they confirm at the stand and you are alerted. When paying digitally they use Stripe checkout (card, Apple Pay, Google Pay, and on larger orders Zip or Klarna). Stock updates on Product cart; Customer Choice is amount-only.",
+  },
+  {
+    question: "What is Customer Choice cart?",
+    answer:
+      "Customer Choice is a stall checkout mode for unattended shelves with price tags already on the goods. Shoppers scan your QR, add amounts (e.g. $10 then $5), and pay the total with cash, card, or local transfer. There is no product list or inventory. Switch it on under My Businesses → QR & print. Included on Free and Pro. Pre-orders and subscriptions are separate.",
   },
   {
     question: "How do pre-orders work?",

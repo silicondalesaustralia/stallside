@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import CardDemandProof from "@/components/CardDemandProof";
+import CartTypeSection from "@/components/CartTypeSection";
 import FeatureColumns from "@/components/FeatureColumns";
 import HowItWorksFlow from "@/components/HowItWorksFlow";
 import JsonLd from "@/components/JsonLd";
@@ -34,6 +35,7 @@ export default function HomePage() {
       <ProductFork />
       <TrustSection />
       <HowItWorksFlow />
+      <CartTypeSection />
       <MarketingDashboardSection />
       <UseCaseGrid />
       <LandingPaymentMethods />

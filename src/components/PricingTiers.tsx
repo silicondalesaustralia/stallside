@@ -53,12 +53,12 @@ export default function PricingTiers() {
         </h2>
       </div>
       <p className="mb-8 max-w-2xl text-base text-[var(--muted)] sm:text-lg">
-        Start free with every Vendl feature - stall checkout, pre-orders,
-        subscriptions, upsells, and more. Cash and local bank payments stay
-        free. On card, wallets and pay-later transactions, Free charges a 2.5%
-        Vendl fee in addition to standard Stripe processing fees. Pass the
-        Vendl fee on to customers or absorb it yourself. Upgrade to Pro to
-        remove the Vendl fee.
+        Start free with every Vendl feature - stall checkout (Product or
+        Customer Choice cart), pre-orders, subscriptions, upsells, and more.
+        Cash and local bank payments stay free. On card, wallets and pay-later
+        transactions, Free charges a 2.5% Vendl fee in addition to standard
+        Stripe processing fees. Pass the Vendl fee on to customers or absorb
+        it yourself. Upgrade to Pro to remove the Vendl fee.
       </p>
 
       <p className="mb-2 text-sm font-semibold text-[var(--field)]">

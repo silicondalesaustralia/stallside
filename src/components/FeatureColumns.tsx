@@ -18,7 +18,8 @@ const OWNER_PRO = [
 
 const CUSTOMER_LIVE = [
   "Scan with your phone camera. No app.",
-  "See what's there and what's left.",
+  "Product cart: see what's there and what's left, then pay.",
+  "Customer Choice: add dollar amounts as you pick items up, then pay the total.",
   "Choose options like size or flavour when a product offers them",
   "Pay cash, card, or a local method, then confirm - the owner knows.",
   "Card, Apple Pay, and Google Pay on their phone",

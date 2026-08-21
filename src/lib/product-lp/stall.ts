@@ -10,7 +10,7 @@ export const STALL_HUB: ProductLpContent = {
   eyebrow: "Vendl Stall",
   headline: "You Will Make More Sales At Your Farm Stand With Vendl",
   support:
-    "Print one QR for your stall. Buyers scan, choose what they’re taking, and pay on their phone - cash, PayID or card - even when nobody is there.",
+    "Print one QR for your stall. Buyers scan and either pick products from your catalogue, or enter dollar amounts (Customer Choice) and pay on their phone - cash, PayID or card - even when nobody is there.",
   chips: ["A$0 monthly on Free", "No customer app", "Instant sale alerts"],
   ctaLabel: "Start free",
   signupHref: STALL_SIGNUP,
@@ -20,6 +20,7 @@ export const STALL_HUB: ProductLpContent = {
   stripFootnote: "",
   upsellHeading: "Built-in tools that grow the basket",
   upsellItems: [
+    "Product or Customer Choice cart",
     "Cart upsell",
     "First-order discount",
     "Volume price breaks",
@@ -27,7 +28,7 @@ export const STALL_HUB: ProductLpContent = {
     "Restock alerts",
   ],
   upsellFootnote:
-    "Offer one more item at checkout, reward first visits, and nudge buyers when stock is low - without another app.",
+    "Choose catalogue checkout or open dollar amounts, offer one more item at checkout, reward first visits, and nudge buyers when stock is low - without another app.",
   heroUpsellLabel: "Cart upsell built in",
   heroUpsellDetail:
     "Offer one more item at checkout - grow the basket without another app.",

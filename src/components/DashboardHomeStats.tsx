@@ -21,7 +21,7 @@ export default function DashboardHomeStats({
   ordersHref: string;
 }) {
   return (
-    <div className="grid min-h-[154px] flex-[1.15] grid-cols-3 gap-3 sm:gap-4">
+    <div className="grid min-h-[154px] min-w-0 flex-[1.15] grid-cols-3 gap-2 sm:gap-4">
       <DashboardStat
         label="Sales"
         href={ordersHref}

@@ -25,7 +25,7 @@ export default function DashboardStat({
       <p className="text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
         {label}
       </p>
-      <div className="mt-3 max-w-full text-center font-receipt text-xl font-semibold tracking-tight tabular-nums sm:text-2xl lg:text-3xl">
+      <div className="mt-3 w-full min-w-0 overflow-hidden px-0.5 text-center font-receipt text-[clamp(0.95rem,2.6vw+0.4rem,1.65rem)] font-semibold leading-none tracking-tight tabular-nums">
         {value}
       </div>
       {typeof current === "number" && typeof previous === "number" ? (

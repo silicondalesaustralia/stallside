@@ -126,7 +126,7 @@ export default function SalesAnalyticsPanel({
   if (layout === "orders") {
     return (
       <>
-        <section className="grid grid-cols-3 gap-3">{stats}</section>
+        <section className="grid min-w-0 grid-cols-3 gap-2 sm:gap-3">{stats}</section>
         {chart}
       </>
     );
@@ -134,7 +134,7 @@ export default function SalesAnalyticsPanel({
 
   return (
     <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
-      <div className="grid min-h-[154px] flex-[1.15] grid-cols-3 gap-3 sm:gap-4">
+      <div className="grid min-h-[154px] min-w-0 flex-[1.15] grid-cols-3 gap-2 sm:gap-4">
         {stats}
       </div>
       <div className="min-h-[154px] flex-1">{chart}</div>

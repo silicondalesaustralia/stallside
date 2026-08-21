@@ -12,7 +12,8 @@ export default function ProductFork() {
             Unattended stall
           </h2>
           <p className="text-[var(--muted)]">
-            Leave your goods out. People scan, pay, take.
+            Leave your goods out. People scan, pay, take — catalogue or Customer
+            Choice amounts.
           </p>
           <p className="text-sm text-[var(--muted)]">
             Cash, card, and local payment methods. Instant sale alerts.

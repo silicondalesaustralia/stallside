@@ -5,6 +5,7 @@ const BEFORE = [
   "Volume and bundle pricing (e.g. 2 for $9)",
   "Real stock counts, “Only N left” scarcity, and printable QR posters",
   "Product freshness notes and provenance lines",
+  "Stall cart type: Product catalogue or Customer Choice (open dollar amounts)",
 ] as const;
 
 /** Same payment story on every page - region called out only as examples. */
