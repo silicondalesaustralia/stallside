@@ -1,11 +1,8 @@
 "use server";
 
 import { APP_NAME } from "@/lib/constants";
-import { sendOwnerEmail } from "@/lib/notify-email";
+import { contactInbox, sendOwnerEmail } from "@/lib/notify-email";
 import { isContactSubject } from "@/lib/contact-subjects";
-
-/** Deliver here until hello@vendl.app has a real mailbox. */
-const CONTACT_TO = "jono@silicondales.com";
 
 export type ContactState = {
   ok: boolean;
@@ -52,13 +49,14 @@ export async function submitContact(
   `;
 
   try {
-    await sendOwnerEmail(CONTACT_TO, `[${APP_NAME} contact] ${subjectRaw}`, html, {
+    const to = contactInbox();
+    await sendOwnerEmail(to, `[${APP_NAME} contact] ${subjectRaw}`, html, {
       replyTo: email,
       kind: "contact_form",
     });
     return { ok: true };
   } catch (error) {
-    console.error("Contact form email failed", { to: CONTACT_TO, error });
+    console.error("Contact form email failed", { to: contactInbox(), error });
     return {
       ok: false,
       error: "Could not send your message. Please try again or email us directly.",

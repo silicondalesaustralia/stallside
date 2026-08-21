@@ -1,29 +1,18 @@
 import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
+import { LEGAL_EMAIL } from "@/lib/legal";
 import { cleanEnvSecret } from "@/lib/env";
 import { filterEmailsForActiveOwners } from "@/lib/owner-deleted";
 import { prisma } from "@/lib/prisma";
 
-/** Real inbox for contact/waitlist owner mail until hello@ has a mailbox. */
-const OWNER_INBOX = "jono@silicondales.com";
+/** Always deliver platform contact/waitlist/admin alerts here. */
+const PLATFORM_INBOXES = [LEGAL_EMAIL, "jono@silicondales.com"];
 
-function isBrandAddressWithoutMailbox(email: string): boolean {
-  return (
-    email.endsWith(`@${APP_DOMAIN}`) || email.endsWith("@stallside.app")
-  );
-}
-
-export function contactInbox(): string {
+/** Contact / waitlist / admin alert recipients (hello@ + personal). */
+export function contactInbox(): string[] {
   const configured = cleanEnvSecret(process.env.CONTACT_EMAIL)?.toLowerCase();
-  // Public brand address (hello@) has no mailbox yet - Resend accepts it then it vanishes.
-  if (!configured || isBrandAddressWithoutMailbox(configured)) {
-    if (configured) {
-      console.warn(
-        `[${APP_NAME}] Ignoring CONTACT_EMAIL=${configured}; using ${OWNER_INBOX}`,
-      );
-    }
-    return OWNER_INBOX;
-  }
-  return configured;
+  const list = [...PLATFORM_INBOXES];
+  if (configured) list.push(configured);
+  return [...new Set(list.map((e) => e.toLowerCase()))];
 }
 
 async function logEmailSend(input: {
