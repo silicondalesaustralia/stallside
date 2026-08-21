@@ -99,3 +99,18 @@ export function FridgeIcon({ className }: IconProps) {
     </IconShell>
   );
 }
+
+export function BakersIcon({ className }: IconProps) {
+  return (
+    <IconShell className={className}>
+      <ellipse cx="24" cy="30" rx="12" ry="7" fill="var(--field)" />
+      <path
+        d="M12 30 C14 18 20 14 24 14 C28 14 34 18 36 30"
+        fill="var(--leaf)"
+      />
+      <circle cx="18" cy="24" r="1.5" fill="var(--marigold)" />
+      <circle cx="24" cy="21" r="1.5" fill="var(--marigold)" />
+      <circle cx="30" cy="24" r="1.5" fill="var(--marigold)" />
+    </IconShell>
+  );
+}

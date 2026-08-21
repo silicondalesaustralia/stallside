@@ -1,5 +1,5 @@
 import {
-  CampIcon,
+  BakersIcon,
   CarParkIcon,
   FarmStallsIcon,
   FirewoodIcon,
@@ -9,24 +9,24 @@ import {
 
 const CASES = [
   {
+    title: "Bakers & microbakers",
+    subtitle: "Pre-orders, subscriptions, bake-day lists",
+    Icon: BakersIcon,
+  },
+  {
     title: "Farm stalls",
-    subtitle: "Eggs, veg, honey, jam",
+    subtitle: "Eggs, veg, honey, jam — stall or boxes",
     Icon: FarmStallsIcon,
   },
   {
     title: "Firewood & hay",
-    subtitle: "Roadside stacks",
+    subtitle: "Roadside stacks & pre-order loads",
     Icon: FirewoodIcon,
   },
   {
     title: "Flowers & plants",
     subtitle: "Driveway buckets",
     Icon: FlowersIcon,
-  },
-  {
-    title: "Camp supplies",
-    subtitle: "Ice, wood, milk, gas",
-    Icon: CampIcon,
   },
   {
     title: "Honesty car parks",
@@ -52,6 +52,10 @@ export default function UseCaseGrid() {
         <h2 className="pl-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
           What it works for
         </h2>
+        <p className="mt-3 max-w-2xl pl-3 text-base text-[var(--muted)]">
+          Stall QR checkout, plus pre-orders and subscriptions when you sell ahead
+          of a collection day or run a regular box.
+        </p>
       </div>
 
       <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
@@ -68,7 +72,7 @@ export default function UseCaseGrid() {
       </ul>
 
       <p className="mt-8 text-center text-sm text-[var(--muted)]">
-        If nobody&apos;s standing there, Vendl works.
+        Unattended stalls, bake days, and recurring boxes — Vendl works.
       </p>
     </section>
   );

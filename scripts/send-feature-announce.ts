@@ -1,5 +1,5 @@
 /**
- * Feature announcement (pricing model + features).
+ * Feature announcement (Customer Choice, QR editor, product photos).
  *
  * Preview (default):
  *   npx tsx scripts/send-feature-announce.ts
@@ -7,6 +7,8 @@
  *
  * Broadcast to all non-lifetime owners (excludes lifetimeAccess):
  *   npx tsx scripts/send-feature-announce.ts --all
+ * Broadcast to lifetime / free-for-life owners:
+ *   npx tsx scripts/send-feature-announce.ts --lifetime --except jaijou@yahoo.com
  */
 import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
@@ -37,9 +39,9 @@ async function sendPreview(to: string) {
   console.log("OK preview sent.");
 }
 
-async function sendAll() {
+async function sendAll(except: Set<string>, lifetime: boolean) {
   const owners = await prisma.owner.findMany({
-    where: { lifetimeAccess: false },
+    where: { lifetimeAccess: lifetime, deletedAt: null },
     include: { user: { select: { email: true, name: true } } },
   });
 
@@ -47,14 +49,16 @@ async function sendAll() {
   let ok = 0;
   let skip = 0;
   let fail = 0;
+  const audience = lifetime ? "lifetime" : "non-lifetime";
 
   console.log(
-    `Broadcast to ${owners.length} non-lifetime owners (deduped by email)…\n`,
+    `Broadcast to ${owners.length} ${audience} owners (deduped by email, except ${except.size})…\n`,
   );
 
   for (const owner of owners) {
     const r = recipientFromOwner(owner);
-    if (!r || seen.has(r.to)) {
+    if (!r || seen.has(r.to) || except.has(r.to)) {
+      if (r && except.has(r.to)) console.log(`SKIP ${r.to}`);
       skip += 1;
       continue;
     }
@@ -73,6 +77,16 @@ async function sendAll() {
   console.log(`\nDone. sent=${ok} skipped=${skip} failed=${fail}`);
 }
 
+function parseExcept(args: string[]): Set<string> {
+  const except = new Set<string>();
+  for (let i = 0; i < args.length; i += 1) {
+    if (args[i] !== "--except") continue;
+    const email = (args[i + 1] ?? "").trim().toLowerCase();
+    if (email.includes("@")) except.add(email);
+  }
+  return except;
+}
+
 async function main() {
   if (!process.env.RESEND_API_KEY) {
     console.error("RESEND_API_KEY is not set");
@@ -80,8 +94,8 @@ async function main() {
   }
 
   const args = process.argv.slice(2);
-  if (args.includes("--all")) {
-    await sendAll();
+  if (args.includes("--all") || args.includes("--lifetime")) {
+    await sendAll(parseExcept(args), args.includes("--lifetime"));
     return;
   }
 
