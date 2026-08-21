@@ -52,7 +52,7 @@ async function fulfillPaidOnlineOrder(
 ) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { items: true },
+    include: { items: true, stand: { select: { cartMode: true } } },
   });
   if (!order) return { error: "Order not found." as const };
   if (
@@ -66,9 +66,12 @@ async function fulfillPaidOnlineOrder(
     return { error: "Payment method mismatch." as const };
   }
 
-  const products = await prisma.product.findMany({
-    where: { id: { in: order.items.map((i) => i.productId) } },
-  });
+  const skipStock = order.stand.cartMode === "CUSTOMER_CHOICE";
+  const products = skipStock
+    ? []
+    : await prisma.product.findMany({
+        where: { id: { in: order.items.map((i) => i.productId) } },
+      });
   const byId = new Map(products.map((p) => [p.id, p]));
   const items = order.items.map((i) => ({
     productId: i.productId,
@@ -86,15 +89,17 @@ async function fulfillPaidOnlineOrder(
   try {
     await prisma.$transaction(
       async (tx) => {
-        await decrementStockForOrder(tx, {
-          items,
-          byId,
-          ownerId: order.ownerId,
-          standId: order.standId,
-          orderId: order.id,
-          source: options.source,
-          reason: isDeposit ? "Deposit reserved" : options.reason,
-        });
+        if (!skipStock) {
+          await decrementStockForOrder(tx, {
+            items,
+            byId,
+            ownerId: order.ownerId,
+            standId: order.standId,
+            orderId: order.id,
+            source: options.source,
+            reason: isDeposit ? "Deposit reserved" : options.reason,
+          });
+        }
         await tx.order.update({
           where: { id: order.id },
           data: {

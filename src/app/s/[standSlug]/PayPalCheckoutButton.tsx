@@ -47,6 +47,7 @@ export default function PayPalCheckoutButton({
   currency,
   standSlug,
   items,
+  customerChoiceAmountCents,
   sandbox,
   disabled,
   onError,
@@ -55,7 +56,8 @@ export default function PayPalCheckoutButton({
   merchantId: string;
   currency: string;
   standSlug: string;
-  items: CartItem[];
+  items?: CartItem[];
+  customerChoiceAmountCents?: number;
   sandbox?: boolean;
   disabled?: boolean;
   onError: (message: string) => void;
@@ -64,6 +66,8 @@ export default function PayPalCheckoutButton({
   const orderIdRef = useRef<string | null>(null);
   const itemsRef = useRef(items);
   itemsRef.current = items;
+  const amountRef = useRef(customerChoiceAmountCents);
+  amountRef.current = customerChoiceAmountCents;
   const onErrorRef = useRef(onError);
   onErrorRef.current = onError;
   const [sdkReady, setSdkReady] = useState(false);
@@ -105,10 +109,12 @@ export default function PayPalCheckoutButton({
           height: 55,
         },
         createOrder: async () => {
-          const result = await startPayPalCheckout({
-            standSlug,
-            items: itemsRef.current,
-          });
+          const amount = amountRef.current;
+          const result = await startPayPalCheckout(
+            amount != null
+              ? { standSlug, customerChoiceAmountCents: amount }
+              : { standSlug, items: itemsRef.current ?? [] },
+          );
           if ("error" in result && result.error) {
             onErrorRef.current(result.error);
             throw new Error(result.error);
@@ -146,10 +152,11 @@ export default function PayPalCheckoutButton({
   async function redirectCheckout() {
     setBusy(true);
     try {
-      const result = await startPayPalCheckout({
-        standSlug,
-        items: itemsRef.current,
-      });
+      const result = await startPayPalCheckout(
+        amountRef.current != null
+          ? { standSlug, customerChoiceAmountCents: amountRef.current }
+          : { standSlug, items: itemsRef.current ?? [] },
+      );
       if ("error" in result && result.error) {
         onErrorRef.current(result.error);
         return;

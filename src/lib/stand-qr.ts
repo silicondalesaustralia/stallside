@@ -1,9 +1,14 @@
 import QRCode from "qrcode";
 import { appBaseUrl } from "@/lib/app-url";
+import type { CartMode } from "@/generated/prisma/client";
 
-export function standCheckoutUrl(slug: string): string {
+export function standCheckoutUrl(
+  slug: string,
+  cartMode: CartMode | "PRODUCT" | "CUSTOMER_CHOICE" = "PRODUCT",
+) {
   const safeSlug = slug.trim().toLowerCase();
-  return `${appBaseUrl()}/s/${safeSlug}`;
+  const base = `${appBaseUrl()}/s/${safeSlug}`;
+  return cartMode === "CUSTOMER_CHOICE" ? `${base}/pay` : base;
 }
 
 export async function standQrDataUrl(checkoutUrl: string, width = 512): Promise<string> {

@@ -9,6 +9,7 @@ import {
 } from "@/generated/prisma/client";
 import {
   decrementStockForOrder,
+  loadCustomerChoiceCheckout,
   loadStandCart,
   orderItemCreates,
   type CartItemInput,
@@ -23,10 +24,28 @@ type CheckoutExtras = {
   claimFirstOrder?: boolean;
 };
 
-export async function confirmCashCheckout(input: {
+type CheckoutPayload = {
   standSlug: string;
-  items: CartItemInput[];
-} & CheckoutExtras) {
+  items?: CartItemInput[];
+  /** Open-amount total for Customer Choice cart (cents). */
+  customerChoiceAmountCents?: number;
+} & CheckoutExtras;
+
+async function loadCheckoutCart(input: CheckoutPayload) {
+  const amount = input.customerChoiceAmountCents;
+  if (amount != null) {
+    if (input.items?.length) {
+      return { error: "Invalid checkout payload." as const };
+    }
+    return loadCustomerChoiceCheckout(input.standSlug, amount);
+  }
+  return loadStandCart(input.standSlug, input.items ?? [], {
+    receiptEmail: input.receiptEmail,
+    claimFirstOrder: input.claimFirstOrder,
+  });
+}
+
+export async function confirmCashCheckout(input: CheckoutPayload) {
   return confirmDeclaredCheckout({
     ...input,
     paymentMethod: PaymentMethod.CASH,
@@ -35,11 +54,8 @@ export async function confirmCashCheckout(input: {
   });
 }
 
-export async function confirmLocalTransferCheckout(input: {
-  standSlug: string;
-  items: CartItemInput[];
-} & CheckoutExtras) {
-  const loaded = await loadStandCart(input.standSlug, input.items);
+export async function confirmLocalTransferCheckout(input: CheckoutPayload) {
+  const loaded = await loadCheckoutCart(input);
   if ("error" in loaded) return { error: loaded.error };
 
   const method = localTransferForCurrency(loaded.stand.currency);
@@ -62,21 +78,22 @@ export async function confirmLocalTransferCheckout(input: {
   });
 }
 
-async function confirmDeclaredCheckout(input: {
-  standSlug: string;
-  items: CartItemInput[];
-  paymentMethod: typeof PaymentMethod.CASH | typeof PaymentMethod.LOCAL_TRANSFER;
-  inventorySource:
-    | typeof InventorySource.ORDER_CASH
-    | typeof InventorySource.ORDER_LOCAL_TRANSFER;
-  reason: string;
-  localTransferMethodId?: string;
-} & CheckoutExtras) {
+async function confirmDeclaredCheckout(
+  input: CheckoutPayload & {
+    paymentMethod: typeof PaymentMethod.CASH | typeof PaymentMethod.LOCAL_TRANSFER;
+    inventorySource:
+      | typeof InventorySource.ORDER_CASH
+      | typeof InventorySource.ORDER_LOCAL_TRANSFER;
+    reason: string;
+    localTransferMethodId?: string;
+  },
+) {
   try {
     const email = input.receiptEmail
       ? normalizeReceiptEmail(input.receiptEmail)
       : "";
-    const loaded = await loadStandCart(input.standSlug, input.items, {
+    const loaded = await loadCheckoutCart({
+      ...input,
       receiptEmail: email || null,
       claimFirstOrder: Boolean(input.claimFirstOrder && email),
     });
@@ -92,6 +109,7 @@ async function confirmDeclaredCheckout(input: {
       discountLabel,
       totalCents,
       preOrderCart,
+      skipStock,
     } = loaded;
     if (preOrderCart) {
       return { error: "Pre-orders must be paid by card." };
@@ -130,15 +148,17 @@ async function confirmDeclaredCheckout(input: {
           },
         });
 
-        await decrementStockForOrder(tx, {
-          items,
-          byId,
-          ownerId: stand.ownerId,
-          standId: stand.id,
-          orderId: created.id,
-          source: input.inventorySource,
-          reason: input.reason,
-        });
+        if (!skipStock) {
+          await decrementStockForOrder(tx, {
+            items,
+            byId,
+            ownerId: stand.ownerId,
+            standId: stand.id,
+            orderId: created.id,
+            source: input.inventorySource,
+            reason: input.reason,
+          });
+        }
 
         return created;
       },

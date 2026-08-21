@@ -8,8 +8,7 @@ import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import { formatMoney } from "@/lib/public-product";
 import { businessPageProductWhere } from "@/lib/product-visibility";
-import QrPrintEditor from "./QrPrintEditor";
-import QrWorkspace from "./QrWorkspace";
+import QrStudio from "./QrStudio";
 
 export default async function StandQrPage({
   params,
@@ -34,7 +33,7 @@ export default async function StandQrPage({
   });
   if (!stand) notFound();
 
-  const checkoutUrl = standCheckoutUrl(stand.slug);
+  const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 640);
   const siteUrl = `https://${APP_DOMAIN}`;
   const paymentBrands = standPaymentBrands(stand, {
@@ -43,26 +42,22 @@ export default async function StandQrPage({
   });
 
   const bundleLines: string[] = [];
-  if (stand.posterShowBundles) {
-    for (const p of stand.products) {
-      const tiers = parsePriceTiers(p.priceTiers);
-      if (!tiers.length) continue;
-      const parts = tiers.map(
-        (t) => `${t.qty}× ${formatMoney(t.totalCents, stand.currency)}`,
-      );
-      bundleLines.push(`${p.name}: ${parts.join(" · ")}`);
-    }
+  for (const p of stand.products) {
+    const tiers = parsePriceTiers(p.priceTiers);
+    if (!tiers.length) continue;
+    const parts = tiers.map(
+      (t) => `${t.qty}× ${formatMoney(t.totalCents, stand.currency)}`,
+    );
+    bundleLines.push(`${p.name}: ${parts.join(" · ")}`);
   }
 
-  const freshnessLines = stand.posterShowFreshness
-    ? stand.products
-        .map((p) => p.freshnessNote?.trim())
-        .filter((n): n is string => Boolean(n))
-        .slice(0, 4)
-    : [];
+  const freshnessLines = stand.products
+    .map((p) => p.freshnessNote?.trim())
+    .filter((n): n is string => Boolean(n))
+    .slice(0, 4);
 
   let firstOrderLine: string | null = null;
-  if (stand.posterShowFirstOrder && stand.firstOrderDiscountEnabled) {
+  if (stand.firstOrderDiscountEnabled) {
     firstOrderLine =
       stand.firstOrderDiscountAmountCents != null &&
       stand.firstOrderDiscountAmountCents > 0
@@ -70,30 +65,8 @@ export default async function StandQrPage({
         : `First time? Get ${stand.firstOrderDiscountPercent}% off - enter your email at checkout.`;
   }
 
-  const sheet = {
-    name: stand.name,
-    qrCallout: stand.qrCallout,
-    qrSignMessage: stand.qrSignMessage,
-    description: stand.description,
-    locationLabel: stand.locationLabel,
-    checkoutUrl,
-    qrDataUrl,
-    siteUrl,
-    paymentBrands,
-    logoUrl: stand.logoUrl,
-    accentColor: stand.accentColor,
-    secondaryColor: stand.secondaryColor,
-    showPosterCta: stand.posterShowCta,
-    posterCtaText: stand.posterCtaText,
-    bundleLines,
-    firstOrderLine,
-    freshnessLines,
-    showHowItWorks: stand.posterShowHowItWorks,
-    showInstructions: stand.posterShowInstructions,
-  };
-
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-8 print:max-w-none print:gap-0">
+    <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 pb-10 print:max-w-none print:gap-0 print:px-0">
       <p className="text-sm text-[var(--muted)] print:hidden">
         <Link href="/dashboard/businesses" className="underline">
           My Businesses
@@ -104,11 +77,35 @@ export default async function StandQrPage({
         </Link>
       </p>
 
-      <QrWorkspace
-        sheet={sheet}
-        checkoutUrl={checkoutUrl}
-        qrDataUrl={qrDataUrl}
+      <QrStudio
+        stand={{
+          id: stand.id,
+          name: stand.name,
+          description: stand.description,
+          locationLabel: stand.locationLabel,
+          qrSignMessage: stand.qrSignMessage,
+          qrCallout: stand.qrCallout,
+          cartMode: stand.cartMode,
+          posterShowCta: stand.posterShowCta,
+          posterCtaText: stand.posterCtaText,
+          posterShowBundles: stand.posterShowBundles,
+          posterShowFirstOrder: stand.posterShowFirstOrder,
+          posterShowInstructions: stand.posterShowInstructions,
+          posterShowFreshness: stand.posterShowFreshness,
+          posterShowHowItWorks: stand.posterShowHowItWorks,
+          slug: stand.slug,
+          logoUrl: stand.logoUrl,
+          accentColor: stand.accentColor,
+          secondaryColor: stand.secondaryColor,
+        }}
+        siteUrl={siteUrl}
+        paymentBrands={paymentBrands}
+        initialCheckoutUrl={checkoutUrl}
+        initialQrDataUrl={qrDataUrl}
         fileName={`${stand.slug}-qr.png`}
+        bundleLines={bundleLines}
+        firstOrderLine={firstOrderLine}
+        freshnessLines={freshnessLines}
         urlWarning={
           !checkoutUrl.startsWith("https://") ? (
             <p className="mb-3 rounded-lg border border-[var(--warn)]/40 bg-[var(--panel)] px-3 py-2 text-sm text-[var(--warn)]">
@@ -121,10 +118,6 @@ export default async function StandQrPage({
           ) : null
         }
       />
-
-      <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-4 print:hidden">
-        <QrPrintEditor stand={stand} />
-      </div>
     </main>
   );
 }

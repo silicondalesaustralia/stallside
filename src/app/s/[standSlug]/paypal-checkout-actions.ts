@@ -7,6 +7,7 @@ import {
   ReceiptChannel,
 } from "@/generated/prisma/client";
 import {
+  loadCustomerChoiceCheckout,
   loadStandCart,
   orderItemCreates,
   type CartItemInput,
@@ -18,7 +19,8 @@ import { computeVendlApplicationFee } from "@/lib/stallside-fee";
 
 export async function startPayPalCheckout(input: {
   standSlug: string;
-  items: CartItemInput[];
+  items?: CartItemInput[];
+  customerChoiceAmountCents?: number;
   customerEmail?: string;
 }) {
   try {
@@ -27,10 +29,17 @@ export async function startPayPalCheckout(input: {
     }
 
     const email = (input.customerEmail ?? "").trim().toLowerCase();
-    const loaded = await loadStandCart(input.standSlug, input.items, {
-      receiptEmail: email || null,
-      claimFirstOrder: Boolean(email),
-    });
+    const amount = input.customerChoiceAmountCents;
+    if (amount != null && input.items?.length) {
+      return { error: "Invalid checkout payload." };
+    }
+    const loaded =
+      amount != null
+        ? await loadCustomerChoiceCheckout(input.standSlug, amount)
+        : await loadStandCart(input.standSlug, input.items ?? [], {
+            receiptEmail: email || null,
+            claimFirstOrder: Boolean(email),
+          });
     if ("error" in loaded) return { error: loaded.error };
 
     const {

@@ -6,16 +6,18 @@ import { z } from "zod";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { CURRENCIES } from "@/lib/constants";
-import { uniqueStandSlug, slugify } from "@/lib/slug";
+import { uniqueStandSlug } from "@/lib/slug";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { brandingDataFromForm } from "./stand-branding-from-form";
 import { dollarsToCents } from "@/lib/money";
-import { getVertical } from "@/lib/verticals";
-import { markFirstProductLive } from "@/lib/signup-timing";
 import { upsertPreOrderAddonProduct } from "@/lib/preorder-upsell-addon";
-import { HandoverMode, PaymentTiming } from "@/generated/prisma/client";
+import { CartMode, HandoverMode, PaymentTiming } from "@/generated/prisma/client";
 import { writeSelectedBusinessCookie } from "@/lib/selected-business";
+import {
+  archiveCustomerChoiceProduct,
+  ensureCustomerChoiceProduct,
+} from "@/lib/customer-choice-product";
 
 const standSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -25,7 +27,6 @@ const standSchema = z.object({
   currency: z.enum(CURRENCIES),
   showExactStock: z.coerce.boolean().optional(),
   isActive: z.coerce.boolean().optional(),
-  verticalSlug: z.string().trim().max(40).optional(),
 });
 
 export async function createStand(formData: FormData) {
@@ -35,8 +36,6 @@ export async function createStand(formData: FormData) {
   }
 
   const { owner } = await requireOwner();
-  const verticalRaw = String(formData.get("verticalSlug") ?? "").trim();
-  const vertical = getVertical(verticalRaw);
 
   const parsed = standSchema.safeParse({
     name: formData.get("name"),
@@ -45,7 +44,6 @@ export async function createStand(formData: FormData) {
     currency: formData.get("currency") || "AUD",
     showExactStock: formData.get("showExactStock") === "on",
     isActive: true,
-    verticalSlug: vertical?.slug,
   });
   if (!parsed.success) {
     throw new Error("Check stand details and try again.");
@@ -55,18 +53,6 @@ export async function createStand(formData: FormData) {
     const found = await prisma.stand.findUnique({ where: { slug: s } });
     return Boolean(found);
   });
-
-  const leadDays = vertical?.defaultLeadDays ?? 3;
-  const orderByAt = new Date();
-  orderByAt.setDate(orderByAt.getDate() + Math.max(1, leadDays - 1));
-  orderByAt.setHours(18, 0, 0, 0);
-  const collectionAt = new Date();
-  collectionAt.setDate(collectionAt.getDate() + leadDays);
-  collectionAt.setHours(10, 0, 0, 0);
-
-  const seedStarter =
-    formData.get("seedStarter") === "on" ||
-    formData.get("seedStarter") === "true";
 
   const stand = await prisma.stand.create({
     data: {
@@ -78,35 +64,8 @@ export async function createStand(formData: FormData) {
       currency: parsed.data.currency,
       showExactStock: parsed.data.showExactStock ?? false,
       isActive: true,
-      verticalSlug: vertical?.slug ?? null,
-      ...(seedStarter && vertical
-        ? {
-            products: {
-              create: vertical.starterCatalogue.map((item, i) => ({
-                ownerId: owner.id,
-                name: item.name,
-                slug: `${slugify(item.name)}-${i + 1}`,
-                priceCents: item.priceCents,
-                currency: parsed.data.currency,
-                stockQuantity: item.stockQuantity,
-                isPreOrder: true,
-                orderByAt,
-                collectionAt,
-                paymentTiming: vertical.defaultPaymentTiming,
-                depositPercent: vertical.defaultDepositPct,
-                handoverMode: vertical.defaultHandover,
-                showExactStock: true,
-                sortOrder: i,
-              })),
-            },
-          }
-        : {}),
     },
   });
-
-  if (seedStarter && vertical) {
-    await markFirstProductLive(owner.id);
-  }
 
   await writeSelectedBusinessCookie(stand.id);
   revalidatePath("/dashboard", "layout");
@@ -318,6 +277,7 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
     locationLabel: z.string().trim().max(120).optional(),
     qrSignMessage: z.string().trim().max(8000).optional(),
     qrCallout: z.string().trim().max(8000).optional(),
+    cartMode: z.enum(["PRODUCT", "CUSTOMER_CHOICE"]),
   });
 
   const parsed = printSchema.safeParse({
@@ -326,6 +286,7 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
     locationLabel: formData.get("locationLabel") || undefined,
     qrSignMessage: formData.get("qrSignMessage") || undefined,
     qrCallout: formData.get("qrCallout") || undefined,
+    cartMode: formData.get("cartMode") || "PRODUCT",
   });
   if (!parsed.success) return { error: "Check the print details and try again." };
 
@@ -339,6 +300,31 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
     ? sanitizeSignHtml(parsed.data.qrCallout, true)
     : "";
 
+  const nextMode =
+    parsed.data.cartMode === "CUSTOMER_CHOICE"
+      ? CartMode.CUSTOMER_CHOICE
+      : CartMode.PRODUCT;
+
+  let customerChoiceProductId = existing.customerChoiceProductId;
+  if (nextMode === CartMode.CUSTOMER_CHOICE) {
+    const ensured = await ensureCustomerChoiceProduct({
+      standId,
+      ownerId: owner.id,
+      currency: existing.currency,
+      existingProductId: existing.customerChoiceProductId,
+    });
+    if (!ensured.ok) return { error: ensured.error };
+    customerChoiceProductId = ensured.productId;
+  } else if (
+    existing.cartMode === CartMode.CUSTOMER_CHOICE &&
+    existing.customerChoiceProductId
+  ) {
+    await archiveCustomerChoiceProduct(
+      standId,
+      existing.customerChoiceProductId,
+    );
+  }
+
   await prisma.stand.update({
     where: { id: standId },
     data: {
@@ -347,6 +333,8 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
       locationLabel: parsed.data.locationLabel || null,
       qrSignMessage: signMessage || null,
       qrCallout: callout || null,
+      cartMode: nextMode,
+      customerChoiceProductId,
       posterShowCta: formData.get("posterShowCta") === "on",
       posterCtaText:
         String(formData.get("posterCtaText") ?? "")
@@ -364,5 +352,6 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
   revalidatePath(`/dashboard/businesses/${standId}`);
   revalidatePath(`/dashboard/businesses/${standId}/qr`);
   revalidatePath(`/s/${existing.slug}`);
+  revalidatePath(`/s/${existing.slug}/pay`);
   return { ok: true as const };
 }

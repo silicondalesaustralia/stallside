@@ -25,7 +25,8 @@ type CheckoutPayStepProps = {
   paypalSandbox: boolean;
   currency: string;
   standSlug: string;
-  items: CartItem[];
+  items?: CartItem[];
+  customerChoiceAmountCents?: number;
   /** Cart total for card-demand logging. */
   subtotalCents?: number;
   /** Pass-on Vendl fee (0 when absorb or Pro). */
@@ -58,6 +59,7 @@ type CheckoutPayStepProps = {
   onCard: () => void;
   onPayPalError: (message: string) => void;
   onBack: () => void;
+  backLabel?: string;
 };
 
 export default function CheckoutPayStep({
@@ -69,7 +71,8 @@ export default function CheckoutPayStep({
   paypalSandbox,
   currency,
   standSlug,
-  items,
+  items = [],
+  customerChoiceAmountCents,
   subtotalCents = 0,
   cardFeeCents = 0,
   cardTotalCents = 0,
@@ -98,6 +101,7 @@ export default function CheckoutPayStep({
   onCard,
   onPayPalError,
   onBack,
+  backLabel = "Back to cart",
 }: CheckoutPayStepProps) {
   const showCash = cashEnabled && !preOrderOnly;
   const showLt = Boolean(localTransferLabel) && !preOrderOnly;
@@ -225,7 +229,8 @@ export default function CheckoutPayStep({
           merchantId={paypalMerchantId}
           currency={currency}
           standSlug={standSlug}
-          items={items}
+          items={customerChoiceAmountCents != null ? undefined : items}
+          customerChoiceAmountCents={customerChoiceAmountCents}
           sandbox={paypalSandbox}
           disabled={pending}
           onError={onPayPalError}
@@ -248,7 +253,7 @@ export default function CheckoutPayStep({
         onClick={onBack}
         className="mt-1 w-full rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-4 text-lg font-semibold text-[var(--ink)]"
       >
-        Back to cart
+        {backLabel}
       </button>
     </div>
   );

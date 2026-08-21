@@ -92,6 +92,11 @@ enum HandoverMode {
   DELIVER
 }
 
+enum CartMode {
+  PRODUCT
+  CUSTOMER_CHOICE
+}
+
 /** Cadence for owner-built shopper subscriptions (Connect Billing). */
 enum ShopperSubInterval {
   WEEKLY
@@ -344,6 +349,10 @@ model Stand {
   /** Show “Only N left” when stock ≤ lowStockThreshold (public). */
   showPublicScarcity Boolean              @default(true)
   isActive           Boolean              @default(true)
+  /** PRODUCT = catalog cart (default); CUSTOMER_CHOICE = open dollar amount. */
+  cartMode           CartMode             @default(PRODUCT)
+  /** Hidden sentinel product for Customer Choice checkout lines. */
+  customerChoiceProductId String?
   /** Stand-level cart upsell product (optional) - take-now carts. */
   upsellProductId    String?
   /** Optional override price when added via upsell card. */

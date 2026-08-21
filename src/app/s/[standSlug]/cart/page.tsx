@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { localTransferForCurrency } from "@/lib/local-transfer";
@@ -47,6 +47,9 @@ export default async function StandCartPage({
     },
   });
   if (!stand || !stand.isActive) notFound();
+  if (stand.cartMode === "CUSTOMER_CHOICE") {
+    redirect(`${standCatalogPath(stand.slug)}/pay`);
+  }
 
   const demoProduct = isDemoStandSlug(stand.slug)
     ? demoProductForStandSlug(stand.slug)

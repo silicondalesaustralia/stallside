@@ -2,10 +2,18 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { standStoreLinks } from "./StandStoreLinks";
+import type { StandStoreNav } from "@/lib/stand-store-nav";
+import { buildStandStoreLinks } from "./StandStoreLinks";
 
-export default function StandStoreMenu({ standSlug }: { standSlug: string }) {
+export default function StandStoreMenu({
+  standSlug,
+  nav,
+}: {
+  standSlug: string;
+  nav: StandStoreNav;
+}) {
   const [open, setOpen] = useState(false);
+  const links = buildStandStoreLinks(standSlug, nav);
 
   useEffect(() => {
     if (!open) return;
@@ -15,6 +23,8 @@ export default function StandStoreMenu({ standSlug }: { standSlug: string }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
+
+  if (links.length === 0) return null;
 
   return (
     <>
@@ -41,10 +51,10 @@ export default function StandStoreMenu({ standSlug }: { standSlug: string }) {
           />
           <div className="absolute left-3 top-3 w-[min(16rem,calc(100vw-1.5rem))] rounded-2xl bg-[var(--field)] p-4 shadow-2xl [color-scheme:dark]">
             <nav className="flex flex-col gap-1">
-              {standStoreLinks.map((link) => (
+              {links.map((link) => (
                 <Link
                   key={link.key}
-                  href={link.href(standSlug)}
+                  href={link.href}
                   onClick={() => setOpen(false)}
                   className="rounded-lg px-2 py-2.5 text-sm text-[var(--ink-on-dark)]"
                 >

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import BrandMark from "@/components/BrandMark";
+import { resolveStandStoreNav } from "@/lib/stand-store-nav";
 import StandCartLink from "./StandCartLink";
 import StandStoreLinks from "./StandStoreLinks";
 import StandStoreMenu from "./StandStoreMenu";
 
-export default function StandStoreHeader({
+export default async function StandStoreHeader({
   standName,
   standSlug,
   logoUrl,
@@ -17,15 +18,25 @@ export default function StandStoreHeader({
   backHref?: string;
   backLabel?: string;
 }) {
+  const nav = await resolveStandStoreNav(standSlug);
+
   return (
     <header className="relative flex flex-col gap-3">
       <div className="absolute left-0 top-0 z-10 sm:hidden">
-        <StandStoreMenu standSlug={standSlug} />
+        <StandStoreMenu standSlug={standSlug} nav={nav} />
       </div>
-      <div className="absolute right-0 top-0 z-10">
-        <StandCartLink standSlug={standSlug} />
-      </div>
-      <div className="flex flex-col items-center px-14 text-center">
+      {nav.showCart ? (
+        <div className="absolute right-0 top-0 z-10">
+          <StandCartLink standSlug={standSlug} />
+        </div>
+      ) : null}
+      <div
+        className={`flex flex-col items-center text-center ${
+          nav.showCart || nav.showShop || nav.showPreOrders || nav.showSubscriptions
+            ? "px-14"
+            : ""
+        }`}
+      >
         {logoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -42,6 +53,7 @@ export default function StandStoreHeader({
         <div className="mt-3 hidden sm:block">
           <StandStoreLinks
             standSlug={standSlug}
+            nav={nav}
             className="flex justify-center gap-4 text-sm font-medium"
           />
         </div>

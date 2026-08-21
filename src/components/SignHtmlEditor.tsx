@@ -11,6 +11,8 @@ type SignHtmlEditorProps = {
   defaultValue?: string;
   placeholder?: string;
   height?: number;
+  /** Fired when content changes (for live previews). */
+  onChange?: (html: string) => void;
 };
 
 function padEmptyBlocks(editor: TinyMCEEditor) {
@@ -28,8 +30,11 @@ export default function SignHtmlEditor({
   defaultValue = "",
   placeholder = "Write here…",
   height = 220,
+  onChange,
 }: SignHtmlEditorProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
   const initial = persistBlankParagraphs(normalizeSignHtml(defaultValue));
 
   function sync(editor: TinyMCEEditor) {
@@ -38,8 +43,9 @@ export default function SignHtmlEditor({
     const html = persistBlankParagraphs(editor.getContent({ format: "html" }).trim());
     const text = editor.getContent({ format: "text" }).replace(/\u00a0/g, " ").trim();
     const keep = Boolean(text) || html.includes("&nbsp;") || /<br\s*\/?>/i.test(html);
-    inputRef.current.value = keep ? html : "";
-
+    const next = keep ? html : "";
+    inputRef.current.value = next;
+    onChangeRef.current?.(next);
   }
 
   return (

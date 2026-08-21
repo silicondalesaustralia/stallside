@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
@@ -9,7 +9,7 @@ import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import { standSocialFromStand } from "@/lib/stand-social";
-import { catalogMetadata } from "@/lib/stand-seo";
+import { catalogMetadata, standCatalogPath } from "@/lib/stand-seo";
 import { businessPageProductWhere } from "@/lib/product-visibility";
 import StandCatalogGrid from "./StandCatalogGrid";
 import StandGoToCartBar from "./StandGoToCartBar";
@@ -67,6 +67,10 @@ export default async function PublicStandPage({
   });
 
   if (!stand || !stand.isActive) notFound();
+
+  if (stand.cartMode === "CUSTOMER_CHOICE") {
+    redirect(`${standCatalogPath(stand.slug)}/pay`);
+  }
 
   const isDemo = isDemoStandSlug(stand.slug);
 

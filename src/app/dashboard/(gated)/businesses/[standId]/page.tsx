@@ -44,7 +44,7 @@ export default async function StandDetailPage({
   });
   if (!stand) notFound();
 
-  const checkoutUrl = standCheckoutUrl(stand.slug);
+  const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 240);
   const cardTier = ownerHasProAccess(owner, {
     email: user.email,

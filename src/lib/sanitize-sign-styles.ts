@@ -28,8 +28,10 @@ function sanitizeStyleValue(prop: string, value: string): string | null {
   const v = value.trim().toLowerCase();
   if (!v || /expression|url\s*\(|javascript:|@import/i.test(v)) return null;
   if (prop === "color" || prop === "background-color") {
-    if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v)) return v;
-    if (/^rgba?\([\d\s.,%]+\)$/.test(v)) return v;
+    if (/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(v)) return v;
+    if (/^rgba?\([\d\s.,%/]+\)$/.test(v)) return v;
+    if (/^hsla?\([\d\s.,%/+-]+\)$/.test(v)) return v;
+    if (/^oklch\([\d\s.%/+-]+\)$/.test(v)) return v;
     if (/^[a-z]+$/.test(v)) return v;
     return null;
   }

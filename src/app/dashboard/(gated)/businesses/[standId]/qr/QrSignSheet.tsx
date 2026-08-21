@@ -128,7 +128,7 @@ export default function QrSignSheet({
           <SafeSignHtml
             html={qrCallout}
             allowStyles
-            className={`safe-sign-html qr-sign-callout text-center font-[family-name:var(--font-display)] font-bold leading-tight tracking-tight text-[var(--gone)] ${
+            className={`safe-sign-html qr-sign-callout text-center font-[family-name:var(--font-display)] font-bold leading-tight tracking-tight ${
               compact ? "mt-1.5 text-lg" : "mt-8 text-3xl"
             }`}
           />

@@ -17,6 +17,11 @@ import { parsePriceTiers, lineTotalWithTiers } from "@/lib/price-tiers";
 import { productLiveWhere } from "@/lib/product-visibility";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 import {
+  CUSTOMER_CHOICE_MAX_CENTS,
+  CUSTOMER_CHOICE_MIN_CENTS,
+  CUSTOMER_CHOICE_PRODUCT_NAME,
+} from "@/lib/customer-choice-constants";
+import {
   HandoverMode,
   PaymentStatus,
   PaymentTiming,
@@ -92,6 +97,79 @@ export function orderItemCreates(lineData: CartLineData[]) {
   );
 }
 
+export async function loadCustomerChoiceCheckout(
+  standSlug: string,
+  amountCents: number,
+) {
+  if (
+    !Number.isInteger(amountCents) ||
+    amountCents < CUSTOMER_CHOICE_MIN_CENTS
+  ) {
+    return {
+      error: `Enter at least ${(CUSTOMER_CHOICE_MIN_CENTS / 100).toFixed(2)}.` as const,
+    };
+  }
+  if (amountCents > CUSTOMER_CHOICE_MAX_CENTS) {
+    return {
+      error: `Amount cannot exceed ${(CUSTOMER_CHOICE_MAX_CENTS / 100).toFixed(0)}.` as const,
+    };
+  }
+
+  const stand = await prisma.stand.findUnique({
+    where: { slug: standSlug },
+    include: { owner: true },
+  });
+  if (!stand || !stand.isActive) {
+    return { error: "This stand is not available." as const };
+  }
+  if (stand.cartMode !== "CUSTOMER_CHOICE") {
+    return { error: "This stand uses product checkout." as const };
+  }
+  if (!stand.customerChoiceProductId) {
+    return { error: "Customer Choice is not set up for this stand." as const };
+  }
+
+  const product = await prisma.product.findFirst({
+    where: {
+      id: stand.customerChoiceProductId,
+      standId: stand.id,
+      isArchived: false,
+    },
+  });
+  if (!product) {
+    return { error: "Customer Choice is not set up for this stand." as const };
+  }
+
+  const lineData: CartLineData[] = [
+    {
+      productId: product.id,
+      productNameSnapshot: CUSTOMER_CHOICE_PRODUCT_NAME,
+      optionsSnapshot: null,
+      quantity: 1,
+      unitPriceCents: amountCents,
+      lineTotalCents: amountCents,
+      usedTier: false,
+      usedUpsell: false,
+    },
+  ];
+
+  const byId = new Map([[product.id, product]]);
+  const stockItems = [{ productId: product.id, quantity: 1 }];
+
+  return {
+    stand,
+    byId,
+    items: stockItems,
+    lineData,
+    subtotalCents: amountCents,
+    discountCents: 0,
+    discountLabel: null as string | null,
+    totalCents: amountCents,
+    preOrderCart: null,
+    skipStock: true as const,
+  };
+}
+
 export async function loadStandCart(
   standSlug: string,
   items: CartItemInput[],
@@ -116,6 +194,11 @@ export async function loadStandCart(
   });
   if (!stand || !stand.isActive) {
     return { error: "This stand is not available." as const };
+  }
+  if (stand.cartMode === "CUSTOMER_CHOICE") {
+    return {
+      error: "This stand uses Customer Choice checkout." as const,
+    };
   }
 
   const productIds = [...new Set(normalized.map((i) => i.productId))];
@@ -426,6 +509,7 @@ export async function loadStandCart(
     discountLabel,
     totalCents,
     preOrderCart,
+    skipStock: false as const,
   };
 }
 
