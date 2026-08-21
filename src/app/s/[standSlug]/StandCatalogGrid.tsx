@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -68,7 +69,6 @@ export default function StandCatalogGrid({
       }
     }
     addToStandCart(standSlug, product.id, 1, product.stockQuantity);
-    router.refresh();
   }
 
   return (
@@ -86,10 +86,12 @@ export default function StandCatalogGrid({
             >
               <Link href={href} className="block p-3 pb-0 sm:p-0">
                 {product.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={product.imageUrl}
                     alt=""
+                    width={640}
+                    height={640}
+                    sizes="(max-width: 640px) 100vw, 280px"
                     className="aspect-[4/3] w-full rounded-[calc(var(--radius)-2px)] object-cover sm:aspect-square sm:rounded-none"
                   />
                 ) : (

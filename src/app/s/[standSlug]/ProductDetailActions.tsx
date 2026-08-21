@@ -179,7 +179,7 @@ export default function ProductDetailActions({
     }
 
     if (goCart) router.push(standCartPath(standSlug));
-    else router.refresh();
+   
   }
 
   return (

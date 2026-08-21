@@ -1,6 +1,10 @@
 import { Prisma, ShopperSubStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { COUNTED_STATUSES } from "@/lib/order-metrics";
+import {
+  COUNTED_STATUSES,
+  summarizeByChannel,
+} from "@/lib/order-metrics";
+import { buildChannelSalesSeries } from "@/lib/sales-series";
 import { productDashboardWhere } from "@/lib/product-visibility";
 import type { DateWindow } from "@/lib/date-range";
 
@@ -111,10 +115,25 @@ export async function loadDashboardHomeData(args: {
     }),
   ]);
 
+  const currentSummaries = summarizeByChannel(currentOrders);
+  const previousSummaries = summarizeByChannel(previousOrders);
+  const channels = buildChannelSalesSeries(
+    currentOrders,
+    window.start,
+    window.end,
+  );
+  const previousPoints = buildChannelSalesSeries(
+    previousOrders,
+    window.prevStart,
+    window.prevEnd,
+  ).all;
+
   return {
     products,
-    currentOrders,
-    previousOrders,
+    currentSummaries,
+    previousSummaries,
+    channels,
+    previousPoints,
     lowStockRows,
     hasPreOrderProduct: Boolean(hasPreOrderProduct),
     soldOutTakeNow,

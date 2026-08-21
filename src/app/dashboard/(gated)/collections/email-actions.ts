@@ -1,8 +1,10 @@
 "use server";
 
+import { after } from "next/server";
 import { PaymentStatus } from "@/generated/prisma/client";
 import { APP_NAME } from "@/lib/constants";
 import { escapeHtml } from "@/lib/lifecycle-emails/html";
+import { mapPool } from "@/lib/map-pool";
 import { sendOwnerEmail } from "@/lib/notify-email";
 import { ownerAlertRecipients } from "@/lib/owner-alert-recipients";
 import { prisma } from "@/lib/prisma";
@@ -107,33 +109,34 @@ export async function sendCollectionGroupCustomerEmails(input: {
   const replyTo =
     ownerAlertRecipients(withEmail[0]!.owner)[0] ?? user.email ?? undefined;
 
-  let sent = 0;
-  let failed = 0;
-  for (const order of withEmail) {
-    try {
-      await sendOwnerEmail(
-        order.receiptEmail!,
-        subject,
-        emailHtml(order.stand.name, order.orderNumber, message),
-        {
-          kind: "owner_to_customer_bulk",
-          replyTo: replyTo ?? undefined,
-        },
-      );
-      sent += 1;
-    } catch (error) {
-      console.error("Bulk owner→customer email failed", order.id, error);
-      failed += 1;
-    }
-  }
-
-  if (sent === 0) {
-    return { error: "Could not send emails. Try again." };
-  }
-
+  const payload = withEmail.map((order) => ({
+    email: order.receiptEmail!,
+    standName: order.stand.name,
+    orderNumber: order.orderNumber,
+  }));
   const skipped = orders.length - withEmail.length;
-  const parts = [`Sent to ${sent}`];
-  if (failed) parts.push(`${failed} failed`);
+
+  after(() => {
+    void mapPool(payload, 5, async (row) => {
+      try {
+        await sendOwnerEmail(
+          row.email,
+          subject,
+          emailHtml(row.standName, row.orderNumber, message),
+          {
+            kind: "owner_to_customer_bulk",
+            replyTo: replyTo ?? undefined,
+          },
+        );
+      } catch (error) {
+        console.error("Bulk owner→customer email failed", row.orderNumber, error);
+      }
+    }).catch((error) => {
+      console.error("Bulk collection emails failed", error);
+    });
+  });
+
+  const parts = [`Emails queued to ${payload.length}`];
   if (skipped) parts.push(`${skipped} had no email`);
   return { ok: true as const, summary: parts.join(", ") + "." };
 }

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/public-product";
@@ -52,10 +53,11 @@ export default function PreOrderPageProductRow({
     <li className="flex flex-col gap-3 py-4">
       <div className="flex items-start gap-3">
         {product.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={product.imageUrl}
             alt=""
+            width={80}
+            height={80}
             className="size-20 shrink-0 rounded-lg object-cover"
           />
         ) : (

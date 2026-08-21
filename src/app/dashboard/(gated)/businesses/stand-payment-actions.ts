@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { localTransferForCurrency } from "@/lib/local-transfer";
@@ -90,5 +91,6 @@ export async function updateStandPayments(standId: string, formData: FormData) {
   revalidatePath("/dashboard/businesses");
   revalidatePath(`/dashboard/businesses/${standId}`);
   revalidatePath(`/s/${existing.slug}`);
+  revalidateTag(standCatalogTag(existing.slug), "max");
   return { ok: true as const };
 }

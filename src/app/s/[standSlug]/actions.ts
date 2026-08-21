@@ -14,6 +14,7 @@ import {
   orderItemCreates,
   type CartItemInput,
 } from "@/lib/checkout";
+import { after } from "next/server";
 import { normalizeReceiptEmail } from "@/lib/first-order-discount";
 import { notifySale } from "@/lib/notify";
 import { notifyTapAndGoInterest } from "@/lib/notify-tap-and-go";
@@ -165,11 +166,11 @@ async function confirmDeclaredCheckout(
       { maxWait: 10_000, timeout: 30_000 },
     );
 
-    try {
-      await notifySale(order.id);
-    } catch (error) {
-      console.error("Sale notify failed", error);
-    }
+    after(() => {
+      void notifySale(order.id).catch((error) => {
+        console.error("Sale notify failed", error);
+      });
+    });
 
     return { orderNumber: order.orderNumber };
   } catch (error) {

@@ -42,7 +42,14 @@ export async function middleware(request: NextRequest) {
     request: { headers: requestHeaders },
   });
 
-  await refreshSessionCookie(request, response);
+  const pathname = request.nextUrl.pathname;
+  if (
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/api/auth")
+  ) {
+    await refreshSessionCookie(request, response);
+  }
   return response;
 }
 

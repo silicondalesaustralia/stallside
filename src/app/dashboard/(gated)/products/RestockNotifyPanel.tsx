@@ -40,7 +40,7 @@ export default function RestockNotifyPanel({
       ) : null}
       {state.ok ? (
         <p className="mt-2 text-sm text-[var(--muted)]">
-          Notified {state.recipientCount ?? subscriberCount} customer
+          Emails queued to {state.recipientCount ?? subscriberCount} customer
           {(state.recipientCount ?? subscriberCount) === 1 ? "" : "s"}.
         </p>
       ) : null}

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { Suspense } from "react";
 import { Bricolage_Grotesque, DM_Sans, Spline_Sans_Mono } from "next/font/google";
 import { APP_DOMAIN, APP_NAME, APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
@@ -74,11 +75,15 @@ export const viewport: Viewport = {
   themeColor: "#17361f",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = (await headers()).get("x-stallside-pathname") ?? "";
+  const loadTracking =
+    !pathname.startsWith("/dashboard") && !pathname.startsWith("/admin");
+
   return (
     <html
       lang="en"
@@ -87,10 +92,14 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col font-sans">
         <AdClickCapture />
-        <GoogleAnalytics />
-        <MetaPixel />
-        <PerformPixel />
-        <RedditPixel />
+        {loadTracking ? (
+          <>
+            <GoogleAnalytics />
+            <MetaPixel />
+            <PerformPixel />
+            <RedditPixel />
+          </>
+        ) : null}
         <NativeShellBootstrap />
         <Suspense fallback={null}>
           <NavigationBusy />

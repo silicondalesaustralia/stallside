@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import {
   InventorySource,
@@ -130,17 +131,14 @@ async function fulfillPaidOnlineOrder(
     throw error;
   }
 
-  try {
-    await notifySale(orderId);
-  } catch (error) {
-    console.error("Sale notify failed", error);
-  }
-
-  try {
-    await notifyOrderCustomer(orderId);
-  } catch (error) {
-    console.error("Customer order email failed", error);
-  }
+  after(() => {
+    void notifySale(orderId).catch((error) => {
+      console.error("Sale notify failed", error);
+    });
+    void notifyOrderCustomer(orderId).catch((error) => {
+      console.error("Customer order email failed", error);
+    });
+  });
 
   return { orderNumber: order.orderNumber, alreadyPaid: false as const };
 }

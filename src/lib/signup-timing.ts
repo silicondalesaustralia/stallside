@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 /** Record first live product once (signup → live timing). */
@@ -9,6 +10,12 @@ export async function markFirstProductLive(ownerId: string): Promise<void> {
 }
 
 export async function medianSignupToFirstLiveMs(): Promise<number | null> {
+  return unstable_cache(computeMedianSignupToFirstLiveMs, ["median-signup-live"], {
+    revalidate: 3600,
+  })();
+}
+
+async function computeMedianSignupToFirstLiveMs(): Promise<number | null> {
   const rows = await prisma.owner.findMany({
     where: { firstProductLiveAt: { not: null }, deletedAt: null },
     select: { createdAt: true, firstProductLiveAt: true },

@@ -1,4 +1,5 @@
 import type Stripe from "stripe";
+import { after } from "next/server";
 import {
   CollectionStatus,
   InventorySource,
@@ -171,6 +172,12 @@ export async function fulfillShopperSubscriptionInvoice(
     { maxWait: 10_000, timeout: 30_000 },
   );
 
-  void notifySale(order.id);
-  void notifyOrderCustomer(order.id);
+  after(() => {
+    void notifySale(order.id).catch((error) => {
+      console.error("Sale notify failed", error);
+    });
+    void notifyOrderCustomer(order.id).catch((error) => {
+      console.error("Customer order email failed", error);
+    });
+  });
 }

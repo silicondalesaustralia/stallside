@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireOwner } from "@/lib/session";
@@ -199,8 +200,10 @@ function revalidateStandPaths(
   revalidatePath(`/dashboard/businesses/${standId}`);
   revalidatePath(`/dashboard/businesses/${standId}/qr`);
   revalidatePath(`/s/${slug}`);
+  revalidateTag(standCatalogTag(slug), "max");
   if (slug !== previousSlug) {
     revalidatePath(`/s/${previousSlug}`);
+    revalidateTag(standCatalogTag(previousSlug), "max");
   }
 }
 
@@ -352,6 +355,7 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
   revalidatePath(`/dashboard/businesses/${standId}`);
   revalidatePath(`/dashboard/businesses/${standId}/qr`);
   revalidatePath(`/s/${existing.slug}`);
+  revalidateTag(standCatalogTag(existing.slug), "max");
   revalidatePath(`/s/${existing.slug}/pay`);
   return { ok: true as const };
 }

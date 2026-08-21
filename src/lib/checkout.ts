@@ -529,30 +529,34 @@ export async function decrementStockForOrder(
     reason: string;
   },
 ) {
-  for (const item of input.items) {
-    const updated = await tx.product.updateMany({
-      where: { id: item.productId, stockQuantity: { gte: item.quantity } },
-      data: { stockQuantity: { decrement: item.quantity } },
-    });
-    if (updated.count !== 1) {
-      throw new Error("STOCK");
-    }
-  }
+  await Promise.all(
+    input.items.map(async (item) => {
+      const updated = await tx.product.updateMany({
+        where: { id: item.productId, stockQuantity: { gte: item.quantity } },
+        data: { stockQuantity: { decrement: item.quantity } },
+      });
+      if (updated.count !== 1) {
+        throw new Error("STOCK");
+      }
+    }),
+  );
 
-  for (const item of input.items) {
-    const product = input.byId.get(item.productId)!;
-    await tx.inventoryAdjustment.create({
-      data: {
-        productId: product.id,
-        ownerId: input.ownerId,
-        standId: input.standId,
-        changeQuantity: -item.quantity,
-        previousQuantity: product.stockQuantity,
-        newQuantity: product.stockQuantity - item.quantity,
-        reason: input.reason,
-        source: input.source,
-        orderId: input.orderId,
-      },
-    });
-  }
+  await Promise.all(
+    input.items.map(async (item) => {
+      const product = input.byId.get(item.productId)!;
+      await tx.inventoryAdjustment.create({
+        data: {
+          productId: product.id,
+          ownerId: input.ownerId,
+          standId: input.standId,
+          changeQuantity: -item.quantity,
+          previousQuantity: product.stockQuantity,
+          newQuantity: product.stockQuantity - item.quantity,
+          reason: input.reason,
+          source: input.source,
+          orderId: input.orderId,
+        },
+      });
+    }),
+  );
 }

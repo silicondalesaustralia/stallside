@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { parseOptionGroupsInput } from "@/lib/product-options";
@@ -59,6 +60,7 @@ export async function saveProductOptions(
 
     revalidatePath(`/dashboard/products/${product.id}`);
     revalidatePath(`/s/${product.stand.slug}`);
+    revalidateTag(standCatalogTag(product.stand.slug), "max");
     revalidatePath(`/s/${product.stand.slug}/${product.slug}`);
     return { ok: true as const };
   } catch (error) {

@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import DashboardMobileNav from "@/components/DashboardMobileNav";
-import DashboardNav from "@/components/DashboardNav";
+import { Suspense } from "react";
+import DashboardNavWithUnread from "@/components/DashboardNavWithUnread";
 import ImpersonationBanner from "@/components/ImpersonationBanner";
 import OwnerPushRegister from "@/components/OwnerPushRegisterLazy";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
 import { requireOwner } from "@/lib/session";
 import { paidAccessDaysRemaining } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
-import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -23,26 +22,28 @@ export default async function DashboardLayout({
   const paidDays = paidAccessDaysRemaining(owner, access);
   const { businesses, selected } = await resolveSelectedBusiness(owner.id);
 
-  const unreadNotifications = await prisma.notification.count({
-    where: { ownerId: owner.id, status: "OPEN" },
-  });
-
   return (
     <div className="flex min-h-full flex-1 bg-[var(--wash)] print:bg-white">
-      <DashboardNav
-        businesses={businesses}
-        selectedBusinessId={selected?.id ?? null}
-        unreadNotifications={unreadNotifications}
-      />
+      <Suspense fallback={null}>
+        <DashboardNavWithUnread
+          ownerId={owner.id}
+          businesses={businesses}
+          selectedBusinessId={selected?.id ?? null}
+          variant="sidebar"
+        />
+      </Suspense>
       <div className="flex min-w-0 flex-1 flex-col pb-28 print:pb-0 md:pb-0">
         <OwnerPushRegister
           pushAlertsEnabled={owner.pushAlertsEnabled && !impersonator}
         />
-        <DashboardMobileNav
-          businesses={businesses}
-          selectedBusinessId={selected?.id ?? null}
-          unreadNotifications={unreadNotifications}
-        />
+        <Suspense fallback={null}>
+          <DashboardNavWithUnread
+            ownerId={owner.id}
+            businesses={businesses}
+            selectedBusinessId={selected?.id ?? null}
+            variant="mobile"
+          />
+        </Suspense>
         {impersonator ? (
           <ImpersonationBanner
             targetEmail={user.email ?? owner.contactEmail}

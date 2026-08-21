@@ -88,3 +88,54 @@ export function filterOrdersByChannels(
   if (mode === "all") return orders;
   return orders.filter((order) => enabled[orderSalesChannel(order)]);
 }
+
+export type ChannelSummaries = Record<"all" | SalesChannel, OrderSummary>;
+
+export function summarizeByChannel(orders: ChannelMetricRow[]): ChannelSummaries {
+  const buckets: Record<SalesChannel, ChannelMetricRow[]> = {
+    subscription: [],
+    preorder: [],
+    stand: [],
+  };
+  for (const order of orders) {
+    buckets[orderSalesChannel(order)].push(order);
+  }
+  return {
+    all: summarizeOrders(orders),
+    subscription: summarizeOrders(buckets.subscription),
+    preorder: summarizeOrders(buckets.preorder),
+    stand: summarizeOrders(buckets.stand),
+  };
+}
+
+export function mergeChannelSummaries(
+  summaries: ChannelSummaries,
+  mode: "all" | "channels",
+  enabled: Record<SalesChannel, boolean>,
+): OrderSummary {
+  if (mode === "all") return summaries.all;
+  const empty: OrderSummary = {
+    salesCents: 0,
+    cashCents: 0,
+    digitalCents: 0,
+    orderCount: 0,
+    currency: summaries.all.currency,
+    cashOrderCount: 0,
+    checkoutOrderCount: 0,
+  };
+  let merged = empty;
+  for (const key of ["subscription", "preorder", "stand"] as const) {
+    if (!enabled[key]) continue;
+    const part = summaries[key];
+    merged = {
+      salesCents: merged.salesCents + part.salesCents,
+      cashCents: merged.cashCents + part.cashCents,
+      digitalCents: merged.digitalCents + part.digitalCents,
+      orderCount: merged.orderCount + part.orderCount,
+      currency: part.currency || merged.currency,
+      cashOrderCount: merged.cashOrderCount + part.cashOrderCount,
+      checkoutOrderCount: merged.checkoutOrderCount + part.checkoutOrderCount,
+    };
+  }
+  return merged;
+}

@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { brandingDataFromForm } from "./stand-branding-from-form";
@@ -25,6 +26,7 @@ export async function updateStandBranding(standId: string, formData: FormData) {
     revalidatePath(`/dashboard/businesses/${stand.id}`);
     revalidatePath(`/dashboard/businesses/${stand.id}/qr`);
     revalidatePath(`/s/${stand.slug}`);
+    revalidateTag(standCatalogTag(stand.slug), "max");
     return { ok: true as const };
   } catch (error) {
     console.error("updateStandBranding failed", error);

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import AdminRecentOwners from "@/components/AdminRecentOwners";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
@@ -26,27 +27,12 @@ export default async function AdminOverviewPage({
     to: params.to,
   });
 
-  const [saas, series, recent, medianLiveMs] = await Promise.all([
+  const [saas, series] = await Promise.all([
     getSaasStats(),
     getSaasSeries(window.start, window.end),
-    prisma.owner.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 8,
-      include: {
-        user: true,
-        stands: { select: { name: true }, take: 3 },
-      },
-    }),
-    medianSignupToFirstLiveMs(),
   ]);
 
   const billingReady = isStripeBillingConfigured();
-  const medianLiveLabel =
-    medianLiveMs == null
-      ? "n/a"
-      : medianLiveMs < 60_000
-        ? `${Math.round(medianLiveMs / 1000)}s`
-        : `${(medianLiveMs / 60_000).toFixed(1)}m`;
 
   return (
     <main className="flex flex-col gap-8">
@@ -59,13 +45,15 @@ export default async function AdminOverviewPage({
           <p className="mt-1 text-[var(--muted)]">
             Subscriptions and Vendl revenue in AUD — not stall checkout sales.
           </p>
-          <p className="mt-1 text-sm text-[var(--muted)]">
-            Median signup → first live product:{" "}
-            <strong>{medianLiveLabel}</strong>
-            {medianLiveMs != null && medianLiveMs > 60_000
-              ? " (over 60s — fix setup before new verticals)"
-              : ""}
-          </p>
+          <Suspense
+            fallback={
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                Median signup → first live product: …
+              </p>
+            }
+          >
+            <AdminMedianLiveLine />
+          </Suspense>
         </div>
         <div className="flex flex-wrap items-center gap-3 text-sm">
           <DashPrimaryCta href="/admin/invites">
@@ -140,10 +128,51 @@ export default async function AdminOverviewPage({
         />
       </section>
 
-      <section className="dash-card p-5">
-        <h2 className="text-lg font-semibold">Recent owners</h2>
-        <AdminRecentOwners owners={recent} />
-      </section>
+      <Suspense
+        fallback={
+          <section className="dash-card p-5">
+            <h2 className="text-lg font-semibold">Recent owners</h2>
+            <p className="mt-2 text-sm text-[var(--muted)]">Loading…</p>
+          </section>
+        }
+      >
+        <AdminRecentOwnersSection />
+      </Suspense>
     </main>
+  );
+}
+
+async function AdminMedianLiveLine() {
+  const medianLiveMs = await medianSignupToFirstLiveMs();
+  const medianLiveLabel =
+    medianLiveMs == null
+      ? "n/a"
+      : medianLiveMs < 60_000
+        ? `${Math.round(medianLiveMs / 1000)}s`
+        : `${(medianLiveMs / 60_000).toFixed(1)}m`;
+  return (
+    <p className="mt-1 text-sm text-[var(--muted)]">
+      Median signup → first live product: <strong>{medianLiveLabel}</strong>
+      {medianLiveMs != null && medianLiveMs > 60_000
+        ? " (over 60s — fix setup before new verticals)"
+        : ""}
+    </p>
+  );
+}
+
+async function AdminRecentOwnersSection() {
+  const recent = await prisma.owner.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 8,
+    include: {
+      user: true,
+      stands: { select: { name: true }, take: 3 },
+    },
+  });
+  return (
+    <section className="dash-card p-5">
+      <h2 className="text-lg font-semibold">Recent owners</h2>
+      <AdminRecentOwners owners={recent} />
+    </section>
   );
 }

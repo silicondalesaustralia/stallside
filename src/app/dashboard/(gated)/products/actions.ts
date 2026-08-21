@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireOwner } from "@/lib/session";
@@ -134,6 +135,7 @@ export async function createProduct(formData: FormData) {
       console.error("Product image upload failed", error);
       revalidatePath("/dashboard/products");
       revalidatePath(`/s/${stand.slug}`);
+      revalidateTag(standCatalogTag(stand.slug), "max");
       redirect(
         `/dashboard/products/${product.id}?imageError=${encodeURIComponent(
           error instanceof Error ? error.message : "Image upload failed.",
@@ -161,6 +163,7 @@ export async function createProduct(formData: FormData) {
 
   revalidatePath("/dashboard/products");
   revalidatePath(`/s/${stand.slug}`);
+  revalidateTag(standCatalogTag(stand.slug), "max");
   redirect(`/dashboard/products/${product.id}`);
 }
 
@@ -410,6 +413,7 @@ export async function updateProduct(productId: string, formData: FormData) {
     revalidatePath(`/dashboard/businesses/${product.standId}`);
     revalidatePath("/dashboard/pre-order-pages");
     revalidatePath(`/s/${product.stand.slug}`);
+    revalidateTag(standCatalogTag(product.stand.slug), "max");
     revalidatePath(`/s/${product.stand.slug}/${slug}`);
     return { ok: true as const };
   } catch (error) {

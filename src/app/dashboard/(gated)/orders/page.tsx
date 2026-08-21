@@ -3,7 +3,11 @@ import { prisma } from "@/lib/prisma";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesAnalyticsPanel from "@/components/SalesAnalyticsPanel";
 import { resolveDateWindow } from "@/lib/date-range";
-import { COUNTED_STATUSES } from "@/lib/order-metrics";
+import {
+  COUNTED_STATUSES,
+  summarizeByChannel,
+} from "@/lib/order-metrics";
+import { buildChannelSalesSeries } from "@/lib/sales-series";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import Link from "next/link";
 import OrderListRow from "./OrderListRow";
@@ -96,13 +100,18 @@ export default async function OrdersPage({
     }),
   ]);
 
-  const serialize = (
-    orders: typeof currentOrders,
-  ) =>
-    orders.map((o) => ({
-      ...o,
-      createdAt: o.createdAt.toISOString(),
-    }));
+  const currentSummaries = summarizeByChannel(currentOrders);
+  const previousSummaries = summarizeByChannel(previousOrders);
+  const channels = buildChannelSalesSeries(
+    currentOrders,
+    window.start,
+    window.end,
+  );
+  const previousPoints = buildChannelSalesSeries(
+    previousOrders,
+    window.prevStart,
+    window.prevEnd,
+  ).all;
 
   return (
     <main className="flex flex-col gap-6">
@@ -134,12 +143,10 @@ export default async function OrdersPage({
       />
 
       <SalesAnalyticsPanel
-        currentOrders={serialize(currentOrders)}
-        previousOrders={serialize(previousOrders)}
-        rangeStart={window.start.toISOString()}
-        rangeEnd={window.end.toISOString()}
-        prevStart={window.prevStart.toISOString()}
-        prevEnd={window.prevEnd.toISOString()}
+        channels={channels}
+        previousPoints={previousPoints}
+        currentSummaries={currentSummaries}
+        previousSummaries={previousSummaries}
         chartTitle="Sales over time"
         layout="orders"
       />

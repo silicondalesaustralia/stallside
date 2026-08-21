@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import BrandMark from "@/components/BrandMark";
 import { resolveStandStoreNav } from "@/lib/stand-store-nav";
@@ -38,10 +39,11 @@ export default async function StandStoreHeader({
         }`}
       >
         {logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={logoUrl}
             alt=""
+            width={220}
+            height={80}
             className="h-16 w-auto max-h-20 max-w-[min(100%,220px)] object-contain sm:h-20 sm:max-h-24"
           />
         ) : (

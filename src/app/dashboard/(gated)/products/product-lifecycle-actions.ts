@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
@@ -45,6 +46,7 @@ function revalidateProductPaths(opts: {
   revalidatePath(`/dashboard/products/${opts.productId}`);
   revalidatePath(`/dashboard/businesses/${opts.standId}`);
   revalidatePath(`/s/${opts.standSlug}`);
+  revalidateTag(standCatalogTag(opts.standSlug), "max");
   revalidatePath(`/s/${opts.standSlug}/${opts.slug}`);
 }
 

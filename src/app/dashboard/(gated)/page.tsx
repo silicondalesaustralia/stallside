@@ -9,27 +9,11 @@ import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesAnalyticsPanel from "@/components/SalesAnalyticsPanel";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveDateWindow } from "@/lib/date-range";
-import { summarizeOrders } from "@/lib/order-metrics";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { loadDashboardHomeData } from "./load-dashboard-home";
 import type { PaymentMethod } from "@/generated/prisma/client";
 
-function serializeOrders(
-  orders: {
-    totalCents: number;
-    paymentMethod: PaymentMethod;
-    currency: string;
-    createdAt: Date;
-    isPreOrder: boolean;
-    shopperSubscriptionId: string | null;
-  }[],
-) {
-  return orders.map((o) => ({
-    ...o,
-    createdAt: o.createdAt.toISOString(),
-  }));
-}
 
 export default async function DashboardPage({
   searchParams,
@@ -65,7 +49,7 @@ export default async function DashboardPage({
     loadUpgradeSignals: !cardTier,
   });
 
-  const current = summarizeOrders(data.currentOrders);
+  const current = data.currentSummaries.all;
   const standName = selected.name;
   const lowStock = data.lowStockRows.map((p) => ({
     id: p.id,
@@ -107,12 +91,10 @@ export default async function DashboardPage({
       </div>
 
       <SalesAnalyticsPanel
-        currentOrders={serializeOrders(data.currentOrders)}
-        previousOrders={serializeOrders(data.previousOrders)}
-        rangeStart={window.start.toISOString()}
-        rangeEnd={window.end.toISOString()}
-        prevStart={window.prevStart.toISOString()}
-        prevEnd={window.prevEnd.toISOString()}
+        channels={data.channels}
+        previousPoints={data.previousPoints}
+        currentSummaries={data.currentSummaries}
+        previousSummaries={data.previousSummaries}
         chartTitle={`${window.label} vs prior`}
         ordersHref={ordersHref}
         layout="home"

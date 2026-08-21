@@ -1,7 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import {
+  loadPublicStandCatalog,
+  loadPublicStandMeta,
+} from "@/lib/public-stand-catalog";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import { isDemoStandSlug } from "@/lib/demo";
 import { mapPublicProduct } from "@/lib/public-product";
@@ -10,7 +13,6 @@ import { standAccentStyle } from "@/lib/stand-brand";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import { standSocialFromStand } from "@/lib/stand-social";
 import { catalogMetadata, standCatalogPath } from "@/lib/stand-seo";
-import { businessPageProductWhere } from "@/lib/product-visibility";
 import StandCatalogGrid from "./StandCatalogGrid";
 import StandGoToCartBar from "./StandGoToCartBar";
 import StandSocialLinks from "./StandSocialLinks";
@@ -23,16 +25,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { standSlug } = await params;
   const slug = decodeURIComponent(standSlug).trim().toLowerCase();
-  const stand = await prisma.stand.findUnique({
-    where: { slug },
-    select: {
-      name: true,
-      slug: true,
-      locationLabel: true,
-      logoUrl: true,
-      isActive: true,
-    },
-  });
+  const stand = await loadPublicStandMeta(slug);
   if (!stand || !stand.isActive) return { title: "Stand" };
   return catalogMetadata({
     standName: stand.name,
@@ -49,22 +42,7 @@ export default async function PublicStandPage({
 }) {
   const { standSlug } = await params;
   const slug = decodeURIComponent(standSlug).trim().toLowerCase();
-  const stand = await prisma.stand.findUnique({
-    where: { slug },
-    include: {
-      products: {
-        where: businessPageProductWhere,
-        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-        include: {
-          optionGroups: {
-            orderBy: { sortOrder: "asc" },
-            include: { choices: { orderBy: { sortOrder: "asc" } } },
-          },
-        },
-      },
-      owner: { include: { user: { select: { email: true, role: true } } } },
-    },
-  });
+  const stand = await loadPublicStandCatalog(slug, "catalog");
 
   if (!stand || !stand.isActive) notFound();
 

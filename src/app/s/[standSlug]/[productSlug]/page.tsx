@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
@@ -105,10 +106,13 @@ export default async function PublicProductPage({
       />
       <article className="mt-6">
         {product.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={product.imageUrl}
             alt=""
+            width={800}
+            height={800}
+            sizes="(max-width: 512px) 100vw, 512px"
+            priority
             className="aspect-square w-full rounded-[var(--radius)] object-cover"
           />
         ) : null}

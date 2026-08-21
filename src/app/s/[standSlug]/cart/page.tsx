@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { loadPublicStandCatalog } from "@/lib/public-stand-catalog";
 import { prisma } from "@/lib/prisma";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { standOffersCard, standOffersPayPal } from "@/lib/stand-payment-brands";
@@ -9,7 +10,6 @@ import { mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { standCatalogPath } from "@/lib/stand-seo";
-import { productLiveWhere } from "@/lib/product-visibility";
 import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
@@ -30,22 +30,7 @@ export default async function StandCartPage({
 }) {
   const { standSlug } = await params;
   const slug = decodeURIComponent(standSlug).trim().toLowerCase();
-  const stand = await prisma.stand.findUnique({
-    where: { slug },
-    include: {
-      products: {
-        where: productLiveWhere,
-        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-        include: {
-          optionGroups: {
-            orderBy: { sortOrder: "asc" },
-            include: { choices: { orderBy: { sortOrder: "asc" } } },
-          },
-        },
-      },
-      owner: { include: { user: { select: { email: true, role: true } } } },
-    },
-  });
+  const stand = await loadPublicStandCatalog(slug, "cart");
   if (!stand || !stand.isActive) notFound();
   if (stand.cartMode === "CUSTOMER_CHOICE") {
     redirect(`${standCatalogPath(stand.slug)}/pay`);

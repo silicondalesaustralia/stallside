@@ -109,7 +109,7 @@ export default function PreOrderPageOrder({
     });
 
     if (goCart) router.push(standCartPath(standSlug));
-    else router.refresh();
+   
   }
 
   const sampleDetails = products.find((p) => p.preOrderDetails)?.preOrderDetails;

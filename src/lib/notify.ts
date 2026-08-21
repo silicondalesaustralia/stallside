@@ -111,20 +111,33 @@ async function maybeNotifyLowStock(
     Date.now() - LOW_STOCK_ALERT_COOLDOWN_HOURS * 60 * 60 * 1000,
   );
 
-  for (const product of products) {
+  const candidates = products.filter((product) => {
     const soldOut = product.stockQuantity <= 0;
-    if (!soldOut && product.stockQuantity > product.lowStockThreshold) continue;
+    return soldOut || product.stockQuantity <= product.lowStockThreshold;
+  });
+  if (!candidates.length) return;
 
+  const recent = await prisma.lowStockAlert.findMany({
+    where: {
+      productId: { in: candidates.map((p) => p.id) },
+      sentAt: { gte: since },
+    },
+    select: {
+      productId: true,
+      stockQuantityAtAlert: true,
+    },
+  });
+  const recentSoldOut = new Set(
+    recent.filter((r) => r.stockQuantityAtAlert <= 0).map((r) => r.productId),
+  );
+  const recentLow = new Set(
+    recent.filter((r) => r.stockQuantityAtAlert > 0).map((r) => r.productId),
+  );
+
+  for (const product of candidates) {
+    const soldOut = product.stockQuantity <= 0;
     if (soldOut) {
-      const recentSoldOut = await prisma.lowStockAlert.findFirst({
-        where: {
-          productId: product.id,
-          sentAt: { gte: since },
-          stockQuantityAtAlert: { lte: 0 },
-        },
-      });
-      if (recentSoldOut) continue;
-
+      if (recentSoldOut.has(product.id)) continue;
       await sendStockAlert({
         owner,
         recipients,
@@ -138,14 +151,7 @@ async function maybeNotifyLowStock(
       continue;
     }
 
-    const recentLow = await prisma.lowStockAlert.findFirst({
-      where: {
-        productId: product.id,
-        sentAt: { gte: since },
-        stockQuantityAtAlert: { gt: 0 },
-      },
-    });
-    if (recentLow) continue;
+    if (recentLow.has(product.id)) continue;
 
     await sendStockAlert({
       owner,

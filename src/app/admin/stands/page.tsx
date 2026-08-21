@@ -2,15 +2,31 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
-export default async function AdminStandsPage() {
+const PAGE_SIZE = 50;
+
+export default async function AdminStandsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   await requireAdmin();
-  const stands = await prisma.stand.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      owner: true,
-      _count: { select: { products: true, orders: true } },
-    },
-  });
+  const params = await searchParams;
+  const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [stands, total] = await Promise.all([
+    prisma.stand.findMany({
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: PAGE_SIZE,
+      include: {
+        owner: true,
+        _count: { select: { products: true, orders: true } },
+      },
+    }),
+    prisma.stand.count(),
+  ]);
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <main className="flex flex-col gap-8">
@@ -45,6 +61,27 @@ export default async function AdminStandsPage() {
           ))}
         </ul>
       )}
+      {pageCount > 1 ? (
+        <nav className="flex items-center gap-3 text-sm">
+          {page > 1 ? (
+            <Link href={`/admin/stands?page=${page - 1}`} className="underline">
+              Previous
+            </Link>
+          ) : (
+            <span className="text-[var(--muted)]">Previous</span>
+          )}
+          <span className="text-[var(--muted)]">
+            Page {page} of {pageCount}
+          </span>
+          {page < pageCount ? (
+            <Link href={`/admin/stands?page=${page + 1}`} className="underline">
+              Next
+            </Link>
+          ) : (
+            <span className="text-[var(--muted)]">Next</span>
+          )}
+        </nav>
+      ) : null}
     </main>
   );
 }

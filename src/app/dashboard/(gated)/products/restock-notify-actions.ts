@@ -1,5 +1,6 @@
 "use server";
 
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
@@ -7,6 +8,7 @@ import {
   isRestockAlertsEnabled,
   RESTOCK_ALERT_COOLDOWN_HOURS,
 } from "@/lib/restock-alerts";
+import { SubStatus } from "@/generated/prisma/client";
 import { sendRestockNotifications } from "@/lib/notify-restock";
 
 export type NotifyRestockState = {
@@ -70,14 +72,35 @@ export async function notifyRestockSubscribers(
     }
   }
 
-  const { recipientCount } = await sendRestockNotifications({
-    standId: stand.id,
-    standName: stand.name,
-    standSlug: stand.slug,
-    sentByUserId: user.id,
-    ownerMessage: ownerMessage || undefined,
+  const queued = await prisma.restockSubscriber.count({
+    where: { standId: stand.id, status: SubStatus.ACTIVE },
+  });
+  if (queued === 0) {
+    return { ok: false, error: "No customers opted in yet." };
+  }
+
+  // Reserve cooldown before deferred send so a double-click cannot queue twice.
+  await prisma.restockNotification.create({
+    data: {
+      standId: stand.id,
+      sentByUserId: user.id,
+      recipientCount: queued,
+    },
+  });
+
+  after(() => {
+    void sendRestockNotifications({
+      standId: stand.id,
+      standName: stand.name,
+      standSlug: stand.slug,
+      sentByUserId: user.id,
+      ownerMessage: ownerMessage || undefined,
+      recordNotification: false,
+    }).catch((error) => {
+      console.error("Restock notify failed", error);
+    });
   });
 
   revalidatePath("/dashboard/products");
-  return { ok: true, recipientCount };
+  return { ok: true, recipientCount: queued };
 }

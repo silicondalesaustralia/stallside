@@ -1,6 +1,7 @@
 import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import { appBaseUrl } from "@/lib/app-url";
 import { prisma } from "@/lib/prisma";
+import { mapPool } from "@/lib/map-pool";
 import { sendOwnerEmail } from "@/lib/notify-email";
 import { SubStatus } from "@/generated/prisma/client";
 
@@ -19,6 +20,8 @@ export async function sendRestockNotifications(input: {
   standSlug: string;
   sentByUserId: string;
   ownerMessage?: string;
+  /** When false, skip writing RestockNotification (caller already reserved cooldown). */
+  recordNotification?: boolean;
 }): Promise<{ recipientCount: number }> {
   const subscribers = await prisma.restockSubscriber.findMany({
     where: { standId: input.standId, status: SubStatus.ACTIVE },
@@ -33,7 +36,7 @@ export async function sendRestockNotifications(input: {
     : "";
 
   let sent = 0;
-  for (const sub of subscribers) {
+  await mapPool(subscribers, 5, async (sub) => {
     const unsubUrl = `${base}/unsubscribe/restock?token=${encodeURIComponent(sub.unsubToken)}`;
     const listUnsubUrl = `${base}/api/restock/unsubscribe?token=${encodeURIComponent(sub.unsubToken)}`;
     const html = `
@@ -66,15 +69,17 @@ ${messageHtml}
         error,
       });
     }
-  }
-
-  await prisma.restockNotification.create({
-    data: {
-      standId: input.standId,
-      sentByUserId: input.sentByUserId,
-      recipientCount: sent,
-    },
   });
+
+  if (input.recordNotification !== false) {
+    await prisma.restockNotification.create({
+      data: {
+        standId: input.standId,
+        sentByUserId: input.sentByUserId,
+        recipientCount: sent,
+      },
+    });
+  }
 
   return { recipientCount: sent };
 }
