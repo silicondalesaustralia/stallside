@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { HandoverMode, ShopperSubInterval } from "@/generated/prisma/client";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { isStripeConfigured } from "@/lib/stripe";
@@ -26,7 +26,7 @@ export async function updateSubscriptionOffer(
   offerId: string,
   formData: FormData,
 ) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const existing = await prisma.subscriptionOffer.findFirst({
     where: { id: offerId, ownerId: owner.id },
     include: { items: true },

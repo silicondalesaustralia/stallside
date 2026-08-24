@@ -2,7 +2,7 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { parseOptionGroupsInput } from "@/lib/product-options";
 import { parsePriceTiers } from "@/lib/price-tiers";
@@ -13,7 +13,7 @@ export async function saveProductOptions(
   rawGroups: unknown,
 ) {
   try {
-    const { owner } = await requireOwner();
+    const { owner } = await requireOwnerWrite();
     const product = await prisma.product.findFirst({
       where: { id: productId, ownerId: owner.id },
       include: { stand: { select: { slug: true, id: true } } },

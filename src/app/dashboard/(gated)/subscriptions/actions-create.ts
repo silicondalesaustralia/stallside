@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { HandoverMode, ShopperSubInterval } from "@/generated/prisma/client";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
@@ -91,7 +91,7 @@ async function syncStripeIfConnected(params: {
 }
 
 export async function createSubscriptionOffer(formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const { selected } = await resolveSelectedBusiness(owner.id);
   if (!selected) return { error: "Create a business first." };
 

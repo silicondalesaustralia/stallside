@@ -71,15 +71,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         delete token.impersonatorRole;
         delete token.impersonatingOwnerId;
       }
-      if ((!token.role || !token.id) && token.email) {
+
+      const userId = token.id ? String(token.id) : null;
+      if (userId) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: userId },
+          select: {
+            id: true,
+            role: true,
+            owner: { select: { deletedAt: true } },
+          },
+        });
+        if (!dbUser || dbUser.owner?.deletedAt) {
+          return {};
+        }
+        token.id = dbUser.id;
+        token.role = dbUser.role;
+      } else if (token.email) {
         const dbUser = await prisma.user.findUnique({
           where: { email: String(token.email) },
-          select: { id: true, role: true },
+          select: {
+            id: true,
+            role: true,
+            owner: { select: { deletedAt: true } },
+          },
         });
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.role = dbUser.role;
+        if (!dbUser || dbUser.owner?.deletedAt) {
+          return {};
         }
+        token.id = dbUser.id;
+        token.role = dbUser.role;
       }
       return token;
     },

@@ -7,7 +7,7 @@ import {
   PaymentTiming,
   type Prisma,
 } from "@/generated/prisma/client";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { parsePreOrderFromForm } from "@/lib/pre-order";
 import { slugify } from "@/lib/slug";
@@ -166,7 +166,7 @@ async function resolvePageAddon(input: {
 }
 
 export async function createPreOrderPage(formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const { selected } = await resolveSelectedBusiness(owner.id);
   if (!selected) return { error: "Create a business first." };
 
@@ -277,7 +277,7 @@ export async function createPreOrderPage(formData: FormData) {
 }
 
 export async function updatePreOrderPage(pageId: string, formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const existing = await prisma.preOrderPage.findFirst({
     where: { id: pageId, ownerId: owner.id },
     include: {
@@ -399,7 +399,7 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
 }
 
 export async function deletePreOrderPage(pageId: string) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const existing = await prisma.preOrderPage.findFirst({
     where: { id: pageId, ownerId: owner.id },
     include: {

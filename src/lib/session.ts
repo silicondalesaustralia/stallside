@@ -13,8 +13,31 @@ export function isPlatformAdminEmail(email: string | null | undefined): boolean 
   return (PLATFORM_ADMIN_EMAILS as readonly string[]).includes(normalized);
 }
 
-/** One auth() lookup per request (layout + pages share this). */
-export const getAuthSession = cache(async () => auth());
+/**
+ * One auth() lookup per request. Refreshes role from DB and drops soft-deleted
+ * owner sessions (JWT alone is not enough after wipe).
+ */
+export const getAuthSession = cache(async () => {
+  const session = await auth();
+  if (!session?.user?.id) return null;
+
+  const dbUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      role: true,
+      owner: { select: { deletedAt: true } },
+    },
+  });
+  if (!dbUser) return null;
+
+  session.user.role = dbUser.role;
+
+  if (dbUser.owner?.deletedAt) {
+    return null;
+  }
+
+  return session;
+});
 
 export const requireUser = cache(async () => {
   const session = await getAuthSession();
@@ -45,7 +68,7 @@ export const requireOwner = cache(async () => {
   const owner = await prisma.owner.findUnique({
     where: { userId: user.id },
   });
-  if (!owner) {
+  if (!owner || owner.deletedAt) {
     redirect("/onboarding");
   }
   return {
@@ -55,10 +78,28 @@ export const requireOwner = cache(async () => {
   };
 });
 
+/** Owner gate for server actions that mutate data (blocks admin login-as). */
+export async function requireOwnerWrite() {
+  const session = await requireOwner();
+  if (session.impersonator) {
+    throw new Error(
+      "Not allowed while viewing as another user. Exit admin login-as first.",
+    );
+  }
+  return session;
+}
+
 export const requireAdmin = cache(async () => {
   const user = await requireUser();
-  if (user.role !== Role.ADMIN || !isPlatformAdminEmail(user.email)) {
+  if (!isPlatformAdminEmail(user.email)) {
     redirect("/dashboard");
   }
-  return user;
+  const dbUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { role: true },
+  });
+  if (dbUser?.role !== Role.ADMIN) {
+    redirect("/dashboard");
+  }
+  return { ...user, role: Role.ADMIN };
 });

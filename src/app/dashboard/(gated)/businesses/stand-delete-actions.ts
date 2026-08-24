@@ -2,12 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
 /** Permanently remove a stand and its products / orders for this owner. */
 export async function deleteStand(standId: string) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const existing = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
   });

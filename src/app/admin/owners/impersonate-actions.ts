@@ -18,6 +18,7 @@ export async function impersonateOwner(ownerId: string) {
     },
   });
   if (!owner?.user.email) throw new Error("Owner not found");
+  if (owner.deletedAt) throw new Error("Owner account is closed");
   if (owner.userId === admin.id) {
     redirect("/dashboard");
   }

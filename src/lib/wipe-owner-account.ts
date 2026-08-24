@@ -10,7 +10,8 @@ export type WipeOwnerResult =
 
 /**
  * Soft-close an owner account: keep all Vendl data, stop marketing/alert
- * emails and stands, cancel SaaS billing. Login/OTP still allowed.
+ * emails and stands, cancel SaaS billing. Existing JWTs stop working because
+ * getAuthSession / requireOwner reject deletedAt.
  */
 export async function wipeOwnerAccount(
   ownerId: string,

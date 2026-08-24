@@ -4,7 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { CURRENCIES } from "@/lib/constants";
 import { uniqueStandSlug } from "@/lib/slug";
@@ -36,7 +36,7 @@ export async function createStand(formData: FormData) {
     throw new Error("Invalid create request.");
   }
 
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
 
   const parsed = standSchema.safeParse({
     name: formData.get("name"),
@@ -75,7 +75,7 @@ export async function createStand(formData: FormData) {
 }
 
 export async function updateStand(standId: string, formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const existing = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
   });
@@ -268,7 +268,7 @@ async function parseConversionPatch(
 
 /** Update fields shown on the printable / downloadable QR sign. */
 export async function updateStandQrPrint(standId: string, formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const existing = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
   });

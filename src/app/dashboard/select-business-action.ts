@@ -2,13 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { pathAfterBusinessSwitch } from "@/lib/dashboard-business-switch";
 import { writeSelectedBusinessCookie } from "@/lib/selected-business";
 
 export async function selectBusiness(standId: string, currentPath?: string) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const id = standId.trim();
   if (!id) return { error: "Pick a business." as const };
 

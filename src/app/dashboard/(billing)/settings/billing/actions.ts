@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import {
   appBaseUrl,
@@ -34,7 +34,7 @@ async function ensureStripeCustomer(ownerId: string, email: string | null) {
 
 /** Vendl Pro - billed from day one. */
 export async function startProPlanCheckout(formData: FormData) {
-  const { owner, user } = await requireOwner();
+  const { owner, user } = await requireOwnerWrite();
   if (!isStripeProBillingConfigured()) {
     throw new Error(
       "Stripe Pro Billing is not configured (need STRIPE_PRICE_ID_PRO_* or CARD_*).",
@@ -94,7 +94,7 @@ export async function startCashPlanCheckout() {
 }
 
 export async function openBillingPortal() {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   if (!owner.stripeCustomerId || !isStripeProBillingConfigured()) {
     redirect("/dashboard/settings/billing");
   }

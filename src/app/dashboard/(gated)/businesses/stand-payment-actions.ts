@@ -2,13 +2,13 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
 
 export async function updateStandPayments(standId: string, formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const existing = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
   });

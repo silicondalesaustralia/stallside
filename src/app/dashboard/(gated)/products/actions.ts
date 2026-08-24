@@ -4,7 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { dollarsToCents } from "@/lib/money";
 import { InventorySource } from "@/generated/prisma/client";
@@ -54,7 +54,7 @@ async function productSlugExists(
 }
 
 export async function createProduct(formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const parsed = productSchema.safeParse({
     standId: formData.get("standId"),
     name: formData.get("name"),
@@ -168,7 +168,7 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function adjustInventory(formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const productId = String(formData.get("productId") ?? "");
   const mode = String(formData.get("mode") ?? "set");
   const amount = Number.parseInt(String(formData.get("amount") ?? ""), 10);
@@ -228,7 +228,7 @@ export async function adjustInventory(formData: FormData) {
 
 export async function updateProduct(productId: string, formData: FormData) {
   try {
-    const { owner } = await requireOwner();
+    const { owner } = await requireOwnerWrite();
     const product = await prisma.product.findFirst({
       where: { id: productId, ownerId: owner.id },
       include: {

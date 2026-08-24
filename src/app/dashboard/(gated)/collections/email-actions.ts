@@ -8,7 +8,7 @@ import { mapPool } from "@/lib/map-pool";
 import { sendOwnerEmail } from "@/lib/notify-email";
 import { ownerAlertRecipients } from "@/lib/owner-alert-recipients";
 import { prisma } from "@/lib/prisma";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 
 function emailHtml(standName: string, orderNumber: string, message: string) {
   const paragraphs = message
@@ -25,7 +25,7 @@ export async function sendOrderCustomerEmail(input: {
   subject: string;
   message: string;
 }) {
-  const { owner, user } = await requireOwner();
+  const { owner, user } = await requireOwnerWrite();
 
   const subject = input.subject.trim().slice(0, 200);
   const message = input.message.trim().slice(0, 5000);
@@ -75,7 +75,7 @@ export async function sendCollectionGroupCustomerEmails(input: {
   subject: string;
   message: string;
 }) {
-  const { owner, user } = await requireOwner();
+  const { owner, user } = await requireOwnerWrite();
 
   const subject = input.subject.trim().slice(0, 200);
   const message = input.message.trim().slice(0, 5000);

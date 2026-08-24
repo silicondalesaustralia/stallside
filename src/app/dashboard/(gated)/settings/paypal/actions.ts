@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import {
   isPayPalConfigured,
@@ -40,7 +40,7 @@ function assertPayPalConnectAvailable() {
 }
 
 export async function startPayPalConnect() {
-  const { owner, user } = await requireOwner();
+  const { owner, user } = await requireOwnerWrite();
   assertCardTier(owner, user);
   assertPayPalConnectAvailable();
   if (!isPayPalConfigured()) {
@@ -79,7 +79,7 @@ export async function startPayPalConnect() {
 
 /** Link this owner to the platform PayPal Business account (no Partner API). */
 export async function connectPayPalDirect() {
-  const { owner, user } = await requireOwner();
+  const { owner, user } = await requireOwnerWrite();
   assertCardTier(owner, user);
   assertPayPalConnectAvailable();
 
@@ -109,7 +109,7 @@ export async function connectPayPalDirect() {
 }
 
 export async function refreshPayPalStatus(formData?: FormData) {
-  const { owner, user } = await requireOwner();
+  const { owner, user } = await requireOwnerWrite();
   assertCardTier(owner, user);
   assertPayPalConnectAvailable();
   if (!isPayPalConfigured()) {
@@ -148,7 +148,7 @@ export async function refreshPayPalStatus(formData?: FormData) {
 }
 
 export async function setPayPalPaymentsEnabled(formData: FormData) {
-  const { owner, user } = await requireOwner();
+  const { owner, user } = await requireOwnerWrite();
   assertCardTier(owner, user);
   assertPayPalConnectAvailable();
   const enabled = formData.get("enabled") === "1";

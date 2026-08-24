@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { PaymentStatus } from "@/generated/prisma/client";
 import { COUNTED_STATUSES } from "@/lib/order-metrics";
@@ -9,7 +9,7 @@ import { COUNTED_STATUSES } from "@/lib/order-metrics";
 const RESTORE_STATUSES = COUNTED_STATUSES as PaymentStatus[];
 
 export async function deleteOrder(orderId: string) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const id = orderId.trim();
   if (!id) return { error: "Order not found." };
 

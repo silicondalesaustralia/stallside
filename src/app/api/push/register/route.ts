@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { getAuthSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
 const bodySchema = z.object({
@@ -10,7 +10,7 @@ const bodySchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
+    const session = await getAuthSession();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const owner = await prisma.owner.findUnique({
       where: { userId: session.user.id },
     });
-    if (!owner) {
+    if (!owner || owner.deletedAt) {
       return NextResponse.json({ error: "Owner required" }, { status: 403 });
     }
 
@@ -50,9 +50,17 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const session = await auth();
+    const session = await getAuthSession();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const owner = await prisma.owner.findUnique({
+      where: { userId: session.user.id },
+      select: { id: true, deletedAt: true },
+    });
+    if (!owner || owner.deletedAt) {
+      return NextResponse.json({ error: "Owner required" }, { status: 403 });
     }
 
     const json: unknown = await request.json();
@@ -61,7 +69,9 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Invalid body" }, { status: 400 });
     }
 
-    await prisma.pushDevice.deleteMany({ where: { token: token.data.token } });
+    await prisma.pushDevice.deleteMany({
+      where: { token: token.data.token, ownerId: owner.id },
+    });
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Push unregister failed", error);

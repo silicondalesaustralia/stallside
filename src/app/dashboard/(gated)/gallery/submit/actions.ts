@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { GallerySource, GalleryStatus } from "@/generated/prisma/client";
 import { uploadGalleryImage } from "@/lib/gallery-upload";
 import { prisma } from "@/lib/prisma";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 
 export type GallerySubmitState = { error?: string; ok?: boolean };
 
@@ -13,7 +13,7 @@ export async function submitGalleryStand(
   _prev: GallerySubmitState,
   formData: FormData,
 ): Promise<GallerySubmitState> {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
 
   const displayName = String(formData.get("displayName") ?? "").trim();
   const location = String(formData.get("location") ?? "").trim();

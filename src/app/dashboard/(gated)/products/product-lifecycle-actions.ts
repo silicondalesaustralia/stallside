@@ -3,7 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { redirect } from "next/navigation";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { uniqueProductSlug } from "@/lib/slug";
 
@@ -52,7 +52,7 @@ function revalidateProductPaths(opts: {
 
 /** Copy a product for editing; new slug, not hidden/archived. */
 export async function duplicateProduct(productId: string) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const source = await ownedProduct(productId, owner.id);
   if (!source) return { error: "Product not found." };
 
@@ -116,7 +116,7 @@ export async function duplicateProduct(productId: string) {
 }
 
 export async function setProductHidden(productId: string, hidden: boolean) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const product = await ownedProduct(productId, owner.id);
   if (!product) return { error: "Product not found." };
   if (product.isArchived) {
@@ -138,7 +138,7 @@ export async function setProductHidden(productId: string, hidden: boolean) {
 }
 
 export async function archiveProduct(productId: string) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const product = await ownedProduct(productId, owner.id);
   if (!product) return { error: "Product not found." };
 
@@ -157,7 +157,7 @@ export async function archiveProduct(productId: string) {
 }
 
 export async function restoreProduct(productId: string) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const product = await ownedProduct(productId, owner.id);
   if (!product) return { error: "Product not found." };
 

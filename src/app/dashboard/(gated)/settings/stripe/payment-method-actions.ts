@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { isStripeConfigured } from "@/lib/stripe";
 import { setConnectPaymentMethodPreference } from "@/lib/stripe-payment-method-config";
 import { requestCapabilityForPaymentMethod } from "@/lib/stripe-connect-capabilities";
@@ -12,7 +12,7 @@ export async function toggleConnectPaymentMethod(input: {
   enabled: boolean;
 }): Promise<{ error?: string; methods?: Awaited<ReturnType<typeof setConnectPaymentMethodPreference>> }> {
   try {
-    const { owner } = await requireOwner();
+    const { owner } = await requireOwnerWrite();
     if (!isStripeConfigured() || !owner.stripeAccountId) {
       return { error: "Stripe is not connected." };
     }

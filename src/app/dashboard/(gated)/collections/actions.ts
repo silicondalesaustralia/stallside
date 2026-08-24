@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { CollectionStatus, PaymentStatus } from "@/generated/prisma/client";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { orderFullyPaidForCollection } from "@/lib/deposit-order";
 
@@ -13,7 +13,7 @@ const NEXT: Partial<Record<CollectionStatus, CollectionStatus | null>> = {
 };
 
 export async function advanceCollectionStatus(orderId: string) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
 
   const order = await prisma.order.findFirst({
     where: {

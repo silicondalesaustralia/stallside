@@ -2,13 +2,13 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { brandingDataFromForm } from "./stand-branding-from-form";
 
 export async function updateStandBranding(standId: string, formData: FormData) {
   try {
-    const { owner } = await requireOwner();
+    const { owner } = await requireOwnerWrite();
 
     const stand = await prisma.stand.findFirst({
       where: { id: standId, ownerId: owner.id },

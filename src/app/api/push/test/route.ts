@@ -1,20 +1,20 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getAuthSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { sendOwnerPush } from "@/lib/notify-push";
 
 export async function POST() {
   try {
-    const session = await auth();
+    const session = await getAuthSession();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const owner = await prisma.owner.findUnique({
       where: { userId: session.user.id },
-      select: { id: true },
+      select: { id: true, deletedAt: true },
     });
-    if (!owner) {
+    if (!owner || owner.deletedAt) {
       return NextResponse.json({ error: "Owner required" }, { status: 403 });
     }
 

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
 function parseAlertEmails(raw: string): string[] | { error: string } {
@@ -22,7 +22,7 @@ function parseAlertEmails(raw: string): string[] | { error: string } {
 }
 
 export async function updateAlertSettings(formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const emailAlertsEnabled = formData.get("emailAlertsEnabled") === "on";
   const pushAlertsEnabled = formData.get("pushAlertsEnabled") === "on";
   const parsed = parseAlertEmails(String(formData.get("alertEmails") ?? ""));
@@ -47,7 +47,7 @@ export async function updateAlertSettings(formData: FormData) {
 }
 
 export async function updateBusinessName(formData: FormData) {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   const businessName = String(formData.get("businessName") ?? "").trim();
   if (businessName.length < 2) {
     return { error: "Enter a business name (at least 2 characters)." };

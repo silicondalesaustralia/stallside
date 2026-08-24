@@ -2,7 +2,7 @@
 
 import { after } from "next/server";
 import { revalidatePath } from "next/cache";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import {
   isRestockAlertsEnabled,
@@ -25,7 +25,7 @@ export async function notifyRestockSubscribers(
     return { ok: false, error: "Restock alerts are unavailable." };
   }
 
-  const { user, owner } = await requireOwner();
+  const { user, owner } = await requireOwnerWrite();
 
   const standId =
     typeof formData.get("standId") === "string"

@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { requireOwner } from "@/lib/session";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
@@ -17,7 +17,7 @@ import {
 import { connectCapabilitiesForCountry } from "@/lib/stripe-connect-capabilities";
 
 export async function startStripeConnect() {
-  const { owner, user } = await requireOwner();
+  const { owner, user } = await requireOwnerWrite();
   if (!isStripeConfigured()) {
     throw new Error("Stripe is not configured on the server yet.");
   }
@@ -68,7 +68,7 @@ export async function startStripeConnect() {
 }
 
 export async function refreshStripeStatus() {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   if (!owner.stripeAccountId || !isStripeConfigured()) {
     redirect("/dashboard/settings/stripe");
   }
@@ -85,7 +85,7 @@ export async function refreshStripeStatus() {
 
 /** Unlink Stripe Connect from this owner so card checkout stops. */
 export async function disconnectStripe() {
-  const { owner } = await requireOwner();
+  const { owner } = await requireOwnerWrite();
   if (!owner.stripeAccountId) {
     redirect("/dashboard/settings/stripe");
   }
