@@ -18,6 +18,7 @@ import {
 import { isDemoStandSlug } from "@/lib/demo";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
+import { checkoutCancelledUrl } from "@/lib/order-access-token";
 import { stripeLineItemsFromCart } from "@/lib/stripe-cart-lines";
 import {
   computeVendlCheckoutFees,
@@ -250,7 +251,7 @@ export async function startCardCheckout(input: {
       mode: "payment" as const,
       line_items: lineItems.filter((l) => l.price_data.unit_amount > 0),
       success_url: `${base}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${base}/checkout/cancelled?order=${order.id}`,
+      cancel_url: checkoutCancelledUrl(order.id),
       ...(customerEmail ? { customer_email: customerEmail } : {}),
       metadata: {
         orderId: order.id,

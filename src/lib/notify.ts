@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { APP_NAME, LOW_STOCK_ALERT_COOLDOWN_HOURS } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
+import { notifyAdminSale } from "@/lib/notify-admin-sale";
 import { sendOwnerEmail } from "@/lib/notify-email";
 import { sendOwnerPush } from "@/lib/notify-push";
 import { ownerAlertRecipients } from "@/lib/owner-alert-recipients";
@@ -51,7 +52,8 @@ export async function notifySale(orderId: string) {
   const emailBit = order.receiptEmail ? ` · ${order.receiptEmail}` : "";
   const body = `${method} ${total} - ${lines}${collectBit}${nameBit}${emailBit}`;
 
-  if (emailOn && recipients.length) {
+  const emailedOwner = emailOn && recipients.length > 0;
+  if (emailedOwner) {
     await sendOwnerEmail(
       recipients,
       `[${APP_NAME}] ${title}`,
@@ -68,6 +70,20 @@ export async function notifySale(orderId: string) {
       console.error(`[${APP_NAME}] Sale push failed`, error);
     });
   }
+
+  const ownerEmail =
+    order.owner.contactEmail || order.owner.user?.email || "";
+  await notifyAdminSale({
+    orderId: order.id,
+    orderNumber: order.orderNumber,
+    ownerId: order.ownerId,
+    ownerEmail,
+    ownerName: order.owner.businessName,
+    standName: order.stand.name,
+    title,
+    body,
+    alreadyEmailed: emailedOwner ? recipients : [],
+  });
 
   await maybeNotifyLowStock(
     order.items.map((i) => i.productId),

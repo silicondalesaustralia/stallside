@@ -64,6 +64,7 @@ export default function PayPalCheckoutButton({
 }) {
   const hostId = useRef(`pp-${Math.random().toString(36).slice(2, 9)}`).current;
   const orderIdRef = useRef<string | null>(null);
+  const cancelTokenRef = useRef<string | null>(null);
   const itemsRef = useRef(items);
   itemsRef.current = items;
   const amountRef = useRef(customerChoiceAmountCents);
@@ -124,6 +125,8 @@ export default function PayPalCheckoutButton({
             throw new Error("missing order");
           }
           orderIdRef.current = result.orderId ?? null;
+          cancelTokenRef.current =
+            "cancelToken" in result ? (result.cancelToken ?? null) : null;
           return result.paypalOrderId;
         },
         onApprove: async (data) => {
@@ -136,8 +139,9 @@ export default function PayPalCheckoutButton({
         },
         onCancel: () => {
           const orderId = orderIdRef.current;
-          if (orderId) {
-            window.location.href = `/checkout/cancelled?order=${encodeURIComponent(orderId)}`;
+          const cancelToken = cancelTokenRef.current;
+          if (orderId && cancelToken) {
+            window.location.href = `/checkout/cancelled?order=${encodeURIComponent(orderId)}&token=${encodeURIComponent(cancelToken)}`;
           }
         },
         onError: () => onErrorRef.current("PayPal checkout failed. Try again."),

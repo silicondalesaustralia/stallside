@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { issueLoginOtp } from "@/lib/login-otp";
+import { issueLoginOtp, RateLimitError } from "@/lib/login-otp";
 import { safeCallbackUrl } from "@/lib/login-callback";
 import {
   getOpenLifetimeInvite,
@@ -19,6 +19,7 @@ function normalizeEmail(raw: FormDataEntryValue | null) {
 }
 
 function otpSendError(error: unknown): Error {
+  if (error instanceof RateLimitError) return error;
   console.error("Login OTP send failed", error);
   return new Error("Could not send sign-in code. Try again in a moment.");
 }

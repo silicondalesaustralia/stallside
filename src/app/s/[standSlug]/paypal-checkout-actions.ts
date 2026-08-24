@@ -15,6 +15,10 @@ import {
 import { isPayPalConfigured, isPayPalConnectAvailable } from "@/lib/paypal";
 import { createPayPalCheckoutOrder } from "@/lib/paypal-orders";
 import { appBaseUrl } from "@/lib/app-url";
+import {
+  checkoutCancelledUrl,
+  orderAccessToken,
+} from "@/lib/order-access-token";
 import { computeVendlApplicationFee } from "@/lib/stallside-fee";
 
 export async function startPayPalCheckout(input: {
@@ -99,7 +103,7 @@ export async function startPayPalCheckout(input: {
       totalCents,
       description: `${stand.name} · ${orderNumber}`,
       successUrl: `${base}/checkout/success?order_id=${order.id}&paypal=1`,
-      cancelUrl: `${base}/checkout/cancelled?order=${order.id}`,
+      cancelUrl: checkoutCancelledUrl(order.id),
     });
 
     await prisma.order.update({
@@ -109,6 +113,7 @@ export async function startPayPalCheckout(input: {
 
     return {
       orderId: order.id,
+      cancelToken: orderAccessToken(order.id, "cancel"),
       paypalOrderId,
       url: approveUrl,
     };

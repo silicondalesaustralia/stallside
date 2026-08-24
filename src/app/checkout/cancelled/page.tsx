@@ -1,16 +1,20 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { PaymentStatus } from "@/generated/prisma/client";
+import { verifyOrderAccessToken } from "@/lib/order-access-token";
 
 export default async function CheckoutCancelledPage({
   searchParams,
 }: {
-  searchParams: Promise<{ order?: string }>;
+  searchParams: Promise<{ order?: string; token?: string }>;
 }) {
-  const { order: orderId } = await searchParams;
+  const { order: orderId, token } = await searchParams;
   let standSlug: string | null = null;
 
-  if (orderId) {
+  if (
+    orderId &&
+    verifyOrderAccessToken(orderId, "cancel", token)
+  ) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: { stand: true },

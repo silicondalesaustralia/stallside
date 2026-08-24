@@ -5,8 +5,9 @@ import {
 } from "@/generated/prisma/client";
 import { depositOutstandingCapCents } from "@/lib/deposit-liability";
 import { prisma } from "@/lib/prisma";
-import { appBaseUrl, getStripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
+export { balanceAuthUrl } from "@/lib/order-access-token";
 
 export function splitDepositBalance(
   totalCents: number,
@@ -210,6 +211,3 @@ export async function releaseStockForCancelledOrder(
   }
 }
 
-export function balanceAuthUrl(orderId: string): string {
-  return `${appBaseUrl()}/checkout/balance/${orderId}`;
-}
