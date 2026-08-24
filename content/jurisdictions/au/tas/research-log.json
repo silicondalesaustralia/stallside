@@ -1,0 +1,91 @@
+{
+  "jurisdiction": "tas",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "site:health.tas.gov.au Tasmania food business risk classification system",
+    "site:health.tas.gov.au P1 P2 P3 P4 registration notification",
+    "site:health.tas.gov.au starting a food business",
+    "Tasmania local councils count site:lgat.tas.gov.au"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://www.health.tas.gov.au/publications/tasmania-food-business-risk-classification-system-fact-sheet",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.health.tas.gov.au/sites/default/files/2021-12/Starting_a_food_buinsess_Fact_sheet_DoHTasmania2016.pdf",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.lgat.tas.gov.au/",
+      "tier": 2,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 40,
+  "fields_not_published": [
+    {
+      "field": "gate.fee",
+      "searches_attempted": [
+        "Risk classification fact sheet: fees council-set, no statewide dollar fee"
+      ]
+    },
+    {
+      "field": "gate.penalty_max_individual",
+      "searches_attempted": [
+        "Risk classification fact sheet silent on maximum penalty dollars"
+      ]
+    },
+    {
+      "field": "channels.farm_gate",
+      "searches_attempted": [
+        "site:health.tas.gov.au farm gate OR honesty stall"
+      ]
+    },
+    {
+      "field": "premises.home_kitchen_allowed",
+      "searches_attempted": [
+        "Risk classification fact sheet silent on residential kitchen fit-out policy"
+      ]
+    },
+    {
+      "field": "labelling.address_can_be_non_residential",
+      "searches_attempted": [
+        "FSANZ Code only; no TAS-specific PO-box rule published on RCS page"
+      ]
+    }
+  ],
+  "escalations": [
+    {
+      "field": "unique.quirk_paragraph",
+      "reason": "Short draft only; needs human polish mapping typical home/farm-gate products to P1-P4 / P3-N",
+      "contact_method": "owner editorial review",
+      "status": "open"
+    },
+    {
+      "field": "classification",
+      "reason": "Schema ClassificationBlock is VIC-class shaped; P1-P4 notes kept in gate.mechanism with classification null",
+      "contact_method": "schema owner",
+      "status": "open"
+    }
+  ],
+  "information_gain_candidates": [
+    "P1-P3 annual registration vs P3-N/P4 one-off notify",
+    "food_risk determines regulator path",
+    "Verified hotline and email",
+    "29 councils via LGAT",
+    "Statewide fee silence"
+  ],
+  "schema_notes": [
+    "Required gate.type = registration_or_notification",
+    "classification null; P1-P4 explained in gate.mechanism",
+    "channels.render_as = prose due to many not_published"
+  ]
+}

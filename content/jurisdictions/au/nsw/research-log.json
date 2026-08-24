@@ -1,0 +1,67 @@
+{
+  "jurisdiction": "nsw",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "Spec §6 verified reference, https://www.foodauthority.nsw.gov.au/retail/home-based-mixed-businesses"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://www.foodauthority.nsw.gov.au/retail/home-based-mixed-businesses",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 28,
+  "fields_not_published": [
+    {
+      "field": "gate.fee",
+      "searches_attempted": [
+        "§6 verified, no fee published"
+      ]
+    },
+    {
+      "field": "gate.penalty_max_individual",
+      "searches_attempted": [
+        "§6 verified, max penalties not on home-based page"
+      ]
+    },
+    {
+      "field": "channels.unattended_honesty_stall",
+      "searches_attempted": [
+        "§6, not addressed"
+      ]
+    }
+  ],
+  "escalations": [
+    {
+      "field": "unique.quirk_paragraph",
+      "reason": "Human-written quirk required before verified_publishable",
+      "contact_method": "human author",
+      "status": "open"
+    },
+    {
+      "field": "meta.verified_by",
+      "reason": "Named human verifier required before indexing",
+      "contact_method": "human review",
+      "status": "open"
+    },
+    {
+      "field": "null_gapfill_2026-08-24",
+      "reason": "Converted remaining nulls to not_published/not_applicable/conditional where regulator silent; human quirk still required before verified_publishable",
+      "contact_method": "record_edit",
+      "status": "done"
+    }
+  ],
+  "information_gain_candidates": [
+    "Market-access catch-22",
+    "Penalty publication gap vs SA",
+    "Honesty stall gap",
+    "Home address on labels"
+  ],
+  "schema_notes": [
+    "regulator_determined_by = sales_channel is load-bearing for routing UI"
+  ]
+}

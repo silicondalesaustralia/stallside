@@ -1,0 +1,61 @@
+{
+  "jurisdiction": "ca",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "California CDPH cottage food operations Class A Class B",
+    "California cottage food sales limit 75000 150000 CPI",
+    "California MEHKO vs cottage food",
+    "Made in a Home Kitchen California cottage food label"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://www.cdph.ca.gov/Programs/CEH/DFDCS/Pages/FDBPrograms/FoodSafetyProgram/CottageFoodOperations.aspx",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.ochealthinfo.com/services-programs/environmental-health/food-safety-programs/cottage-food",
+      "tier": 2,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 48,
+  "fields_not_published": [
+    {
+      "field": "gate.fee",
+      "searches_attempted": [
+        "Local EH sets registration/permit fees; no statewide fee on CDPH page"
+      ]
+    },
+    {
+      "field": "scope.sales_cap current CPI figure",
+      "searches_attempted": [
+        "Statutory bases $75k/$150k stored; live CPI-adjusted dollars vary by year; confirm on CDPH before publishing adjusted figures"
+      ]
+    }
+  ],
+  "escalations": [
+    {
+      "field": "scope.sales_cap",
+      "reason": "Confirm current-year CDPH CPI-adjusted Class A/B caps if page will publish dollars beyond statutory base",
+      "contact_method": "CDPH cottage food page / local EH",
+      "status": "open"
+    }
+  ],
+  "information_gain_candidates": [
+    "Class A vs B registration/permit fork",
+    "$75k/$150k bases with CPI",
+    "Approved list + 3-month training",
+    "MEHKO separate opt-in"
+  ],
+  "schema_notes": [
+    "classification = null; Class A/B explained in gate.mechanism and unique",
+    "gate.type = registration (Class A primary); Class B permit noted in mechanism",
+    "sales_cap = 75000 Class A primary; Class B in fee_notes/unique",
+    "wholesale_to_retail = conditional (Class B)"
+  ]
+}

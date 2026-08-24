@@ -1,0 +1,170 @@
+{
+  "code": "ca",
+  "country": "US",
+  "name": "California",
+  "slug": "california",
+  "demonym": "Californian",
+  "meta": {
+    "last_verified": "2026-08-24",
+    "verified_by": "",
+    "regulator_page_last_updated": "not_published",
+    "next_review_due": "2027-02-24",
+    "completeness": "research_complete"
+  },
+  "law": {
+    "statute": "California Retail Food Code (CalCode) Cottage Food Operations",
+    "statute_url": "https://www.cdph.ca.gov/Programs/CEH/DFDCS/Pages/FDBPrograms/FoodSafetyProgram/CottageFoodOperations.aspx",
+    "key_section": "Cottage Food Operations (Class A registration / Class B permit)",
+    "regulations": [],
+    "code_applies": "not_applicable"
+  },
+  "gate": {
+    "type": "registration",
+    "regulator_primary": "Local Environmental Health Agency",
+    "regulator_fallback": "California Department of Public Health (CDPH) (approved food list and statewide standards)",
+    "regulator_determined_by": "business_class",
+    "mechanism": "Class A: registration with local environmental health for direct-to-consumer sales only (self-certification; no routine kitchen inspection). Class B: permit with local environmental health for direct and indirect (retail/restaurant) sales; initial inspection and typically annual inspection. Both classes limited to CDPH-approved cottage foods and inflation-adjusted gross sales caps. Operator must complete approved cottage food training within 3 months of registration or permit.",
+    "form_url": "",
+    "portal_url": "",
+    "fee": "not_published",
+    "fee_currency": "USD",
+    "fee_notes": "Fees are set by the local environmental health agency. Class A primary sales_cap field stores $75,000 statutory base; Class B statutory base is $150,000. CDPH adjusts both annually for California CPI (confirm current-year adjusted figures on CDPH before publishing dollar claims beyond the base).",
+    "timing": "before operating; complete cottage food operator training within 3 months of registration or permit",
+    "per_site": true,
+    "transferable": "not_published",
+    "change_of_details_rule": "not_published",
+    "statement_of_trade_required": "not_applicable",
+    "penalty_max_individual": "not_published",
+    "penalty_max_body_corporate": "not_published",
+    "penalty_expiation_individual": "not_published",
+    "penalty_expiation_body_corporate": "not_published",
+    "penalty_max_individual_units": "not_applicable",
+    "penalty_max_body_corporate_units": "not_applicable"
+  },
+  "classification": null,
+  "scope": {
+    "sales_cap": 75000,
+    "sales_cap_basis": "gross",
+    "approved_food_list": true,
+    "prohibited_foods": [
+      "Foods not on the CDPH approved cottage food list",
+      "Potentially hazardous foods outside cottage food scope"
+    ],
+    "definition_of_sale_includes_donations": "not_published",
+    "applies_to_one_off_sales": "not_published",
+    "applies_to_charitable": "not_published",
+    "primary_production_carve_out": "not_applicable",
+    "farm_gate_requires_notification": "not_applicable",
+    "manufacture_triggers_licence": "not_applicable",
+    "licence_exemptions": [],
+    "commodity_schemes": [],
+    "commodity_scheme_regulator": "not_applicable"
+  },
+  "channels": {
+    "direct_to_consumer": true,
+    "farm_gate": true,
+    "farmers_markets": true,
+    "roadside_stall": "not_published",
+    "unattended_honesty_stall": "not_published",
+    "online_orders_local_pickup": true,
+    "shipping": true,
+    "wholesale_to_retail": "conditional",
+    "render_as": "table",
+    "render_reason": "Class A direct only; Class B adds indirect retail. Mail/third-party delivery allowed for direct sales per CDPH/local guidance within California.",
+    "notes": "Class A: direct sales only (in person, mail, or third-party delivery within California). Class B: direct plus indirect sales through permitted retailers. Advertisements that offer cottage food to the public must include county of approval, permit/registration number, and Made in a Home Kitchen (or Repackaged in a Home Kitchen)."
+  },
+  "labelling": {
+    "basis": "California Retail Food Code cottage food labeling requirements",
+    "required_elements": [
+      "Common name of the product",
+      "Name and address of the cottage food operation",
+      "Registration or permit number",
+      "Ingredients in descending order of predominance by weight",
+      "Net quantity",
+      "Allergen information as required",
+      "Mandated Made in a Home Kitchen statement (minimum type size per CalCode/local guidance)"
+    ],
+    "mandated_disclaimer_text": "Made in a Home Kitchen",
+    "allergen_rule": "Major allergens declared per applicable labeling rules",
+    "nutrition_panel_required": "not_required",
+    "country_of_origin_required": "not_published",
+    "supplier_address_required": true,
+    "address_can_be_non_residential": "not_published"
+  },
+  "training": {
+    "food_handler_skills_required": true,
+    "food_safety_supervisor_required": "not_applicable",
+    "fss_trigger": "",
+    "free_training_accepted": "not_published",
+    "free_training_name": "Approved cottage food operator food processor course",
+    "free_training_url": "https://www.cdph.ca.gov/Programs/CEH/DFDCS/Pages/FDBPrograms/FoodSafetyProgram/CottageFoodOperations.aspx"
+  },
+  "premises": {
+    "home_kitchen_allowed": true,
+    "inspection_required": "conditional",
+    "inspection_frequency_basis": "Class A: no initial or routine kitchen inspection (self-certification). Class B: initial inspection and typically annual routine inspection by local EH.",
+    "inspection_fee": "not_published",
+    "construction_standard": "Private home kitchen and attached storage used for the cottage food operation; employee limit of one full-time equivalent excluding household members",
+    "exemptions_available": "not_applicable",
+    "exemptions_never_granted_for": []
+  },
+  "food_safety_management": {
+    "standard_322a_applies": "not_applicable",
+    "standard_322a_trigger": "",
+    "food_safety_program_required": "not_applicable",
+    "food_safety_program_trigger": "",
+    "records_required": "not_applicable"
+  },
+  "money": {
+    "sales_tax_applies": "not_published",
+    "gst_threshold": "not_applicable",
+    "abn_required": "not_applicable",
+    "hobby_vs_business_test_url": "",
+    "insurance_typical_market_requirement": "not_published"
+  },
+  "contact": {
+    "phone": "",
+    "email": "",
+    "url": "https://www.cdph.ca.gov/Programs/CEH/DFDCS/Pages/FDBPrograms/FoodSafetyProgram/CottageFoodOperations.aspx",
+    "council_directory_url": "",
+    "council_count": null
+  },
+  "unique": {
+    "quirk_paragraph": "California splits cottage food into Class A and Class B. Class A is registration for direct sales. Class B is a permit that unlocks indirect sales to retailers, with kitchen inspection.\n\nsales_cap in this record stores the Class A statutory base of $75,000 gross. Class B's statutory base is $150,000. CDPH adjusts both annually using California CPI, so live dollar caps move each year.\n\nA second, separate regime is the Microenterprise Home Kitchen Operation (MEHKO). MEHKO is a county opt-in program for preparing and serving meals from a home kitchen. It is not the same as cottage food, and counties that have opted in are not listed here.",
+    "common_mistake": "Selling through stores on a Class A registration, or treating MEHKO meal service rules as cottage food rules.",
+    "what_does_not_apply": "Foods off the CDPH approved list, and MEHKO meal service (separate county opt-in program)."
+  },
+  "information_gain": [
+    "Class A registration vs Class B permit (business_class gate)",
+    "Class A $75,000 / Class B $150,000 statutory bases with annual CPI adjustment",
+    "CDPH approved food list is load-bearing",
+    "Training required within 3 months of registration or permit",
+    "MEHKO is a separate county opt-in home-meal regime"
+  ],
+  "sources": [
+    {
+      "field": "gate",
+      "url": "https://www.cdph.ca.gov/Programs/CEH/DFDCS/Pages/FDBPrograms/FoodSafetyProgram/CottageFoodOperations.aspx",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "scope.sales_cap",
+      "url": "https://www.cdph.ca.gov/Programs/CEH/DFDCS/Pages/FDBPrograms/FoodSafetyProgram/CottageFoodOperations.aspx",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "labelling",
+      "url": "https://www.cdph.ca.gov/Programs/CEH/DFDCS/Pages/FDBPrograms/FoodSafetyProgram/CottageFoodOperations.aspx",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "channels",
+      "url": "https://www.ochealthinfo.com/services-programs/environmental-health/food-safety-programs/cottage-food",
+      "retrieved": "2026-08-24",
+      "tier": 2
+    }
+  ]
+}

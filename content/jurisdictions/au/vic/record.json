@@ -1,0 +1,197 @@
+{
+  "code": "vic",
+  "country": "AU",
+  "name": "Victoria",
+  "slug": "victoria",
+  "demonym": "Victorian",
+  "meta": {
+    "last_verified": "2026-08-24",
+    "verified_by": "",
+    "regulator_page_last_updated": "not_published",
+    "next_review_due": "2027-02-24",
+    "completeness": "research_complete"
+  },
+  "law": {
+    "statute": "Food Act 1984 (Vic)",
+    "statute_url": "https://www.legislation.vic.gov.au/",
+    "key_section": "",
+    "regulations": [],
+    "code_applies": true
+  },
+  "gate": {
+    "type": "registration_or_notification",
+    "regulator_primary": "Local council",
+    "regulator_fallback": "PrimeSafe (meat/seafood); Dairy Food Safety Victoria (dairy)",
+    "regulator_determined_by": "business_class",
+    "mechanism": "Council classifies premises by highest-risk food activity (classes 1, 2, 3, 3A, 4). Classes 1, 2, 3 and 3A register annually; class 4 notifies once. Fixed premises: council where premises sits. Temporary/mobile: principal council, then statement of trade when trading elsewhere. Applications via FoodTrader.",
+    "form_url": "",
+    "portal_url": "https://foodtrader.vic.gov.au/",
+    "fee": "not_published",
+    "fee_currency": "AUD",
+    "fee_notes": "Fees are set by councils. Community class-4 temporary notification: councils do not charge (community guidance). Do not publish a statewide fee.",
+    "timing": "before operating; contact local EHO early",
+    "per_site": true,
+    "transferable": "not_published",
+    "change_of_details_rule": "",
+    "statement_of_trade_required": true,
+    "penalty_max_individual": "not_published",
+    "penalty_max_body_corporate": "not_published",
+    "penalty_expiation_individual": "not_published",
+    "penalty_expiation_body_corporate": "not_published",
+    "penalty_max_individual_units": "not_applicable",
+    "penalty_max_body_corporate_units": "not_applicable"
+  },
+  "classification": {
+    "system": "vic_food_act_classes",
+    "classes": [
+      "1",
+      "2",
+      "3",
+      "3A",
+      "4"
+    ],
+    "determined_by": "highest_risk_activity",
+    "registration_classes": [
+      "1",
+      "2",
+      "3",
+      "3A"
+    ],
+    "notification_classes": [
+      "4"
+    ],
+    "notes": "Class 1 highest risk, class 4 lowest. Class 3 generally pre-packaged high-risk or unpackaged low-risk food, no FSS or food safety program by law. Class 1, 2 and 3A require a food safety supervisor. Class 1 and some class 2 require a food safety program."
+  },
+  "scope": {
+    "sales_cap": "not_applicable",
+    "sales_cap_basis": "not_applicable",
+    "approved_food_list": false,
+    "prohibited_foods": [],
+    "definition_of_sale_includes_donations": "not_published",
+    "applies_to_one_off_sales": "not_published",
+    "applies_to_charitable": true,
+    "primary_production_carve_out": "not_published",
+    "farm_gate_requires_notification": "not_published",
+    "manufacture_triggers_licence": "not_applicable",
+    "licence_exemptions": [],
+    "commodity_schemes": [
+      "meat",
+      "seafood",
+      "dairy"
+    ],
+    "commodity_scheme_regulator": "PrimeSafe; Dairy Food Safety Victoria"
+  },
+  "channels": {
+    "direct_to_consumer": true,
+    "farmers_markets": true,
+    "farm_gate": "not_published",
+    "roadside_stall": "not_published",
+    "unattended_honesty_stall": "not_published",
+    "online_orders_local_pickup": "not_published",
+    "shipping": "not_published",
+    "wholesale_to_retail": "not_published",
+    "notes": "Temporary/mobile statewide registration with statement of trade to the trading council. Community gold-coin donation / free food: community guidance says registration/notification not required, confirm for commercial honesty stalls."
+  },
+  "labelling": {
+    "required_elements": [],
+    "mandated_disclaimer_text": "not_applicable",
+    "allergen_rule": "",
+    "nutrition_panel_required": "not_published",
+    "country_of_origin_required": "not_published",
+    "supplier_address_required": "not_published",
+    "address_can_be_non_residential": "not_published"
+  },
+  "training": {
+    "food_handler_skills_required": true,
+    "food_safety_supervisor_required": "conditional",
+    "fss_trigger": "Required for class 1, 2 and 3A. Not required by law for class 3 or class 4.",
+    "free_training_accepted": true,
+    "free_training_name": "DoFoodSafely",
+    "free_training_url": ""
+  },
+  "premises": {
+    "home_kitchen_allowed": true,
+    "inspection_required": true,
+    "inspection_frequency_basis": "",
+    "inspection_fee": "not_published",
+    "construction_standard": "Standard 3.2.3",
+    "exemptions_available": "not_published",
+    "exemptions_never_granted_for": []
+  },
+  "food_safety_management": {
+    "standard_322a_applies": "conditional",
+    "standard_322a_trigger": "",
+    "food_safety_program_required": "conditional",
+    "food_safety_program_trigger": "All class 1 and some class 2 (eight high-risk activities). Class 3: not required by law.",
+    "records_required": "conditional"
+  },
+  "money": {
+    "sales_tax_applies": "not_applicable",
+    "gst_threshold": 75000,
+    "abn_required": "not_published",
+    "hobby_vs_business_test_url": "",
+    "insurance_typical_market_requirement": "not_published"
+  },
+  "contact": {
+    "phone": "1300 364 352",
+    "email": "foodsafety@health.vic.gov.au",
+    "url": "https://www.health.vic.gov.au/food-safety",
+    "council_directory_url": "https://www.vic.gov.au/know-your-council",
+    "council_count": 79
+  },
+  "unique": {
+    "quirk_paragraph": "",
+    "common_mistake": "Assuming every home kitchen only needs a one-off notification, jam/biscuit sellers may be class 3 (annual registration) while only the lowest-risk class 4 activities notify once.",
+    "what_does_not_apply": ""
+  },
+  "information_gain": [
+    "Class 3 vs 4 split for typical farm-stand products (unpackaged low-risk), registration vs one-off notification.",
+    "Statement of trade + FoodTrader statewide temporary/mobile model.",
+    "Unattended honesty-stall treatment: not published for commercial stands.",
+    "Verified Food Safety Hotline 1300 364 352 and foodsafety@health.vic.gov.au."
+  ],
+  "sources": [
+    {
+      "field": "gate.type",
+      "url": "https://www.health.vic.gov.au/sites/default/files/2022-09/so-you-want-to-start-a-food-business.pdf",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "classification",
+      "url": "https://www.health.vic.gov.au/sites/default/files/2022-09/so-you-want-to-start-a-food-business.pdf",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.portal_url",
+      "url": "https://www.health.vic.gov.au/sites/default/files/2022-09/so-you-want-to-start-a-food-business.pdf",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.statement_of_trade_required",
+      "url": "https://www.health.vic.gov.au/sites/default/files/2022-09/so-you-want-to-start-a-food-business.pdf",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "training.fss_trigger",
+      "url": "https://www.health.vic.gov.au/sites/default/files/2022-09/so-you-want-to-start-a-food-business.pdf",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "contact.phone",
+      "url": "https://www.health.vic.gov.au/sites/default/files/2022-09/so-you-want-to-start-a-food-business.pdf",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "contact.council_count",
+      "url": "https://www.vic.gov.au/know-your-council",
+      "retrieved": "2026-08-24",
+      "tier": 2
+    }
+  ]
+}

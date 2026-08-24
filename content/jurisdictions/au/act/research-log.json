@@ -1,0 +1,79 @@
+{
+  "jurisdiction": "act",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "site:act.gov.au start a food business registration Health Protection Service",
+    "site:accesscanberra.act.gov.au register a food business fee",
+    "Food Act 2001 ACT legislation food business definition",
+    "ACT Health Protection Service food business registration fees low risk"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://www.act.gov.au/business/start-a-food-a-business",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.accesscanberra.act.gov.au/business-and-work/hospitality-liquor-and-gaming/register-a-food-business",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.legislation.act.gov.au/a/2001-66",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 42,
+  "fields_not_published": [
+    {
+      "field": "gate.penalty_max_individual",
+      "searches_attempted": [
+        "Start-a-food-business and Access Canberra registration pages silent on max penalty dollars"
+      ]
+    },
+    {
+      "field": "channels.unattended_honesty_stall",
+      "searches_attempted": [
+        "site:act.gov.au honesty stall OR farm gate"
+      ]
+    },
+    {
+      "field": "premises.home_kitchen_allowed",
+      "searches_attempted": [
+        "Start-a-food-business page silent on residential kitchen policy"
+      ]
+    },
+    {
+      "field": "labelling.address_can_be_non_residential",
+      "searches_attempted": [
+        "FSANZ Code only; no ACT-specific PO-box rule on business start page"
+      ]
+    }
+  ],
+  "escalations": [
+    {
+      "field": "unique.quirk_paragraph",
+      "reason": "Short draft only; needs human polish on single-occasion and charitable definition quirk",
+      "contact_method": "owner editorial review",
+      "status": "open"
+    }
+  ],
+  "information_gain_candidates": [
+    "Single-territory HPS registration with Access Canberra portal",
+    "Published low/medium/high risk fees",
+    "Food Act covers charitable and single occasion",
+    "Pre-registration inspection",
+    "Verified HPS contacts"
+  ],
+  "schema_notes": [
+    "Required gate.type = registration",
+    "council_count = 1; council_directory_url empty string",
+    "channels.render_as = prose due to many not_published"
+  ]
+}

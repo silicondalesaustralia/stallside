@@ -1,0 +1,58 @@
+{
+  "jurisdiction": "fl",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "Florida Statutes 500.80 cottage food operations",
+    "FDACS cottage foods approved list permit exemption",
+    "Florida cottage food internet mail wholesale Ask IFAS"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://www.flsenate.gov/Laws/Statutes/2025/500.80",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.fdacs.gov/Business-Services/Food-Establishments/Cottage-Foods",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://ask.ifas.ufl.edu/publication/FS425",
+      "tier": 2,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 48,
+  "fields_not_published": [
+    {
+      "field": "channels.roadside_stall",
+      "searches_attempted": [
+        "s. 500.80 channels; direct-to-consumer and internet/mail covered; roadside not named"
+      ]
+    },
+    {
+      "field": "money.sales_tax_applies",
+      "searches_attempted": [
+        "s. 500.80(5) tax laws still apply; no cottage-specific sales-tax rule published on FDACS page"
+      ]
+    }
+  ],
+  "escalations": [],
+  "information_gain_candidates": [
+    "$250,000 gross sales cap with permit exemption",
+    "Internet/mail allowed; wholesale banned",
+    "Statutory 10-point disclaimer",
+    "Complaint-only inspection"
+  ],
+  "schema_notes": [
+    "meta.completeness = research_complete",
+    "law.code_applies and AU food-safety fields set to not_applicable",
+    "mandated_disclaimer_text taken verbatim from s. 500.80(3)(g), not brochure"
+  ]
+}

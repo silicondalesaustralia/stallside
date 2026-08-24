@@ -1,0 +1,65 @@
+{
+  "jurisdiction": "mo",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "RSMo 196.298 cottage food production operation",
+    "Missouri cottage food farmers market internet",
+    "Missouri RSMo 261.241 jam jelly honey"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://revisor.mo.gov/main/OneSection.aspx?bid=51016&section=196.298",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://agriculture.mo.gov/",
+      "tier": 2,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 45,
+  "fields_not_published": [
+    {
+      "field": "channels.farmers_markets",
+      "searches_attempted": [
+        "RSMo 196.298 text: sale at individual's home direct to consumers; farmers markets not named"
+      ]
+    },
+    {
+      "field": "scope.sales_cap",
+      "searches_attempted": [
+        "RSMo 196.298 no dollar cap; separate 261.241 noted in unique (stored as not_required)"
+      ]
+    }
+  ],
+  "escalations": [
+    {
+      "field": "channels.farmers_markets",
+      "reason": "Statute defines sale at the individual's home; confirm whether farmers markets or other venues are allowed under rules or guidance",
+      "contact_method": "DHSS / local health department",
+      "status": "open"
+    },
+    {
+      "field": "labelling.mandated_disclaimer_text",
+      "reason": "Statute requires a statement that food is not inspected by the department or local health department; exact rule wording may differ from paraphrased content stored",
+      "contact_method": "DHSS cottage food rules",
+      "status": "open"
+    }
+  ],
+  "information_gain_candidates": [
+    "Three-category product list only",
+    "No 196.298 sales cap",
+    "Home-sale DTC model",
+    "In-state-only internet"
+  ],
+  "schema_notes": [
+    "sales_cap = not_required",
+    "approved_food_list = true with narrow three categories",
+    "farmers_markets escalated as not_published"
+  ]
+}

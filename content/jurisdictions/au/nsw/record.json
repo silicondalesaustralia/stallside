@@ -1,0 +1,200 @@
+{
+  "code": "nsw",
+  "country": "AU",
+  "name": "New South Wales",
+  "slug": "new-south-wales",
+  "demonym": "New South Welsh",
+  "meta": {
+    "last_verified": "2026-08-24",
+    "verified_by": "",
+    "regulator_page_last_updated": "not_published",
+    "next_review_due": "2027-02-24",
+    "completeness": "research_complete"
+  },
+  "law": {
+    "statute": "Food Act 2003 (NSW)",
+    "statute_url": "https://legislation.nsw.gov.au/view/whole/html/inforce/current/act-2003-043",
+    "key_section": "ss 4-7 (definitions); notification via Food Regulation partnership",
+    "regulations": [],
+    "code_applies": true
+  },
+  "gate": {
+    "type": "notification",
+    "regulator_primary": "Local council (direct-to-consumer)",
+    "regulator_fallback": "NSW Food Authority (not direct / wholesale)",
+    "regulator_determined_by": "sales_channel",
+    "mechanism": "Notification via council permit/approval application when selling direct to the final customer; NSW Food Authority pathway when not direct (wholesale to a business to on-sell). Licence may also be required for high-risk manufacture, case by case.",
+    "form_url": "",
+    "portal_url": "",
+    "fee": "not_published",
+    "fee_currency": "AUD",
+    "fee_notes": "No fee published on the home-based mixed businesses page.",
+    "timing": "",
+    "per_site": "not_published",
+    "transferable": false,
+    "change_of_details_rule": "",
+    "statement_of_trade_required": "not_applicable",
+    "penalty_max_individual": "not_published",
+    "penalty_max_body_corporate": "not_published",
+    "penalty_expiation_individual": "not_published",
+    "penalty_expiation_body_corporate": "not_published",
+    "penalty_max_individual_units": "not_applicable",
+    "penalty_max_body_corporate_units": "not_applicable"
+  },
+  "classification": null,
+  "scope": {
+    "sales_cap": "not_applicable",
+    "sales_cap_basis": "not_applicable",
+    "approved_food_list": false,
+    "prohibited_foods": [],
+    "definition_of_sale_includes_donations": "not_published",
+    "applies_to_one_off_sales": true,
+    "applies_to_charitable": true,
+    "primary_production_carve_out": true,
+    "farm_gate_requires_notification": true,
+    "manufacture_triggers_licence": "not_published",
+    "licence_exemptions": [],
+    "commodity_schemes": [],
+    "commodity_scheme_regulator": ""
+  },
+  "channels": {
+    "direct_to_consumer": true,
+    "farmers_markets": "not_published",
+    "farm_gate": "not_published",
+    "roadside_stall": "not_published",
+    "unattended_honesty_stall": "not_published",
+    "online_orders_local_pickup": "not_published",
+    "shipping": "not_published",
+    "wholesale_to_retail": true,
+    "notes": "Direct to final customer → local council. Not direct (wholesale to a cafe to on-sell) → NSW Food Authority. Food Act s 7(2)(b): sale or service of food directly to the public is excluded from primary food production."
+  },
+  "labelling": {
+    "required_elements": [
+      "name of food",
+      "lot identification",
+      "supplier name and street address in Australia or New Zealand",
+      "ingredients",
+      "best-before or use-by",
+      "directions for use and storage",
+      "nutrition information panel",
+      "country of origin",
+      "warning and advisory statements",
+      "allergen declaration"
+    ],
+    "mandated_disclaimer_text": "not_applicable",
+    "allergen_rule": "Allergen declaration required as a label element.",
+    "nutrition_panel_required": true,
+    "country_of_origin_required": true,
+    "supplier_address_required": true,
+    "address_can_be_non_residential": "not_published"
+  },
+  "training": {
+    "food_handler_skills_required": true,
+    "food_safety_supervisor_required": "conditional",
+    "fss_trigger": "Required only where food is ready-to-eat and potentially hazardous and not in the supplier's original packaging.",
+    "free_training_accepted": "not_published",
+    "free_training_name": "",
+    "free_training_url": ""
+  },
+  "premises": {
+    "home_kitchen_allowed": true,
+    "inspection_required": "conditional",
+    "inspection_frequency_basis": "Routine for sandwiches, salads, non-preservative sauces. Not routine for jams, chutneys, biscuits, chocolates.",
+    "inspection_fee": "not_published",
+    "construction_standard": "Standard 3.2.3",
+    "exemptions_available": true,
+    "exemptions_never_granted_for": [
+      "kitchen/storeroom flooring",
+      "personal hygiene areas"
+    ]
+  },
+  "food_safety_management": {
+    "standard_322a_applies": "conditional",
+    "standard_322a_trigger": "Applies where potentially hazardous food is processed into ready-to-eat food and served. Process includes chopping, cooking, drying, fermenting, heating, thawing, washing.",
+    "food_safety_program_required": "not_published",
+    "food_safety_program_trigger": "",
+    "records_required": "not_published"
+  },
+  "money": {
+    "sales_tax_applies": "not_applicable",
+    "gst_threshold": 75000,
+    "abn_required": "not_published",
+    "hobby_vs_business_test_url": "",
+    "insurance_typical_market_requirement": "not_published"
+  },
+  "contact": {
+    "phone": "1300 552 406",
+    "email": "",
+    "url": "https://www.foodauthority.nsw.gov.au/retail/home-based-mixed-businesses",
+    "council_directory_url": "https://www.olg.nsw.gov.au/",
+    "council_count": 128
+  },
+  "unique": {
+    "quirk_paragraph": "",
+    "common_mistake": "Assuming NSW Food Authority will inspect on request to satisfy market access conditions some councils impose, it will not.",
+    "what_does_not_apply": "If you only sell low-risk packaged foods such as jams, chutneys, biscuits or chocolates, Food Safety Supervisor and Standard 3.2.2A tools that target unpackaged potentially hazardous ready-to-eat food typically do not apply, confirm with your council. Routine inspection is also framed differently for those products."
+  },
+  "information_gain": [
+    "Market-access catch-22: markets demand inspection; NSW Food Authority refuses to inspect on request.",
+    "SA publishes maximum penalties; NSW home-based guidance does not publish max penalties.",
+    "Unattended honesty-stall treatment: not published by NSW Food Authority.",
+    "Home address on labels: supplier street address in AU/NZ is a required label element.",
+    "Food Act s 7(2)(b): direct-to-public sale is outside the primary food production carve-out."
+  ],
+  "sources": [
+    {
+      "field": "scope.applies_to_charitable",
+      "url": "https://legislation.nsw.gov.au/view/whole/html/inforce/current/act-2003-043",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "scope.primary_production_carve_out",
+      "url": "https://legislation.nsw.gov.au/view/whole/html/inforce/current/act-2003-043",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.regulator_determined_by",
+      "url": "https://www.foodauthority.nsw.gov.au/retail/home-based-mixed-businesses",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.transferable",
+      "url": "https://www.foodauthority.nsw.gov.au/retail/home-based-mixed-businesses",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "training.fss_trigger",
+      "url": "https://www.foodauthority.nsw.gov.au/retail/home-based-mixed-businesses",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "food_safety_management.standard_322a_trigger",
+      "url": "https://www.foodauthority.nsw.gov.au/retail/home-based-mixed-businesses",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "labelling.required_elements",
+      "url": "https://www.foodauthority.nsw.gov.au/retail/home-based-mixed-businesses",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "premises.inspection_frequency_basis",
+      "url": "https://www.foodauthority.nsw.gov.au/retail/home-based-mixed-businesses",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "contact.phone",
+      "url": "https://www.foodauthority.nsw.gov.au/retail/home-based-mixed-businesses",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    }
+  ]
+}

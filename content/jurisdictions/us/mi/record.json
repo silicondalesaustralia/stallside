@@ -1,0 +1,176 @@
+{
+  "code": "mi",
+  "country": "US",
+  "name": "Michigan",
+  "slug": "michigan",
+  "demonym": "Michigander",
+  "meta": {
+    "last_verified": "2026-08-24",
+    "verified_by": "",
+    "regulator_page_last_updated": "not_published",
+    "next_review_due": "2027-02-24",
+    "completeness": "research_complete"
+  },
+  "law": {
+    "statute": "Michigan Food Law, MCL 289.4102 (Cottage food operation)",
+    "statute_url": "https://www.legislature.mi.gov/Laws/MCL?objectName=MCL-289-4102",
+    "key_section": "MCL 289.4102",
+    "regulations": [],
+    "code_applies": "not_applicable"
+  },
+  "gate": {
+    "type": "none",
+    "regulator_primary": "Michigan Department of Agriculture and Rural Development (MDARD)",
+    "regulator_fallback": "",
+    "regulator_determined_by": "geography",
+    "mechanism": "Cottage food operation exempt from Food Law licensing and evaluation if MCL 289.4102 requirements are met. No cottage food license or permit. Optional MSU Product Center registration can substitute a registration number for a home address on labels.",
+    "form_url": "",
+    "portal_url": "",
+    "fee": 0,
+    "fee_currency": "USD",
+    "fee_notes": "No license fee for cottage food exemption. Optional MSU Product Center registration may charge a one-time fee (confirm current amount with Product Center).",
+    "timing": "not_applicable",
+    "per_site": "not_applicable",
+    "transferable": "not_applicable",
+    "change_of_details_rule": "not_applicable",
+    "statement_of_trade_required": "not_applicable",
+    "penalty_max_individual": "not_published",
+    "penalty_max_body_corporate": "not_published",
+    "penalty_expiation_individual": "not_published",
+    "penalty_expiation_body_corporate": "not_published",
+    "penalty_max_individual_units": "not_applicable",
+    "penalty_max_body_corporate_units": "not_applicable"
+  },
+  "classification": null,
+  "scope": {
+    "sales_cap": 50000,
+    "sales_cap_basis": "gross",
+    "approved_food_list": true,
+    "prohibited_foods": [
+      "Potentially hazardous / TCS foods",
+      "Wholesale or consignment sales"
+    ],
+    "definition_of_sale_includes_donations": "not_published",
+    "applies_to_one_off_sales": "not_published",
+    "applies_to_charitable": "not_published",
+    "primary_production_carve_out": "not_applicable",
+    "farm_gate_requires_notification": "not_applicable",
+    "manufacture_triggers_licence": "not_applicable",
+    "licence_exemptions": [],
+    "commodity_schemes": [],
+    "commodity_scheme_regulator": "not_applicable"
+  },
+  "channels": {
+    "direct_to_consumer": true,
+    "farm_gate": true,
+    "farmers_markets": true,
+    "roadside_stall": true,
+    "unattended_honesty_stall": "not_published",
+    "online_orders_local_pickup": true,
+    "shipping": "conditional",
+    "wholesale_to_retail": false,
+    "render_as": "table",
+    "render_reason": "MDARD/MCL: DTC within Michigan; internet/mail conditional on pre-sale consumer interaction",
+    "notes": "Gross sales must not exceed $50,000 annually until October 1, 2026 ($75,000 if unit price is $250 or more). Beginning October 1, 2026 MDARD may adjust caps by Detroit CPI. Sales and delivery only within Michigan. Internet, mail order, or third-party delivery allowed if the operation provides an opportunity for the consumer to interact directly with the operation before the sale. Wholesale and consignment prohibited."
+  },
+  "labelling": {
+    "basis": "MCL 289.4102(3)",
+    "required_elements": [
+      "Business name and address, or name plus MSU Product Center registration number in place of address",
+      "Name of the cottage food product",
+      "Ingredients in descending order of predominance by weight",
+      "Net weight or net volume",
+      "Allergen labeling as specified by federal requirements",
+      "Nutritional labeling if any nutritional claim is made",
+      "Mandated disclaimer in at least 11-point type with clear contrast"
+    ],
+    "mandated_disclaimer_text": "Made in a home kitchen that has not been inspected by the Michigan department of agriculture and rural development.",
+    "allergen_rule": "Allergen labeling as specified by federal labeling requirements",
+    "nutrition_panel_required": "not_required",
+    "country_of_origin_required": "not_published",
+    "supplier_address_required": true,
+    "address_can_be_non_residential": true
+  },
+  "training": {
+    "food_handler_skills_required": "not_required",
+    "food_safety_supervisor_required": "not_required",
+    "fss_trigger": "",
+    "free_training_accepted": "not_applicable",
+    "free_training_name": "MSU Extension cottage food training (optional)",
+    "free_training_url": "https://www.michigan.gov/mdard/food-dairy/michigan-cottage-foods-information"
+  },
+  "premises": {
+    "home_kitchen_allowed": true,
+    "inspection_required": false,
+    "inspection_frequency_basis": "Exempt from licensing and evaluation; MDARD retains enforcement for adulteration and applicable violations",
+    "inspection_fee": "not_applicable",
+    "construction_standard": "not_applicable",
+    "exemptions_available": "not_applicable",
+    "exemptions_never_granted_for": []
+  },
+  "food_safety_management": {
+    "standard_322a_applies": "not_applicable",
+    "standard_322a_trigger": "",
+    "food_safety_program_required": "not_applicable",
+    "food_safety_program_trigger": "",
+    "records_required": "not_applicable"
+  },
+  "money": {
+    "sales_tax_applies": "not_published",
+    "gst_threshold": "not_applicable",
+    "abn_required": "not_applicable",
+    "hobby_vs_business_test_url": "",
+    "insurance_typical_market_requirement": "not_published"
+  },
+  "contact": {
+    "phone": "",
+    "email": "MDARD-CottageFood@michigan.gov",
+    "url": "https://www.michigan.gov/mdard",
+    "council_directory_url": "",
+    "council_count": null
+  },
+  "unique": {
+    "quirk_paragraph": "Michigan pairs a license exemption with a hard in-state sales wall and a dual gross-sales cap. Most operators sit under $50,000 gross. Operators whose cottage products sell at $250 or more per unit may go to $75,000. Both figures are subject to possible Detroit CPI adjustment beginning October 1, 2026.\n\nInternet and mail are not a free-for-all. MCL 289.4102 allows those channels only when the consumer can interact with the cottage food operation before the sale, and only for sales delivered in Michigan.\n\nThe label disclaimer is statutory and must appear in at least 11-point contrasting type.",
+    "common_mistake": "Shipping out of state, skipping the pre-sale interaction requirement for internet sales, or treating wholesale/consignment as cottage food.",
+    "what_does_not_apply": "Potentially hazardous foods and any wholesale path are outside the cottage food exemption and need ordinary food establishment licensing."
+  },
+  "information_gain": [
+    "$50,000 / $75,000 dual gross sales cap until Oct 1, 2026 with CPI adjustment authority after",
+    "In-state-only sales and delivery",
+    "Internet/mail conditional on pre-sale direct consumer interaction",
+    "Verbatim 11-point MDARD disclaimer in MCL 289.4102(3)(g)",
+    "Optional MSU Product Center registration to omit home address on labels"
+  ],
+  "sources": [
+    {
+      "field": "law",
+      "url": "https://www.legislature.mi.gov/Laws/MCL?objectName=MCL-289-4102",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate",
+      "url": "https://www.michigan.gov/mdard/food-dairy/michigan-cottage-foods-information",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "channels",
+      "url": "https://www.michigan.gov/mdard/food-dairy/michigan-cottage-foods-information",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "labelling",
+      "url": "https://www.legislature.mi.gov/Laws/MCL?objectName=MCL-289-4102",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "scope.sales_cap",
+      "url": "https://www.legislature.mi.gov/Laws/MCL?objectName=MCL-289-4102",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    }
+  ]
+}

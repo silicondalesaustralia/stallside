@@ -1,0 +1,172 @@
+{
+  "code": "oh",
+  "country": "US",
+  "name": "Ohio",
+  "slug": "ohio",
+  "demonym": "Ohioan",
+  "meta": {
+    "last_verified": "2026-08-24",
+    "verified_by": "",
+    "regulator_page_last_updated": "not_published",
+    "next_review_due": "2027-02-24",
+    "completeness": "research_complete"
+  },
+  "law": {
+    "statute": "Ohio Revised Code Chapter 3715 (Cottage food production operation)",
+    "statute_url": "https://codes.ohio.gov/ohio-revised-code/chapter-3715",
+    "key_section": "ORC 3715.01, 3715.021, 3715.023, 3715.025",
+    "regulations": [
+      "OAC 901:3-20 (cottage food rules)"
+    ],
+    "code_applies": "not_applicable"
+  },
+  "gate": {
+    "type": "none",
+    "regulator_primary": "Ohio Department of Agriculture (ODA), Division of Food Safety",
+    "regulator_fallback": "",
+    "regulator_determined_by": "food_risk",
+    "mechanism": "Primary path: Cottage Food Production Operation under ORC Chapter 3715 produces non-potentially hazardous foods in a home kitchen with no ODA license or inspection. Separate path: Home Bakery license ($10/year) for potentially hazardous bakery foods produced in a home kitchen, with ODA inspection. Cottage food products may only be sold in Ohio; home bakery may distribute out of state.",
+    "form_url": "",
+    "portal_url": "",
+    "fee": 0,
+    "fee_currency": "USD",
+    "fee_notes": "Cottage food: no license fee. Home bakery license: $10 per year, renewed each September; request inspection via ODA Food Safety (foodsafety@agri.ohio.gov).",
+    "timing": "not_applicable for cottage food; before operating for home bakery",
+    "per_site": "not_applicable",
+    "transferable": "not_applicable",
+    "change_of_details_rule": "not_applicable",
+    "statement_of_trade_required": "not_applicable",
+    "penalty_max_individual": "not_published",
+    "penalty_max_body_corporate": "not_published",
+    "penalty_expiation_individual": "not_published",
+    "penalty_expiation_body_corporate": "not_published",
+    "penalty_max_individual_units": "not_applicable",
+    "penalty_max_body_corporate_units": "not_applicable"
+  },
+  "classification": null,
+  "scope": {
+    "sales_cap": "not_required",
+    "sales_cap_basis": "not_applicable",
+    "approved_food_list": true,
+    "prohibited_foods": [
+      "Potentially hazardous foods (under cottage food path)",
+      "Acidified foods",
+      "Low-acid canned foods"
+    ],
+    "definition_of_sale_includes_donations": "not_published",
+    "applies_to_one_off_sales": "not_published",
+    "applies_to_charitable": "not_published",
+    "primary_production_carve_out": "not_applicable",
+    "farm_gate_requires_notification": "not_applicable",
+    "manufacture_triggers_licence": "not_applicable",
+    "licence_exemptions": [],
+    "commodity_schemes": [],
+    "commodity_scheme_regulator": "not_applicable"
+  },
+  "channels": {
+    "direct_to_consumer": true,
+    "farm_gate": true,
+    "farmers_markets": true,
+    "roadside_stall": "not_published",
+    "unattended_honesty_stall": "not_published",
+    "online_orders_local_pickup": true,
+    "shipping": "conditional",
+    "wholesale_to_retail": true,
+    "render_as": "table",
+    "render_reason": "Cottage food may be sold to retail food establishments in Ohio when properly labeled; out-of-state cottage shipping not allowed",
+    "notes": "Cottage food products may only be sold in Ohio. Properly labeled cottage foods are acceptable for sale by licensed retail food establishments (ORC 3715.023(B)). Home bakery is a separate licensed regime and may distribute out of state. No published dollar sales limit for cottage food."
+  },
+  "labelling": {
+    "basis": "ORC 3715.023",
+    "required_elements": [
+      "Name and address of the business",
+      "Name of the food product",
+      "Ingredients in descending order of predominance by weight",
+      "Net weight and volume",
+      "Statement in ten-point type: This product is home produced.",
+      "Major allergen declaration when applicable (FDA labeling)"
+    ],
+    "mandated_disclaimer_text": "This product is home produced.",
+    "allergen_rule": "Major food allergens declared per FDA labeling (21 CFR Part 101)",
+    "nutrition_panel_required": "not_required",
+    "country_of_origin_required": "not_published",
+    "supplier_address_required": true,
+    "address_can_be_non_residential": "not_published"
+  },
+  "training": {
+    "food_handler_skills_required": "not_required",
+    "food_safety_supervisor_required": "not_required",
+    "fss_trigger": "",
+    "free_training_accepted": "not_applicable",
+    "free_training_name": "",
+    "free_training_url": ""
+  },
+  "premises": {
+    "home_kitchen_allowed": true,
+    "inspection_required": "conditional",
+    "inspection_frequency_basis": "Cottage food: exempt from ODA inspection/licensing (sampling still possible). Home bakery: initial and renewal inspection.",
+    "inspection_fee": "not_published",
+    "construction_standard": "Home means primary residence with one common residential stove/oven in an ordinary kitchen",
+    "exemptions_available": "not_applicable",
+    "exemptions_never_granted_for": []
+  },
+  "food_safety_management": {
+    "standard_322a_applies": "not_applicable",
+    "standard_322a_trigger": "",
+    "food_safety_program_required": "not_applicable",
+    "food_safety_program_trigger": "",
+    "records_required": "not_applicable"
+  },
+  "money": {
+    "sales_tax_applies": "not_published",
+    "gst_threshold": "not_applicable",
+    "abn_required": "not_applicable",
+    "hobby_vs_business_test_url": "",
+    "insurance_typical_market_requirement": "not_published"
+  },
+  "contact": {
+    "phone": "",
+    "email": "foodsafety@agri.ohio.gov",
+    "url": "https://agri.ohio.gov/divisions/food-safety/resources/cottage-food",
+    "council_directory_url": "",
+    "council_count": null
+  },
+  "unique": {
+    "quirk_paragraph": "Ohio runs two home-kitchen regimes side by side. Cottage food covers non-potentially hazardous items with no license and no routine inspection, but products stay inside Ohio and must carry the statutory line \"This product is home produced.\"\n\nIf you want refrigerated bakery (potentially hazardous bakery foods), that is not cottage food. It is a Home Bakery license at $10 per year, with an ODA kitchen inspection and different distribution rules, including possible out-of-state sales.\n\nThere is no published cottage food sales-dollar cap. The hard limit is food type and labeling, not revenue.",
+    "common_mistake": "Putting cream-filled or other PHF bakery on a cottage food label instead of obtaining a Home Bakery license.",
+    "what_does_not_apply": "Acidified foods, low-acid canned foods, and other potentially hazardous foods cannot be produced under the cottage food path."
+  },
+  "information_gain": [
+    "Two regimes: unlicensed cottage food vs $10/year Home Bakery for PHF bakery",
+    "No published cottage food sales-dollar limit",
+    "Statutory label: This product is home produced. (10-point)",
+    "Cottage food sales limited to Ohio; home bakery may go out of state",
+    "Labeled cottage foods may be sold by licensed retail food establishments"
+  ],
+  "sources": [
+    {
+      "field": "law",
+      "url": "https://codes.ohio.gov/ohio-revised-code/chapter-3715",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate",
+      "url": "https://agri.ohio.gov/divisions/food-safety/resources/cottage-food",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "labelling",
+      "url": "https://codes.ohio.gov/ohio-revised-code/section-3715.023",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.fee_notes",
+      "url": "https://agri.ohio.gov/help-center/questions/questions",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    }
+  ]
+}

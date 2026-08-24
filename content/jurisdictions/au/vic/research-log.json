@@ -1,0 +1,104 @@
+{
+  "jurisdiction": "vic",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "site:health.vic.gov.au home based food business registration",
+    "site:health.vic.gov.au food premises classification class 1 2 3 4 registration notification",
+    "site:health.vic.gov.au \"class 3A\" OR \"food premises classes\" home based",
+    "Victoria local councils how many site:vic.gov.au"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://www.health.vic.gov.au/sites/default/files/2022-09/so-you-want-to-start-a-food-business.pdf",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.health.vic.gov.au/sites/default/files/migrated/files/collections/policies-and-guidelines/f/food-business-management-guide-jan-2019-pdf.pdf",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.health.vic.gov.au/food-safety/information-for-community-groups-selling-food-to-raise-funds",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://foodtrader.vic.gov.au/",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.vic.gov.au/know-your-council",
+      "tier": 2,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": "2026-04-21"
+    }
+  ],
+  "fields_populated": 42,
+  "fields_not_published": [
+    {
+      "field": "channels.unattended_honesty_stall",
+      "searches_attempted": [
+        "site:health.vic.gov.au farm gate sales",
+        "site:health.vic.gov.au roadside stall",
+        "community groups gold coin donation (found, commercial honesty stall silent)"
+      ]
+    },
+    {
+      "field": "gate.fee",
+      "searches_attempted": [
+        "So you want to run a food business PDF, fees council-set; class 4 community notification no charge"
+      ]
+    },
+    {
+      "field": "gate.penalty_max_individual",
+      "searches_attempted": [
+        "So you want to run a food business PDF, no max penalty dollars published"
+      ]
+    },
+    {
+      "field": "labelling.address_can_be_non_residential",
+      "searches_attempted": [
+        "So you want to run a food business PDF labelling section, points to FSANZ Code only"
+      ]
+    }
+  ],
+  "escalations": [
+    {
+      "field": "scope.farm_gate_requires_notification",
+      "reason": "No clear Tier 1 statement whether farm-gate sales of own produce trigger registration/notification beyond general food business rules",
+      "contact_method": "phone Food Safety Hotline 1300 364 352",
+      "status": "open"
+    },
+    {
+      "field": "meta.regulator_page_last_updated",
+      "reason": "Primary PDF lacks a clear last-updated stamp; flag before publishing time-sensitive fee claims",
+      "contact_method": "email foodsafety@health.vic.gov.au",
+      "status": "open"
+    },
+    {
+      "field": "null_gapfill_2026-08-24",
+      "reason": "Converted remaining nulls to not_published/not_applicable/conditional where regulator silent; human quirk still required before verified_publishable",
+      "contact_method": "record_edit",
+      "status": "done"
+    }
+  ],
+  "information_gain_candidates": [
+    "Class 3 vs 4 for typical low-risk home products",
+    "Statement of trade + FoodTrader model",
+    "Commercial honesty stall gap vs community gold-coin donation guidance",
+    "Verified hotline and email"
+  ],
+  "schema_notes": [
+    "Required gate.type = registration_or_notification",
+    "Required classification block for vic_food_act_classes",
+    "Required gate.portal_url and gate.statement_of_trade_required"
+  ]
+}

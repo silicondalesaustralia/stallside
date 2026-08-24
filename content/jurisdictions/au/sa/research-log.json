@@ -1,0 +1,45 @@
+{
+  "jurisdiction": "sa",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "owner",
+  "queries_run": [
+    "Ready-to-publish SA page supplied by owner against Tier 1 sources listed on page"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://www.sahealth.sa.gov.au/wps/wcm/connect/Public+Content/SA+Health+Internet/Public+health/Food+safety+for+businesses/Starting+a+food+business",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": "2026-07-20"
+    }
+  ],
+  "fields_populated": 50,
+  "fields_not_published": [
+    {
+      "field": "channels.unattended_honesty_stall",
+      "searches_attempted": [
+        "No honesty-box exemption; donations-as-sale covered in page prose"
+      ]
+    },
+    {
+      "field": "labelling.address_can_be_non_residential",
+      "searches_attempted": [
+        "FSANZ supplier address required; no general PO-box rule published"
+      ]
+    }
+  ],
+  "escalations": [],
+  "information_gain_candidates": [
+    "Donation-requested honesty systems can still constitute selling food",
+    "Primary production carve-out excludes direct public sale",
+    "PIRSA egg accreditation thresholds and A$606 application fee",
+    "Nil notification fee versus A$25,000 maximum individual penalty",
+    "Country of origin under ACL Information Standard 2016"
+  ],
+  "schema_notes": [
+    "page.md is ready-to-publish owner copy",
+    "meta.completeness = verified_publishable",
+    "Public author optional per spec v1.1"
+  ]
+}

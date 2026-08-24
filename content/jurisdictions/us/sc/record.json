@@ -1,0 +1,167 @@
+{
+  "code": "sc",
+  "country": "US",
+  "name": "South Carolina",
+  "slug": "south-carolina",
+  "demonym": "South Carolinian",
+  "meta": {
+    "last_verified": "2026-08-24",
+    "verified_by": "",
+    "regulator_page_last_updated": "not_published",
+    "next_review_due": "2027-02-24",
+    "completeness": "research_complete"
+  },
+  "law": {
+    "statute": "South Carolina Code s. 44-1-143 (Home-based Food Production)",
+    "statute_url": "https://www.scstatehouse.gov/code/t44c001.php",
+    "key_section": "s. 44-1-143",
+    "regulations": [],
+    "code_applies": "not_applicable"
+  },
+  "gate": {
+    "type": "none",
+    "regulator_primary": "South Carolina Department of Agriculture (SCDA)",
+    "regulator_fallback": "",
+    "regulator_determined_by": "geography",
+    "mechanism": "Home-based food production operation meeting s. 44-1-143 is not a retail food establishment and needs no retail food permit from SCDA when producing non-potentially hazardous foods in a residential kitchen under the statute.",
+    "form_url": "",
+    "portal_url": "",
+    "fee": 0,
+    "fee_currency": "USD",
+    "fee_notes": "No retail food permit fee under the home-based food production exemption. Optional SCDA home-based food ID number available if operator does not want a home address on the label.",
+    "timing": "not_applicable",
+    "per_site": "not_applicable",
+    "transferable": "not_applicable",
+    "change_of_details_rule": "not_applicable",
+    "statement_of_trade_required": "not_applicable",
+    "penalty_max_individual": "not_published",
+    "penalty_max_body_corporate": "not_published",
+    "penalty_expiation_individual": "not_published",
+    "penalty_expiation_body_corporate": "not_published",
+    "penalty_max_individual_units": "not_applicable",
+    "penalty_max_body_corporate_units": "not_applicable"
+  },
+  "classification": null,
+  "scope": {
+    "sales_cap": "not_required",
+    "sales_cap_basis": "not_applicable",
+    "approved_food_list": true,
+    "prohibited_foods": [
+      "Potentially hazardous foods"
+    ],
+    "definition_of_sale_includes_donations": "not_published",
+    "applies_to_one_off_sales": "not_published",
+    "applies_to_charitable": "not_published",
+    "primary_production_carve_out": "not_applicable",
+    "farm_gate_requires_notification": "not_applicable",
+    "manufacture_triggers_licence": "not_applicable",
+    "licence_exemptions": [],
+    "commodity_schemes": [],
+    "commodity_scheme_regulator": "not_applicable"
+  },
+  "channels": {
+    "direct_to_consumer": true,
+    "farm_gate": true,
+    "farmers_markets": true,
+    "roadside_stall": "not_published",
+    "unattended_honesty_stall": "not_published",
+    "online_orders_local_pickup": true,
+    "shipping": true,
+    "wholesale_to_retail": true,
+    "render_as": "table",
+    "render_reason": "s. 44-1-143 allows direct sales including online/mail and sales to retail stores within South Carolina",
+    "notes": "May sell directly to a person (including online and by mail order) or to retail stores, including grocery stores, within South Carolina. Retail stores must post signage that home-based foods are not subject to commercial food regulations. Operations with net earnings under $1,500 annually that would otherwise meet the definition are exempt from the labeling provisions of the section (not a general sales cap)."
+  },
+  "labelling": {
+    "basis": "South Carolina Code s. 44-1-143(D)",
+    "required_elements": [
+      "Name and address of the home-based food production operation, or SCDA-issued identification number in place of address",
+      "Name of the product",
+      "Ingredients in descending order of predominance by weight",
+      "Conspicuous all-caps mandated disclaimer with clear contrast",
+      "Compliance with applicable federal labeling laws"
+    ],
+    "mandated_disclaimer_text": "PROCESSED AND PREPARED BY A HOME-BASED FOOD PRODUCTION OPERATION THAT IS NOT SUBJECT TO SOUTH CAROLINA'S FOOD SAFETY REGULATIONS.",
+    "allergen_rule": "Federal labeling laws and regulations apply to packaged items",
+    "nutrition_panel_required": "not_required",
+    "country_of_origin_required": "not_published",
+    "supplier_address_required": true,
+    "address_can_be_non_residential": true
+  },
+  "training": {
+    "food_handler_skills_required": "not_required",
+    "food_safety_supervisor_required": "not_required",
+    "fss_trigger": "",
+    "free_training_accepted": "not_applicable",
+    "free_training_name": "",
+    "free_training_url": ""
+  },
+  "premises": {
+    "home_kitchen_allowed": true,
+    "inspection_required": false,
+    "inspection_frequency_basis": "Not a retail food establishment under Reg. 61-25 when statute met",
+    "inspection_fee": "not_applicable",
+    "construction_standard": "Residential kitchen standards in s. 44-1-143",
+    "exemptions_available": "not_applicable",
+    "exemptions_never_granted_for": []
+  },
+  "food_safety_management": {
+    "standard_322a_applies": "not_applicable",
+    "standard_322a_trigger": "",
+    "food_safety_program_required": "not_applicable",
+    "food_safety_program_trigger": "",
+    "records_required": "not_applicable"
+  },
+  "money": {
+    "sales_tax_applies": "not_published",
+    "gst_threshold": "not_applicable",
+    "abn_required": "not_applicable",
+    "hobby_vs_business_test_url": "",
+    "insurance_typical_market_requirement": "not_published"
+  },
+  "contact": {
+    "phone": "",
+    "email": "",
+    "url": "https://agriculture.sc.gov/permits-and-inspections/retail-food-safety/",
+    "council_directory_url": "",
+    "council_count": null
+  },
+  "unique": {
+    "quirk_paragraph": "South Carolina is unusually open on channels for a home-kitchen statute. Compliant home-based producers may sell direct to consumers (including online and mail order) and into retail stores inside the state, without a retail food permit.\n\nThere is no general sales-dollar ceiling on the exemption. The $1,500 net-earnings figure in the statute is a labeling carve-out for very small operations, not a statewide sales cap.\n\nThe label disclaimer is locked in all capital letters by statute and must contrast with the label background.",
+    "common_mistake": "Treating the $1,500 net-earnings figure as a hard sales limit, or using home-based food as a restaurant ingredient without an SCDA variance.",
+    "what_does_not_apply": "Potentially hazardous foods and out-of-state sales sit outside this home-based food production path."
+  },
+  "information_gain": [
+    "No retail food permit when s. 44-1-143 is met",
+    "Direct plus retail-store sales allowed in South Carolina; online/mail allowed",
+    "No general sales cap; $1,500 net is a labeling exemption only",
+    "All-caps statutory disclaimer required on packages",
+    "Retail food oversight moved to SCDA"
+  ],
+  "sources": [
+    {
+      "field": "law",
+      "url": "https://law.justia.com/codes/south-carolina/2023/title-44/chapter-1/section-44-1-143/",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate",
+      "url": "https://agriculture.sc.gov/permits-and-inspections/retail-food-safety/",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "labelling",
+      "url": "https://agriculture.sc.gov/wp-content/uploads/2026/05/Home-basedFoodProduction2026.pdf",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "channels",
+      "url": "https://agriculture.sc.gov/wp-content/uploads/2026/05/Home-basedFoodProduction2026.pdf",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    }
+  ]
+}

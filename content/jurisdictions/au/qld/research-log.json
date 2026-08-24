@@ -1,0 +1,105 @@
+{
+  "jurisdiction": "qld",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "site:business.qld.gov.au starting a food business licence home",
+    "site:health.qld.gov.au food business licence OR licensing home based",
+    "site:business.qld.gov.au food business licence application council",
+    "Queensland Food Act 2006 \"licensable food business\" site:qld.gov.au",
+    "Queensland local governments how many councils LGAQ"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://www.legislation.qld.gov.au/view/whole/html/current/act-2006-003",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.qld.gov.au/health/staying-healthy/food-pantry/food-safety-for-consumers/food-safety-and-the-law/food-business-licensing",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": "2023-02-07"
+    },
+    {
+      "url": "https://www.qld.gov.au/health/staying-healthy/food-pantry/local-government-food-safety-activities-annual-report",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.health.qld.gov.au/__data/assets/pdf_file/0024/441528/fundraising-events.pdf",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.lgaq.asn.au/Membership/Find-Your-Council",
+      "tier": 2,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 38,
+  "fields_not_published": [
+    {
+      "field": "channels.unattended_honesty_stall",
+      "searches_attempted": [
+        "site:qld.gov.au farm gate sales",
+        "site:qld.gov.au roadside stall",
+        "Food Act 2006 definitions sell / food business"
+      ]
+    },
+    {
+      "field": "gate.fee",
+      "searches_attempted": [
+        "qld.gov.au food business licensing, no statewide fee; council-set"
+      ]
+    },
+    {
+      "field": "gate.penalty_max_individual",
+      "searches_attempted": [
+        "Food Act 2006 s 49, 1000 penalty units (AUD conversion not published on guidance; do not invent)"
+      ]
+    },
+    {
+      "field": "contact.phone",
+      "searches_attempted": [
+        "qld.gov.au food business licensing, directs to local council, no statewide business hotline on that page"
+      ]
+    }
+  ],
+  "escalations": [
+    {
+      "field": "scope.farm_gate",
+      "reason": "Confirm whether packing eggs/honey at farm gate for retail is manufacture under s 48 in practice",
+      "contact_method": "council EHO + Safe Food Production QLD",
+      "status": "open"
+    },
+    {
+      "field": "meta.regulator_page_last_updated",
+      "reason": "qld.gov.au licensing page last updated 7 Feb 2023 (>24 months), phone confirm before publishing time-sensitive claims",
+      "contact_method": "local council EHO",
+      "status": "open"
+    },
+    {
+      "field": "null_gapfill_2026-08-24",
+      "reason": "Converted remaining nulls to not_published/not_applicable/conditional where regulator silent; human quirk still required before verified_publishable",
+      "contact_method": "record_edit",
+      "status": "done"
+    }
+  ],
+  "information_gain_candidates": [
+    "s 48 licence vs exemption fork for farm-stand products",
+    "Penalty units not dollars",
+    "Honesty stall gap",
+    "Cross-jurisdiction licence vs notification contrast"
+  ],
+  "schema_notes": [
+    "Required gate.type = licence",
+    "Required scope.licence_exemptions and manufacture_triggers_licence",
+    "Required penalty_*_units fields (do not invent AUD)"
+  ]
+}

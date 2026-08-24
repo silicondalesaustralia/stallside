@@ -1,0 +1,187 @@
+{
+  "code": "wa",
+  "country": "AU",
+  "name": "Western Australia",
+  "slug": "western-australia",
+  "demonym": "Western Australian",
+  "meta": {
+    "last_verified": "2026-08-24",
+    "verified_by": "",
+    "regulator_page_last_updated": "2021-02-18",
+    "next_review_due": "2027-02-24",
+    "completeness": "research_complete"
+  },
+  "law": {
+    "statute": "Food Act 2008 (WA)",
+    "statute_url": "https://www.legislation.wa.gov.au/",
+    "key_section": "",
+    "regulations": ["Food Regulations 2009 (WA)"],
+    "code_applies": true
+  },
+  "gate": {
+    "type": "registration",
+    "regulator_primary": "Local government Environmental Health Services",
+    "regulator_fallback": "WA Department of Health Environmental Health Directorate",
+    "regulator_determined_by": "geography",
+    "mechanism": "Register or notify with local government before operating. Food prepared in a residential home intended for sale requires Registration. Some Food Regulations 2009 exempt activities notify instead of register.",
+    "form_url": "",
+    "portal_url": "",
+    "fee": "not_published",
+    "fee_currency": "AUD",
+    "fee_notes": "Local government sets fees. Department of Health prescribed fees (for DoH-regulated sites only): notification $84, registration $255 under Food Regulations 2009.",
+    "timing": "before operating",
+    "per_site": true,
+    "transferable": "not_published",
+    "change_of_details_rule": "",
+    "statement_of_trade_required": "not_applicable",
+    "penalty_max_individual": 10000,
+    "penalty_max_body_corporate": 50000,
+    "penalty_expiation_individual": "not_published",
+    "penalty_expiation_body_corporate": "not_published",
+    "penalty_max_individual_units": "not_applicable",
+    "penalty_max_body_corporate_units": "not_applicable"
+  },
+  "classification": null,
+  "scope": {
+    "sales_cap": "not_applicable",
+    "sales_cap_basis": "not_applicable",
+    "approved_food_list": false,
+    "prohibited_foods": [],
+    "definition_of_sale_includes_donations": "not_published",
+    "applies_to_one_off_sales": "not_published",
+    "applies_to_charitable": "conditional",
+    "primary_production_carve_out": "not_published",
+    "farm_gate_requires_notification": true,
+    "manufacture_triggers_licence": "not_applicable",
+    "licence_exemptions": [],
+    "commodity_schemes": [],
+    "commodity_scheme_regulator": "Department of Primary Industries and Regional Development (DPIRD) / agric.wa.gov.au"
+  },
+  "channels": {
+    "direct_to_consumer": true,
+    "farm_gate": true,
+    "farmers_markets": "not_published",
+    "roadside_stall": "not_published",
+    "unattended_honesty_stall": "not_published",
+    "online_orders_local_pickup": "not_published",
+    "shipping": "not_published",
+    "wholesale_to_retail": "not_published",
+    "render_as": "prose",
+    "render_reason": "6 of 8 not_published, table suppressed per spec 7.12",
+    "notes": "Fundraising exemption from registration for non-PHF charitable food cooked for immediate consumption still requires notification."
+  },
+  "labelling": {
+    "basis": "Australia New Zealand Food Standards Code, Standard 1.2.1",
+    "required_elements": [
+      "Name of the food",
+      "Lot identification",
+      "Supplier name and street address in Australia or New Zealand",
+      "Ingredient list",
+      "Best-before or use-by date",
+      "Directions for use and storage",
+      "Nutrition information panel",
+      "Country of origin",
+      "Warning and advisory statements, and allergen declaration"
+    ],
+    "mandated_disclaimer_text": "not_applicable",
+    "allergen_rule": "Allergen declaration required as a Code label element",
+    "nutrition_panel_required": true,
+    "country_of_origin_required": true,
+    "supplier_address_required": true,
+    "address_can_be_non_residential": "not_published"
+  },
+  "training": {
+    "food_handler_skills_required": true,
+    "food_safety_supervisor_required": "conditional",
+    "fss_trigger": "Standard 3.2.2A Category 1 or 2: unpackaged, potentially hazardous food that is ready to eat (processing it, or selling it without making it).",
+    "free_training_accepted": "not_published",
+    "free_training_name": "",
+    "free_training_url": ""
+  },
+  "premises": {
+    "home_kitchen_allowed": true,
+    "inspection_required": true,
+    "inspection_frequency_basis": "",
+    "inspection_fee": "not_published",
+    "construction_standard": "Standard 3.2.3",
+    "exemptions_available": true,
+    "exemptions_never_granted_for": []
+  },
+  "food_safety_management": {
+    "standard_322a_applies": "conditional",
+    "standard_322a_trigger": "Applies to Category 1 and Category 2 food service, catering and retail businesses handling unpackaged, potentially hazardous ready-to-eat food.",
+    "food_safety_program_required": "not_published",
+    "food_safety_program_trigger": "",
+    "records_required": "not_published"
+  },
+  "money": {
+    "sales_tax_applies": "not_applicable",
+    "gst_threshold": 75000,
+    "abn_required": "not_published",
+    "hobby_vs_business_test_url": "https://business.gov.au/",
+    "insurance_typical_market_requirement": "not_published"
+  },
+  "contact": {
+    "phone": "",
+    "email": "",
+    "url": "https://www.health.wa.gov.au/Articles/F_I/Home-based-food-businesses",
+    "council_directory_url": "https://walga.asn.au/",
+    "council_count": 137
+  },
+  "unique": {
+    "quirk_paragraph": "DRAFT: Western Australia treats home-prepared food for sale as Registration with local government Environmental Health, with a separate notify path for regulated exemptions. Escalation needed for human polish of the register-versus-notify fork and the charitable fundraising carve-out.",
+    "common_mistake": "Assuming a low-risk home bake sale can skip contact with council because it feels informal.",
+    "what_does_not_apply": "Home kitchen use is framed for low-risk activity under Standard 3.2.3; DoH policy limits construction exemptions to low risk. Confirm product risk with your local EHO."
+  },
+  "information_gain": [
+    "Home food for sale requires Registration under the WA home-based table, not a soft informal notify-only path",
+    "Unregistered business maximum penalties published: A$10,000 individual and A$50,000 body corporate",
+    "Council fees are local; DoH prescribed fees apply only to DoH-regulated sites (notification A$84, registration A$255)",
+    "Charitable fundraising can be exempt from registration for non-PHF food cooked for immediate consumption, but must still notify",
+    "137 local governments; directory via WALGA"
+  ],
+  "sources": [
+    {
+      "field": "gate",
+      "url": "https://www.health.wa.gov.au/Articles/F_I/Home-based-food-businesses",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.mechanism",
+      "url": "https://www.health.wa.gov.au/Articles/N_R/Registration-of-a-food-business",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.fee_notes",
+      "url": "https://www.health.wa.gov.au/Articles/S_T/Starting-a-food-business-in-WA",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "law",
+      "url": "https://www.legislation.wa.gov.au/",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "labelling",
+      "url": "https://www.foodstandards.gov.au/",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "contact.council_directory_url",
+      "url": "https://walga.asn.au/",
+      "retrieved": "2026-08-24",
+      "tier": 2
+    },
+    {
+      "field": "money.gst_threshold",
+      "url": "https://www.ato.gov.au/",
+      "retrieved": "2026-08-24",
+      "tier": 2
+    }
+  ]
+}

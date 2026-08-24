@@ -1,0 +1,92 @@
+{
+  "jurisdiction": "wa",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "site:health.wa.gov.au home-based food businesses registration",
+    "site:health.wa.gov.au starting a food business in WA fees",
+    "site:health.wa.gov.au registration of a food business notify",
+    "site:health.wa.gov.au home-based food business penalty unregistered",
+    "Western Australia local governments count site:walga.asn.au"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://www.health.wa.gov.au/Articles/F_I/Home-based-food-businesses",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": "2021-02-18"
+    },
+    {
+      "url": "https://www.health.wa.gov.au/Articles/N_R/Registration-of-a-food-business",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.health.wa.gov.au/Articles/S_T/Starting-a-food-business-in-WA",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://walga.asn.au/",
+      "tier": 2,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 44,
+  "fields_not_published": [
+    {
+      "field": "gate.fee",
+      "searches_attempted": [
+        "Starting a food business in WA: local government sets fees; DoH prescribed $84/$255 for DoH sites only"
+      ]
+    },
+    {
+      "field": "channels.unattended_honesty_stall",
+      "searches_attempted": [
+        "site:health.wa.gov.au honesty stall OR farm gate OR roadside"
+      ]
+    },
+    {
+      "field": "scope.primary_production_carve_out",
+      "searches_attempted": [
+        "Home-based and registration pages silent on primary production carve-out detail"
+      ]
+    },
+    {
+      "field": "scope.commodity_schemes eggs detail",
+      "searches_attempted": [
+        "DPIRD / agric.wa.gov.au named as commodity regulator; egg scheme detail not_published"
+      ]
+    },
+    {
+      "field": "labelling.address_can_be_non_residential",
+      "searches_attempted": [
+        "FSANZ Code supplier address; no WA-specific PO-box rule on home-based page"
+      ]
+    }
+  ],
+  "escalations": [
+    {
+      "field": "unique.quirk_paragraph",
+      "reason": "Short draft only; needs human polish on register-versus-notify fork and charitable fundraising carve-out wording",
+      "contact_method": "owner editorial review",
+      "status": "open"
+    }
+  ],
+  "information_gain_candidates": [
+    "Home food for sale = Registration path",
+    "Published unregistered-business penalty maxima",
+    "Council fee silence vs DoH prescribed fee table",
+    "Charitable non-PHF fundraising still notifies",
+    "137 councils via WALGA"
+  ],
+  "schema_notes": [
+    "Required gate.type = registration",
+    "classification null; exempt notify path explained in gate.mechanism",
+    "channels.render_as = prose due to many not_published"
+  ]
+}

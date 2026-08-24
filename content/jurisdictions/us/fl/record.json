@@ -1,0 +1,177 @@
+{
+  "code": "fl",
+  "country": "US",
+  "name": "Florida",
+  "slug": "florida",
+  "demonym": "Floridian",
+  "meta": {
+    "last_verified": "2026-08-24",
+    "verified_by": "",
+    "regulator_page_last_updated": "not_published",
+    "next_review_due": "2027-02-24",
+    "completeness": "research_complete"
+  },
+  "law": {
+    "statute": "Florida Statutes s. 500.80 (Cottage food operations)",
+    "statute_url": "https://www.flsenate.gov/Laws/Statutes/2025/500.80",
+    "key_section": "s. 500.80",
+    "regulations": [],
+    "code_applies": "not_applicable"
+  },
+  "gate": {
+    "type": "none",
+    "regulator_primary": "Florida Department of Agriculture and Consumer Services (FDACS)",
+    "regulator_fallback": "",
+    "regulator_determined_by": "geography",
+    "mechanism": "Cottage food operation exempt from permitting under s. 500.12 if it complies with s. 500.80 and annual gross sales of cottage food products do not exceed $250,000. Complaint-based investigation only; no routine permit.",
+    "form_url": "",
+    "portal_url": "",
+    "fee": 0,
+    "fee_currency": "USD",
+    "fee_notes": "No permit required under cottage food exemption.",
+    "timing": "not_applicable",
+    "per_site": "not_applicable",
+    "transferable": "not_applicable",
+    "change_of_details_rule": "not_applicable",
+    "statement_of_trade_required": "not_applicable",
+    "penalty_max_individual": "not_published",
+    "penalty_max_body_corporate": "not_published",
+    "penalty_expiation_individual": "not_published",
+    "penalty_expiation_body_corporate": "not_published",
+    "penalty_max_individual_units": "not_applicable",
+    "penalty_max_body_corporate_units": "not_applicable"
+  },
+  "classification": null,
+  "scope": {
+    "sales_cap": 250000,
+    "sales_cap_basis": "gross",
+    "approved_food_list": true,
+    "prohibited_foods": [
+      "Potentially hazardous / TCS foods requiring refrigeration",
+      "Meat, poultry, fish, dairy, eggs (as cottage products)",
+      "Low-acid canned foods and acidified foods outside low-risk cottage scope"
+    ],
+    "definition_of_sale_includes_donations": "not_published",
+    "applies_to_one_off_sales": "not_published",
+    "applies_to_charitable": "not_published",
+    "primary_production_carve_out": "not_applicable",
+    "farm_gate_requires_notification": "not_applicable",
+    "manufacture_triggers_licence": "not_applicable",
+    "licence_exemptions": [],
+    "commodity_schemes": [],
+    "commodity_scheme_regulator": "not_applicable"
+  },
+  "channels": {
+    "direct_to_consumer": true,
+    "farm_gate": true,
+    "farmers_markets": true,
+    "roadside_stall": "not_published",
+    "unattended_honesty_stall": "not_published",
+    "online_orders_local_pickup": true,
+    "shipping": true,
+    "wholesale_to_retail": false,
+    "render_as": "table",
+    "render_reason": "Statute s. 500.80(2) allows internet/mail; prohibits wholesale",
+    "notes": "s. 500.80(2): may sell over the internet or by mail order; delivery in person, to an event venue, or by USPS/commercial mail. May not sell, offer, or deliver at wholesale. FDACS publishes an approved cottage food product list (low-risk); full brochure list details treated as published on FDACS cottage foods page."
+  },
+  "labelling": {
+    "basis": "Florida Statutes s. 500.80(3)",
+    "required_elements": [
+      "Name and address of the cottage food operation",
+      "Name of the cottage food product",
+      "Ingredients in descending order of predominance by weight",
+      "Net weight or net volume",
+      "Allergen information as specified by federal labeling requirements",
+      "Nutritional information if any nutritional claim is made",
+      "Mandated disclaimer in at least 10-point type with clear contrast"
+    ],
+    "mandated_disclaimer_text": "Made in a cottage food operation that is not subject to Florida's food safety regulations.",
+    "allergen_rule": "Allergen information as specified by federal labeling requirements",
+    "nutrition_panel_required": "not_required",
+    "country_of_origin_required": "not_published",
+    "supplier_address_required": true,
+    "address_can_be_non_residential": "not_published"
+  },
+  "training": {
+    "food_handler_skills_required": "not_required",
+    "food_safety_supervisor_required": "not_required",
+    "fss_trigger": "",
+    "free_training_accepted": "not_applicable",
+    "free_training_name": "",
+    "free_training_url": ""
+  },
+  "premises": {
+    "home_kitchen_allowed": true,
+    "inspection_required": false,
+    "inspection_frequency_basis": "Complaint-based only under s. 500.80(7)",
+    "inspection_fee": "not_applicable",
+    "construction_standard": "not_applicable",
+    "exemptions_available": "not_applicable",
+    "exemptions_never_granted_for": []
+  },
+  "food_safety_management": {
+    "standard_322a_applies": "not_applicable",
+    "standard_322a_trigger": "",
+    "food_safety_program_required": "not_applicable",
+    "food_safety_program_trigger": "",
+    "records_required": "not_applicable"
+  },
+  "money": {
+    "sales_tax_applies": "not_published",
+    "gst_threshold": "not_applicable",
+    "abn_required": "not_applicable",
+    "hobby_vs_business_test_url": "",
+    "insurance_typical_market_requirement": "not_published"
+  },
+  "contact": {
+    "phone": "",
+    "email": "",
+    "url": "https://www.fdacs.gov/Business-Services/Food-Establishments/Cottage-Foods",
+    "council_directory_url": "",
+    "council_count": null
+  },
+  "unique": {
+    "quirk_paragraph": "Florida's cottage food path is a true permit exemption, not a registration. If you stay within s. 500.80 and keep annual gross cottage food sales at or under $250,000, you do not need a s. 500.12 food permit.\n\nThe trade-off is product and channel discipline. Only low-risk cottage foods, prepackaged and labeled, stored on the cottage premises. Internet and mail order are expressly allowed. Wholesale is expressly banned.\n\nLocal governments are largely preempted from prohibiting cottage food operations, but home-based business conditions under s. 559.955 still apply. FDACS can still enter and inspect after a complaint.",
+    "common_mistake": "Assuming internet sales are banned, or selling cottage foods wholesale to stores under the exemption.",
+    "what_does_not_apply": "Foods that need time/temperature control for safety, and any wholesale channel, sit outside the cottage food exemption and need ordinary food permitting."
+  },
+  "information_gain": [
+    "Permit exemption (not registration) under s. 500.80 with $250,000 gross sales cap",
+    "Internet and mail order expressly allowed; wholesale expressly prohibited",
+    "Verbatim label disclaimer locked in statute at 10-point type",
+    "Complaint-based inspection only; refusal to allow entry is disciplinary grounds",
+    "State preemption of local bans, subject to home-based business rules"
+  ],
+  "sources": [
+    {
+      "field": "law",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2025/500.80",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate",
+      "url": "https://www.fdacs.gov/Business-Services/Food-Establishments/Cottage-Foods",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "channels",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2025/500.80",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "labelling",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2025/500.80",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "scope.approved_food_list",
+      "url": "https://www.fdacs.gov/Business-Services/Food-Establishments/Cottage-Foods",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "jurisdiction": "oh",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "ORC Chapter 3715 cottage food production operation",
+    "Ohio Department of Agriculture cottage food home bakery $10",
+    "ORC 3715.023 This product is home produced"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://codes.ohio.gov/ohio-revised-code/chapter-3715",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://agri.ohio.gov/divisions/food-safety/resources/cottage-food",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://agri.ohio.gov/help-center/questions/questions",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 47,
+  "fields_not_published": [
+    {
+      "field": "scope.sales_cap",
+      "searches_attempted": [
+        "ORC 3715 cottage food; ODA fact sheet; no dollar sales limit published (stored as not_required)"
+      ]
+    },
+    {
+      "field": "channels.roadside_stall",
+      "searches_attempted": [
+        "ODA cottage food page; in-state sales and retail allowed; roadside not specifically named"
+      ]
+    }
+  ],
+  "escalations": [],
+  "information_gain_candidates": [
+    "Cottage vs Home Bakery fork",
+    "No cottage sales-dollar cap",
+    "Statutory home-produced label",
+    "In-state cottage sales only"
+  ],
+  "schema_notes": [
+    "gate.type = none for cottage food primary path; home bakery noted in mechanism and fee_notes",
+    "sales_cap = not_required",
+    "mandated_disclaimer_text verbatim from ORC 3715.023"
+  ]
+}

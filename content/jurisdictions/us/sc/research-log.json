@@ -1,0 +1,52 @@
+{
+  "jurisdiction": "sc",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "South Carolina Code 44-1-143 Home-based Food Production",
+    "SCDA home-based food production label disclaimer",
+    "South Carolina cottage food retail stores online mail"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://law.justia.com/codes/south-carolina/2023/title-44/chapter-1/section-44-1-143/",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://agriculture.sc.gov/permits-and-inspections/retail-food-safety/",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://agriculture.sc.gov/wp-content/uploads/2026/05/Home-basedFoodProduction2026.pdf",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 47,
+  "fields_not_published": [
+    {
+      "field": "scope.sales_cap",
+      "searches_attempted": [
+        "s. 44-1-143(G) $1500 net labeling carve-out only; no general sales cap (stored as not_required)"
+      ]
+    }
+  ],
+  "escalations": [],
+  "information_gain_candidates": [
+    "No retail food permit",
+    "Retail store channel allowed",
+    "$1500 labeling carve-out vs no sales cap",
+    "All-caps statutory disclaimer"
+  ],
+  "schema_notes": [
+    "sales_cap = not_required; $1500 net labeling exemption in channels.notes and unique",
+    "mandated_disclaimer_text verbatim all caps from statute",
+    "wholesale_to_retail = true (retail stores)"
+  ]
+}

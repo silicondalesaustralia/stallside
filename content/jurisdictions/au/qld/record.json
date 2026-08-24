@@ -1,0 +1,189 @@
+{
+  "code": "qld",
+  "country": "AU",
+  "name": "Queensland",
+  "slug": "queensland",
+  "demonym": "Queenslander",
+  "meta": {
+    "last_verified": "2026-08-24",
+    "verified_by": "",
+    "regulator_page_last_updated": "2023-02-07",
+    "next_review_due": "2027-02-24",
+    "completeness": "research_complete"
+  },
+  "law": {
+    "statute": "Food Act 2006 (Qld)",
+    "statute_url": "https://www.legislation.qld.gov.au/view/whole/html/current/act-2006-003",
+    "key_section": "ss 48-49",
+    "regulations": [],
+    "code_applies": true
+  },
+  "gate": {
+    "type": "licence",
+    "regulator_primary": "Local council",
+    "regulator_fallback": "Safe Food Production Queensland (accredited primary produce)",
+    "regulator_determined_by": "food_risk",
+    "mechanism": "Licence required only if the business is a 'licensable food business' under s 48 (manufacture; or retail sale of unpackaged food by a non-non-profit; or non-profit meals on ≥12 days/year). Apply to the local government for the premises. Display the licence. Some low-risk activities are exempt from licensing but must still comply with food laws.",
+    "form_url": "",
+    "portal_url": "",
+    "fee": "not_published",
+    "fee_currency": "AUD",
+    "fee_notes": "Fees are set by each local government. Do not publish a statewide fee.",
+    "timing": "before carrying on a licensable food business",
+    "per_site": true,
+    "transferable": "not_published",
+    "change_of_details_rule": "",
+    "statement_of_trade_required": "not_applicable",
+    "penalty_max_individual": "not_published",
+    "penalty_max_body_corporate": "not_published",
+    "penalty_expiation_individual": "not_published",
+    "penalty_expiation_body_corporate": "not_published",
+    "penalty_max_individual_units": 1000,
+    "penalty_max_body_corporate_units": "not_published"
+  },
+  "classification": null,
+  "scope": {
+    "sales_cap": "not_applicable",
+    "sales_cap_basis": "not_applicable",
+    "approved_food_list": false,
+    "prohibited_foods": [],
+    "definition_of_sale_includes_donations": "not_published",
+    "applies_to_one_off_sales": true,
+    "applies_to_charitable": "conditional",
+    "primary_production_carve_out": true,
+    "farm_gate_requires_notification": "not_applicable",
+    "manufacture_triggers_licence": true,
+    "licence_exemptions": [
+      "production of primary produce under Food Production (Safety) Act 2000 accreditation",
+      "sale of unpackaged snack food (biscuits/cakes, confectionery, chips, nuts, dried/glazed fruit, if not potentially hazardous)",
+      "sale of whole fruit or vegetables",
+      "sale of seeds, spices, dried herbs, tea leaves, coffee beans or ground coffee",
+      "grinding of coffee beans",
+      "sale of drinks other than fruit/vegetable juice processed at the place of sale",
+      "sale of ice including flavoured ice",
+      "certain non-profit meal sales (simple breakfast; consumer helps prepare; pre-prepared heated per directions; educational/training activity)",
+      "other food prescribed under a regulation"
+    ],
+    "commodity_schemes": [
+      "eggs",
+      "dairy",
+      "meat",
+      "seafood",
+      "specified horticulture"
+    ],
+    "commodity_scheme_regulator": "Safe Food Production Queensland"
+  },
+  "channels": {
+    "direct_to_consumer": true,
+    "farmers_markets": "not_published",
+    "farm_gate": "not_published",
+    "roadside_stall": "not_published",
+    "unattended_honesty_stall": "not_published",
+    "online_orders_local_pickup": "not_published",
+    "shipping": "not_published",
+    "wholesale_to_retail": "not_published",
+    "notes": "Manufacture of food is licensable even if packaged. Selling only whole produce or packaged food may be exempt from a licence, confirm with council. Qld.gov.au consumer guidance also lists packaged food and non-profit fundraising examples as not needing a licence."
+  },
+  "labelling": {
+    "required_elements": [],
+    "mandated_disclaimer_text": "not_applicable",
+    "allergen_rule": "",
+    "nutrition_panel_required": "not_published",
+    "country_of_origin_required": "not_published",
+    "supplier_address_required": "not_published",
+    "address_can_be_non_residential": "not_published"
+  },
+  "training": {
+    "food_handler_skills_required": true,
+    "food_safety_supervisor_required": "conditional",
+    "fss_trigger": "All licensed food businesses must have a food safety supervisor (per Queensland Health fundraising guidance and annual report framing). Unlicensed businesses still need skills and knowledge appropriate to activities.",
+    "free_training_accepted": "not_published",
+    "free_training_name": "",
+    "free_training_url": ""
+  },
+  "premises": {
+    "home_kitchen_allowed": true,
+    "inspection_required": "not_published",
+    "inspection_frequency_basis": "Food Act does not prescribe inspection frequency (per Queensland Government local government Food Act annual report).",
+    "inspection_fee": "not_published",
+    "construction_standard": "Standard 3.2.3",
+    "exemptions_available": "not_published",
+    "exemptions_never_granted_for": []
+  },
+  "food_safety_management": {
+    "standard_322a_applies": "conditional",
+    "standard_322a_trigger": "",
+    "food_safety_program_required": "conditional",
+    "food_safety_program_trigger": "Certain high-risk licensed businesses require an accredited food safety program, confirm with council.",
+    "records_required": "not_published"
+  },
+  "money": {
+    "sales_tax_applies": "not_applicable",
+    "gst_threshold": 75000,
+    "abn_required": "not_published",
+    "hobby_vs_business_test_url": "",
+    "insurance_typical_market_requirement": "not_published"
+  },
+  "contact": {
+    "phone": "",
+    "email": "",
+    "url": "https://www.qld.gov.au/health/staying-healthy/food-pantry/food-safety-for-consumers/food-safety-and-the-law/food-business-licensing",
+    "council_directory_url": "https://www.lgaq.asn.au/Membership/Find-Your-Council",
+    "council_count": 77
+  },
+  "unique": {
+    "quirk_paragraph": "",
+    "common_mistake": "Assuming Queensland uses the same notification model as NSW/SA, Queensland licenses licensable food businesses; many farm-gate whole-produce sellers may be licence-exempt but still bound by the Food Standards Code.",
+    "what_does_not_apply": ""
+  },
+  "information_gain": [
+    "Licence vs exemption fork under s 48, manufacture and unpackaged retail vs whole produce / snack food exemptions.",
+    "Penalty stated in penalty units (1000) not dollars on the face of s 49, do not invent an AUD figure.",
+    "Unattended honesty-stall treatment: not published.",
+    "Cross-jurisdiction: QLD is licence-based; NSW/SA are notification; VIC is class-based registration/notification."
+  ],
+  "sources": [
+    {
+      "field": "law.key_section",
+      "url": "https://www.legislation.qld.gov.au/view/whole/html/current/act-2006-003",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "scope.licence_exemptions",
+      "url": "https://www.legislation.qld.gov.au/view/whole/html/current/act-2006-003",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.penalty_max_individual_units",
+      "url": "https://www.legislation.qld.gov.au/view/whole/html/current/act-2006-003",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.mechanism",
+      "url": "https://www.qld.gov.au/health/staying-healthy/food-pantry/food-safety-for-consumers/food-safety-and-the-law/food-business-licensing",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "meta.regulator_page_last_updated",
+      "url": "https://www.qld.gov.au/health/staying-healthy/food-pantry/food-safety-for-consumers/food-safety-and-the-law/food-business-licensing",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "contact.council_count",
+      "url": "https://www.lgaq.asn.au/Membership/Find-Your-Council",
+      "retrieved": "2026-08-24",
+      "tier": 2
+    },
+    {
+      "field": "scope.commodity_scheme_regulator",
+      "url": "https://www.qld.gov.au/health/staying-healthy/food-pantry/local-government-food-safety-activities-annual-report",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    }
+  ]
+}

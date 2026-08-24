@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
+import FooterNewsNav from "@/components/FooterNewsNav";
 import OwnerAuthLink from "@/components/OwnerAuthLink";
 import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 
@@ -11,7 +12,6 @@ const LINKS = [
   { href: "/about", label: "About" },
   { href: "/gallery", label: "Gallery" },
   { href: "/testimonials", label: "Testimonials" },
-  { href: "/farms-stand-news", label: "News" },
   { href: "/contact", label: "Contact" },
   { href: "/contact?subject=feature-request", label: "Feature request" },
   { href: "/terms", label: "Terms" },
@@ -77,12 +77,13 @@ export default function LandingFooter() {
             ))}
           </div>
         </div>
-        <nav className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--ink-on-dark)]/75">
+        <nav className="flex flex-wrap items-start gap-x-5 gap-y-2 text-sm text-[var(--ink-on-dark)]/75">
           {LINKS.map((link) => (
             <Link key={link.href} href={link.href} className="hover:text-[var(--ink-on-dark)]">
               {link.label}
             </Link>
           ))}
+          <FooterNewsNav />
           <OwnerAuthLink variant="footer" />
         </nav>
       </div>

@@ -1,0 +1,58 @@
+{
+  "jurisdiction": "mi",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "MCL 289.4102 cottage food operation Michigan",
+    "MDARD cottage foods sales limit internet mail",
+    "Michigan cottage food label disclaimer 11-point"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://www.legislature.mi.gov/Laws/MCL?objectName=MCL-289-4102",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.michigan.gov/mdard/food-dairy/michigan-cottage-foods-information",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.legislature.mi.gov/documents/2025-2026/publicact/htm/2025-PA-0051.htm",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 48,
+  "fields_not_published": [
+    {
+      "field": "channels.unattended_honesty_stall",
+      "searches_attempted": [
+        "MDARD cottage foods page; farmers markets / roadside named; honesty stall not named"
+      ]
+    },
+    {
+      "field": "money.sales_tax_applies",
+      "searches_attempted": [
+        "General food sales-tax exemption exists; cottage-specific rule not confirmed for record"
+      ]
+    }
+  ],
+  "escalations": [],
+  "information_gain_candidates": [
+    "Dual $50k/$75k gross caps with post-Oct 2026 CPI path",
+    "In-state-only sales",
+    "Conditional internet/mail with pre-sale interaction",
+    "Statutory 11-point disclaimer"
+  ],
+  "schema_notes": [
+    "sales_cap stores primary $50,000; $75,000 unit-price tier and CPI note in channels.notes and unique",
+    "mandated_disclaimer_text verbatim from MCL 289.4102(3)(g)",
+    "shipping = conditional"
+  ]
+}

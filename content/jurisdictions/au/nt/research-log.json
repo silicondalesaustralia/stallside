@@ -1,0 +1,91 @@
+{
+  "jurisdiction": "nt",
+  "started": "2026-08-24",
+  "completed": "2026-08-24",
+  "researcher": "build-agent",
+  "queries_run": [
+    "site:nt.gov.au register food business Environmental Health",
+    "site:nt.gov.au food business registration fees P1 P2 P3 P4",
+    "Food Act 2004 Northern Territory registration",
+    "Northern Territory local governments count site:lgant.asn.au"
+  ],
+  "pages_fetched": [
+    {
+      "url": "https://nt.gov.au/industry/hospitality/accommodation-and-food-businesses/register-food-business",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://nt.gov.au/industry/hospitality/accommodation-and-food-businesses/food-business-registration-fees",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.lgant.asn.au/",
+      "tier": 2,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    }
+  ],
+  "fields_populated": 40,
+  "fields_not_published": [
+    {
+      "field": "gate.penalty_max_individual",
+      "searches_attempted": [
+        "Register food business and fees pages silent on maximum penalty dollars"
+      ]
+    },
+    {
+      "field": "channels.unattended_honesty_stall",
+      "searches_attempted": [
+        "site:nt.gov.au honesty stall OR farm gate"
+      ]
+    },
+    {
+      "field": "premises.home_kitchen_allowed",
+      "searches_attempted": [
+        "Register food business page silent on residential kitchen policy"
+      ]
+    },
+    {
+      "field": "premises.inspection_required",
+      "searches_attempted": [
+        "Register food business page silent on mandatory pre-registration inspection"
+      ]
+    },
+    {
+      "field": "labelling.address_can_be_non_residential",
+      "searches_attempted": [
+        "FSANZ Code only; no NT-specific PO-box rule on registration pages"
+      ]
+    }
+  ],
+  "escalations": [
+    {
+      "field": "unique.quirk_paragraph",
+      "reason": "Short draft only; needs human polish mapping home/farm-gate sellers onto P1-P4 terms and fees",
+      "contact_method": "owner editorial review",
+      "status": "open"
+    },
+    {
+      "field": "classification",
+      "reason": "Schema ClassificationBlock is VIC-class shaped; P1-P4 notes kept in gate.mechanism with classification null",
+      "contact_method": "schema owner",
+      "status": "open"
+    }
+  ],
+  "information_gain_candidates": [
+    "Territory Services registration before operating",
+    "Published P1-P4 fee ladder including P4 nil",
+    "P1/P2 1-year vs P3 3-year terms",
+    "17 councils via LGANT",
+    "food_risk inside registration gate"
+  ],
+  "schema_notes": [
+    "Required gate.type = registration",
+    "classification null; P1-P4 explained in gate.mechanism and fee_notes",
+    "channels.render_as = prose due to many not_published"
+  ]
+}

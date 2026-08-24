@@ -1,0 +1,171 @@
+{
+  "code": "mo",
+  "country": "US",
+  "name": "Missouri",
+  "slug": "missouri",
+  "demonym": "Missourian",
+  "meta": {
+    "last_verified": "2026-08-24",
+    "verified_by": "",
+    "regulator_page_last_updated": "not_published",
+    "next_review_due": "2027-02-24",
+    "completeness": "research_complete"
+  },
+  "law": {
+    "statute": "Missouri Revised Statutes s. 196.298 (Cottage food production operation)",
+    "statute_url": "https://revisor.mo.gov/main/OneSection.aspx?bid=51016&section=196.298",
+    "key_section": "RSMo 196.298",
+    "regulations": [],
+    "code_applies": "not_applicable"
+  },
+  "gate": {
+    "type": "none",
+    "regulator_primary": "Missouri Department of Health and Senior Services (DHSS)",
+    "regulator_fallback": "Local health departments (complaint records; investigation of outbreaks)",
+    "regulator_determined_by": "geography",
+    "mechanism": "A cottage food production operation under RSMo 196.298 is not a food service establishment and is not subject to state or local health or food code laws other than this section and rules promulgated for cottage food. No cottage food permit under this section.",
+    "form_url": "",
+    "portal_url": "",
+    "fee": 0,
+    "fee_currency": "USD",
+    "fee_notes": "No permit fee under RSMo 196.298 cottage food path.",
+    "timing": "not_applicable",
+    "per_site": "not_applicable",
+    "transferable": "not_applicable",
+    "change_of_details_rule": "not_applicable",
+    "statement_of_trade_required": "not_applicable",
+    "penalty_max_individual": "not_published",
+    "penalty_max_body_corporate": "not_published",
+    "penalty_expiation_individual": "not_published",
+    "penalty_expiation_body_corporate": "not_published",
+    "penalty_max_individual_units": "not_applicable",
+    "penalty_max_body_corporate_units": "not_applicable"
+  },
+  "classification": null,
+  "scope": {
+    "sales_cap": "not_required",
+    "sales_cap_basis": "not_applicable",
+    "approved_food_list": true,
+    "prohibited_foods": [
+      "Anything outside baked goods (non-PHF), canned jam or jelly, and dried herb or herb mix",
+      "Potentially hazardous baked goods as defined by department rule"
+    ],
+    "definition_of_sale_includes_donations": "not_published",
+    "applies_to_one_off_sales": "not_published",
+    "applies_to_charitable": "not_published",
+    "primary_production_carve_out": "not_applicable",
+    "farm_gate_requires_notification": "not_applicable",
+    "manufacture_triggers_licence": "not_applicable",
+    "licence_exemptions": [],
+    "commodity_schemes": [],
+    "commodity_scheme_regulator": "not_applicable"
+  },
+  "channels": {
+    "direct_to_consumer": true,
+    "farm_gate": "not_published",
+    "farmers_markets": "not_published",
+    "roadside_stall": "not_published",
+    "unattended_honesty_stall": "not_published",
+    "online_orders_local_pickup": "conditional",
+    "shipping": "conditional",
+    "wholesale_to_retail": false,
+    "render_as": "prose",
+    "render_reason": "Statute centers on sale at the individual's home direct to consumers; farmers market and other venues not named",
+    "notes": "RSMo 196.298 defines the operation as producing listed foods for sale at the individual's home, sold only directly to consumers. Internet sales allowed only if both the cottage food production operation and the purchaser are located in Missouri. Farmers markets and other off-home venues are not addressed in the section text and remain escalated."
+  },
+  "labelling": {
+    "basis": "RSMo 196.298(4)",
+    "required_elements": [
+      "Name and address of the cottage food production operation",
+      "Statement that the food is not inspected by the department or local health department"
+    ],
+    "mandated_disclaimer_text": "This food is not inspected by the Department of Health and Senior Services or local health department.",
+    "allergen_rule": "not_published",
+    "nutrition_panel_required": "not_required",
+    "country_of_origin_required": "not_published",
+    "supplier_address_required": true,
+    "address_can_be_non_residential": "not_published"
+  },
+  "training": {
+    "food_handler_skills_required": "not_required",
+    "food_safety_supervisor_required": "not_required",
+    "fss_trigger": "",
+    "free_training_accepted": "not_applicable",
+    "free_training_name": "",
+    "free_training_url": ""
+  },
+  "premises": {
+    "home_kitchen_allowed": true,
+    "inspection_required": false,
+    "inspection_frequency_basis": "Local health and DHSS shall not regulate production under this section; complaint records maintained; outbreak investigation authority retained",
+    "inspection_fee": "not_applicable",
+    "construction_standard": "Home means primary residence with a kitchen and appliances designed for common residential usage",
+    "exemptions_available": "not_applicable",
+    "exemptions_never_granted_for": []
+  },
+  "food_safety_management": {
+    "standard_322a_applies": "not_applicable",
+    "standard_322a_trigger": "",
+    "food_safety_program_required": "not_applicable",
+    "food_safety_program_trigger": "",
+    "records_required": "not_applicable"
+  },
+  "money": {
+    "sales_tax_applies": "not_published",
+    "gst_threshold": "not_applicable",
+    "abn_required": "not_applicable",
+    "hobby_vs_business_test_url": "",
+    "insurance_typical_market_requirement": "not_published"
+  },
+  "contact": {
+    "phone": "",
+    "email": "",
+    "url": "https://revisor.mo.gov/main/OneSection.aspx?bid=51016&section=196.298",
+    "council_directory_url": "https://agriculture.mo.gov/",
+    "council_count": null
+  },
+  "unique": {
+    "quirk_paragraph": "Missouri's RSMo 196.298 cottage food path is narrow on products and place. Only three product categories qualify: baked goods that are not potentially hazardous, canned jam or jelly, and dried herb or herb mix. Sales are framed as direct-to-consumer from the individual's home.\n\nThere is no sales-dollar cap in 196.298. A separate Missouri scheme (RSMo 261.241) covers certain jams, jellies, and honey with its own rules and a published $30,000 figure; that is not the same cottage food statute.\n\nInternet sales are allowed only when both seller and buyer are in Missouri. Farmers markets are not named in 196.298, so venue expansion beyond the home sale model needs confirmation before publishing.",
+    "common_mistake": "Selling candy, salsa, or other non-listed foods under 196.298, or shipping to out-of-state buyers.",
+    "what_does_not_apply": "Foods outside baked goods, canned jam/jelly, and dried herbs/herb mixes; wholesale; and any internet sale where buyer or seller is outside Missouri."
+  },
+  "information_gain": [
+    "Only three product categories under RSMo 196.298",
+    "No sales cap in 196.298; separate RSMo 261.241 jam/jelly/honey scheme noted",
+    "Sale framed at individual's home, direct to consumers",
+    "Internet only if both parties in Missouri",
+    "Label must state food is not inspected by DHSS or local health department"
+  ],
+  "sources": [
+    {
+      "field": "law",
+      "url": "https://revisor.mo.gov/main/OneSection.aspx?bid=51016&section=196.298",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate",
+      "url": "https://revisor.mo.gov/main/OneSection.aspx?bid=51016&section=196.298",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "labelling",
+      "url": "https://revisor.mo.gov/main/OneSection.aspx?bid=51016&section=196.298",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "channels",
+      "url": "https://revisor.mo.gov/main/OneSection.aspx?bid=51016&section=196.298",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "contact",
+      "url": "https://agriculture.mo.gov/",
+      "retrieved": "2026-08-24",
+      "tier": 2
+    }
+  ]
+}

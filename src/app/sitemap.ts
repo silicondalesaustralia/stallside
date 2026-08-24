@@ -13,6 +13,15 @@ import {
   standProductPath,
 } from "@/lib/stand-seo";
 import { businessPageProductWhere } from "@/lib/product-visibility";
+import {
+  AU_HUB_PATH,
+  US_HUB_PATH,
+  councilsPath,
+  isPageIndexable,
+  jurisdictionPathFor,
+  loadAllAuJurisdictionRecords,
+  loadAllUsJurisdictionRecords,
+} from "@/lib/jurisdictions";
 
 /** Refresh storefront URLs hourly so new stands/products show up for crawlers. */
 export const revalidate = 3600;
@@ -45,6 +54,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: path === "" ? "weekly" : "monthly",
     priority: path === "" ? 1 : 0.6,
   }));
+
+  const publishedAu = loadAllAuJurisdictionRecords().filter(isPageIndexable);
+  if (publishedAu.length > 0) {
+    entries.push({
+      url: `${SITE_URL}${AU_HUB_PATH}`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    });
+    for (const record of publishedAu) {
+      entries.push({
+        url: `${SITE_URL}${jurisdictionPathFor(record)}`,
+        lastModified: new Date(record.meta.last_verified),
+        changeFrequency: "monthly",
+        priority: 0.7,
+      });
+      entries.push({
+        url: `${SITE_URL}${councilsPath(record.slug)}`,
+        lastModified: new Date(record.meta.last_verified),
+        changeFrequency: "monthly",
+        priority: 0.5,
+      });
+    }
+  }
+
+  const publishedUs = loadAllUsJurisdictionRecords().filter(isPageIndexable);
+  if (publishedUs.length > 0) {
+    entries.push({
+      url: `${SITE_URL}${US_HUB_PATH}`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    });
+    for (const record of publishedUs) {
+      entries.push({
+        url: `${SITE_URL}${jurisdictionPathFor(record)}`,
+        lastModified: new Date(record.meta.last_verified),
+        changeFrequency: "monthly",
+        priority: 0.7,
+      });
+    }
+  }
 
   for (const article of getAllArticles()) {
     entries.push({
