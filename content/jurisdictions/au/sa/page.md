@@ -100,7 +100,7 @@ Category 2 businesses sell unpackaged, potentially hazardous ready-to-eat food w
 
 Businesses captured by those categories need a qualified Food Safety Supervisor (FSS), along with the other management tools applicable to their category.
 
-A stand selling whole fruit and vegetables, sealed jars of jam, honey or other low-risk products is not doing the same activity.
+A stand selling whole fruit and vegetables, sealed jars of jam, honey or other low-risk products will often sit outside those Category 1 and Category 2 triggers, but that depends on the food and how you handle it.
 
 The question is not simply whether you "sell food". It is whether the food and handling activities bring the business into Category 1 or Category 2 under Standard 3.2.2A.
 
@@ -316,11 +316,9 @@ For a small home or farm-gate food seller, finding out whether you need to notif
 
 ## Nearby jurisdictions
 
-Food-business rules change when you cross a state or territory border.
+Food-business rules change when you cross a state or territory border. Guides for neighbouring states will be linked here when those pages are published.
 
-If you are comparing requirements or selling across borders, see the equivalent guides for [New South Wales](/sell-food-from-home/new-south-wales), [Victoria](/sell-food-from-home/victoria) and [Queensland](/sell-food-from-home/queensland).
-
-Western Australia and the Northern Territory should also be linked here once those jurisdiction pages are live.
+For another published Australian jurisdiction reference, see [selling food from home in the Australian Capital Territory](/sell-food-from-home/australian-capital-territory).
 
 Looking for the right council? See the [South Australian council directory](/sell-food-from-home/south-australia/councils).
 
@@ -330,14 +328,14 @@ This page was checked against primary government and regulator material on **24 
 
 Primary sources used:
 
-* **South Australian Food Act 2001**, including the definitions of food business and primary food production and section 86 notification requirements and penalties
-* **SA Health**, Food Business Notification and South Australian food-safety guidance
-* **SA Health**, Standard 3.2.2A Food Safety Management Tools guidance
-* **Food Standards Australia New Zealand**, Australia New Zealand Food Standards Code and Safe Food Australia
-* **Food Standards Australia New Zealand**, food labelling, allergen labelling, nutrition information and country-of-origin guidance
-* **PIRSA**, South Australian egg food-safety and accreditation requirements
-* **Australian Taxation Office**, GST registration threshold guidance
-* **business.gov.au**, business-versus-hobby and ABN guidance
+* [Food Act 2001 (SA)](https://www.legislation.sa.gov.au/lz?path=/c/a/food%20act%202001) — definitions of food business and primary food production; section 86 notification and penalties
+* [SA Health — Starting a food business](https://www.sahealth.sa.gov.au/wps/wcm/connect/Public+Content/SA+Health+Internet/Public+health/Food+safety+for+businesses/Starting+a+food+business) — Food Business Notification and statewide food-safety guidance
+* [SA Health](https://www.sahealth.sa.gov.au/) — Standard 3.2.2A Food Safety Management Tools guidance
+* [Food Standards Australia New Zealand](https://www.foodstandards.gov.au/) — Australia New Zealand Food Standards Code, Safe Food Australia, labelling and allergen guidance
+* [Country of Origin Food Labelling Information Standard 2016](https://www.legislation.gov.au/Details/F2016L00528) — country-of-origin labelling under Australian Consumer Law
+* [PIRSA](https://www.pir.sa.gov.au/) — South Australian egg food-safety and accreditation requirements
+* [Australian Taxation Office](https://www.ato.gov.au/) — GST registration threshold guidance
+* [business.gov.au](https://business.gov.au/) — business-versus-hobby and ABN guidance
 
 Rules change. Confirm the current requirements with your council, SA Health or the relevant regulator before you start. This page is a practical reference, not legal advice, and does not replace the Food Act 2001 (SA), the Food Standards Code or directions from an authorised regulator.
 

@@ -1,4 +1,4 @@
-import { organizationSchema, websiteSchema, faqPageSchema } from "@/lib/schema";
+import { organizationSchema, websiteSchema } from "@/lib/schema";
 import { SITE_URL } from "@/lib/legal";
 import { pageDescription, pageTitle } from "./copy";
 import {
@@ -38,13 +38,12 @@ export function jurisdictionPageSchema(record: JurisdictionRecord) {
   const description = pageDescription(record);
   const webpageId = `${url}#webpage`;
   const breadcrumbId = `${url}#breadcrumb`;
-  const faqId = `${url}#faq`;
-  const faqs = faqsForJurisdiction(record);
   const sameAs = AREA_SAME_AS[record.code];
   const countryName = record.country === "US" ? "United States" : "Australia";
   const hubLabel =
     record.country === "US" ? "Cottage food laws" : "Sell food from home";
 
+  // FAQ copy may still render on-page; FAQPage schema waits for verified query demand.
   const graph: Record<string, unknown>[] = [
     organizationSchema(),
     websiteSchema(),
@@ -85,7 +84,6 @@ export function jurisdictionPageSchema(record: JurisdictionRecord) {
         "@type": "SpeakableSpecification",
         cssSelector: [".jurisdiction-title", ".jurisdiction-body p:first-of-type"],
       },
-      ...(faqs.length > 0 ? { mainEntity: { "@id": faqId } } : {}),
     },
     {
       "@type": "BreadcrumbList",
@@ -107,13 +105,6 @@ export function jurisdictionPageSchema(record: JurisdictionRecord) {
       ],
     },
   ];
-
-  if (faqs.length > 0) {
-    const faq = faqPageSchema(faqs) as Record<string, unknown>;
-    faq["@id"] = faqId;
-    faq.url = url;
-    graph.push(faq);
-  }
 
   return { "@context": "https://schema.org", "@graph": graph };
 }

@@ -33,14 +33,11 @@ export const AU_NEIGHBOURS: Record<string, string[]> = {
   victoria: ["new-south-wales", "south-australia", "tasmania"],
   queensland: ["new-south-wales", "northern-territory"],
   "south-australia": [
-    "victoria",
-    "new-south-wales",
-    "western-australia",
-    "northern-territory",
+    "australian-capital-territory",
   ],
   "western-australia": ["south-australia", "northern-territory"],
   tasmania: ["victoria"],
-  "australian-capital-territory": ["new-south-wales"],
+  "australian-capital-territory": ["south-australia"],
   "northern-territory": [
     "south-australia",
     "western-australia",
@@ -54,7 +51,7 @@ export const US_NEIGHBOURS: Record<string, string[]> = {
   michigan: ["ohio", "missouri"],
   ohio: ["michigan", "missouri", "south-carolina"],
   "south-carolina": ["florida", "missouri"],
-  missouri: ["michigan", "ohio", "california"],
+  missouri: [],
   california: ["missouri", "florida"],
 };
 

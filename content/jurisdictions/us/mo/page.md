@@ -9,10 +9,10 @@ In Missouri, a cottage food production operation under RSMo 196.298 can sell a n
 | **Who regulates** | DHSS and local health departments do not regulate cottage food production under 196.298; they keep complaint records and retain outbreak investigation authority |
 | **Sales cap under 196.298** | None (former US$50,000 cap removed effective 28 August 2022) |
 | **Allowed products** | Baked goods that are not potentially hazardous; canned jam or jelly; dried herb or herb mix |
-| **Sales model** | Direct to consumers; statute frames production for sale at the individual's home |
+| **Sales model** | Cottage-food sales under §196.298: direct to consumers, with the statutory definition tied to sale at the individual's home. Off-home venues may rely on different Missouri Food Code or local exemptions |
 | **Internet** | Allowed only if both the cottage food operation and the purchaser are located in Missouri |
 | **Wholesale** | Not under the cottage food statute |
-| **Label** | Name and address of the operation, plus a statement that the food is not inspected by DHSS or the local health department |
+| **Label** | Statute requires name and address, plus a statement that the food is not inspected by DHSS or the local health department (exact sentence is not fixed in the statute; see labelling below) |
 
 ## What qualifies as a cottage food production operation
 
@@ -78,7 +78,7 @@ RSMo 196.298 does not name farmers markets, roadside stands or festivals as cott
 
 Separately, the Missouri Food Code contains exemptions for some non-potentially hazardous foods sold from individual stands **where local codes allow**. That is a different pathway from 196.298. Whether a market stand is allowed, and under which exemption, depends on the food and on your local public health agency.
 
-If you want to sell away from home, contact your [local public health agency](https://health.mo.gov/living/lpha/lphas.php) before treating the venue as covered.
+**Selling at a market or roadside stand?** Find your [local public health agency (LPHA)](https://health.mo.gov/living/lpha/lphas.php) and ask which pathway applies before you treat the venue as covered.
 
 ## Sales cap
 
@@ -90,10 +90,12 @@ Do not confuse that with **RSMo 261.241**, a separate jam, jelly and honey statu
 
 ### What the statute requires
 
-RSMo 196.298(4) requires DHSS to promulgate labelling rules. The label must include:
+RSMo 196.298(4) requires DHSS to promulgate labelling rules. The statute requires the label to include:
 
 * the name and address of the cottage food production operation
 * a statement that the food is not inspected by the department or local health department
+
+The statute describes the **content** of that statement. It does not prescribe one fixed sentence as the only lawful wording.
 
 ### What DHSS guidance adds for cottage food labels
 
@@ -106,7 +108,7 @@ DHSS Home-Based Kitchen Food Production Guidance also expects cottage food label
 * list of any allergens
 * a statement that the product is prepared in a kitchen that is not subject to inspection by the Missouri Department of Health and Senior Services
 
-Use the statute as the mandatory floor. Follow current DHSS guidance for the fuller label set consumers and local agencies expect.
+Treat the statute as the mandatory floor. Treat the DHSS list as the fuller practical label set consumers and local agencies expect. Do not treat the DHSS sentence as a statutory verbatim disclaimer unless a later rule expressly locks that wording.
 
 ## Training
 
@@ -124,6 +126,8 @@ Local health departments may not regulate cottage food **production**. That is a
 
 DHSS explains that Local Public Health Agencies (LPHAs) regulate retail food establishments and may adopt the Missouri Food Code or local ordinances that are equal to or more stringent. If your product is not cottage food, you generally must meet the food-safety rules used by your LPHA. That can mean an approved commercial kitchen and routine inspection.
 
+**Find your LPHA:** [health.mo.gov/living/lpha/lphas.php](https://health.mo.gov/living/lpha/lphas.php)
+
 ### Missouri Food Code non-PHF stand exemption
 
 Where local codes allow, the Food Code exemption for certain individual stands selling only qualifying non-potentially hazardous foods is a separate route. DHSS examples of foods that may fall under that exemption (not under cottage law) include fruit butters, sorghum, cracked nuts, packaged spices and dry soup mixes. Sellers must check the local agency. Labels and, for unpackaged individual portions, a visible placard are part of that exemption framework.
@@ -134,9 +138,11 @@ RSMo 261.241 is not the cottage food law. It is a domicile manufacturing exempti
 
 > This product has not been inspected by the Department of Health and Senior Services.
 
-### Raw agricultural commodities
+### Raw agricultural commodities (not a cottage-food pathway)
 
-Whole unprocessed produce, pure honey handled as a raw agricultural commodity, and similar raw items may sit outside food-establishment regulation when sold direct to the end consumer under DHSS guidance. Processing beyond harvest cuts usually changes that analysis.
+This is **not** an extra cottage-food category under RSMo 196.298.
+
+Whole unprocessed produce, pure honey handled as a raw agricultural commodity, and similar raw items may sit outside food-establishment regulation when sold direct to the end consumer under DHSS guidance. Processing beyond harvest cuts usually changes that analysis. Do not read honey or raw produce as additional cottage foods under §196.298.
 
 ## Taxes and getting paid
 
@@ -160,7 +166,7 @@ So the organising question in Missouri is not "do I need a cottage food licence?
 
 ## Nearby states
 
-Cottage food rules change at state lines. Compare [Michigan](/cottage-food-laws/michigan), [Ohio](/cottage-food-laws/ohio) and [California](/cottage-food-laws/california).
+Cottage food rules change at state lines. Missouri borders Iowa, Illinois, Kentucky, Tennessee, Arkansas, Oklahoma, Kansas and Nebraska. Guides for those states will be linked here when published. Do not treat unrelated state pages as Missouri neighbours.
 
 ## Sources and verification
 

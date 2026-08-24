@@ -131,13 +131,13 @@ Some service-based and charitable organisations may be exempt from fees if they 
 
 Section 89 of the Food Act makes it an offence to conduct a food business that is neither registered nor exempt. The maximum penalty is **50 penalty units**, imprisonment for 6 months, or both.
 
-Under the Legislation Act 2001 (ACT), section 133, a penalty unit is currently **A$160** for an individual and **A$810** for a corporation. Confirm the current unit value when you rely on a dollar figure.
+Under the Legislation Act 2001 (ACT), section 133, at this page's verification date a penalty unit is **A$160** for an individual and **A$810** for a corporation.
 
 ## Food Safety Supervisor and Standard 3.2.2A
 
-Registered ACT food businesses must nominate a Food Safety Supervisor trained appropriately. ACT guidance notes some non-profit community organisations are exempt from that FSS requirement. Confirm any exemption with HPS before relying on it.
+ACT has its own Food Safety Supervisor requirement for registered food businesses. Registered ACT food businesses must nominate a Food Safety Supervisor trained appropriately. ACT guidance notes some non-profit community organisations are exempt from that FSS requirement. Confirm any exemption with HPS before relying on it.
 
-Separately, Standard 3.2.2A applies nationally to particular Category 1 and Category 2 businesses handling unpackaged, potentially hazardous ready-to-eat food. A home business limited to shelf-stable low-risk packaged foods is not the same activity as a café. The dividing line is the food and how you handle it.
+This ACT FSS rule is separate from the Category 1 and Category 2 triggers under national Standard 3.2.2A. Standard 3.2.2A applies nationally to particular food service, catering and retail businesses handling unpackaged, potentially hazardous ready-to-eat food. A home business limited to shelf-stable low-risk packaged foods is not the same activity as a café. The dividing line is the food and how you handle it.
 
 Even where Standard 3.2.2A does not apply, food businesses must ensure people who handle food have skills and knowledge appropriate to the work they do.
 
@@ -178,7 +178,7 @@ Where the Code requires supplier identification, it requires the supplier's name
 
 ## Where you can sell
 
-ACT food law captures sale of food, including direct sale to the public. There is no published ACT "honesty box" exemption from the Food Act. An unattended stand is still a method of selling food where the activity is a food business.
+ACT food law captures sale of food, including direct sale to the public. There is no published ACT "honesty box" exemption from the Food Act. The Act does not create a separate exemption merely because the sale is unattended. If the activity otherwise meets the definition of a food business, using an honesty box or QR payment does not by itself take it outside that definition.
 
 ACT does not publish a detailed channel-by-channel rulebook for farm gate, roadside stalls, markets, online pickup or shipping. Treat the sales channel as part of the compliance question: registration or exemption status, premises suitability, labelling, and any planning or event rules for that location. Markets can add their own insurance and booking conditions.
 
@@ -210,9 +210,9 @@ So the ACT organising question is not "which council do I notify?" It is: does t
 
 ## Nearby jurisdictions
 
-The ACT is surrounded by New South Wales rules.
+The ACT is surrounded by New South Wales rules. If you prepare food in the ACT and sell into NSW, or the other way around, you need to check both systems. A New South Wales guide will be linked here when that page is published.
 
-If you prepare food in the ACT and sell into NSW, or the other way around, check both systems. Start with the [New South Wales](/sell-food-from-home/new-south-wales) guide.
+For another published Australian jurisdiction reference, see [selling food from home in South Australia](/sell-food-from-home/south-australia).
 
 There is no ACT council food-registration directory, because local councils are not the food-business registration authority here.
 
@@ -223,7 +223,7 @@ This page was checked against primary government and legislation material on **2
 Primary sources used:
 
 * [Food Act 2001 (ACT)](https://www.legislation.act.gov.au/a/2001-66), including sections 6, 10, 11 and 89
-* Food Regulation 2002 (ACT), section prescribing food businesses exempt from registration (cross-checked against current ACT register guidance)
+* [Food Regulation 2002 (ACT)](https://www.legislation.act.gov.au/sl/2002-10/default.asp), section prescribing food businesses exempt from registration (cross-checked against current ACT register guidance)
 * [Legislation Act 2001 (ACT) s 133](https://www.legislation.act.gov.au/a/2001-14) (penalty unit values)
 * [Register a food business](https://www.act.gov.au/business/health-licenses-and-inspections/food-businesses-and-events-registration/register-a-food-business) (ACT Government)
 * [Fees to register a food business](https://www.act.gov.au/business/health-licenses-and-inspections/food-businesses-and-events-registration/fees-to-register-a-food-business) (ACT Government)
@@ -231,9 +231,9 @@ Primary sources used:
 * [Start a food business](https://www.act.gov.au/business/start-a-food-a-business) (ACT Government)
 * [Food Business Registration Application](https://www.act.gov.au/__data/assets/pdf_file/0011/2399402/Food-Business-Registration-Application.pdf) (ACT Government)
 * [Access Canberra register a food business](https://www.accesscanberra.act.gov.au/business-and-work/hospitality-liquor-and-gaming/register-a-food-business)
-* Food Standards Australia New Zealand, Australia New Zealand Food Standards Code and labelling guidance
-* Australian Taxation Office, GST registration threshold guidance
-* business.gov.au, business-versus-hobby guidance
+* [Food Standards Australia New Zealand](https://www.foodstandards.gov.au/), Australia New Zealand Food Standards Code and labelling guidance
+* [Australian Taxation Office](https://www.ato.gov.au/), GST registration threshold guidance
+* [business.gov.au](https://business.gov.au/), business-versus-hobby guidance
 
 Rules change. Confirm current requirements with the Health Protection Service before you start. This page is a practical reference, not legal advice, and does not replace the Food Act 2001 (ACT), the Food Standards Code or directions from an authorised regulator.
 
