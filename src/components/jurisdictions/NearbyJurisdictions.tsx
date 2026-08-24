@@ -3,7 +3,7 @@ import type { JurisdictionRecord } from "@/lib/jurisdictions/types";
 import {
   councilsPath,
   getJurisdictionBySlug,
-  isPageRenderable,
+  isPageIndexable,
   jurisdictionPathFor,
   loadAllAuJurisdictionRecords,
   loadAllUsJurisdictionRecords,
@@ -35,7 +35,7 @@ export default function NearbyJurisdictions({
     record.country === "US"
       ? loadAllUsJurisdictionRecords()
       : loadAllAuJurisdictionRecords();
-  const available = new Set(pool.filter(isPageRenderable).map((r) => r.slug));
+  const available = new Set(pool.filter(isPageIndexable).map((r) => r.slug));
   const anchors = record.country === "US" ? US_ANCHORS : AU_ANCHORS;
 
   const links = neighbourSlugs

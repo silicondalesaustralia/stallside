@@ -7,7 +7,6 @@ import { loadAllUsJurisdictionRecords } from "@/lib/jurisdictions/load";
 import {
   US_HUB_PATH,
   isPageIndexable,
-  isPageRenderable,
   jurisdictionPathFor,
 } from "@/lib/jurisdictions/paths";
 import { jurisdictionHubSchema } from "@/lib/jurisdictions/hub-schema";
@@ -16,22 +15,27 @@ const title = "Cottage food laws in the United States";
 const description =
   "State cottage food laws for selling homemade food: sales caps, approved foods, labelling, and who regulates home kitchen sales.";
 
-const records = loadAllUsJurisdictionRecords().sort((a, b) =>
-  a.name.localeCompare(b.name),
-);
-const hasPublished = records.some(isPageIndexable);
+const published = loadAllUsJurisdictionRecords()
+  .filter(isPageIndexable)
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: US_HUB_PATH },
-  robots: hasPublished
-    ? { index: true, follow: true }
-    : { index: false, follow: false },
+  robots:
+    published.length > 0
+      ? { index: true, follow: true }
+      : { index: false, follow: false },
 };
 
+function gateLabel(type: string): string {
+  if (type === "none") return "No permit";
+  return type.replaceAll("_", " ");
+}
+
 export default function CottageFoodLawsIndexPage() {
-  const listItems = records.filter(isPageRenderable).map((r) => ({
+  const listItems = published.map((r) => ({
     name: r.name,
     slug: r.slug,
     urlPath: jurisdictionPathFor(r),
@@ -46,12 +50,12 @@ export default function CottageFoodLawsIndexPage() {
           items: listItems,
           hubPath: US_HUB_PATH,
           aboutName: "Cottage food law in the United States",
-          itemListName: "US cottage food pilot states",
+          itemListName: "US cottage food states",
           inLanguage: "en-US",
         })}
       />
       <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
-        {!hasPublished ? (
+        {published.length === 0 ? (
           <p className="mb-6 rounded-[var(--radius)] border border-amber-700/30 bg-amber-50 px-4 py-3 text-sm text-amber-950">
             Draft hub: state pages ship after human verification. Not submitted for
             indexing yet.
@@ -65,34 +69,22 @@ export default function CottageFoodLawsIndexPage() {
           under state rules. Caps, approved foods, and permits differ by state.
         </p>
         <ul className="mt-10 divide-y divide-[var(--line)] border-y border-[var(--line)]">
-          {records.map((r) => {
-            const ready = isPageRenderable(r);
-            const live = isPageIndexable(r);
-            return (
-              <li
-                key={r.code}
-                className="flex items-baseline justify-between gap-4 py-4"
+          {published.map((r) => (
+            <li
+              key={r.code}
+              className="flex items-baseline justify-between gap-4 py-4"
+            >
+              <Link
+                href={jurisdictionPathFor(r)}
+                className="font-semibold text-[var(--field)] underline-offset-2 hover:underline"
               >
-                {ready ? (
-                  <Link
-                    href={jurisdictionPathFor(r)}
-                    className="font-semibold text-[var(--field)] underline-offset-2 hover:underline"
-                  >
-                    {r.name}
-                  </Link>
-                ) : (
-                  <span className="font-semibold text-[var(--muted)]">{r.name}</span>
-                )}
-                <span className="shrink-0 text-sm text-[var(--muted)]">
-                  {live
-                    ? r.gate.type.replaceAll("_", " ")
-                    : ready
-                      ? "Draft"
-                      : "Research in progress"}
-                </span>
-              </li>
-            );
-          })}
+                {r.name}
+              </Link>
+              <span className="shrink-0 text-sm text-[var(--muted)]">
+                {gateLabel(r.gate.type)}
+              </span>
+            </li>
+          ))}
         </ul>
       </main>
     </MarketingPageShell>

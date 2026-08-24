@@ -7,7 +7,6 @@ import { loadAllAuJurisdictionRecords } from "@/lib/jurisdictions/load";
 import {
   AU_HUB_PATH,
   isPageIndexable,
-  isPageRenderable,
   jurisdictionPath,
 } from "@/lib/jurisdictions/paths";
 import { jurisdictionHubSchema } from "@/lib/jurisdictions/hub-schema";
@@ -16,22 +15,22 @@ const title = "Sell food from home in Australia";
 const description =
   "State and territory rules for home-based food businesses in Australia: who to notify, how to start, and where you can sell.";
 
-const records = loadAllAuJurisdictionRecords().sort((a, b) =>
-  a.name.localeCompare(b.name),
-);
-const hasPublished = records.some(isPageIndexable);
+const published = loadAllAuJurisdictionRecords()
+  .filter(isPageIndexable)
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: AU_HUB_PATH },
-  robots: hasPublished
-    ? { index: true, follow: true }
-    : { index: false, follow: false },
+  robots:
+    published.length > 0
+      ? { index: true, follow: true }
+      : { index: false, follow: false },
 };
 
 export default function SellFoodFromHomeIndexPage() {
-  const listItems = records.filter(isPageRenderable).map((r) => ({
+  const listItems = published.map((r) => ({
     name: r.name,
     slug: r.slug,
     urlPath: jurisdictionPath(r.slug),
@@ -47,7 +46,7 @@ export default function SellFoodFromHomeIndexPage() {
         })}
       />
       <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
-        {!hasPublished ? (
+        {published.length === 0 ? (
           <p className="mb-6 rounded-[var(--radius)] border border-amber-700/30 bg-amber-50 px-4 py-3 text-sm text-amber-950">
             Draft hub: jurisdiction pages ship after human verification. Not submitted for
             indexing yet.
@@ -62,31 +61,19 @@ export default function SellFoodFromHomeIndexPage() {
           they make at home.
         </p>
         <ul className="mt-10 divide-y divide-[var(--line)] border-y border-[var(--line)]">
-          {records.map((r) => {
-            const ready = isPageRenderable(r);
-            const live = isPageIndexable(r);
-            return (
-              <li key={r.code} className="flex items-baseline justify-between gap-4 py-4">
-                {ready ? (
-                  <Link
-                    href={jurisdictionPath(r.slug)}
-                    className="font-semibold text-[var(--field)] underline-offset-2 hover:underline"
-                  >
-                    {r.name}
-                  </Link>
-                ) : (
-                  <span className="font-semibold text-[var(--muted)]">{r.name}</span>
-                )}
-                <span className="shrink-0 text-sm text-[var(--muted)]">
-                  {live
-                    ? r.gate.type.replaceAll("_", " ")
-                    : ready
-                      ? "Draft"
-                      : "Research in progress"}
-                </span>
-              </li>
-            );
-          })}
+          {published.map((r) => (
+            <li key={r.code} className="flex items-baseline justify-between gap-4 py-4">
+              <Link
+                href={jurisdictionPath(r.slug)}
+                className="font-semibold text-[var(--field)] underline-offset-2 hover:underline"
+              >
+                {r.name}
+              </Link>
+              <span className="shrink-0 text-sm text-[var(--muted)]">
+                {r.gate.type.replaceAll("_", " ")}
+              </span>
+            </li>
+          ))}
         </ul>
       </main>
     </MarketingPageShell>
