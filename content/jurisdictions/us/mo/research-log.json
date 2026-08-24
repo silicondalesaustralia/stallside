@@ -4,62 +4,84 @@
   "completed": "2026-08-24",
   "researcher": "build-agent",
   "queries_run": [
-    "RSMo 196.298 cottage food production operation",
-    "Missouri cottage food farmers market internet",
-    "Missouri RSMo 261.241 jam jelly honey"
+    "RSMo 196.298 cottage food production operation revisor.mo.gov",
+    "Missouri DHSS home-based kitchen food production guidance PDF",
+    "RSMo 261.241 jam jelly honey thirty thousand",
+    "Missouri Food Code food establishment exemption individual stands",
+    "site:health.mo.gov cottage food farmers market labeling LPHA"
   ],
   "pages_fetched": [
     {
       "url": "https://revisor.mo.gov/main/OneSection.aspx?bid=51016&section=196.298",
       "tier": 1,
       "fetched_at": "2026-08-24",
+      "regulator_last_updated": "2022-08-28 effective"
+    },
+    {
+      "url": "https://revisor.mo.gov/main/OneSection.aspx?bid=51811&section=261.241",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
       "regulator_last_updated": ""
     },
     {
-      "url": "https://agriculture.mo.gov/",
-      "tier": 2,
+      "url": "https://health.mo.gov/sites/health/files/media/pdf/2026/03/home-based-kitchen-food-prod-guidance.pdf",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": "2023-08 revision"
+    },
+    {
+      "url": "https://health.mo.gov/safety/foodsafety/pdf/missourifoodcode.pdf",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://health.mo.gov/living/lpha/lphas.php",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://health.mo.gov/safety/foodsafety/",
+      "tier": 1,
       "fetched_at": "2026-08-24",
       "regulator_last_updated": ""
     }
   ],
-  "fields_populated": 45,
+  "fields_populated": 50,
   "fields_not_published": [
     {
       "field": "channels.farmers_markets",
       "searches_attempted": [
-        "RSMo 196.298 text: sale at individual's home direct to consumers; farmers markets not named"
+        "RSMo 196.298 does not name farmers markets; DHSS guidance does not affirm cottage-law market sales; Food Code stand exemption treated as separate pathway"
       ]
     },
     {
-      "field": "scope.sales_cap",
+      "field": "money.sales_tax_applies",
       "searches_attempted": [
-        "RSMo 196.298 no dollar cap; separate 261.241 noted in unique (stored as not_required)"
+        "Food statute silent; left not_published rather than invent DOR rule"
+      ]
+    },
+    {
+      "field": "gate.penalty_max_individual",
+      "searches_attempted": [
+        "196.298 has no dedicated penalty dollars in section text; 261.241 uses injunction language"
       ]
     }
   ],
-  "escalations": [
-    {
-      "field": "channels.farmers_markets",
-      "reason": "Statute defines sale at the individual's home; confirm whether farmers markets or other venues are allowed under rules or guidance",
-      "contact_method": "DHSS / local health department",
-      "status": "open"
-    },
-    {
-      "field": "labelling.mandated_disclaimer_text",
-      "reason": "Statute requires a statement that food is not inspected by the department or local health department; exact rule wording may differ from paraphrased content stored",
-      "contact_method": "DHSS cottage food rules",
-      "status": "open"
-    }
-  ],
+  "escalations": [],
   "information_gain_candidates": [
-    "Three-category product list only",
-    "No 196.298 sales cap",
-    "Home-sale DTC model",
-    "In-state-only internet"
+    "Three-category product list only under 196.298",
+    "No 196.298 sales cap after 2022 revision",
+    "Local pre-emption of production regulation for cottage food",
+    "In-state-only internet",
+    "Parallel Food Code / 261.241 pathways",
+    "Sale-at-home statutory framing"
   ],
   "schema_notes": [
-    "sales_cap = not_required",
-    "approved_food_list = true with narrow three categories",
-    "farmers_markets escalated as not_published"
+    "sales_cap = not_applicable (cap removed; mechanism absent)",
+    "farmers_markets = not_published under 196.298 (not invented from third-party summaries)",
+    "page.md curated rewrite; completeness remains research_complete pending human review",
+    "Rejected Tier-3 cottagefoodlicense.com / St Joseph PDF as authority for market-sales claims"
   ]
 }

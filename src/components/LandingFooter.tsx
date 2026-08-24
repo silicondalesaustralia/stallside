@@ -92,7 +92,7 @@ export default function LandingFooter() {
 
         <nav
           aria-label="Footer"
-          className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
         >
           <FooterColumn title="Product">
             <LinkList items={PRODUCT} />
@@ -102,15 +102,12 @@ export default function LandingFooter() {
             <div className="mt-1.5">
               <OwnerAuthLink variant="footer" />
             </div>
-            <div className="mt-4">
-              <p className="mb-1.5 text-xs font-semibold tracking-wide text-[var(--ink-on-dark)]/55 uppercase">
-                Legal
-              </p>
-              <LinkList items={LEGAL} />
-            </div>
           </FooterColumn>
           <FooterColumn title="Selling food in your region">
             <FooterSellingFoodNav />
+          </FooterColumn>
+          <FooterColumn title="Legal">
+            <LinkList items={LEGAL} />
           </FooterColumn>
         </nav>
       </div>

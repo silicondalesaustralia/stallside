@@ -13,7 +13,7 @@ export function answerLead(record: JurisdictionRecord): string {
       case "sc":
         return "In South Carolina, the Home-based Food Production Law lets you sell listed non-potentially hazardous foods from a home kitchen without a retail food establishment permit, if you follow labelling and sales rules under section 44-1-143.";
       case "mo":
-        return "In Missouri, a cottage food production operation under RSMo 196.298 may sell baked goods, canned jam or jelly, or dried herbs from home directly to consumers without being treated as a food service establishment.";
+        return "In Missouri, a cottage food production operation under RSMo 196.298 can sell a narrow list of home-kitchen foods directly to consumers without a food permit or routine health inspection. The statute is not a general homemade-food law.";
       case "ca":
         return "In California, a cottage food operation must register (Class A) or get a permit (Class B) from the local environmental health agency, stay on the approved foods list, and keep gross annual sales within the Class A or Class B cap.";
       default:
@@ -35,7 +35,7 @@ export function answerLead(record: JurisdictionRecord): string {
     case "tas":
       return "In Tasmania, your local council Environmental Health Officer classifies your food business under the Food Business Risk Classification System. Higher-risk classes register annually; lower-risk classes notify.";
     case "act":
-      return "In the Australian Capital Territory, most food businesses must register with the ACT Health Protection Service before opening. Access Canberra handles the registration process.";
+      return "In the Australian Capital Territory, most food businesses must register with the ACT Health Protection Service before opening. Access Canberra is the front door for the application. There is no local-council food-registration pathway. Domestic home kitchens are only approved for low-risk food preparation.";
     case "nt":
       return "In the Northern Territory, food businesses must register with NT Health before operating. Fees and registration length follow the Priority 1 to Priority 4 risk classification.";
     default:
@@ -52,10 +52,16 @@ export function pageTitle(record: JurisdictionRecord): string {
 
 export function pageDescription(record: JurisdictionRecord): string {
   if (record.country === "US") {
+    if (record.code === "mo") {
+      return "Missouri cottage food law: RSMo 196.298 products, in-state internet sales, labelling, and how local health rules apply outside the cottage food path.";
+    }
     return `${record.name} cottage food law: sales caps, approved foods, labelling, and who regulates home kitchen sales.`;
   }
   if (record.code === "sa") {
     return "Selling food from home in South Australia: Food Business Notification, farm-gate rules, eggs, labelling, and where you can sell.";
+  }
+  if (record.code === "act") {
+    return "Selling food from home in the ACT: Health Protection Service registration, home-kitchen limits, exemptions, fees, labelling, and Access Canberra.";
   }
   return `How to start a home-based food business in ${record.name}: who regulates you, how to notify or apply, labelling, and where you can sell, including farm gate and stalls.`;
 }

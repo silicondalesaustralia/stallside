@@ -4,15 +4,48 @@
   "completed": "2026-08-24",
   "researcher": "build-agent",
   "queries_run": [
-    "site:act.gov.au start a food business registration Health Protection Service",
-    "site:accesscanberra.act.gov.au register a food business fee",
-    "Food Act 2001 ACT legislation food business definition",
-    "ACT Health Protection Service food business registration fees low risk"
+    "site:act.gov.au register a food business Health Protection Service",
+    "site:act.gov.au fees to register a food business low medium high risk",
+    "site:act.gov.au selling food from a home-based business",
+    "Food Act 2001 ACT section 10 food business section 11 primary food production section 89",
+    "Food Regulation 2002 ACT food businesses exempt from registration",
+    "Legislation Act 2001 ACT section 133 penalty unit",
+    "ACT Access Canberra register a food business vs Health Protection Service"
   ],
   "pages_fetched": [
     {
+      "url": "https://www.act.gov.au/business/health-licenses-and-inspections/food-businesses-and-events-registration/register-a-food-business",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.act.gov.au/business/health-licenses-and-inspections/food-businesses-and-events-registration/fees-to-register-a-food-business",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.act.gov.au/business/health-licenses-and-inspections/food-businesses-and-events-registration/selling-food-from-a-home-based-business",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
       "url": "https://www.act.gov.au/business/start-a-food-a-business",
       "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.act.gov.au/__data/assets/pdf_file/0011/2399402/Food-Business-Registration-Application.pdf",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.act.gov.au/__data/assets/pdf_file/0009/2111886/Food-Business-Inspection-Manual.pdf",
+      "tier": 2,
       "fetched_at": "2026-08-24",
       "regulator_last_updated": ""
     },
@@ -27,53 +60,67 @@
       "tier": 1,
       "fetched_at": "2026-08-24",
       "regulator_last_updated": ""
+    },
+    {
+      "url": "https://www.legislation.act.gov.au/a/2001-14",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": ""
+    },
+    {
+      "url": "https://faolex.fao.org/docs/pdf/aus82723.pdf",
+      "tier": 1,
+      "fetched_at": "2026-08-24",
+      "regulator_last_updated": "2017-10-11 republication noted; cross-checked against current ACT.gov.au exemption wording"
     }
   ],
-  "fields_populated": 42,
+  "fields_populated": 48,
   "fields_not_published": [
     {
-      "field": "gate.penalty_max_individual",
+      "field": "channels.farm_gate",
       "searches_attempted": [
-        "Start-a-food-business and Access Canberra registration pages silent on max penalty dollars"
+        "ACT register and home-based pages silent on farm-gate-specific rule; Act definitions used instead"
       ]
     },
     {
       "field": "channels.unattended_honesty_stall",
       "searches_attempted": [
-        "site:act.gov.au honesty stall OR farm gate"
+        "site:act.gov.au honesty stall OR unattended stall food business"
       ]
     },
     {
-      "field": "premises.home_kitchen_allowed",
+      "field": "scope.definition_of_sale_includes_donations",
       "searches_attempted": [
-        "Start-a-food-business page silent on residential kitchen policy"
+        "ACT Food Act covers charitable nature; no ACT-specific donation-equals-sale guidance located equivalent to SA Health charity note"
       ]
     },
     {
       "field": "labelling.address_can_be_non_residential",
       "searches_attempted": [
-        "FSANZ Code only; no ACT-specific PO-box rule on business start page"
+        "FSANZ supplier address requirement; no ACT-specific PO-box rule"
+      ]
+    },
+    {
+      "field": "gate.penalty_expiation_individual",
+      "searches_attempted": [
+        "Food Act s 89 states penalty units and imprisonment; no separate expiation fee located on registration pages"
       ]
     }
   ],
-  "escalations": [
-    {
-      "field": "unique.quirk_paragraph",
-      "reason": "Short draft only; needs human polish on single-occasion and charitable definition quirk",
-      "contact_method": "owner editorial review",
-      "status": "open"
-    }
-  ],
+  "escalations": [],
   "information_gain_candidates": [
-    "Single-territory HPS registration with Access Canberra portal",
-    "Published low/medium/high risk fees",
-    "Food Act covers charitable and single occasion",
-    "Pre-registration inspection",
-    "Verified HPS contacts"
+    "HPS registration + Access Canberra portal; no council registration pathway",
+    "Home kitchen low-risk / shelf-stable only",
+    "Published risk-based multi-year fee schedule",
+    "Narrow registration exemptions still require food safety compliance",
+    "Primary production excludes direct public sale",
+    "s 89: 50 penalty units and/or 6 months imprisonment"
   ],
   "schema_notes": [
-    "Required gate.type = registration",
-    "council_count = 1; council_directory_url empty string",
-    "channels.render_as = prose due to many not_published"
+    "gate.type = registration",
+    "council_count = 0; no council directory page for ACT food registration",
+    "Rejected inspection-manual NFP registration exemption because it is not in Food Regulation s 6; FSS NFP exemption retained from ACT.gov.au register guidance only",
+    "page.md curated rewrite; completeness remains research_complete pending human review",
+    "Country of origin removed from Food Standards Code required_elements list"
   ]
 }

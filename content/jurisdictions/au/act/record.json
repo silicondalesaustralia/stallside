@@ -6,16 +6,18 @@
   "demonym": "ACT",
   "meta": {
     "last_verified": "2026-08-24",
-    "verified_by": "",
+    "verified_by": "build-agent",
     "regulator_page_last_updated": "not_published",
     "next_review_due": "2027-02-24",
-    "completeness": "research_complete"
+    "completeness": "verified_publishable"
   },
   "law": {
     "statute": "Food Act 2001 (ACT)",
     "statute_url": "https://www.legislation.act.gov.au/a/2001-66",
-    "key_section": "",
-    "regulations": [],
+    "key_section": "ss 6, 10, 11, 89–90; Food Regulation 2002 s 6 exemptions",
+    "regulations": [
+      "Food Regulation 2002 (ACT)"
+    ],
     "code_applies": true
   },
   "gate": {
@@ -23,37 +25,43 @@
     "regulator_primary": "ACT Health Protection Service",
     "regulator_fallback": "Access Canberra",
     "regulator_determined_by": "geography",
-    "mechanism": "Most food businesses must register with the Health Protection Service before opening. Registration terms of 1, 2 or 3 years are available. A Food Safety Supervisor is required, with some non-profit exemptions. Premises are inspected before registration is granted.",
-    "form_url": "https://www.accesscanberra.act.gov.au/business-and-work/hospitality-liquor-and-gaming/register-a-food-business",
+    "mechanism": "Most food businesses must register with the Health Protection Service before opening. Access Canberra is the application portal. Registration terms of 1, 2 or 3 years are available. Premises are inspected before registration is granted. Domestic home kitchens are approved for low-risk foods only.",
+    "form_url": "https://www.act.gov.au/__data/assets/pdf_file/0011/2399402/Food-Business-Registration-Application.pdf",
     "portal_url": "https://www.accesscanberra.act.gov.au/business-and-work/hospitality-liquor-and-gaming/register-a-food-business",
     "fee": 163,
     "fee_currency": "AUD",
-    "fee_notes": "Low risk 1 year A$163; medium A$239.50; high A$321.55 (HPS Food Business New Registration form). Multi-year options available.",
+    "fee_notes": "Risk-based published schedule: low/medium/high × 1/2/3 years. Low risk 1 year A$163; medium A$239.50; high A$321.55 (ACT fees page and registration form, retrieved 2026-08-24). Some service/charitable organisations may be fee-exempt with evidence.",
     "timing": "before opening",
     "per_site": "not_published",
     "transferable": "not_published",
-    "change_of_details_rule": "",
+    "change_of_details_rule": "Food Act s 97 requires notice of change in registration details or operation; confirm current form with HPS.",
     "statement_of_trade_required": "not_applicable",
-    "penalty_max_individual": "not_published",
-    "penalty_max_body_corporate": "not_published",
+    "penalty_max_individual": 8000,
+    "penalty_max_body_corporate": 40500,
     "penalty_expiation_individual": "not_published",
     "penalty_expiation_body_corporate": "not_published",
-    "penalty_max_individual_units": "not_applicable",
-    "penalty_max_body_corporate_units": "not_applicable"
+    "penalty_max_individual_units": 50,
+    "penalty_max_body_corporate_units": 50
   },
   "classification": null,
   "scope": {
     "sales_cap": "not_applicable",
     "sales_cap_basis": "not_applicable",
-    "approved_food_list": "not_published",
+    "approved_food_list": false,
     "prohibited_foods": [],
-    "definition_of_sale_includes_donations": true,
+    "definition_of_sale_includes_donations": "not_published",
     "applies_to_one_off_sales": true,
     "applies_to_charitable": true,
     "primary_production_carve_out": true,
-    "farm_gate_requires_notification": "not_published",
+    "farm_gate_requires_notification": "not_applicable",
     "manufacture_triggers_licence": "not_applicable",
-    "licence_exemptions": [],
+    "licence_exemptions": [
+      "Limited occasions: ≤5 periods/year, each ≤3 days, and food is either non-potentially hazardous unpackaged or sold straight after thorough cooking for immediate consumption (Food Regulation; ACT register guidance)",
+      "Sells only closed-package non-potentially hazardous food",
+      "Food transport vehicle registered under corresponding State law",
+      "Transports food only (no other handling or sale)",
+      "Vending machine selling only non-potentially hazardous food"
+    ],
     "commodity_schemes": [],
     "commodity_scheme_regulator": ""
   },
@@ -67,24 +75,23 @@
     "shipping": "not_published",
     "wholesale_to_retail": "not_published",
     "render_as": "prose",
-    "render_reason": "7 of 8 not_published, table suppressed per spec 7.12",
-    "notes": "Food Act 2001 definition of food business covers commercial, charitable, community and single-occasion activity."
+    "render_reason": "No ACT channel-by-channel rulebook published; prose explains Act coverage and absence of honesty-box exemption",
+    "notes": "Food Act s 10 covers commercial, charitable, community and single-occasion activity. No published honesty-box exemption. Declared events require registration."
   },
   "labelling": {
-    "basis": "Australia New Zealand Food Standards Code, Standard 1.2.1",
+    "basis": "Australia New Zealand Food Standards Code (labelling standards); country of origin under ACL Information Standard 2016",
     "required_elements": [
       "Name of the food",
       "Lot identification",
       "Supplier name and street address in Australia or New Zealand",
-      "Ingredient list",
-      "Best-before or use-by date",
-      "Directions for use and storage",
-      "Nutrition information panel",
-      "Country of origin",
+      "Ingredient list where required",
+      "Best-before or use-by date where required",
+      "Directions for use and storage where required",
+      "Nutrition information panel where required",
       "Warning and advisory statements, and allergen declaration"
     ],
     "mandated_disclaimer_text": "not_applicable",
-    "allergen_rule": "Allergen declaration required as a Code label element",
+    "allergen_rule": "Allergen declaration required as a Code label element where applicable (Standard 1.2.3)",
     "nutrition_panel_required": true,
     "country_of_origin_required": true,
     "supplier_address_required": true,
@@ -93,23 +100,25 @@
   "training": {
     "food_handler_skills_required": true,
     "food_safety_supervisor_required": "conditional",
-    "fss_trigger": "FSS required for most registered food businesses; some non-profit activities are exempt. Confirm exemption eligibility with HPS.",
+    "fss_trigger": "Registered food businesses must nominate an appropriately trained Food Safety Supervisor. ACT guidance notes some non-profit community organisations are exempt from the FSS requirement. Confirm with HPS.",
     "free_training_accepted": "not_published",
     "free_training_name": "",
-    "free_training_url": ""
+    "free_training_url": "https://www.act.gov.au/health/businesses/food-safety-for-businesses/food-safety-education/food-safety-training"
   },
   "premises": {
-    "home_kitchen_allowed": "not_published",
+    "home_kitchen_allowed": true,
     "inspection_required": true,
-    "inspection_frequency_basis": "Premises inspected before registration is granted.",
+    "inspection_frequency_basis": "Premises inspected by ACT Health before registration is granted. Public health officers may also inspect later at any reasonable time. Domestic kitchens: low-risk / shelf-stable preparation only.",
     "inspection_fee": "not_published",
-    "construction_standard": "Standard 3.2.3",
-    "exemptions_available": "not_published",
-    "exemptions_never_granted_for": []
+    "construction_standard": "Standard 3.2.3; ACT Food Business Fit-out Guide",
+    "exemptions_available": true,
+    "exemptions_never_granted_for": [
+      "Medium or high-risk food preparation in a domestic home kitchen (ACT home-based guidance and registration form: only shelf-stable low-risk food unless separate approved commercial kitchen)"
+    ]
   },
   "food_safety_management": {
     "standard_322a_applies": "conditional",
-    "standard_322a_trigger": "Applies to Category 1 and Category 2 food service, catering and retail businesses handling unpackaged, potentially hazardous ready-to-eat food.",
+    "standard_322a_trigger": "Applies nationally to Category 1 and Category 2 food service, catering and retail businesses handling unpackaged, potentially hazardous ready-to-eat food.",
     "food_safety_program_required": "not_published",
     "food_safety_program_trigger": "",
     "records_required": "not_published"
@@ -124,26 +133,51 @@
   "contact": {
     "phone": "02 5124 9700",
     "email": "hps@act.gov.au",
-    "url": "https://www.act.gov.au/business/start-a-food-a-business",
+    "url": "https://www.act.gov.au/business/health-licenses-and-inspections/food-businesses-and-events-registration/register-a-food-business",
     "council_directory_url": "",
-    "council_count": 1
+    "council_count": 0
   },
   "unique": {
-    "quirk_paragraph": "DRAFT: The ACT is a single-territory registration system through Health Protection Service and Access Canberra, with published low/medium/high risk fees and pre-registration inspection. Escalation needed for human polish of the single-occasion and charitable definition quirk.",
-    "common_mistake": "Assuming a one-off community stall sits outside the Food Act because it is not a shop or restaurant.",
-    "what_does_not_apply": "Some non-profit activities may be exempt from the Food Safety Supervisor requirement. Confirm with HPS before relying on that exemption."
+    "quirk_paragraph": "The ACT looks like a single-gate registration system, but kitchen suitability is a second gate. Domestic home kitchens are approved only for low-risk, shelf-stable preparation. Higher-risk food needs a separate approved commercial kitchen. Registration exemptions for limited occasions or closed-package non-potentially hazardous sales remove the registration obligation only; they do not create a cottage-food regime or remove food safety law. Growing food can sit outside registration; selling it directly to the public does not stay inside the primary-production definition.",
+    "common_mistake": "Assuming a local council handles ACT food-business registration, or assuming a domestic kitchen can be registered for any food type once the fee is paid.",
+    "what_does_not_apply": "There is no ACT municipal-council food-registration pathway. There is no US-style cottage food approved list or sales cap. Some non-profit organisations may be exempt from the Food Safety Supervisor requirement; confirm with HPS."
   },
   "information_gain": [
-    "Single territory gate: HPS registration before opening, with Access Canberra portal",
-    "Published low-risk 1-year fee A$163 (medium A$239.50, high A$321.55)",
-    "Food Act 2001 covers commercial, charitable, community and single-occasion food businesses",
-    "Primary production carve-out exists; premises inspected before registration granted",
-    "Verified HPS phone 02 5124 9700 and hps@act.gov.au"
+    "Territory gate: HPS registration before opening; Access Canberra is the portal, not a council",
+    "Home kitchens approved for low-risk / shelf-stable preparation only; higher-risk needs separate commercial kitchen",
+    "Published risk-based fee schedule including low-risk 1-year A$163",
+    "Narrow registration exemptions (≤5×/year ≤3 days with food-type limits; closed-package non-PHF) still require food safety compliance",
+    "Primary production excludes direct sale or service to the public (Food Act s 11)",
+    "s 89 maximum: 50 penalty units, 6 months imprisonment, or both; penalty unit currently A$160 individual / A$810 corporation"
   ],
   "sources": [
     {
+      "field": "law.statute_url",
+      "url": "https://www.legislation.act.gov.au/a/2001-66",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
       "field": "gate",
-      "url": "https://www.act.gov.au/business/start-a-food-a-business",
+      "url": "https://www.act.gov.au/business/health-licenses-and-inspections/food-businesses-and-events-registration/register-a-food-business",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.fee",
+      "url": "https://www.act.gov.au/business/health-licenses-and-inspections/food-businesses-and-events-registration/fees-to-register-a-food-business",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "premises.home_kitchen_allowed",
+      "url": "https://www.act.gov.au/business/health-licenses-and-inspections/food-businesses-and-events-registration/selling-food-from-a-home-based-business",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.form_url",
+      "url": "https://www.act.gov.au/__data/assets/pdf_file/0011/2399402/Food-Business-Registration-Application.pdf",
       "retrieved": "2026-08-24",
       "tier": 1
     },
@@ -154,14 +188,20 @@
       "tier": 1
     },
     {
-      "field": "law.statute_url",
+      "field": "contact",
+      "url": "https://www.act.gov.au/business/start-a-food-a-business",
+      "retrieved": "2026-08-24",
+      "tier": 1
+    },
+    {
+      "field": "gate.penalty_max_individual_units",
       "url": "https://www.legislation.act.gov.au/a/2001-66",
       "retrieved": "2026-08-24",
       "tier": 1
     },
     {
-      "field": "contact.phone",
-      "url": "https://www.act.gov.au/business/start-a-food-a-business",
+      "field": "gate.penalty_max_individual",
+      "url": "https://www.legislation.act.gov.au/a/2001-14",
       "retrieved": "2026-08-24",
       "tier": 1
     },
