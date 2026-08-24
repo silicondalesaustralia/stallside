@@ -1,6 +1,6 @@
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
-import FooterNewsNav from "@/components/FooterNewsNav";
+import FooterSellingFoodNav from "@/components/FooterSellingFoodNav";
 import OwnerAuthLink from "@/components/OwnerAuthLink";
 import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 
@@ -12,6 +12,7 @@ const LINKS = [
   { href: "/about", label: "About" },
   { href: "/gallery", label: "Gallery" },
   { href: "/testimonials", label: "Testimonials" },
+  { href: "/farms-stand-news", label: "News" },
   { href: "/contact", label: "Contact" },
   { href: "/contact?subject=feature-request", label: "Feature request" },
   { href: "/terms", label: "Terms" },
@@ -83,7 +84,7 @@ export default function LandingFooter() {
               {link.label}
             </Link>
           ))}
-          <FooterNewsNav />
+          <FooterSellingFoodNav />
           <OwnerAuthLink variant="footer" />
         </nav>
       </div>
