@@ -1,48 +1,23 @@
 import Link from "next/link";
-import {
-  US_HUB_PATH,
-  isPageRenderable,
-  jurisdictionPathFor,
-  loadAllAuJurisdictionRecords,
-} from "@/lib/jurisdictions";
+import { AU_HUB_PATH, US_HUB_PATH } from "@/lib/jurisdictions";
 
 const linkClass =
   "text-sm text-[var(--ink-on-dark)]/75 transition hover:text-[var(--ink-on-dark)]";
 
-/** Compact AU + USA guide links for the footer Guides column. */
+/** Footer guides column: country hubs only. */
 export default function FooterSellingFoodNav() {
-  const au = loadAllAuJurisdictionRecords()
-    .filter(isPageRenderable)
-    .sort((a, b) => a.name.localeCompare(b.name));
-
   return (
-    <div className="space-y-4">
-      <div>
-        <p className="text-xs font-semibold tracking-wide text-[var(--ink-on-dark)]/55 uppercase">
+    <ul className="space-y-1.5">
+      <li>
+        <Link href={AU_HUB_PATH} className={linkClass}>
           Australia
-        </p>
-        <ul className="mt-2 space-y-1.5">
-          {au.map((r) => (
-            <li key={r.code}>
-              <Link href={jurisdictionPathFor(r)} className={linkClass}>
-                {r.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <p className="text-xs font-semibold tracking-wide text-[var(--ink-on-dark)]/55 uppercase">
+        </Link>
+      </li>
+      <li>
+        <Link href={US_HUB_PATH} className={linkClass}>
           USA
-        </p>
-        <ul className="mt-2 space-y-1.5">
-          <li>
-            <Link href={US_HUB_PATH} className={linkClass}>
-              Cottage food laws
-            </Link>
-          </li>
-        </ul>
-      </div>
-    </div>
+        </Link>
+      </li>
+    </ul>
   );
 }
