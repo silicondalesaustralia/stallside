@@ -4,14 +4,22 @@ import { PaymentStatus, PaymentTiming } from "@/generated/prisma/client";
 import { formatMoney } from "@/lib/money";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
+import { verifyOrderAccessToken } from "@/lib/order-access-token";
 import BalanceAuthButton from "./BalanceAuthButton";
 
 export default async function BalanceAuthPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ orderId: string }>;
+  searchParams: Promise<{ token?: string }>;
 }) {
   const { orderId } = await params;
+  const { token } = await searchParams;
+  if (!verifyOrderAccessToken(orderId, "balance", token)) {
+    notFound();
+  }
+
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: { stand: true },
@@ -39,7 +47,7 @@ export default async function BalanceAuthPage({
         owes <strong>{balance}</strong>. Tap below to retry the charge (you may
         need to authenticate with your bank).
       </p>
-      <BalanceAuthButton orderId={order.id} />
+      <BalanceAuthButton orderId={order.id} token={token!} />
       <Link href={`/s/${order.stand.slug}`} className="text-sm text-[var(--leaf-dark)] underline">
         Back to stand
       </Link>

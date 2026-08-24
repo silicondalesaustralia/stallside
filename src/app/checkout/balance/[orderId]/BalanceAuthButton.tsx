@@ -3,7 +3,13 @@
 import { useState, useTransition } from "react";
 import { retryBalanceCharge } from "./actions";
 
-export default function BalanceAuthButton({ orderId }: { orderId: string }) {
+export default function BalanceAuthButton({
+  orderId,
+  token,
+}: {
+  orderId: string;
+  token: string;
+}) {
   const [pending, start] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
   const [ok, setOk] = useState(false);
@@ -16,7 +22,7 @@ export default function BalanceAuthButton({ orderId }: { orderId: string }) {
         onClick={() => {
           setMessage(null);
           start(async () => {
-            const result = await retryBalanceCharge(orderId);
+            const result = await retryBalanceCharge(orderId, token);
             if (result.ok) {
               setOk(true);
               setMessage("Balance paid - thank you.");
