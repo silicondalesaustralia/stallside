@@ -1,4 +1,5 @@
 import {
+  APP_DISPLAY_NAME,
   APP_NAME,
   APP_SEO_DESCRIPTION,
   APP_TAGLINE,
@@ -21,7 +22,8 @@ export function newsOrganizationSchema() {
   return {
     "@type": "Organization",
     "@id": `${SITE_URL}/#organization`,
-    name: APP_NAME,
+    name: APP_DISPLAY_NAME,
+    alternateName: APP_NAME,
     url: SITE_URL,
     logo: {
       "@type": "ImageObject",
@@ -29,7 +31,7 @@ export function newsOrganizationSchema() {
       url: `${SITE_URL}/brand/app-icon.png`,
       width: 512,
       height: 512,
-      caption: APP_NAME,
+      caption: APP_DISPLAY_NAME,
     },
     image: { "@id": `${SITE_URL}/#logo` },
     sameAs: [...NEWS_SOCIAL_SAME_AS],

@@ -1,6 +1,5 @@
 import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import {
-  LEGAL_ABN,
   LEGAL_ADDRESS_LINE,
   LEGAL_EMAIL,
   LEGAL_ENTITY,
@@ -15,8 +14,8 @@ export default function TermsContent() {
         </h2>
         <p className="text-[var(--muted)]">
           These Terms govern use of {APP_NAME} ({APP_DOMAIN}), a software service operated by{" "}
-          {LEGAL_ENTITY} (ABN {LEGAL_ABN}), {LEGAL_ADDRESS_LINE}. By creating an account or using
-          the service you agree to these Terms.
+          {LEGAL_ENTITY}, {LEGAL_ADDRESS_LINE}. By creating an account or using the service you
+          agree to these Terms.
         </p>
       </section>
 

@@ -83,11 +83,7 @@ export function jurisdictionPageSchema(record: JurisdictionRecord) {
       ],
       speakable: {
         "@type": "SpeakableSpecification",
-        cssSelector: [
-          ".jurisdiction-title",
-          ".jurisdiction-lead",
-          ".jurisdiction-page .space-y-4 > p:first-of-type",
-        ],
+        cssSelector: [".jurisdiction-title", ".jurisdiction-body p:first-of-type"],
       },
       ...(faqs.length > 0 ? { mainEntity: { "@id": faqId } } : {}),
     },

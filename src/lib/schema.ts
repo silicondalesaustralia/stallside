@@ -1,9 +1,7 @@
-import { APP_NAME, APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
+import { APP_DISPLAY_NAME, APP_NAME, APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
 import {
-  LEGAL_ABN,
   LEGAL_ADDRESS,
   LEGAL_EMAIL,
-  LEGAL_ENTITY,
   SITE_URL,
 } from "@/lib/legal";
 import { CARD_PLAN_BY_CURRENCY, BILLING_CURRENCIES } from "@/lib/saas-pricing";
@@ -14,15 +12,10 @@ export function organizationSchema() {
   return {
     "@type": "Organization",
     "@id": `${SITE_URL}/#organization`,
-    name: APP_NAME,
+    name: APP_DISPLAY_NAME,
+    alternateName: APP_NAME,
     url: SITE_URL,
     email: LEGAL_EMAIL,
-    taxID: LEGAL_ABN,
-    identifier: {
-      "@type": "PropertyValue",
-      name: "ABN",
-      value: LEGAL_ABN,
-    },
     address: {
       "@type": "PostalAddress",
       streetAddress: LEGAL_ADDRESS.streetAddress,
@@ -30,11 +23,6 @@ export function organizationSchema() {
       addressRegion: LEGAL_ADDRESS.addressRegion,
       postalCode: LEGAL_ADDRESS.postalCode,
       addressCountry: LEGAL_ADDRESS.addressCountry,
-    },
-    parentOrganization: {
-      "@type": "Organization",
-      name: LEGAL_ENTITY,
-      taxID: LEGAL_ABN,
     },
     logo: `${SITE_URL}/brand/app-icon.png`,
   };

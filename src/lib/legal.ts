@@ -1,7 +1,7 @@
-import { APP_DOMAIN } from "@/lib/constants";
+import { APP_DISPLAY_NAME, APP_DOMAIN } from "@/lib/constants";
 
-export const LEGAL_ENTITY = "Saltbush Investment Trust";
-export const LEGAL_ABN = "21 226 814 942";
+/** Public operator name used in schema and legal copy. */
+export const LEGAL_ENTITY = APP_DISPLAY_NAME;
 export const LEGAL_EMAIL = `hello@${APP_DOMAIN}`;
 
 export const LEGAL_ADDRESS = {

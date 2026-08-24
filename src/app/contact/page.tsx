@@ -4,7 +4,6 @@ import JsonLd from "@/components/JsonLd";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import { APP_NAME } from "@/lib/constants";
 import {
-  LEGAL_ABN,
   LEGAL_ADDRESS_LINE,
   LEGAL_EMAIL,
   LEGAL_ENTITY,
@@ -54,7 +53,6 @@ export default async function ContactPage({
 
         <aside className="mt-12 space-y-2 border-t border-[var(--line)] pt-8 text-sm text-[var(--muted)]">
           <p className="font-medium text-[var(--ink)]">{LEGAL_ENTITY}</p>
-          <p>ABN {LEGAL_ABN}</p>
           <p>{LEGAL_ADDRESS_LINE}</p>
           <p>
             <a className="text-[var(--leaf-dark)] underline" href={`mailto:${LEGAL_EMAIL}`}>

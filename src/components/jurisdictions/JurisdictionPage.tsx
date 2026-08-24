@@ -55,11 +55,11 @@ export default function JurisdictionPage({
       </h1>
 
       {curated ? (
-        <div className="mt-6 text-[var(--field)] [&_p]:mt-4 [&_p]:leading-relaxed [&_ol]:mt-4 [&_ul]:mt-4 [&_li]:leading-relaxed [&_strong]:font-semibold [&_table]:mt-8 [&_a]:underline [&_a]:underline-offset-2">
+        <div className="jurisdiction-body mt-6 text-[var(--field)] [&_p]:mt-4 [&_p]:leading-relaxed [&_ol]:mt-4 [&_ul]:mt-4 [&_li]:leading-relaxed [&_strong]:font-semibold [&_table]:mt-8 [&_a]:underline [&_a]:underline-offset-2">
           <NewsMarkdown source={curated} skipFirstH1={false} />
         </div>
       ) : (
-        <>
+        <div className="jurisdiction-body">
           <p className="jurisdiction-lead mt-6 text-lg text-[var(--field)] leading-relaxed">
             {answerLead(record)}
           </p>
@@ -74,7 +74,7 @@ export default function JurisdictionPage({
           <QuirkSection record={record} />
           <NearbyJurisdictions record={record} />
           <SourcesSection record={record} />
-        </>
+        </div>
       )}
 
       <JurisdictionFaq faqs={faqs} />

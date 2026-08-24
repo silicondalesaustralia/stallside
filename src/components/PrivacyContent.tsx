@@ -1,6 +1,5 @@
 import { APP_NAME } from "@/lib/constants";
 import {
-  LEGAL_ABN,
   LEGAL_ADDRESS_LINE,
   LEGAL_EMAIL,
   LEGAL_ENTITY,
@@ -14,8 +13,7 @@ export default function PrivacyContent() {
           Who we are
         </h2>
         <p className="text-[var(--muted)]">
-          {APP_NAME} is operated by {LEGAL_ENTITY} (ABN {LEGAL_ABN}),{" "}
-          {LEGAL_ADDRESS_LINE}. Contact:{" "}
+          {APP_NAME} is operated by {LEGAL_ENTITY}, {LEGAL_ADDRESS_LINE}. Contact:{" "}
           <a className="text-[var(--leaf-dark)] underline" href={`mailto:${LEGAL_EMAIL}`}>
             {LEGAL_EMAIL}
           </a>
