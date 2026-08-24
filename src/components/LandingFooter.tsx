@@ -1,7 +1,6 @@
 import Link from "next/link";
 import BrandLockup from "@/components/BrandLockup";
 import FooterSellingFoodNav from "@/components/FooterSellingFoodNav";
-import OwnerAuthLink from "@/components/OwnerAuthLink";
 import {
   FOOTER_SOCIALS,
   FooterSocialIcon,
@@ -16,6 +15,7 @@ const PRODUCT = [
   { href: "/stall", label: "Stall" },
   { href: "/pre-orders", label: "Pre-orders" },
   { href: "/#pricing", label: "Pricing" },
+  { href: "/login", label: "Login" },
 ] as const;
 
 const COMPANY = [
@@ -99,9 +99,6 @@ export default function LandingFooter() {
           </FooterColumn>
           <FooterColumn title="Company">
             <LinkList items={COMPANY} />
-            <div className="mt-1.5">
-              <OwnerAuthLink variant="footer" />
-            </div>
           </FooterColumn>
           <FooterColumn title="Selling food in your region">
             <FooterSellingFoodNav />
