@@ -50,6 +50,19 @@ export function pageTitle(record: JurisdictionRecord): string {
   return `Selling food from home in ${record.name}`;
 }
 
+/** AU council directory — shared title/H1 pattern for every jurisdiction. */
+export function councilsPageTitle(record: JurisdictionRecord): string {
+  return `Selling Food From Home In ${record.name} - By Council`;
+}
+
+export function councilsPageH1(record: JurisdictionRecord): string {
+  return `${record.name} Council - Food Forms & Rules`;
+}
+
+export function councilsPageDescription(record: JurisdictionRecord): string {
+  return `Local council food forms and rules for selling food from home in ${record.name}. Find notification, registration or licence links by council.`;
+}
+
 export function pageDescription(record: JurisdictionRecord): string {
   if (record.country === "US") {
     if (record.code === "mo") {

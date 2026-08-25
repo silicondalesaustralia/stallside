@@ -1,5 +1,9 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import {
+  loadCouncilDirectory,
+  type CouncilDirectoryFile,
+} from "./council";
 import type { CountryCode } from "./primitives";
 import type { JurisdictionRecord } from "./types";
 
@@ -66,4 +70,12 @@ export function loadJurisdictionPageMarkdown(
   const path = join(dir, code, "page.md");
   if (!existsSync(path)) return null;
   return readFileSync(path, "utf8");
+}
+
+/** Local-authority directory for a jurisdiction, when seeded. */
+export function loadJurisdictionCouncils(
+  code: string,
+  country: CountryCode = "AU",
+): CouncilDirectoryFile | null {
+  return loadCouncilDirectory(code, country);
 }

@@ -9,7 +9,7 @@
     "verified_by": "",
     "regulator_page_last_updated": "2023-02-07",
     "next_review_due": "2027-02-24",
-    "completeness": "research_complete"
+    "completeness": "verified_publishable"
   },
   "law": {
     "statute": "Food Act 2006 (Qld)",
@@ -128,8 +128,8 @@
     "phone": "",
     "email": "",
     "url": "https://www.qld.gov.au/health/staying-healthy/food-pantry/food-safety-for-consumers/food-safety-and-the-law/food-business-licensing",
-    "council_directory_url": "https://www.lgaq.asn.au/Membership/Find-Your-Council",
-    "council_count": 77
+    "council_directory_url": "https://www.dlgwv.qld.gov.au/local-government/for-the-community/local-government-directory/search-the-local-government-directory",
+    "council_count": 78
   },
   "unique": {
     "quirk_paragraph": "",

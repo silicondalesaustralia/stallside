@@ -1,10 +1,18 @@
 export {
+  completenessForScore,
+  formatCouncilAddress,
+  loadCouncilDirectory,
+  primaryCouncilActionUrl,
+  scoreCouncilRecord,
+} from "./council";
+export {
   getJurisdictionBySlug,
   listAuJurisdictionCodes,
   listUsJurisdictionCodes,
   loadAllAuJurisdictionRecords,
   loadAllJurisdictionRecords,
   loadAllUsJurisdictionRecords,
+  loadJurisdictionCouncils,
   loadJurisdictionPageMarkdown,
   loadJurisdictionRecord,
 } from "./load";
@@ -23,7 +31,14 @@ export {
   jurisdictionPathFor,
   neighboursFor,
 } from "./paths";
-export { answerLead, pageDescription, pageTitle } from "./copy";
+export {
+  answerLead,
+  councilsPageDescription,
+  councilsPageH1,
+  councilsPageTitle,
+  pageDescription,
+  pageTitle,
+} from "./copy";
 export {
   faqsForJurisdiction,
   jurisdictionPageSchema,
@@ -34,6 +49,10 @@ export {
 } from "./hub-schema";
 export type {
   ClassificationBlock,
+  CouncilCompleteness,
+  CouncilDirectoryFile,
+  CouncilRecord,
+  CouncilRegion,
   CountryCode,
   ExplicitGap,
   GateType,

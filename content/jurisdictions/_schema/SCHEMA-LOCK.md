@@ -8,6 +8,8 @@
 
 Repo JSON under `content/jurisdictions/{au|us}/{code}/record.json` with companion `research-log.json`. Types in `src/lib/jurisdictions/types.ts`.
 
+**Local authorities (phase 2 seed):** optional `content/jurisdictions/{au|us}/{code}/councils.json` — SA first. Directory route lists councils; individual council URLs stay gated on index score ≥6 + Parent Topic.
+
 ## Gate-type divergence (why four AU records were required)
 
 | Code | `gate.type` | `regulator_determined_by` | What broke a naive shared template |

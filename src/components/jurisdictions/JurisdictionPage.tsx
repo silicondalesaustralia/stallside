@@ -1,6 +1,7 @@
 import Link from "next/link";
 import NewsMarkdown from "@/components/NewsMarkdown";
 import AtAGlance from "@/components/jurisdictions/AtAGlance";
+import CouncilDirectoryLink from "@/components/jurisdictions/CouncilDirectoryLink";
 import GettingPaid from "@/components/jurisdictions/GettingPaid";
 import HowToNotify from "@/components/jurisdictions/HowToNotify";
 import JurisdictionFaq from "@/components/jurisdictions/JurisdictionFaq";
@@ -13,7 +14,10 @@ import WhatDoesNotApply from "@/components/jurisdictions/WhatDoesNotApply";
 import WhereYouSell from "@/components/jurisdictions/WhereYouSell";
 import WhoRegulates from "@/components/jurisdictions/WhoRegulates";
 import { answerLead, pageTitle } from "@/lib/jurisdictions/copy";
-import { loadJurisdictionPageMarkdown } from "@/lib/jurisdictions/load";
+import {
+  loadJurisdictionCouncils,
+  loadJurisdictionPageMarkdown,
+} from "@/lib/jurisdictions/load";
 import {
   hubPathFor,
   isPageIndexable,
@@ -32,6 +36,9 @@ export default function JurisdictionPage({
   const hubPath = hubPathFor(record);
   const hubLabel =
     record.country === "US" ? "Cottage food laws" : "Sell food from home";
+  const hasCouncils =
+    record.country === "AU" &&
+    loadJurisdictionCouncils(record.code, "AU") != null;
 
   return (
     <article className="jurisdiction-page mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
@@ -53,6 +60,8 @@ export default function JurisdictionPage({
       <h1 className="jurisdiction-title mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl sm:leading-tight">
         {pageTitle(record)}
       </h1>
+
+      {hasCouncils ? <CouncilDirectoryLink record={record} /> : null}
 
       {curated ? (
         <div className="jurisdiction-body mt-6 text-[var(--field)] [&_p]:mt-4 [&_p]:leading-relaxed [&_ol]:mt-4 [&_ul]:mt-4 [&_li]:leading-relaxed [&_strong]:font-semibold [&_table]:mt-8 [&_a]:underline [&_a]:underline-offset-2">

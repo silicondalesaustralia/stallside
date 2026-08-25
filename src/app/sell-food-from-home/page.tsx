@@ -3,9 +3,13 @@ import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import { APP_NAME } from "@/lib/constants";
-import { loadAllAuJurisdictionRecords } from "@/lib/jurisdictions/load";
+import {
+  loadAllAuJurisdictionRecords,
+  loadJurisdictionCouncils,
+} from "@/lib/jurisdictions/load";
 import {
   AU_HUB_PATH,
+  councilsPath,
   isPageIndexable,
   jurisdictionPath,
 } from "@/lib/jurisdictions/paths";
@@ -15,21 +19,21 @@ const title = "Sell food from home in Australia";
 const description =
   "State and territory rules for home-based food businesses in Australia: who to notify, how to start, and where you can sell.";
 
-const published = loadAllAuJurisdictionRecords()
-  .filter(isPageIndexable)
-  .sort((a, b) => a.name.localeCompare(b.name));
+function publishedJurisdictions() {
+  return loadAllAuJurisdictionRecords()
+    .filter(isPageIndexable)
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: AU_HUB_PATH },
-  robots:
-    published.length > 0
-      ? { index: true, follow: true }
-      : { index: false, follow: false },
+  robots: { index: true, follow: true },
 };
 
 export default function SellFoodFromHomeIndexPage() {
+  const published = publishedJurisdictions();
   const listItems = published.map((r) => ({
     name: r.name,
     slug: r.slug,
@@ -61,19 +65,37 @@ export default function SellFoodFromHomeIndexPage() {
           they make at home.
         </p>
         <ul className="mt-10 divide-y divide-[var(--line)] border-y border-[var(--line)]">
-          {published.map((r) => (
-            <li key={r.code} className="flex items-baseline justify-between gap-4 py-4">
-              <Link
-                href={jurisdictionPath(r.slug)}
-                className="font-semibold text-[var(--field)] underline-offset-2 hover:underline"
+          {published.map((r) => {
+            const hasCouncils = loadJurisdictionCouncils(r.code, "AU") != null;
+            return (
+              <li
+                key={r.code}
+                className="flex flex-col gap-1 py-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
               >
-                {r.name}
-              </Link>
-              <span className="shrink-0 text-sm text-[var(--muted)]">
-                {r.gate.type.replaceAll("_", " ")}
-              </span>
-            </li>
-          ))}
+                <div className="min-w-0">
+                  <Link
+                    href={jurisdictionPath(r.slug)}
+                    className="font-semibold text-[var(--field)] underline-offset-2 hover:underline"
+                  >
+                    {r.name}
+                  </Link>
+                  {hasCouncils ? (
+                    <p className="mt-1 text-sm text-[var(--muted)]">
+                      <Link
+                        href={councilsPath(r.slug)}
+                        className="underline underline-offset-2 hover:text-[var(--field)]"
+                      >
+                        Council food forms & rules
+                      </Link>
+                    </p>
+                  ) : null}
+                </div>
+                <span className="shrink-0 text-sm text-[var(--muted)]">
+                  {r.gate.type.replaceAll("_", " ")}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </main>
     </MarketingPageShell>
