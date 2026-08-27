@@ -11,6 +11,10 @@ import {
   primaryLinks,
   secondaryLinks,
 } from "@/components/dash-nav-links";
+import {
+  setupNavBadge,
+  type DashboardSetupAlerts,
+} from "@/lib/dashboard-setup-alerts";
 import type { BusinessOption } from "@/lib/selected-business";
 
 function NavItem({
@@ -64,12 +68,14 @@ export default function DashboardSidebar({
   collapsed,
   onToggle,
   unreadNotifications,
+  setupAlerts,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
   collapsed: boolean;
   onToggle: () => void;
   unreadNotifications?: number;
+  setupAlerts: DashboardSetupAlerts;
 }) {
   return (
     <aside
@@ -105,6 +111,7 @@ export default function DashboardSidebar({
             href={link.href}
             label={link.label}
             collapsed={collapsed}
+            badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
           />
         ))}
         <div className="my-2 border-t border-white/10" />
@@ -114,11 +121,7 @@ export default function DashboardSidebar({
             href={link.href}
             label={link.label}
             collapsed={collapsed}
-            badge={
-              link.href === "/dashboard/notifications"
-                ? unreadNotifications
-                : undefined
-            }
+            badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
           />
         ))}
       </nav>
@@ -127,10 +130,13 @@ export default function DashboardSidebar({
           <Link
             href="/dashboard/settings"
             title="Settings"
-            className="flex justify-center rounded-lg px-2 py-2 text-[var(--ink-on-dark)]/80 hover:bg-white/10"
+            className="relative flex justify-center rounded-lg px-2 py-2 text-[var(--ink-on-dark)]/80 hover:bg-white/10"
           >
-            <span className="flex size-8 items-center justify-center text-[var(--ink-on-dark)]">
+            <span className="relative flex size-8 items-center justify-center text-[var(--ink-on-dark)]">
               <DashNavIcon href="/dashboard/settings" />
+              {setupAlerts.needsStripe ? (
+                <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-[var(--gone)]" />
+              ) : null}
             </span>
           </Link>
         ) : (
@@ -139,16 +145,25 @@ export default function DashboardSidebar({
               businesses={businesses}
               selectedId={selectedBusinessId}
               tone="dark"
+              needsBusiness={setupAlerts.needsBusiness}
             />
             <Link
               href="/dashboard/settings"
-              className="mt-2 flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-white/10"
+              className="relative mt-2 flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-white/10"
             >
-              <span className="flex size-8 items-center justify-center rounded-full bg-[var(--ink-on-dark)]/15 text-xs font-medium text-[var(--ink-on-dark)]">
+              <span className="relative flex size-8 items-center justify-center rounded-full bg-[var(--ink-on-dark)]/15 text-xs font-medium text-[var(--ink-on-dark)]">
                 Me
+                {setupAlerts.needsStripe ? (
+                  <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-[var(--gone)]" />
+                ) : null}
               </span>
-              <span className="truncate text-sm font-medium text-[var(--ink-on-dark)]">
+              <span className="flex flex-1 items-center justify-between gap-2 truncate text-sm font-medium text-[var(--ink-on-dark)]">
                 Account
+                {setupAlerts.needsStripe ? (
+                  <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
+                    1
+                  </span>
+                ) : null}
               </span>
             </Link>
           </>

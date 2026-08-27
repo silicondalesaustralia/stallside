@@ -7,6 +7,7 @@ import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import BusinessCheckoutStrip from "./BusinessCheckoutStrip";
 import BusinessPageHeader from "./BusinessPageHeader";
+import BusinessSetupPrompt from "./BusinessSetupPrompt";
 import BusinessPaymentsTab from "./BusinessPaymentsTab";
 import BusinessProductsTab from "./BusinessProductsTab";
 import BusinessSetupTabs, {
@@ -25,11 +26,12 @@ export default async function StandDetailPage({
   searchParams,
 }: {
   params: Promise<{ standId: string }>;
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; new?: string }>;
 }) {
   const { standId } = await params;
-  const { tab: tabParam } = await searchParams;
+  const { tab: tabParam, new: newParam } = await searchParams;
   const tab: BusinessTabId = isBusinessTabId(tabParam) ? tabParam : "details";
+  const isNewBusiness = newParam === "1";
 
   const { owner, user } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
@@ -82,6 +84,12 @@ export default async function StandDetailPage({
         paymentBrands={paymentBrands}
       />
 
+      <BusinessSetupPrompt
+        standId={stand.id}
+        productCount={stand.products.length}
+        isNew={isNewBusiness}
+      />
+
       <BusinessSetupTabs standId={stand.id} active={tab} />
 
       {tab === "details" ? <StandEditForm stand={stand} /> : null}
@@ -105,6 +113,9 @@ export default async function StandDetailPage({
           )}
           paypalConnectAvailable={isPayPalConnectAvailable()}
           cardTier={cardTier}
+          stripeConnected={owner.stripeChargesEnabled}
+          stripeStarted={Boolean(owner.stripeAccountId)}
+          productCount={stand.products.length}
         />
       ) : null}
       {tab === "branding" ? (

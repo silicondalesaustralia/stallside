@@ -14,7 +14,10 @@ export async function runCreatorDay3Cron(now: Date): Promise<{
       creatorDay3SentAt: null,
       createdAt: { lte: daysAgo(3, now) },
     },
-    include: { user: { select: { email: true, name: true } } },
+    include: {
+      user: { select: { email: true, name: true } },
+      _count: { select: { stands: true, products: true } },
+    },
     take: 200,
   });
 
@@ -23,8 +26,12 @@ export async function runCreatorDay3Cron(now: Date): Promise<{
   for (const owner of owners) {
     const r = recipient(owner);
     if (!r) continue;
+    const showStripeNudge =
+      owner._count.stands > 0 &&
+      owner._count.products > 0 &&
+      !owner.stripeChargesEnabled;
     try {
-      await sendCreatorDay3(r);
+      await sendCreatorDay3({ ...r, showStripeNudge });
       await markSent(owner.id, "creatorDay3SentAt", now);
       sent += 1;
     } catch (error) {

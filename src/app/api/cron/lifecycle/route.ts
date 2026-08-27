@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runCreatorDay3Cron } from "@/lib/lifecycle-emails/run-creator-day3-cron";
 import { runProLapseCron } from "@/lib/lifecycle-emails/run-pro-lapse-cron";
+import {
+  runStripeNeverStartedNudgeCron,
+  runStripeRestrictedNudgeCron,
+} from "@/lib/lifecycle-emails/run-stripe-nudges-cron";
 
 export const runtime = "nodejs";
 
@@ -17,18 +21,24 @@ export async function GET(req: NextRequest) {
   }
 
   const now = new Date();
-  const [creator, lapse] = await Promise.all([
+  const [creator, lapse, stripeRestricted, stripeNeverStarted] = await Promise.all([
     runCreatorDay3Cron(now),
     runProLapseCron(now),
+    runStripeRestrictedNudgeCron(now),
+    runStripeNeverStartedNudgeCron(now),
   ]);
 
   return NextResponse.json({
     checkedCreatorDay3: creator.checked,
     checkedProLapse: lapse.checked,
+    checkedStripeRestricted: stripeRestricted.checked,
+    checkedStripeNeverStarted: stripeNeverStarted.checked,
     sent: {
       creatorDay3: creator.sent,
       proLapse23: lapse.day23,
       proLapse45: lapse.day45,
+      stripeRestricted: stripeRestricted.sent,
+      stripeNeverStarted: stripeNeverStarted.sent,
     },
   });
 }

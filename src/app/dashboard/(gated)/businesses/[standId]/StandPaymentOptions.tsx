@@ -74,7 +74,7 @@ export default function StandPaymentOptions({
     <section className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4">
       <h2 className="text-lg font-semibold">Checkout payments</h2>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        Enable or disable what customers see at this stand. Currency: {currency}.
+        Enable or disable what customers see at checkout. Currency: {currency}.
       </p>
 
       <form key={formKey} action={onSubmit} className="mt-4 flex flex-col gap-4">

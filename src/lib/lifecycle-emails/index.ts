@@ -7,3 +7,5 @@ export {
 } from "@/lib/lifecycle-emails/lapse";
 export { sendFirstTenOrdersEmail } from "@/lib/lifecycle-emails/milestone";
 export { sendCancellationFeedback } from "@/lib/lifecycle-emails/cancellation";
+export { sendStripeRestrictedNudge } from "@/lib/lifecycle-emails/stripe-restricted";
+export { sendStripeNeverStartedNudge } from "@/lib/lifecycle-emails/stripe-never-started";

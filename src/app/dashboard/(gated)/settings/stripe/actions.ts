@@ -45,14 +45,17 @@ export async function startStripeConnect() {
       capabilities: connectCapabilitiesForCountry(country),
       business_profile: {
         name: owner.businessName,
-        product_description: "Farm stand / roadside produce sales",
+        product_description: "Small business sales - checkout, pre-orders, subscriptions",
       },
       metadata: { ownerId: owner.id },
     });
     accountId = account.id;
     await prisma.owner.update({
       where: { id: owner.id },
-      data: { stripeAccountId: accountId },
+      data: {
+        stripeAccountId: accountId,
+        stripeConnectStartedAt: owner.stripeConnectStartedAt ?? new Date(),
+      },
     });
   }
 

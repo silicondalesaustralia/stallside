@@ -81,10 +81,10 @@ export default async function StripeSettingsPage({
           Card / Tap &amp; Go
         </h1>
         <p className="mt-2 text-[var(--muted)]">
-          Connect Stripe so stand customers can pay by card, Tap &amp; Go, and
-          any other methods enabled on your Stripe account (such as PayTo or Buy
-          Now, Pay Later). Payments go to your Stripe account. This is separate
-          from your{" "}
+          Connect Stripe so customers can pay by card at checkout, on pre-orders,
+          and for subscription boxes — plus Tap &amp; Go and other methods enabled
+          on your Stripe account (such as PayTo or Buy Now, Pay Later). Payments
+          go to your Stripe account. This is separate from your{" "}
           <Link href="/dashboard/settings/billing" className="underline">
             app subscription
           </Link>
@@ -101,7 +101,8 @@ export default async function StripeSettingsPage({
       {started && !ready ? (
         <p className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
           Finish Stripe setup so charges are enabled. Until then, customers will
-          not see Card / Tap &amp; Go at checkout.
+          not see card at checkout, and pre-orders and subscriptions will not
+          work.
         </p>
       ) : null}
 

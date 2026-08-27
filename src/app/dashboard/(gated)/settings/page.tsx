@@ -3,6 +3,7 @@ import { isPlatformAdminEmail, requireOwner } from "@/lib/session";
 import { logout } from "@/app/login/actions";
 import { billingRegionDisplay } from "@/lib/saas-pricing";
 import { stallsideSubscriptionSummary } from "@/lib/stallside-subscription-summary";
+import { STRIPE_CHECKOUT_METHODS_PHRASE } from "@/lib/stripe-connect-copy";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
@@ -107,9 +108,9 @@ export default async function SettingsPage() {
               : "Not connected"}
         </p>
         <p className="text-[var(--muted)]">
-          Connect Stripe for card, Apple Pay, Google Pay, and Buy Now Pay Later
-          on larger orders. Funds go to your account. Free includes a 2.5%
-          Vendl fee on card sales unless you upgrade to Pro.
+          Connect Stripe for {STRIPE_CHECKOUT_METHODS_PHRASE}. Funds go to your
+          account. Free includes a 2.5% Vendl fee on card sales unless you
+          upgrade to Pro.
         </p>
         <Link
           href="/dashboard/settings/stripe"

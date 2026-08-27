@@ -12,7 +12,7 @@ export default function StripeDisconnectButton() {
       disabled={pending}
       onClick={() => {
         const ok = window.confirm(
-          "Disconnect Stripe? Card / Tap & Go will turn off on your stands. You can connect again later.",
+          "Disconnect Stripe? Card checkout, pre-orders, and subscriptions will turn off until you connect again.",
         );
         if (!ok) return;
         startTransition(async () => {

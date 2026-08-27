@@ -21,12 +21,12 @@ export function trialWelcomeHtml(name: string): string {
       <p><strong>Free includes every feature</strong> - stall checkout,
       pre-orders, subscriptions, cart upsells, payments, branding, and more.</p>
       <p><strong>Start here:</strong></p>
-      <p><strong>Stands</strong></p>
+      <p><strong>Checkout at your location</strong></p>
       <ol>
         <li>Create your first business</li>
         <li>Add what you sell</li>
-        <li>Share your link, or print a QR for the stall</li>
-        <li>Connect Stripe if you want card payments</li>
+        <li>Share your link, or print a QR for customers</li>
+        <li>Connect Stripe if you want card payments (optional for cash)</li>
       </ol>
       ${ctaButton(L.newStand, "Create your first stand")}
       <p><strong>Pre-orders or subscriptions</strong></p>

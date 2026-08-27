@@ -3,7 +3,9 @@ import { Suspense } from "react";
 import DashboardNavWithUnread from "@/components/DashboardNavWithUnread";
 import ImpersonationBanner from "@/components/ImpersonationBanner";
 import OwnerPushRegister from "@/components/OwnerPushRegisterLazy";
+import StripeSetupBanner from "@/components/StripeSetupBanner";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
+import { loadStripeSetupBanner } from "@/lib/load-stripe-setup-banner";
 import { requireOwner } from "@/lib/session";
 import { paidAccessDaysRemaining } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
@@ -21,6 +23,13 @@ export default async function DashboardLayout({
   const access = { email: user.email, role: user.role };
   const paidDays = paidAccessDaysRemaining(owner, access);
   const { businesses, selected } = await resolveSelectedBusiness(owner.id);
+  const stripeSetupBanner = await loadStripeSetupBanner({
+    ownerId: owner.id,
+    businessCount: businesses.length,
+    selectedStandId: selected?.id ?? null,
+    stripeAccountId: owner.stripeAccountId,
+    stripeChargesEnabled: owner.stripeChargesEnabled,
+  });
 
   return (
     <div className="flex min-h-full flex-1 bg-[var(--wash)] print:bg-white">
@@ -29,6 +38,8 @@ export default async function DashboardLayout({
           ownerId={owner.id}
           businesses={businesses}
           selectedBusinessId={selected?.id ?? null}
+          stripeAccountId={owner.stripeAccountId}
+          stripeChargesEnabled={owner.stripeChargesEnabled}
           variant="sidebar"
         />
       </Suspense>
@@ -41,6 +52,8 @@ export default async function DashboardLayout({
             ownerId={owner.id}
             businesses={businesses}
             selectedBusinessId={selected?.id ?? null}
+            stripeAccountId={owner.stripeAccountId}
+            stripeChargesEnabled={owner.stripeChargesEnabled}
             variant="mobile"
           />
         </Suspense>
@@ -51,6 +64,9 @@ export default async function DashboardLayout({
           />
         ) : null}
         <div className="mx-auto w-full max-w-[86rem] flex-1 px-4 py-6 print:max-w-none print:px-0 print:py-0 md:px-6 md:py-8">
+          {stripeSetupBanner ? (
+            <StripeSetupBanner banner={stripeSetupBanner} />
+          ) : null}
           {paidDays != null ? (
             <TrialDaysBadge daysLeft={paidDays} mode="paid" />
           ) : null}

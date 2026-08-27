@@ -24,6 +24,14 @@ import {
   CREATOR_DAY3_SUBJECT,
   creatorDay3Html,
 } from "../src/lib/lifecycle-emails/creator-intro";
+import {
+  STRIPE_RESTRICTED_SUBJECT,
+  stripeRestrictedHtml,
+} from "../src/lib/lifecycle-emails/stripe-restricted";
+import {
+  STRIPE_NEVER_STARTED_SUBJECT,
+  stripeNeverStartedHtml,
+} from "../src/lib/lifecycle-emails/stripe-never-started";
 
 const to = (process.argv[2] || "jono@silicondales.com").trim().toLowerCase();
 const name = "Jono";
@@ -253,6 +261,23 @@ function buildJobs(): Job[] {
       replyTo: emailReplyTo(),
       subject: FEATURE_ANNOUNCE_SUBJECT,
       html: featureAnnounceHtml(name),
+    },
+    {
+      label: "Stripe restricted nudge",
+      kind: "lifecycle_stripe_restricted",
+      replyTo: emailReplyTo(),
+      subject: STRIPE_RESTRICTED_SUBJECT,
+      html: stripeRestrictedHtml(name, [
+        "Date of birth",
+        "Bank account for payouts",
+      ]),
+    },
+    {
+      label: "Stripe never started nudge",
+      kind: "lifecycle_stripe_never_started",
+      replyTo: emailReplyTo(),
+      subject: STRIPE_NEVER_STARTED_SUBJECT,
+      html: stripeNeverStartedHtml(name),
     },
     {
       label: "Pro lapse cash fallback",

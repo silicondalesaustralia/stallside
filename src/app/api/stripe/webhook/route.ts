@@ -12,6 +12,7 @@ import {
 } from "@/lib/stripe-billing";
 import { fulfillPaidCardOrder } from "@/lib/fulfill-paid-order";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
+import { maybeSendStripeRestrictedNudge } from "@/lib/lifecycle-emails/send-stripe-nudges";
 import { prisma } from "@/lib/prisma";
 import { PaymentStatus } from "@/generated/prisma/client";
 import {
@@ -89,6 +90,7 @@ async function handleConnectAccountUpdated(account: Stripe.Account) {
     ownerId: owner.id,
     stripeAccountId: account.id,
   });
+  await maybeSendStripeRestrictedNudge(owner.id);
 }
 
 export async function POST(req: NextRequest) {

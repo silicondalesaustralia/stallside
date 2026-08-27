@@ -71,7 +71,7 @@ export async function createStand(formData: FormData) {
   await writeSelectedBusinessCookie(stand.id);
   revalidatePath("/dashboard", "layout");
   revalidatePath("/dashboard/businesses");
-  redirect(`/dashboard/businesses/${stand.id}`);
+  redirect(`/dashboard/businesses/${stand.id}?new=1`);
 }
 
 export async function updateStand(standId: string, formData: FormData) {

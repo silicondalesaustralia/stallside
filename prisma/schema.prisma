@@ -215,6 +215,12 @@ model Owner {
   stripeOnboardingComplete  Boolean            @default(false)
   stripeChargesEnabled      Boolean            @default(false)
   stripePayoutsEnabled      Boolean            @default(false)
+  /** When Connect account id was first saved (onboarding started). */
+  stripeConnectStartedAt    DateTime?
+  /** Email: started Connect but charges still disabled (restricted / incomplete). */
+  stripeRestrictedNudgeSentAt DateTime?
+  /** Email: stand set up but Stripe never connected (optional card nudge). */
+  stripeNeverStartedNudgeSentAt DateTime?
   /** Platform Billing customer (Vendl SaaS subscription) */
   stripeCustomerId          String?
   /** Platform Billing subscription id */

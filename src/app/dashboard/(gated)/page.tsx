@@ -12,7 +12,7 @@ import { resolveDateWindow } from "@/lib/date-range";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { loadDashboardHomeData } from "./load-dashboard-home";
-import type { PaymentMethod } from "@/generated/prisma/client";
+import { resolveDashboardOnboardingPath } from "@/lib/dashboard-onboarding-path";
 
 
 export default async function DashboardPage({
@@ -102,10 +102,17 @@ export default async function DashboardPage({
 
       <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
         <DashboardNextCard
+          onboardingPath={resolveDashboardOnboardingPath({
+            hasPreOrderProduct: data.hasPreOrderProduct,
+            preOrderPageCount: data.preOrderPageCount,
+            subscriptionOfferCount: data.subscriptionOfferCount,
+          })}
           stripeConnected={owner.stripeChargesEnabled}
           stripeStarted={Boolean(owner.stripeAccountId)}
           products={data.products}
           orderCount={current.orderCount}
+          preOrderPageCount={data.preOrderPageCount}
+          subscriptionOfferCount={data.subscriptionOfferCount}
           showPreOrders={showPreOrdersCrossSell}
           upgradeHref={upgradeLabel ? "/dashboard/settings/billing" : null}
           upgradeLabel={upgradeLabel}

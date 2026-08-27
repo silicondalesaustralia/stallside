@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardSidebar from "@/components/DashboardSidebar";
+import type { DashboardSetupAlerts } from "@/lib/dashboard-setup-alerts";
 import type { BusinessOption } from "@/lib/selected-business";
 
 const STORAGE_KEY = "vendl-dash-sidebar";
@@ -10,10 +11,12 @@ export default function DashboardNav({
   businesses,
   selectedBusinessId,
   unreadNotifications,
+  setupAlerts,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
   unreadNotifications?: number;
+  setupAlerts: DashboardSetupAlerts;
 }) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -36,6 +39,7 @@ export default function DashboardNav({
       collapsed={collapsed}
       onToggle={onToggle}
       unreadNotifications={unreadNotifications}
+      setupAlerts={setupAlerts}
     />
   );
 }

@@ -10,10 +10,12 @@ export default function DashboardBusinessSelect({
   businesses,
   selectedId,
   tone = "light",
+  needsBusiness = false,
 }: {
   businesses: BusinessOption[];
   selectedId: string | null;
   tone?: "light" | "dark";
+  needsBusiness?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -24,13 +26,16 @@ export default function DashboardBusinessSelect({
     return (
       <Link
         href="/dashboard/businesses/new"
-        className={
+        className={`relative inline-flex items-center gap-2 ${
           dark
             ? "text-sm font-medium text-[var(--marigold)] underline"
             : "text-sm font-medium text-[var(--leaf-dark)] underline"
-        }
+        }`}
       >
         Create a business
+        {needsBusiness ? (
+          <span className="size-2 rounded-full bg-[var(--gone)]" />
+        ) : null}
       </Link>
     );
   }

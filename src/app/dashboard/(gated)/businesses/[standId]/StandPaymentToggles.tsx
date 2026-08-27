@@ -3,6 +3,7 @@ import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import type { LocalTransferMethod } from "@/lib/local-transfer";
 import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
+import { STRIPE_CHECKOUT_METHODS_PHRASE } from "@/lib/stripe-connect-copy";
 
 type StandPaymentTogglesProps = {
   method: LocalTransferMethod | null;
@@ -98,8 +99,8 @@ export default function StandPaymentToggles({
           </span>
           <span className="mt-0.5 block text-[var(--muted)]">
             {cardReady
-              ? "Card, Apple Pay, Google Pay, and Buy Now Pay Later on larger orders. Money to your Stripe."
-              : "Finish Stripe setup in Settings before enabling."}
+              ? `${STRIPE_CHECKOUT_METHODS_PHRASE}. Money to your Stripe.`
+              : "Finish Stripe setup in Settings before enabling card, pre-orders, or subscriptions."}
           </span>
         </span>
       </label>

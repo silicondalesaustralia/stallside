@@ -11,6 +11,8 @@ import {
   sendProLapseDay45,
   sendFirstTenOrdersEmail,
   sendCancellationFeedback,
+  sendStripeRestrictedNudge,
+  sendStripeNeverStartedNudge,
 } from "../src/lib/lifecycle-emails";
 import { sendFeatureAnnounce } from "../src/lib/lifecycle-emails/feature-announce";
 
@@ -38,6 +40,19 @@ const jobs: Array<{ label: string; run: () => Promise<void> }> = [
   {
     label: "8. Feature announce",
     run: () => sendFeatureAnnounce(recipient),
+  },
+  {
+    label: "9. Stripe restricted nudge",
+    run: () =>
+      sendStripeRestrictedNudge({
+        to,
+        name,
+        missingItems: ["Date of birth", "Bank account for payouts"],
+      }),
+  },
+  {
+    label: "10. Stripe never started nudge",
+    run: () => sendStripeNeverStartedNudge({ to, name }),
   },
 ];
 
