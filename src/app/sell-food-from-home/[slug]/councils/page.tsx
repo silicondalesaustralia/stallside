@@ -132,16 +132,15 @@ export default async function CouncilsDirectoryPage({ params }: Props) {
           <>
             <CouncilsDirectoryList directory={directory} />
             <p className="mt-8 text-sm text-[var(--muted)] leading-relaxed">
-              Verified food-business links are marked above. Other councils show
-              as link pending until their pages are checked. Individual council
-              pages are not published until they clear the local indexability
-              bar.
+              Food-business links are added where verified. Councils marked link
+              pending still need a checked form or registration page — use the
+              official directory above or contact the council directly.
             </p>
           </>
         ) : (
           <p className="mt-6 text-sm text-[var(--muted)] leading-relaxed">
-            Individual council pages are phase 2. This directory exists so the
-            jurisdiction page can link a real council path from day one.
+            A council directory is not available for this state yet. Use the
+            official directory above when listed, or contact your local council.
           </p>
         )}
       </main>

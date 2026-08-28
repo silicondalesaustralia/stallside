@@ -121,12 +121,14 @@ export default async function LocalAgenciesDirectoryPage({ params }: Props) {
             <CouncilsDirectoryList directory={directory} />
             <p className="mt-8 text-sm text-[var(--muted)] leading-relaxed">
               Phone numbers are from the state directory. Food-program URLs are
-              added where verified. Individual agency pages are phase 2.
+              added where verified.
             </p>
           </>
         ) : (
           <p className="mt-6 text-sm text-[var(--muted)] leading-relaxed">
-            Agency directory seeding is in progress for this state.
+            A local agency directory is not available for this state yet. Use
+            the official state directory above when listed, or contact your
+            county health department.
           </p>
         )}
       </main>
