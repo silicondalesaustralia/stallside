@@ -4,10 +4,13 @@ import type { CouncilDirectoryFile } from "./council";
 import {
   councilsPageDescription,
   councilsPageTitle,
+  localAgenciesPageDescription,
+  localAgenciesPageTitle,
 } from "./copy";
 import {
   AU_HUB_PATH,
-  councilsPath,
+  US_HUB_PATH,
+  localDirectoryPath,
   jurisdictionPathFor,
 } from "./paths";
 import type { JurisdictionRecord } from "./types";
@@ -65,10 +68,40 @@ export function councilsDirectorySchema(
   record: JurisdictionRecord,
   directory?: CouncilDirectoryFile | null,
 ) {
-  const path = councilsPath(record.slug);
+  const path = localDirectoryPath(record);
   const url = `${SITE_URL}${path}`;
   const parentUrl = `${SITE_URL}${jurisdictionPathFor(record)}`;
   const breadcrumbId = `${url}#breadcrumb`;
+  const hubPath = record.country === "US" ? US_HUB_PATH : AU_HUB_PATH;
+  const hubLabel =
+    record.country === "US" ? "Cottage food laws" : "Sell food from home";
+  const countryName = record.country === "US" ? "United States" : "Australia";
+  const directoryLabel = record.country === "US" ? "Local agencies" : "Councils";
+  const pageTitle =
+    record.country === "US"
+      ? localAgenciesPageTitle(record)
+      : councilsPageTitle(record);
+  const pageDescription =
+    record.country === "US"
+      ? localAgenciesPageDescription(record)
+      : councilsPageDescription(record);
+  const statePrefix: Record<string, string> = {
+    mo: "MO",
+    fl: "FL",
+    mi: "MI",
+    oh: "OH",
+    sc: "SC",
+    ca: "CA",
+    nsw: "NSW",
+    vic: "VIC",
+    qld: "QLD",
+    sa: "SA",
+    wa: "WA",
+    tas: "TAS",
+    act: "ACT",
+    nt: "NT",
+  };
+  const regionCode = statePrefix[record.code] ?? record.code.toUpperCase();
   const councils = directory?.councils ?? [];
   const verified = councils.filter(
     (c) => c.food_business_page || c.notification_form_url,
@@ -81,16 +114,16 @@ export function councilsDirectorySchema(
       "@type": "CollectionPage",
       "@id": `${url}#webpage`,
       url,
-      name: councilsPageTitle(record),
-      description: councilsPageDescription(record),
-      inLanguage: "en-AU",
+      name: pageTitle,
+      description: pageDescription,
+      inLanguage: record.country === "US" ? "en-US" : "en-AU",
       isPartOf: { "@id": `${SITE_URL}/#website` },
       publisher: { "@id": `${SITE_URL}/#organization` },
       breadcrumb: { "@id": breadcrumbId },
       about: {
         "@type": "AdministrativeArea",
         name: record.name,
-        containedInPlace: { "@type": "Country", name: "Australia" },
+        containedInPlace: { "@type": "Country", name: countryName },
       },
       ...(verified.length
         ? { mainEntity: { "@id": `${url}#itemlist` } }
@@ -104,8 +137,8 @@ export function councilsDirectorySchema(
         {
           "@type": "ListItem",
           position: 2,
-          name: "Sell food from home",
-          item: `${SITE_URL}${AU_HUB_PATH}`,
+          name: hubLabel,
+          item: `${SITE_URL}${hubPath}`,
         },
         {
           "@type": "ListItem",
@@ -116,7 +149,7 @@ export function councilsDirectorySchema(
         {
           "@type": "ListItem",
           position: 4,
-          name: "Councils",
+          name: directoryLabel,
           item: url,
         },
       ],
@@ -149,8 +182,8 @@ export function councilsDirectorySchema(
             streetAddress: c.street_address,
             addressLocality: c.suburb || undefined,
             postalCode: c.postcode || undefined,
-            addressRegion: "SA",
-            addressCountry: "AU",
+            addressRegion: regionCode,
+            addressCountry: record.country === "US" ? "US" : "AU",
           };
         }
         const phone = c.eho_phone || c.phone;

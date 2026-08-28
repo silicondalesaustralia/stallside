@@ -5,7 +5,7 @@
   "slug": "missouri",
   "demonym": "Missourian",
   "meta": {
-    "last_verified": "2026-08-24",
+    "last_verified": "2026-08-28",
     "verified_by": "build-agent",
     "regulator_page_last_updated": "2023-08",
     "next_review_due": "2027-02-24",
@@ -133,8 +133,8 @@
     "phone": "(573) 751-6095",
     "email": "info@health.mo.gov",
     "url": "https://health.mo.gov/safety/foodsafety/",
-    "council_directory_url": "https://health.mo.gov/living/lpha/lphas.php",
-    "council_count": null
+    "council_directory_url": "https://health.mo.gov/local/find-your-local-public-health-agency",
+    "council_count": 118
   },
   "unique": {
     "quirk_paragraph": "Missouri looks open because RSMo 196.298 needs no permit and has no sales cap, but the product list is only three categories and the statute frames sale at the individual's home. Leave that path and local public health agencies matter again through the Missouri Food Code or local ordinances. A separate RSMo 261.241 jam/jelly/honey exemption still carries a US$30,000 cap. Internet cottage food sales are in-state only.",
@@ -188,7 +188,7 @@
     },
     {
       "field": "contact.council_directory_url",
-      "url": "https://health.mo.gov/living/lpha/lphas.php",
+      "url": "https://health.mo.gov/local/find-your-local-public-health-agency",
       "retrieved": "2026-08-24",
       "tier": 1
     },

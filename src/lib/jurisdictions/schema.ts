@@ -5,6 +5,7 @@ import {
   hubPathFor,
   jurisdictionPathFor,
 } from "./paths";
+import { MO_FAQS } from "./mo-faqs";
 import { NSW_FAQS } from "./nsw-faqs";
 import { NT_FAQS } from "./nt-faqs";
 import { SA_FAQS } from "./sa-faqs";
@@ -37,6 +38,7 @@ const FAQS_BY_CODE: Partial<Record<JurisdictionRecord["code"], typeof SA_FAQS>> 
   wa: WA_FAQS,
   tas: TAS_FAQS,
   nt: NT_FAQS,
+  mo: MO_FAQS,
 };
 
 export function faqsForJurisdiction(record: JurisdictionRecord) {

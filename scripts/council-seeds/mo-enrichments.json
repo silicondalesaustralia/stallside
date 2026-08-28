@@ -1,0 +1,196 @@
+[
+  {
+    "slug": "st-louis-county-department-of-public-health",
+    "food_business_page": "https://stlouiscountymo.gov/st-louis-county-departments/public-health/food-and-restaurants/",
+    "temporary_stall_page": "https://stlouiscountymo.gov/st-louis-county-departments/public-health/food-and-restaurants/temporary-events/temporary-food-establishment-application/",
+    "inspection_fee_page": "https://stlouiscountymo.gov/st-louis-county-departments/public-health/food-and-restaurants/permit-applications/retail-health-permit-application/",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. For farmers markets, temporary stands, and home-based food outside cottage food, St. Louis County DPH issues retail food permits and conducts inspections under the county food code.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://stlouiscountymo.gov/st-louis-county-departments/public-health/food-and-restaurants/",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  },
+  {
+    "slug": "city-of-st-louis-department-of-health",
+    "food_business_page": "https://www.stlouis-mo.gov/government/departments/health/environmental-health/food-control/",
+    "temporary_stall_page": "https://www.stlouis-mo.gov/government/departments/health/environmental-health/food-control/temporary-food-permits.cfm",
+    "notification_form_url": "https://www.stlouis-mo.gov/government/departments/health/environmental-health/food-control/documents/permanent-food-permit.cfm",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. City food control permits restaurants, taverns, and temporary food booths; home-based food outside cottage food may need a city health permit.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.stlouis-mo.gov/government/departments/health/environmental-health/food-control/",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  },
+  {
+    "slug": "kansas-city",
+    "food_business_page": "https://www.kcmo.gov/city-hall/departments/health/if-you-want-to-open-a-restaurant-in-kansas-city-mo",
+    "temporary_stall_page": "https://www.kcmo.gov/city-hall/departments/health/food-permits-for-mobile-units-catering-farmers-markets-and-similar-vendors",
+    "inspection_fee_page": "https://www.kcmo.gov/city-hall/departments/health/if-you-want-to-open-a-restaurant-in-kansas-city-mo",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. Kansas City Environmental Public Health permits food establishments, farmers market vendors, and mobile units; home-based food outside cottage food follows KC food code.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.kcmo.gov/city-hall/departments/health/if-you-want-to-open-a-restaurant-in-kansas-city-mo",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  },
+  {
+    "slug": "springfield-greene-county",
+    "food_business_page": "https://health.springfieldmo.gov/2898/Food-Inspection-Information-for-Business",
+    "temporary_stall_page": "https://health.springfieldmo.gov/2928/Temporary-Food-Events",
+    "notification_form_url": "https://ecity.springfieldmo.gov/submit-record/#instType/businesslicense/recType/HDF",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. Springfield-Greene County Health permits brick-and-mortar and temporary food events; home-based food outside cottage food may need a local permit.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://health.springfieldmo.gov/2898/Food-Inspection-Information-for-Business",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  },
+  {
+    "slug": "columbia-boone-county-department-of-public-health-and-human-services",
+    "food_business_page": "https://www.como.gov/health/environmental-health/food-safety/",
+    "temporary_stall_page": "https://www.como.gov/health/environmental-health/food-safety/food-service-establishments/temp-food-service-establishment/",
+    "inspection_fee_page": "https://www.como.gov/health/environmental-health/food-safety/food-service-establishments/permanent/",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. Columbia/Boone County Environmental Health permits permanent and temporary food service; home-based food outside cottage food may require a local operating permit.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.como.gov/health/environmental-health/food-safety/",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  },
+  {
+    "slug": "clay-county-public",
+    "food_business_page": "https://clayhealth.com/339/Food-Establishment-Owners-Event-Organize",
+    "notification_form_url": "https://clayhealth.com/DocumentCenter/View/1672",
+    "temporary_stall_page": "https://clayhealth.com/339/Food-Establishment-Owners-Event-Organize",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. Clay County Public Health Center permits food establishments and temporary events; home-based food outside cottage food follows Clay County food code.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://clayhealth.com/339/Food-Establishment-Owners-Event-Organize",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  },
+  {
+    "slug": "jackson-county-public-health",
+    "enforcement_agency": "Jackson County Environmental Health",
+    "enforcement_agency_url": "https://www.jacksongov.org/Business/Licenses-and-Permits/Food-Related",
+    "food_business_page": "https://www.jacksongov.org/Business/Licenses-and-Permits/Food-Related",
+    "temporary_stall_page": "https://www.jacksongov.org/Business/Licenses-and-Permits/Food-Related",
+    "inspection_fee_page": "https://www.jacksongov.org/Government/Departments/Environmental-Health/Fees-at-a-Glance",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. Food establishment permits for Jackson County cities and unincorporated areas are handled by Jackson County Environmental Health; home-based food outside cottage food may need a county permit.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.jacksongov.org/Business/Licenses-and-Permits/Food-Related",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  },
+  {
+    "slug": "cass-county",
+    "food_business_page": "https://www.casscounty.com/2456/NewExisting-Food-Establishments",
+    "inspection_fee_page": "https://www.casscounty.com/2456/NewExisting-Food-Establishments",
+    "notification_form_url": "https://www.casscounty.com/DocumentCenter/View/4108",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. Cass County Health Department permits new and existing food establishments; home-based food outside cottage food may require environmental health review.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.casscounty.com/2456/NewExisting-Food-Establishments",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  },
+  {
+    "slug": "platte-county",
+    "food_business_page": "https://www.plattecountyhealthdept.com/permits-and-certificates/page/food-establishment-permits",
+    "temporary_stall_page": "https://www.plattecountyhealthdept.com/permits-and-certificates/page/food-establishment-permits",
+    "notification_form_url": "https://form.jotform.com/222723828098060",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. Platte County Health Department permits brick-and-mortar, mobile, and temporary food stands; home-based food outside cottage food follows Chapter 230 ordinances.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.plattecountyhealthdept.com/permits-and-certificates/page/food-establishment-permits",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  },
+  {
+    "slug": "franklin-county-department-of-health",
+    "food_business_page": "https://www.franklinmo.org/feed-regs",
+    "temporary_stall_page": "https://www.franklinmo.org/environmental",
+    "inspection_fee_page": "https://www.franklinmo.org/feed-regs",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. Franklin County permits food service and retail establishments annually; home-based food outside cottage food may require a county permit.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.franklinmo.org/feed-regs",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  },
+  {
+    "slug": "jefferson-county",
+    "food_business_page": "https://jeffcohealth.org/food-permits/",
+    "temporary_stall_page": "https://jeffcohealth.org/food-safety/",
+    "inspection_fee_page": "https://jeffcohealth.org/food-permits/",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. Jefferson County Health Department permits food establishments; home-based food outside cottage food may require a local food permit.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://jeffcohealth.org/food-permits/",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  },
+  {
+    "slug": "city-of-st-joseph",
+    "food_business_page": "https://www.stjosephmo.gov/439/Health-Permits",
+    "temporary_stall_page": "https://www.stjosephmo.gov/417/Food-Establishment-Safety-Inspections",
+    "inspection_fee_page": "https://www.stjosephmo.gov/439/Health-Permits",
+    "notes": "Cottage food under RSMo 196.298 is not regulated by LPHAs. St. Joseph requires city food and beverage permits for establishments; home-based cottage food needs a business license only.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.stjosephmo.gov/439/Health-Permits",
+        "retrieved": "2026-08-28",
+        "tier": 1
+      }
+    ]
+  }
+]

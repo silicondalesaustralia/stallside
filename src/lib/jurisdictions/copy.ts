@@ -63,6 +63,25 @@ export function councilsPageDescription(record: JurisdictionRecord): string {
   return `Local council food forms and rules for selling food from home in ${record.name}. Find notification, registration or licence links by council.`;
 }
 
+export function localAgenciesPageTitle(record: JurisdictionRecord): string {
+  return `${record.name} cottage food law — local health agencies`;
+}
+
+export function localAgenciesPageH1(record: JurisdictionRecord): string {
+  return `${record.name} local public health agencies`;
+}
+
+export function localAgenciesPageDescription(record: JurisdictionRecord): string {
+  return `Local public health agencies in ${record.name} for food rules outside cottage food law. Find county health department contacts when your product leaves the cottage food path.`;
+}
+
+export function localDirectoryLinkLabel(record: JurisdictionRecord): string {
+  if (record.country === "US") {
+    return `${record.name} local health agency directory`;
+  }
+  return `${record.name} council food forms & rules`;
+}
+
 export function pageDescription(record: JurisdictionRecord): string {
   if (record.country === "US") {
     if (record.code === "mo") {

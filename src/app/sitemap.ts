@@ -17,10 +17,12 @@ import {
   AU_HUB_PATH,
   US_HUB_PATH,
   councilsPath,
+  localAgenciesPath,
   isPageIndexable,
   jurisdictionPathFor,
   loadAllAuJurisdictionRecords,
   loadAllUsJurisdictionRecords,
+  loadJurisdictionCouncils,
 } from "@/lib/jurisdictions";
 
 /** Refresh storefront URLs hourly so new stands/products show up for crawlers. */
@@ -94,6 +96,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: "monthly",
         priority: 0.7,
       });
+      if (loadJurisdictionCouncils(record.code, "US")) {
+        entries.push({
+          url: `${SITE_URL}${localAgenciesPath(record.slug)}`,
+          lastModified: new Date(record.meta.last_verified),
+          changeFrequency: "monthly",
+          priority: 0.5,
+        });
+      }
     }
   }
 

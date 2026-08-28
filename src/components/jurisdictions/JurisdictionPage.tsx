@@ -1,7 +1,7 @@
 import Link from "next/link";
 import NewsMarkdown from "@/components/NewsMarkdown";
 import AtAGlance from "@/components/jurisdictions/AtAGlance";
-import CouncilDirectoryLink from "@/components/jurisdictions/CouncilDirectoryLink";
+import LocalDirectoryLink from "@/components/jurisdictions/LocalDirectoryLink";
 import GettingPaid from "@/components/jurisdictions/GettingPaid";
 import HowToNotify from "@/components/jurisdictions/HowToNotify";
 import JurisdictionFaq from "@/components/jurisdictions/JurisdictionFaq";
@@ -36,9 +36,8 @@ export default function JurisdictionPage({
   const hubPath = hubPathFor(record);
   const hubLabel =
     record.country === "US" ? "Cottage food laws" : "Sell food from home";
-  const hasCouncils =
-    record.country === "AU" &&
-    loadJurisdictionCouncils(record.code, "AU") != null;
+  const hasLocalDirectory =
+    loadJurisdictionCouncils(record.code, record.country) != null;
 
   return (
     <article className="jurisdiction-page mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
@@ -61,7 +60,7 @@ export default function JurisdictionPage({
         {pageTitle(record)}
       </h1>
 
-      {hasCouncils ? <CouncilDirectoryLink record={record} /> : null}
+      {hasLocalDirectory ? <LocalDirectoryLink record={record} /> : null}
 
       {curated ? (
         <div className="jurisdiction-body mt-6 text-[var(--field)] [&_p]:mt-4 [&_p]:leading-relaxed [&_ol]:mt-4 [&_ul]:mt-4 [&_li]:leading-relaxed [&_strong]:font-semibold [&_table]:mt-8 [&_a]:underline [&_a]:underline-offset-2">

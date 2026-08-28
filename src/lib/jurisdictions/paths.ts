@@ -22,6 +22,17 @@ export function councilsPath(slug: string): string {
   return `${AU_HUB_PATH}/${slug}/councils`;
 }
 
+/** US local health agency directory (reuses council data schema). */
+export function localAgenciesPath(slug: string): string {
+  return `${US_HUB_PATH}/${slug}/local-agencies`;
+}
+
+export function localDirectoryPath(record: JurisdictionRecord): string {
+  return record.country === "US"
+    ? localAgenciesPath(record.slug)
+    : councilsPath(record.slug);
+}
+
 /** Geographic neighbours for AU body links (phase 1). */
 export const AU_NEIGHBOURS: Record<string, string[]> = {
   "new-south-wales": [

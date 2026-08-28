@@ -78,7 +78,7 @@ RSMo 196.298 does not name farmers markets, roadside stands or festivals as cott
 
 Separately, the Missouri Food Code contains exemptions for some non-potentially hazardous foods sold from individual stands **where local codes allow**. That is a different pathway from 196.298. Whether a market stand is allowed, and under which exemption, depends on the food and on your local public health agency.
 
-**Selling at a market or roadside stand?** Find your [local public health agency (LPHA)](https://health.mo.gov/living/lpha/lphas.php) and ask which pathway applies before you treat the venue as covered.
+**Selling at a market or roadside stand?** Find your [local public health agency (LPHA)](https://health.mo.gov/local/find-your-local-public-health-agency) and ask which pathway applies before you treat the venue as covered.
 
 ## Sales cap
 
@@ -126,7 +126,7 @@ Local health departments may not regulate cottage food **production**. That is a
 
 DHSS explains that Local Public Health Agencies (LPHAs) regulate retail food establishments and may adopt the Missouri Food Code or local ordinances that are equal to or more stringent. If your product is not cottage food, you generally must meet the food-safety rules used by your LPHA. That can mean an approved commercial kitchen and routine inspection.
 
-**Find your LPHA:** [health.mo.gov/living/lpha/lphas.php](https://health.mo.gov/living/lpha/lphas.php)
+**Find your LPHA:** [health.mo.gov/local/find-your-local-public-health-agency](https://health.mo.gov/local/find-your-local-public-health-agency)
 
 ### Missouri Food Code non-PHF stand exemption
 
@@ -178,7 +178,7 @@ Primary sources used:
 * [RSMo 261.241](https://revisor.mo.gov/main/OneSection.aspx?bid=51811&section=261.241) — Sellers of jams, jellies, and honey
 * [Missouri Home-Based Kitchen Food Production Guidance](https://health.mo.gov/sites/health/files/media/pdf/2026/03/home-based-kitchen-food-prod-guidance.pdf) (DHSS, August 2023 revision hosted 2026)
 * [Missouri Food Code](https://health.mo.gov/safety/foodsafety/pdf/missourifoodcode.pdf) — food establishment definition exemptions
-* [Local Public Health Agency directory](https://health.mo.gov/living/lpha/lphas.php)
+* [Local Public Health Agency directory](https://health.mo.gov/local/find-your-local-public-health-agency)
 * [DHSS Food Safety](https://health.mo.gov/safety/foodsafety/) — (573) 751-6095, info@health.mo.gov
 
 Rules change. Confirm current requirements with DHSS and your local public health agency before you sell. This page is a practical reference, not legal advice, and does not replace Missouri statutes, the Missouri Food Code or directions from an authorised regulator.
