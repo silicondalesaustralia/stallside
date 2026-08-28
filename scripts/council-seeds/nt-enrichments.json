@@ -1,0 +1,99 @@
+[
+  {
+    "slug": "darwin",
+    "website": "https://www.darwin.nt.gov.au/",
+    "food_business_page": "https://www.darwin.nt.gov.au/street-food/applying-for-a-permit",
+    "planning_home_business_page": "https://www.darwin.nt.gov.au/business",
+    "temporary_stall_page": "https://www.darwin.nt.gov.au/street-food/applying-for-a-permit",
+    "phone": "08 8930 0600",
+    "notes": "Food business registration is with NT Health Territory Services. Council handles street food permits and planning; NT Health registration required before trading. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "temporary_stall_page",
+        "url": "https://www.darwin.nt.gov.au/street-food/applying-for-a-permit",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      },
+      {
+        "field": "planning_home_business_page",
+        "url": "https://www.darwin.nt.gov.au/business",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ],
+    "notification_form_url": "https://nt.gov.au/industry/hospitality/accommodation-and-food-businesses/register-food-business"
+  },
+  {
+    "slug": "palmerston",
+    "website": "https://www.palmerston.nt.gov.au/",
+    "food_business_page": "https://www.palmerston.nt.gov.au/business",
+    "planning_home_business_page": "https://www.palmerston.nt.gov.au/business",
+    "phone": "08 8935 9922",
+    "notes": "Register food businesses with NT Health. Council handles local planning and permits. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "planning_home_business_page",
+        "url": "https://www.palmerston.nt.gov.au/business",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ],
+    "notification_form_url": "https://nt.gov.au/industry/hospitality/accommodation-and-food-businesses/register-food-business"
+  },
+  {
+    "slug": "litchfield",
+    "website": "https://www.litchfield.nt.gov.au/",
+    "food_business_page": "https://www.litchfield.nt.gov.au/business",
+    "planning_home_business_page": "https://www.litchfield.nt.gov.au/business",
+    "phone": "08 8983 0600",
+    "notes": "NT Health registers food businesses territory-wide. Contact Litchfield Council for planning and home business approvals. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "planning_home_business_page",
+        "url": "https://www.litchfield.nt.gov.au/business",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ],
+    "notification_form_url": "https://nt.gov.au/industry/hospitality/accommodation-and-food-businesses/register-food-business"
+  },
+  {
+    "slug": "alice-springs",
+    "website": "https://www.alicesprings.nt.gov.au/",
+    "food_business_page": "https://www.alicesprings.nt.gov.au/business",
+    "planning_home_business_page": "https://www.alicesprings.nt.gov.au/business",
+    "phone": "08 8950 0500",
+    "notes": "Food registration via NT Health Territory Services. Council handles local permits and market stall applications. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "planning_home_business_page",
+        "url": "https://www.alicesprings.nt.gov.au/business",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ],
+    "notification_form_url": "https://nt.gov.au/industry/hospitality/accommodation-and-food-businesses/register-food-business"
+  },
+  {
+    "slug": "katherine",
+    "website": "https://www.katherine.nt.gov.au/",
+    "food_business_page": "https://www.katherine.nt.gov.au/business",
+    "planning_home_business_page": "https://www.katherine.nt.gov.au/business",
+    "phone": "08 8972 5500",
+    "notes": "Register food businesses with NT Health before operating. Council handles local business permits. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "planning_home_business_page",
+        "url": "https://www.katherine.nt.gov.au/business",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ],
+    "notification_form_url": "https://nt.gov.au/industry/hospitality/accommodation-and-food-businesses/register-food-business"
+  }
+]

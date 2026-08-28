@@ -5,16 +5,16 @@
   "slug": "western-australia",
   "demonym": "Western Australian",
   "meta": {
-    "last_verified": "2026-08-24",
-    "verified_by": "",
+    "last_verified": "2026-08-28",
+    "verified_by": "owner",
     "regulator_page_last_updated": "2021-02-18",
     "next_review_due": "2027-02-24",
-    "completeness": "research_complete"
+    "completeness": "verified_publishable"
   },
   "law": {
     "statute": "Food Act 2008 (WA)",
     "statute_url": "https://www.legislation.wa.gov.au/",
-    "key_section": "",
+    "key_section": "Registration of food businesses; home-based food businesses",
     "regulations": ["Food Regulations 2009 (WA)"],
     "code_applies": true
   },
@@ -94,9 +94,9 @@
     "food_handler_skills_required": true,
     "food_safety_supervisor_required": "conditional",
     "fss_trigger": "Standard 3.2.2A Category 1 or 2: unpackaged, potentially hazardous food that is ready to eat (processing it, or selling it without making it).",
-    "free_training_accepted": "not_published",
-    "free_training_name": "",
-    "free_training_url": ""
+    "free_training_accepted": true,
+    "free_training_name": "DoFoodSafely",
+    "free_training_url": "https://dofoodsafely.health.vic.gov.au/"
   },
   "premises": {
     "home_kitchen_allowed": true,
@@ -129,7 +129,7 @@
     "council_count": 137
   },
   "unique": {
-    "quirk_paragraph": "DRAFT: Western Australia treats home-prepared food for sale as Registration with local government Environmental Health, with a separate notify path for regulated exemptions. Escalation needed for human polish of the register-versus-notify fork and the charitable fundraising carve-out.",
+    "quirk_paragraph": "Western Australia draws a hard line at the kitchen door. Food prepared in a residential home intended for sale is a food business, and the default path with local government Environmental Health is registration, not an informal notify-only shortcut.\n\nSome activities under the Food Regulations 2009 notify instead of registering, and charitable fundraising can be exempt from registration for non-potentially hazardous food cooked for immediate consumption. That exemption still requires notification. The fork is product risk and event type, not whether the sale feels small.\n\nCouncil fees are set locally. The Department of Health publishes prescribed fees only for DoH-regulated sites: notification A$84 and registration A$255 under the Food Regulations 2009. Do not assume those figures apply to every council-regulated home premises.\n\nMaximum penalties for operating unregistered are published: A$10,000 for an individual and A$50,000 for a body corporate under the Food Act 2008 (WA).",
     "common_mistake": "Assuming a low-risk home bake sale can skip contact with council because it feels informal.",
     "what_does_not_apply": "Home kitchen use is framed for low-risk activity under Standard 3.2.3; DoH policy limits construction exemptions to low risk. Confirm product risk with your local EHO."
   },

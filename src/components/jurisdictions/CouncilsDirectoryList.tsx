@@ -22,9 +22,15 @@ function statusLabel(c: CouncilRecord): string {
   return "Link pending";
 }
 
-function CouncilRow({ council }: { council: CouncilRecord }) {
+function CouncilRow({
+  council,
+  jurisdictionCode,
+}: {
+  council: CouncilRecord;
+  jurisdictionCode: string;
+}) {
   const href = primaryCouncilActionUrl(council);
-  const address = formatCouncilAddress(council);
+  const address = formatCouncilAddress(council, jurisdictionCode);
   const foodPhone = council.eho_phone || council.phone;
   const foodEmail = council.eho_email || council.email;
 
@@ -121,7 +127,11 @@ export default function CouncilsDirectoryList({
             </h2>
             <ul className="mt-3">
               {rows.map((c) => (
-                <CouncilRow key={c.slug} council={c} />
+                <CouncilRow
+                  key={c.slug}
+                  council={c}
+                  jurisdictionCode={directory.jurisdiction_code}
+                />
               ))}
             </ul>
           </section>

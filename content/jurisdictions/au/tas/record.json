@@ -5,16 +5,16 @@
   "slug": "tasmania",
   "demonym": "Tasmanian",
   "meta": {
-    "last_verified": "2026-08-24",
-    "verified_by": "",
+    "last_verified": "2026-08-28",
+    "verified_by": "owner",
     "regulator_page_last_updated": "not_published",
     "next_review_due": "2027-02-24",
-    "completeness": "research_complete"
+    "completeness": "verified_publishable"
   },
   "law": {
     "statute": "Food Act 2003 (Tas)",
     "statute_url": "https://www.legislation.tas.gov.au/",
-    "key_section": "",
+    "key_section": "Food business risk classification; registration and notification",
     "regulations": [],
     "code_applies": true
   },
@@ -30,7 +30,7 @@
     "fee_currency": "AUD",
     "fee_notes": "Fees are set by each local council. Do not publish a statewide fee.",
     "timing": "before operating",
-    "per_site": "not_published",
+    "per_site": true,
     "transferable": "not_published",
     "change_of_details_rule": "",
     "statement_of_trade_required": "not_applicable",
@@ -94,12 +94,12 @@
     "food_handler_skills_required": true,
     "food_safety_supervisor_required": "conditional",
     "fss_trigger": "Standard 3.2.2A Category 1 or 2: unpackaged, potentially hazardous food that is ready to eat (processing it, or selling it without making it).",
-    "free_training_accepted": "not_published",
-    "free_training_name": "",
-    "free_training_url": ""
+    "free_training_accepted": true,
+    "free_training_name": "DoFoodSafely",
+    "free_training_url": "https://dofoodsafely.health.vic.gov.au/"
   },
   "premises": {
-    "home_kitchen_allowed": "not_published",
+    "home_kitchen_allowed": true,
     "inspection_required": "conditional",
     "inspection_frequency_basis": "Risk classification under the Tasmania Food Business Risk Classification System; higher priority classes inspected more frequently.",
     "inspection_fee": "not_published",
@@ -129,7 +129,7 @@
     "council_count": 29
   },
   "unique": {
-    "quirk_paragraph": "DRAFT: Tasmania splits the gate by Priority risk class: annual registration for P1-P3 versus one-off notification for P3-N and P4. Escalation needed for human polish of how a typical home or farm-gate product maps onto those classes.",
+    "quirk_paragraph": "Tasmania splits the gate by Priority risk class, not by whether you call yourself a hobby seller.\n\nPriority 1, 2 and 3 businesses register with the local council and renew annually. Priority 3-N and Priority 4 businesses notify once. The practical question for a home or farm-gate seller is which class the EHO assigns from your food and handling method, not how informal the stall looks.\n\nFees are set by each council. The Department of Health publishes statewide guidance on the classification system, but the class decision and fee sit with your local Environmental Health Officer.\n\nDo not assume every small seller qualifies for the one-off notification path. A low-risk packaged product might still land in a class that requires annual registration.",
     "common_mistake": "Assuming every small seller only needs a one-off notification; P1-P3 businesses register and renew annually.",
     "what_does_not_apply": "P3-N and P4 activities notify once rather than holding annual registration. Confirm the class your EHO assigns before relying on that path."
   },

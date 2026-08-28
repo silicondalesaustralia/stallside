@@ -1,0 +1,264 @@
+[
+  {
+    "slug": "melbourne",
+    "website": "https://www.melbourne.vic.gov.au/",
+    "food_business_page": "https://www.melbourne.vic.gov.au/register-food-or-beverage-business",
+    "notification_form_url": "https://www.melbourne.vic.gov.au/register-food-or-beverage-business",
+    "planning_home_business_page": "https://www.melbourne.vic.gov.au/melbourne-planning-scheme-do-i-need-permit",
+    "phone": "03 9658 9658",
+    "notes": "All food premises must register under the Food Act 1984. Home-based businesses may need planning assessment under Clause 52.11 before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.melbourne.vic.gov.au/register-food-or-beverage-business",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      },
+      {
+        "field": "planning_home_business_page",
+        "url": "https://www.melbourne.vic.gov.au/melbourne-planning-scheme-do-i-need-permit",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "merri-bek",
+    "website": "https://www.merri-bek.vic.gov.au/",
+    "food_business_page": "https://www.merri-bek.vic.gov.au/Building-and-business/Food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9240 1111",
+    "notes": "Register or notify via FoodTrader. Council classifies premises by Food Act class. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.merri-bek.vic.gov.au/Building-and-business/Food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "port-phillip",
+    "website": "https://www.portphillip.vic.gov.au/",
+    "food_business_page": "https://www.portphillip.vic.gov.au/food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9209 6777",
+    "notes": "Food premises registration via FoodTrader. Contact Environmental Health before fit-out. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.portphillip.vic.gov.au/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "stonnington",
+    "website": "https://www.stonnington.vic.gov.au/",
+    "food_business_page": "https://www.stonnington.vic.gov.au/About-Us/Contact-us/Health-services/Food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 8290 1333",
+    "notes": "Register food premises through FoodTrader. Home-based businesses contact Environmental Health early.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.stonnington.vic.gov.au/About-Us/Contact-us/Health-services/Food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "boroondara",
+    "website": "https://www.boroondara.vic.gov.au/",
+    "food_business_page": "https://www.boroondara.vic.gov.au/business/food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9278 4444",
+    "notes": "Food Act registration or notification via FoodTrader. Council assigns class 1–4. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.boroondara.vic.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "glen-eira",
+    "website": "https://www.gleneira.vic.gov.au/",
+    "food_business_page": "https://www.gleneira.vic.gov.au/business/food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9524 3333",
+    "notes": "Register via FoodTrader. Home-based low-risk packaged foods may be class 3 or 4.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.gleneira.vic.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "monash",
+    "website": "https://www.monash.vic.gov.au/",
+    "food_business_page": "https://www.monash.vic.gov.au/Business/Food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9518 3555",
+    "notes": "Food premises registration through FoodTrader portal. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.monash.vic.gov.au/Business/Food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "bayside",
+    "website": "https://www.bayside.vic.gov.au/",
+    "food_business_page": "https://www.bayside.vic.gov.au/services/business/food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9599 4444",
+    "notes": "Register or notify via FoodTrader before operating a home-based food business.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.bayside.vic.gov.au/services/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "kingston",
+    "website": "https://www.kingston.vic.gov.au/",
+    "food_business_page": "https://www.kingston.vic.gov.au/business/food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9581 5111",
+    "notes": "Food Act registration via FoodTrader. Contact Environmental Health for class advice. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.kingston.vic.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "whitehorse",
+    "website": "https://www.whitehorse.vic.gov.au/",
+    "food_business_page": "https://www.whitehorse.vic.gov.au/business/food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9262 6333",
+    "notes": "Register food premises on FoodTrader. Home kitchen class determined by EHO.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.whitehorse.vic.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "manningham",
+    "website": "https://www.manningham.vic.gov.au/",
+    "food_business_page": "https://www.manningham.vic.gov.au/food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9840 9333",
+    "notes": "Food premises registration through FoodTrader. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.manningham.vic.gov.au/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "maribyrnong",
+    "website": "https://www.maribyrnong.vic.gov.au/",
+    "food_business_page": "https://www.maribyrnong.vic.gov.au/Residents/Health-and-safety/Food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9688 0200",
+    "notes": "Register via FoodTrader. Home-based businesses contact Environmental Health before starting.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.maribyrnong.vic.gov.au/Residents/Health-and-safety/Food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "hobsons-bay",
+    "website": "https://www.hobsonsbay.vic.gov.au/",
+    "food_business_page": "https://www.hobsonsbay.vic.gov.au/Services/Health-and-safety/Food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9932 1000",
+    "notes": "Food Act registration via FoodTrader portal. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.hobsonsbay.vic.gov.au/Services/Health-and-safety/Food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "darebin",
+    "website": "https://www.darebin.vic.gov.au/",
+    "food_business_page": "https://www.darebin.vic.gov.au/Business/Health-and-local-laws/Food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 8470 8888",
+    "notes": "Register or notify through FoodTrader. Council assigns Food Act class. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.darebin.vic.gov.au/Business/Health-and-local-laws/Food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "yarra",
+    "website": "https://www.yarracity.vic.gov.au/",
+    "food_business_page": "https://www.yarracity.vic.gov.au/business/food-businesses",
+    "notification_form_url": "https://foodtrader.vic.gov.au/",
+    "phone": "03 9205 5555",
+    "notes": "Food premises registration on FoodTrader. Contact council for home-based class advice.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.yarracity.vic.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  }
+]

@@ -1,0 +1,172 @@
+[
+  {
+    "slug": "hobart",
+    "website": "https://www.hobartcity.com.au/",
+    "food_business_page": "https://www.hobartcity.com.au/Development-and-Business/Business-information-and-support/Permits-licences-and-registrations/Food-and-beverage-businesses",
+    "notification_form_url": "https://www.hobartcity.com.au/Development-and-Business/Business-information-and-support/Permits-licences-and-registrations/Food-and-beverage-businesses",
+    "phone": "03 6238 2711",
+    "notes": "Low-risk packaged foods may notify once; higher-risk home kitchens register annually. EHO assigns Priority class.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.hobartcity.com.au/Development-and-Business/Business-information-and-support/Permits-licences-and-registrations/Food-and-beverage-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "glenorchy",
+    "website": "https://www.gcc.tas.gov.au/",
+    "food_business_page": "https://www.gcc.tas.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.gcc.tas.gov.au/business/food-businesses",
+    "phone": "03 6216 6800",
+    "notes": "Notify or register with council EHO. Priority class determines annual registration vs one-off notification. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.gcc.tas.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "clarence",
+    "website": "https://www.ccc.tas.gov.au/",
+    "food_business_page": "https://www.ccc.tas.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.ccc.tas.gov.au/business/food-businesses",
+    "phone": "03 6217 9500",
+    "notes": "Food business notification or registration via Clarence City Council Environmental Health. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.ccc.tas.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "kingborough",
+    "website": "https://www.kingborough.tas.gov.au/",
+    "food_business_page": "https://www.kingborough.tas.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.kingborough.tas.gov.au/business/food-businesses",
+    "phone": "03 6211 8200",
+    "notes": "Contact Environmental Health for Priority class and registration path. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.kingborough.tas.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "launceston",
+    "website": "https://www.launceston.tas.gov.au/",
+    "food_business_page": "https://www.launceston.tas.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.launceston.tas.gov.au/business/food-businesses",
+    "phone": "03 6323 3000",
+    "notes": "Register or notify with City of Launceston Environmental Health Officer. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.launceston.tas.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "devonport",
+    "website": "https://www.devonport.tas.gov.au/",
+    "food_business_page": "https://www.devonport.tas.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.devonport.tas.gov.au/business/food-businesses",
+    "phone": "03 6424 0511",
+    "notes": "Food business registration or notification with council EHO. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.devonport.tas.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "burnie",
+    "website": "https://www.burnie.net/",
+    "food_business_page": "https://www.burnie.net/business/food-businesses",
+    "notification_form_url": "https://www.burnie.net/business/food-businesses",
+    "phone": "03 6430 5700",
+    "notes": "Contact City of Burnie Environmental Health before operating a home food business. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.burnie.net/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "west-tamar",
+    "website": "https://www.wtc.tas.gov.au/",
+    "food_business_page": "https://www.wtc.tas.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.wtc.tas.gov.au/business/food-businesses",
+    "phone": "03 6323 9300",
+    "notes": "Priority risk classification by council EHO determines registration or notification. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.wtc.tas.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "george-town",
+    "website": "https://www.georgetown.tas.gov.au/",
+    "food_business_page": "https://www.georgetown.tas.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.georgetown.tas.gov.au/business/food-businesses",
+    "phone": "03 6382 8800",
+    "notes": "Notify or register with George Town Council Environmental Health. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.georgetown.tas.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "sorell",
+    "website": "https://www.sorell.tas.gov.au/",
+    "food_business_page": "https://www.sorell.tas.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.sorell.tas.gov.au/business/food-businesses",
+    "phone": "03 6269 0000",
+    "notes": "Contact Sorell Council EHO for home-based food business classification.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.sorell.tas.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  }
+]

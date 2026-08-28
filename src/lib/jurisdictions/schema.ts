@@ -5,7 +5,12 @@ import {
   hubPathFor,
   jurisdictionPathFor,
 } from "./paths";
+import { NSW_FAQS } from "./nsw-faqs";
+import { NT_FAQS } from "./nt-faqs";
 import { SA_FAQS } from "./sa-faqs";
+import { TAS_FAQS } from "./tas-faqs";
+import { VIC_FAQS } from "./vic-faqs";
+import { WA_FAQS } from "./wa-faqs";
 import type { JurisdictionRecord } from "./types";
 
 const AREA_SAME_AS: Record<string, string> = {
@@ -25,9 +30,17 @@ const AREA_SAME_AS: Record<string, string> = {
   ca: "https://en.wikipedia.org/wiki/California",
 };
 
+const FAQS_BY_CODE: Partial<Record<JurisdictionRecord["code"], typeof SA_FAQS>> = {
+  sa: SA_FAQS,
+  nsw: NSW_FAQS,
+  vic: VIC_FAQS,
+  wa: WA_FAQS,
+  tas: TAS_FAQS,
+  nt: NT_FAQS,
+};
+
 export function faqsForJurisdiction(record: JurisdictionRecord) {
-  if (record.code === "sa") return SA_FAQS;
-  return [];
+  return FAQS_BY_CODE[record.code] ?? [];
 }
 
 export function jurisdictionPageSchema(record: JurisdictionRecord) {

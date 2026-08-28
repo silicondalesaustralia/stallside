@@ -1,0 +1,264 @@
+[
+  {
+    "slug": "perth",
+    "website": "https://www.perth.wa.gov.au/",
+    "food_business_page": "https://www.perth.wa.gov.au/businesses/environmental-health",
+    "notification_form_url": "https://www.perth.wa.gov.au/forms-and-payments/residents-and-businesses/Business/certification-and-approval/food-business-registration",
+    "inspection_fee_page": "https://www.perth.wa.gov.au/businesses/environmental-health",
+    "phone": "08 9461 3333",
+    "notes": "Home-based food for sale requires registration. Online application via ePathway. Inspection fees apply by risk rating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "notification_form_url",
+        "url": "https://www.perth.wa.gov.au/forms-and-payments/residents-and-businesses/Business/certification-and-approval/food-business-registration",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      },
+      {
+        "field": "inspection_fee_page",
+        "url": "https://www.perth.wa.gov.au/businesses/environmental-health",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "stirling",
+    "website": "https://www.stirling.wa.gov.au/",
+    "food_business_page": "https://www.stirling.wa.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.stirling.wa.gov.au/business/food-businesses/register-a-food-business",
+    "phone": "08 9205 8555",
+    "notes": "Register food businesses with City of Stirling Environmental Health. Home kitchen registration required for food prepared for sale.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.stirling.wa.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "joondalup",
+    "website": "https://www.joondalup.wa.gov.au/",
+    "food_business_page": "https://www.joondalup.wa.gov.au/know-your-council/news/food-business-registration",
+    "notification_form_url": "https://www.joondalup.wa.gov.au/business/food-businesses",
+    "phone": "08 9400 4000",
+    "notes": "Register with Environmental Health before operating. Home-based businesses contact council for kitchen assessment.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.joondalup.wa.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "wanneroo",
+    "website": "https://www.wanneroo.wa.gov.au/",
+    "food_business_page": "https://www.wanneroo.wa.gov.au/business-and-investment/food-businesses",
+    "notification_form_url": "https://www.wanneroo.wa.gov.au/business-and-investment/food-businesses/register-a-food-business",
+    "phone": "08 9405 5000",
+    "notes": "Food business registration with local Environmental Health. Home kitchen requires registration when food is prepared for sale.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.wanneroo.wa.gov.au/business-and-investment/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "swan",
+    "website": "https://www.swan.wa.gov.au/",
+    "food_business_page": "https://www.swan.wa.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.swan.wa.gov.au/business/food-businesses/food-business-registration",
+    "phone": "08 9267 9267",
+    "notes": "Register food premises with City of Swan Environmental Health before operating. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.swan.wa.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "belmont",
+    "website": "https://www.belmont.wa.gov.au/",
+    "food_business_page": "https://www.belmont.wa.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.belmont.wa.gov.au/business/food-businesses/food-business-registration",
+    "phone": "08 9477 7222",
+    "notes": "Food business registration required. Contact Environmental Health for home-based kitchen advice.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.belmont.wa.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "victoria-park",
+    "website": "https://www.victoriapark.wa.gov.au/",
+    "food_business_page": "https://www.victoriapark.wa.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.victoriapark.wa.gov.au/business/food-businesses/register-a-food-business",
+    "phone": "08 9311 8111",
+    "notes": "Register with Town of Victoria Park Environmental Health Services. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.victoriapark.wa.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "fremantle",
+    "website": "https://www.fremantle.wa.gov.au/",
+    "food_business_page": "https://www.fremantle.wa.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.fremantle.wa.gov.au/business/food-businesses/food-business-registration",
+    "phone": "08 9432 9999",
+    "notes": "Food premises registration with City of Fremantle Environmental Health. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.fremantle.wa.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "cockburn",
+    "website": "https://www.cockburn.wa.gov.au/",
+    "food_business_page": "https://www.cockburn.wa.gov.au/Business/Health-and-food/food-businesses",
+    "notification_form_url": "https://www.cockburn.wa.gov.au/Business/Health-and-food/food-businesses/register-a-food-business",
+    "phone": "08 9411 3444",
+    "notes": "Register home-based food businesses with Environmental Health before selling food.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.cockburn.wa.gov.au/Business/Health-and-food/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "melville",
+    "website": "https://www.melvillecity.com.au/",
+    "food_business_page": "https://www.melvillecity.com.au/business/food-businesses",
+    "notification_form_url": "https://www.melvillecity.com.au/business/food-businesses/register-a-food-business",
+    "phone": "08 9364 0666",
+    "notes": "Food business registration with City of Melville Environmental Health. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.melvillecity.com.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "canning",
+    "website": "https://www.canning.wa.gov.au/",
+    "food_business_page": "https://www.canning.wa.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.canning.wa.gov.au/business/food-businesses/food-business-registration",
+    "phone": "08 9231 7111",
+    "notes": "Register with City of Canning Environmental Health. Home kitchen food for sale requires registration.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.canning.wa.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "armadale",
+    "website": "https://www.armadale.wa.gov.au/",
+    "food_business_page": "https://www.armadale.wa.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.armadale.wa.gov.au/business/food-businesses/register-a-food-business",
+    "phone": "08 9394 5000",
+    "notes": "Food business registration with City of Armadale Environmental Health. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.armadale.wa.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "mandurah",
+    "website": "https://www.mandurah.wa.gov.au/",
+    "food_business_page": "https://www.mandurah.wa.gov.au/Business/Health-and-food/food-businesses",
+    "notification_form_url": "https://www.mandurah.wa.gov.au/Business/Health-and-food/food-businesses/register-a-food-business",
+    "phone": "08 9550 3777",
+    "notes": "Register food premises with City of Mandurah before operating. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.mandurah.wa.gov.au/Business/Health-and-food/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "subiaco",
+    "website": "https://www.subiaco.wa.gov.au/",
+    "food_business_page": "https://www.subiaco.wa.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.subiaco.wa.gov.au/business/food-businesses/food-business-registration",
+    "phone": "08 9237 9222",
+    "notes": "Food business registration with City of Subiaco Environmental Health. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.subiaco.wa.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  },
+  {
+    "slug": "rockingham",
+    "website": "https://www.rockingham.wa.gov.au/",
+    "food_business_page": "https://www.rockingham.wa.gov.au/business/food-businesses",
+    "notification_form_url": "https://www.rockingham.wa.gov.au/business/food-businesses/register-a-food-business",
+    "phone": "08 9528 0333",
+    "notes": "Register with City of Rockingham Environmental Health before selling food from home. Home-based food businesses contact Environmental Health before operating.",
+    "verified_at": "2026-08-28",
+    "sources": [
+      {
+        "field": "food_business_page",
+        "url": "https://www.rockingham.wa.gov.au/business/food-businesses",
+        "retrieved": "2026-08-28",
+        "tier": 2
+      }
+    ]
+  }
+]

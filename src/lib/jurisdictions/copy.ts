@@ -76,5 +76,20 @@ export function pageDescription(record: JurisdictionRecord): string {
   if (record.code === "act") {
     return "Selling food from home in the ACT: Health Protection Service registration, home-kitchen limits, exemptions, fees, labelling, and Access Canberra.";
   }
+  if (record.code === "nsw") {
+    return "Selling food from home in NSW: council notification for direct sales, NSW Food Authority routing, labelling, Food Safety Supervisor rules, and market access.";
+  }
+  if (record.code === "vic") {
+    return "Selling food from home in Victoria: FoodTrader registration, class 1–4 rules, statement of trade, labelling, and where you can sell.";
+  }
+  if (record.code === "wa") {
+    return "Selling food from home in Western Australia: local government registration, home kitchen rules, penalties, labelling, and farm-gate sales.";
+  }
+  if (record.code === "tas") {
+    return "Selling food from home in Tasmania: Priority risk classification, annual registration vs one-off notification, labelling, and council contacts.";
+  }
+  if (record.code === "nt") {
+    return "Selling food from home in the Northern Territory: NT Health registration, Priority class fees, three-year P3 terms, labelling, and council planning links.";
+  }
   return `How to start a home-based food business in ${record.name}: who regulates you, how to notify or apply, labelling, and where you can sell, including farm gate and stalls.`;
 }

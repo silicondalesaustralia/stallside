@@ -5,11 +5,11 @@
   "slug": "new-south-wales",
   "demonym": "New South Welsh",
   "meta": {
-    "last_verified": "2026-08-24",
-    "verified_by": "",
+    "last_verified": "2026-08-28",
+    "verified_by": "owner",
     "regulator_page_last_updated": "not_published",
     "next_review_due": "2027-02-24",
-    "completeness": "research_complete"
+    "completeness": "verified_publishable"
   },
   "law": {
     "statute": "Food Act 2003 (NSW)",
@@ -29,8 +29,8 @@
     "fee": "not_published",
     "fee_currency": "AUD",
     "fee_notes": "No fee published on the home-based mixed businesses page.",
-    "timing": "",
-    "per_site": "not_published",
+    "timing": "before operating",
+    "per_site": true,
     "transferable": false,
     "change_of_details_rule": "",
     "statement_of_trade_required": "not_applicable",
@@ -59,8 +59,8 @@
   },
   "channels": {
     "direct_to_consumer": true,
-    "farmers_markets": "not_published",
-    "farm_gate": "not_published",
+    "farm_gate": true,
+    "farmers_markets": true,
     "roadside_stall": "not_published",
     "unattended_honesty_stall": "not_published",
     "online_orders_local_pickup": "not_published",
@@ -92,9 +92,9 @@
     "food_handler_skills_required": true,
     "food_safety_supervisor_required": "conditional",
     "fss_trigger": "Required only where food is ready-to-eat and potentially hazardous and not in the supplier's original packaging.",
-    "free_training_accepted": "not_published",
-    "free_training_name": "",
-    "free_training_url": ""
+    "free_training_accepted": true,
+    "free_training_name": "DoFoodSafely",
+    "free_training_url": "https://dofoodsafely.health.vic.gov.au/"
   },
   "premises": {
     "home_kitchen_allowed": true,
@@ -130,7 +130,7 @@
     "council_count": 128
   },
   "unique": {
-    "quirk_paragraph": "",
+    "quirk_paragraph": "The unusual part of New South Wales is not the notification form itself. It is who you notify, and what happens when a market asks for proof your council cannot supply from the state regulator.\n\nIf you sell direct to the person who eats the food, your local council is the enforcement path. If you sell to a cafe, retailer or other business to on-sell, the NSW Food Authority handles notification instead. That sales-channel split is load-bearing: the wrong regulator means the wrong form.\n\nMarkets and event organisers sometimes ask for inspection evidence before they will let you trade. Councils may impose local conditions, but the NSW Food Authority publishes that it will not inspect on request solely to satisfy those market access requirements. That creates a practical catch-22 for home sellers who need a stall spot and a compliant premises at the same time.\n\nThe Food Act also draws a line around primary production. Growing food can sit outside the food-business definition, but direct sale or service to the public is carved out of that protection. A farm-gate table can therefore sit inside the Act even when the growing activity did not.\n\nFor low-risk packaged products such as jams, chutneys, biscuits and chocolates, Food Safety Supervisor and Standard 3.2.2A obligations that target unpackaged potentially hazardous ready-to-eat food typically do not apply. Confirm with your council, but the product profile matters as much as the venue.",
     "common_mistake": "Assuming NSW Food Authority will inspect on request to satisfy market access conditions some councils impose, it will not.",
     "what_does_not_apply": "If you only sell low-risk packaged foods such as jams, chutneys, biscuits or chocolates, Food Safety Supervisor and Standard 3.2.2A tools that target unpackaged potentially hazardous ready-to-eat food typically do not apply, confirm with your council. Routine inspection is also framed differently for those products."
   },

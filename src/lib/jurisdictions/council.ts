@@ -86,7 +86,7 @@ export function scoreCouncilRecord(
   if (c.eho_phone || c.eho_email || c.phone) score += 1;
   if (c.planning_home_business_page) score += 1;
   if (c.temporary_stall_page) score += 1;
-  if (/home kitchen|low-risk|home-based businesses named|home based/i.test(c.notes)) {
+  if (/home kitchen|home-based|low-risk|home-based businesses named|home based/i.test(c.notes)) {
     score += 2;
   }
   return score;
@@ -117,10 +117,25 @@ export function primaryCouncilActionUrl(c: CouncilRecord): string | null {
   );
 }
 
-export function formatCouncilAddress(c: CouncilRecord): string | null {
+const STATE_POSTCODE_PREFIX: Record<string, string> = {
+  nsw: "NSW",
+  vic: "VIC",
+  qld: "QLD",
+  sa: "SA",
+  wa: "WA",
+  tas: "TAS",
+  act: "ACT",
+  nt: "NT",
+};
+
+export function formatCouncilAddress(
+  c: CouncilRecord,
+  jurisdictionCode?: string,
+): string | null {
   if (!c.street_address) return null;
-  const locality = [c.suburb, c.postcode ? `SA ${c.postcode}` : ""]
-    .filter(Boolean)
-    .join(" ");
+  const prefix = jurisdictionCode ? STATE_POSTCODE_PREFIX[jurisdictionCode] : "";
+  const postcodePart =
+    c.postcode && prefix ? `${prefix} ${c.postcode}` : c.postcode || "";
+  const locality = [c.suburb, postcodePart].filter(Boolean).join(" ");
   return locality ? `${c.street_address}, ${locality}` : c.street_address;
 }

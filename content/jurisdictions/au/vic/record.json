@@ -5,16 +5,16 @@
   "slug": "victoria",
   "demonym": "Victorian",
   "meta": {
-    "last_verified": "2026-08-24",
-    "verified_by": "",
+    "last_verified": "2026-08-28",
+    "verified_by": "owner",
     "regulator_page_last_updated": "not_published",
     "next_review_due": "2027-02-24",
-    "completeness": "research_complete"
+    "completeness": "verified_publishable"
   },
   "law": {
     "statute": "Food Act 1984 (Vic)",
     "statute_url": "https://www.legislation.vic.gov.au/",
-    "key_section": "",
+    "key_section": "Food premises classification; registration and notification",
     "regulations": [],
     "code_applies": true
   },
@@ -93,12 +93,23 @@
     "notes": "Temporary/mobile statewide registration with statement of trade to the trading council. Community gold-coin donation / free food: community guidance says registration/notification not required, confirm for commercial honesty stalls."
   },
   "labelling": {
-    "required_elements": [],
+    "basis": "Australia New Zealand Food Standards Code, Standard 1.2.1",
+    "required_elements": [
+      "Name of the food",
+      "Lot identification",
+      "Supplier name and street address in Australia or New Zealand",
+      "Ingredient list",
+      "Best-before or use-by date",
+      "Directions for use and storage",
+      "Nutrition information panel",
+      "Country of origin",
+      "Warning and advisory statements, and allergen declaration"
+    ],
     "mandated_disclaimer_text": "not_applicable",
-    "allergen_rule": "",
-    "nutrition_panel_required": "not_published",
-    "country_of_origin_required": "not_published",
-    "supplier_address_required": "not_published",
+    "allergen_rule": "Allergen declaration required as a Code label element",
+    "nutrition_panel_required": true,
+    "country_of_origin_required": true,
+    "supplier_address_required": true,
     "address_can_be_non_residential": "not_published"
   },
   "training": {
@@ -107,7 +118,7 @@
     "fss_trigger": "Required for class 1, 2 and 3A. Not required by law for class 3 or class 4.",
     "free_training_accepted": true,
     "free_training_name": "DoFoodSafely",
-    "free_training_url": ""
+    "free_training_url": "https://dofoodsafely.health.vic.gov.au/"
   },
   "premises": {
     "home_kitchen_allowed": true,
@@ -120,7 +131,7 @@
   },
   "food_safety_management": {
     "standard_322a_applies": "conditional",
-    "standard_322a_trigger": "",
+    "standard_322a_trigger": "Applies to Category 1 and Category 2 food service, catering and retail businesses handling unpackaged, potentially hazardous ready-to-eat food.",
     "food_safety_program_required": "conditional",
     "food_safety_program_trigger": "All class 1 and some class 2 (eight high-risk activities). Class 3: not required by law.",
     "records_required": "conditional"
@@ -129,7 +140,7 @@
     "sales_tax_applies": "not_applicable",
     "gst_threshold": 75000,
     "abn_required": "not_published",
-    "hobby_vs_business_test_url": "",
+    "hobby_vs_business_test_url": "https://business.gov.au/",
     "insurance_typical_market_requirement": "not_published"
   },
   "contact": {
@@ -140,9 +151,9 @@
     "council_count": 79
   },
   "unique": {
-    "quirk_paragraph": "",
+    "quirk_paragraph": "Victoria's fork is not notify versus ignore. It is annual registration versus one-off notification, and your council assigns that path by food class.\n\nClasses 1, 2, 3 and 3A register annually with the council where the premises sits. Class 4 notifies once. The trap for home sellers is assuming every jam jar or biscuit tin is class 4. Many packaged low-risk home products land in class 3, which still means annual registration, not a single notification.\n\nFoodTrader is the statewide portal, but the council EHO still classifies the premises from your highest-risk activity. Temporary and mobile traders add another layer: principal council registration plus a statement of trade when you sell somewhere else.\n\nCommunity gold-coin or free-food events sit under separate community guidance. A commercial honesty stall or paid checkout is a different question. The dividing line is whether you are conducting a commercial sale, not whether the stand looks informal.",
     "common_mistake": "Assuming every home kitchen only needs a one-off notification, jam/biscuit sellers may be class 3 (annual registration) while only the lowest-risk class 4 activities notify once.",
-    "what_does_not_apply": ""
+    "what_does_not_apply": "Class 4 activities use a one-off notification rather than annual registration. Food Safety Supervisor is not required by law for class 3 or class 4. Confirm your class with the council EHO before relying on either path."
   },
   "information_gain": [
     "Class 3 vs 4 split for typical farm-stand products (unpackaged low-risk), registration vs one-off notification.",

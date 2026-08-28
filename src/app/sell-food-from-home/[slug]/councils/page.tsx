@@ -75,9 +75,22 @@ export default async function CouncilsDirectoryPage({ params }: Props) {
           {councilsPageH1(record)}
         </h1>
         <p className="mt-6 text-[var(--field)] leading-relaxed">
-          {record.name} has {count ?? "multiple"} local government areas. Your
-          food business notification, registration or licence usually starts with
-          the council for the premises where you prepare or store food.
+          {record.code === "nt" ? (
+            <>
+              {record.name} has {count ?? "multiple"} local government areas.
+              Food business registration is handled by NT Health through
+              Territory Services, not local councils. Councils listed below may
+              still handle planning, home business approvals and market stall
+              permits.
+            </>
+          ) : (
+            <>
+              {record.name} has {count ?? "multiple"} local government areas.
+              Your food business notification, registration or licence usually
+              starts with the council for the premises where you prepare or store
+              food.
+            </>
+          )}
         </p>
         {record.gate.type === "licence" ? (
           <p className="mt-4 text-[var(--field)] leading-relaxed">

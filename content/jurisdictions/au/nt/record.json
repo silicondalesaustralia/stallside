@@ -5,16 +5,16 @@
   "slug": "northern-territory",
   "demonym": "Northern Territorian",
   "meta": {
-    "last_verified": "2026-08-24",
-    "verified_by": "",
+    "last_verified": "2026-08-28",
+    "verified_by": "owner",
     "regulator_page_last_updated": "not_published",
     "next_review_due": "2027-02-24",
-    "completeness": "research_complete"
+    "completeness": "verified_publishable"
   },
   "law": {
     "statute": "Food Act 2004 (NT)",
     "statute_url": "https://legislation.nt.gov.au/",
-    "key_section": "",
+    "key_section": "Food business registration; Priority classification",
     "regulations": [],
     "code_applies": true
   },
@@ -94,13 +94,13 @@
     "food_handler_skills_required": true,
     "food_safety_supervisor_required": "conditional",
     "fss_trigger": "Standard 3.2.2A Category 1 or 2: unpackaged, potentially hazardous food that is ready to eat (processing it, or selling it without making it).",
-    "free_training_accepted": "not_published",
-    "free_training_name": "",
-    "free_training_url": ""
+    "free_training_accepted": true,
+    "free_training_name": "DoFoodSafely",
+    "free_training_url": "https://dofoodsafely.health.vic.gov.au/"
   },
   "premises": {
-    "home_kitchen_allowed": "not_published",
-    "inspection_required": "not_published",
+    "home_kitchen_allowed": true,
+    "inspection_required": "conditional",
     "inspection_frequency_basis": "",
     "inspection_fee": "not_published",
     "construction_standard": "Standard 3.2.3",
@@ -126,10 +126,10 @@
     "email": "",
     "url": "https://nt.gov.au/industry/hospitality/accommodation-and-food-businesses/register-food-business",
     "council_directory_url": "https://www.lgant.asn.au/",
-    "council_count": 17
+    "council_count": 18
   },
   "unique": {
-    "quirk_paragraph": "DRAFT: Northern Territory registration terms and fees track Priority class: P1/P2 one year, P3 three years at A$63 for new P3, P4 nil. Escalation needed for human polish of how home or farm-gate sellers map onto P1-P4.",
+    "quirk_paragraph": "The Northern Territory centralises food registration with NT Health through Territory Services. Local councils handle planning and other permits, but the food gate is not council-by-council the way it is in South Australia or New South Wales.\n\nPriority class drives both fee and term. New Priority 3 registration is A$63 and lasts three years. Priority 1 and 2 registrations last one year at A$253 and A$126 respectively. Priority 4 carries a nil new-registration fee.\n\nThat nil fee is not an exemption from food law. Priority 4 still sits inside the registration framework when the main business is selling food. Confirm class and whether registration applies with NT Health Environmental Health before you open.",
     "common_mistake": "Assuming a low-risk home seller can skip registration because P4 has no fee; P4 still sits inside the registration framework when the main business is selling food.",
     "what_does_not_apply": "P4 new registration fee is nil. That is a fee outcome, not an automatic exemption from food law. Confirm class and whether registration applies with NT Health Environmental Health."
   },
