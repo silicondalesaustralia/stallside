@@ -23,6 +23,7 @@ function asDate(value: Date | string): Date {
   return value instanceof Date ? value : new Date(value);
 }
 
+/** Format in the browser only — server UTC would shift wall-clock times. */
 function DateTimeLocalInput({
   name,
   defaultDate,
@@ -34,9 +35,7 @@ function DateTimeLocalInput({
   required?: boolean;
   className?: string;
 }) {
-  const [value, setValue] = useState(() =>
-    defaultDate ? toDateTimeLocalValue(asDate(defaultDate)) : "",
-  );
+  const [value, setValue] = useState("");
 
   useEffect(() => {
     setValue(defaultDate ? toDateTimeLocalValue(asDate(defaultDate)) : "");
@@ -72,8 +71,10 @@ export default function PreOrderFields({
   const [handover, setHandover] = useState<"COLLECT" | "DELIVER">(
     defaultHandoverMode,
   );
+  const [showExact, setShowExact] = useState(defaultShowExactStock);
   const canEnable = forceOn || stripeConnected || on;
-  const inputClass = "rounded-lg border border-[var(--line)] bg-white px-3 py-2.5";
+  const inputClass =
+    "rounded-lg border border-[var(--line)] bg-white px-3 py-2.5";
 
   return (
     <fieldset className="flex flex-col gap-3 rounded-lg border border-[var(--line)] p-4">
@@ -222,11 +223,16 @@ export default function PreOrderFields({
             </div>
           </div>
 
+          <input
+            type="hidden"
+            name="preOrderShowExactStock"
+            value={showExact ? "true" : "false"}
+          />
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
-              name="preOrderShowExactStock"
-              defaultChecked={defaultShowExactStock}
+              checked={showExact}
+              onChange={(e) => setShowExact(e.target.checked)}
               className="size-4 accent-[var(--leaf)]"
             />
             Show exact slots left publicly

@@ -248,6 +248,8 @@ export async function createPreOrderPage(formData: FormData) {
 
   const slug = await uniquePageSlug(stand.id, slugInput || title);
   const schedule = scheduleFromPre(pre.data);
+  const locationLabel =
+    String(formData.get("locationLabel") ?? "").trim().slice(0, 120) || null;
 
   const addon = await resolvePageAddon({
     formData,
@@ -261,6 +263,10 @@ export async function createPreOrderPage(formData: FormData) {
   if (!addon.ok) return { error: addon.error };
 
   const page = await prisma.$transaction(async (tx) => {
+    await tx.stand.update({
+      where: { id: stand.id },
+      data: { locationLabel },
+    });
     const created = await tx.preOrderPage.create({
       data: {
         standId: stand.id,
@@ -377,6 +383,9 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
   }
 
   const schedule = scheduleFromPre(pre.data);
+  const locationLabel =
+    String(formData.get("locationLabel") ?? "").trim().slice(0, 120) || null;
+
   const addon = await resolvePageAddon({
     formData,
     standId: existing.standId,
@@ -400,6 +409,10 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
   if (!image.ok) return { error: image.error };
 
   await prisma.$transaction(async (tx) => {
+    await tx.stand.update({
+      where: { id: existing.standId },
+      data: { locationLabel },
+    });
     await tx.preOrderPageProduct.deleteMany({
       where: { preOrderPageId: existing.id },
     });
@@ -443,12 +456,13 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
   revalidatePath(`/dashboard/pre-order-pages/${existing.id}`);
   revalidatePath(`/dashboard/pre-order-pages/${existing.id}/qr`);
   revalidatePath("/dashboard/products");
+  revalidatePath(`/dashboard/businesses/${existing.standId}`);
   revalidatePath(`/s/${existing.stand.slug}`);
   revalidatePath(preOrderPagePath(existing.stand.slug, existing.slug));
   if (slug !== existing.slug) {
     revalidatePath(preOrderPagePath(existing.stand.slug, slug));
   }
-  return { ok: true as const };
+  redirect(`/dashboard/pre-order-pages/${existing.id}?saved=1`);
 }
 
 export async function deletePreOrderPage(pageId: string) {

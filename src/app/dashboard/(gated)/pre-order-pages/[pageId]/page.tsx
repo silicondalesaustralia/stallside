@@ -8,15 +8,26 @@ import { deletePreOrderPage } from "../actions";
 
 export default async function EditPreOrderPagePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ pageId: string }>;
+  searchParams: Promise<{ saved?: string }>;
 }) {
   const { pageId } = await params;
+  const { saved } = await searchParams;
   const { owner } = await requireOwner();
   const page = await prisma.preOrderPage.findFirst({
     where: { id: pageId, ownerId: owner.id },
     include: {
-      stand: { select: { id: true, name: true, slug: true, currency: true } },
+      stand: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          currency: true,
+          locationLabel: true,
+        },
+      },
       items: { select: { productId: true }, orderBy: { sortOrder: "asc" } },
     },
   });
@@ -82,6 +93,7 @@ export default async function EditPreOrderPagePage({
         <PreOrderPageForm
           stripeConnected={stripeConnected}
           currency={page.stand.currency}
+          initialMessage={saved === "1" ? "Saved." : null}
           products={products.map((p) => ({
             id: p.id,
             name: p.name,
@@ -90,11 +102,11 @@ export default async function EditPreOrderPagePage({
           }))}
           values={{
             id: page.id,
-            updatedAt: page.updatedAt.toISOString(),
             title: page.title,
             slug: page.slug,
             description: page.description,
             imageUrl: page.imageUrl,
+            locationLabel: page.stand.locationLabel,
             isActive: page.isActive,
             hideOnBusinessPage: page.hideOnBusinessPage,
             orderByAt: page.orderByAt.toISOString(),

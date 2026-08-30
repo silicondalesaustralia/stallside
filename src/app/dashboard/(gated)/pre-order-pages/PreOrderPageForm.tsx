@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState, useTransition, type FormEvent } from "react";
 import PreOrderAddonFields from "@/components/PreOrderAddonFields";
 import PreOrderFields from "../products/PreOrderFields";
 import PreOrderShareFields from "./PreOrderShareFields";
@@ -19,11 +18,11 @@ type ProductOpt = {
 
 type PageValues = {
   id?: string;
-  updatedAt?: string;
   title: string;
   slug: string;
   description: string | null;
   imageUrl: string | null;
+  locationLabel: string | null;
   isActive: boolean;
   hideOnBusinessPage: boolean;
   orderByAt: string;
@@ -40,33 +39,38 @@ type PageValues = {
   preOrderUpsellDiscountValue: number | null;
 };
 
+const inputClass =
+  "rounded-lg border border-[var(--line)] bg-white px-3 py-2.5";
+
 export default function PreOrderPageForm({
   products,
   stripeConnected,
   currency,
   values,
+  standLocationLabel,
+  initialMessage,
 }: {
   products: ProductOpt[];
   stripeConnected: boolean;
   currency: string;
   values?: PageValues;
+  standLocationLabel?: string | null;
+  initialMessage?: string | null;
 }) {
-  const router = useRouter();
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(initialMessage ?? null);
   const [pending, startTransition] = useTransition();
   const [imageBusy, setImageBusy] = useState(false);
   const editing = Boolean(values?.id);
   const selected = new Set(values?.productIds ?? []);
 
-  function onSubmit(formData: FormData) {
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     if (imageBusy) {
       setMessage("Wait for the photo to finish preparing, then save.");
       return;
     }
-    const payload = new FormData();
-    for (const [key, value] of formData.entries()) {
-      payload.append(key, value);
-    }
+    const form = event.currentTarget;
+    const payload = new FormData(form);
     setMessage(null);
     startTransition(async () => {
       try {
@@ -75,13 +79,15 @@ export default function PreOrderPageForm({
           : await createPreOrderPage(payload);
         if (result && "error" in result && result.error) {
           setMessage(result.error);
-          return;
-        }
-        if (editing) {
-          setMessage("Saved.");
-          router.refresh();
         }
       } catch (error) {
+        const digest =
+          typeof error === "object" &&
+          error !== null &&
+          "digest" in error
+            ? String((error as { digest?: unknown }).digest)
+            : "";
+        if (digest.startsWith("NEXT_REDIRECT")) throw error;
         console.error("Pre-order page save failed", error);
         setMessage("Could not save. Try again.");
       }
@@ -89,11 +95,22 @@ export default function PreOrderPageForm({
   }
 
   return (
-    <form
-      key={values?.updatedAt ?? values?.id ?? "new"}
-      action={onSubmit}
-      className="grid w-full gap-4 lg:grid-cols-2"
-    >
+    <form onSubmit={onSubmit} className="grid w-full gap-4 lg:grid-cols-2">
+      <label className="flex flex-col gap-2 text-sm lg:col-span-2">
+        <span className="font-medium">Suburb / location</span>
+        <input
+          name="locationLabel"
+          defaultValue={
+            values?.locationLabel ?? standLocationLabel ?? ""
+          }
+          maxLength={120}
+          placeholder="Macclesfield"
+          className={inputClass}
+        />
+        <span className="text-[var(--muted)]">
+          Shown under your stand name on the public pre-order page.
+        </span>
+      </label>
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
