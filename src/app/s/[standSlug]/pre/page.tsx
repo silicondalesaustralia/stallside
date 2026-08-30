@@ -75,7 +75,7 @@ export default async function PublicPreOrdersIndexPage({
               >
                 <p className="font-medium">{page.title}</p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
-                  Collect {formatCollectionLabel(page.collectionAt)}
+                  Collect {formatCollectionLabel(page.collectionAt, stand.timezone)}
                 </p>
                 {page.description ? (
                   <p className="mt-2 text-sm text-[var(--muted)]">

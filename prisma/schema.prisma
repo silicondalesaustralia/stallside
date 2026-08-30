@@ -344,6 +344,8 @@ model Stand {
   qrSignMessage      String?
   qrCallout          String?
   currency           String               @default("AUD")
+  /** IANA timezone for order-by / collection wall-clock times. */
+  timezone           String               @default("Australia/Adelaide")
   /** PayID / Pix / UPI alias shown at checkout (owner-direct; not verified). */
   localTransferAlias String?
   localTransferMethodId String?

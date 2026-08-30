@@ -1,4 +1,5 @@
 import { CURRENCIES } from "@/lib/constants";
+import { DEFAULT_TIMEZONE, STAND_TIMEZONES } from "@/lib/stand-timezone";
 import { createStand } from "../actions";
 import FormField from "@/components/FormField";
 
@@ -40,6 +41,23 @@ export default function NewStandPage() {
               </option>
             ))}
           </select>
+        </label>
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="font-medium">Timezone</span>
+          <select
+            name="timezone"
+            defaultValue={DEFAULT_TIMEZONE}
+            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+          >
+            {STAND_TIMEZONES.map((z) => (
+              <option key={z.value} value={z.value}>
+                {z.label}
+              </option>
+            ))}
+          </select>
+          <span className="text-[var(--muted)]">
+            Used for pre-order order-by and collection times.
+          </span>
         </label>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" name="showExactStock" className="size-4" />

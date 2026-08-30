@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toDateTimeLocalValue } from "@/lib/pre-order";
+import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
 
 type Props = {
   stripeConnected: boolean;
   defaultIsPreOrder?: boolean;
   /** Always on - for pre-order pages (no toggle). */
   forceOn?: boolean;
+  timeZone?: string;
   defaultOrderByAt?: Date | string | null;
   defaultCollectionAt?: Date | string | null;
   defaultCollectionNote?: string | null;
@@ -23,23 +25,27 @@ function asDate(value: Date | string): Date {
   return value instanceof Date ? value : new Date(value);
 }
 
-/** Format in the browser only — server UTC would shift wall-clock times. */
+/** Format in the stand timezone — not the server/browser local zone. */
 function DateTimeLocalInput({
   name,
   defaultDate,
+  timeZone,
   required,
   className,
 }: {
   name: string;
   defaultDate: Date | string | null;
+  timeZone: string;
   required?: boolean;
   className?: string;
 }) {
   const [value, setValue] = useState("");
 
   useEffect(() => {
-    setValue(defaultDate ? toDateTimeLocalValue(asDate(defaultDate)) : "");
-  }, [defaultDate]);
+    setValue(
+      defaultDate ? toDateTimeLocalValue(asDate(defaultDate), timeZone) : "",
+    );
+  }, [defaultDate, timeZone]);
 
   return (
     <input
@@ -57,6 +63,7 @@ export default function PreOrderFields({
   stripeConnected,
   defaultIsPreOrder = false,
   forceOn = false,
+  timeZone = DEFAULT_TIMEZONE,
   defaultOrderByAt = null,
   defaultCollectionAt = null,
   defaultCollectionNote = null,
@@ -124,6 +131,7 @@ export default function PreOrderFields({
             <DateTimeLocalInput
               name="orderByAt"
               required
+              timeZone={timeZone}
               defaultDate={defaultOrderByAt}
               className={inputClass}
             />
@@ -135,6 +143,7 @@ export default function PreOrderFields({
             <DateTimeLocalInput
               name="collectionAt"
               required
+              timeZone={timeZone}
               defaultDate={defaultCollectionAt}
               className={inputClass}
             />

@@ -40,7 +40,7 @@ export default async function NewPreOrderPagePage() {
     }),
     prisma.stand.findUnique({
       where: { id: selected.id },
-      select: { currency: true, locationLabel: true },
+      select: { currency: true, locationLabel: true, timezone: true },
     }),
   ]);
 
@@ -63,6 +63,7 @@ export default async function NewPreOrderPagePage() {
         <PreOrderPageForm
           stripeConnected={stripeConnected}
           currency={stand?.currency ?? "AUD"}
+          timeZone={stand?.timezone ?? "Australia/Adelaide"}
           standLocationLabel={stand?.locationLabel ?? null}
           products={products.map((p) => ({
             id: p.id,

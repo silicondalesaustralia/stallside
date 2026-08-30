@@ -25,7 +25,7 @@ export async function generateMetadata({
       isActive: true,
       stand: { slug: standKey, isActive: true },
     },
-    include: { stand: { select: { name: true, slug: true } } },
+    include: { stand: { select: { name: true, slug: true, timezone: true } } },
   });
   if (!page) return { title: "Pre-order" };
   return preOrderPageMetadata({
@@ -35,7 +35,10 @@ export async function generateMetadata({
     pageSlug: page.slug,
     description: page.description,
     imageUrl: page.imageUrl,
-    collectionLabel: formatCollectionLabel(page.collectionAt),
+    collectionLabel: formatCollectionLabel(
+      page.collectionAt,
+      page.stand.timezone,
+    ),
   });
 }
 
@@ -87,6 +90,7 @@ export default async function PublicPreOrderPage({
       mapPublicProduct(p, {
         showExactStock: stand.showExactStock || page.showExactStock,
         showPublicScarcity: stand.showPublicScarcity,
+        timeZone: stand.timezone,
       }),
     ]),
   );
@@ -123,8 +127,8 @@ export default async function PublicPreOrderPage({
       >
         {page.title}
       </h1>
-      <p className="mt-2 text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">
-        Pre-order · {formatCollectionLabel(page.collectionAt)}
+      <p className="mt-2 text-center text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">
+        Pre-order · {formatCollectionLabel(page.collectionAt, stand.timezone)}
       </p>
       {page.description ? (
         <p className="mt-3 text-lg leading-snug text-[var(--muted)]">

@@ -26,6 +26,7 @@ export default async function EditPreOrderPagePage({
           slug: true,
           currency: true,
           locationLabel: true,
+          timezone: true,
         },
       },
       items: { select: { productId: true }, orderBy: { sortOrder: "asc" } },
@@ -93,6 +94,7 @@ export default async function EditPreOrderPagePage({
         <PreOrderPageForm
           stripeConnected={stripeConnected}
           currency={page.stand.currency}
+          timeZone={page.stand.timezone}
           initialMessage={saved === "1" ? "Saved." : null}
           products={products.map((p) => ({
             id: p.id,

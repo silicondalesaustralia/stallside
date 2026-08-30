@@ -46,6 +46,7 @@ export default function PreOrderPageForm({
   products,
   stripeConnected,
   currency,
+  timeZone,
   values,
   standLocationLabel,
   initialMessage,
@@ -53,6 +54,7 @@ export default function PreOrderPageForm({
   products: ProductOpt[];
   stripeConnected: boolean;
   currency: string;
+  timeZone: string;
   values?: PageValues;
   standLocationLabel?: string | null;
   initialMessage?: string | null;
@@ -71,11 +73,6 @@ export default function PreOrderPageForm({
     }
     const form = event.currentTarget;
     const payload = new FormData(form);
-    // Server is UTC — attach the browser offset so wall-clock times round-trip.
-    payload.set(
-      "timezoneOffsetMinutes",
-      String(new Date().getTimezoneOffset()),
-    );
     setMessage(null);
     startTransition(async () => {
       try {
@@ -145,6 +142,7 @@ export default function PreOrderPageForm({
         <PreOrderFields
           forceOn
           stripeConnected={stripeConnected}
+          timeZone={timeZone}
           defaultIsPreOrder
           defaultOrderByAt={values?.orderByAt ?? null}
           defaultCollectionAt={values?.collectionAt ?? null}

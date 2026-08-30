@@ -4,6 +4,7 @@ import {
 } from "@/lib/pre-order";
 import type { PublicOptionGroup } from "@/lib/product-options";
 import { parsePriceTiers } from "@/lib/price-tiers";
+import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
 
 export type PreOrderDetailsData = {
   ordersCloseLabel: string | null;
@@ -47,23 +48,24 @@ function stockLabel(
   threshold: number,
   preOrder: { collectionAt: Date } | null,
   showPublicScarcity: boolean,
+  timeZone: string,
 ): string {
   if (quantity <= 0) {
     return preOrder
-      ? `Sold out for ${formatCollectionLabel(preOrder.collectionAt)}`
+      ? `Sold out for ${formatCollectionLabel(preOrder.collectionAt, timeZone)}`
       : "Sold out";
   }
   if (preOrder && showExact) {
-    return `${quantity} left for ${formatCollectionLabel(preOrder.collectionAt)}`;
+    return `${quantity} left for ${formatCollectionLabel(preOrder.collectionAt, timeZone)}`;
   }
   if (showExact) return `${quantity} left`;
   if (preOrder) {
     if (quantity <= threshold) {
       return showPublicScarcity
-        ? `Only ${quantity} left for ${formatCollectionLabel(preOrder.collectionAt)}`
-        : `Low stock for ${formatCollectionLabel(preOrder.collectionAt)}`;
+        ? `Only ${quantity} left for ${formatCollectionLabel(preOrder.collectionAt, timeZone)}`
+        : `Low stock for ${formatCollectionLabel(preOrder.collectionAt, timeZone)}`;
     }
-    return `Available for ${formatCollectionLabel(preOrder.collectionAt)}`;
+    return `Available for ${formatCollectionLabel(preOrder.collectionAt, timeZone)}`;
   }
   if (quantity <= threshold) {
     return showPublicScarcity ? `Only ${quantity} left` : "Low stock";
@@ -108,14 +110,16 @@ export function mapPublicProduct(
     showExactStock: boolean;
     showPublicScarcity?: boolean;
     now?: number;
+    timeZone?: string;
   },
 ): PublicProductCard {
   const now = opts.now ?? Date.now();
+  const timeZone = opts.timeZone ?? DEFAULT_TIMEZONE;
   const isPre = Boolean(p.isPreOrder && p.collectionAt && p.orderByAt);
   const closed = isPre && p.orderByAt!.getTime() <= now;
   const soldOut = p.stockQuantity <= 0 || closed;
   const collectionLabel = isPre
-    ? formatCollectionLabel(p.collectionAt!)
+    ? formatCollectionLabel(p.collectionAt!, timeZone)
     : null;
   const showExact = isPre
     ? Boolean(p.showExactStock)
@@ -127,15 +131,16 @@ export function mapPublicProduct(
     p.lowStockThreshold,
     isPre ? { collectionAt: p.collectionAt! } : null,
     showPublicScarcity,
+    timeZone,
   );
   if (closed && p.stockQuantity > 0) {
-    label = `Orders closed (${formatOrderByLabel(p.orderByAt!)})`;
+    label = `Orders closed (${formatOrderByLabel(p.orderByAt!, timeZone)})`;
   }
   const preOrderDetails: PreOrderDetailsData | null = isPre
     ? {
         ordersCloseLabel: closed
           ? null
-          : formatOrderByLabel(p.orderByAt!),
+          : formatOrderByLabel(p.orderByAt!, timeZone),
         collectionLabel: collectionLabel!,
         note: p.collectionNote,
       }

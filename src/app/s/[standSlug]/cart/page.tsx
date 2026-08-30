@@ -60,6 +60,7 @@ export default async function StandCartPage({
     mapPublicProduct(p, {
       showExactStock: stand.showExactStock,
       showPublicScarcity: stand.showPublicScarcity,
+      timeZone: stand.timezone,
     }),
   );
 

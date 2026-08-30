@@ -7,6 +7,11 @@ import { z } from "zod";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { CURRENCIES } from "@/lib/constants";
+import {
+  DEFAULT_TIMEZONE,
+  STAND_TIMEZONES,
+  resolveStandTimezone,
+} from "@/lib/stand-timezone";
 import { uniqueStandSlug } from "@/lib/slug";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
 import { localTransferForCurrency } from "@/lib/local-transfer";
@@ -20,12 +25,18 @@ import {
   ensureCustomerChoiceProduct,
 } from "@/lib/customer-choice-product";
 
+const timezoneValues = STAND_TIMEZONES.map((z) => z.value) as [
+  string,
+  ...string[],
+];
+
 const standSchema = z.object({
   name: z.string().trim().min(2).max(80),
   // Align with QR print editor (HTML instructions can exceed plain-text length).
   description: z.string().trim().max(8000).optional(),
   locationLabel: z.string().trim().max(120).optional(),
   currency: z.enum(CURRENCIES),
+  timezone: z.enum(timezoneValues),
   showExactStock: z.coerce.boolean().optional(),
   isActive: z.coerce.boolean().optional(),
 });
@@ -43,6 +54,9 @@ export async function createStand(formData: FormData) {
     description: formData.get("description") || undefined,
     locationLabel: formData.get("locationLabel") || undefined,
     currency: formData.get("currency") || "AUD",
+    timezone: resolveStandTimezone(
+      String(formData.get("timezone") ?? DEFAULT_TIMEZONE),
+    ),
     showExactStock: formData.get("showExactStock") === "on",
     isActive: true,
   });
@@ -63,6 +77,7 @@ export async function createStand(formData: FormData) {
       description: parsed.data.description,
       locationLabel: parsed.data.locationLabel,
       currency: parsed.data.currency,
+      timezone: parsed.data.timezone,
       showExactStock: parsed.data.showExactStock ?? false,
       isActive: true,
     },
@@ -142,6 +157,9 @@ export async function updateStand(standId: string, formData: FormData) {
     description: description || undefined,
     locationLabel: locationLabel || undefined,
     currency: formData.get("currency") || existing.currency,
+    timezone: resolveStandTimezone(
+      String(formData.get("timezone") ?? existing.timezone ?? DEFAULT_TIMEZONE),
+    ),
     showExactStock: formData.get("showExactStock") === "on",
     isActive: formData.get("isActive") === "on",
   });
@@ -175,6 +193,7 @@ export async function updateStand(standId: string, formData: FormData) {
       description: description || null,
       locationLabel: locationLabel || null,
       currency: parsed.data.currency,
+      timezone: parsed.data.timezone,
       ...(clearLocal
         ? {
             localTransferAlias: null,

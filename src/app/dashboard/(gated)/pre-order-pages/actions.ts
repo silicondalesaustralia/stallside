@@ -202,7 +202,7 @@ export async function createPreOrderPage(formData: FormData) {
 
   const stand = await prisma.stand.findFirst({
     where: { id: selected.id, ownerId: owner.id },
-    select: { id: true, slug: true, currency: true },
+    select: { id: true, slug: true, currency: true, timezone: true },
   });
   if (!stand) return { error: "Create a business first." };
 
@@ -210,7 +210,12 @@ export async function createPreOrderPage(formData: FormData) {
     owner.stripeAccountId && owner.stripeChargesEnabled,
   );
   formData.set("isPreOrder", "true");
-  const pre = parsePreOrderFromForm(formData, true, stripeConnected);
+  const pre = parsePreOrderFromForm(
+    formData,
+    true,
+    stripeConnected,
+    stand.timezone,
+  );
   if (!pre.ok) return { error: pre.error };
   if (!pre.data.isPreOrder) {
     return { error: "Set order-by and collection times." };
@@ -331,7 +336,7 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
   const existing = await prisma.preOrderPage.findFirst({
     where: { id: pageId, ownerId: owner.id },
     include: {
-      stand: { select: { id: true, slug: true, currency: true } },
+      stand: { select: { id: true, slug: true, currency: true, timezone: true } },
       items: { select: { productId: true } },
     },
   });
@@ -341,7 +346,12 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
     owner.stripeAccountId && owner.stripeChargesEnabled,
   );
   formData.set("isPreOrder", "true");
-  const pre = parsePreOrderFromForm(formData, true, stripeConnected);
+  const pre = parsePreOrderFromForm(
+    formData,
+    true,
+    stripeConnected,
+    existing.stand.timezone,
+  );
   if (!pre.ok) return { error: pre.error };
   if (!pre.data.isPreOrder) {
     return { error: "Set order-by and collection times." };

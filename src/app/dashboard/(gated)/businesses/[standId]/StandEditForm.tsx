@@ -3,6 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { CURRENCIES } from "@/lib/constants";
+import {
+  STAND_TIMEZONES,
+  resolveStandTimezone,
+} from "@/lib/stand-timezone";
 import { updateStand } from "../actions";
 
 type StandFields = {
@@ -12,6 +16,7 @@ type StandFields = {
   description: string | null;
   locationLabel: string | null;
   currency: string;
+  timezone: string;
   showExactStock: boolean;
   isActive: boolean;
 };
@@ -100,6 +105,23 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
         </select>
         <span className="text-[var(--muted)]">
           PayID only appears for AUD under Checkout payments.
+        </span>
+      </label>
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="font-medium">Timezone</span>
+        <select
+          name="timezone"
+          defaultValue={resolveStandTimezone(stand.timezone)}
+          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+        >
+          {STAND_TIMEZONES.map((z) => (
+            <option key={z.value} value={z.value}>
+              {z.label}
+            </option>
+          ))}
+        </select>
+        <span className="text-[var(--muted)]">
+          Pre-order order-by and collection times use this timezone.
         </span>
       </label>
       <label className="flex items-center gap-2 text-sm">

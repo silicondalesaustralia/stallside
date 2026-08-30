@@ -85,11 +85,13 @@ export default async function PublicProductPage({
       mapPublicProduct(p, {
         showExactStock: stand.showExactStock,
         showPublicScarcity: stand.showPublicScarcity,
+        timeZone: stand.timezone,
       }),
     );
   const product = mapPublicProduct(productRow, {
     showExactStock: stand.showExactStock,
     showPublicScarcity: stand.showPublicScarcity,
+    timeZone: stand.timezone,
   });
 
   return (
