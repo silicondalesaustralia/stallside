@@ -71,6 +71,11 @@ export default function PreOrderPageForm({
     }
     const form = event.currentTarget;
     const payload = new FormData(form);
+    // Server is UTC — attach the browser offset so wall-clock times round-trip.
+    payload.set(
+      "timezoneOffsetMinutes",
+      String(new Date().getTimezoneOffset()),
+    );
     setMessage(null);
     startTransition(async () => {
       try {

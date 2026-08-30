@@ -29,10 +29,14 @@ export type PreOrderParsed =
       handoverMode: HandoverModeValue;
     };
 
-function parseDateTimeLocal(raw: string): Date | null {
+function parseDateTimeLocal(
+  raw: string,
+  /** From `Date#getTimezoneOffset()` in the browser that submitted the form. */
+  timezoneOffsetMinutes: number,
+): Date | null {
   const trimmed = raw.trim();
   if (!trimmed) return null;
-  // datetime-local has no zone - treat digits as wall-clock (not UTC via Date.parse).
+  // datetime-local has no zone — digits are the user's wall clock.
   const match =
     /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(trimmed);
   if (match) {
@@ -42,14 +46,19 @@ function parseDateTimeLocal(raw: string): Date | null {
     const hour = Number(match[4]);
     const minute = Number(match[5]);
     const second = match[6] ? Number(match[6]) : 0;
-    const d = new Date(year, month, day, hour, minute, second);
+    // Do NOT use `new Date(y, m, d, …)` here — that uses the server TZ (UTC on
+    // Vercel) and shifts every save for AU users.
+    const utcMs =
+      Date.UTC(year, month, day, hour, minute, second) +
+      timezoneOffsetMinutes * 60_000;
+    const d = new Date(utcMs);
     return Number.isNaN(d.getTime()) ? null : d;
   }
   const d = new Date(trimmed);
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
-/** `datetime-local` value from a Date (local wall clock). */
+/** `datetime-local` value from a Date (local wall clock). Browser only. */
 export function toDateTimeLocalValue(d: Date | string): string {
   const date = typeof d === "string" ? new Date(d) : d;
   if (Number.isNaN(date.getTime())) return "";
@@ -87,9 +96,18 @@ export function parsePreOrderFromForm(
       error: "Connect Stripe before enabling pre-orders.",
     };
   }
-  const orderByAt = parseDateTimeLocal(String(formData.get("orderByAt") ?? ""));
+  const offsetRaw = Number(formData.get("timezoneOffsetMinutes"));
+  if (!Number.isFinite(offsetRaw)) {
+    return { ok: false, error: "Could not read your timezone. Refresh and try again." };
+  }
+  const timezoneOffsetMinutes = offsetRaw;
+  const orderByAt = parseDateTimeLocal(
+    String(formData.get("orderByAt") ?? ""),
+    timezoneOffsetMinutes,
+  );
   const collectionAt = parseDateTimeLocal(
     String(formData.get("collectionAt") ?? ""),
+    timezoneOffsetMinutes,
   );
   if (!orderByAt || !collectionAt) {
     return { ok: false, error: "Set order-by and collection times." };
