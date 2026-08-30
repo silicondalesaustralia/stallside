@@ -106,6 +106,7 @@ export default async function PublicPreOrderPage({
         standName={stand.name}
         standSlug={stand.slug}
         logoUrl={branded.logoUrl}
+        locationLabel={stand.locationLabel}
         backHref={standCatalogPath(stand.slug)}
         backLabel="← All products"
       />

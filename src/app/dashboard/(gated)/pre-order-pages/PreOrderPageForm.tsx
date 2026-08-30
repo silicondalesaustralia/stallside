@@ -19,14 +19,15 @@ type ProductOpt = {
 
 type PageValues = {
   id?: string;
+  updatedAt?: string;
   title: string;
   slug: string;
   description: string | null;
   imageUrl: string | null;
   isActive: boolean;
   hideOnBusinessPage: boolean;
-  orderByAt: Date;
-  collectionAt: Date;
+  orderByAt: string;
+  collectionAt: string;
   collectionNote: string | null;
   showExactStock: boolean;
   paymentTiming: "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE" | "PAY_NOW";
@@ -88,14 +89,11 @@ export default function PreOrderPageForm({
   }
 
   return (
-    <form action={onSubmit} className="grid w-full gap-4 lg:grid-cols-2">
-      <PreOrderShareFields
-        title={values?.title ?? ""}
-        slug={values?.slug ?? ""}
-        description={values?.description ?? null}
-        imageUrl={values?.imageUrl ?? null}
-        onImageBusyChange={setImageBusy}
-      />
+    <form
+      key={values?.updatedAt ?? values?.id ?? "new"}
+      action={onSubmit}
+      className="grid w-full gap-4 lg:grid-cols-2"
+    >
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
@@ -183,6 +181,14 @@ export default function PreOrderPageForm({
           intro="Optional cart add-on for this page. Offered when the cart is this pre-order sheet. Inherits collection day and payment settings."
         />
       </div>
+
+      <PreOrderShareFields
+        title={values?.title ?? ""}
+        slug={values?.slug ?? ""}
+        description={values?.description ?? null}
+        imageUrl={values?.imageUrl ?? null}
+        onImageBusyChange={setImageBusy}
+      />
 
       <div className="flex flex-wrap items-center gap-3 lg:col-span-2">
         {message ? (

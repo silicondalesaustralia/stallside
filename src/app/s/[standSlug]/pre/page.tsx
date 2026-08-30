@@ -52,6 +52,7 @@ export default async function PublicPreOrdersIndexPage({
         standName={stand.name}
         standSlug={stand.slug}
         logoUrl={branded.logoUrl}
+        locationLabel={stand.locationLabel}
       />
       <h2 className="mt-8 text-2xl font-semibold tracking-tight">Pre-orders</h2>
       {pages.length === 0 ? (

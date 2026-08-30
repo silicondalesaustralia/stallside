@@ -89,6 +89,7 @@ export default async function PublicStandPage({
         standName={stand.name}
         standSlug={stand.slug}
         logoUrl={branded.logoUrl}
+        locationLabel={stand.locationLabel}
       />
       {products.length === 0 ? (
         <p className="mt-10 text-center text-xl text-[var(--muted)]">

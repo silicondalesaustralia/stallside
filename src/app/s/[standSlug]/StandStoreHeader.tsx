@@ -10,12 +10,14 @@ export default async function StandStoreHeader({
   standName,
   standSlug,
   logoUrl,
+  locationLabel,
   backHref,
   backLabel,
 }: {
   standName: string;
   standSlug: string;
   logoUrl: string | null;
+  locationLabel?: string | null;
   backHref?: string;
   backLabel?: string;
 }) {
@@ -52,6 +54,11 @@ export default async function StandStoreHeader({
         <h1 className="mt-3 font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--field)] sm:text-3xl">
           {standName}
         </h1>
+        {locationLabel?.trim() ? (
+          <p className="mt-1 text-sm text-[var(--muted)] sm:text-base">
+            {locationLabel.trim()}
+          </p>
+        ) : null}
         <div className="mt-3 hidden sm:block">
           <StandStoreLinks
             standSlug={standSlug}

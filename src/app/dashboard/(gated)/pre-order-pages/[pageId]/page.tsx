@@ -90,14 +90,15 @@ export default async function EditPreOrderPagePage({
           }))}
           values={{
             id: page.id,
+            updatedAt: page.updatedAt.toISOString(),
             title: page.title,
             slug: page.slug,
             description: page.description,
             imageUrl: page.imageUrl,
             isActive: page.isActive,
             hideOnBusinessPage: page.hideOnBusinessPage,
-            orderByAt: page.orderByAt,
-            collectionAt: page.collectionAt,
+            orderByAt: page.orderByAt.toISOString(),
+            collectionAt: page.collectionAt.toISOString(),
             collectionNote: page.collectionNote,
             showExactStock: page.showExactStock,
             paymentTiming: page.paymentTiming,

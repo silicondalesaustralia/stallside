@@ -50,9 +50,11 @@ function parseDateTimeLocal(raw: string): Date | null {
 }
 
 /** `datetime-local` value from a Date (local wall clock). */
-export function toDateTimeLocalValue(d: Date): string {
+export function toDateTimeLocalValue(d: Date | string): string {
+  const date = typeof d === "string" ? new Date(d) : d;
+  if (Number.isNaN(date.getTime())) return "";
   const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 export function parsePreOrderFromForm(

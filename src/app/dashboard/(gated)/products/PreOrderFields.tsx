@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toDateTimeLocalValue } from "@/lib/pre-order";
 
 type Props = {
@@ -9,8 +9,8 @@ type Props = {
   defaultIsPreOrder?: boolean;
   /** Always on - for pre-order pages (no toggle). */
   forceOn?: boolean;
-  defaultOrderByAt?: Date | null;
-  defaultCollectionAt?: Date | null;
+  defaultOrderByAt?: Date | string | null;
+  defaultCollectionAt?: Date | string | null;
   defaultCollectionNote?: string | null;
   defaultShowExactStock?: boolean;
   defaultDepositRequired?: boolean;
@@ -18,6 +18,41 @@ type Props = {
   defaultHandoverMode?: "COLLECT" | "DELIVER";
   collectionNoun?: string;
 };
+
+function asDate(value: Date | string): Date {
+  return value instanceof Date ? value : new Date(value);
+}
+
+function DateTimeLocalInput({
+  name,
+  defaultDate,
+  required,
+  className,
+}: {
+  name: string;
+  defaultDate: Date | string | null;
+  required?: boolean;
+  className?: string;
+}) {
+  const [value, setValue] = useState(() =>
+    defaultDate ? toDateTimeLocalValue(asDate(defaultDate)) : "",
+  );
+
+  useEffect(() => {
+    setValue(defaultDate ? toDateTimeLocalValue(asDate(defaultDate)) : "");
+  }, [defaultDate]);
+
+  return (
+    <input
+      name={name}
+      type="datetime-local"
+      required={required}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      className={className}
+    />
+  );
+}
 
 export default function PreOrderFields({
   stripeConnected,
@@ -33,12 +68,12 @@ export default function PreOrderFields({
   collectionNoun = "Collection",
 }: Props) {
   const [on, setOn] = useState(forceOn || defaultIsPreOrder);
-  const [showExact, setShowExact] = useState(defaultShowExactStock);
   const [depositOn, setDepositOn] = useState(defaultDepositRequired);
   const [handover, setHandover] = useState<"COLLECT" | "DELIVER">(
     defaultHandoverMode,
   );
   const canEnable = forceOn || stripeConnected || on;
+  const inputClass = "rounded-lg border border-[var(--line)] bg-white px-3 py-2.5";
 
   return (
     <fieldset className="flex flex-col gap-3 rounded-lg border border-[var(--line)] p-4">
@@ -85,30 +120,22 @@ export default function PreOrderFields({
         <>
           <label className="flex flex-col gap-2 text-sm">
             <span className="font-medium">Orders close</span>
-            <input
+            <DateTimeLocalInput
               name="orderByAt"
-              type="datetime-local"
               required
-              defaultValue={
-                defaultOrderByAt ? toDateTimeLocalValue(defaultOrderByAt) : ""
-              }
-              className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+              defaultDate={defaultOrderByAt}
+              className={inputClass}
             />
           </label>
           <label className="flex flex-col gap-2 text-sm">
             <span className="font-medium">
               {collectionNoun} (after orders close)
             </span>
-            <input
+            <DateTimeLocalInput
               name="collectionAt"
-              type="datetime-local"
               required
-              defaultValue={
-                defaultCollectionAt
-                  ? toDateTimeLocalValue(defaultCollectionAt)
-                  : ""
-              }
-              className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+              defaultDate={defaultCollectionAt}
+              className={inputClass}
             />
           </label>
           <label className="flex flex-col gap-2 text-sm">
@@ -122,17 +149,18 @@ export default function PreOrderFields({
                   : "Collect from the stall 8am-noon Sat"
               }
               defaultValue={defaultCollectionNote ?? ""}
-              className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+              className={inputClass}
             />
           </label>
 
           <div className="flex flex-col gap-2 text-sm">
             <span className="font-medium">Handover</span>
-            <input type="hidden" name="handoverMode" value={handover} />
             <div className="flex flex-wrap gap-3">
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
+                  name="handoverMode"
+                  value="COLLECT"
                   checked={handover === "COLLECT"}
                   onChange={() => setHandover("COLLECT")}
                   className="size-4 accent-[var(--leaf)]"
@@ -142,6 +170,8 @@ export default function PreOrderFields({
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
+                  name="handoverMode"
+                  value="DELIVER"
                   checked={handover === "DELIVER"}
                   onChange={() => setHandover("DELIVER")}
                   className="size-4 accent-[var(--leaf)]"
@@ -153,13 +183,12 @@ export default function PreOrderFields({
 
           <div className="flex flex-col gap-2 text-sm">
             <span className="font-medium">Deposit required?</span>
-            {depositOn ? (
-              <input type="hidden" name="depositRequired" value="true" />
-            ) : null}
             <div className="flex flex-wrap items-center gap-3">
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
+                  name="depositRequired"
+                  value="false"
                   checked={!depositOn}
                   onChange={() => setDepositOn(false)}
                   className="size-4 accent-[var(--leaf)]"
@@ -169,6 +198,8 @@ export default function PreOrderFields({
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
+                  name="depositRequired"
+                  value="true"
                   checked={depositOn}
                   onChange={() => setDepositOn(true)}
                   className="size-4 accent-[var(--leaf)]"
@@ -191,14 +222,11 @@ export default function PreOrderFields({
             </div>
           </div>
 
-          {showExact ? (
-            <input type="hidden" name="preOrderShowExactStock" value="true" />
-          ) : null}
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
-              checked={showExact}
-              onChange={(e) => setShowExact(e.target.checked)}
+              name="preOrderShowExactStock"
+              defaultChecked={defaultShowExactStock}
               className="size-4 accent-[var(--leaf)]"
             />
             Show exact slots left publicly
