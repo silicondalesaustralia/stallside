@@ -93,6 +93,7 @@ export default async function EditPreOrderPagePage({
             title: page.title,
             slug: page.slug,
             description: page.description,
+            imageUrl: page.imageUrl,
             isActive: page.isActive,
             hideOnBusinessPage: page.hideOnBusinessPage,
             orderByAt: page.orderByAt,

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import PreOrderAddonFields from "@/components/PreOrderAddonFields";
 import PreOrderFields from "../products/PreOrderFields";
+import PreOrderShareFields from "./PreOrderShareFields";
 import {
   createPreOrderPage,
   updatePreOrderPage,
@@ -21,6 +22,7 @@ type PageValues = {
   title: string;
   slug: string;
   description: string | null;
+  imageUrl: string | null;
   isActive: boolean;
   hideOnBusinessPage: boolean;
   orderByAt: Date;
@@ -51,10 +53,15 @@ export default function PreOrderPageForm({
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [imageBusy, setImageBusy] = useState(false);
   const editing = Boolean(values?.id);
   const selected = new Set(values?.productIds ?? []);
 
   function onSubmit(formData: FormData) {
+    if (imageBusy) {
+      setMessage("Wait for the photo to finish preparing, then save.");
+      return;
+    }
     const payload = new FormData();
     for (const [key, value] of formData.entries()) {
       payload.append(key, value);
@@ -82,35 +89,13 @@ export default function PreOrderPageForm({
 
   return (
     <form action={onSubmit} className="grid w-full gap-4 lg:grid-cols-2">
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Page title</span>
-        <input
-          name="title"
-          required
-          maxLength={120}
-          defaultValue={values?.title ?? ""}
-          placeholder="Pre-order Monday 17 Mar"
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">URL slug (optional)</span>
-        <input
-          name="slug"
-          defaultValue={values?.slug ?? ""}
-          placeholder="auto from title"
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 font-receipt"
-        />
-      </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Description (optional)</span>
-        <input
-          name="description"
-          defaultValue={values?.description ?? ""}
-          maxLength={500}
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
+      <PreOrderShareFields
+        title={values?.title ?? ""}
+        slug={values?.slug ?? ""}
+        description={values?.description ?? null}
+        imageUrl={values?.imageUrl ?? null}
+        onImageBusyChange={setImageBusy}
+      />
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
@@ -137,20 +122,20 @@ export default function PreOrderPageForm({
       </label>
 
       <div className="lg:col-span-2">
-      <PreOrderFields
-        forceOn
-        stripeConnected={stripeConnected}
-        defaultIsPreOrder
-        defaultOrderByAt={values?.orderByAt ?? null}
-        defaultCollectionAt={values?.collectionAt ?? null}
-        defaultCollectionNote={values?.collectionNote ?? null}
-        defaultShowExactStock={values?.showExactStock ?? false}
-        defaultDepositRequired={
-          values?.paymentTiming === "DEPOSIT_THEN_BALANCE"
-        }
-        defaultDepositPercent={values?.depositPercent ?? 30}
-        defaultHandoverMode={values?.handoverMode ?? "COLLECT"}
-      />
+        <PreOrderFields
+          forceOn
+          stripeConnected={stripeConnected}
+          defaultIsPreOrder
+          defaultOrderByAt={values?.orderByAt ?? null}
+          defaultCollectionAt={values?.collectionAt ?? null}
+          defaultCollectionNote={values?.collectionNote ?? null}
+          defaultShowExactStock={values?.showExactStock ?? false}
+          defaultDepositRequired={
+            values?.paymentTiming === "DEPOSIT_THEN_BALANCE"
+          }
+          defaultDepositPercent={values?.depositPercent ?? 30}
+          defaultHandoverMode={values?.handoverMode ?? "COLLECT"}
+        />
       </div>
 
       <fieldset className="flex flex-col gap-2 rounded-lg border border-[var(--line)] p-4 lg:col-span-2">
@@ -168,10 +153,7 @@ export default function PreOrderPageForm({
         ) : (
           <ul className="flex flex-col gap-2">
             {products.map((p) => (
-              <label
-                key={p.id}
-                className="flex items-start gap-2 text-sm"
-              >
+              <label key={p.id} className="flex items-start gap-2 text-sm">
                 <input
                   type="checkbox"
                   name="productIds"
@@ -192,35 +174,41 @@ export default function PreOrderPageForm({
       </fieldset>
 
       <div className="lg:col-span-2">
-      <PreOrderAddonFields
-        currency={currency}
-        name={values?.preOrderUpsellName ?? null}
-        priceCents={values?.preOrderUpsellPriceCents ?? null}
-        discountKind={values?.preOrderUpsellDiscountKind ?? null}
-        discountValue={values?.preOrderUpsellDiscountValue ?? null}
-        intro="Optional cart add-on for this page. Offered when the cart is this pre-order sheet. Inherits collection day and payment settings."
-      />
+        <PreOrderAddonFields
+          currency={currency}
+          name={values?.preOrderUpsellName ?? null}
+          priceCents={values?.preOrderUpsellPriceCents ?? null}
+          discountKind={values?.preOrderUpsellDiscountKind ?? null}
+          discountValue={values?.preOrderUpsellDiscountValue ?? null}
+          intro="Optional cart add-on for this page. Offered when the cart is this pre-order sheet. Inherits collection day and payment settings."
+        />
       </div>
 
       <div className="flex flex-wrap items-center gap-3 lg:col-span-2">
-      {message ? (
-        <p
-          className={`text-sm ${
-            message === "Saved."
-              ? "text-[var(--leaf-dark)]"
-              : "text-[var(--warn)]"
-          }`}
+        {message ? (
+          <p
+            className={`text-sm ${
+              message === "Saved."
+                ? "text-[var(--leaf-dark)]"
+                : "text-[var(--warn)]"
+            }`}
+          >
+            {message}
+          </p>
+        ) : null}
+        <button
+          type="submit"
+          disabled={pending || imageBusy || !stripeConnected}
+          className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60"
         >
-          {message}
-        </p>
-      ) : null}
-      <button
-        type="submit"
-        disabled={pending || !stripeConnected}
-        className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60"
-      >
-        {pending ? "Saving…" : editing ? "Save page" : "Create page"}
-      </button>
+          {pending
+            ? "Saving…"
+            : imageBusy
+              ? "Preparing photo…"
+              : editing
+                ? "Save page"
+                : "Create page"}
+        </button>
       </div>
     </form>
   );

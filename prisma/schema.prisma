@@ -609,6 +609,8 @@ model PreOrderPage {
   title            String
   slug             String
   description      String?
+  /** Optional cover used for social link previews (Open Graph). */
+  imageUrl         String?
   isActive         Boolean              @default(true)
   /** When true, page products stay off the business catalog and business QR. */
   hideOnBusinessPage Boolean            @default(true)

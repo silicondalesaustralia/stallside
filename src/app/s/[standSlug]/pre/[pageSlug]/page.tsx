@@ -4,10 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { standCatalogPath } from "@/lib/stand-seo";
+import { preOrderPageMetadata, standCatalogPath } from "@/lib/stand-seo";
 import { productLiveWhere } from "@/lib/product-visibility";
-import { SITE_URL } from "@/lib/legal";
-import { preOrderPagePath } from "@/lib/preorder-page";
 import { formatCollectionLabel } from "@/lib/pre-order";
 import StandStoreHeader from "../../StandStoreHeader";
 import StandGoToCartBar from "../../StandGoToCartBar";
@@ -30,16 +28,15 @@ export async function generateMetadata({
     include: { stand: { select: { name: true, slug: true } } },
   });
   if (!page) return { title: "Pre-order" };
-  const title = `${page.title} · ${page.stand.name}`;
-  const description =
-    page.description?.trim() ||
-    `Pre-order for ${formatCollectionLabel(page.collectionAt)} from ${page.stand.name}.`;
-  const canonical = `${SITE_URL}${preOrderPagePath(page.stand.slug, page.slug)}`;
-  return {
-    title,
-    description,
-    alternates: { canonical },
-  };
+  return preOrderPageMetadata({
+    standName: page.stand.name,
+    standSlug: page.stand.slug,
+    pageTitle: page.title,
+    pageSlug: page.slug,
+    description: page.description,
+    imageUrl: page.imageUrl,
+    collectionLabel: formatCollectionLabel(page.collectionAt),
+  });
 }
 
 export default async function PublicPreOrderPage({
@@ -112,7 +109,17 @@ export default async function PublicPreOrderPage({
         backHref={standCatalogPath(stand.slug)}
         backLabel="← All products"
       />
-      <h1 className="mt-6 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+      {page.imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={page.imageUrl}
+          alt=""
+          className="mt-6 aspect-[1.91/1] w-full object-cover"
+        />
+      ) : null}
+      <h1
+        className={`${page.imageUrl ? "mt-4" : "mt-6"} font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight`}
+      >
         {page.title}
       </h1>
       <p className="mt-2 text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">

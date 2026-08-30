@@ -54,6 +54,45 @@ export function catalogMetadata(input: {
   };
 }
 
+export function preOrderPageMetadata(input: {
+  standName: string;
+  standSlug: string;
+  pageTitle: string;
+  pageSlug: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  collectionLabel?: string | null;
+}): Metadata {
+  const title = `${input.pageTitle} · ${input.standName}`;
+  const description =
+    input.description?.trim() ||
+    (input.collectionLabel
+      ? `Pre-order for ${input.collectionLabel} from ${input.standName}.`
+      : `Pre-order from ${input.standName}.`);
+  const canonical = `${SITE_URL}${standPreOrderPagePath(input.standSlug, input.pageSlug)}`;
+  const demo = isDemoStandSlug(input.standSlug);
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    robots: demo ? { index: false, follow: false } : { index: true, follow: true },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: "website",
+      ...(input.imageUrl ? { images: [{ url: input.imageUrl }] } : {}),
+    },
+    twitter: {
+      card: input.imageUrl ? "summary_large_image" : "summary",
+      title,
+      description,
+      ...(input.imageUrl ? { images: [input.imageUrl] } : {}),
+    },
+  };
+}
+
 export function productMetadata(input: {
   standName: string;
   standSlug: string;

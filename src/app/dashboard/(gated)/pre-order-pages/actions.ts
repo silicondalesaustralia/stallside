@@ -16,8 +16,38 @@ import { preOrderPagePath } from "@/lib/preorder-page";
 import { parsePreOrderAddonForm } from "@/lib/preorder-addon-form";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 import { upsertPreOrderAddonProduct } from "@/lib/preorder-upsell-addon";
+import { uploadPreOrderPageImage } from "@/lib/preorder-page-image-upload";
 
 type Tx = Prisma.TransactionClient;
+
+async function resolvePageImageUrl(input: {
+  formData: FormData;
+  standId: string;
+  pageId: string;
+  existingUrl: string | null;
+}): Promise<{ ok: true; imageUrl: string | null } | { ok: false; error: string }> {
+  if (input.formData.get("clearImage") === "on") {
+    return { ok: true, imageUrl: null };
+  }
+  const imageFile = input.formData.get("image");
+  if (!(imageFile instanceof File) || imageFile.size <= 0) {
+    return { ok: true, imageUrl: input.existingUrl };
+  }
+  try {
+    const imageUrl = await uploadPreOrderPageImage(
+      input.standId,
+      input.pageId,
+      imageFile,
+    );
+    return { ok: true, imageUrl };
+  } catch (error) {
+    return {
+      ok: false,
+      error:
+        error instanceof Error ? error.message : "Could not upload that photo.",
+    };
+  }
+}
 
 async function uniquePageSlug(
   standId: string,
@@ -269,6 +299,20 @@ export async function createPreOrderPage(formData: FormData) {
     return created;
   });
 
+  const image = await resolvePageImageUrl({
+    formData,
+    standId: stand.id,
+    pageId: page.id,
+    existingUrl: null,
+  });
+  if (!image.ok) return { error: image.error };
+  if (image.imageUrl) {
+    await prisma.preOrderPage.update({
+      where: { id: page.id },
+      data: { imageUrl: image.imageUrl },
+    });
+  }
+
   revalidatePath("/dashboard/pre-order-pages");
   revalidatePath("/dashboard/products");
   revalidatePath(`/s/${stand.slug}`);
@@ -347,6 +391,14 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
   const previousIds = existing.items.map((i) => i.productId);
   const removedIds = previousIds.filter((id) => !productIds.includes(id));
 
+  const image = await resolvePageImageUrl({
+    formData,
+    standId: existing.standId,
+    pageId: existing.id,
+    existingUrl: existing.imageUrl,
+  });
+  if (!image.ok) return { error: image.error };
+
   await prisma.$transaction(async (tx) => {
     await tx.preOrderPageProduct.deleteMany({
       where: { preOrderPageId: existing.id },
@@ -357,6 +409,7 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
         title,
         slug,
         description,
+        imageUrl: image.imageUrl,
         isActive: formData.get("isActive") === "on",
         hideOnBusinessPage: formData.get("hideOnBusinessPage") === "on",
         orderByAt: schedule.orderByAt,

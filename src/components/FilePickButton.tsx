@@ -10,6 +10,7 @@ export default function FilePickButton({
   maxBytes,
   hint,
   onBusyChange,
+  onFileReady,
 }: {
   name: string;
   accept?: string;
@@ -17,6 +18,7 @@ export default function FilePickButton({
   maxBytes?: number;
   hint?: string;
   onBusyChange?: (busy: boolean) => void;
+  onFileReady?: (file: File | null) => void;
 }) {
   const id = useId();
   const [fileName, setFileName] = useState<string | null>(null);
@@ -52,10 +54,12 @@ export default function FilePickButton({
             setStatus(null);
             if (!file) {
               setFileName(null);
+              onFileReady?.(null);
               return;
             }
             if (!maxBytes) {
               setFileName(file.name);
+              onFileReady?.(file);
               return;
             }
             if (busy) return;
@@ -68,6 +72,7 @@ export default function FilePickButton({
                 transfer.items.add(prepared);
                 input.files = transfer.files;
                 setFileName(prepared.name);
+                onFileReady?.(prepared);
                 setStatus(
                   prepared.size < file.size
                     ? "Photo resized to fit upload limit."
@@ -77,6 +82,7 @@ export default function FilePickButton({
               .catch((error: unknown) => {
                 input.value = "";
                 setFileName(null);
+                onFileReady?.(null);
                 setStatus(
                   error instanceof Error
                     ? error.message
