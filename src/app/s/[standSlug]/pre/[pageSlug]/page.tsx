@@ -115,11 +115,11 @@ export default async function PublicPreOrderPage({
         <img
           src={page.imageUrl}
           alt=""
-          className="mt-6 aspect-[1.91/1] w-full object-cover"
+          className="mt-6 aspect-[1.91/1] w-full rounded-[var(--radius)] object-cover"
         />
       ) : null}
       <h1
-        className={`${page.imageUrl ? "mt-4" : "mt-6"} font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight`}
+        className={`${page.imageUrl ? "mt-4" : "mt-6"} text-center font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight`}
       >
         {page.title}
       </h1>
