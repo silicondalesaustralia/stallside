@@ -31,7 +31,7 @@ export default function CartTypeSection() {
             href="/signup"
             className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
           >
-            Start free
+            Get Free Account
           </Link>
           <Link
             href="/stall"

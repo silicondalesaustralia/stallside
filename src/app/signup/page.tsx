@@ -44,7 +44,7 @@ export default function SignupPage() {
           type="submit"
           className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]"
         >
-          Free
+          Get Free Account
         </button>
       </form>
       <p className="mt-6 text-sm text-[var(--muted)]">

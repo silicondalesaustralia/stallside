@@ -20,7 +20,7 @@ export default async function StartFreeNavLink({
 
   return (
     <Link href="/signup" className={STYLES[variant]}>
-      Free
+      Get Free Account
     </Link>
   );
 }

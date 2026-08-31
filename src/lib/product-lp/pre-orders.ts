@@ -12,7 +12,7 @@ export const PRE_ORDERS_HUB: ProductLpContent = {
   support:
     "Know what to make before you make it. Get paid before you hand it over. Share a link - Facebook, Instagram, WhatsApp - or print a QR for collection day.",
   chips: ["No website", "Make list included", "Deposits when you need them"],
-  ctaLabel: "Start free",
+  ctaLabel: "Get Free Account",
   signupHref: PRE_SIGNUP,
   secondaryLabel: "See how it works ↓",
   stripHeading: "Everything a batch producer needs - nothing else",
@@ -200,7 +200,7 @@ function preDoorway(
     ...PRE_ORDERS_HUB,
     doorwayLinks: undefined,
     doorwaySectionHeading: undefined,
-    ctaLabel: "Start free",
+    ctaLabel: "Get Free Account",
     secondaryLabel: "See how it works ↓",
     proofNote: proofNote ?? PRE_ORDERS_HUB.proofNote,
     ...rest,

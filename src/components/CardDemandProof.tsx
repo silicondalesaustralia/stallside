@@ -44,7 +44,7 @@ export default function CardDemandProof() {
             href="/signup"
             className="inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
           >
-            Free
+            Get Free Account
           </Link>
         </div>
       </div>

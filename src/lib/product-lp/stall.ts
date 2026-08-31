@@ -12,7 +12,7 @@ export const STALL_HUB: ProductLpContent = {
   support:
     "Print one QR for your stall. Buyers scan and either pick products from your catalogue, or enter dollar amounts (Customer Choice) and pay on their phone - cash, PayID or card - even when nobody is there.",
   chips: ["A$0 monthly on Free", "No customer app", "Instant sale alerts"],
-  ctaLabel: "Start free",
+  ctaLabel: "Get Free Account",
   signupHref: STALL_SIGNUP,
   secondaryLabel: "See how it works ↓",
   stripHeading: "",
@@ -196,7 +196,7 @@ function stallDoorway(
     ...STALL_HUB,
     doorwayLinks: undefined,
     doorwaySectionHeading: undefined,
-    ctaLabel: "Start free",
+    ctaLabel: "Get Free Account",
     signupHref: STALL_SIGNUP,
     secondaryLabel: "See how it works ↓",
     proofNote: STALL_HUB.proofNote,
