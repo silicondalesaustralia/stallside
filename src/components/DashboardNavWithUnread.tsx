@@ -63,6 +63,7 @@ export default async function DashboardNavWithUnread({
         unreadNotifications={unreadNotifications}
         setupAlerts={setupAlerts}
         setupIncomplete={setupIncomplete}
+        businessMode={businessMode}
       />
     );
   }
@@ -74,6 +75,7 @@ export default async function DashboardNavWithUnread({
       unreadNotifications={unreadNotifications}
       setupAlerts={setupAlerts}
       setupIncomplete={setupIncomplete}
+      businessMode={businessMode}
     />
   );
 }

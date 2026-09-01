@@ -7,7 +7,7 @@ import BrandLockup from "@/components/BrandLockup";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
 import {
   dashLinkActive,
-  dashNavGroups,
+  dashNavGroupsForMode,
   mobileTabs,
 } from "@/components/dash-nav-links";
 import {
@@ -22,12 +22,14 @@ export default function DashboardMobileNav({
   unreadNotifications,
   setupAlerts,
   setupIncomplete = 0,
+  businessMode = null,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
   unreadNotifications?: number;
   setupAlerts: DashboardSetupAlerts;
   setupIncomplete?: number;
+  businessMode?: string | null;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -89,7 +91,7 @@ export default function DashboardMobileNav({
               needsBusiness={setupAlerts.needsBusiness}
             />
             <nav className="mt-3 flex flex-col gap-3 border-t border-white/10 pt-3">
-              {dashNavGroups.map((group) => (
+              {dashNavGroupsForMode(businessMode).map((group) => (
                 <div key={group.id}>
                   <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--ink-on-dark)]/40">
                     {group.label}

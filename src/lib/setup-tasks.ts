@@ -1,4 +1,4 @@
-/** Stable setup-task IDs for Getting Started (inferred completion). */
+/** Getting Started tasks — inferred completion; progressive after short gate. */
 
 import {
   normalizeBusinessMode,
@@ -6,9 +6,12 @@ import {
 } from "@/lib/business-mode";
 
 export const SETUP_TASK_IDS = [
+  "CHOOSE_SELL_CATEGORIES",
+  "CONFIGURE_FULFILMENT",
   "CREATE_STAND",
   "CREATE_FIRST_PRODUCT",
   "CONNECT_PAYMENTS",
+  "BRANDING",
   "GENERATE_QR",
   "CONFIGURE_ALERTS",
   "PREVIEW_STAND",
@@ -22,6 +25,9 @@ export type SetupTaskDef = {
   title: string;
   description: string;
   hrefKey:
+    | "setup_sell"
+    | "setup_fulfilment"
+    | "setup_branding"
     | "businesses_new"
     | "products_new"
     | "stripe"
@@ -36,45 +42,63 @@ export type SetupTaskDef = {
 
 const BASE_DEFS: Omit<SetupTaskDef, "required" | "title" | "description">[] = [
   {
+    id: "CHOOSE_SELL_CATEGORIES",
+    hrefKey: "setup_sell",
+    order: 1,
+    effort: "1 min",
+  },
+  {
+    id: "CONFIGURE_FULFILMENT",
+    hrefKey: "setup_fulfilment",
+    order: 2,
+    effort: "1 min",
+  },
+  {
     id: "CREATE_STAND",
     hrefKey: "businesses_new",
-    order: 1,
+    order: 3,
     effort: "2 min",
   },
   {
     id: "CREATE_FIRST_PRODUCT",
     hrefKey: "products_new",
-    order: 2,
+    order: 4,
     effort: "2 min",
   },
   {
     id: "CONNECT_PAYMENTS",
     hrefKey: "stripe",
-    order: 3,
+    order: 5,
     effort: "5 min",
+  },
+  {
+    id: "BRANDING",
+    hrefKey: "setup_branding",
+    order: 6,
+    effort: "1 min",
   },
   {
     id: "GENERATE_QR",
     hrefKey: "qr",
-    order: 4,
+    order: 7,
     effort: "2 min",
   },
   {
     id: "CONFIGURE_ALERTS",
     hrefKey: "notifications",
-    order: 5,
+    order: 8,
     effort: "1 min",
   },
   {
     id: "PREVIEW_STAND",
     hrefKey: "preview",
-    order: 6,
+    order: 9,
     effort: "1 min",
   },
   {
     id: "FIRST_SALE",
     hrefKey: "orders",
-    order: 7,
+    order: 10,
     effort: "—",
   },
 ];
@@ -83,32 +107,51 @@ function copyForMode(mode: BusinessMode): Record<
   SetupTaskId,
   { title: string; description: string; required: boolean }
 > {
+  const sharedEarly = {
+    CHOOSE_SELL_CATEGORIES: {
+      title: "What do you sell?",
+      description: "Optional — personalises tips. Never locks your catalogue.",
+      required: false,
+    },
+    CONFIGURE_FULFILMENT: {
+      title: "How will you fulfil orders?",
+      description: "Pickup, delivery, pre-orders, stand — pick what you offer.",
+      required: false,
+    },
+    CONNECT_PAYMENTS: {
+      title: "Connect card payments",
+      description:
+        "Optional. Cash and PayID work without Stripe. Connect for Tap & Go.",
+      required: false,
+    },
+    BRANDING: {
+      title: "Add your brand colours",
+      description: "Primary and accent on your public shop or stand.",
+      required: false,
+    },
+    CONFIGURE_ALERTS: {
+      title: "Turn on sale alerts",
+      description: "Email or phone push when something sells.",
+      required: false,
+    },
+  } as const;
+
   if (mode === "FOOD_BUSINESS") {
     return {
+      ...sharedEarly,
       CREATE_STAND: {
-        title: "Set up your storefront",
-        description:
-          "We create a public shop URL for you (same system as stands).",
+        title: "Confirm your shop URL",
+        description: "Your catalogue has a public link — open it anytime.",
         required: true,
       },
       CREATE_FIRST_PRODUCT: {
         title: "Add your first product",
-        description: "Name, price, and stock for online orders.",
+        description: "Name, price, and stock so customers can order.",
         required: true,
-      },
-      CONNECT_PAYMENTS: {
-        title: "Connect card payments",
-        description: "Optional now — connect Stripe for Tap & Go anytime.",
-        required: false,
       },
       GENERATE_QR: {
         title: "Share your shop link or QR",
-        description: "Optional for food businesses — useful for markets too.",
-        required: false,
-      },
-      CONFIGURE_ALERTS: {
-        title: "Turn on sale alerts",
-        description: "Email or phone push when something sells.",
+        description: "Optional — useful for markets and posters.",
         required: false,
       },
       PREVIEW_STAND: {
@@ -124,10 +167,11 @@ function copyForMode(mode: BusinessMode): Record<
     };
   }
 
-  const farmish = mode === "FARM_STAND";
   return {
+    ...sharedEarly,
     CREATE_STAND: {
-      title: farmish ? "Create your farm stand" : "Create your farm stand",
+      title:
+        mode === "BOTH" ? "Create your farm stand" : "Create your farm stand",
       description: "Add a stand with a public URL for QR checkout.",
       required: true,
     },
@@ -136,21 +180,10 @@ function copyForMode(mode: BusinessMode): Record<
       description: "Name, price, and stock so shoppers have something to buy.",
       required: true,
     },
-    CONNECT_PAYMENTS: {
-      title: "Connect card payments",
-      description:
-        "Optional. Cash and PayID work without Stripe. Connect for Tap & Go.",
-      required: false,
-    },
     GENERATE_QR: {
       title: "Print or download your QR sign",
       description: "Generate a poster for the stall fence or table.",
       required: true,
-    },
-    CONFIGURE_ALERTS: {
-      title: "Turn on sale alerts",
-      description: "Get email or phone push when something sells or runs low.",
-      required: false,
     },
     PREVIEW_STAND: {
       title: "Preview your live stand",
@@ -165,7 +198,6 @@ function copyForMode(mode: BusinessMode): Record<
   };
 }
 
-/** @deprecated Prefer setupTaskDefsForMode */
 export const SETUP_TASK_DEFS: readonly SetupTaskDef[] = setupTaskDefsForMode(
   "BOTH",
 );
@@ -189,6 +221,9 @@ export type SetupFacts = {
   standSlug: string | null;
   selectedStandId: string | null;
   businessMode?: string | null;
+  sellCategoriesCount?: number;
+  fulfilmentIntentsCount?: number;
+  hasBranding?: boolean;
 };
 
 export type SetupTaskStatus = SetupTaskDef & {
@@ -202,6 +237,12 @@ export function setupTaskHref(
 ): string {
   const id = facts.selectedStandId;
   switch (key) {
+    case "setup_sell":
+      return "/dashboard/setup/sell";
+    case "setup_fulfilment":
+      return "/dashboard/setup/fulfilment";
+    case "setup_branding":
+      return "/dashboard/setup/branding";
     case "businesses_new":
       return id ? `/dashboard/businesses/${id}` : "/dashboard/businesses/new";
     case "products_new":
@@ -228,12 +269,18 @@ export function isSetupTaskComplete(
   facts: SetupFacts,
 ): boolean {
   switch (id) {
+    case "CHOOSE_SELL_CATEGORIES":
+      return (facts.sellCategoriesCount ?? 0) > 0;
+    case "CONFIGURE_FULFILMENT":
+      return (facts.fulfilmentIntentsCount ?? 0) > 0;
     case "CREATE_STAND":
       return facts.standCount > 0;
     case "CREATE_FIRST_PRODUCT":
       return facts.productCount > 0;
     case "CONNECT_PAYMENTS":
       return facts.stripeChargesEnabled;
+    case "BRANDING":
+      return Boolean(facts.hasBranding);
     case "GENERATE_QR":
       return facts.orderCount > 0;
     case "CONFIGURE_ALERTS":
@@ -257,6 +304,14 @@ export function resolveSetupTasks(facts: SetupFacts): SetupTaskStatus[] {
 export function resolveNextSetupTask(
   tasks: SetupTaskStatus[],
 ): SetupTaskStatus | null {
+  const standDone = Boolean(
+    tasks.find((t) => t.id === "CREATE_STAND")?.complete,
+  );
+  const firstProduct = tasks.find(
+    (t) => t.id === "CREATE_FIRST_PRODUCT" && !t.complete,
+  );
+  // Strong primary CTA once a location/shop exists.
+  if (standDone && firstProduct) return firstProduct;
   return (
     tasks.find((t) => t.required && !t.complete) ??
     tasks.find((t) => !t.complete) ??

@@ -1,3 +1,9 @@
+import {
+  normalizeBusinessMode,
+  primaryLocationLabel,
+  type BusinessMode,
+} from "@/lib/business-mode";
+
 export type DashNavItem = {
   href: string;
   label: string;
@@ -12,75 +18,84 @@ export type DashNavGroup = {
 };
 
 /** Desktop sidebar groups — live routes only; future tools marked soon. */
-export const dashNavGroups: readonly DashNavGroup[] = [
-  {
-    id: "home",
-    label: "Home",
-    items: [
-      { href: "/dashboard/getting-started", label: "Getting Started" },
-      { href: "/dashboard", label: "Dashboard" },
-    ],
-  },
-  {
-    id: "sell",
-    label: "Sell",
-    items: [
-      { href: "/dashboard/orders", label: "Orders" },
-      { href: "/dashboard/products", label: "Products" },
-      { href: "/dashboard/pre-order-pages", label: "Pre-orders" },
-      { href: "/dashboard/subscriptions", label: "Subscriptions" },
-      { href: "/dashboard/businesses", label: "Farm Stands" },
-      { href: "/dashboard/collections", label: "Collections" },
-    ],
-  },
-  {
-    id: "customers",
-    label: "Customers",
-    items: [
-      { href: "/dashboard/customers", label: "Customers", soon: true },
-      { href: "/dashboard/messages", label: "Messages", soon: true },
-      { href: "/dashboard/reviews", label: "Reviews", soon: true },
-    ],
-  },
-  {
-    id: "operate",
-    label: "Operate",
-    items: [
-      { href: "/dashboard/notifications", label: "Notifications" },
-      { href: "/dashboard/fulfilment", label: "Fulfilment", soon: true },
-      { href: "/dashboard/recipes", label: "Recipes & Costs", soon: true },
-    ],
-  },
-  {
-    id: "grow",
-    label: "Grow",
-    items: [
-      { href: "/dashboard/coupons", label: "Coupons", soon: true },
-      { href: "/dashboard/marketing", label: "Marketing", soon: true },
-      { href: "/dashboard/forms", label: "Forms", soon: true },
-    ],
-  },
-  {
-    id: "website",
-    label: "Website",
-    items: [
-      { href: "/dashboard/website", label: "Website builder", soon: true },
-      { href: "/dashboard/website/domains", label: "Domains", soon: true },
-    ],
-  },
-  {
-    id: "account",
-    label: "Account",
-    items: [
-      { href: "/dashboard/settings/stripe", label: "Payments" },
-      { href: "/dashboard/settings/billing", label: "Billing" },
-      { href: "/dashboard/settings", label: "Settings" },
-      { href: "/dashboard/knowledge", label: "Help" },
-    ],
-  },
-] as const;
+export function dashNavGroupsForMode(
+  modeInput?: string | null,
+): DashNavGroup[] {
+  const mode = normalizeBusinessMode(modeInput);
+  const locationsLabel = primaryLocationLabel(mode);
 
-/** Flat live links for badges / active checks. */
+  return [
+    {
+      id: "home",
+      label: "Home",
+      items: [
+        { href: "/dashboard/getting-started", label: "Getting Started" },
+        { href: "/dashboard", label: "Dashboard" },
+      ],
+    },
+    {
+      id: "sell",
+      label: "Sell",
+      items: [
+        { href: "/dashboard/orders", label: "Orders" },
+        { href: "/dashboard/products", label: "Products" },
+        { href: "/dashboard/pre-order-pages", label: "Pre-orders" },
+        { href: "/dashboard/subscriptions", label: "Subscriptions" },
+        { href: "/dashboard/businesses", label: locationsLabel },
+        { href: "/dashboard/collections", label: "Collections" },
+      ],
+    },
+    {
+      id: "customers",
+      label: "Customers",
+      items: [
+        { href: "/dashboard/customers", label: "Customers", soon: true },
+        { href: "/dashboard/messages", label: "Messages", soon: true },
+        { href: "/dashboard/reviews", label: "Reviews", soon: true },
+      ],
+    },
+    {
+      id: "operate",
+      label: "Operate",
+      items: [
+        { href: "/dashboard/notifications", label: "Notifications" },
+        { href: "/dashboard/fulfilment", label: "Fulfilment", soon: true },
+        { href: "/dashboard/recipes", label: "Recipes & Costs", soon: true },
+      ],
+    },
+    {
+      id: "grow",
+      label: "Grow",
+      items: [
+        { href: "/dashboard/coupons", label: "Coupons", soon: true },
+        { href: "/dashboard/marketing", label: "Marketing", soon: true },
+        { href: "/dashboard/forms", label: "Forms", soon: true },
+      ],
+    },
+    {
+      id: "website",
+      label: "Website",
+      items: [
+        { href: "/dashboard/website", label: "Website builder", soon: true },
+        { href: "/dashboard/website/domains", label: "Domains", soon: true },
+      ],
+    },
+    {
+      id: "account",
+      label: "Account",
+      items: [
+        { href: "/dashboard/settings/stripe", label: "Payments" },
+        { href: "/dashboard/settings/billing", label: "Billing" },
+        { href: "/dashboard/settings", label: "Settings" },
+        { href: "/dashboard/knowledge", label: "Help" },
+      ],
+    },
+  ];
+}
+
+/** @deprecated Prefer dashNavGroupsForMode */
+export const dashNavGroups = dashNavGroupsForMode("BOTH");
+
 export const primaryLinks = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/dashboard/products", label: "Products" },
@@ -88,15 +103,24 @@ export const primaryLinks = [
   { href: "/dashboard/collections", label: "Collections" },
 ] as const;
 
-export const secondaryLinks = [
-  { href: "/dashboard/getting-started", label: "Getting Started" },
-  { href: "/dashboard/pre-order-pages", label: "Pre-orders" },
-  { href: "/dashboard/subscriptions", label: "Subscriptions" },
-  { href: "/dashboard/businesses", label: "Farm Stands" },
-  { href: "/dashboard/notifications", label: "Notifications" },
-  { href: "/dashboard/knowledge", label: "Help" },
-  { href: "/dashboard/settings", label: "Settings" },
-] as const;
+export function secondaryLinksForMode(modeInput?: string | null) {
+  const mode = normalizeBusinessMode(modeInput) as BusinessMode;
+  return [
+    { href: "/dashboard/getting-started", label: "Getting Started" },
+    { href: "/dashboard/pre-order-pages", label: "Pre-orders" },
+    { href: "/dashboard/subscriptions", label: "Subscriptions" },
+    {
+      href: "/dashboard/businesses",
+      label: primaryLocationLabel(mode),
+    },
+    { href: "/dashboard/notifications", label: "Notifications" },
+    { href: "/dashboard/knowledge", label: "Help" },
+    { href: "/dashboard/settings", label: "Settings" },
+  ] as const;
+}
+
+/** @deprecated Prefer secondaryLinksForMode */
+export const secondaryLinks = secondaryLinksForMode("BOTH");
 
 export const mobileTabs = [
   { href: "/dashboard", label: "Home" },
@@ -117,6 +141,8 @@ export function dashLinkActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
-export function liveDashNavItems(): DashNavItem[] {
-  return dashNavGroups.flatMap((g) => g.items.filter((i) => !i.soon));
+export function liveDashNavItems(modeInput?: string | null): DashNavItem[] {
+  return dashNavGroupsForMode(modeInput).flatMap((g) =>
+    g.items.filter((i) => !i.soon),
+  );
 }

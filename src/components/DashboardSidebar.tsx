@@ -7,7 +7,7 @@ import BrandMark from "@/components/BrandMark";
 import DashNavIcon from "@/components/DashNavIcon";
 import DashSidebarNavItem from "@/components/DashSidebarNavItem";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
-import { dashNavGroups } from "@/components/dash-nav-links";
+import { dashNavGroupsForMode } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
   type DashboardSetupAlerts,
@@ -24,6 +24,7 @@ export default function DashboardSidebar({
   unreadNotifications,
   setupAlerts,
   setupIncomplete = 0,
+  businessMode = null,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
@@ -32,6 +33,7 @@ export default function DashboardSidebar({
   unreadNotifications?: number;
   setupAlerts: DashboardSetupAlerts;
   setupIncomplete?: number;
+  businessMode?: string | null;
 }) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
@@ -81,7 +83,7 @@ export default function DashboardSidebar({
       </div>
 
       <nav className="flex-1 space-y-3 overflow-y-auto px-2 py-3">
-        {dashNavGroups.map((group) => {
+        {dashNavGroupsForMode(businessMode).map((group) => {
           const open = collapsed || (openGroups[group.id] ?? true);
           return (
             <div key={group.id}>

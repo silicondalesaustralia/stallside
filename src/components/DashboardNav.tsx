@@ -13,12 +13,14 @@ export default function DashboardNav({
   unreadNotifications,
   setupAlerts,
   setupIncomplete = 0,
+  businessMode = null,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
   unreadNotifications?: number;
   setupAlerts: DashboardSetupAlerts;
   setupIncomplete?: number;
+  businessMode?: string | null;
 }) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -43,6 +45,7 @@ export default function DashboardNav({
       unreadNotifications={unreadNotifications}
       setupAlerts={setupAlerts}
       setupIncomplete={setupIncomplete}
+      businessMode={businessMode}
     />
   );
 }

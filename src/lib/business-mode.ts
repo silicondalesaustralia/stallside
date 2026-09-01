@@ -21,6 +21,13 @@ export function normalizeBusinessMode(
   return isBusinessMode(value) ? value : "BOTH";
 }
 
+/** Public label for Stand records — avoid “Farm Stand” for food-only sellers. */
+export function primaryLocationLabel(mode: BusinessMode): string {
+  if (mode === "FOOD_BUSINESS") return "Shop";
+  if (mode === "BOTH") return "Locations";
+  return "Farm Stands";
+}
+
 export const BUSINESS_MODE_OPTIONS: readonly {
   id: BusinessMode;
   title: string;
@@ -96,16 +103,8 @@ export const AU_STATES = [
   { id: "ACT", label: "Australian Capital Territory" },
 ] as const;
 
-export const ONBOARDING_STEPS = [
-  "mode",
-  "profile",
-  "sell",
-  "fulfilment",
-  "payments",
-  "product",
-  "theme",
-  "finish",
-] as const;
+/** Gate only — progressive setup lives on Getting Started after dashboard. */
+export const ONBOARDING_STEPS = ["mode", "profile"] as const;
 
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
@@ -116,12 +115,4 @@ export function isOnboardingStep(
     value != null &&
     (ONBOARDING_STEPS as readonly string[]).includes(value)
   );
-}
-
-export function nextOnboardingStep(
-  step: OnboardingStep,
-): OnboardingStep | null {
-  const i = ONBOARDING_STEPS.indexOf(step);
-  if (i < 0 || i >= ONBOARDING_STEPS.length - 1) return null;
-  return ONBOARDING_STEPS[i + 1] ?? null;
 }

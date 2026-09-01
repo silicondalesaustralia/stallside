@@ -106,15 +106,31 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
     } else if (intent) {
       // Re-signup with an existing (incl. soft-closed) account: store click ids
       // and clear deletedAt so they can use the product again.
+      // Soft-closed accounts must re-run the business-mode wizard.
+      const restoring = Boolean(owner.deletedAt);
       await prisma.owner.update({
         where: { id: owner.id },
         data: {
           ...(adAttribution
             ? { adAttribution: adAttribution as Prisma.InputJsonValue }
             : {}),
-          ...(owner.deletedAt ? { deletedAt: null } : {}),
+          ...(restoring
+            ? {
+                deletedAt: null,
+                onboardingCompletedAt: null,
+                businessMode: null,
+                emailAlertsEnabled: true,
+                pushAlertsEnabled: true,
+              }
+            : {}),
         },
       });
+      if (restoring) {
+        await prisma.stand.updateMany({
+          where: { ownerId: owner.id },
+          data: { isActive: true },
+        });
+      }
       await prisma.signupIntent.delete({ where: { email } }).catch(() => null);
     }
   }

@@ -27,7 +27,7 @@ export const loadSetupProgress = cache(async (input: {
 }): Promise<SetupProgressPayload> => {
   const standId = input.selectedStandId;
 
-  const [productCount, orderCount] = await Promise.all([
+  const [productCount, orderCount, ownerExtras] = await Promise.all([
     standId
       ? prisma.product.count({
           where: {
@@ -44,6 +44,16 @@ export const loadSetupProgress = cache(async (input: {
         paymentStatus: { in: COUNTED_STATUSES },
       },
     }),
+    prisma.owner.findUnique({
+      where: { id: input.ownerId },
+      select: {
+        sellCategories: true,
+        fulfilmentIntents: true,
+        brandAccentColor: true,
+        brandSecondaryColor: true,
+        brandLogoUrl: true,
+      },
+    }),
   ]);
 
   const facts: SetupFacts = {
@@ -57,6 +67,13 @@ export const loadSetupProgress = cache(async (input: {
     standSlug: input.standSlug,
     selectedStandId: input.selectedStandId,
     businessMode: input.businessMode,
+    sellCategoriesCount: ownerExtras?.sellCategories.length ?? 0,
+    fulfilmentIntentsCount: ownerExtras?.fulfilmentIntents.length ?? 0,
+    hasBranding: Boolean(
+      ownerExtras?.brandAccentColor ||
+        ownerExtras?.brandSecondaryColor ||
+        ownerExtras?.brandLogoUrl,
+    ),
   };
 
   const tasks = resolveSetupTasks(facts);
