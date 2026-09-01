@@ -14,9 +14,11 @@ export function isProductTabId(value: string | undefined): value is ProductTabId
 export default function ProductsTabs({
   active,
   view,
+  scope,
 }: {
   active: ProductTabId;
   view?: string;
+  scope?: string;
 }) {
   const archived = view === "archived";
   return (
@@ -26,6 +28,7 @@ export default function ProductsTabs({
         const params = new URLSearchParams();
         if (tab.id !== "standard") params.set("tab", tab.id);
         if (archived) params.set("view", "archived");
+        if (scope === "all") params.set("scope", "all");
         const qs = params.toString();
         return (
           <Link

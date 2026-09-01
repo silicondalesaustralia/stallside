@@ -13,6 +13,7 @@ type ProductRow = {
   costCents: number | null;
   stockQuantity: number;
   sku: string | null;
+  locationName?: string | null;
 };
 
 export default function ProductListRow({
@@ -27,6 +28,7 @@ export default function ProductListRow({
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
               {product.sku ? `SKU ${product.sku}` : "Product"}
+              {product.locationName ? ` · ${product.locationName}` : null}
               {product.isArchived ? " · Archived" : null}
               {product.isHidden && !product.isArchived ? " · Hidden" : null}
             </p>

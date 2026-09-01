@@ -205,6 +205,25 @@ export async function startCardCheckout(input: {
       },
     });
 
+    try {
+      const { ensureCustomer } = await import("@/lib/catalogue/customers");
+      const customer = await ensureCustomer({
+        ownerId: stand.ownerId,
+        email: customerEmail,
+        name: customerName,
+        phone: customerPhone,
+        source: "order",
+      });
+      if (customer) {
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { customerId: customer.id },
+        });
+      }
+    } catch (err) {
+      console.error("Customer link failed", err);
+    }
+
     const base = appBaseUrl();
     let lineItems = stripeLineItemsFromCart(lineData, stand.currency);
     if (discountCents > 0 && lineItems.length > 0) {

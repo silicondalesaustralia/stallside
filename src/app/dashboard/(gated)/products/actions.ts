@@ -123,6 +123,15 @@ export async function createProduct(formData: FormData) {
     },
   });
 
+  const { ensureDefaultProductChannels } = await import(
+    "@/lib/catalogue/channels"
+  );
+  await ensureDefaultProductChannels({
+    productId: product.id,
+    standId: stand.id,
+    ownerId: owner.id,
+  });
+
   const imageFile = formData.get("image");
   if (imageFile instanceof File && imageFile.size > 0) {
     try {

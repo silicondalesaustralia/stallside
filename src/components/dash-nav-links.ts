@@ -39,9 +39,9 @@ export function dashNavGroupsForMode(
       items: [
         { href: "/dashboard/orders", label: "Orders" },
         { href: "/dashboard/products", label: "Products" },
+        { href: "/dashboard/categories", label: "Categories" },
         { href: "/dashboard/pre-order-pages", label: "Pre-orders" },
         { href: "/dashboard/subscriptions", label: "Subscriptions" },
-        { href: "/dashboard/businesses", label: locationsLabel },
         { href: "/dashboard/collections", label: "Collections" },
       ],
     },
@@ -49,7 +49,7 @@ export function dashNavGroupsForMode(
       id: "customers",
       label: "Customers",
       items: [
-        { href: "/dashboard/customers", label: "Customers", soon: true },
+        { href: "/dashboard/customers", label: "Customers" },
         { href: "/dashboard/messages", label: "Messages", soon: true },
         { href: "/dashboard/reviews", label: "Reviews", soon: true },
       ],
@@ -58,6 +58,7 @@ export function dashNavGroupsForMode(
       id: "operate",
       label: "Operate",
       items: [
+        { href: "/dashboard/businesses", label: locationsLabel },
         { href: "/dashboard/notifications", label: "Notifications" },
         { href: "/dashboard/fulfilment", label: "Fulfilment", soon: true },
         { href: "/dashboard/recipes", label: "Recipes & Costs", soon: true },

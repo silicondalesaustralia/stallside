@@ -15,6 +15,7 @@ import {
 } from "@/lib/product-options";
 import { parsePriceTiers, lineTotalWithTiers } from "@/lib/price-tiers";
 import { productLiveWhere } from "@/lib/product-visibility";
+import { productIdsOnStandWhere } from "@/lib/catalogue/product-on-stand";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 import {
   CUSTOMER_CHOICE_MAX_CENTS,
@@ -203,7 +204,9 @@ export async function loadStandCart(
 
   const productIds = [...new Set(normalized.map((i) => i.productId))];
   const products = await prisma.product.findMany({
-    where: { id: { in: productIds }, standId: stand.id, ...productLiveWhere },
+    where: {
+      AND: [productIdsOnStandWhere(stand.id, productIds), productLiveWhere],
+    },
     include: {
       optionGroups: {
         orderBy: { sortOrder: "asc" },

@@ -166,6 +166,23 @@ async function confirmDeclaredCheckout(
       { maxWait: 10_000, timeout: 30_000 },
     );
 
+    try {
+      const { ensureCustomer } = await import("@/lib/catalogue/customers");
+      const customer = await ensureCustomer({
+        ownerId: stand.ownerId,
+        email,
+        source: "order",
+      });
+      if (customer) {
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { customerId: customer.id },
+        });
+      }
+    } catch (err) {
+      console.error("Customer link failed", err);
+    }
+
     after(() => {
       void notifySale(order.id).catch((error) => {
         console.error("Sale notify failed", error);

@@ -106,6 +106,15 @@ export async function duplicateProduct(productId: string) {
     },
   });
 
+  const { ensureDefaultProductChannels } = await import(
+    "@/lib/catalogue/channels"
+  );
+  await ensureDefaultProductChannels({
+    productId: copy.id,
+    standId: source.standId,
+    ownerId: owner.id,
+  });
+
   revalidateProductPaths({
     standId: source.standId,
     standSlug: source.stand.slug,

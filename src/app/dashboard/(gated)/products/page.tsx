@@ -18,16 +18,18 @@ import { resolveSelectedBusiness } from "@/lib/selected-business";
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; tab?: string }>;
+  searchParams: Promise<{ view?: string; tab?: string; scope?: string }>;
 }) {
   const { user, owner } = await requireOwner();
-  const { selected } = await resolveSelectedBusiness(owner.id);
-  const { view, tab: tabParam } = await searchParams;
+  const { businesses, selected } = await resolveSelectedBusiness(owner.id);
+  const { view, tab: tabParam, scope } = await searchParams;
   const showArchived = view === "archived";
   const tab: ProductTabId = isProductTabId(tabParam) ? tabParam : "standard";
   const isPreOrder = tab === "preorder";
+  const showAll =
+    scope === "all" || (!selected && businesses.length > 0);
 
-  if (!selected) {
+  if (!selected && businesses.length === 0) {
     return (
       <main className="flex flex-col gap-8">
         <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
@@ -41,6 +43,7 @@ export default async function ProductsPage({
   const showRestock =
     !showArchived &&
     tab === "standard" &&
+    Boolean(selected) &&
     isRestockAlertsEnabled() &&
     ownerHasProAccess(owner, {
       email: user.email,
@@ -52,7 +55,7 @@ export default async function ProductsPage({
     prisma.product.findMany({
       where: {
         ownerId: owner.id,
-        standId: selected.id,
+        ...(showAll || !selected ? {} : { standId: selected.id }),
         preOrderEligible: isPreOrder,
         isHidden: false,
         ...(showArchived ? { isArchived: true } : productDashboardWhere),
@@ -67,21 +70,35 @@ export default async function ProductsPage({
         costCents: true,
         stockQuantity: true,
         sku: true,
+        stand: { select: { name: true } },
       },
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     }),
-    showRestock
+    showRestock && selected
       ? loadRestockPanels(owner.id, selected.id)
       : Promise.resolve([]),
   ]);
 
-  function listHref(nextView?: "archived") {
+  function listHref(nextView?: "archived", nextScope?: "all" | "selected") {
     const params = new URLSearchParams();
     if (tab !== "standard") params.set("tab", tab);
     if (nextView) params.set("view", nextView);
+    const scopeVal =
+      nextScope === "all"
+        ? "all"
+        : nextScope === "selected"
+          ? undefined
+          : showAll
+            ? "all"
+            : undefined;
+    if (scopeVal === "all") params.set("scope", "all");
     const qs = params.toString();
     return qs ? `/dashboard/products?${qs}` : "/dashboard/products";
   }
+
+  const scopeLabel = showAll
+    ? "all locations"
+    : selected?.name ?? "catalogue";
 
   return (
     <main className="flex flex-col gap-6">
@@ -93,14 +110,16 @@ export default async function ProductsPage({
           <p className="mt-1 text-[var(--muted)]">
             {products.length} {isPreOrder ? "pre-order" : ""} product
             {products.length === 1 ? "" : "s"}
-            {showArchived ? " archived" : " in progress"} · {selected.name}
+            {showArchived ? " archived" : ""} · {scopeLabel}
           </p>
         </div>
         <DashPrimaryCta
           href={
             isPreOrder
               ? "/dashboard/pre-order-pages/new"
-              : `/dashboard/products/new?standId=${selected.id}`
+              : selected
+                ? `/dashboard/products/new?standId=${selected.id}`
+                : "/dashboard/products/new"
           }
         >
           {isPreOrder ? "+ New pre-order page" : "+ Add product"}
@@ -108,9 +127,33 @@ export default async function ProductsPage({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <ProductsTabs active={tab} view={view} />
+        <ProductsTabs active={tab} view={view} scope={showAll ? "all" : undefined} />
+        {businesses.length > 1 ? (
+          <>
+            <Link
+              href={listHref(showArchived ? "archived" : undefined, "selected")}
+              className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
+                !showAll
+                  ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
+                  : "bg-white text-[var(--ink)] outline outline-[var(--line)]"
+              }`}
+            >
+              Selected
+            </Link>
+            <Link
+              href={listHref(showArchived ? "archived" : undefined, "all")}
+              className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
+                showAll
+                  ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
+                  : "bg-white text-[var(--ink)] outline outline-[var(--line)]"
+              }`}
+            >
+              All locations
+            </Link>
+          </>
+        ) : null}
         <Link
-          href={listHref()}
+          href={listHref(undefined, showAll ? "all" : "selected")}
           className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
             !showArchived
               ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
@@ -120,7 +163,7 @@ export default async function ProductsPage({
           Active
         </Link>
         <Link
-          href={listHref("archived")}
+          href={listHref("archived", showAll ? "all" : "selected")}
           className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
             showArchived
               ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
@@ -161,10 +204,17 @@ export default async function ProductsPage({
       ) : (
         <ul className="flex flex-col gap-3">
           {products.map((product) => (
-            <ProductListRow key={product.id} product={product} />
+            <ProductListRow
+              key={product.id}
+              product={{
+                ...product,
+                locationName: showAll ? product.stand.name : null,
+              }}
+            />
           ))}
         </ul>
       )}
     </main>
   );
 }
+

@@ -8,7 +8,13 @@ import ProductEditForm from "./ProductEditForm";
 import ProductLifecycleActions from "../ProductLifecycleActions";
 import ProductOptionsEditor from "./ProductOptionsEditor";
 import ProductStockCard from "./ProductStockCard";
+import ProductCatalogueFields from "./ProductCatalogueFields";
 import { parsePriceTiers } from "@/lib/price-tiers";
+import { ProductChannelType } from "@/generated/prisma/client";
+import {
+  normalizeBusinessMode,
+  primaryLocationLabel,
+} from "@/lib/business-mode";
 
 export default async function EditProductPage({
   params,
@@ -43,11 +49,40 @@ export default async function EditProductPage({
         orderBy: { sortOrder: "asc" },
         include: { choices: { orderBy: { sortOrder: "asc" } } },
       },
+      channels: true,
+      categoryLinks: { select: { categoryId: true } },
     },
   });
   if (!product) notFound();
 
+  const [stands, categories] = await Promise.all([
+    prisma.stand.findMany({
+      where: { ownerId: owner.id },
+      orderBy: { createdAt: "asc" },
+      select: { id: true, name: true },
+    }),
+    prisma.category.findMany({
+      where: { ownerId: owner.id, isActive: true },
+      orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
+      select: { id: true, title: true },
+    }),
+  ]);
+
   const path = standProductPath(product.stand.slug, product.slug);
+  const standChannelIds = product.channels
+    .filter(
+      (c) =>
+        c.channelType === ProductChannelType.STAND &&
+        c.isEnabled &&
+        c.standId,
+    )
+    .map((c) => c.standId as string);
+  if (standChannelIds.length === 0) {
+    standChannelIds.push(product.standId);
+  }
+  const showOnline = product.channels.some(
+    (c) => c.channelType === ProductChannelType.ONLINE && c.isEnabled,
+  );
 
   return (
     <main className="flex flex-col gap-6">
@@ -107,6 +142,17 @@ export default async function EditProductPage({
           siblingProducts: product.stand.products,
         }}
         initialImageError={imageError ?? null}
+      />
+      <ProductCatalogueFields
+        productId={product.id}
+        stands={stands}
+        standChannelIds={standChannelIds}
+        showOnline={showOnline}
+        categories={categories}
+        categoryIds={product.categoryLinks.map((l) => l.categoryId)}
+        locationLabel={primaryLocationLabel(
+          normalizeBusinessMode(owner.businessMode),
+        )}
       />
       <ProductStockCard
         productId={product.id}
