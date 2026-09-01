@@ -295,6 +295,31 @@ model Owner {
   firstProductLiveAt        DateTime?
   /** Stall→pre-orders contextual cross-sell dismissed. */
   preOrdersCrossSellDismissedAt DateTime?
+  /**
+   * Onboarding preset: FARM_STAND | FOOD_BUSINESS | BOTH.
+   * Configures checklist/nav emphasis only — not a separate account type.
+   */
+  businessMode              String?
+  /** ISO country; AU-first onboarding defaults here. */
+  country                   String             @default("AU")
+  stateTerritory            String?
+  suburb                    String?
+  postcode                  String?
+  abn                       String?
+  gstRegistered             Boolean            @default(false)
+  pricesIncludeGst          Boolean            @default(true)
+  shortDescription          String?
+  /** Multi-select sell categories from onboarding (eggs, bread, …). */
+  sellCategories            String[]           @default([])
+  /** Intents: farm_stand | pickup | delivery | preorders | subscriptions */
+  fulfilmentIntents         String[]           @default([])
+  /** Null until guided setup finished or skipped (legacy backfilled). */
+  onboardingCompletedAt     DateTime?
+  /** Brand defaults applied to first stand during onboarding theme step. */
+  brandAccentColor          String?
+  brandSecondaryColor       String?
+  brandLogoUrl              String?
+  defaultTimezone           String             @default("Australia/Adelaide")
   createdAt                 DateTime           @default(now())
   updatedAt                 DateTime           @updatedAt
 

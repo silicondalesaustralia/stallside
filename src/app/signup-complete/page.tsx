@@ -42,14 +42,14 @@ export default async function SignupCompletePage() {
         You&apos;re in
       </h1>
       <p className="mt-2 text-[var(--muted)]">
-        Your account is ready. Set up your stand, print a QR, and start taking
-        payments from your phone.
+        Your account is ready. Tell us what you sell and we&apos;ll set up your
+        checklist.
       </p>
       <Link
-        href="/dashboard"
+        href="/onboarding"
         className="mt-8 inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]"
       >
-        Go to dashboard
+        Continue setup
       </Link>
       <p className="mt-6 text-xs text-[var(--muted)]">{APP_NAME.toLowerCase()}.app</p>
     </main>

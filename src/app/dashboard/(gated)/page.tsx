@@ -40,6 +40,7 @@ export default async function DashboardPage({
       stripeChargesEnabled: owner.stripeChargesEnabled,
       emailAlertsEnabled: owner.emailAlertsEnabled,
       pushAlertsEnabled: owner.pushAlertsEnabled,
+      businessMode: owner.businessMode,
     }),
     loadVendlFeeEconomics({ ownerId: owner.id, owner, access }),
   ]);

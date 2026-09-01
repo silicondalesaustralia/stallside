@@ -47,6 +47,7 @@ export default async function DashboardLayout({
     stripeChargesEnabled: owner.stripeChargesEnabled,
     emailAlertsEnabled: owner.emailAlertsEnabled,
     pushAlertsEnabled: owner.pushAlertsEnabled,
+    businessMode: owner.businessMode,
   };
 
   return (

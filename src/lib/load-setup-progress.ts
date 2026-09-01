@@ -23,6 +23,7 @@ export const loadSetupProgress = cache(async (input: {
   stripeChargesEnabled: boolean;
   emailAlertsEnabled: boolean;
   pushAlertsEnabled: boolean;
+  businessMode?: string | null;
 }): Promise<SetupProgressPayload> => {
   const standId = input.selectedStandId;
 
@@ -55,6 +56,7 @@ export const loadSetupProgress = cache(async (input: {
     hasStand: input.standCount > 0,
     standSlug: input.standSlug,
     selectedStandId: input.selectedStandId,
+    businessMode: input.businessMode,
   };
 
   const tasks = resolveSetupTasks(facts);

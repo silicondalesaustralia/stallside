@@ -71,6 +71,9 @@ export const requireOwner = cache(async () => {
   if (!owner || owner.deletedAt) {
     redirect("/onboarding");
   }
+  if (!owner.onboardingCompletedAt) {
+    redirect("/onboarding");
+  }
   return {
     user,
     owner,

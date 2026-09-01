@@ -14,6 +14,7 @@ export default async function DashboardNavWithUnread({
   stripeChargesEnabled,
   emailAlertsEnabled,
   pushAlertsEnabled,
+  businessMode,
   variant,
 }: {
   ownerId: string;
@@ -24,6 +25,7 @@ export default async function DashboardNavWithUnread({
   stripeChargesEnabled: boolean;
   emailAlertsEnabled: boolean;
   pushAlertsEnabled: boolean;
+  businessMode?: string | null;
   variant: "sidebar" | "mobile";
 }) {
   const [unreadNotifications, setupAlerts, setupProgress] = await Promise.all([
@@ -45,6 +47,7 @@ export default async function DashboardNavWithUnread({
       stripeChargesEnabled,
       emailAlertsEnabled,
       pushAlertsEnabled,
+      businessMode,
     }),
   ]);
 

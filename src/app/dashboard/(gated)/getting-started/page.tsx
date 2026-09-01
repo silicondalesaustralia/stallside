@@ -15,6 +15,7 @@ export default async function GettingStartedPage() {
     stripeChargesEnabled: owner.stripeChargesEnabled,
     emailAlertsEnabled: owner.emailAlertsEnabled,
     pushAlertsEnabled: owner.pushAlertsEnabled,
+    businessMode: owner.businessMode,
   });
 
   return (
