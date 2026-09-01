@@ -4,13 +4,14 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/legal";
 import { standProductPath } from "@/lib/stand-seo";
+import { FulfilmentOptionKind, ProductChannelType } from "@/generated/prisma/client";
+import ProductFulfilmentFields from "../ProductFulfilmentFields";
 import ProductEditForm from "./ProductEditForm";
 import ProductLifecycleActions from "../ProductLifecycleActions";
 import ProductOptionsEditor from "./ProductOptionsEditor";
 import ProductStockCard from "./ProductStockCard";
 import ProductCatalogueFields from "./ProductCatalogueFields";
 import { parsePriceTiers } from "@/lib/price-tiers";
-import { ProductChannelType } from "@/generated/prisma/client";
 import {
   normalizeBusinessMode,
   primaryLocationLabel,
@@ -51,11 +52,14 @@ export default async function EditProductPage({
       },
       channels: true,
       categoryLinks: { select: { categoryId: true } },
+      fulfilmentOptions: {
+        select: { fulfilmentOptionId: true, isEnabled: true },
+      },
     },
   });
   if (!product) notFound();
 
-  const [stands, categories] = await Promise.all([
+  const [stands, categories, onlineFulfilmentOptions] = await Promise.all([
     prisma.stand.findMany({
       where: { ownerId: owner.id },
       orderBy: { createdAt: "asc" },
@@ -65,6 +69,18 @@ export default async function EditProductPage({
       where: { ownerId: owner.id, isActive: true },
       orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
       select: { id: true, title: true },
+    }),
+    prisma.fulfilmentOption.findMany({
+      where: {
+        ownerId: owner.id,
+        isActive: true,
+        kind: {
+          in: [FulfilmentOptionKind.PICKUP, FulfilmentOptionKind.DELIVERY],
+        },
+        channels: { has: "ONLINE" },
+      },
+      orderBy: [{ sortOrder: "asc" }, { label: "asc" }],
+      select: { id: true, label: true, kind: true },
     }),
   ]);
 
@@ -83,6 +99,19 @@ export default async function EditProductPage({
   const showOnline = product.channels.some(
     (c) => c.channelType === ProductChannelType.ONLINE && c.isEnabled,
   );
+  const enabledOptionIds = new Set(
+    product.fulfilmentOptions
+      .filter((row) => row.isEnabled)
+      .map((row) => row.fulfilmentOptionId),
+  );
+  const hasRestrictions = product.fulfilmentOptions.length > 0;
+  const fulfilmentRows = onlineFulfilmentOptions.map((option) => ({
+    id: option.id,
+    label: option.label,
+    kind: option.kind,
+    enabled: hasRestrictions ? enabledOptionIds.has(option.id) : true,
+    hasRestriction: hasRestrictions,
+  }));
 
   return (
     <main className="flex flex-col gap-6">
@@ -154,6 +183,17 @@ export default async function EditProductPage({
           normalizeBusinessMode(owner.businessMode),
         )}
       />
+      {showOnline && fulfilmentRows.length > 0 ? (
+        <section className="dash-card p-5">
+          <h2 className="font-semibold text-[var(--field)]">Online fulfilment</h2>
+          <div className="mt-4">
+            <ProductFulfilmentFields
+              productId={product.id}
+              options={fulfilmentRows}
+            />
+          </div>
+        </section>
+      ) : null}
       <ProductStockCard
         productId={product.id}
         stockQuantity={product.stockQuantity}

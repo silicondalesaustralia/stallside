@@ -324,6 +324,15 @@ export async function createPreOrderPage(formData: FormData) {
     });
   }
 
+  try {
+    const { syncPreOrderPageFulfilmentOption } = await import(
+      "@/lib/fulfilment/sync-preorder-page"
+    );
+    await syncPreOrderPageFulfilmentOption(page.id);
+  } catch (err) {
+    console.error("Pre-order fulfilment sync failed", err);
+  }
+
   revalidatePath("/dashboard/pre-order-pages");
   revalidatePath("/dashboard/products");
   revalidatePath(`/s/${stand.slug}`);
@@ -461,6 +470,15 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
     });
     await clearOrphanedPreOrderFlags(tx, removedIds);
   });
+
+  try {
+    const { syncPreOrderPageFulfilmentOption } = await import(
+      "@/lib/fulfilment/sync-preorder-page"
+    );
+    await syncPreOrderPageFulfilmentOption(existing.id);
+  } catch (err) {
+    console.error("Pre-order fulfilment sync failed", err);
+  }
 
   revalidatePath("/dashboard/pre-order-pages");
   revalidatePath(`/dashboard/pre-order-pages/${existing.id}`);

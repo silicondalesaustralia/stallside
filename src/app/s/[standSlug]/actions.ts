@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import {
+  HandoverMode,
   InventorySource,
   PaymentMethod,
   PaymentStatus,
@@ -181,6 +182,21 @@ async function confirmDeclaredCheckout(
       }
     } catch (err) {
       console.error("Customer link failed", err);
+    }
+
+    try {
+      const { snapshotOrderFulfilment } = await import(
+        "@/lib/fulfilment/snapshot-order"
+      );
+      await snapshotOrderFulfilment({
+        orderId: order.id,
+        standId: stand.id,
+        ownerId: stand.ownerId,
+        isPreOrder: false,
+        handoverMode: HandoverMode.COLLECT,
+      });
+    } catch (err) {
+      console.error("Order fulfilment snapshot failed", err);
     }
 
     after(() => {

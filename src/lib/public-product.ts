@@ -198,9 +198,4 @@ export function mapPublicProduct(
   };
 }
 
-export function formatMoney(cents: number, currency: string) {
-  return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency,
-  }).format(cents / 100);
-}
+export { formatMoney } from "@/lib/money";

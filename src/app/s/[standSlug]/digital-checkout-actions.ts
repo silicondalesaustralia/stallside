@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
 import {
   CollectionStatus,
   HandoverMode,
@@ -77,11 +78,71 @@ export async function startCardCheckout(input: {
       subtotalCents,
       discountCents,
       discountLabel,
-      totalCents,
+      totalCents: cartTotalCents,
       preOrderCart,
     } = loaded;
     const owner = stand.owner;
     const demo = isDemoStandSlug(stand.slug);
+
+    let totalCents = cartTotalCents;
+    let deliveryFeeCents = 0;
+    let shopFulfilment: {
+      id: string;
+      handoverMode: HandoverMode;
+    } | null = null;
+
+    if (!preOrderCart) {
+      const cookieStore = await cookies();
+      const { resolveShopFulfilmentForCheckout } = await import(
+        "@/lib/fulfilment/resolve-checkout"
+      );
+      const resolved = await resolveShopFulfilmentForCheckout({
+        ownerId: stand.ownerId,
+        cookieHeader: cookieStore.toString(),
+        productIds: lineData.map((l) => l.productId),
+        subtotalCents: cartTotalCents,
+        deliverySuburb,
+        deliveryPostcode,
+      });
+      if ("error" in resolved) return { error: resolved.error };
+      if (resolved.option) {
+        shopFulfilment = {
+          id: resolved.option.id,
+          handoverMode: resolved.option.handoverMode,
+        };
+        deliveryFeeCents = resolved.option.deliveryFeeCents;
+        totalCents = cartTotalCents + deliveryFeeCents;
+        if (resolved.option.handoverMode === HandoverMode.DELIVER) {
+          if (!deliveryAddressLine1 || !deliverySuburb || !deliveryPostcode) {
+            return { error: "Enter a delivery address." };
+          }
+        }
+      }
+    } else if (preOrderCart.handoverMode === HandoverMode.DELIVER) {
+      const { findPreOrderFulfilmentOption } = await import(
+        "@/lib/fulfilment/resolve-checkout"
+      );
+      const { deliveryAddressMatchesZone, deliveryZoneMismatchMessage } =
+        await import("@/lib/fulfilment/delivery-match");
+      const linked = await findPreOrderFulfilmentOption(
+        lineData.map((l) => l.productId),
+      );
+      if (linked) {
+        const zoneOption = await prisma.fulfilmentOption.findUnique({
+          where: { id: linked.id },
+          include: {
+            deliveryZone: { include: { rules: true } },
+          },
+        });
+        const rules = zoneOption?.deliveryZone?.rules ?? [];
+        if (
+          rules.length > 0 &&
+          !deliveryAddressMatchesZone(rules, deliverySuburb, deliveryPostcode)
+        ) {
+          return { error: deliveryZoneMismatchMessage() };
+        }
+      }
+    }
 
     if (!stand.acceptCard) {
       return { error: "Card is not enabled at this stand." };
@@ -198,10 +259,19 @@ export async function startCardCheckout(input: {
                   }
                 : {}),
             }
-          : {
-              paymentTiming: PaymentTiming.PAY_NOW,
-              handoverMode: HandoverMode.COLLECT,
-            }),
+          : shopFulfilment?.handoverMode === HandoverMode.DELIVER
+            ? {
+                paymentTiming: PaymentTiming.PAY_NOW,
+                handoverMode: HandoverMode.DELIVER,
+                deliveryAddressLine1,
+                deliverySuburb,
+                deliveryPostcode,
+                deliveryNotes,
+              }
+            : {
+                paymentTiming: PaymentTiming.PAY_NOW,
+                handoverMode: shopFulfilment?.handoverMode ?? HandoverMode.COLLECT,
+              }),
       },
     });
 
@@ -224,6 +294,53 @@ export async function startCardCheckout(input: {
       console.error("Customer link failed", err);
     }
 
+    try {
+      const { snapshotFromLegacyPreOrder, snapshotOrderFulfilment } =
+        await import("@/lib/fulfilment/snapshot-order");
+      const { findPreOrderFulfilmentOption } = await import(
+        "@/lib/fulfilment/resolve-checkout"
+      );
+      if (preOrderCart) {
+        const linked = await findPreOrderFulfilmentOption(
+          lineData.map((l) => l.productId),
+        );
+        if (linked) {
+          await snapshotOrderFulfilment({
+            orderId: order.id,
+            standId: stand.id,
+            ownerId: stand.ownerId,
+            isPreOrder: true,
+            collectionAt: preOrderCart.collectionAt,
+            collectionNote: preOrderCart.collectionNote,
+            handoverMode: preOrderCart.handoverMode,
+            collectionStatus: "ORDERED",
+            fulfilmentOptionId: linked.id,
+          });
+        } else {
+          await snapshotFromLegacyPreOrder({
+            orderId: order.id,
+            standId: stand.id,
+            ownerId: stand.ownerId,
+            collectionAt: preOrderCart.collectionAt,
+            collectionNote: preOrderCart.collectionNote,
+            handoverMode: preOrderCart.handoverMode,
+            paymentTiming: preOrderCart.paymentTiming,
+          });
+        }
+      } else {
+        await snapshotOrderFulfilment({
+          orderId: order.id,
+          standId: stand.id,
+          ownerId: stand.ownerId,
+          isPreOrder: false,
+          handoverMode: shopFulfilment?.handoverMode ?? HandoverMode.COLLECT,
+          fulfilmentOptionId: shopFulfilment?.id ?? null,
+        });
+      }
+    } catch (err) {
+      console.error("Order fulfilment snapshot failed", err);
+    }
+
     const base = appBaseUrl();
     let lineItems = stripeLineItemsFromCart(lineData, stand.currency);
     if (discountCents > 0 && lineItems.length > 0) {
@@ -237,6 +354,17 @@ export async function startCardCheckout(input: {
           lineItems[i].price_data.product_data.name += ` (${discountLabel})`;
         }
       }
+    }
+
+    if (deliveryFeeCents > 0 && !depositMode) {
+      lineItems.push({
+        quantity: 1,
+        price_data: {
+          currency: stand.currency.toLowerCase(),
+          unit_amount: deliveryFeeCents,
+          product_data: { name: "Delivery" },
+        },
+      });
     }
 
     if (depositMode) {

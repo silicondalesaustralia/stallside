@@ -92,6 +92,43 @@ enum HandoverMode {
   DELIVER
 }
 
+enum FulfilmentOptionKind {
+  STAND_IMMEDIATE
+  PICKUP
+  DELIVERY
+  PREORDER_SHEET
+  SUBSCRIPTION
+}
+
+enum PickupLocationType {
+  HOME
+  FARM_STAND
+  FARM_GATE
+  MARKET
+  SHOP
+  OTHER
+}
+
+enum PickupWindowRecurrence {
+  ONE_OFF
+  WEEKLY
+}
+
+enum DeliveryZoneRuleKind {
+  POSTCODE
+  SUBURB
+}
+
+enum FulfilmentStatus {
+  NEW
+  PREPARING
+  READY
+  COLLECTED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
 enum CartMode {
   PRODUCT
   CUSTOMER_CHOICE
@@ -290,6 +327,10 @@ model Owner {
   pushDevices               PushDevice[]
   galleryStands             GalleryStand[]
   notifications             Notification[]
+  pickupLocations           PickupLocation[]
+  pickupWindows             PickupWindow[]
+  deliveryZones             DeliveryZone[]
+  fulfilmentOptions         FulfilmentOption[]
   /** Soft-close: data retained, login/emails/stands stopped. */
   deletedAt                 DateTime?
   /** Ad click ids + UTMs from first signup (for Perform/Meta pushback). */
@@ -441,6 +482,8 @@ model Stand {
   cardInterests      CardInterest[]
   channelInterests   ChannelInterest[]
   notifications      Notification[]
+  fulfilmentOptions  FulfilmentOption[]
+  pickupLocations    PickupLocation[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 
@@ -531,20 +574,202 @@ model Customer {
 
 /** Owner online shop at /shop/{slug} — separate from farm-stand QR URLs. */
 model Storefront {
-  id           String   @id @default(cuid())
-  ownerId      String   @unique
-  owner        Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id              String    @id @default(cuid())
+  ownerId         String    @unique
+  owner           Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   /** Public path segment: vendl.app/shop/{slug} */
-  slug         String   @unique
-  isPublished  Boolean  @default(false)
-  headline     String?
-  about        String?
+  slug            String    @unique
+  isPublished     Boolean   @default(false)
+  headline        String?
+  subheadline     String?
+  about           String?
+  heroImageUrl    String?
+  themePreset     String    @default("market")
+  /** Working copy — saved on “Save draft”. */
+  draftConfig     Json      @default("{}")
+  /** Snapshot copied from draft on publish. */
+  publishedConfig Json?
+  publishedAt     DateTime?
+  contactEmail    String?
+  showPhone       Boolean   @default(false)
   /** Saved for Phase 4+ DNS wiring; not active yet. */
-  customDomain String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  customDomain    String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([isPublished])
+}
+
+// --- Phase 5: reusable fulfilment ---
+
+model PickupLocation {
+  id                            String             @id @default(cuid())
+  ownerId                       String
+  owner                         Owner              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  standId                       String?
+  stand                         Stand?             @relation(fields: [standId], references: [id], onDelete: SetNull)
+  type                          PickupLocationType @default(OTHER)
+  name                          String
+  publicLabel                   String
+  addressLine1                  String?
+  suburb                        String?
+  stateTerritory                String?
+  postcode                      String?
+  latitude                      Float?
+  longitude                     Float?
+  publicInstructions            String?
+  privateInstructions           String?
+  showFullAddressBeforePurchase Boolean            @default(false)
+  isActive                      Boolean            @default(true)
+  sortOrder                     Int                @default(0)
+  createdAt                     DateTime           @default(now())
+  updatedAt                     DateTime           @updatedAt
+  windows                       PickupWindow[]
+  fulfilmentOptions             FulfilmentOption[]
+
+  @@index([ownerId, isActive, sortOrder])
+}
+
+model PickupWindow {
+  id                String                 @id @default(cuid())
+  ownerId           String
+  owner             Owner                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  pickupLocationId  String?
+  pickupLocation    PickupLocation?        @relation(fields: [pickupLocationId], references: [id], onDelete: SetNull)
+  label             String?
+  timezone          String                 @default("Australia/Adelaide")
+  recurrence        PickupWindowRecurrence @default(WEEKLY)
+  startsAt          DateTime?
+  endsAt            DateTime?
+  weekday           Int?
+  startTimeMin      Int?
+  endTimeMin        Int?
+  orderOpensAt      DateTime?
+  orderClosesAt     DateTime?
+  orderOpenWeekday  Int?
+  orderOpenTimeMin  Int?
+  orderCloseWeekday Int?
+  orderCloseTimeMin Int?
+  maxOrders         Int?
+  pickupFeeCents    Int                    @default(0)
+  minOrderCents     Int                    @default(0)
+  isActive          Boolean                @default(true)
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  fulfilmentOptions FulfilmentOption[]
+
+  @@index([ownerId, isActive])
+}
+
+model DeliveryZone {
+  id                   String             @id @default(cuid())
+  ownerId              String
+  owner                Owner              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name                 String
+  deliveryFeeCents     Int                @default(0)
+  freeDeliveryMinCents Int?
+  minOrderCents        Int                @default(0)
+  timezone             String             @default("Australia/Adelaide")
+  recurrence           PickupWindowRecurrence @default(WEEKLY)
+  weekday              Int?
+  startTimeMin         Int?
+  endTimeMin           Int?
+  orderCloseWeekday    Int?
+  orderCloseTimeMin    Int?
+  customerInstructions String?
+  isActive             Boolean            @default(true)
+  sortOrder            Int                @default(0)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  rules                DeliveryZoneRule[]
+  fulfilmentOptions    FulfilmentOption[]
+
+  @@index([ownerId, isActive, sortOrder])
+}
+
+model DeliveryZoneRule {
+  id             String              @id @default(cuid())
+  deliveryZoneId String
+  deliveryZone   DeliveryZone        @relation(fields: [deliveryZoneId], references: [id], onDelete: Cascade)
+  kind           DeliveryZoneRuleKind
+  value          String
+
+  @@unique([deliveryZoneId, kind, value])
+}
+
+model FulfilmentOption {
+  id                  String               @id @default(cuid())
+  ownerId             String
+  owner               Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  kind                FulfilmentOptionKind
+  label               String
+  standId             String?
+  stand               Stand?               @relation(fields: [standId], references: [id], onDelete: Cascade)
+  pickupLocationId    String?
+  pickupLocation      PickupLocation?      @relation(fields: [pickupLocationId], references: [id], onDelete: SetNull)
+  pickupWindowId      String?
+  pickupWindow        PickupWindow?        @relation(fields: [pickupWindowId], references: [id], onDelete: SetNull)
+  deliveryZoneId      String?
+  deliveryZone        DeliveryZone?        @relation(fields: [deliveryZoneId], references: [id], onDelete: SetNull)
+  preOrderPageId      String?              @unique
+  preOrderPage        PreOrderPage?        @relation(fields: [preOrderPageId], references: [id], onDelete: SetNull)
+  subscriptionOfferId String?              @unique
+  subscriptionOffer   SubscriptionOffer?   @relation(fields: [subscriptionOfferId], references: [id], onDelete: SetNull)
+  handoverMode        HandoverMode         @default(COLLECT)
+  paymentTiming       PaymentTiming        @default(PAY_NOW)
+  depositPercent      Int?
+  minOrderCents       Int                  @default(0)
+  feeCents            Int                  @default(0)
+  /** STAND | ONLINE — which channels surface this option. */
+  channels            String[]             @default(["STAND"])
+  isActive            Boolean              @default(true)
+  sortOrder           Int                  @default(0)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  products            ProductFulfilmentOption[]
+  orderSnapshots      OrderFulfilment[]
+
+  @@index([ownerId, kind, isActive, sortOrder])
+  @@index([standId])
+}
+
+model ProductFulfilmentOption {
+  id                 String           @id @default(cuid())
+  productId          String
+  product            Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  fulfilmentOptionId String
+  fulfilmentOption   FulfilmentOption @relation(fields: [fulfilmentOptionId], references: [id], onDelete: Cascade)
+  isEnabled          Boolean          @default(true)
+
+  @@unique([productId, fulfilmentOptionId])
+  @@index([fulfilmentOptionId])
+}
+
+model OrderFulfilment {
+  id                        String               @id @default(cuid())
+  orderId                   String               @unique
+  order                     Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fulfilmentOptionId        String?
+  fulfilmentOption          FulfilmentOption?    @relation(fields: [fulfilmentOptionId], references: [id], onDelete: SetNull)
+  kind                      FulfilmentOptionKind
+  optionLabel               String
+  pickupLocationName        String?
+  pickupPublicLabel         String?
+  pickupAddressSnapshot     String?
+  pickupInstructions        String?
+  pickupPrivateInstructions String?
+  windowLabel               String?
+  collectionStartsAt        DateTime?
+  collectionEndsAt          DateTime?
+  deliveryZoneName          String?
+  deliveryFeeCents          Int                  @default(0)
+  handoverMode              HandoverMode
+  fulfilmentStatus          FulfilmentStatus     @default(NEW)
+  sellerNotes               String?
+  createdAt                 DateTime             @default(now())
+
+  @@index([collectionStartsAt, fulfilmentStatus])
+  @@index([fulfilmentOptionId])
 }
 
 /** Starter checkout: shopper tapped "I'd have paid by card" (no PII). */
@@ -640,6 +865,7 @@ model Product {
   channels           ProductChannel[]
   preOrderPageItems  PreOrderPageProduct[]
   subscriptionOfferItems SubscriptionOfferProduct[]
+  fulfilmentOptions      ProductFulfilmentOption[]
   orderItems         OrderItem[]
   inventoryAdjustments InventoryAdjustment[]
   lowStockAlerts     LowStockAlert[]
@@ -676,6 +902,7 @@ model SubscriptionOffer {
   stripePriceId      String?
   items              SubscriptionOfferProduct[]
   subscriptions      ShopperSubscription[]
+  fulfilmentOption   FulfilmentOption?
   createdAt          DateTime                   @default(now())
   updatedAt          DateTime                   @updatedAt
 
@@ -764,6 +991,7 @@ model PreOrderPage {
   preOrderUpsellDiscountValue Int?
   preOrderUpsellProductId String?
   items            PreOrderPageProduct[]
+  fulfilmentOption FulfilmentOption?
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
 
@@ -868,6 +1096,7 @@ model Order {
   stripeInvoiceId         String?           @unique
   items                   OrderItem[]
   inventoryAdjustments    InventoryAdjustment[]
+  fulfilment              OrderFulfilment?
   createdAt               DateTime          @default(now())
   updatedAt               DateTime          @updatedAt
 

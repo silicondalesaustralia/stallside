@@ -16,6 +16,8 @@ const schemaFingerprint = [
   ...Object.keys(Prisma.StandScalarFieldEnum),
   ...Object.keys(Prisma.OwnerScalarFieldEnum),
   ...Object.keys(Prisma.OrderScalarFieldEnum),
+  ...Object.keys(Prisma.StorefrontScalarFieldEnum),
+  ...Object.keys(Prisma.FulfilmentOptionScalarFieldEnum),
 ]
   .sort()
   .join(",");

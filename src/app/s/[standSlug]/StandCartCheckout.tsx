@@ -107,6 +107,9 @@ export default function StandCartCheckout({
   preOrderUpsell = null,
   pagePreOrderUpsells = [],
   firstOrder = null,
+  shopDeliveryRequired = false,
+  shopDeliveryFeeCents = 0,
+  shopFulfilmentLabel = null,
 }: {
   standSlug: string;
   currency: string;
@@ -127,6 +130,9 @@ export default function StandCartCheckout({
   preOrderUpsell?: CartUpsellConfig | null;
   pagePreOrderUpsells?: PagePreOrderUpsell[];
   firstOrder?: FirstOrderOffer | null;
+  shopDeliveryRequired?: boolean;
+  shopDeliveryFeeCents?: number;
+  shopFulfilmentLabel?: string | null;
 }) {
   const [cartLines, setCartLines] = useState<CartLine[]>([]);
   const [hydrated, setHydrated] = useState(false);
@@ -253,7 +259,13 @@ export default function StandCartCheckout({
   }, [products, cartLines, upsell, preOrderUpsell, pagePreOrderUpsells]);
 
   const subtotal = lines.reduce((sum, l) => sum + l.lineTotalCents, 0);
-  const total = subtotal;
+  const preOrderOnly =
+    lines.length > 0 && lines.every((l) => l.product.isPreOrder);
+  const shopDelivery = !preOrderOnly && shopDeliveryRequired;
+  const deliverOnly =
+    shopDelivery ||
+    (preOrderOnly && lines.every((l) => l.product.handoverMode === "DELIVER"));
+  const total = subtotal + (shopDelivery ? shopDeliveryFeeCents : 0);
   const cardFeeCents =
     stallsideFeeApplies && passFeeToCustomer && total > 0
       ? stallsidePassOnFeeCents(total)
@@ -282,10 +294,6 @@ export default function StandCartCheckout({
       ? `First visit? Enter email for ${formatMoney(firstOrder.amountCents, currency)} off`
       : `First visit? Enter email for ${firstOrder.percent}% off`
     : null;
-  const preOrderOnly =
-    lines.length > 0 && lines.every((l) => l.product.isPreOrder);
-  const deliverOnly =
-    preOrderOnly && lines.every((l) => l.product.handoverMode === "DELIVER");
   const hasMixedCart =
     lines.some((l) => l.product.isPreOrder) &&
     lines.some((l) => !l.product.isPreOrder);
@@ -592,6 +600,14 @@ export default function StandCartCheckout({
       {step === "cart" ? (
         <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-[var(--panel)]/95 px-4 py-4 backdrop-blur pb-[max(1rem,env(safe-area-inset-bottom))]">
           <div className="mx-auto flex max-w-lg flex-col gap-3">
+            {shopFulfilmentLabel ? (
+              <p className="text-sm text-[var(--muted)]">
+                {shopFulfilmentLabel}
+                {shopDelivery && shopDeliveryFeeCents > 0
+                  ? ` · includes ${formatMoney(shopDeliveryFeeCents, currency)} delivery`
+                  : null}
+              </p>
+            ) : null}
             <div className="flex items-baseline justify-between gap-3">
               <p className="text-base text-[var(--muted)]">Total</p>
               <p className="font-receipt text-3xl font-semibold tabular-nums">

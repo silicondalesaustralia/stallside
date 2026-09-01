@@ -18,7 +18,7 @@ export default async function WebsiteDomainsPage({
       <div>
         <p className="text-sm text-[var(--muted)]">
           <Link href="/dashboard/website" className="underline">
-            Online shop
+            Website editor
           </Link>
         </p>
         <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">

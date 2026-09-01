@@ -1,5 +1,6 @@
 import { PaymentStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { resolveOrderCollectionAt } from "@/lib/fulfilment/legacy-read";
 import type { CollectionOrderView } from "./group-collections";
 
 export { groupCollectionDays, dayMakeListMeta } from "./group-collections";
@@ -47,6 +48,15 @@ export async function loadCollectionOrders(ownerId: string, standId: string) {
       currency: true,
       createdAt: true,
       stand: { select: { name: true } },
+      fulfilment: {
+        select: {
+          optionLabel: true,
+          pickupLocationName: true,
+          pickupPublicLabel: true,
+          windowLabel: true,
+          collectionStartsAt: true,
+        },
+      },
       shopperSubscription: {
         select: {
           offerId: true,
@@ -74,13 +84,20 @@ export type CollectionOrder = Awaited<
 export function toCollectionOrderView(
   order: CollectionOrder,
 ): CollectionOrderView {
+  const collectionAt =
+    resolveOrderCollectionAt(order, order.fulfilment) ?? order.collectionAt;
+  const fulfilmentLabel =
+    order.fulfilment?.windowLabel && order.fulfilment.pickupPublicLabel
+      ? `${order.fulfilment.windowLabel} · ${order.fulfilment.pickupPublicLabel}`
+      : order.fulfilment?.optionLabel ?? null;
+
   return {
     id: order.id,
     orderNumber: order.orderNumber,
     customerName: order.customerName,
     customerPhone: order.customerPhone,
     receiptEmail: order.receiptEmail,
-    collectionAt: order.collectionAt,
+    collectionAt,
     collectionNote: order.collectionNote,
     collectionStatus: order.collectionStatus,
     paymentStatus: order.paymentStatus,
@@ -96,6 +113,7 @@ export function toCollectionOrderView(
     stand: order.stand,
     subscriptionOfferId: order.shopperSubscription?.offerId ?? null,
     subscriptionOfferTitle: order.shopperSubscription?.offer.title ?? null,
+    fulfilmentLabel,
     items: order.items,
   };
 }

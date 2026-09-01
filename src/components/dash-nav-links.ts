@@ -60,7 +60,7 @@ export function dashNavGroupsForMode(
       items: [
         { href: "/dashboard/businesses", label: locationsLabel },
         { href: "/dashboard/notifications", label: "Notifications" },
-        { href: "/dashboard/fulfilment", label: "Fulfilment", soon: true },
+        { href: "/dashboard/fulfilment", label: "Fulfilment" },
         { href: "/dashboard/recipes", label: "Recipes & Costs", soon: true },
       ],
     },
@@ -77,7 +77,7 @@ export function dashNavGroupsForMode(
       id: "website",
       label: "Website",
       items: [
-        { href: "/dashboard/website", label: "Online shop" },
+        { href: "/dashboard/website", label: "Website editor" },
         { href: "/dashboard/website/domains", label: "Domains" },
       ],
     },

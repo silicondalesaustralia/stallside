@@ -178,6 +178,8 @@ export async function createSubscriptionOffer(formData: FormData) {
     },
   });
 
+  await syncOfferFulfilment(offer.id);
+
   try {
     await syncStripeIfConnected({
       ownerStripeAccountId: owner.stripeAccountId,
@@ -200,4 +202,15 @@ export async function createSubscriptionOffer(formData: FormData) {
 
   revalidatePath("/dashboard/subscriptions");
   redirect(`/dashboard/subscriptions/${offer.id}`);
+}
+
+async function syncOfferFulfilment(offerId: string) {
+  try {
+    const { syncSubscriptionOfferFulfilmentOption } = await import(
+      "@/lib/fulfilment/sync-subscription-offer"
+    );
+    await syncSubscriptionOfferFulfilmentOption(offerId);
+  } catch (err) {
+    console.error("Subscription fulfilment sync failed", err);
+  }
 }

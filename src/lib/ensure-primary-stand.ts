@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { uniqueStandSlug } from "@/lib/slug";
 import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
+import { ensureStandImmediateOption } from "@/lib/fulfilment/defaults";
 
 /** Ensure the owner has at least one stand (food businesses need Product.standId). */
 export async function ensurePrimaryStand(owner: {
@@ -17,7 +18,10 @@ export async function ensurePrimaryStand(owner: {
     where: { ownerId: owner.id },
     orderBy: { createdAt: "asc" },
   });
-  if (existing) return existing;
+  if (existing) {
+    await ensureStandImmediateOption(existing);
+    return existing;
+  }
 
   const slug = await uniqueStandSlug(owner.businessName, async (s) => {
     const found = await prisma.stand.findUnique({ where: { slug: s } });
@@ -40,5 +44,8 @@ export async function ensurePrimaryStand(owner: {
       acceptLocalTransfer: true,
       acceptCard: true,
     },
+  }).then(async (stand) => {
+    await ensureStandImmediateOption(stand);
+    return stand;
   });
 }

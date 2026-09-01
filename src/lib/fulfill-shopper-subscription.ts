@@ -172,6 +172,40 @@ export async function fulfillShopperSubscriptionInvoice(
     { maxWait: 10_000, timeout: 30_000 },
   );
 
+  try {
+    const { snapshotFromLegacyPreOrder, snapshotOrderFulfilment } =
+      await import("@/lib/fulfilment/snapshot-order");
+    const offerOption = await prisma.fulfilmentOption.findFirst({
+      where: { subscriptionOfferId: offer.id },
+      select: { id: true },
+    });
+    if (offerOption) {
+      await snapshotOrderFulfilment({
+        orderId: order.id,
+        standId: sub.standId,
+        ownerId: sub.ownerId,
+        isPreOrder: true,
+        collectionAt,
+        collectionNote: offer.collectionNote,
+        handoverMode: offer.handoverMode,
+        collectionStatus: "ORDERED",
+        fulfilmentOptionId: offerOption.id,
+      });
+    } else {
+      await snapshotFromLegacyPreOrder({
+        orderId: order.id,
+        standId: sub.standId,
+        ownerId: sub.ownerId,
+        collectionAt,
+        collectionNote: offer.collectionNote,
+        handoverMode: offer.handoverMode,
+        paymentTiming: PaymentTiming.PAY_UPFRONT,
+      });
+    }
+  } catch (err) {
+    console.error("Subscription fulfilment snapshot failed", err);
+  }
+
   after(() => {
     void notifySale(order.id).catch((error) => {
       console.error("Sale notify failed", error);

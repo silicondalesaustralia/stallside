@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { loadPublicStandCatalog } from "@/lib/public-stand-catalog";
 import { prisma } from "@/lib/prisma";
 import { localTransferForCurrency } from "@/lib/local-transfer";
@@ -10,6 +11,10 @@ import { mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { standCatalogPath } from "@/lib/stand-seo";
+import { readShopOriginFromCookies } from "@/lib/storefront/shop-origin";
+import { readShopFulfilmentOptionFromCookies } from "@/lib/fulfilment/shop-option";
+import { FulfilmentOptionKind } from "@/generated/prisma/client";
+import { shopPagePath } from "@/lib/storefront/paths";
 import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
@@ -159,6 +164,48 @@ export default async function StandCartPage({
     })
     .filter((o): o is NonNullable<typeof o> => Boolean(o));
 
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore.toString();
+  const shopOriginSlug = readShopOriginFromCookies(cookieHeader);
+  let backHref = standCatalogPath(stand.slug);
+  let backLabel = "← Continue shopping";
+  if (shopOriginSlug) {
+    const originStorefront = await prisma.storefront.findFirst({
+      where: { slug: shopOriginSlug, ownerId: stand.ownerId },
+      select: { slug: true },
+    });
+    if (originStorefront) {
+      backHref = shopPagePath(originStorefront.slug, "shop");
+      backLabel = "← Back to shop";
+    }
+  }
+
+  let shopDeliveryRequired = false;
+  let shopDeliveryFeeCents = 0;
+  let shopFulfilmentLabel: string | null = null;
+  const shopOptionId = readShopFulfilmentOptionFromCookies(cookieHeader);
+  if (shopOptionId) {
+    const shopOption = await prisma.fulfilmentOption.findFirst({
+      where: {
+        id: shopOptionId,
+        ownerId: stand.ownerId,
+        isActive: true,
+        channels: { has: "ONLINE" },
+      },
+      include: {
+        deliveryZone: { select: { deliveryFeeCents: true } },
+      },
+    });
+    if (shopOption) {
+      shopFulfilmentLabel = shopOption.label;
+      if (shopOption.kind === FulfilmentOptionKind.DELIVERY) {
+        shopDeliveryRequired = true;
+        shopDeliveryFeeCents =
+          shopOption.feeCents || shopOption.deliveryZone?.deliveryFeeCents || 0;
+      }
+    }
+  }
+
   return (
     <main
       className="mx-auto min-h-full w-full max-w-lg px-4 pb-8 pt-8"
@@ -168,8 +215,8 @@ export default async function StandCartPage({
         standName={stand.name}
         standSlug={stand.slug}
         logoUrl={branded.logoUrl}
-        backHref={standCatalogPath(stand.slug)}
-        backLabel="← Continue shopping"
+        backHref={backHref}
+        backLabel={backLabel}
       />
       <h2 className="mt-6 font-[family-name:var(--font-display)] text-2xl font-bold">
         Your cart
@@ -209,6 +256,9 @@ export default async function StandCartPage({
               }
             : null
         }
+        shopDeliveryRequired={shopDeliveryRequired}
+        shopDeliveryFeeCents={shopDeliveryFeeCents}
+        shopFulfilmentLabel={shopFulfilmentLabel}
       />
     </main>
   );
