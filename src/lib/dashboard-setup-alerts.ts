@@ -8,13 +8,23 @@ export function setupNavBadge(
   href: string,
   alerts: DashboardSetupAlerts,
   unreadNotifications = 0,
+  setupIncomplete = 0,
 ): number | undefined {
   if (href === "/dashboard/notifications") {
     return unreadNotifications > 0 ? unreadNotifications : undefined;
   }
+  if (href === "/dashboard/getting-started" && setupIncomplete > 0) {
+    return setupIncomplete;
+  }
   if (href === "/dashboard" && alerts.needsBusiness) return 1;
   if (href === "/dashboard/products" && alerts.needsProducts) return 1;
-  if (href === "/dashboard/settings" && alerts.needsStripe) return 1;
+  if (
+    (href === "/dashboard/settings" ||
+      href === "/dashboard/settings/stripe") &&
+    alerts.needsStripe
+  ) {
+    return 1;
+  }
   return undefined;
 }
 

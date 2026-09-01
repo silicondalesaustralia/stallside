@@ -25,6 +25,18 @@ function Icon({
 }
 
 const ICONS: Record<string, React.ReactNode> = {
+  "/dashboard/getting-started": (
+    <Icon d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+  ),
+  "/dashboard/businesses": (
+    <Icon d="M5 20V10l7-5 7 5v10M9 20v-6h6v6" />
+  ),
+  "/dashboard/settings/stripe": (
+    <Icon d="M4 8h16v10H4zM4 8l2-3h12l2 3M8 13h4" />
+  ),
+  "/dashboard/settings/billing": (
+    <Icon d="M12 3v18M8 8h7a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h7" />
+  ),
   "/dashboard": (
     <Icon d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" />
   ),

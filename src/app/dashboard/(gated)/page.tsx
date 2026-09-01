@@ -3,17 +3,18 @@ import { requireOwner } from "@/lib/session";
 import DashboardChannelCard from "@/components/DashboardChannelCard";
 import DashboardGreeting from "@/components/DashboardGreeting";
 import DashboardLowStockCard from "@/components/DashboardLowStockCard";
-import DashboardNextCard from "@/components/DashboardNextCard";
 import DashboardPanels from "@/components/DashboardPanels";
 import DateRangeFilter from "@/components/DateRangeFilter";
+import ProEconomicsCard from "@/components/ProEconomicsCard";
 import SalesAnalyticsPanel from "@/components/SalesAnalyticsPanel";
+import SetupProgressCard from "@/components/SetupProgressCard";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveDateWindow } from "@/lib/date-range";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { loadDashboardHomeData } from "./load-dashboard-home";
-import { resolveDashboardOnboardingPath } from "@/lib/dashboard-onboarding-path";
-
+import { loadSetupProgress } from "@/lib/load-setup-progress";
+import { loadVendlFeeEconomics } from "@/lib/vendl-fee-economics";
 
 export default async function DashboardPage({
   searchParams,
@@ -21,21 +22,36 @@ export default async function DashboardPage({
   searchParams: Promise<{ range?: string; from?: string; to?: string }>;
 }) {
   const { owner, user } = await requireOwner();
-  const { selected } = await resolveSelectedBusiness(owner.id);
-  const cardTier = ownerHasProAccess(owner, {
-    email: user.email,
-    role: user.role,
-  });
+  const { businesses, selected } = await resolveSelectedBusiness(owner.id);
+  const access = { email: user.email, role: user.role };
+  const cardTier = ownerHasProAccess(owner, access);
   const params = await searchParams;
   const window = resolveDateWindow(params);
   const monthStart = new Date();
   monthStart.setUTCDate(1);
   monthStart.setUTCHours(0, 0, 0, 0);
 
+  const [setupProgress, feeEconomics] = await Promise.all([
+    loadSetupProgress({
+      ownerId: owner.id,
+      selectedStandId: selected?.id ?? null,
+      standSlug: selected?.slug ?? null,
+      standCount: businesses.length,
+      stripeChargesEnabled: owner.stripeChargesEnabled,
+      emailAlertsEnabled: owner.emailAlertsEnabled,
+      pushAlertsEnabled: owner.pushAlertsEnabled,
+    }),
+    loadVendlFeeEconomics({ ownerId: owner.id, owner, access }),
+  ]);
+
   if (!selected) {
     return (
-      <main className="flex flex-col gap-8">
+      <main className="flex flex-col gap-6">
         <DashboardGreeting standName={owner.businessName} />
+        <SetupProgressCard
+          tasks={setupProgress.tasks}
+          summary={setupProgress.summary}
+        />
         <NoBusinessYet />
       </main>
     );
@@ -60,26 +76,14 @@ export default async function DashboardPage({
     ...order,
     stand: { name: standName },
   }));
-  const showPreOrdersCrossSell =
-    !owner.preOrdersCrossSellDismissedAt &&
-    !data.hasPreOrderProduct &&
-    data.soldOutTakeNow >= 1;
   const ordersHref = `/dashboard/orders?range=${window.key}${
     window.key === "custom"
       ? `&from=${window.fromParam}&to=${window.toParam}`
       : ""
   }`;
-  const cardInterestCount = data.cardInterests.length;
-  const restockN = data.restockSubscriberCount;
-  const upgradeLabel =
-    !cardTier && cardInterestCount > 0
-      ? "Card demand this month"
-      : !cardTier && restockN > 0
-        ? "Restock list growing"
-        : null;
 
   return (
-    <main className="flex flex-col gap-5">
+    <main className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <DashboardGreeting standName={standName} />
         <DateRangeFilter
@@ -101,25 +105,14 @@ export default async function DashboardPage({
       />
 
       <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
-        <DashboardNextCard
-          onboardingPath={resolveDashboardOnboardingPath({
-            hasPreOrderProduct: data.hasPreOrderProduct,
-            preOrderPageCount: data.preOrderPageCount,
-            subscriptionOfferCount: data.subscriptionOfferCount,
-          })}
-          stripeConnected={owner.stripeChargesEnabled}
-          stripeStarted={Boolean(owner.stripeAccountId)}
-          products={data.products}
-          orderCount={current.orderCount}
-          preOrderPageCount={data.preOrderPageCount}
-          subscriptionOfferCount={data.subscriptionOfferCount}
-          showPreOrders={showPreOrdersCrossSell}
-          upgradeHref={upgradeLabel ? "/dashboard/settings/billing" : null}
-          upgradeLabel={upgradeLabel}
-          qrHref={`/dashboard/businesses/${selected.id}/qr`}
+        <SetupProgressCard
+          tasks={setupProgress.tasks}
+          summary={setupProgress.summary}
         />
         <DashboardLowStockCard items={lowStock} />
       </div>
+
+      {feeEconomics ? <ProEconomicsCard economics={feeEconomics} /> : null}
 
       <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
         <DashboardChannelCard

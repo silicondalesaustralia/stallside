@@ -1,6 +1,7 @@
 import DashboardMobileNav from "@/components/DashboardMobileNav";
 import DashboardNav from "@/components/DashboardNav";
 import { loadDashboardSetupAlerts } from "@/lib/load-dashboard-setup-alerts";
+import { loadSetupProgress } from "@/lib/load-setup-progress";
 import { prisma } from "@/lib/prisma";
 import type { BusinessOption } from "@/lib/selected-business";
 
@@ -8,18 +9,24 @@ export default async function DashboardNavWithUnread({
   ownerId,
   businesses,
   selectedBusinessId,
+  selectedStandSlug,
   stripeAccountId,
   stripeChargesEnabled,
+  emailAlertsEnabled,
+  pushAlertsEnabled,
   variant,
 }: {
   ownerId: string;
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
+  selectedStandSlug: string | null;
   stripeAccountId: string | null;
   stripeChargesEnabled: boolean;
+  emailAlertsEnabled: boolean;
+  pushAlertsEnabled: boolean;
   variant: "sidebar" | "mobile";
 }) {
-  const [unreadNotifications, setupAlerts] = await Promise.all([
+  const [unreadNotifications, setupAlerts, setupProgress] = await Promise.all([
     prisma.notification.count({
       where: { ownerId, status: "OPEN" },
     }),
@@ -30,7 +37,20 @@ export default async function DashboardNavWithUnread({
       stripeAccountId,
       stripeChargesEnabled,
     }),
+    loadSetupProgress({
+      ownerId,
+      selectedStandId: selectedBusinessId,
+      standSlug: selectedStandSlug,
+      standCount: businesses.length,
+      stripeChargesEnabled,
+      emailAlertsEnabled,
+      pushAlertsEnabled,
+    }),
   ]);
+
+  const setupIncomplete = setupProgress.summary.launched
+    ? 0
+    : setupProgress.summary.requiredTotal - setupProgress.summary.requiredDone;
 
   if (variant === "mobile") {
     return (
@@ -39,6 +59,7 @@ export default async function DashboardNavWithUnread({
         selectedBusinessId={selectedBusinessId}
         unreadNotifications={unreadNotifications}
         setupAlerts={setupAlerts}
+        setupIncomplete={setupIncomplete}
       />
     );
   }
@@ -49,6 +70,7 @@ export default async function DashboardNavWithUnread({
       selectedBusinessId={selectedBusinessId}
       unreadNotifications={unreadNotifications}
       setupAlerts={setupAlerts}
+      setupIncomplete={setupIncomplete}
     />
   );
 }

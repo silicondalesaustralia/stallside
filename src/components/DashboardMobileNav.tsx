@@ -7,8 +7,8 @@ import BrandLockup from "@/components/BrandLockup";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
 import {
   dashLinkActive,
+  dashNavGroups,
   mobileTabs,
-  secondaryLinks,
 } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
@@ -21,11 +21,13 @@ export default function DashboardMobileNav({
   selectedBusinessId,
   unreadNotifications,
   setupAlerts,
+  setupIncomplete = 0,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
   unreadNotifications?: number;
   setupAlerts: DashboardSetupAlerts;
+  setupIncomplete?: number;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -43,9 +45,14 @@ export default function DashboardMobileNav({
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  const moreBadge =
+    setupIncomplete > 0 ||
+    setupAlerts.needsStripe ||
+    (unreadNotifications ?? 0) > 0;
+
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--panel)] print:hidden md:hidden">
+      <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--panel)]/95 backdrop-blur-sm print:hidden md:hidden">
         <div className="flex items-center justify-between gap-3 px-4 py-3">
           <BrandLockup href="/dashboard" size="sm" />
           <button
@@ -56,7 +63,7 @@ export default function DashboardMobileNav({
             className="relative rounded-full bg-[var(--field)] px-3 py-1.5 text-xs font-semibold text-[var(--ink-on-dark)]"
           >
             {open ? "Close" : "More"}
-            {!open && (setupAlerts.needsStripe || (unreadNotifications ?? 0) > 0) ? (
+            {!open && moreBadge ? (
               <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-[var(--gone)]" />
             ) : null}
           </button>
@@ -73,7 +80,7 @@ export default function DashboardMobileNav({
           />
           <div
             id="dash-more-menu"
-            className="absolute right-3 top-3 w-[min(18rem,calc(100vw-1.5rem))] rounded-2xl bg-[var(--field)] p-4 shadow-2xl [color-scheme:dark]"
+            className="absolute right-3 top-3 max-h-[min(85vh,36rem)] w-[min(20rem,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl bg-[var(--field)] p-4 shadow-2xl [color-scheme:dark]"
           >
             <DashboardBusinessSelect
               businesses={businesses}
@@ -81,29 +88,50 @@ export default function DashboardMobileNav({
               tone="dark"
               needsBusiness={setupAlerts.needsBusiness}
             />
-            <nav className="mt-3 flex flex-col gap-1 border-t border-white/10 pt-3">
-              {secondaryLinks.map((link) => {
-                const badge = setupNavBadge(
-                  link.href,
-                  setupAlerts,
-                  unreadNotifications,
-                );
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-between rounded-lg px-2 py-2.5 text-sm text-[var(--ink-on-dark)] hover:bg-white/10"
-                  >
-                    <span>{link.label}</span>
-                    {badge && badge > 0 ? (
-                      <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
-                        {badge > 9 ? "9+" : badge}
-                      </span>
-                    ) : null}
-                  </Link>
-                );
-              })}
+            <nav className="mt-3 flex flex-col gap-3 border-t border-white/10 pt-3">
+              {dashNavGroups.map((group) => (
+                <div key={group.id}>
+                  <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--ink-on-dark)]/40">
+                    {group.label}
+                  </p>
+                  {group.items.map((item) => {
+                    if (item.soon) {
+                      return (
+                        <span
+                          key={item.href}
+                          className="flex items-center justify-between rounded-lg px-2 py-2 text-sm text-[var(--ink-on-dark)]/35"
+                        >
+                          {item.label}
+                          <span className="text-[9px] font-bold uppercase">
+                            Soon
+                          </span>
+                        </span>
+                      );
+                    }
+                    const badge = setupNavBadge(
+                      item.href,
+                      setupAlerts,
+                      unreadNotifications,
+                      setupIncomplete,
+                    );
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        className="flex items-center justify-between rounded-lg px-2 py-2.5 text-sm text-[var(--ink-on-dark)] hover:bg-white/10"
+                      >
+                        <span>{item.label}</span>
+                        {badge && badge > 0 ? (
+                          <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
+                            {badge > 9 ? "9+" : badge}
+                          </span>
+                        ) : null}
+                      </Link>
+                    );
+                  })}
+                </div>
+              ))}
             </nav>
           </div>
         </div>
@@ -117,6 +145,7 @@ export default function DashboardMobileNav({
               tab.href,
               setupAlerts,
               unreadNotifications,
+              setupIncomplete,
             );
             return (
               <li key={tab.href}>
