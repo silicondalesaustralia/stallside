@@ -51,3 +51,26 @@ export async function ensureCustomer(input: EnsureCustomerInput) {
     },
   });
 }
+
+/** Link order to CRM when email present; no-op for anonymous cash. */
+export async function linkOrderToCustomer(input: {
+  orderId: string;
+  ownerId: string;
+  email?: string | null;
+  name?: string | null;
+  phone?: string | null;
+}) {
+  const customer = await ensureCustomer({
+    ownerId: input.ownerId,
+    email: input.email,
+    name: input.name,
+    phone: input.phone,
+    source: "order",
+  });
+  if (!customer) return null;
+  await prisma.order.update({
+    where: { id: input.orderId },
+    data: { customerId: customer.id },
+  });
+  return customer;
+}

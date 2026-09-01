@@ -17,12 +17,20 @@ import { resolveSelectedBusiness } from "@/lib/selected-business";
 export default async function OrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ range?: string; from?: string; to?: string }>;
+  searchParams: Promise<{
+    range?: string;
+    from?: string;
+    to?: string;
+    q?: string;
+    customerId?: string;
+  }>;
 }) {
   const { owner, user } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
   const params = await searchParams;
   const window = resolveDateWindow(params);
+  const emailQuery = params.q?.trim();
+  const customerId = params.customerId?.trim();
   const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
@@ -49,7 +57,26 @@ export default async function OrdersPage({
     shopperSubscriptionId: true,
   } as const;
 
-  const [currentOrders, previousOrders, listedOrders] = await Promise.all([
+  const listFilter = {
+    ...standScope,
+    createdAt: { gte: window.start, lte: window.end },
+    ...(customerId ? { customerId } : {}),
+    ...(emailQuery
+      ? {
+          OR: [
+            {
+              receiptEmail: { contains: emailQuery, mode: "insensitive" as const },
+            },
+            {
+              customerName: { contains: emailQuery, mode: "insensitive" as const },
+            },
+          ],
+        }
+      : {}),
+  };
+
+  const [currentOrders, previousOrders, listedOrders, filterCustomer] =
+    await Promise.all([
     prisma.order.findMany({
       where: {
         ...standScope,
@@ -68,10 +95,7 @@ export default async function OrdersPage({
       select: metricSelect,
     }),
     prisma.order.findMany({
-      where: {
-        ...standScope,
-        createdAt: { gte: window.start, lte: window.end },
-      },
+      where: listFilter,
       orderBy: { createdAt: "desc" },
       take: 100,
       select: {
@@ -98,6 +122,12 @@ export default async function OrdersPage({
         },
       },
     }),
+    customerId
+      ? prisma.customer.findFirst({
+          where: { id: customerId, ownerId: owner.id },
+          select: { name: true, email: true },
+        })
+      : Promise.resolve(null),
   ]);
 
   const currentSummaries = summarizeByChannel(currentOrders);
@@ -122,7 +152,19 @@ export default async function OrdersPage({
         <p className="mt-1 text-[var(--muted)]">
           {listedOrders.length} order{listedOrders.length === 1 ? "" : "s"} ·{" "}
           {selected.name} · {window.label}
+          {filterCustomer
+            ? ` · ${filterCustomer.name || filterCustomer.email}`
+            : emailQuery
+              ? ` · “${emailQuery}”`
+              : ""}
         </p>
+        {(emailQuery || customerId) && (
+          <p className="mt-2 text-sm">
+            <Link href="/dashboard/orders" className="underline">
+              Clear filter
+            </Link>
+          </p>
+        )}
         {cardTier ? (
           <p className="mt-2 text-sm md:hidden">
             <Link

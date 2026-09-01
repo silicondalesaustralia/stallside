@@ -1,11 +1,9 @@
 # Vendl Next — Phase 3 Catalogue Architecture
 
-**Status:** IN PROGRESS — slices 3A–3G implemented in code; run backfill scripts after migrate  
+**Status:** COMPLETE (slices 3A–3H) — nullable `standId` (3I) deferred  
 **Date:** 1 September 2026  
-**Decisions applied (§13):** D1 hybrid ONLINE→primary Stand; D2 keep preorder/sub junctions;  
-D3 slug uniqueness unchanged for now (stand-scoped); D4 single stock pool;  
-D5 marketingConsent false except restock opt-in.  
-**Deferred:** 3I nullable `Product.standId` / owner-unique slugs until dual-read is proven.  
+**Phase 4:** see `VENDL-PHASE-4-STOREFRONT.md`  
+**Regression:** `VENDL-PHASE-3-REGRESSION-CHECKLIST.md`  
 **Inputs:** Live repository audit, Phase 0 audit, Phase 1–2 shipped behaviour,  
 AU food & farm commerce brief  
 **Constraint:** Farm stands, `/s/*`, QR codes, payments, fees, and historic orders  

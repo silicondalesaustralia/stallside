@@ -42,6 +42,7 @@ export async function subscribeRestockAlert(
 
   const stand = await prisma.stand.findUnique({
     where: { id: standId },
+    select: { id: true, isActive: true, ownerId: true },
   });
   if (!stand?.isActive) {
     return { ok: false, error: "Stand not found." };
@@ -50,6 +51,20 @@ export async function subscribeRestockAlert(
   const unsubToken = randomBytes(24).toString("hex");
   const now = new Date();
 
+  let customerId: string | null = null;
+  try {
+    const { ensureCustomer } = await import("@/lib/catalogue/customers");
+    const customer = await ensureCustomer({
+      ownerId: stand.ownerId,
+      email: emailRaw,
+      source: "restock",
+      marketingConsent: true,
+    });
+    customerId = customer?.id ?? null;
+  } catch (err) {
+    console.error("Customer link failed", err);
+  }
+
   await prisma.restockSubscriber.upsert({
     where: {
       standId_email: { standId, email: emailRaw },
@@ -57,6 +72,7 @@ export async function subscribeRestockAlert(
     create: {
       standId,
       email: emailRaw,
+      customerId,
       status: SubStatus.ACTIVE,
       consentText: RESTOCK_CONSENT_TEXT,
       consentAt: now,
@@ -65,6 +81,7 @@ export async function subscribeRestockAlert(
     },
     update: {
       status: SubStatus.ACTIVE,
+      customerId: customerId ?? undefined,
       consentText: RESTOCK_CONSENT_TEXT,
       consentAt: now,
       consentSource: RESTOCK_CONSENT_SOURCE,

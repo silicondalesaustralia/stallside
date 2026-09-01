@@ -77,8 +77,8 @@ export function dashNavGroupsForMode(
       id: "website",
       label: "Website",
       items: [
-        { href: "/dashboard/website", label: "Website builder", soon: true },
-        { href: "/dashboard/website/domains", label: "Domains", soon: true },
+        { href: "/dashboard/website", label: "Online shop" },
+        { href: "/dashboard/website/domains", label: "Domains" },
       ],
     },
     {

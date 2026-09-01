@@ -14,15 +14,22 @@ import ProductListRow from "./ProductListRow";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
+import { productOnStandWhere } from "@/lib/catalogue/product-on-stand";
 
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; tab?: string; scope?: string }>;
+  searchParams: Promise<{
+    view?: string;
+    tab?: string;
+    scope?: string;
+    category?: string;
+  }>;
 }) {
   const { user, owner } = await requireOwner();
   const { businesses, selected } = await resolveSelectedBusiness(owner.id);
-  const { view, tab: tabParam, scope } = await searchParams;
+  const { view, tab: tabParam, scope, category: categorySlug } =
+    await searchParams;
   const showArchived = view === "archived";
   const tab: ProductTabId = isProductTabId(tabParam) ? tabParam : "standard";
   const isPreOrder = tab === "preorder";
@@ -51,14 +58,33 @@ export default async function ProductsPage({
       lifetimeAccess: owner.lifetimeAccess,
     });
 
+  const [categories, categoryRow] = await Promise.all([
+    prisma.category.findMany({
+      where: { ownerId: owner.id, isActive: true },
+      orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
+      select: { id: true, slug: true, title: true },
+    }),
+    categorySlug
+      ? prisma.category.findFirst({
+          where: { ownerId: owner.id, slug: categorySlug, isActive: true },
+          select: { id: true, title: true },
+        })
+      : Promise.resolve(null),
+  ]);
+
   const [products, restockPanels] = await Promise.all([
     prisma.product.findMany({
       where: {
         ownerId: owner.id,
-        ...(showAll || !selected ? {} : { standId: selected.id }),
+        ...(showAll || !selected ? {} : productOnStandWhere(selected.id)),
         preOrderEligible: isPreOrder,
         isHidden: false,
         ...(showArchived ? { isArchived: true } : productDashboardWhere),
+        ...(categoryRow
+          ? {
+              categoryLinks: { some: { categoryId: categoryRow.id } },
+            }
+          : {}),
       },
       select: {
         id: true,
@@ -79,7 +105,11 @@ export default async function ProductsPage({
       : Promise.resolve([]),
   ]);
 
-  function listHref(nextView?: "archived", nextScope?: "all" | "selected") {
+  function listHref(
+    nextView?: "archived",
+    nextScope?: "all" | "selected",
+    nextCategory?: string | null,
+  ) {
     const params = new URLSearchParams();
     if (tab !== "standard") params.set("tab", tab);
     if (nextView) params.set("view", nextView);
@@ -92,6 +122,11 @@ export default async function ProductsPage({
             ? "all"
             : undefined;
     if (scopeVal === "all") params.set("scope", "all");
+    const cat =
+      nextCategory === null
+        ? undefined
+        : nextCategory ?? categorySlug ?? undefined;
+    if (cat) params.set("category", cat);
     const qs = params.toString();
     return qs ? `/dashboard/products?${qs}` : "/dashboard/products";
   }
@@ -99,6 +134,7 @@ export default async function ProductsPage({
   const scopeLabel = showAll
     ? "all locations"
     : selected?.name ?? "catalogue";
+  const categoryLabel = categoryRow ? ` · ${categoryRow.title}` : "";
 
   return (
     <main className="flex flex-col gap-6">
@@ -111,6 +147,7 @@ export default async function ProductsPage({
             {products.length} {isPreOrder ? "pre-order" : ""} product
             {products.length === 1 ? "" : "s"}
             {showArchived ? " archived" : ""} · {scopeLabel}
+            {categoryLabel}
           </p>
         </div>
         <DashPrimaryCta
@@ -173,6 +210,38 @@ export default async function ProductsPage({
           Archived
         </Link>
       </div>
+
+      {categories.length > 0 && !isPreOrder ? (
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href={listHref(showArchived ? "archived" : undefined, undefined, null)}
+            className={`rounded-full px-3 py-1.5 text-sm font-semibold ${
+              !categorySlug
+                ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
+                : "bg-white text-[var(--ink)] outline outline-[var(--line)]"
+            }`}
+          >
+            All categories
+          </Link>
+          {categories.map((c) => (
+            <Link
+              key={c.id}
+              href={listHref(
+                showArchived ? "archived" : undefined,
+                undefined,
+                c.slug,
+              )}
+              className={`rounded-full px-3 py-1.5 text-sm font-semibold ${
+                categorySlug === c.slug
+                  ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
+                  : "bg-white text-[var(--ink)] outline outline-[var(--line)]"
+              }`}
+            >
+              {c.title}
+            </Link>
+          ))}
+        </div>
+      ) : null}
 
       {isPreOrder && !showArchived ? (
         <p className="text-sm text-[var(--muted)]">

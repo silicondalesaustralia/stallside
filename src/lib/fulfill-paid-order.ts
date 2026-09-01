@@ -131,6 +131,21 @@ async function fulfillPaidOnlineOrder(
     throw error;
   }
 
+  if (!order.customerId && order.receiptEmail) {
+    try {
+      const { linkOrderToCustomer } = await import("@/lib/catalogue/customers");
+      await linkOrderToCustomer({
+        orderId: order.id,
+        ownerId: order.ownerId,
+        email: order.receiptEmail,
+        name: order.customerName,
+        phone: order.customerPhone,
+      });
+    } catch (err) {
+      console.error("Customer link failed", err);
+    }
+  }
+
   after(() => {
     void notifySale(orderId).catch((error) => {
       console.error("Sale notify failed", error);

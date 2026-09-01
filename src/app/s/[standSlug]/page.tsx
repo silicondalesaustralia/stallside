@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import {
   loadPublicStandCatalog,
   loadPublicStandMeta,
@@ -13,10 +14,14 @@ import { standAccentStyle } from "@/lib/stand-brand";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import { standSocialFromStand } from "@/lib/stand-social";
 import { catalogMetadata, standCatalogPath } from "@/lib/stand-seo";
+import { businessPageProductWhere } from "@/lib/product-visibility";
+import { productOnStandWhere } from "@/lib/catalogue/product-on-stand";
+import { prisma } from "@/lib/prisma";
 import StandCatalogGrid from "./StandCatalogGrid";
 import StandGoToCartBar from "./StandGoToCartBar";
 import StandSocialLinks from "./StandSocialLinks";
 import StandStoreHeader from "./StandStoreHeader";
+import StandCategoryChips from "./StandCategoryChips";
 
 export async function generateMetadata({
   params,
@@ -37,10 +42,13 @@ export async function generateMetadata({
 
 export default async function PublicStandPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ standSlug: string }>;
+  searchParams: Promise<{ category?: string }>;
 }) {
   const { standSlug } = await params;
+  const { category: categorySlug } = await searchParams;
   const slug = decodeURIComponent(standSlug).trim().toLowerCase();
   const stand = await loadPublicStandCatalog(slug, "catalog");
 
@@ -50,9 +58,41 @@ export default async function PublicStandPage({
     redirect(`${standCatalogPath(stand.slug)}/pay`);
   }
 
+  const categoryRows = await prisma.category.findMany({
+    where: {
+      ownerId: stand.ownerId,
+      isActive: true,
+      products: {
+        some: {
+          product: {
+            AND: [businessPageProductWhere, productOnStandWhere(stand.id)],
+          },
+        },
+      },
+    },
+    orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
+    select: { id: true, slug: true, title: true },
+  });
+
+  let productRows = stand.products;
+  if (categorySlug) {
+    const cat = categoryRows.find((c) => c.slug === categorySlug);
+    if (cat) {
+      const links = await prisma.productCategory.findMany({
+        where: {
+          categoryId: cat.id,
+          productId: { in: stand.products.map((p) => p.id) },
+        },
+        select: { productId: true },
+      });
+      const ids = new Set(links.map((l) => l.productId));
+      productRows = stand.products.filter((p) => ids.has(p.id));
+    }
+  }
+
   const isDemo = isDemoStandSlug(stand.slug);
 
-  const products = stand.products.map((p) =>
+  const products = productRows.map((p) =>
     mapPublicProduct(p, {
       showExactStock: stand.showExactStock,
       showPublicScarcity: stand.showPublicScarcity,
@@ -101,6 +141,15 @@ export default async function PublicStandPage({
           <p className="mt-4 text-center text-lg text-[var(--muted)]">
             Choose items to purchase.
           </p>
+          <Suspense fallback={null}>
+            <StandCategoryChips
+              standSlug={stand.slug}
+              categories={categoryRows.map((c) => ({
+                slug: c.slug,
+                title: c.title,
+              }))}
+            />
+          </Suspense>
           {paymentBrands.length > 0 ? (
             <div className="mt-2 flex justify-center">
               <PaymentIconRow brands={paymentBrands} className="w-full justify-center gap-2" />

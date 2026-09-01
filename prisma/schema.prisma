@@ -280,6 +280,7 @@ model Owner {
   products                  Product[]
   categories                Category[]
   customers                 Customer[]
+  storefront                Storefront?
   preOrderPages             PreOrderPage[]
   subscriptionOffers        SubscriptionOffer[]
   shopperSubscriptions      ShopperSubscription[]
@@ -526,6 +527,24 @@ model Customer {
 
   @@unique([ownerId, email])
   @@index([ownerId, createdAt])
+}
+
+/** Owner online shop at /shop/{slug} — separate from farm-stand QR URLs. */
+model Storefront {
+  id           String   @id @default(cuid())
+  ownerId      String   @unique
+  owner        Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  /** Public path segment: vendl.app/shop/{slug} */
+  slug         String   @unique
+  isPublished  Boolean  @default(false)
+  headline     String?
+  about        String?
+  /** Saved for Phase 4+ DNS wiring; not active yet. */
+  customDomain String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isPublished])
 }
 
 /** Starter checkout: shopper tapped "I'd have paid by card" (no PII). */

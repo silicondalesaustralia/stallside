@@ -78,10 +78,10 @@ export default async function CustomersPage() {
                     </p>
                   </div>
                   <Link
-                    href={`/dashboard/orders?q=${encodeURIComponent(c.email ?? "")}`}
+                    href={`/dashboard/customers/${c.id}`}
                     className="rounded-full px-3 py-1.5 text-sm font-semibold outline outline-[var(--line)]"
                   >
-                    Orders
+                    View
                   </Link>
                 </div>
               </li>

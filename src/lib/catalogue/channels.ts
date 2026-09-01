@@ -82,6 +82,33 @@ export async function listProductsForStandCatalog(
   });
 }
 
+/** Products with ONLINE channel enabled for the owner's primary shop surface. */
+export async function listProductsForOnlineShop(
+  ownerId: string,
+  standId: string,
+  visibility: Prisma.ProductWhereInput,
+) {
+  return prisma.product.findMany({
+    where: {
+      AND: [
+        { ownerId },
+        visibility,
+        {
+          channels: {
+            some: {
+              channelType: ProductChannelType.ONLINE,
+              standId,
+              isEnabled: true,
+            },
+          },
+        },
+      ],
+    },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    include: optionInclude,
+  });
+}
+
 export async function resolveProductForStand(input: {
   standId: string;
   slug?: string;

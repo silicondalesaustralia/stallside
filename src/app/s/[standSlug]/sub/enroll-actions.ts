@@ -97,6 +97,25 @@ export async function startShopperSubscriptionCheckout(input: {
       },
     });
 
+    try {
+      const { ensureCustomer } = await import("@/lib/catalogue/customers");
+      const customer = await ensureCustomer({
+        ownerId: owner.id,
+        email: customerEmail,
+        name: customerName,
+        phone: customerPhone,
+        source: "subscription",
+      });
+      if (customer) {
+        await prisma.shopperSubscription.update({
+          where: { id: shopperSub.id },
+          data: { customerId: customer.id },
+        });
+      }
+    } catch (err) {
+      console.error("Customer link failed", err);
+    }
+
     const base = appBaseUrl();
     const path = subscriptionOfferPath(stand.slug, offer.slug);
     const feePercent = shopperSubApplicationFeePercent(owner);
