@@ -30,6 +30,7 @@ describe("domains normalize", () => {
     assert.equal(isLikelyApexHostname("example.com"), true);
     assert.equal(isLikelyApexHostname("www.example.com"), false);
     assert.equal(isLikelyApexHostname("shop.example.com"), false);
+    assert.equal(isLikelyApexHostname("stallside.app"), true);
   });
 });
 

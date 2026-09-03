@@ -20,7 +20,9 @@ import { loadPreferredOriginInput } from "@/lib/domains/resolve";
 const ERROR_COPY: Record<string, string> = {
   feature_disabled: "Custom domains are not enabled on this environment yet.",
   not_entitled: "Custom domains are included with Vendl Pro.",
-  invalid_hostname: "Enter a valid hostname such as www.yourdomain.com or yourdomain.com.",
+  invalid_hostname: "Enter a hostname such as www.yourdomain.com.",
+  apex_use_www:
+    "Connect www.yourdomain.com for now — bare domains (yourdomain.com) aren’t supported yet. You can redirect the bare domain to www at your DNS host.",
   conflict: "This domain is already connected to another Vendl store.",
   cloudflare_unconfigured: "Domain infrastructure is not configured yet.",
   cloudflare_error: "Cloudflare could not process that domain. Try again shortly.",
@@ -168,13 +170,14 @@ export default async function WebsiteDomainsPage({
                   Connect your domain
                 </p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
-                  You can connect a top-level domain (for example{" "}
-                  <span className="font-mono text-[var(--field)]">yourfarm.com</span>)
-                  or a subdomain if you already have a website you don&apos;t want to
-                  change (for example{" "}
+                  Use a subdomain such as{" "}
+                  <span className="font-mono text-[var(--field)]">www.yourfarm.com</span>
+                  {" "}
+                  or{" "}
                   <span className="font-mono text-[var(--field)]">shop.yourfarm.com</span>
-                  ). Next we&apos;ll show the DNS records to add at your domain host —
-                  or to send your webmaster.
+                  . Bare domains (yourfarm.com) aren&apos;t supported yet — after www
+                  is live, redirect the bare domain to www at your DNS host so
+                  visitors can still type the short address.
                 </p>
               </div>
               <label className="flex flex-col gap-2 text-sm">
@@ -182,7 +185,7 @@ export default async function WebsiteDomainsPage({
                 <input
                   name="hostname"
                   required
-                  placeholder="shop.yourfarm.com"
+                  placeholder="www.yourfarm.com"
                   className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
                 />
               </label>
