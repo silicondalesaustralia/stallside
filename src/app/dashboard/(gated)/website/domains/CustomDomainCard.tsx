@@ -58,8 +58,8 @@ function buildDnsRecords(domain: CustomDomainRow): DnsRecord[] {
       : "Point your domain at Vendl",
     hint:
       traffic.name === "@"
-        ? "Apex/root domain: some hosts call this @, blank, or ALIAS/ANAME."
-        : "Use the host label your DNS panel expects (often without the domain suffix).",
+        ? "Apex/root domain: use Name @ (or blank). If Cloudflare says a record already exists, edit or replace the existing @ / A / AAAA record — don’t add a second one. Some hosts use ALIAS/ANAME instead of CNAME."
+        : "If a record for this host already exists, edit it instead of adding a duplicate. Use the host label your DNS panel expects (often without the domain suffix).",
     type: "CNAME",
     name: traffic.name,
     value: target,
