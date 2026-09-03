@@ -167,8 +167,12 @@ export default async function WebsiteDomainsPage({
                   Connect your domain
                 </p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
-                  Enter your domain (for example stallside.app or www.yourfarm.com.au).
-                  We&apos;ll show the DNS record to add next.
+                  You can connect a top-level domain (for example{" "}
+                  <span className="font-mono text-[var(--field)]">yourfarm.com</span>)
+                  or a subdomain if you already have a website you don&apos;t want to
+                  change (for example{" "}
+                  <span className="font-mono text-[var(--field)]">shop.yourfarm.com</span>
+                  ). We&apos;ll show the DNS record to add next.
                 </p>
               </div>
               <label className="flex flex-col gap-2 text-sm">
@@ -176,7 +180,7 @@ export default async function WebsiteDomainsPage({
                 <input
                   name="hostname"
                   required
-                  placeholder="stallside.app"
+                  placeholder="shop.yourfarm.com"
                   className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
                 />
               </label>
