@@ -21,14 +21,11 @@ async function lookupCustomHost(
   if (hit && Date.now() - hit.at < TTL_MS) return hit.value;
 
   const secret = domainsInternalLookupSecret();
-  const origin =
+  // Look up on this deployment so the domain row is read from the same env DB.
+  const base =
+    requestUrl.origin ||
     process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
     `https://${APP_DOMAIN}`;
-  // Prefer deployment origin for same-region lookup; fall back to public app URL.
-  const base =
-    requestUrl.protocol === "http:" || requestUrl.hostname === "localhost"
-      ? requestUrl.origin
-      : origin;
 
   try {
     const url = `${base}/api/tenancy/host-lookup?hostname=${encodeURIComponent(host)}`;
