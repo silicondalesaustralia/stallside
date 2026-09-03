@@ -170,14 +170,20 @@ export default async function WebsiteDomainsPage({
                   Connect your domain
                 </p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
-                  Use a subdomain such as{" "}
-                  <span className="font-mono text-[var(--field)]">www.yourfarm.com</span>
-                  {" "}
-                  or{" "}
+                  Enter your site as{" "}
+                  <span className="font-mono font-semibold text-[var(--field)]">
+                    www.yourfarm.com
+                  </span>{" "}
+                  (or{" "}
                   <span className="font-mono text-[var(--field)]">shop.yourfarm.com</span>
-                  . Bare domains (yourfarm.com) aren&apos;t supported yet — after www
-                  is live, redirect the bare domain to www at your DNS host so
-                  visitors can still type the short address.
+                  {" "}
+                  if the main site stays elsewhere).
+                </p>
+                <p className="mt-2 text-sm text-[var(--muted)]">
+                  Don&apos;t enter the bare domain alone (yourfarm.com) — that
+                  can&apos;t be activated yet. After www works, add a redirect from
+                  yourfarm.com → www at your DNS host so customers can still type
+                  the short address.
                 </p>
               </div>
               <label className="flex flex-col gap-2 text-sm">
@@ -188,6 +194,9 @@ export default async function WebsiteDomainsPage({
                   placeholder="www.yourfarm.com"
                   className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
                 />
+                <span className="text-xs text-[var(--muted)]">
+                  Must include www or another subdomain (e.g. shop).
+                </span>
               </label>
               <button type="submit" className={dashCtaClass}>
                 Continue
