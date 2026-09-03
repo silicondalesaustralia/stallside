@@ -20,9 +20,7 @@ import { loadPreferredOriginInput } from "@/lib/domains/resolve";
 const ERROR_COPY: Record<string, string> = {
   feature_disabled: "Custom domains are not enabled on this environment yet.",
   not_entitled: "Custom domains are included with Vendl Pro.",
-  invalid_hostname: "Enter a valid hostname such as www.yourdomain.com.",
-  apex_unsupported:
-    "Use www.yourdomain.com (or shop.) — root domains are not supported yet.",
+  invalid_hostname: "Enter a valid hostname such as www.yourdomain.com or yourdomain.com.",
   conflict: "This domain is already connected to another Vendl store.",
   cloudflare_unconfigured: "Domain infrastructure is not configured yet.",
   cloudflare_error: "Cloudflare could not process that domain. Try again shortly.",
@@ -169,8 +167,8 @@ export default async function WebsiteDomainsPage({
                   Connect your domain
                 </p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
-                  Use a hostname such as www.yourfarm.com.au. Root domains are not
-                  supported yet — redirect your apex to www at your DNS provider.
+                  Enter your domain (for example stallside.app or www.yourfarm.com.au).
+                  We&apos;ll show the DNS record to add next.
                 </p>
               </div>
               <label className="flex flex-col gap-2 text-sm">
@@ -178,7 +176,7 @@ export default async function WebsiteDomainsPage({
                 <input
                   name="hostname"
                   required
-                  placeholder="www.yourdomain.com"
+                  placeholder="stallside.app"
                   className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
                 />
               </label>

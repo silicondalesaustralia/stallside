@@ -120,7 +120,21 @@ export function defaultCnameInstructions(hostname: string): {
   value: string;
 } {
   const labels = hostname.split(".");
-  const name = labels.length > 2 ? labels[0]! : "www";
+  // Apex (example.com): CNAME/ALIAS @ → customers.vendl.app (CF flattening).
+  // Subdomain (shop.example.com): CNAME shop → customers.vendl.app.
+  const name =
+    labels.length === 2 ||
+    (labels.length === 3 &&
+      ["com.au", "co.uk", "com", "net", "org", "co"].includes(
+        labels.slice(-2).join("."),
+      ) &&
+      labels[0] !== "www" &&
+      labels[0] !== "shop" &&
+      labels[0] !== "store")
+      ? "@"
+      : labels.length > 2
+        ? labels[0]!
+        : "www";
   return {
     type: "CNAME",
     name,

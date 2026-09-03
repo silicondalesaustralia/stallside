@@ -9,7 +9,6 @@ import {
   customDomainsFeatureEnabled,
 } from "./config";
 import {
-  isLikelyApexHostname,
   isValidCustomHostname,
   normalizeDomainHostname,
 } from "./normalize";
@@ -26,7 +25,6 @@ export type DomainActionError =
   | "feature_disabled"
   | "not_entitled"
   | "invalid_hostname"
-  | "apex_unsupported"
   | "conflict"
   | "not_found"
   | "cloudflare_unconfigured"
@@ -77,13 +75,6 @@ export async function connectCustomDomain(input: {
       "Enter a valid hostname such as www.yourdomain.com.",
     );
   }
-  if (isLikelyApexHostname(hostname)) {
-    throw new DomainActionFailure(
-      "apex_unsupported",
-      "Use a hostname like www.yourdomain.com (root domains are not supported yet). Redirect your apex to www at your DNS provider.",
-    );
-  }
-
   const conflict = await prisma.storefrontDomain.findUnique({
     where: { hostname },
     select: { storefrontId: true },

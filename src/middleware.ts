@@ -112,13 +112,6 @@ export async function middleware(request: NextRequest) {
   const host = (hostHeader ?? "").split(":")[0].toLowerCase();
   const pathname = request.nextUrl.pathname;
 
-  if (STALLSIDE_HOSTS.has(host) && !keepOnStallside(pathname)) {
-    const dest = new URL(
-      `https://www.vendl.app${pathname}${request.nextUrl.search}`,
-    );
-    return NextResponse.redirect(dest, 307);
-  }
-
   const resolution = resolveHostname(hostHeader);
 
   if (resolution.type === "CUSTOM_DOMAIN") {
@@ -126,10 +119,24 @@ export async function middleware(request: NextRequest) {
       resolution.hostname,
       request.nextUrl,
     );
-    if (!slug) {
-      return NextResponse.rewrite(new URL("/not-found", request.url));
+    if (slug) {
+      return applyTenantRewrite(request, slug, pathname);
     }
-    return applyTenantRewrite(request, slug, pathname);
+    // Legacy brand hosts: keep redirecting to Vendl unless connected as a custom domain.
+    if (STALLSIDE_HOSTS.has(host) && !keepOnStallside(pathname)) {
+      const dest = new URL(
+        `https://www.vendl.app${pathname}${request.nextUrl.search}`,
+      );
+      return NextResponse.redirect(dest, 307);
+    }
+    return NextResponse.rewrite(new URL("/not-found", request.url));
+  }
+
+  if (STALLSIDE_HOSTS.has(host) && !keepOnStallside(pathname)) {
+    const dest = new URL(
+      `https://www.vendl.app${pathname}${request.nextUrl.search}`,
+    );
+    return NextResponse.redirect(dest, 307);
   }
 
   if (
