@@ -73,12 +73,13 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     slug: "customer-payments",
     title: "Accept card at the stand",
     summary:
-      "Connect Stripe so customers pay by card, Apple Pay, or Google Pay - separate from your Vendl subscription. PayPal coming soon.",
+      "Connect Stripe for card / Tap & Go, or PayPal (and Venmo on USD) - separate from your Vendl subscription.",
     videoUrl: "https://youtu.be/keo53YG_Nks",
     comingSoon: false,
     related: ["billing", "first-stand", "pre-orders", "pre-order-pages", "subscriptions"],
     ctas: [
       { label: "Connect Stripe", href: "/dashboard/settings/stripe" },
+      { label: "Connect PayPal", href: "/dashboard/settings/paypal" },
       { label: "Billing", href: "/dashboard/settings/billing" },
     ],
     steps: [
@@ -87,7 +88,8 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
       "Open Settings → Stripe (Card / Tap & Go) and tap Connect Stripe. Complete Stripe’s onboarding with your business and bank details.",
       "When charges are enabled, turn Card / Tap & Go on for each business under My Businesses → manage.",
       "Scan your Vendl QR on another phone and run a small test card sale. Payments go to your Stripe account.",
-      "PayPal at checkout is coming soon. Cash and PayID (Australia only) work without Stripe and have no Vendl fee.",
+      "PayPal Connect: Settings → PayPal (Free and Pro). Shoppers can pay with PayPal; USD stands can also show Venmo. Free takes the same 2.5% Vendl fee on PayPal sales; Pro waives it. Pre-orders stay card-only.",
+      "Cash and PayID (Australia only) work without Stripe or PayPal and have no Vendl fee.",
     ],
   },
 ];

@@ -2,12 +2,16 @@ import Link from "next/link";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import type { LocalTransferMethod } from "@/lib/local-transfer";
-import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
+import {
+  paypalCheckoutBrandsForCurrency,
+  STRIPE_CHECKOUT_BRANDS,
+} from "@/lib/payment-brand-assets";
 import { STRIPE_CHECKOUT_METHODS_PHRASE } from "@/lib/stripe-connect-copy";
 
 type StandPaymentTogglesProps = {
   method: LocalTransferMethod | null;
   initialAlias: string;
+  currency: string;
   acceptCash: boolean;
   acceptLocalTransfer: boolean;
   acceptCard: boolean;
@@ -21,15 +25,19 @@ type StandPaymentTogglesProps = {
 export default function StandPaymentToggles({
   method,
   initialAlias,
+  currency,
   acceptCash,
   acceptLocalTransfer,
   acceptCard,
-  acceptPayPal: _acceptPayPal,
+  acceptPayPal,
   cardReady,
-  paypalReady: _paypalReady,
-  paypalConnectAvailable: _paypalConnectAvailable,
+  paypalReady,
+  paypalConnectAvailable,
   cardTier: _cardTier,
 }: StandPaymentTogglesProps) {
+  const paypalEditable = paypalConnectAvailable && paypalReady;
+  const paypalBrands = paypalCheckoutBrandsForCurrency(currency);
+
   return (
     <>
       <label className="flex items-start gap-3 text-sm">
@@ -113,6 +121,41 @@ export default function StandPaymentToggles({
           Manage Stripe Connect
         </Link>
       </p>
+
+      {paypalConnectAvailable ? (
+        <>
+          <label className="flex items-start gap-3 text-sm">
+            <input
+              type="checkbox"
+              name="acceptPayPal"
+              defaultChecked={acceptPayPal}
+              disabled={!paypalEditable}
+              className="mt-1 size-4 disabled:opacity-50"
+            />
+            <span className="min-w-0">
+              <span className="flex flex-wrap items-center gap-2 font-medium">
+                <PaymentIconRow brands={paypalBrands} />
+                PayPal
+              </span>
+              <span className="mt-0.5 block text-[var(--muted)]">
+                {paypalEditable
+                  ? currency.toUpperCase() === "USD"
+                    ? "PayPal and Venmo at checkout. Money to your PayPal."
+                    : "PayPal wallet at checkout. Money to your PayPal."
+                  : "Connect PayPal in Settings before enabling."}
+              </span>
+            </span>
+          </label>
+          <p className="text-sm">
+            <Link
+              href="/dashboard/settings/paypal"
+              className="font-medium text-[var(--leaf-dark)] underline"
+            >
+              Manage PayPal Connect
+            </Link>
+          </p>
+        </>
+      ) : null}
     </>
   );
 }

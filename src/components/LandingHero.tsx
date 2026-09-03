@@ -70,7 +70,7 @@ export default function LandingHero() {
             href="/demo"
             className="hidden rounded-[var(--radius-pill)] border border-[var(--ink-on-dark)]/30 bg-white/5 px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap backdrop-blur-sm transition duration-150 hover:bg-white/10 sm:inline-flex sm:px-4 sm:py-2 sm:text-sm"
           >
-            Try Demo
+            Demo
           </Link>
           <OwnerAuthLink variant="hero" />
         </div>

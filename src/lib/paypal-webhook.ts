@@ -1,4 +1,4 @@
-import { paypalFetch } from "@/lib/paypal";
+import { paypalFetch, paypalSellerAuthMerchantId } from "@/lib/paypal";
 import { capturePayPalOrder } from "@/lib/paypal-orders";
 import { fulfillPaidPayPalOrder } from "@/lib/fulfill-paid-order";
 import { prisma } from "@/lib/prisma";
@@ -76,7 +76,10 @@ async function findPayPalOrder(resource: WebhookResource) {
   const stallsideId =
     resource.custom_id || resource.purchase_units?.[0]?.custom_id;
   if (stallsideId) {
-    const byId = await prisma.order.findUnique({ where: { id: stallsideId } });
+    const byId = await prisma.order.findUnique({
+      where: { id: stallsideId },
+      include: { owner: { select: { paypalMerchantId: true } } },
+    });
     if (byId?.paymentMethod === PaymentMethod.PAYPAL) return byId;
   }
 
@@ -89,6 +92,7 @@ async function findPayPalOrder(resource: WebhookResource) {
       paypalOrderId,
       paymentMethod: PaymentMethod.PAYPAL,
     },
+    include: { owner: { select: { paypalMerchantId: true } } },
   });
 }
 
@@ -117,7 +121,8 @@ export async function handlePayPalWebhookEvent(rawBody: string): Promise<void> {
       resource.purchase_units?.[0]?.payments?.captures?.[0]?.id ?? null;
 
     if (type === "CHECKOUT.ORDER.APPROVED" && !captureIdFromEvent) {
-      const captured = await capturePayPalOrder(order.paypalOrderId);
+      const sellerId = paypalSellerAuthMerchantId(order.owner.paypalMerchantId);
+      const captured = await capturePayPalOrder(order.paypalOrderId, sellerId);
       const captureId =
         captured.purchase_units?.[0]?.payments?.captures?.[0]?.id ?? null;
       await fulfillPaidPayPalOrder(order.id, captureId);

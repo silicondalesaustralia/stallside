@@ -1,4 +1,5 @@
 import DashboardTopBar from "@/components/DashboardTopBar";
+import DashHubSubnav from "@/components/DashHubSubnav";
 
 /** Coherent content frame for the owner dashboard. */
 export default function AppShell({
@@ -23,6 +24,7 @@ export default function AppShell({
           notificationCount={notificationCount}
         />
       ) : null}
+      <DashHubSubnav />
       {children}
     </div>
   );

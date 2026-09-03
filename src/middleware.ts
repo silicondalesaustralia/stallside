@@ -6,10 +6,17 @@ import {
   requestIsSecure,
   sessionCookieName,
 } from "@/lib/auth-session";
+import { APP_DOMAIN } from "@/lib/constants";
+import { resolveHostname } from "@/lib/tenancy/hostname";
+import { resolveCustomDomainSlug } from "@/lib/domains/middleware-lookup";
 
 const STALLSIDE_HOSTS = new Set(["stallside.app", "www.stallside.app"]);
 
-/** Paths that must keep working on stallside (printed QR posters + checkout returns). */
+function apexOrigin(request: NextRequest): string {
+  const proto = requestIsSecure(request) ? "https" : "http";
+  return `${proto}://${APP_DOMAIN}`;
+}
+
 function keepOnStallside(pathname: string): boolean {
   return (
     pathname === "/s" ||
@@ -24,25 +31,123 @@ function keepOnStallside(pathname: string): boolean {
   );
 }
 
-/** Expose path for login callbackUrl; refresh Auth.js JWT cookie (sliding session). */
-export async function middleware(request: NextRequest) {
-  const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
-  if (STALLSIDE_HOSTS.has(host) && !keepOnStallside(request.nextUrl.pathname)) {
+function tenantRewritePath(slug: string, pathname: string): string | null {
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname === "/favicon.ico" ||
+    pathname === "/manifest.webmanifest" ||
+    pathname.includes(".")
+  ) {
+    return null;
+  }
+
+  const shopPrefix = `/shop/${slug}`;
+  if (pathname === shopPrefix || pathname.startsWith(`${shopPrefix}/`)) {
+    return pathname;
+  }
+
+  if (
+    pathname.startsWith("/s/") ||
+    pathname.startsWith("/checkout/") ||
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/signup")
+  ) {
+    return null;
+  }
+
+  if (pathname === "/") return shopPrefix;
+  return `${shopPrefix}${pathname}`;
+}
+
+function shouldRedirectTenantToApex(pathname: string): boolean {
+  return (
+    pathname.startsWith("/s/") ||
+    pathname.startsWith("/checkout/") ||
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/signup")
+  );
+}
+
+function applyTenantRewrite(
+  request: NextRequest,
+  slug: string,
+  pathname: string,
+) {
+  if (shouldRedirectTenantToApex(pathname)) {
     const dest = new URL(
-      `https://www.vendl.app${request.nextUrl.pathname}${request.nextUrl.search}`,
+      `${apexOrigin(request)}${pathname}${request.nextUrl.search}`,
     );
     return NextResponse.redirect(dest, 307);
   }
 
+  const rewritten = tenantRewritePath(slug, pathname);
+  if (rewritten && rewritten !== pathname) {
+    const url = request.nextUrl.clone();
+    url.pathname = rewritten;
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-vendl-tenant-slug", slug);
+    requestHeaders.set("x-stallside-pathname", rewritten);
+    requestHeaders.set("x-stallside-search", request.nextUrl.search);
+    return NextResponse.rewrite(url, {
+      request: { headers: requestHeaders },
+    });
+  }
+
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-stallside-pathname", request.nextUrl.pathname);
+  requestHeaders.set("x-vendl-tenant-slug", slug);
+  requestHeaders.set("x-stallside-pathname", pathname);
+  requestHeaders.set("x-stallside-search", request.nextUrl.search);
+  return NextResponse.next({ request: { headers: requestHeaders } });
+}
+
+export async function middleware(request: NextRequest) {
+  const hostHeader = request.headers.get("host");
+  const host = (hostHeader ?? "").split(":")[0].toLowerCase();
+  const pathname = request.nextUrl.pathname;
+
+  if (STALLSIDE_HOSTS.has(host) && !keepOnStallside(pathname)) {
+    const dest = new URL(
+      `https://www.vendl.app${pathname}${request.nextUrl.search}`,
+    );
+    return NextResponse.redirect(dest, 307);
+  }
+
+  const resolution = resolveHostname(hostHeader);
+
+  if (resolution.type === "CUSTOM_DOMAIN") {
+    const slug = await resolveCustomDomainSlug(
+      resolution.hostname,
+      request.nextUrl,
+    );
+    if (!slug) {
+      return NextResponse.rewrite(new URL("/not-found", request.url));
+    }
+    return applyTenantRewrite(request, slug, pathname);
+  }
+
+  if (
+    (resolution.type === "VENDL_SUBDOMAIN" ||
+      resolution.type === "LOCAL_SUBDOMAIN") &&
+    "slug" in resolution
+  ) {
+    return applyTenantRewrite(request, resolution.slug, pathname);
+  }
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-stallside-pathname", pathname);
   requestHeaders.set("x-stallside-search", request.nextUrl.search);
 
   const response = NextResponse.next({
     request: { headers: requestHeaders },
   });
 
-  const pathname = request.nextUrl.pathname;
   if (
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/admin") ||
@@ -53,12 +158,14 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
-async function refreshSessionCookie(request: NextRequest, response: NextResponse) {
+async function refreshSessionCookie(
+  request: NextRequest,
+  response: NextResponse,
+) {
   const secret = process.env.AUTH_SECRET;
   if (!secret) return;
 
   const secure = requestIsSecure(request);
-  // Prefer the cookie name Auth.js used at sign-in (AUTH_URL https → __Secure-).
   const preferredName = sessionCookieName(secure);
   const fallbackName = sessionCookieName(!secure);
 
@@ -105,8 +212,5 @@ async function refreshSessionCookie(request: NextRequest, response: NextResponse
 }
 
 export const config = {
-  matcher: [
-    // Host redirect + session refresh. Skip hashed Next static assets.
-    "/((?!_next/static|_next/image).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image).*)"],
 };

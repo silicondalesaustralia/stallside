@@ -10,27 +10,13 @@ import {
   isPayPalDirectMode,
   paypalDirectMerchantId,
 } from "@/lib/paypal";
-import {
-  hasComplimentaryAccess,
-  ownerHasProAccess,
-} from "@/lib/owner-trial";
+import { hasComplimentaryAccess } from "@/lib/owner-trial";
 import { createPartnerReferralLink } from "@/lib/paypal-connect";
 import { syncPayPalMerchantStatus } from "@/lib/paypal-sync";
 
 function revalidatePayPal() {
   revalidatePath("/dashboard/settings");
   revalidatePath("/dashboard/settings/paypal");
-}
-
-function assertCardTier(
-  owner: { subscriptionPlan?: string | null },
-  user: { email?: string | null; role?: string | null },
-) {
-  if (
-    !ownerHasProAccess(owner, { email: user.email, role: user.role })
-  ) {
-    throw new Error("PayPal requires Vendl Pro.");
-  }
 }
 
 function assertPayPalConnectAvailable() {
@@ -41,7 +27,6 @@ function assertPayPalConnectAvailable() {
 
 export async function startPayPalConnect() {
   const { owner, user } = await requireOwnerWrite();
-  assertCardTier(owner, user);
   assertPayPalConnectAvailable();
   if (!isPayPalConfigured()) {
     throw new Error("PayPal is not configured on the server yet.");
@@ -49,6 +34,18 @@ export async function startPayPalConnect() {
 
   if (isPayPalDirectMode()) {
     redirect("/dashboard/settings/paypal?partner=direct");
+  }
+
+  const platformId = paypalDirectMerchantId();
+  if (platformId && owner.paypalMerchantId === platformId) {
+    await prisma.owner.update({
+      where: { id: owner.id },
+      data: {
+        paypalMerchantId: null,
+        paypalOnboardingComplete: false,
+        paypalPaymentsEnabled: false,
+      },
+    });
   }
 
   try {
@@ -80,7 +77,6 @@ export async function startPayPalConnect() {
 /** Link this owner to the platform PayPal Business account (no Partner API). */
 export async function connectPayPalDirect() {
   const { owner, user } = await requireOwnerWrite();
-  assertCardTier(owner, user);
   assertPayPalConnectAvailable();
 
   const allowed =
@@ -109,8 +105,7 @@ export async function connectPayPalDirect() {
 }
 
 export async function refreshPayPalStatus(formData?: FormData) {
-  const { owner, user } = await requireOwnerWrite();
-  assertCardTier(owner, user);
+  const { owner } = await requireOwnerWrite();
   assertPayPalConnectAvailable();
   if (!isPayPalConfigured()) {
     redirect("/dashboard/settings/paypal");
@@ -140,7 +135,7 @@ export async function refreshPayPalStatus(formData?: FormData) {
     });
   } catch (error) {
     console.error("PayPal status refresh failed", error);
-    redirect("/dashboard/settings/paypal?partner=error");
+    redirect("/dashboard/settings/paypal?sync=failed");
   }
 
   revalidatePayPal();
@@ -148,8 +143,7 @@ export async function refreshPayPalStatus(formData?: FormData) {
 }
 
 export async function setPayPalPaymentsEnabled(formData: FormData) {
-  const { owner, user } = await requireOwnerWrite();
-  assertCardTier(owner, user);
+  const { owner } = await requireOwnerWrite();
   assertPayPalConnectAvailable();
   const enabled = formData.get("enabled") === "1";
 
@@ -163,4 +157,28 @@ export async function setPayPalPaymentsEnabled(formData: FormData) {
   });
 
   revalidatePayPal();
+}
+
+export async function disconnectPayPal() {
+  const { owner } = await requireOwnerWrite();
+  assertPayPalConnectAvailable();
+
+  await prisma.$transaction([
+    prisma.owner.update({
+      where: { id: owner.id },
+      data: {
+        paypalMerchantId: null,
+        paypalOnboardingComplete: false,
+        paypalPaymentsEnabled: false,
+      },
+    }),
+    prisma.stand.updateMany({
+      where: { ownerId: owner.id, acceptPayPal: true },
+      data: { acceptPayPal: false },
+    }),
+  ]);
+
+  revalidatePayPal();
+  revalidatePath("/dashboard/businesses");
+  redirect("/dashboard/settings/paypal?disconnected=1");
 }

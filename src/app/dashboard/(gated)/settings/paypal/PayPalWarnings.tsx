@@ -23,15 +23,22 @@ export default function PayPalWarnings({
         </li>
         <li>
           PayPal&apos;s merchant fee comes out of your proceeds (owner-direct).
-          Vendl does not take a Connect cut.
+          On Free, Vendl also takes a 2.5% platform fee on marketplace PayPal
+          sales (same as card) - waived on Pro. Pass-on uses the same setting as
+          Stripe (Settings → Stripe → pass fee to customer).
           {feeHint ? (
             <>
               {" "}
-              Estimate for {billingCurrency}: {feeHint}.
+              PayPal&apos;s own estimate for {billingCurrency}: {feeHint}.
             </>
           ) : (
-            <> Fee rates vary by currency - confirm on PayPal&apos;s site.</>
+            <> Confirm PayPal&apos;s processing rates on their site.</>
           )}
+        </li>
+        <li>
+          USD stands can also show <strong className="text-[var(--ink)]">Venmo</strong>{" "}
+          via PayPal (US shoppers). AU and other currencies get the PayPal wallet
+          only.
         </li>
       </ul>
     </section>

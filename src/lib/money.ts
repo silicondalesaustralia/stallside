@@ -1,9 +1,28 @@
 import { STALLSIDE_FEE_BPS } from "@/lib/constants";
 
+/** Stable locale per currency so SSR and browser agree (undefined locale varies by region). */
+export function moneyFormatLocale(currency: string): string {
+  switch (currency.trim().toUpperCase()) {
+    case "USD":
+      return "en-US";
+    case "GBP":
+      return "en-GB";
+    case "EUR":
+      return "en-IE";
+    case "CAD":
+      return "en-CA";
+    case "NZD":
+      return "en-NZ";
+    default:
+      return "en-AU";
+  }
+}
+
 export function formatMoney(cents: number, currency: string): string {
-  return new Intl.NumberFormat(undefined, {
+  const code = currency.trim().toUpperCase();
+  return new Intl.NumberFormat(moneyFormatLocale(code), {
     style: "currency",
-    currency,
+    currency: code,
   }).format(cents / 100);
 }
 

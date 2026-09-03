@@ -11,6 +11,7 @@ import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
 } from "@/lib/stallside-fee";
+import { isPayPalMarketplaceMode } from "@/lib/paypal";
 import StandStoreHeader from "../StandStoreHeader";
 import CustomerChoiceCheckout from "../CustomerChoiceCheckout";
 
@@ -85,6 +86,7 @@ export default async function CustomerChoicePayPage({
         paypalSandbox={
           (process.env.PAYPAL_MODE || "sandbox").toLowerCase() !== "live"
         }
+        paypalMarketplace={isPayPalMarketplaceMode()}
         localTransfer={localTransfer}
         passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner)}
         stallsideFeeApplies={shouldChargeVendlFee(stand.owner)}

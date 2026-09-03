@@ -1,11 +1,20 @@
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { loadStorefrontPage, storefrontEnabledPages } from "@/lib/storefront/page-loader";
-import { storefrontMetadata } from "@/lib/storefront/seo";
-import StorefrontShell from "@/components/storefront/StorefrontShell";
+import { loadStorefrontPage } from "@/lib/storefront/page-loader";
+import {
+  buildStorefrontPageMetadata,
+  homeSeoDefaults,
+  seoConfigSource,
+} from "@/lib/studio/resolve-seo-metadata";
+import { resolveStudioPublicContext } from "@/lib/studio/public-context";
+import { greenValleyDemoOverride } from "@/lib/demo/green-valley/runtime-override";
+import StudioPublicSections from "@/lib/studio/public-render";
+import StorefrontPageShell from "@/components/storefront/StorefrontPageShell";
 import StorefrontHomeContent from "@/components/storefront/StorefrontHomeContent";
 import StorefrontGoToCartBar from "@/components/storefront/StorefrontGoToCartBar";
+import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
+import { storefrontSchemaGraph } from "@/lib/storefront/technical-seo/schema";
+import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
 
 export async function generateMetadata({
   params,
@@ -19,10 +28,18 @@ export async function generateMetadata({
   const draft = sp.draft === "1";
   try {
     const ctx = await loadStorefrontPage(slug, draft);
-    return storefrontMetadata({
+    const configRaw = seoConfigSource(
+      ctx.storefront.draftConfig,
+      ctx.storefront.publishedConfig,
+      ctx.storefront.isPublished && !draft,
+    );
+    return buildStorefrontPageMetadata({
       branding: ctx.branding,
       slug: ctx.storefront.slug,
       published: ctx.storefront.isPublished && !draft,
+      configRaw,
+      entityType: "home",
+      defaults: homeSeoDefaults(ctx.branding),
     });
   } catch {
     return { title: "Shop", robots: { index: false, follow: false } };
@@ -42,22 +59,39 @@ export default async function PublicStorefrontHomePage({
   const ctx = await loadStorefrontPage(slug, draft);
   if (!ctx.config.pages.home?.enabled) notFound();
 
-  const enabledPages = storefrontEnabledPages(ctx.config);
+  const studioCtx = await resolveStudioPublicContext(
+    ctx,
+    draft,
+    draft ? undefined : await greenValleyDemoOverride(ctx, { homeNodes: true }),
+  );
+  const primaryCustomHostname = draft
+    ? null
+    : await loadPrimaryCustomHostname(ctx.storefront.id);
+  const pageUrl = storefrontPublicUrl(ctx.storefront.slug, {
+    primaryCustomHostname,
+  });
+  const schemaGraph = draft
+    ? undefined
+    : storefrontSchemaGraph({
+        slug: ctx.storefront.slug,
+        branding: ctx.branding,
+        pageUrl,
+        primaryCustomHostname,
+      });
 
   return (
-    <StorefrontShell
-      storefrontSlug={ctx.storefront.slug}
-      standSlug={ctx.stand.slug}
-      branding={ctx.branding}
-      activePage="home"
-      enabledPages={enabledPages}
+    <StorefrontPageShell
+      ctx={ctx}
       draft={draft}
-      isDraftPreview={ctx.isDraftPreview}
-      fulfilmentOptions={ctx.fulfilmentOptions}
-      currency={ctx.stand.currency}
+      activePage="home"
+      schemaGraph={schemaGraph}
     >
-      <StorefrontHomeContent ctx={ctx} draft={draft} />
+      {studioCtx.active ? (
+        <StudioPublicSections nodes={studioCtx.studio.nodes} metadata={studioCtx.metadata} />
+      ) : (
+        <StorefrontHomeContent ctx={ctx} draft={draft} />
+      )}
       <StorefrontGoToCartBar standSlug={ctx.stand.slug} branding={ctx.branding} />
-    </StorefrontShell>
+    </StorefrontPageShell>
   );
 }

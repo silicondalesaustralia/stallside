@@ -16,7 +16,7 @@ Give this file to another agent whose job is to **improve UI/UX only**. Backend 
 | **Owner** | Web dashboard + Capacitor iOS/Android shell | Stands, products, stock, orders, QR print, Stripe |
 | **Platform admin** | Desktop browser `/admin` only | Owners, stands, orders overview |
 
-**Not in scope for UI pass:** customer App Store directory, PayPal, hardware readers, native redesign of Capacitor chrome.
+**Not in scope for UI pass:** customer App Store directory, hardware readers, native redesign of Capacitor chrome. PayPal Connect UI is env-gated (`PAYPAL_CONNECT_ENABLED`).
 
 ---
 
@@ -150,7 +150,7 @@ Flow in `PublicCart.tsx`:
 - Cash = logged only (no refunds UI)  
 - Currency **per stand**  
 - Owner app first; customer directory app **later**  
-- Payments: **QR + Cash + Stripe card/Apple Pay/Google Pay** (no PayPal in MVP; no physical reader required)  
+- Payments: **QR + Cash + Stripe card/Apple Pay/Google Pay**; PayPal (+ Venmo USD) when Connect enabled  
 - Admin = **desktop web only** (not in Capacitor)  
 
 ---

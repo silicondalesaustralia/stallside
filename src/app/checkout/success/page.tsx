@@ -24,7 +24,12 @@ export default async function CheckoutSuccessPage({
     demoCurrency,
     restock,
     preOrder,
+    standSlug,
+    standName,
   } = await resolveCheckoutSuccess(params);
+
+  const backHref = standSlug ? `/s/${standSlug}` : "/";
+  const backLabel = standName ? `Back to ${standName}` : `Back to ${APP_NAME}`;
 
   return (
     <main className="mx-auto flex min-h-full max-w-lg flex-1 flex-col justify-center px-6 py-16">
@@ -83,10 +88,10 @@ export default async function CheckoutSuccessPage({
       </div>
       {demoStandSlug && demoProduct ? null : (
         <Link
-          href="/"
+          href={backHref}
           className="mt-8 inline-flex w-full items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-6 py-4 text-lg font-semibold text-[var(--ink)]"
         >
-          Back to {APP_NAME}
+          {backLabel}
         </Link>
       )}
     </main>

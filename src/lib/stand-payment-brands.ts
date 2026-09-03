@@ -1,6 +1,9 @@
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
-import { stripeCheckoutBrandsForCurrency } from "@/lib/payment-brand-assets";
+import {
+  paypalCheckoutBrandsForCurrency,
+  stripeCheckoutBrandsForCurrency,
+} from "@/lib/payment-brand-assets";
 import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 
@@ -50,7 +53,7 @@ export function standPaymentBrands(
   }
 
   if (standOffersPayPal(stand, owner)) {
-    brands.push("paypal");
+    brands.push(...paypalCheckoutBrandsForCurrency(stand.currency));
   }
 
   return brands;

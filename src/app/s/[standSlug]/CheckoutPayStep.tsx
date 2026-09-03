@@ -23,6 +23,7 @@ type CheckoutPayStepProps = {
   paypalClientId: string | null;
   paypalMerchantId: string | null;
   paypalSandbox: boolean;
+  paypalMarketplace?: boolean;
   currency: string;
   standSlug: string;
   items?: CartItem[];
@@ -43,6 +44,8 @@ type CheckoutPayStepProps = {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
+  couponCode?: string;
+  onCouponCode?: (v: string) => void;
   deliveryAddressLine1?: string;
   deliverySuburb?: string;
   deliveryPostcode?: string;
@@ -69,6 +72,7 @@ export default function CheckoutPayStep({
   paypalClientId,
   paypalMerchantId,
   paypalSandbox,
+  paypalMarketplace = false,
   currency,
   standSlug,
   items = [],
@@ -85,6 +89,8 @@ export default function CheckoutPayStep({
   customerName,
   customerEmail,
   customerPhone,
+  couponCode = "",
+  onCouponCode,
   deliveryAddressLine1 = "",
   deliverySuburb = "",
   deliveryPostcode = "",
@@ -143,6 +149,18 @@ export default function CheckoutPayStep({
             onChange={(e) => onCustomerEmail(e.target.value)}
             placeholder="you@example.com"
             className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 text-base"
+          />
+        </label>
+      ) : null}
+      {onCouponCode ? (
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="font-medium">Promo code (optional)</span>
+          <input
+            value={couponCode}
+            onChange={(e) => onCouponCode(e.target.value.toUpperCase())}
+            placeholder="WELCOME10"
+            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 text-base uppercase tracking-wide"
+            autoCapitalize="characters"
           />
         </label>
       ) : null}
@@ -232,6 +250,7 @@ export default function CheckoutPayStep({
           items={customerChoiceAmountCents != null ? undefined : items}
           customerChoiceAmountCents={customerChoiceAmountCents}
           sandbox={paypalSandbox}
+          marketplace={paypalMarketplace}
           disabled={pending}
           onError={onPayPalError}
         />

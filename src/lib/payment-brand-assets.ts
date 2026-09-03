@@ -4,6 +4,7 @@ export type PaymentBrand =
   | "apple"
   | "google"
   | "paypal"
+  | "venmo"
   | "stripe"
   | "payid"
   | "payto"
@@ -57,6 +58,14 @@ export function stripeCheckoutBrandsForCurrency(
   return STRIPE_CHECKOUT_BRANDS;
 }
 
+/** PayPal rail brands (Venmo only when stand currency is USD). */
+export function paypalCheckoutBrandsForCurrency(
+  currency: string,
+): PaymentBrand[] {
+  if (currency.trim().toUpperCase() === "USD") return ["paypal", "venmo"];
+  return ["paypal"];
+}
+
 export function paymentBrandSrc(brand: PaymentBrand): string | null {
   switch (brand) {
     case "payid":
@@ -98,6 +107,8 @@ export function paymentBrandLabel(brand: PaymentBrand): string {
       return "Google Pay";
     case "paypal":
       return "PayPal";
+    case "venmo":
+      return "Venmo";
     case "stripe":
       return "Stripe";
     case "zip":

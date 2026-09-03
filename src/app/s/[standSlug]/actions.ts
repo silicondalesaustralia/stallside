@@ -24,6 +24,7 @@ import { localTransferForCurrency } from "@/lib/local-transfer";
 type CheckoutExtras = {
   receiptEmail?: string | null;
   claimFirstOrder?: boolean;
+  couponCode?: string | null;
 };
 
 type CheckoutPayload = {
@@ -44,6 +45,7 @@ async function loadCheckoutCart(input: CheckoutPayload) {
   return loadStandCart(input.standSlug, input.items ?? [], {
     receiptEmail: input.receiptEmail,
     claimFirstOrder: input.claimFirstOrder,
+    couponCode: input.couponCode,
   });
 }
 
@@ -113,6 +115,13 @@ async function confirmDeclaredCheckout(
       preOrderCart,
       skipStock,
     } = loaded;
+    const promotionId =
+      "promotionId" in loaded ? (loaded.promotionId ?? null) : null;
+    const promotionCodeSnapshot =
+      "promotionCodeSnapshot" in loaded
+        ? (loaded.promotionCodeSnapshot ?? null)
+        : null;
+
     if (preOrderCart) {
       return { error: "Pre-orders must be paid by card." };
     }
@@ -128,6 +137,24 @@ async function confirmDeclaredCheckout(
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
 
+    let campaignId: string | null = null;
+    try {
+      const { cookies } = await import("next/headers");
+      const jar = await cookies();
+      const token = jar.get("vendl_campaign")?.value;
+      if (token) {
+        const click = await prisma.campaignClick.findUnique({
+          where: { token },
+          include: { campaign: { select: { ownerId: true, id: true } } },
+        });
+        if (click && click.campaign.ownerId === stand.ownerId) {
+          campaignId = click.campaign.id;
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+
     const order = await prisma.$transaction(
       async (tx) => {
         const created = await tx.order.create({
@@ -141,6 +168,9 @@ async function confirmDeclaredCheckout(
             subtotalCents,
             discountCents,
             discountLabel,
+            promotionId,
+            promotionCodeSnapshot,
+            campaignId,
             totalCents,
             currency: stand.currency,
             platformFeeCents: 0,
@@ -203,6 +233,55 @@ async function confirmDeclaredCheckout(
       void notifySale(order.id).catch((error) => {
         console.error("Sale notify failed", error);
       });
+      void (async () => {
+        try {
+          const fresh = await prisma.order.findUnique({
+            where: { id: order.id },
+            select: {
+              customerId: true,
+              totalCents: true,
+              currency: true,
+              promotionId: true,
+              campaignId: true,
+              ownerId: true,
+            },
+          });
+          if (!fresh) return;
+          if (fresh.customerId) {
+            const { earnLoyaltyForOrder } = await import("@/lib/grow/loyalty");
+            await earnLoyaltyForOrder({
+              ownerId: fresh.ownerId,
+              orderId: order.id,
+              customerId: fresh.customerId,
+              totalCents: fresh.totalCents,
+              currency: fresh.currency,
+            });
+          }
+          if (fresh.promotionId) {
+            const { incrementPromotionUsage } = await import(
+              "@/lib/grow/promotions"
+            );
+            await incrementPromotionUsage(fresh.promotionId);
+          }
+          if (fresh.campaignId) {
+            const { cookies } = await import("next/headers");
+            const token = (await cookies()).get("vendl_campaign")?.value;
+            if (token) {
+              const { attributeOrderToCampaign } = await import(
+                "@/lib/grow/campaigns"
+              );
+              await attributeOrderToCampaign({
+                orderId: order.id,
+                ownerId: fresh.ownerId,
+                clickToken: token,
+                totalCents: fresh.totalCents,
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Growth cash hooks failed", err);
+        }
+      })();
     });
 
     return { orderNumber: order.orderNumber };

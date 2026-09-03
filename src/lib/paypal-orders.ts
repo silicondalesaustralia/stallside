@@ -1,4 +1,8 @@
-import { paypalDirectMerchantId, paypalFetch } from "@/lib/paypal";
+import {
+  isPayPalDirectMode,
+  paypalDirectMerchantId,
+  paypalFetch,
+} from "@/lib/paypal";
 
 type Link = { href: string; rel: string; method?: string };
 
@@ -17,32 +21,60 @@ type PayPalOrderResult = {
   }>;
 };
 
+function moneyValue(cents: number): string {
+  return (cents / 100).toFixed(2);
+}
+
 export async function createPayPalCheckoutOrder(input: {
   merchantId: string;
   orderId: string;
   currency: string;
   totalCents: number;
+  /** Vendl Connect fee in cents; only applied in marketplace (non-direct) mode. */
+  platformFeeCents?: number;
   description: string;
   cancelUrl: string;
   successUrl: string;
 }): Promise<{ paypalOrderId: string; approveUrl: string }> {
-  const value = (input.totalCents / 100).toFixed(2);
+  const currency = input.currency.toUpperCase();
+  const value = moneyValue(input.totalCents);
   // Own-account / direct mode: omit payee (platform REST app receives funds).
   // Marketplace: set payee to the seller merchant id.
   const platformId = paypalDirectMerchantId();
   const useOwnAccount =
     Boolean(platformId) && input.merchantId === platformId;
+  const marketplace =
+    !useOwnAccount && !isPayPalDirectMode() && Boolean(input.merchantId);
+
   const purchaseUnit: Record<string, unknown> = {
     reference_id: input.orderId,
     custom_id: input.orderId,
     description: input.description.slice(0, 127),
     amount: {
-      currency_code: input.currency.toUpperCase(),
+      currency_code: currency,
       value,
     },
   };
   if (!useOwnAccount) {
     purchaseUnit.payee = { merchant_id: input.merchantId };
+  }
+
+  const feeCents = input.platformFeeCents ?? 0;
+  if (marketplace) {
+    const instruction: Record<string, unknown> = {
+      disbursement_mode: "INSTANT",
+    };
+    if (feeCents > 0) {
+      instruction.platform_fees = [
+        {
+          amount: {
+            currency_code: currency,
+            value: moneyValue(feeCents),
+          },
+        },
+      ];
+    }
+    purchaseUnit.payment_instruction = instruction;
   }
 
   const data = await paypalFetch<{ id: string; links?: Link[] }>(
@@ -66,6 +98,7 @@ export async function createPayPalCheckoutOrder(input: {
         },
       }),
     },
+    marketplace ? { sellerMerchantId: input.merchantId, partnerAttribution: true } : {},
   );
 
   const url = approveUrl(data.links);
@@ -73,20 +106,32 @@ export async function createPayPalCheckoutOrder(input: {
   return { paypalOrderId: data.id, approveUrl: url };
 }
 
-export async function getPayPalOrder(paypalOrderId: string) {
+export async function getPayPalOrder(
+  paypalOrderId: string,
+  sellerMerchantId?: string | null,
+) {
   return paypalFetch<PayPalOrderResult>(
     `/v2/checkout/orders/${paypalOrderId}`,
+    {},
+    sellerMerchantId ? { sellerMerchantId, partnerAttribution: true } : {},
   );
 }
 
-export async function capturePayPalOrder(paypalOrderId: string) {
+export async function capturePayPalOrder(
+  paypalOrderId: string,
+  sellerMerchantId?: string | null,
+) {
+  const authOpts = sellerMerchantId
+    ? { sellerMerchantId, partnerAttribution: true as const }
+    : {};
   try {
     return await paypalFetch<PayPalOrderResult>(
       `/v2/checkout/orders/${paypalOrderId}/capture`,
       { method: "POST", body: "{}" },
+      authOpts,
     );
   } catch (error) {
-    const existing = await getPayPalOrder(paypalOrderId);
+    const existing = await getPayPalOrder(paypalOrderId, sellerMerchantId);
     if (existing.status === "COMPLETED") return existing;
     throw error;
   }

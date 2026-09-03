@@ -5,7 +5,7 @@ import {
 import { isDemoStandSlug } from "@/lib/demo";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
-import { isPayPalConfigured } from "@/lib/paypal";
+import { isPayPalConfigured, paypalSellerAuthMerchantId } from "@/lib/paypal";
 import { capturePayPalOrder } from "@/lib/paypal-orders";
 import { prisma } from "@/lib/prisma";
 import { PaymentMethod } from "@/generated/prisma/client";
@@ -14,6 +14,7 @@ import { restockOptInForOrder } from "./restock-opt-in-gate";
 import {
   applyDemo,
   applyFulfillResult,
+  applyStandBack,
   emptySuccessState,
   type PreOrderSuccessInfo,
   type SuccessPageState,
@@ -80,13 +81,14 @@ async function resolveShopperSubSuccess(
       where: { id: shopperSubscriptionId },
       include: {
         offer: { select: { title: true, collectionNote: true } },
-        stand: { select: { name: true } },
+        stand: { select: { name: true, slug: true } },
       },
     });
     if (!row) {
       state.message = "Subscription not found.";
       return state;
     }
+    applyStandBack(state, row.stand);
     state.message = ok
       ? `You're subscribed to ${row.offer.title} from ${row.stand.name}. Check your email for the manage link.`
       : "Payment received — your subscription will activate shortly.";
@@ -119,6 +121,7 @@ async function resolveStripeSuccess(
         items: true,
       },
     });
+    applyStandBack(state, order?.stand ?? null);
     applyDemo(state, order);
 
     const demo =
@@ -178,7 +181,9 @@ async function resolvePayPalSuccess(
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        owner: { include: { user: { select: { email: true, role: true } } } },
+        owner: {
+          select: { paypalMerchantId: true, user: { select: { email: true, role: true } } },
+        },
         stand: { select: { id: true, slug: true, name: true } },
         items: true,
       },
@@ -187,13 +192,17 @@ async function resolvePayPalSuccess(
       state.message = "PayPal order not found.";
       return state;
     }
+    applyStandBack(state, order.stand);
     applyDemo(state, order);
     const paypalOrderId = token || order.paypalOrderId;
     if (!paypalOrderId) {
       state.message = "PayPal payment token missing.";
       return state;
     }
-    const captured = await capturePayPalOrder(paypalOrderId);
+    const captured = await capturePayPalOrder(
+      paypalOrderId,
+      paypalSellerAuthMerchantId(order.owner.paypalMerchantId),
+    );
     const captureId =
       captured.purchase_units?.[0]?.payments?.captures?.[0]?.id ?? null;
     const result = await fulfillPaidPayPalOrder(order.id, captureId);

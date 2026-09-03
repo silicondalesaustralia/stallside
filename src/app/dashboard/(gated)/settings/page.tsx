@@ -4,6 +4,7 @@ import { logout } from "@/app/login/actions";
 import { billingRegionDisplay } from "@/lib/saas-pricing";
 import { stallsideSubscriptionSummary } from "@/lib/stallside-subscription-summary";
 import { STRIPE_CHECKOUT_METHODS_PHRASE } from "@/lib/stripe-connect-copy";
+import { isPayPalConnectAvailable } from "@/lib/paypal";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
@@ -18,6 +19,7 @@ export default async function SettingsPage() {
     lifetimeAccess: owner.lifetimeAccess,
   });
   const billingRegion = billingRegionDisplay(owner.billingCurrency);
+  const paypalConnectAvailable = isPayPalConnectAvailable();
 
   return (
     <main className="flex w-full max-w-3xl flex-col gap-8">
@@ -122,6 +124,46 @@ export default async function SettingsPage() {
             : owner.stripeAccountId
               ? "Finish Stripe setup"
               : "Connect Stripe"}
+        </Link>
+      </section>
+
+      <section id="paypal" className="space-y-3 text-sm scroll-mt-8">
+        <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+          <PaymentBrandIcon brand="paypal" className="size-6" />
+          PayPal
+          {paypalConnectAvailable ? (
+            <PaymentIconRow brands={["paypal", "venmo"]} />
+          ) : null}
+        </h2>
+        <p>
+          Status:{" "}
+          {!paypalConnectAvailable
+            ? "Coming soon"
+            : owner.paypalPaymentsEnabled && owner.paypalOnboardingComplete
+              ? "Connected · offering at checkout"
+              : owner.paypalMerchantId
+                ? owner.paypalOnboardingComplete
+                  ? "Connected · turn on for checkout"
+                  : "Connected · finish setup"
+                : "Not connected"}
+        </p>
+        <p className="text-[var(--muted)]">
+          {paypalConnectAvailable
+            ? "Connect PayPal so shoppers can pay with PayPal (and Venmo on USD stands). Funds go to your PayPal Business account. Free includes a 2.5% Vendl fee unless you upgrade to Pro."
+            : "PayPal Connect is coming soon. Card / Tap & Go via Stripe is live today."}
+        </p>
+        <Link
+          href="/dashboard/settings/paypal"
+          className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+        >
+          <PaymentBrandIcon brand="paypal" className="size-5" />
+          {!paypalConnectAvailable
+            ? "PayPal settings"
+            : owner.paypalPaymentsEnabled && owner.paypalOnboardingComplete
+              ? "Manage PayPal"
+              : owner.paypalMerchantId
+                ? "Finish PayPal setup"
+                : "Connect PayPal"}
         </Link>
       </section>
     </main>

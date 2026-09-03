@@ -80,6 +80,8 @@ export function fulfilmentKindLabel(kind: FulfilmentOptionKind): string {
       return "Delivery";
     case FulfilmentOptionKind.PREORDER_SHEET:
       return "Pre-order";
+    case FulfilmentOptionKind.MENU_SHEET:
+      return "Menu";
     case FulfilmentOptionKind.SUBSCRIPTION:
       return "Subscription";
     default:

@@ -18,6 +18,7 @@ import { shopProductPath } from "@/lib/storefront/paths";
 import { writeShopOrigin } from "@/lib/storefront/shop-origin";
 import { storefrontButtonClass } from "@/lib/storefront/branding";
 import type { ResolvedStorefrontBranding } from "@/lib/storefront/types";
+import { useStorefrontLinkBase } from "./StorefrontLinkProvider";
 
 function stockTone(label: string) {
   if (label.startsWith("Sold out") || label.startsWith("Orders closed")) {
@@ -52,6 +53,7 @@ export default function StorefrontProductGrid({
   branding,
   draft,
   compact = false,
+  basePath: basePathProp,
 }: {
   storefrontSlug: string;
   standSlug: string;
@@ -60,7 +62,10 @@ export default function StorefrontProductGrid({
   branding: ResolvedStorefrontBranding;
   draft?: boolean;
   compact?: boolean;
+  basePath?: string;
 }) {
+  const linkCtx = useStorefrontLinkBase();
+  const basePath = basePathProp ?? linkCtx.basePath;
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const btnClass = storefrontButtonClass(branding);
@@ -70,7 +75,9 @@ export default function StorefrontProductGrid({
     writeShopOrigin(storefrontSlug);
     if (product.soldOut) return;
     if (product.hasOptions) {
-      router.push(shopProductPath(storefrontSlug, product.slug, draft));
+      router.push(
+        shopProductPath(storefrontSlug, product.slug, draft, basePath),
+      );
       return;
     }
     const cart = readStandCart(standSlug);
@@ -109,7 +116,12 @@ export default function StorefrontProductGrid({
       {error ? <p className="mb-4 text-sm text-[var(--gone)]">{error}</p> : null}
       <ul className={`grid ${cols}`}>
         {products.map((product) => {
-          const href = shopProductPath(storefrontSlug, product.slug, draft);
+          const href = shopProductPath(
+            storefrontSlug,
+            product.slug,
+            draft,
+            basePath,
+          );
           return (
             <li
               key={product.id}

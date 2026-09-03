@@ -3,9 +3,10 @@ import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
-import { PaymentStatus } from "@/generated/prisma/client";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
+import { loadCustomerInsight } from "@/lib/grow/segments";
 import { updateCustomerNotes } from "../actions";
+import { addCustomerTag, removeCustomerTag } from "../tag-actions";
 
 export default async function CustomerDetailPage({
   params,
@@ -21,6 +22,7 @@ export default async function CustomerDetailPage({
   const customer = await prisma.customer.findFirst({
     where: { id: customerId, ownerId: owner.id },
     include: {
+      tagLinks: { include: { tag: true } },
       orders: {
         orderBy: { createdAt: "desc" },
         take: 50,
@@ -38,14 +40,9 @@ export default async function CustomerDetailPage({
   });
   if (!customer) notFound();
 
-  const paidOrders = customer.orders.filter(
-    (o) =>
-      o.paymentStatus === PaymentStatus.PAID ||
-      o.paymentStatus === PaymentStatus.CUSTOMER_CONFIRMED ||
-      o.paymentStatus === PaymentStatus.DEPOSIT_PAID,
-  );
-  const lifetime = paidOrders.reduce((s, o) => s + o.totalCents, 0);
-  const currency = paidOrders[0]?.currency ?? "AUD";
+  const insight = await loadCustomerInsight(owner.id, customer.id);
+  const currency =
+    customer.orders[0]?.currency ?? owner.billingCurrency ?? "AUD";
 
   return (
     <main className="flex flex-col gap-8">
@@ -63,15 +60,62 @@ export default async function CustomerDetailPage({
           {customer.phone ? ` · ${customer.phone}` : ""}
         </p>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          {customer.orders.length} order
-          {customer.orders.length === 1 ? "" : "s"}
-          {lifetime > 0
-            ? ` · ${formatMoney(lifetime, currency)} paid`
-            : ""}
-          {customer.marketingConsent ? " · marketing ok" : ""}
+          {customer.marketingConsent ? "Marketing ok" : "No marketing"}
           {customer.source ? ` · via ${customer.source}` : ""}
         </p>
       </div>
+
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Stat label="Orders" value={String(insight.orderCount)} />
+        <Stat label="Spend" value={formatMoney(insight.spendCents, currency)} />
+        <Stat label="AOV" value={formatMoney(insight.aovCents, currency)} />
+        <Stat
+          label="Last order"
+          value={
+            insight.lastOrderAt
+              ? insight.lastOrderAt.toLocaleDateString()
+              : "—"
+          }
+        />
+      </section>
+
+      {insight.productNames.length > 0 ? (
+        <p className="text-sm text-[var(--muted)]">
+          Bought: {insight.productNames.join(", ")}
+        </p>
+      ) : null}
+
+      <section className="dash-card flex max-w-lg flex-col gap-3 p-4">
+        <h2 className="font-semibold">Tags</h2>
+        <div className="flex flex-wrap gap-2">
+          {customer.tagLinks.map((link) => (
+            <form key={link.tagId} action={removeCustomerTag} className="inline">
+              <input type="hidden" name="customerId" value={customer.id} />
+              <input type="hidden" name="tagId" value={link.tagId} />
+              <button
+                type="submit"
+                className="rounded-full border border-[var(--line)] px-3 py-1 text-xs"
+              >
+                {link.tag.name} ×
+              </button>
+            </form>
+          ))}
+          {customer.tagLinks.length === 0 ? (
+            <span className="text-sm text-[var(--muted)]">No tags yet</span>
+          ) : null}
+        </div>
+        <form action={addCustomerTag} className="flex flex-wrap gap-2">
+          <input type="hidden" name="customerId" value={customer.id} />
+          <input
+            name="tag"
+            placeholder="Add tag"
+            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm"
+          />
+          <button type="submit" className="text-sm font-semibold underline">
+            Add
+          </button>
+        </form>
+      </section>
 
       {saved ? (
         <p className="text-sm text-[var(--leaf-dark)]">Notes saved.</p>
@@ -120,7 +164,8 @@ export default async function CustomerDetailPage({
                   <span>{formatMoney(o.totalCents, o.currency)}</span>
                 </div>
                 <p className="mt-1 text-[var(--muted)]">
-                  {o.stand.name} · {o.paymentStatus.replace(/_/g, " ").toLowerCase()}
+                  {o.stand.name} ·{" "}
+                  {o.paymentStatus.replace(/_/g, " ").toLowerCase()}
                 </p>
               </li>
             ))}
@@ -128,5 +173,16 @@ export default async function CustomerDetailPage({
         )}
       </section>
     </main>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="dash-card p-4">
+      <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+        {label}
+      </p>
+      <p className="mt-1 text-xl font-semibold">{value}</p>
+    </div>
   );
 }

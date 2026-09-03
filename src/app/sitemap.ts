@@ -154,5 +154,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Sitemap stand query failed", error);
   }
 
+  try {
+    const storefronts = await prisma.storefront.findMany({
+      where: { isPublished: true },
+      select: { slug: true, updatedAt: true, publishedAt: true },
+      orderBy: { publishedAt: "desc" },
+    });
+    for (const sf of storefronts) {
+      entries.push({
+        url: `${SITE_URL}/shop/${encodeURIComponent(sf.slug)}/sitemap.xml`,
+        lastModified: sf.publishedAt ?? sf.updatedAt,
+        changeFrequency: "daily",
+        priority: 0.7,
+      });
+    }
+  } catch (error) {
+    console.error("Sitemap storefront query failed", error);
+  }
+
   return entries;
 }

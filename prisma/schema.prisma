@@ -97,7 +97,15 @@ enum FulfilmentOptionKind {
   PICKUP
   DELIVERY
   PREORDER_SHEET
+  MENU_SHEET
   SUBSCRIPTION
+}
+
+enum MenuKind {
+  /** Curated take-now list — uses stand / shop fulfilment as today. */
+  ALWAYS_AVAILABLE
+  /** Scheduled drop — syncs pre-order schedule to linked products. */
+  PREORDER_DROP
 }
 
 enum PickupLocationType {
@@ -319,6 +327,7 @@ model Owner {
   customers                 Customer[]
   storefront                Storefront?
   preOrderPages             PreOrderPage[]
+  menus                     Menu[]
   subscriptionOffers        SubscriptionOffer[]
   shopperSubscriptions      ShopperSubscription[]
   orders                    Order[]
@@ -331,6 +340,20 @@ model Owner {
   pickupWindows             PickupWindow[]
   deliveryZones             DeliveryZone[]
   fulfilmentOptions         FulfilmentOption[]
+  ingredients               Ingredient[]
+  recipes                   Recipe[]
+  productionPlans           ProductionPlan[]
+  customerTags              CustomerTag[]
+  customerSegments          CustomerSegment[]
+  promotions                Promotion[]
+  campaigns                 Campaign[]
+  marketingSuppressions     MarketingSuppression[]
+  loyaltyProgram            LoyaltyProgram?
+  reviews                   Review[]
+  giftCards                 GiftCard[]
+  customOrderForms          CustomOrderForm[]
+  customOrderRequests       CustomOrderRequest[]
+  sellerEvents              SellerEvent[]
   /** Soft-close: data retained, login/emails/stands stopped. */
   deletedAt                 DateTime?
   /** Ad click ids + UTMs from first signup (for Perform/Meta pushback). */
@@ -472,6 +495,7 @@ model Stand {
   products           Product[]
   productChannels    ProductChannel[]
   preOrderPages      PreOrderPage[]
+  menus              Menu[]
   subscriptionOffers SubscriptionOffer[]
   shopperSubscriptions ShopperSubscription[]
   orders             Order[]
@@ -484,6 +508,7 @@ model Stand {
   notifications      Notification[]
   fulfilmentOptions  FulfilmentOption[]
   pickupLocations    PickupLocation[]
+  sellerEvents       SellerEvent[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 
@@ -565,6 +590,11 @@ model Customer {
   orders               Order[]
   shopperSubscriptions ShopperSubscription[]
   restockSubscribers   RestockSubscriber[]
+  tagLinks             CustomerTagLink[]
+  loyaltyAccount       LoyaltyAccount?
+  reviews              Review[]
+  campaignRecipients   CampaignRecipient[]
+  giftCardsIssued      GiftCard[]
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
 
@@ -592,12 +622,56 @@ model Storefront {
   publishedAt     DateTime?
   contactEmail    String?
   showPhone       Boolean   @default(false)
-  /** Saved for Phase 4+ DNS wiring; not active yet. */
+  /** Legacy single field; prefer StorefrontDomain rows (Phase 9). */
   customDomain    String?
+  domains         StorefrontDomain[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   @@index([isPublished])
+}
+
+enum StorefrontDomainType {
+  VENDL_SUBDOMAIN
+  CUSTOM
+}
+
+enum StorefrontDomainStatus {
+  PENDING
+  VERIFYING
+  ACTIVE
+  ERROR
+  DISCONNECTED
+}
+
+/** Phase 9 — hostname → storefront mapping (Vendl subdomain or Cloudflare custom hostname). */
+model StorefrontDomain {
+  id                         String                 @id @default(cuid())
+  storefrontId               String
+  storefront                 Storefront             @relation(fields: [storefrontId], references: [id], onDelete: Cascade)
+  /** Normalized hostname only (no scheme/path/port). */
+  hostname                   String                 @unique
+  type                       StorefrontDomainType
+  status                     StorefrontDomainStatus @default(PENDING)
+  isPrimary                  Boolean                @default(false)
+  cloudflareCustomHostnameId String?
+  hostnameStatus             String?
+  sslStatus                  String?
+  verificationMethod         String?
+  verificationName           String?
+  verificationValue          String?
+  cnameTarget                String?
+  lastCheckedAt              DateTime?
+  verifiedAt                 DateTime?
+  activatedAt                DateTime?
+  errorCode                  String?
+  errorMessage               String?
+  createdAt                  DateTime               @default(now())
+  updatedAt                  DateTime               @updatedAt
+
+  @@index([storefrontId, status])
+  @@index([storefrontId, isPrimary])
+  @@index([type, status])
 }
 
 // --- Phase 5: reusable fulfilment ---
@@ -713,6 +787,8 @@ model FulfilmentOption {
   deliveryZone        DeliveryZone?        @relation(fields: [deliveryZoneId], references: [id], onDelete: SetNull)
   preOrderPageId      String?              @unique
   preOrderPage        PreOrderPage?        @relation(fields: [preOrderPageId], references: [id], onDelete: SetNull)
+  menuId              String?              @unique
+  menu                Menu?                @relation(fields: [menuId], references: [id], onDelete: SetNull)
   subscriptionOfferId String?              @unique
   subscriptionOffer   SubscriptionOffer?   @relation(fields: [subscriptionOfferId], references: [id], onDelete: SetNull)
   handoverMode        HandoverMode         @default(COLLECT)
@@ -864,11 +940,17 @@ model Product {
   categoryLinks      ProductCategory[]
   channels           ProductChannel[]
   preOrderPageItems  PreOrderPageProduct[]
+  menuItems          MenuProduct[]
   subscriptionOfferItems SubscriptionOfferProduct[]
   fulfilmentOptions      ProductFulfilmentOption[]
+  /** Optional link to a production recipe (Phase 6). */
+  productRecipe      ProductRecipe?
+  /** Optional packaging/materials cost per sellable unit (cents). */
+  packagingCostCents Int?
   orderItems         OrderItem[]
   inventoryAdjustments InventoryAdjustment[]
   lowStockAlerts     LowStockAlert[]
+  eventProducts      SellerEventProduct[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 
@@ -1011,6 +1093,51 @@ model PreOrderPageProduct {
   @@index([productId])
 }
 
+/** Curated product list — always-on menu or scheduled pre-order drop. */
+model Menu {
+  id                 String        @id @default(cuid())
+  standId            String
+  stand              Stand         @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId            String
+  owner              Owner         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title              String
+  slug               String
+  description        String?
+  isActive           Boolean       @default(true)
+  kind               MenuKind      @default(ALWAYS_AVAILABLE)
+  /** When true, menu products stay off the stand catalog / QR grid. */
+  hideOnBusinessPage Boolean       @default(false)
+  showOnStand        Boolean       @default(true)
+  showOnShop         Boolean       @default(true)
+  /** PREORDER_DROP schedule (null for ALWAYS_AVAILABLE). */
+  orderByAt          DateTime?
+  collectionAt       DateTime?
+  collectionNote     String?
+  showExactStock     Boolean       @default(false)
+  paymentTiming      PaymentTiming @default(PAY_UPFRONT)
+  depositPercent     Int?
+  handoverMode       HandoverMode  @default(COLLECT)
+  items              MenuProduct[]
+  fulfilmentOption   FulfilmentOption?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@unique([standId, slug])
+  @@index([standId, isActive, kind])
+}
+
+model MenuProduct {
+  id        String  @id @default(cuid())
+  menuId    String
+  menu      Menu    @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sortOrder Int     @default(0)
+
+  @@unique([menuId, productId])
+  @@index([productId])
+}
+
 /** Named option group on a product (e.g. Size, Flavour). Max 3 per product in app. */
 model ProductOptionGroup {
   id        String                @id @default(cuid())
@@ -1055,6 +1182,13 @@ model Order {
   /** First-order (or other) discount applied to this order. */
   discountCents           Int               @default(0)
   discountLabel           String?
+  /** Phase 7 promotion used (nullable; label/code snapshotted). */
+  promotionId             String?
+  promotion               Promotion?        @relation(fields: [promotionId], references: [id], onDelete: SetNull)
+  promotionCodeSnapshot   String?
+  /** Campaign attribution (first-party click → order within window). */
+  campaignId              String?
+  campaign                Campaign?         @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   currency                String
   platformFeeCents        Int               @default(0)
   stripeCheckoutSessionId String?
@@ -1097,6 +1231,14 @@ model Order {
   items                   OrderItem[]
   inventoryAdjustments    InventoryAdjustment[]
   fulfilment              OrderFulfilment?
+  /** Opaque QR lookup token for seller handover (Phase 8). */
+  opsLookupToken          String?           @unique
+  /** Market/event sale link (nullable). */
+  sellerEventId           String?
+  sellerEvent             SellerEvent?      @relation(fields: [sellerEventId], references: [id], onDelete: SetNull)
+  /** Converted from a custom order request. */
+  customOrderRequestId    String?           @unique
+  customOrderRequest      CustomOrderRequest? @relation(fields: [customOrderRequestId], references: [id], onDelete: SetNull)
   createdAt               DateTime          @default(now())
   updatedAt               DateTime          @updatedAt
 
@@ -1106,21 +1248,26 @@ model Order {
   @@index([paymentStatus, balanceDueAt])
   @@index([shopperSubscriptionId])
   @@index([customerId])
+  @@index([promotionId])
+  @@index([campaignId])
+  @@index([sellerEventId])
 }
 
 model OrderItem {
-  id                  String   @id @default(cuid())
+  id                  String    @id @default(cuid())
   orderId             String
-  order               Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order               Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId           String
-  product             Product  @relation(fields: [productId], references: [id])
+  product             Product   @relation(fields: [productId], references: [id])
   productNameSnapshot String
   /** e.g. "Size: Dozen · Flavour: Chocolate" */
   optionsSnapshot     String?
   quantity            Int
   unitPriceCents      Int
   lineTotalCents      Int
-  createdAt           DateTime @default(now())
+  /** Phase 8 packing checkoff — set when line is packed (qty unchanged). */
+  packedAt            DateTime?
+  createdAt           DateTime  @default(now())
 
   @@index([orderId])
 }
@@ -1250,3 +1397,569 @@ model Notification {
   @@index([ownerId, isRead, createdAt])
   @@index([standId, createdAt])
 }
+
+/** Canonical recipe/ingredient measure units (Phase 6). */
+enum MeasureUnit {
+  MG
+  G
+  KG
+  ML
+  L
+  EACH
+}
+
+enum ProductionStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETE
+}
+
+/** Owner-scoped purchasable ingredient with current buy-price. */
+model Ingredient {
+  id                 String                  @id @default(cuid())
+  ownerId            String
+  owner              Owner                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name               String
+  description        String?
+  /** Unit recipes usually reference (e.g. G for flour). */
+  baseUnit           MeasureUnit
+  /** How much you buy in one purchase (e.g. 12.5). */
+  purchaseQuantity   Decimal                 @db.Decimal(18, 6)
+  purchaseUnit       MeasureUnit
+  purchasePriceCents Int
+  supplier           String?
+  sku                String?
+  notes              String?
+  isActive           Boolean                 @default(true)
+  recipeLines        RecipeIngredient[]
+  costHistory        IngredientCostHistory[]
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+
+  @@index([ownerId, isActive])
+  @@index([ownerId, name])
+}
+
+/** Snapshot when purchase price/qty changes — current costing uses Ingredient fields. */
+model IngredientCostHistory {
+  id                 String      @id @default(cuid())
+  ingredientId       String
+  ingredient         Ingredient  @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  purchaseQuantity   Decimal     @db.Decimal(18, 6)
+  purchaseUnit       MeasureUnit
+  purchasePriceCents Int
+  note               String?
+  recordedAt         DateTime    @default(now())
+
+  @@index([ingredientId, recordedAt])
+}
+
+model Recipe {
+  id              String             @id @default(cuid())
+  ownerId         String
+  owner           Owner              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name            String
+  description     String?
+  /** How many sellable/yield units one batch produces. */
+  yieldQuantity   Decimal            @db.Decimal(18, 6)
+  /** Human label for yield units — e.g. "buns", "loaves", "batches". */
+  yieldLabel      String             @default("units")
+  instructions    String?
+  prepNotes       String?
+  isActive        Boolean            @default(true)
+  lines           RecipeIngredient[]
+  productLinks    ProductRecipe[]
+  usedAsComponent RecipeIngredient[] @relation("RecipeComponent")
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([ownerId, isActive])
+  @@index([ownerId, name])
+}
+
+/**
+ * Recipe line: either a raw Ingredient OR a nested component Recipe (XOR).
+ * Nested quantity is expressed in the component recipe's yield units.
+ */
+model RecipeIngredient {
+  id                String       @id @default(cuid())
+  recipeId          String
+  recipe            Recipe       @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredientId      String?
+  ingredient        Ingredient?  @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  componentRecipeId String?
+  componentRecipe   Recipe?      @relation("RecipeComponent", fields: [componentRecipeId], references: [id], onDelete: Restrict)
+  quantity          Decimal      @db.Decimal(18, 6)
+  /** Required for ingredient lines; ignored for component-recipe lines. */
+  unit              MeasureUnit?
+  sortOrder         Int          @default(0)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@index([recipeId, sortOrder])
+  @@index([ingredientId])
+  @@index([componentRecipeId])
+}
+
+/** One primary production recipe per product. */
+model ProductRecipe {
+  id                   String   @id @default(cuid())
+  productId            String   @unique
+  product              Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  recipeId             String
+  recipe               Recipe   @relation(fields: [recipeId], references: [id], onDelete: Restrict)
+  /**
+   * How many of the recipe's yield units are in one product unit.
+   * Example: recipe yields 12 buns; box of 6 → yieldUnitsPerProduct = 6.
+   */
+  yieldUnitsPerProduct Decimal  @db.Decimal(18, 6)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([recipeId])
+}
+
+/**
+ * Optional persisted notes/status for a derived production group.
+ * groupKey examples: "day:2026-09-12", "menu:<id>", "fo:<fulfilmentOptionId>:2026-09-12"
+ */
+model ProductionPlan {
+  id        String           @id @default(cuid())
+  ownerId   String
+  owner     Owner            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  standId   String
+  groupKey  String
+  title     String?
+  notes     String?
+  status    ProductionStatus @default(PLANNED)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@unique([ownerId, groupKey])
+  @@index([ownerId, standId])
+}
+
+// ─── Phase 7: Growth & Customer Retention ───────────────────────────────────
+
+enum PromotionType {
+  PERCENT_OFF
+  FIXED_OFF
+  FREE_DELIVERY
+}
+
+enum CampaignStatus {
+  DRAFT
+  SENDING
+  SENT
+  FAILED
+  CANCELLED
+}
+
+enum CampaignRecipientStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum LoyaltyTxnType {
+  ORDER_EARN
+  REWARD_REDEEM
+  MANUAL_ADJUSTMENT
+  REFUND_REVERSAL
+}
+
+enum GiftCardTxnType {
+  ISSUE
+  REDEEM
+  REFUND_RESTORE
+  MANUAL_ADJUSTMENT
+}
+
+model CustomerTag {
+  id        String            @id @default(cuid())
+  ownerId   String
+  owner     Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name      String
+  links     CustomerTagLink[]
+  createdAt DateTime          @default(now())
+
+  @@unique([ownerId, name])
+  @@index([ownerId])
+}
+
+model CustomerTagLink {
+  customerId String
+  customer   Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  tagId      String
+  tag        CustomerTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
+
+  @@id([customerId, tagId])
+  @@index([tagId])
+}
+
+/** Dynamic segment — rules stored as JSON conditions evaluated at query time. */
+model CustomerSegment {
+  id          String     @id @default(cuid())
+  ownerId     String
+  owner       Owner      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  /** Preset key e.g. best_customers | custom */
+  presetKey   String?
+  /**
+   * Conditions object, e.g.
+   * { "minOrders": 2, "minSpendCents": 10000, "daysSinceLastOrderMin": 60,
+   *   "tagIds": [], "productIds": [], "menuIds": [], "marketingConsent": true,
+   *   "subscriptionActive": true }
+   */
+  rules       Json       @default("{}")
+  isActive    Boolean    @default(true)
+  campaigns   Campaign[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([ownerId, isActive])
+}
+
+model Promotion {
+  id                 String        @id @default(cuid())
+  ownerId            String
+  owner              Owner         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  code               String
+  name               String
+  type               PromotionType @default(PERCENT_OFF)
+  /** Percent 1–100 when PERCENT_OFF; ignored for FIXED. */
+  percentOff         Int?
+  /** Fixed cents off when FIXED_OFF. */
+  amountOffCents     Int?
+  minOrderCents      Int           @default(0)
+  startsAt           DateTime?
+  endsAt             DateTime?
+  usageLimit         Int?
+  perCustomerLimit   Int           @default(1)
+  usageCount         Int           @default(0)
+  /** Empty = all products. */
+  productIds         String[]      @default([])
+  categoryIds        String[]      @default([])
+  menuIds            String[]      @default([])
+  firstOrderOnly     Boolean       @default(false)
+  isActive           Boolean       @default(true)
+  orders             Order[]
+  campaigns          Campaign[]
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@unique([ownerId, code])
+  @@index([ownerId, isActive])
+}
+
+model MarketingSuppression {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  email     String
+  /** unsubscribed | bounce | complaint | manual */
+  reason    String   @default("unsubscribed")
+  token     String   @unique
+  createdAt DateTime @default(now())
+
+  @@unique([ownerId, email])
+  @@index([ownerId])
+}
+
+model Campaign {
+  id              String              @id @default(cuid())
+  ownerId         String
+  owner           Owner               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name            String
+  status          CampaignStatus      @default(DRAFT)
+  subject         String
+  previewText     String?
+  heading         String?
+  body            String
+  imageUrl        String?
+  ctaLabel        String?
+  ctaUrl          String?
+  segmentId       String?
+  segment         CustomerSegment?    @relation(fields: [segmentId], references: [id], onDelete: SetNull)
+  promotionId     String?
+  promotion       Promotion?          @relation(fields: [promotionId], references: [id], onDelete: SetNull)
+  /** menu | product | custom audience hint */
+  audienceType    String              @default("segment")
+  audienceRefId   String?
+  templateKey     String?
+  sentAt          DateTime?
+  recipientCount  Int                 @default(0)
+  sentCount       Int                 @default(0)
+  failedCount     Int                 @default(0)
+  clickCount      Int                 @default(0)
+  attributedOrders Int                @default(0)
+  attributedRevenueCents Int          @default(0)
+  recipients      CampaignRecipient[]
+  clicks          CampaignClick[]
+  orders          Order[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([ownerId, status])
+}
+
+model CampaignRecipient {
+  id           String                   @id @default(cuid())
+  campaignId   String
+  campaign     Campaign                 @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  customerId   String?
+  customer     Customer?                @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  email        String
+  status       CampaignRecipientStatus  @default(PENDING)
+  errorMessage String?
+  resendId     String?
+  sentAt       DateTime?
+  createdAt    DateTime                 @default(now())
+
+  @@unique([campaignId, email])
+  @@index([campaignId, status])
+  @@index([customerId])
+}
+
+model CampaignClick {
+  id         String    @id @default(cuid())
+  campaignId String
+  campaign   Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  token      String    @unique
+  email      String?
+  clickedAt  DateTime  @default(now())
+  orderId    String?
+
+  @@index([campaignId, clickedAt])
+}
+
+model LoyaltyProgram {
+  id                 String           @id @default(cuid())
+  ownerId            String           @unique
+  owner              Owner            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name               String           @default("Rewards")
+  isActive           Boolean          @default(false)
+  /** Points earned per whole currency unit spent (e.g. 1 = 1pt per $1). */
+  pointsPerCurrency  Int              @default(1)
+  /** Points required for one reward. */
+  rewardThreshold    Int              @default(100)
+  /** Reward value in cents. */
+  rewardCents        Int              @default(1000)
+  accounts           LoyaltyAccount[]
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+}
+
+model LoyaltyAccount {
+  id          String               @id @default(cuid())
+  programId   String
+  program     LoyaltyProgram       @relation(fields: [programId], references: [id], onDelete: Cascade)
+  customerId  String               @unique
+  customer    Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  /** Cached balance; ledger is source of truth. */
+  balance     Int                  @default(0)
+  transactions LoyaltyTransaction[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([programId])
+}
+
+model LoyaltyTransaction {
+  id          String         @id @default(cuid())
+  accountId   String
+  account     LoyaltyAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  type        LoyaltyTxnType
+  points      Int
+  orderId     String?
+  note        String?
+  createdAt   DateTime       @default(now())
+
+  @@unique([accountId, type, orderId])
+  @@index([accountId, createdAt])
+}
+
+model Review {
+  id           String       @id @default(cuid())
+  ownerId      String
+  owner        Owner        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  customerId   String?
+  customer     Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  orderId      String
+  orderItemId  String?
+  productId    String?
+  rating       Int
+  title        String?
+  body         String
+  status       ReviewStatus @default(PENDING)
+  token        String       @unique
+  sellerReply  String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([orderId, productId])
+  @@index([ownerId, status])
+  @@index([productId, status])
+}
+
+model GiftCard {
+  id            String               @id @default(cuid())
+  ownerId       String
+  owner         Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  code          String
+  /** Initial face value cents. */
+  initialCents  Int
+  /** Cached remaining; ledger is source of truth. */
+  balanceCents  Int
+  currency      String               @default("AUD")
+  customerId    String?
+  customer      Customer?            @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  expiresAt     DateTime?
+  isActive      Boolean              @default(true)
+  note          String?
+  transactions  GiftCardTransaction[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@unique([ownerId, code])
+  @@index([ownerId, isActive])
+}
+
+model GiftCardTransaction {
+  id         String          @id @default(cuid())
+  giftCardId String
+  giftCard   GiftCard        @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
+  type       GiftCardTxnType
+  amountCents Int
+  orderId    String?
+  note       String?
+  createdAt  DateTime        @default(now())
+
+  @@index([giftCardId, createdAt])
+}
+
+// --- Phase 8: Advanced Operations ---
+
+enum CustomOrderRequestStatus {
+  SUBMITTED
+  REVIEWING
+  ACCEPTED
+  DECLINED
+  CONVERTED
+  CANCELLED
+}
+
+enum CustomOrderFieldType {
+  TEXT
+  TEXTAREA
+  EMAIL
+  PHONE
+  NUMBER
+  SELECT
+  DATE
+}
+
+enum SellerEventStatus {
+  DRAFT
+  LIVE
+  CLOSED
+}
+
+model CustomOrderForm {
+  id          String               @id @default(cuid())
+  ownerId     String
+  owner       Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title       String
+  slug        String
+  description String?
+  isPublished Boolean              @default(false)
+  thankYouNote String?
+  fields      CustomOrderField[]
+  requests    CustomOrderRequest[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@unique([ownerId, slug])
+  @@index([ownerId, isPublished])
+}
+
+model CustomOrderField {
+  id         String               @id @default(cuid())
+  formId     String
+  form       CustomOrderForm      @relation(fields: [formId], references: [id], onDelete: Cascade)
+  label      String
+  fieldType  CustomOrderFieldType @default(TEXT)
+  required   Boolean              @default(false)
+  sortOrder  Int                  @default(0)
+  /** SELECT options as string[]. */
+  options    Json?
+  createdAt  DateTime             @default(now())
+
+  @@index([formId, sortOrder])
+}
+
+model CustomOrderRequest {
+  id            String                   @id @default(cuid())
+  ownerId       String
+  owner         Owner                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  formId        String
+  form          CustomOrderForm          @relation(fields: [formId], references: [id], onDelete: Cascade)
+  status        CustomOrderRequestStatus @default(SUBMITTED)
+  customerName  String?
+  email         String?
+  phone         String?
+  /** Field id → answer value. */
+  answers       Json
+  sellerNotes   String?
+  convertedOrder Order?
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+
+  @@index([ownerId, status, createdAt])
+  @@index([formId, createdAt])
+}
+
+model SellerEvent {
+  id            String              @id @default(cuid())
+  ownerId       String
+  owner         Owner               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  standId       String
+  stand         Stand               @relation(fields: [standId], references: [id], onDelete: Cascade)
+  name          String
+  locationLabel String?
+  startsAt      DateTime
+  endsAt        DateTime?
+  status        SellerEventStatus   @default(DRAFT)
+  notes         String?
+  products      SellerEventProduct[]
+  orders        Order[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([ownerId, startsAt])
+  @@index([standId, status])
+}
+
+model SellerEventProduct {
+  id           String      @id @default(cuid())
+  eventId      String
+  event        SellerEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  /** Soft allocation for packing/close-out — not a stock reservation. */
+  allocatedQty Int?
+  soldQty      Int         @default(0)
+
+  @@unique([eventId, productId])
+  @@index([productId])
+}
+

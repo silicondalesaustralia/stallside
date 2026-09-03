@@ -1,12 +1,13 @@
 import Link from "next/link";
 import {
   standCatalogPath,
+  standMenusPath,
   standPreOrdersPath,
   standSubscriptionsPath,
 } from "@/lib/stand-seo";
 import type { StandStoreNav } from "@/lib/stand-store-nav";
 
-export type StandStoreLinkKey = "shop" | "pre" | "sub";
+export type StandStoreLinkKey = "shop" | "menu" | "pre" | "sub";
 
 export function buildStandStoreLinks(
   standSlug: string,
@@ -18,6 +19,13 @@ export function buildStandStoreLinks(
       key: "shop",
       label: "Shop",
       href: standCatalogPath(standSlug),
+    });
+  }
+  if (nav.showMenus) {
+    links.push({
+      key: "menu",
+      label: "Menus",
+      href: standMenusPath(standSlug),
     });
   }
   if (nav.showPreOrders) {

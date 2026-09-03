@@ -35,6 +35,18 @@ async function main() {
   }
   console.log(`Subscription offers synced: ${offers.length}`);
 
+  const menuDrops = await prisma.menu.findMany({
+    where: { kind: "PREORDER_DROP" },
+    select: { id: true },
+  });
+  for (const menu of menuDrops) {
+    const { syncMenuFulfilmentOption } = await import(
+      "../src/lib/fulfilment/sync-menu"
+    );
+    await syncMenuFulfilmentOption(menu.id);
+  }
+  console.log(`Menu drops synced: ${menuDrops.length}`);
+
   console.log("Done.");
 }
 

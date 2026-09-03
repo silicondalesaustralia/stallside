@@ -52,6 +52,9 @@ const ICONS: Record<string, React.ReactNode> = {
   "/dashboard/website": (
     <Icon d="M4 6h16v12H4zM4 9h16M8 13h8" />
   ),
+  "/dashboard/website/studio": (
+    <Icon d="M4 6h16v12H4zM4 9h16M8 13h8" />
+  ),
   "/dashboard/website/domains": (
     <Icon d="M12 3v18M8 8h7a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h7" />
   ),
@@ -66,6 +69,39 @@ const ICONS: Record<string, React.ReactNode> = {
   ),
   "/dashboard/subscriptions": (
     <Icon d="M5 12a7 7 0 0 1 12-4l2-2v6h-6M19 12a7 7 0 0 1-12 4l-2 2v-6h6" />
+  ),
+  "/dashboard/menus": (
+    <Icon d="M6 4h12v16H6zM6 9h12M9 13h6" />
+  ),
+  "/dashboard/calendar": (
+    <Icon d="M6 4h12v16H6zM6 9h12M9 2v4M15 2v4" />
+  ),
+  "/dashboard/marketing": (
+    <Icon d="M5 12h14M12 5v14M5 5l14 14" />
+  ),
+  "/dashboard/operate": (
+    <Icon d="M4 19h16M7 19V9l5-4 5 4v10" />
+  ),
+  "/dashboard/forms": (
+    <Icon d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h4" />
+  ),
+  "/dashboard/events": (
+    <Icon d="M8 2v4M16 2v4M4 10h16M6 4h12a2 2 0 0 1 2 2v14H4V6a2 2 0 0 1 2-2z" />
+  ),
+  "/dashboard/grow": (
+    <Icon d="M5 12h14M12 5v14M5 5l14 14" />
+  ),
+  "/dashboard/fulfilment": (
+    <Icon d="M5 12h14M12 5v14" />
+  ),
+  "/dashboard/production": (
+    <Icon d="M4 19h16M7 19V9l5-4 5 4v10M10 12h4" />
+  ),
+  "/dashboard/recipes": (
+    <Icon d="M8 4h8v16H8zM11 8h2M11 12h2M11 16h1" />
+  ),
+  "/dashboard/ingredients": (
+    <Icon d="M12 3v7l4 8H8l4-8V3M7 21h10" />
   ),
   "/dashboard/notifications": (
     <Icon d="M6 9a6 6 0 1 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9M10 21h4" />

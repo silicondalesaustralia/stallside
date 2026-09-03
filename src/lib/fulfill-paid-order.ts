@@ -153,6 +153,41 @@ async function fulfillPaidOnlineOrder(
     void notifyOrderCustomer(orderId).catch((error) => {
       console.error("Customer order email failed", error);
     });
+    void (async () => {
+      try {
+        const fresh = await prisma.order.findUnique({
+          where: { id: orderId },
+          select: {
+            id: true,
+            ownerId: true,
+            customerId: true,
+            totalCents: true,
+            currency: true,
+            campaignId: true,
+            promotionId: true,
+          },
+        });
+        if (!fresh) return;
+        if (fresh.customerId) {
+          const { earnLoyaltyForOrder } = await import("@/lib/grow/loyalty");
+          await earnLoyaltyForOrder({
+            ownerId: fresh.ownerId,
+            orderId: fresh.id,
+            customerId: fresh.customerId,
+            totalCents: fresh.totalCents,
+            currency: fresh.currency,
+          });
+        }
+        if (fresh.promotionId) {
+          const { incrementPromotionUsage } = await import(
+            "@/lib/grow/promotions"
+          );
+          await incrementPromotionUsage(fresh.promotionId);
+        }
+      } catch (err) {
+        console.error("Growth post-pay hooks failed", err);
+      }
+    })();
   });
 
   return { orderNumber: order.orderNumber, alreadyPaid: false as const };

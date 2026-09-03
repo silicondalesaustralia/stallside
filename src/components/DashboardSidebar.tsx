@@ -7,14 +7,51 @@ import BrandMark from "@/components/BrandMark";
 import DashNavIcon from "@/components/DashNavIcon";
 import DashSidebarNavItem from "@/components/DashSidebarNavItem";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
-import { dashNavGroupsForMode } from "@/components/dash-nav-links";
+import {
+  GETTING_STARTED_NAV,
+  primaryNavForMode,
+  secondaryNavForMode,
+  type DashNavItem,
+} from "@/components/dash-nav-links";
 import {
   setupNavBadge,
   type DashboardSetupAlerts,
 } from "@/lib/dashboard-setup-alerts";
 import type { BusinessOption } from "@/lib/selected-business";
 
-const GROUP_STORAGE = "vendl-dash-nav-groups";
+const MORE_STORAGE = "vendl-dash-more-open";
+
+function NavItemList({
+  items,
+  collapsed,
+  setupAlerts,
+  unreadNotifications,
+  setupIncomplete,
+}: {
+  items: readonly DashNavItem[];
+  collapsed: boolean;
+  setupAlerts: DashboardSetupAlerts;
+  unreadNotifications?: number;
+  setupIncomplete?: number;
+}) {
+  return (
+    <>
+      {items.map((item) => (
+        <DashSidebarNavItem
+          key={item.href}
+          item={item}
+          collapsed={collapsed}
+          badge={setupNavBadge(
+            item.href,
+            setupAlerts,
+            unreadNotifications,
+            setupIncomplete,
+          )}
+        />
+      ))}
+    </>
+  );
+}
 
 export default function DashboardSidebar({
   businesses,
@@ -35,21 +72,25 @@ export default function DashboardSidebar({
   setupIncomplete?: number;
   businessMode?: string | null;
 }) {
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [moreOpen, setMoreOpen] = useState(false);
+  const primary = primaryNavForMode(businessMode);
+  const primaryHrefs = new Set(primary.map((i) => i.href));
+  const secondary = secondaryNavForMode(businessMode).filter(
+    (i) => !primaryHrefs.has(i.href),
+  );
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(GROUP_STORAGE);
-      if (raw) setOpenGroups(JSON.parse(raw) as Record<string, boolean>);
+      setMoreOpen(localStorage.getItem(MORE_STORAGE) === "1");
     } catch {
       /* ignore */
     }
   }, []);
 
-  function toggleGroup(id: string) {
-    setOpenGroups((prev) => {
-      const next = { ...prev, [id]: !(prev[id] ?? true) };
-      localStorage.setItem(GROUP_STORAGE, JSON.stringify(next));
+  function toggleMore() {
+    setMoreOpen((prev) => {
+      const next = !prev;
+      localStorage.setItem(MORE_STORAGE, next ? "1" : "0");
       return next;
     });
   }
@@ -82,39 +123,55 @@ export default function DashboardSidebar({
         </button>
       </div>
 
-      <nav className="flex-1 space-y-3 overflow-y-auto px-2 py-3">
-        {dashNavGroupsForMode(businessMode).map((group) => {
-          const open = collapsed || (openGroups[group.id] ?? true);
-          return (
-            <div key={group.id}>
-              {collapsed ? null : (
-                <button
-                  type="button"
-                  onClick={() => toggleGroup(group.id)}
-                  className="mb-1 flex w-full items-center justify-between px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--ink-on-dark)]/40"
-                >
-                  {group.label}
-                  <span className="text-[9px]">{open ? "−" : "+"}</span>
-                </button>
-              )}
-              {open
-                ? group.items.map((item) => (
-                    <DashSidebarNavItem
-                      key={item.href}
-                      item={item}
-                      collapsed={collapsed}
-                      badge={setupNavBadge(
-                        item.href,
-                        setupAlerts,
-                        unreadNotifications,
-                        setupIncomplete,
-                      )}
-                    />
-                  ))
-                : null}
-            </div>
-          );
-        })}
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-3">
+        <div className="mb-2 border-b border-white/10 pb-2">
+          <NavItemList
+            items={[GETTING_STARTED_NAV]}
+            collapsed={collapsed}
+            setupAlerts={setupAlerts}
+            unreadNotifications={unreadNotifications}
+            setupIncomplete={setupIncomplete}
+          />
+        </div>
+
+        <NavItemList
+          items={primary}
+          collapsed={collapsed}
+          setupAlerts={setupAlerts}
+          unreadNotifications={unreadNotifications}
+          setupIncomplete={setupIncomplete}
+        />
+
+        {secondary.length > 0 ? (
+          <div className="mt-4 border-t border-white/10 pt-3">
+            {collapsed ? null : (
+              <button
+                type="button"
+                aria-expanded={moreOpen}
+                onClick={toggleMore}
+                className={`mb-2 flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-xs font-bold uppercase tracking-wide transition-colors ${
+                  moreOpen
+                    ? "bg-[var(--marigold)] text-[var(--field)] shadow-sm"
+                    : "bg-[var(--marigold)]/25 text-[var(--marigold)] ring-1 ring-[var(--marigold)]/60 hover:bg-[var(--marigold)]/35"
+                }`}
+              >
+                <span>More tools</span>
+                <span className="text-sm leading-none" aria-hidden>
+                  {moreOpen ? "−" : "+"}
+                </span>
+              </button>
+            )}
+            {(collapsed || moreOpen) && (
+              <NavItemList
+                items={secondary}
+                collapsed={collapsed}
+                setupAlerts={setupAlerts}
+                unreadNotifications={unreadNotifications}
+                setupIncomplete={setupIncomplete}
+              />
+            )}
+          </div>
+        ) : null}
       </nav>
 
       <div className="border-t border-white/10 px-2 py-3">

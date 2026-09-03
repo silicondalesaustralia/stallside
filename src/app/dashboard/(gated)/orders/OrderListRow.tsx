@@ -1,3 +1,4 @@
+import Link from "next/link";
 import DashListCard from "@/components/DashListCard";
 import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
 import { formatMoney } from "@/lib/money";
@@ -57,6 +58,7 @@ export default function OrderListRow({ order }: { order: OrderRow }) {
 
   return (
     <li>
+      <Link href={`/dashboard/orders/${order.id}`} className="block">
       <DashListCard>
         <div className="flex flex-wrap items-start justify-between gap-4 px-4 py-4">
           <div className="min-w-0 flex-1">
@@ -108,6 +110,7 @@ export default function OrderListRow({ order }: { order: OrderRow }) {
           />
         </div>
       </DashListCard>
+      </Link>
     </li>
   );
 }

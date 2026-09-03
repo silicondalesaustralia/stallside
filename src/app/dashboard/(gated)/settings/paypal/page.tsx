@@ -5,15 +5,16 @@ import {
   isPayPalConfigured,
   isPayPalConnectAvailable,
   isPayPalDirectMode,
+  isPayPalMarketplaceMode,
   paypalDirectMerchantId,
+  paypalPartnerMerchantId,
+  paypalPlatformMerchantIds,
 } from "@/lib/paypal";
-import {
-  hasComplimentaryAccess,
-  ownerHasProAccess,
-} from "@/lib/owner-trial";
+import { hasComplimentaryAccess } from "@/lib/owner-trial";
 import { syncPayPalMerchantStatus } from "@/lib/paypal-sync";
 import {
   connectPayPalDirect,
+  disconnectPayPal,
   refreshPayPalStatus,
   setPayPalPaymentsEnabled,
   startPayPalConnect,
@@ -29,21 +30,18 @@ export default async function PayPalSettingsPage({
     permissionsGranted?: string;
     partner?: string;
     connected?: string;
+    disconnected?: string;
+    sync?: string;
   }>;
 }) {
   const { owner, user } = await requireOwner();
   const params = await searchParams;
-  const cardTier = ownerHasProAccess(owner, {
-    email: user.email,
-    role: user.role,
-  });
   const canDirect =
     isPayPalDirectMode() ||
     hasComplimentaryAccess({ email: user.email, role: user.role });
   const directMerchantId = paypalDirectMerchantId();
 
   if (
-    cardTier &&
     isPayPalConfigured() &&
     (params.return === "1" || params.merchantIdInPayPal)
   ) {
@@ -62,13 +60,27 @@ export default async function PayPalSettingsPage({
   }
 
   const configured = isPayPalConfigured();
+  const partnerMerchantId = configured ? paypalPartnerMerchantId() : null;
   const connectAvailable = isPayPalConnectAvailable();
+  const marketplaceMode = isPayPalMarketplaceMode();
+  const bnConfigured = Boolean(process.env.PAYPAL_BN_CODE?.trim());
   const connected = Boolean(owner.paypalMerchantId);
+  const isDirectLinked =
+    connected &&
+    Boolean(directMerchantId) &&
+    owner.paypalMerchantId === directMerchantId;
+  const isPlatformMerchantLinked =
+    connected &&
+    marketplaceMode &&
+    Boolean(owner.paypalMerchantId) &&
+    paypalPlatformMerchantIds().has(owner.paypalMerchantId ?? "");
   const ready = owner.paypalOnboardingComplete;
   const partnerDenied = params.partner === "denied";
   const partnerDirectHint = params.partner === "direct";
   const partnerError = params.partner === "error";
   const connectedDirect = params.connected === "direct";
+  const disconnected = params.disconnected === "1";
+  const syncFailed = params.sync === "failed";
 
   return (
     <main className="flex w-full max-w-3xl flex-col gap-8">
@@ -81,6 +93,8 @@ export default async function PayPalSettingsPage({
         <h1 className="text-3xl font-semibold tracking-tight">PayPal Connect</h1>
         <p className="mt-2 text-[var(--muted)]">
           Connect PayPal so customers can pay after scanning your Vendl QR.
+          Available on Free and Pro. Free includes a 2.5% Vendl fee on PayPal
+          sales unless you upgrade to Pro.
         </p>
       </div>
 
@@ -91,14 +105,84 @@ export default async function PayPalSettingsPage({
         </p>
       ) : null}
 
-      {partnerDenied || partnerDirectHint ? (
+      {marketplaceMode ? (
+        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm">
+          <strong>Marketplace mode.</strong> Each seller connects their own
+          PayPal Business account. Customer payments go to the seller; Vendl
+          collects a platform fee on Free (2.5%) via PayPal Partner fees.
+          {!bnConfigured ? (
+            <>
+              {" "}
+              Set <code className="rounded bg-black/5 px-1">PAYPAL_BN_CODE</code>{" "}
+              on the server for partner attribution.
+            </>
+          ) : null}
+        </p>
+      ) : null}
+
+      {partnerDenied ? (
+        <div className="space-y-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+          <p className="font-semibold">
+            Partner Referrals returned 403 — your REST app cannot onboard sellers yet.
+          </p>
+          <p>
+            The current <strong>Vendl</strong> app is likely a standard Merchant app.
+            Marketplace needs a <strong>Platform</strong> REST app (Australia is supported).
+          </p>
+          <ol className="list-decimal space-y-1 pl-5">
+            <li>
+              PayPal Developer → Apps &amp; Credentials → Create App → App type{" "}
+              <strong>Platform</strong> (not Merchant).
+            </li>
+            <li>
+              On that app, toggle on <strong>Platform Fee</strong> (must match our
+              PARTNER_FEE API feature).
+            </li>
+            <li>
+              Copy the new sandbox Client ID, Secret, BN code, and platform
+              Business merchant id into <code className="rounded bg-black/5 px-1">.env</code>.
+            </li>
+            <li>
+              Remove or comment out{" "}
+              <code className="rounded bg-black/5 px-1">PAYPAL_CONNECT_MODE=direct</code>{" "}
+              and restart the dev server.
+            </li>
+          </ol>
+          <p>
+            <a
+              className="underline"
+              href="https://developer.paypal.com/docs/multiparty/integration-checklist/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              PayPal multiparty checklist
+            </a>
+            {" · "}
+            <a
+              className="underline"
+              href="https://developer.paypal.com/platforms/create-account"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Create Platform account
+            </a>
+          </p>
+          {canDirect ? (
+            <p>
+              Until then, use{" "}
+              <strong>Use platform PayPal (direct test)</strong> below — checkout
+              works; funds go to your sandbox Business account in env.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {partnerDirectHint ? (
         <p className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-          {partnerDenied
-            ? "PayPal Partner Referrals is not enabled on this app yet (403 NOT_AUTHORIZED). Marketplace owner-onboarding needs PayPal partner approval."
-            : "Marketplace Connect is disabled (PAYPAL_CONNECT_MODE=direct)."}{" "}
-          Until Partner API is approved, use{" "}
-          <strong>Use platform PayPal (direct test)</strong> below - funds go to
-          the Vendl PayPal Business account linked in env.
+          Marketplace Connect is disabled while{" "}
+          <code className="rounded bg-black/5 px-1">PAYPAL_CONNECT_MODE=direct</code>.
+          Comment that out in <code className="rounded bg-black/5 px-1">.env</code> after
+          your Platform REST app is configured, then restart the server.
         </p>
       ) : null}
 
@@ -111,18 +195,49 @@ export default async function PayPalSettingsPage({
 
       {connectedDirect ? (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm">
-          Linked to the platform PayPal Business account for live testing.
+          Linked to the platform PayPal Business account for sandbox testing.
+          Disconnect before connecting a real seller account in marketplace mode.
         </p>
       ) : null}
 
-      {!cardTier ? (
-        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          PayPal is on Vendl Pro. Your account does not have Pro access
-          yet.
+      {syncFailed ? (
+        <p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">
+          Could not sync PayPal yet. If you finished onboarding on PayPal, paste your{" "}
+          <strong>seller</strong> merchant ID below (Test Store account → Account ID on
+          sandbox.paypal.com), or fix{" "}
+          <code className="rounded bg-black/5 px-1">PAYPAL_PARTNER_MERCHANT_ID</code> in{" "}
+          <code className="rounded bg-black/5 px-1">.env</code> — use the Platform Partner
+          App Account ID (letters/numbers like <code className="rounded bg-black/5 px-1">T9WERV2MAP33C</code>,
+          not the long number from the app name).
         </p>
       ) : null}
 
-      {cardTier && connectAvailable ? <PayPalWarnings billingCurrency={owner.billingCurrency} /> : null}
+      {isPlatformMerchantLinked ? (
+        <div className="space-y-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-950">
+          <p className="font-semibold">Wrong PayPal account linked</p>
+          <p>
+            The merchant ID saved here is the Vendl <strong>platform</strong>{" "}
+            partner account — not your seller store. Checkout will pay the
+            platform app, not your Test Store. Disconnect, then sync your{" "}
+            <strong>Test Store</strong> seller merchant ID (a different 13-character
+            ID from the platform&apos;s{" "}
+            <code className="rounded bg-black/5 px-1">
+              {partnerMerchantId ?? "partner id"}
+            </code>
+            ).
+          </p>
+        </div>
+      ) : null}
+
+      {disconnected ? (
+        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm">
+          PayPal disconnected. PayPal was turned off on all businesses.
+        </p>
+      ) : null}
+
+      {connectAvailable ? (
+        <PayPalWarnings billingCurrency={owner.billingCurrency} />
+      ) : null}
 
       {!configured && connectAvailable ? (
         <p className="text-sm text-red-700">
@@ -132,8 +247,9 @@ export default async function PayPalSettingsPage({
           <code className="rounded bg-black/5 px-1">
             PAYPAL_PARTNER_MERCHANT_ID
           </code>{" "}
-          (live merchant id) on the server, with{" "}
-          <code className="rounded bg-black/5 px-1">PAYPAL_MODE=live</code>.
+          on the server, with{" "}
+          <code className="rounded bg-black/5 px-1">PAYPAL_MODE=live</code> or{" "}
+          <code className="rounded bg-black/5 px-1">sandbox</code>.
         </p>
       ) : null}
 
@@ -143,7 +259,14 @@ export default async function PayPalSettingsPage({
         <p>
           Merchant ID:{" "}
           {owner.paypalMerchantId ? (
-            <code className="text-xs">{owner.paypalMerchantId}</code>
+            <>
+              <code className="text-xs">{owner.paypalMerchantId}</code>
+              {isDirectLinked ? (
+                <span className="ml-2 text-[var(--muted)]">(platform test)</span>
+              ) : marketplaceMode && connected ? (
+                <span className="ml-2 text-[var(--muted)]">(seller account)</span>
+              ) : null}
+            </>
           ) : (
             "Not connected"
           )}
@@ -155,7 +278,7 @@ export default async function PayPalSettingsPage({
         </p>
       </section>
 
-      {cardTier && connectAvailable ? (
+      {connectAvailable ? (
         <div className="flex flex-wrap gap-3">
           <form action={startPayPalConnect}>
             <button
@@ -178,23 +301,81 @@ export default async function PayPalSettingsPage({
             </form>
           ) : null}
           {connected ? (
-            <form action={refreshPayPalStatus}>
-              <button
-                type="submit"
-                className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold"
-              >
-                Refresh status
-              </button>
-            </form>
+            <>
+              <form action={refreshPayPalStatus}>
+                <button
+                  type="submit"
+                  className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold"
+                >
+                  Refresh status
+                </button>
+              </form>
+              <form action={disconnectPayPal}>
+                <button
+                  type="submit"
+                  className="rounded-lg border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-800"
+                >
+                  Disconnect PayPal
+                </button>
+              </form>
+            </>
           ) : null}
         </div>
       ) : null}
 
-      {cardTier && connectAvailable && connected && ready ? (
+      {connectAvailable && connected ? (
+        <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+          <p className="font-semibold">Re-link seller account</p>
+          <p className="text-[var(--muted)]">
+            Paste your seller merchant ID if you linked the wrong sandbox account.
+          </p>
+          <form action={refreshPayPalStatus} className="flex flex-col gap-2 sm:flex-row">
+            <input
+              type="text"
+              name="merchantIdInPayPal"
+              placeholder="Seller merchant ID"
+              className="min-w-0 flex-1 rounded-lg border border-[var(--line)] px-3 py-2 text-sm"
+            />
+            <button
+              type="submit"
+              className="rounded-lg border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold"
+            >
+              Update seller ID
+            </button>
+          </form>
+        </section>
+      ) : null}
+
+      {connectAvailable && !connected ? (
+        <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+          <p className="font-semibold">Finished PayPal onboarding?</p>
+          <p className="text-[var(--muted)]">
+            Sandbox often won&apos;t redirect back to localhost. Sync links your Test Store
+            seller account to Vendl.
+          </p>
+          <form action={refreshPayPalStatus} className="flex flex-col gap-2 sm:flex-row">
+            <input
+              type="text"
+              name="merchantIdInPayPal"
+              placeholder="Seller merchant ID (optional)"
+              className="min-w-0 flex-1 rounded-lg border border-[var(--line)] px-3 py-2 text-sm"
+            />
+            <button
+              type="submit"
+              className="rounded-lg bg-[var(--leaf)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
+            >
+              Sync from PayPal
+            </button>
+          </form>
+        </section>
+      ) : null}
+
+      {connectAvailable && connected && ready ? (
         <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
           <p className="font-semibold">Show PayPal at checkout</p>
           <p className="text-[var(--muted)]">
-            Customers see PayPal only when this is on.
+            Customers see PayPal when this is on. USD stands can also show
+            Venmo. Then enable PayPal on each business under My Businesses.
           </p>
           <form action={setPayPalPaymentsEnabled}>
             <input

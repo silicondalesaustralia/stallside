@@ -42,6 +42,7 @@ export default function CustomerChoiceCheckout({
   paypalClientId,
   paypalMerchantId,
   paypalSandbox,
+  paypalMarketplace = false,
   localTransfer,
   passFeeToCustomer,
   stallsideFeeApplies,
@@ -55,6 +56,7 @@ export default function CustomerChoiceCheckout({
   paypalClientId: string | null;
   paypalMerchantId: string | null;
   paypalSandbox: boolean;
+  paypalMarketplace?: boolean;
   localTransfer: LocalTransferInfo | null;
   passFeeToCustomer: boolean;
   stallsideFeeApplies: boolean;
@@ -298,6 +300,7 @@ export default function CustomerChoiceCheckout({
             paypalClientId={paypalClientId}
             paypalMerchantId={paypalMerchantId}
             paypalSandbox={paypalSandbox}
+            paypalMarketplace={paypalMarketplace}
             currency={currency}
             standSlug={standSlug}
             customerChoiceAmountCents={totalCents}

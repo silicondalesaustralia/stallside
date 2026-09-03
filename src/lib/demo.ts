@@ -1,10 +1,25 @@
 import { appBaseUrl } from "@/lib/app-url";
 import { cleanEnvSecret } from "@/lib/env";
 import { preOrderPagePath } from "@/lib/preorder-page";
+import {
+  isWebsiteDemoStandSlug,
+  websiteDemoStandSlug,
+} from "@/lib/demo/green-valley/constants";
 
 /** Test-card pre-order demo: https://vendl.app/s/green-valley-baked-goods/pre/pre-order-bread-27-may-2027 */
 export const DEFAULT_DEMO_PREORDER_STAND_SLUG = "green-valley-baked-goods";
 export const DEFAULT_DEMO_PREORDER_PAGE_SLUG = "pre-order-bread-27-may-2027";
+
+export {
+  websiteDemoStandSlug,
+  websiteDemoStorefrontSlug,
+  isWebsiteDemoStandSlug,
+  isWebsiteDemoStorefrontSlug,
+  isGreenValleyDemoTemplate,
+  demoTemplatePath,
+  GREEN_VALLEY_DEMO_COOKIE,
+  GREEN_VALLEY_DEMO_TEMPLATES,
+} from "@/lib/demo/green-valley/constants";
 
 export type DemoProduct = "stall" | "preorder";
 
@@ -59,17 +74,19 @@ export function demoCustomerUrlForProduct(
   return `${appBaseUrl()}/s/${standSlug}`;
 }
 
-/** Instrumented demo stands (test card + success redirect). */
+/** Instrumented demo stands (test card + success redirect + website demo). */
 export function demoStandSlugs(): Set<string> {
   const slugs = [
     cleanEnvSecret(process.env.DEMO_STALL_STAND_SLUG)?.toLowerCase(),
     demoStandSlugForProduct("preorder"),
+    websiteDemoStandSlug(),
   ].filter((s): s is string => Boolean(s));
   return new Set(slugs);
 }
 
 export function isDemoStandSlug(slug: string): boolean {
-  return demoStandSlugs().has(slug.trim().toLowerCase());
+  const normalized = slug.trim().toLowerCase();
+  return demoStandSlugs().has(normalized) || isWebsiteDemoStandSlug(normalized);
 }
 
 /** Map a demo stand slug back to a /demo product query param. */

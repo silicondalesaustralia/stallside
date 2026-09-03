@@ -520,4 +520,812 @@ html.nav-busy * {
   .collections-label-page[data-cut-guides="1"] .collections-label-cell {
     outline: 0.3pt dashed rgba(0, 0, 0, 0.35);
   }
+
+  .print-production .dash-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}
+
+/* FullCalendar — Vendl skin tweaks */
+.vendl-calendar .fc {
+  --fc-border-color: var(--line);
+  --fc-today-bg-color: color-mix(in srgb, var(--leaf) 8%, transparent);
+  --fc-event-border-color: transparent;
+  font-family: inherit;
+}
+
+.vendl-calendar .fc .fc-button-primary {
+  background: var(--field);
+  border-color: var(--field);
+}
+
+.vendl-calendar .fc .fc-button-primary:not(:disabled).fc-button-active,
+.vendl-calendar .fc .fc-button-primary:not(:disabled):active,
+.vendl-calendar .fc .fc-button-primary:hover {
+  background: var(--leaf);
+  border-color: var(--leaf);
+}
+
+.vendl-calendar .fc-event.cal-readonly {
+  opacity: 0.85;
+  cursor: default;
+}
+
+.vendl-calendar .fc-event.cal-editable {
+  cursor: grab;
+}
+
+/* Month cells — clip event labels so they don't bleed into neighbours */
+.vendl-calendar .fc-event {
+  overflow: hidden !important;
+  max-width: 100% !important;
+}
+
+.vendl-calendar .fc-fi .fc-fl > * {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.vendl-fc-event-inner {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+/* Phase 8D — Vendl website editor (neutral chrome, canvas-first) */
+/* Phase 8D.1C — canvas-first website editor (neutral chrome, no Outline panel) */
+.vendl-website-editor {
+  min-height: calc(100vh - 10rem);
+  --puck-color-grey-01: #ffffff;
+  --puck-color-grey-02: #fafaf9;
+  --puck-color-grey-03: #f5f5f4;
+  --puck-color-grey-04: #e7e5e4;
+  --puck-color-grey-05: #a8a29e;
+  --puck-color-grey-06: #78716c;
+  --puck-color-grey-07: #57534e;
+  --puck-color-grey-08: #44403c;
+  --puck-color-grey-09: #292524;
+  --puck-color-grey-10: #1c1917;
+  --puck-color-grey-11: #f5f5f4;
+  --puck-color-grey-12: #f5f5f4;
+  --puck-color-azure-01: #f0f9ff;
+  --puck-color-azure-02: #e0f2fe;
+  --puck-color-azure-03: #bae6fd;
+  --puck-color-azure-04: #7dd3fc;
+  --puck-color-azure-05: #38bdf8;
+  --puck-color-azure-06: #0ea5e9;
+}
+
+.vendl-website-editor [class*="PuckLayout-nav"],
+.vendl-website-editor [class*="PuckLayout-leftSideBar"],
+.vendl-website-editor [class*="Sidebar-left"],
+.vendl-website-editor [class*="PuckLayout-rightSideBar"],
+.vendl-website-editor [class*="Sidebar-right"] {
+  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.vendl-website-editor [class*="PuckLayout-inner"] {
+  --puck-side-nav-width: 0px !important;
+  --puck-left-side-bar-width: 0px !important;
+  --puck-right-side-bar-width: 0px !important;
+  --puck-side-bar-width: 0px !important;
+  grid-template-columns: 0 0 1fr 0 !important;
+  grid-template-areas:
+    "header header header header"
+    ". . editor ." !important;
+  background-color: #f5f5f4 !important;
+}
+
+.vendl-website-editor [class*="PuckLayout-editor"] {
+  min-width: 0;
+}
+
+.vendl-website-editor [class*="PuckCanvas"] {
+  background: #f5f5f4 !important;
+  padding: 0 !important;
+}
+
+.vendl-website-editor [class*="PuckCanvas-root"] {
+  width: 100% !important;
+  transform: none !important;
+  overflow: visible !important;
+}
+
+.vendl-website-editor [class*="PuckHeader-leftSideBarToggle"],
+.vendl-website-editor [class*="PuckHeader-rightSideBarToggle"],
+.vendl-website-editor [class*="PuckHeader-title"],
+.vendl-website-editor [class*="ViewportControls"] {
+  display: none !important;
+}
+
+.vendl-editor-preview-outer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;
+  background: #f5f5f4;
+}
+
+.vendl-editor-preview-frame {
+  width: 100%;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+}
+
+.vendl-settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.vendl-settings-overlay__backdrop {
+  pointer-events: auto;
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgb(0 0 0 / 0.2);
+  cursor: default;
+}
+
+.vendl-settings-overlay__panel {
+  pointer-events: auto;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(100vw, 22rem);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--line);
+  background: white;
+  box-shadow: -4px 0 24px rgb(0 0 0 / 0.08);
+}
+
+@media (max-width: 768px) {
+  .vendl-settings-overlay__panel {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 85vh;
+    border-left: none;
+    border-top: 1px solid var(--line);
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -4px 24px rgb(0 0 0 / 0.12);
+  }
+}
+
+.vendl-settings-overlay__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--line);
+  padding: 0.75rem 1rem;
+}
+
+.vendl-settings-overlay__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.vendl-section-overlay {
+  position: relative;
+  cursor: pointer;
+}
+
+.vendl-section-overlay.is-hover {
+  outline: 2px dashed rgb(23 54 31 / 0.2);
+  outline-offset: 2px;
+}
+
+.vendl-section-overlay.is-selected {
+  outline: 2px solid rgb(23 54 31 / 0.35);
+  outline-offset: 2px;
+}
+
+.vendl-section-overlay__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: rgb(255 255 255 / 0.92);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.75rem;
+}
+
+.vendl-section-overlay__label {
+  font-weight: 700;
+  color: var(--field);
+}
+
+.vendl-section-overlay__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.vendl-section-overlay__actions button {
+  border-radius: 0.375rem;
+  border: 1px solid var(--line);
+  background: white;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--field);
+}
+
+.vendl-section-overlay__actions button:disabled {
+  opacity: 0.35;
+}
+
+.vendl-add-section-gap {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.65rem;
+  border: 1px dashed var(--line);
+  border-radius: 999px;
+  background: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.vendl-section-drawer label,
+.vendl-section-drawer [class*="FieldLabel"] {
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  color: var(--field) !important;
+}
+
+/* Craft.js website editor spike */
+.vendl-craft-editor {
+  min-height: calc(100vh - 10rem);
+}
+
+.vendl-craft-editor__canvas-wrap {
+  display: flex;
+  justify-content: center;
+  background: #f5f5f4;
+  min-height: calc(100vh - 14rem);
+}
+
+.vendl-craft-editor__viewport {
+  width: 100%;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+}
+
+.craft-section {
+  position: relative;
+}
+
+.craft-section.is-hover {
+  outline: 2px dashed rgb(23 54 31 / 0.2);
+  outline-offset: 2px;
+}
+
+.craft-section.is-selected {
+  outline: 2px solid rgb(23 54 31 / 0.35);
+  outline-offset: 2px;
+}
+
+.craft-section__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: rgb(255 255 255 / 0.92);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.75rem;
+}
+
+.craft-section__label {
+  font-weight: 700;
+  color: var(--field);
+}
+
+.craft-section__hint {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.craft-section__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.craft-section__actions button {
+  border-radius: 0.375rem;
+  border: 1px solid var(--line);
+  background: white;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--field);
+}
+
+.craft-section__actions button:disabled {
+  opacity: 0.35;
+}
+
+/* Website Studio editor (Craft.js production) */
+.vendl-studio-editor {
+  min-height: calc(100vh - 10rem);
+}
+
+.vendl-studio-editor__workspace {
+  display: grid;
+  grid-template-columns: minmax(200px, 240px) minmax(0, 1fr) minmax(0, 280px);
+  min-height: calc(100vh - 14rem);
+}
+
+@media (max-width: 1024px) {
+  .vendl-studio-editor__workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vendl-studio-palette,
+  .vendl-studio-settings {
+    display: none;
+  }
+}
+
+.vendl-studio-editor__canvas-wrap {
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  background: #f5f5f4;
+  padding: 1rem 0.5rem;
+}
+
+.vendl-studio-editor__viewport {
+  width: 100%;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+}
+
+.vendl-studio-palette {
+  border-right: 1px solid var(--line);
+  background: white;
+  overflow-y: auto;
+}
+
+.vendl-studio-palette--collapsed {
+  width: 3rem;
+  border-right: 1px solid var(--line);
+  background: white;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0.75rem;
+}
+
+.vendl-studio-palette__expand {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.vendl-studio-palette__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.vendl-studio-palette__body {
+  padding: 0.75rem;
+}
+
+.vendl-studio-palette__group + .vendl-studio-palette__group {
+  margin-top: 1rem;
+}
+
+.vendl-studio-palette__group-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.vendl-studio-palette__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.vendl-studio-palette__item {
+  cursor: grab;
+  border-radius: 0.625rem;
+  border: 1px solid var(--line);
+  background: var(--wash);
+  padding: 0.5rem 0.65rem;
+}
+
+.vendl-studio-palette__item:active {
+  cursor: grabbing;
+}
+
+.vendl-studio-palette__item-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--field);
+}
+
+.vendl-studio-palette__item-hint {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+.vendl-studio-settings {
+  border-left: 1px solid var(--line);
+  background: white;
+  overflow-y: auto;
+}
+
+.vendl-studio-settings--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.vendl-studio-settings__head {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.vendl-studio-settings__body {
+  padding: 1rem;
+}
+
+/* Studio template design tokens */
+.studio-template-artisan .studio-section h2 {
+  letter-spacing: var(--studio-heading-tracking, -0.02em);
+}
+
+.studio-template-artisan .craft-section__bar,
+.studio-template-artisan .vendl-studio-palette__item {
+  border-radius: 1rem;
+}
+
+.studio-template-farmhouse .studio-section h2 {
+  letter-spacing: var(--studio-heading-tracking, -0.01em);
+}
+
+.studio-template-farmhouse .vendl-studio-palette__item {
+  border-radius: 0.75rem;
+  background: #faf8f4;
+}
+
+.studio-template-market .studio-section h2 {
+  letter-spacing: var(--studio-heading-tracking, -0.015em);
+  text-transform: none;
+}
+
+.studio-template-market .vendl-studio-palette__item {
+  border-radius: 0.5rem;
+  background: white;
+}
+
+/* Studio storefront design system */
+.studio-template-farmhouse {
+  --studio-content-max: 72rem;
+  --studio-prose-max: 40rem;
+  --studio-section-py: 4.5rem;
+  --studio-section-py-mobile: 2.75rem;
+  --studio-card-radius: 0.75rem;
+  --studio-hero-min-height: 28rem;
+  --studio-hero-min-height-mobile: 22rem;
+  --studio-btn-height: 2.75rem;
+  --studio-heading-tracking: -0.01em;
+}
+
+.studio-template-market {
+  --studio-content-max: 80rem;
+  --studio-prose-max: 42rem;
+  --studio-section-py: 3.5rem;
+  --studio-section-py-mobile: 2.5rem;
+  --studio-card-radius: 0.625rem;
+  --studio-hero-min-height: 20rem;
+  --studio-hero-min-height-mobile: 16rem;
+  --studio-btn-height: 2.5rem;
+  --studio-heading-tracking: -0.015em;
+}
+
+.studio-template-artisan {
+  --studio-content-max: 72rem;
+  --studio-prose-max: 42rem;
+  --studio-section-py: 4.5rem;
+  --studio-section-py-mobile: 3rem;
+  --studio-card-radius: 1rem;
+  --studio-hero-min-height: 32rem;
+  --studio-hero-min-height-mobile: 24rem;
+  --studio-btn-height: 2.75rem;
+  --studio-heading-tracking: -0.025em;
+}
+
+.studio-section {
+  padding-block: var(--studio-section-py-mobile);
+}
+
+@media (min-width: 640px) {
+  .studio-section {
+    padding-block: var(--studio-section-py, 3.5rem);
+  }
+}
+
+.studio-section--wash {
+  background: var(--wash);
+}
+
+.studio-section--panel {
+  background: var(--panel);
+}
+
+.studio-section__inner {
+  margin-inline: auto;
+  max-width: var(--studio-content-max, 64rem);
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .studio-section__inner {
+    padding-inline: 2rem;
+  }
+}
+
+.studio-display,
+.studio-heading {
+  font-family: var(--font-display), serif;
+  font-weight: var(--studio-heading-weight, 700);
+  letter-spacing: var(--studio-heading-tracking, -0.02em);
+  color: var(--field);
+}
+
+.studio-heading {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.15;
+}
+
+.studio-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.studio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--studio-btn-height);
+  padding-inline: 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.studio-btn--primary {
+  background: var(--leaf-dark);
+  color: white;
+}
+
+.studio-btn--primary:hover {
+  filter: brightness(1.05);
+}
+
+.studio-btn--secondary {
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--field);
+}
+
+.studio-nav--artisan .studio-nav__brand {
+  font-family: var(--font-display), serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--field);
+}
+
+.studio-nav__link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 0.15rem;
+}
+
+.studio-nav__link:hover,
+.studio-nav__link.is-active {
+  color: var(--field);
+  border-bottom-color: var(--leaf-dark);
+}
+
+.studio-nav__menu-btn {
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.studio-footer--artisan-dark {
+  background: #2a2118;
+  color: #f3efe8;
+  border-top-color: #3d342a;
+}
+
+.studio-footer--farmhouse {
+  background: #3a4636;
+  color: #f2f0e8;
+  border-top-color: #4a5746;
+}
+
+.studio-footer--market {
+  background: #1f2420;
+  color: #f4f4f5;
+  border-top-color: #2e342f;
+}
+
+.studio-nav--farmhouse .studio-nav__brand {
+  font-family: var(--font-display), serif;
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+
+.studio-nav--market .studio-nav__brand {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.studio-nav--market .studio-btn--primary {
+  border-radius: var(--radius-button, 0.5rem);
+}
+
+.studio-product-card--farm {
+  border: 1px solid var(--line);
+  border-radius: var(--studio-card-radius);
+  padding: 0.75rem;
+  background: var(--panel);
+}
+
+.studio-template-farmhouse .studio-btn--primary {
+  border-radius: var(--radius-button, 0.5rem);
+  background: var(--site-accent, #a0522d);
+}
+
+.studio-template-market .studio-heading {
+  font-size: clamp(1.375rem, 2vw, 1.75rem);
+}
+
+.studio-commerce-page {
+  padding-block: var(--studio-section-py-mobile, 2rem);
+}
+
+@media (min-width: 640px) {
+  .studio-commerce-page {
+    padding-block: var(--studio-section-py, 3rem);
+  }
+}
+
+/* Shared page content layout — legacy + studio shells */
+.storefront-page-content {
+  margin-inline: auto;
+  padding-inline: 1rem;
+  padding-block: 2rem;
+}
+
+@media (min-width: 640px) {
+  .storefront-page-content {
+    padding-inline: 1.5rem;
+    padding-block: 2.5rem;
+  }
+}
+
+.storefront-page-content--wide {
+  max-width: 64rem;
+}
+
+.storefront-page-content--narrow {
+  max-width: 48rem;
+}
+
+.studio-template-artisan .storefront-page-content,
+.studio-template-farmhouse .storefront-page-content,
+.studio-template-market .storefront-page-content {
+  max-width: var(--studio-content-max, 64rem);
+  padding-inline: 1rem;
+  padding-block: var(--studio-section-py-mobile, 2rem);
+}
+
+@media (min-width: 640px) {
+  .studio-template-artisan .storefront-page-content,
+  .studio-template-farmhouse .storefront-page-content,
+  .studio-template-market .storefront-page-content {
+    padding-inline: 2rem;
+    padding-block: var(--studio-section-py, 3rem);
+  }
+}
+
+.studio-template-artisan .storefront-page-content--narrow,
+.studio-template-farmhouse .storefront-page-content--narrow,
+.studio-template-market .storefront-page-content--narrow {
+  max-width: var(--studio-prose-max, 42rem);
+}
+
+.studio-footer {
+  border-top: 1px solid transparent;
+  background: #2f362f;
+  color: #f2f0e8;
+}
+
+.studio-footer--artisan {
+  background: #2a2118;
+  color: #f3efe8;
+}
+
+.studio-footer__brand {
+  font-family: var(--font-display), serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: inherit;
+}
+
+.studio-product-card--editorial .studio-product-card__fallback {
+  font-family: var(--font-display), serif;
+}
+
+.vendl-studio-editor__viewport {
+  box-shadow: 0 4px 24px rgb(0 0 0 / 0.08);
+}
+
+/* Legacy spike alias */
+.vendl-puck-spike {
+  min-height: 70vh;
 }

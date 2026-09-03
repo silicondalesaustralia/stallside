@@ -58,7 +58,7 @@ export function normalizeSignHtml(raw: string): string {
  * Allowlist sanitize for owner-authored sign HTML.
  * Blank paragraphs, &nbsp;, and <br> are kept so editor spacing survives reload.
  */
-export function sanitizeSignHtml(raw: string, allowStyles = false): string {
+export function sanitizeSignHtml(raw: string, allowStyles = false, maxLength = 8000): string {
   const normalized = normalizeSignHtml(raw);
   if (!normalized) return "";
 
@@ -93,5 +93,5 @@ export function sanitizeSignHtml(raw: string, allowStyles = false): string {
 
   out = persistBlankParagraphs(out);
   out = out.replace(/&(?!(amp|lt|gt|quot|nbsp|#\d+|#x[\da-f]+);)/gi, "&amp;");
-  return out.trim().slice(0, 8000);
+  return out.trim().slice(0, maxLength);
 }

@@ -16,7 +16,7 @@ QR self-checkout + inventory SaaS for **unmanned farm stands / honesty stalls**.
 | **Owner** | Web dashboard + Capacitor iOS/Android shell | Stands, products, stock, orders, QR print, Stripe, alerts |
 | **Platform admin** | Desktop browser `/admin` only | Owners, stands, orders overview |
 
-**Not in scope yet:** customer App Store directory, PayPal, hardware card readers, Connect application fees, SaaS subscription billing collection.
+**Not in scope yet:** customer App Store directory, hardware card readers. PayPal Connect + Venmo (USD) are implemented but env-gated (`PAYPAL_CONNECT_ENABLED`).
 
 ---
 

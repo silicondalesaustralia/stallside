@@ -147,6 +147,7 @@ export default function StandCartCheckout({
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [couponCode, setCouponCode] = useState("");
   const [deliveryAddressLine1, setDeliveryAddressLine1] = useState("");
   const [deliverySuburb, setDeliverySuburb] = useState("");
   const [deliveryPostcode, setDeliveryPostcode] = useState("");
@@ -352,7 +353,8 @@ export default function StandCartCheckout({
         standSlug,
         items: payload,
         receiptEmail: email || null,
-        claimFirstOrder: Boolean(firstOrder?.enabled && email),
+        claimFirstOrder: Boolean(firstOrder?.enabled && email && !couponCode.trim()),
+        couponCode: couponCode.trim() || null,
       });
       if ("error" in result && result.error) {
         setError(result.error);
@@ -370,7 +372,8 @@ export default function StandCartCheckout({
         standSlug,
         items: payload,
         receiptEmail: email || null,
-        claimFirstOrder: Boolean(firstOrder?.enabled && email),
+        claimFirstOrder: Boolean(firstOrder?.enabled && email && !couponCode.trim()),
+        couponCode: couponCode.trim() || null,
       });
       if ("error" in result && result.error) {
         setError(result.error);
@@ -417,6 +420,7 @@ export default function StandCartCheckout({
         deliverySuburb: deliverOnly ? deliverySuburb.trim() : undefined,
         deliveryPostcode: deliverOnly ? deliveryPostcode.trim() : undefined,
         deliveryNotes: deliverOnly ? deliveryNotes.trim() : undefined,
+        couponCode: couponCode.trim() || null,
       });
       if ("error" in result && result.error) {
         setError(result.error);
@@ -557,6 +561,8 @@ export default function StandCartCheckout({
           customerName={customerName}
           customerEmail={customerEmail}
           customerPhone={customerPhone}
+          couponCode={couponCode}
+          onCouponCode={setCouponCode}
           deliveryAddressLine1={deliveryAddressLine1}
           deliverySuburb={deliverySuburb}
           deliveryPostcode={deliveryPostcode}

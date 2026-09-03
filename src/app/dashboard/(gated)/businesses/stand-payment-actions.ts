@@ -27,19 +27,12 @@ export async function updateStandPayments(standId: string, formData: FormData) {
   );
 
   const acceptCash = formData.get("acceptCash") === "on";
-  // Disabled inputs are omitted from FormData - keep prior value.
-  // Enabled + unchecked is also omitted - that must mean off (same as cash).
-  const cardEditable = cardReady;
-  // PayPal is coming soon - never leave it on when Connect isn't available.
-  const paypalEditable = paypalReady;
-  const acceptCard = cardEditable
-    ? formData.get("acceptCard") === "on"
-    : existing.acceptCard;
-  const acceptPayPal = !paypalConnectAvailable
-    ? false
-    : paypalEditable
+  // Card / PayPal checkboxes are disabled when not ready — treat as off, not stale DB true.
+  const acceptCard = cardReady ? formData.get("acceptCard") === "on" : false;
+  const acceptPayPal =
+    paypalConnectAvailable && paypalReady
       ? formData.get("acceptPayPal") === "on"
-      : existing.acceptPayPal;
+      : false;
 
   let acceptLocalTransfer = false;
   let localTransferAlias: string | null = null;
@@ -51,7 +44,7 @@ export async function updateStandPayments(standId: string, formData: FormData) {
     if (acceptLocalTransfer || aliasRaw) {
       if (acceptLocalTransfer && !aliasRaw) {
         return {
-          error: `Enter your ${method.aliasLabel.toLowerCase()} to enable PayID.`,
+          error: `Enter ${method.aliasLabel} to enable PayID.`,
         };
       }
       if (aliasRaw && !method.validate(aliasRaw)) {

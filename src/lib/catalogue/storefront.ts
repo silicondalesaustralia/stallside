@@ -5,7 +5,7 @@ import {
   listProductsForOnlineShop,
   primaryStandIdForOwner,
 } from "@/lib/catalogue/channels";
-import { appBaseUrl } from "@/lib/app-url";
+import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 import { normalizeBusinessMode } from "@/lib/business-mode";
 import {
   buildDefaultStorefrontConfig,
@@ -26,7 +26,11 @@ export async function uniqueStorefrontSlug(
   base: string,
   excludeOwnerId?: string,
 ): Promise<string> {
+  const { isReservedVendlSubdomain } = await import(
+    "@/lib/tenancy/reserved-subdomains"
+  );
   const exists = async (slug: string) => {
+    if (isReservedVendlSubdomain(slug)) return true;
     const hit = await prisma.storefront.findFirst({
       where: {
         slug,
@@ -205,8 +209,7 @@ export function storefrontPublicPath(slug: string) {
 }
 
 export function storefrontFullUrl(slug: string, draft = false) {
-  const path = storefrontPublicPath(slug);
-  return `${appBaseUrl()}${path}${draft ? "?draft=1" : ""}`;
+  return storefrontPublicUrl(slug, { draft, forcePath: draft });
 }
 
 export function slugifyStorefrontInput(input: string) {
@@ -224,7 +227,19 @@ export async function saveStorefrontDraftData(input: {
   showPhone: boolean;
   heroImageUrl?: string | null;
   draftConfig: StorefrontConfig;
+  existingDraftConfigRaw?: unknown;
 }) {
+  const preserved =
+    input.existingDraftConfigRaw &&
+    typeof input.existingDraftConfigRaw === "object" &&
+    !Array.isArray(input.existingDraftConfigRaw)
+      ? (input.existingDraftConfigRaw as Record<string, unknown>)
+      : {};
+  const mergedDraftConfig = {
+    ...preserved,
+    ...input.draftConfig,
+  };
+
   await prisma.storefront.update({
     where: { ownerId: input.ownerId },
     data: {
@@ -238,7 +253,7 @@ export async function saveStorefrontDraftData(input: {
       ...(input.heroImageUrl !== undefined
         ? { heroImageUrl: input.heroImageUrl }
         : {}),
-      draftConfig: input.draftConfig as unknown as Prisma.InputJsonValue,
+      draftConfig: mergedDraftConfig as unknown as Prisma.InputJsonValue,
     },
   });
 }

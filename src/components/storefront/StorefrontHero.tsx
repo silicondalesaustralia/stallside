@@ -11,11 +11,13 @@ export default function StorefrontHero({
   storefrontSlug,
   draft,
   hasProducts,
+  basePath,
 }: {
   branding: ResolvedStorefrontBranding;
   storefrontSlug: string;
   draft?: boolean;
   hasProducts: boolean;
+  basePath?: string;
 }) {
   const theme = STOREFRONT_THEMES[branding.themePreset];
   const btnClass = storefrontButtonClass(branding);
@@ -43,7 +45,7 @@ export default function StorefrontHero({
         ) : null}
         {hasProducts ? (
           <Link
-            href={shopPagePath(storefrontSlug, "shop", draft)}
+            href={shopPagePath(storefrontSlug, "shop", draft, basePath)}
             className={`mt-8 inline-flex ${btnClass}`}
           >
             Shop now

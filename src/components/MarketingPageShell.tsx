@@ -25,7 +25,7 @@ export default function MarketingPageShell({
               href="/demo"
               className="hidden rounded-[var(--radius-pill)] border border-[var(--line)] px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap text-[var(--field)] transition hover:border-[var(--leaf)] hover:text-[var(--leaf-dark)] sm:inline-flex sm:px-4 sm:py-2 sm:text-sm"
             >
-              Try Demo
+              Demo
             </Link>
             <OwnerAuthLink variant="marketing" />
           </div>

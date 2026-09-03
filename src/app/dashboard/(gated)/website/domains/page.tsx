@@ -1,56 +1,194 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
+import { prisma } from "@/lib/prisma";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
-import { saveStorefrontDomain } from "../actions";
+import { APP_DOMAIN } from "@/lib/constants";
+import {
+  storefrontPublicUrl,
+  storefrontSubdomainHost,
+  storefrontSubdomainPrimaryEnabled,
+} from "@/lib/tenancy/public-url";
+import DomainsCopyButton from "./DomainsCopyButton";
+import CustomDomainCard from "./CustomDomainCard";
+import { connectDomainAction } from "./actions";
+import { ownerCanUseCustomDomains } from "@/lib/domains/entitlements";
+import { customDomainsFeatureEnabled } from "@/lib/domains/config";
+import { getStorefrontUrl } from "@/lib/domains/preferred-origin";
+import { loadPreferredOriginInput } from "@/lib/domains/resolve";
+
+const ERROR_COPY: Record<string, string> = {
+  feature_disabled: "Custom domains are not enabled on this environment yet.",
+  not_entitled: "Custom domains are included with Vendl Pro.",
+  invalid_hostname: "Enter a valid hostname such as www.yourdomain.com.",
+  apex_unsupported:
+    "Use www.yourdomain.com (or shop.) — root domains are not supported yet.",
+  conflict: "This domain is already connected to another Vendl store.",
+  cloudflare_unconfigured: "Domain infrastructure is not configured yet.",
+  cloudflare_error: "Cloudflare could not process that domain. Try again shortly.",
+  not_found: "Domain not found.",
+};
 
 export default async function WebsiteDomainsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{
+    saved?: string;
+    connected?: string;
+    checked?: string;
+    primary?: string;
+    disconnected?: string;
+    error?: string;
+  }>;
 }) {
   const { owner } = await requireOwner();
   const params = await searchParams;
   const storefront = await ensureStorefront(owner.id, owner.businessName);
+  const ownerRow = await prisma.owner.findUniqueOrThrow({
+    where: { id: owner.id },
+    include: { user: { select: { email: true, role: true } } },
+  });
+  const canCustom = ownerCanUseCustomDomains(ownerRow, {
+    email: ownerRow.user.email,
+    role: ownerRow.user.role,
+    lifetimeAccess: ownerRow.lifetimeAccess,
+  });
+  const featureOn = customDomainsFeatureEnabled();
+
+  const domains = await prisma.storefrontDomain.findMany({
+    where: {
+      storefrontId: storefront.id,
+      type: "CUSTOM",
+      status: { not: "DISCONNECTED" },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const preferred = await loadPreferredOriginInput(storefront);
+  const liveUrl = getStorefrontUrl(preferred);
+  const vendlHost = storefrontSubdomainHost(storefront.slug);
+  const subdomainLive = storefrontSubdomainPrimaryEnabled();
+  const pathUrl = storefrontPublicUrl(storefront.slug, { forcePath: true });
 
   return (
     <main className="flex flex-col gap-8">
       <div>
-        <p className="text-sm text-[var(--muted)]">
-          <Link href="/dashboard/website" className="underline">
-            Website editor
-          </Link>
-        </p>
-        <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-          Custom domains
+        <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+          Domains
         </h1>
         <p className="mt-1 text-[var(--muted)]">
-          Save your intended domain now. Pointing DNS at Vendl and automatic
-          HTTPS will ship in a later release.
+          Your included Vendl address and optional custom domain.
         </p>
       </div>
 
-      {params.saved ? (
-        <p className="text-sm text-[var(--leaf-dark)]">Saved.</p>
+      {params.connected ? (
+        <p className="text-sm text-[var(--leaf-dark)]">Domain connected — add the DNS record below.</p>
+      ) : null}
+      {params.checked ? (
+        <p className="text-sm text-[var(--leaf-dark)]">Status refreshed.</p>
+      ) : null}
+      {params.primary ? (
+        <p className="text-sm text-[var(--leaf-dark)]">Primary domain updated.</p>
+      ) : null}
+      {params.disconnected ? (
+        <p className="text-sm text-[var(--leaf-dark)]">Domain disconnected.</p>
+      ) : null}
+      {params.error && ERROR_COPY[params.error] ? (
+        <p className="text-sm text-[var(--gone)]">{ERROR_COPY[params.error]}</p>
       ) : null}
 
-      <form
-        action={saveStorefrontDomain}
-        className="dash-card flex max-w-lg flex-col gap-4 p-4"
-      >
-        <label className="flex flex-col gap-2 text-sm">
-          <span className="font-medium">Custom domain (optional)</span>
-          <input
-            name="customDomain"
-            placeholder="shop.example.com"
-            defaultValue={storefront.customDomain ?? ""}
-            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-          />
-        </label>
-        <button type="submit" className={dashCtaClass}>
-          Save domain
-        </button>
-      </form>
+      <section className="dash-card flex max-w-lg flex-col gap-3 p-5">
+        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+          Your Vendl address
+        </p>
+        <p className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
+          {vendlHost}
+        </p>
+        <p className="text-sm text-[var(--muted)]">
+          Included with every account
+          {!subdomainLive ? ` · also ${pathUrl}` : null}.
+        </p>
+        <div className="mt-2 flex flex-wrap gap-3">
+          <a href={liveUrl} target="_blank" rel="noreferrer" className={dashCtaClass}>
+            View site
+          </a>
+          <DomainsCopyButton value={liveUrl} />
+        </div>
+        <p className="text-xs text-[var(--muted)]">
+          Change your address in{" "}
+          <Link href="/dashboard/website/details" className="underline">
+            Shop details
+          </Link>{" "}
+          (slug).
+        </p>
+      </section>
+
+      {!canCustom ? (
+        <section className="dash-card flex max-w-lg flex-col gap-3 p-5">
+          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+            Use your own domain
+          </p>
+          <p className="text-sm text-[var(--muted)]">
+            Connect your existing domain and publish your Vendl website at your own web
+            address. Included with Vendl Pro.
+          </p>
+          <Link href="/dashboard/settings/billing" className={dashCtaClass}>
+            Upgrade to Pro
+          </Link>
+        </section>
+      ) : !featureOn ? (
+        <section className="dash-card max-w-lg p-5 text-sm text-[var(--muted)]">
+          Custom domain connect is coming online soon. Your {APP_DOMAIN} address stays
+          available.
+        </section>
+      ) : (
+        <>
+          {domains.map((d) => (
+            <CustomDomainCard
+              key={d.id}
+              domain={{
+                id: d.id,
+                hostname: d.hostname,
+                status: d.status,
+                isPrimary: d.isPrimary,
+                cnameTarget: d.cnameTarget,
+                verificationName: d.verificationName,
+                verificationValue: d.verificationValue,
+                lastCheckedAt: d.lastCheckedAt,
+                errorMessage: d.errorMessage,
+              }}
+            />
+          ))}
+          {domains.length === 0 ? (
+            <form
+              action={connectDomainAction}
+              className="dash-card flex max-w-lg flex-col gap-4 p-5"
+            >
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+                  Connect your domain
+                </p>
+                <p className="mt-1 text-sm text-[var(--muted)]">
+                  Use a hostname such as www.yourfarm.com.au. Root domains are not
+                  supported yet — redirect your apex to www at your DNS provider.
+                </p>
+              </div>
+              <label className="flex flex-col gap-2 text-sm">
+                <span className="font-medium">Hostname</span>
+                <input
+                  name="hostname"
+                  required
+                  placeholder="www.yourdomain.com"
+                  className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+                />
+              </label>
+              <button type="submit" className={dashCtaClass}>
+                Continue
+              </button>
+            </form>
+          ) : null}
+        </>
+      )}
     </main>
   );
 }

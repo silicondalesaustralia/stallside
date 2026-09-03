@@ -156,7 +156,7 @@ export async function updateStand(standId: string, formData: FormData) {
     name: formData.get("name"),
     description: description || undefined,
     locationLabel: locationLabel || undefined,
-    currency: formData.get("currency") || existing.currency,
+    currency: formData.get("currency") ?? existing.currency,
     timezone: resolveStandTimezone(
       String(formData.get("timezone") ?? existing.timezone ?? DEFAULT_TIMEZONE),
     ),

@@ -67,7 +67,7 @@ giving anything away. Quantity-break pricing, if built, also belongs on Starter.
 
 ### Coming soon **[CURRENT]**
 
-- **PayPal** at the gate - gated by `PAYPAL_CONNECT_ENABLED=1`; default UI says coming soon
+- **PayPal** at the gate - gated by `PAYPAL_CONNECT_ENABLED=1`; Settings hub + stand toggle + Venmo (USD); marketplace `platform_fees` match Free 2.5%
 - Pix / UPI local transfer methods exist in code but are disabled
 
 ### No Pro trial **[CURRENT]**
@@ -132,7 +132,7 @@ either collapses into the normal dashboard or is repurposed as a Pro-preview wra
 | Feature | Pro-gated? | Note |
 |---------|------------|------|
 | Stripe Connect / accept Card | Yes | |
-| PayPal Connect (when env on) | Yes | |
+| PayPal Connect (when env on) | **No** | Free: 2.5% Vendl fee on PayPal sales; Pro waives |
 | Pre-orders - **create new** | Yes | + Stripe charges enabled |
 | Pre-orders - **fulfil existing paid** | **No** | See §5 |
 | Collections - **new collection days** | Yes | |
@@ -353,8 +353,13 @@ DEMO_STALL_STAND_SLUG / DEMO_PREORDER_STAND_SLUG / DEMO_PREORDER_PAGE_SLUG
 
 ### PayPal
 
-- Default: **coming soon** unless `PAYPAL_CONNECT_ENABLED=1`
-- Env-gated (`src/lib/paypal.ts`, `settings/paypal/`, `paypal-checkout-actions.ts`)
+- Env-gated (`PAYPAL_CONNECT_ENABLED=1` in `src/lib/paypal.ts`)
+- **Free and Pro** — not Pro-gated; same fee model as Stripe card (2.5% on Free, waived on Pro)
+- Settings: `/dashboard/settings/paypal` (linked from Settings hub)
+- Stand toggle: `acceptPayPal` when owner Connect is ready
+- Marketplace orders take Vendl `platform_fees` (same Free 2.5% / Pro waive as Stripe)
+- Venmo: PayPal funding source on **USD** stands only (`PayPalCheckoutButton`)
+- Pre-orders remain **card-only**
 
 Stand must keep **at least one** payment method enabled when updating toggles - see the downgrade
 edge case in §8.

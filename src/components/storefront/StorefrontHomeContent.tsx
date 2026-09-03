@@ -15,6 +15,7 @@ import { shopPagePath } from "@/lib/storefront/paths";
 import Link from "next/link";
 import { storefrontButtonClass } from "@/lib/storefront/branding";
 import Image from "next/image";
+import { currentStorefrontBasePath } from "@/lib/tenancy/request-base-path";
 
 function mapProducts(
   ctx: NonNullable<StorefrontContext>,
@@ -28,13 +29,14 @@ function mapProducts(
   );
 }
 
-export default function StorefrontHomeContent({
+export default async function StorefrontHomeContent({
   ctx,
   draft,
 }: {
   ctx: NonNullable<StorefrontContext>;
   draft?: boolean;
 }) {
+  const basePath = await currentStorefrontBasePath(ctx.storefront.slug);
   const products = mapProducts(ctx);
   const sections = enabledSections(ctx.config);
   const btnClass = storefrontButtonClass(ctx.branding);
@@ -56,6 +58,7 @@ export default function StorefrontHomeContent({
                 storefrontSlug={ctx.storefront.slug}
                 draft={draft}
                 hasProducts={products.length > 0}
+                basePath={basePath}
               />
             );
           case "featured_products":
@@ -71,7 +74,7 @@ export default function StorefrontHomeContent({
                   </h2>
                   {products.length > featured.length ? (
                     <Link
-                      href={shopPagePath(ctx.storefront.slug, "shop", draft)}
+                      href={shopPagePath(ctx.storefront.slug, "shop", draft, basePath)}
                       className="text-sm font-semibold text-[var(--leaf-dark)] underline"
                     >
                       View all
@@ -85,6 +88,7 @@ export default function StorefrontHomeContent({
                   products={featured}
                   branding={ctx.branding}
                   draft={draft}
+                  basePath={basePath}
                   compact
                 />
               </section>
@@ -106,7 +110,7 @@ export default function StorefrontHomeContent({
                 />
                 <div className="mt-6">
                   <Link
-                    href={shopPagePath(ctx.storefront.slug, "shop", draft)}
+                    href={shopPagePath(ctx.storefront.slug, "shop", draft, basePath)}
                     className={`inline-flex ${btnClass}`}
                   >
                     Browse shop

@@ -4,7 +4,7 @@ import AppShell from "@/components/AppShell";
 import DashboardNavWithUnread from "@/components/DashboardNavWithUnread";
 import ImpersonationBanner from "@/components/ImpersonationBanner";
 import OwnerPushRegister from "@/components/OwnerPushRegisterLazy";
-import StripeSetupBanner from "@/components/StripeSetupBanner";
+import StripeSetupBannerClient from "@/components/StripeSetupBanner";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
 import { loadStripeSetupBanner } from "@/lib/load-stripe-setup-banner";
 import { requireOwner } from "@/lib/session";
@@ -74,7 +74,7 @@ export default async function DashboardLayout({
           notificationCount={unreadNotifications}
         >
           {stripeSetupBanner ? (
-            <StripeSetupBanner banner={stripeSetupBanner} />
+            <StripeSetupBannerClient banner={stripeSetupBanner} />
           ) : null}
           {paidDays != null ? (
             <TrialDaysBadge daysLeft={paidDays} mode="paid" />

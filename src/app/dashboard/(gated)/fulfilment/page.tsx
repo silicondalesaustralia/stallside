@@ -43,7 +43,16 @@ export default async function FulfilmentHubPage() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Link
+          href="/dashboard/fulfilment/orders"
+          className="dash-card p-5 hover:border-[var(--leaf)]"
+        >
+          <p className="font-semibold">Orders board</p>
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            Pack, ready, collect or deliver
+          </p>
+        </Link>
         <Link href="/dashboard/fulfilment/locations" className="dash-card p-5 hover:border-[var(--leaf)]">
           <p className="text-2xl font-bold text-[var(--field)]">{locations}</p>
           <p className="mt-1 font-semibold">Pickup locations</p>
@@ -62,7 +71,7 @@ export default async function FulfilmentHubPage() {
       </div>
 
       <p className="text-sm text-[var(--muted)]">
-        Operational pickup lists remain under{" "}
+        Pre-order day lists also live under{" "}
         <Link href="/dashboard/collections" className="underline">
           Collections
         </Link>

@@ -2,6 +2,8 @@ import { appBaseUrl } from "@/lib/app-url";
 
 export { appBaseUrl };
 
+import { paypalAuthAssertion } from "@/lib/paypal-auth-assertion";
+
 type PayPalToken = { access_token: string; expires_at: number };
 
 let cachedToken: PayPalToken | null = null;
@@ -52,6 +54,49 @@ export function isPayPalDirectMode(): boolean {
   return (process.env.PAYPAL_CONNECT_MODE || "").toLowerCase() === "direct";
 }
 
+/** Marketplace Connect (seller payee + platform fees), not direct test. */
+export function isPayPalMarketplaceMode(): boolean {
+  return isPayPalConnectAvailable() && !isPayPalDirectMode();
+}
+
+/** Platform / partner account ids — must not be saved as a seller merchant id. */
+export function paypalPlatformMerchantIds(): Set<string> {
+  const ids = new Set<string>();
+  const partner = process.env.PAYPAL_PARTNER_MERCHANT_ID?.trim();
+  const direct = process.env.PAYPAL_DIRECT_MERCHANT_ID?.trim();
+  if (partner) ids.add(partner);
+  if (direct) ids.add(direct);
+  return ids;
+}
+
+export function assertSellerPayPalMerchantId(merchantId: string): void {
+  const id = merchantId.trim();
+  if (paypalPlatformMerchantIds().has(id)) {
+    throw new Error(
+      "That merchant ID is the Vendl platform partner account, not your seller store. In PayPal Sandbox, open your Test Store business account and paste its merchant ID.",
+    );
+  }
+}
+
+/** Seller merchant id for PayPal-Auth-Assertion (null in direct / platform checkout). */
+export function paypalSellerAuthMerchantId(
+  merchantId: string | null | undefined,
+): string | null {
+  const id = merchantId?.trim();
+  if (!id) return null;
+  if (isPayPalDirectMode()) return null;
+  const platformId = paypalDirectMerchantId();
+  if (platformId && id === platformId) return null;
+  return id;
+}
+
+export type PayPalFetchOptions = {
+  /** Seller merchant id for PayPal-Auth-Assertion on marketplace API calls. */
+  sellerMerchantId?: string | null;
+  /** Send PayPal-Partner-Attribution-Id (BN code). Checkout only — wrong BN breaks partner APIs. */
+  partnerAttribution?: boolean;
+};
+
 async function getAccessToken(): Promise<string> {
   const clientId = process.env.PAYPAL_CLIENT_ID;
   const secret = process.env.PAYPAL_CLIENT_SECRET;
@@ -87,13 +132,28 @@ async function getAccessToken(): Promise<string> {
 export async function paypalFetch<T>(
   path: string,
   init: RequestInit = {},
+  options: PayPalFetchOptions = {},
 ): Promise<T> {
   const token = await getAccessToken();
   const headers = new Headers(init.headers);
   headers.set("Authorization", `Bearer ${token}`);
   headers.set("Content-Type", "application/json");
-  const bn = process.env.PAYPAL_BN_CODE;
-  if (bn) headers.set("PayPal-Partner-Attribution-Id", bn);
+  const bn = process.env.PAYPAL_BN_CODE?.trim();
+  if (bn && options.partnerAttribution) {
+    headers.set("PayPal-Partner-Attribution-Id", bn);
+  } else if (
+    isPayPalMarketplaceMode() &&
+    options.sellerMerchantId &&
+    options.partnerAttribution
+  ) {
+    console.warn(
+      "[PayPal] PAYPAL_BN_CODE missing — set BN code for marketplace attribution",
+    );
+  }
+  const sellerId = options.sellerMerchantId?.trim();
+  if (sellerId && isPayPalMarketplaceMode()) {
+    headers.set("PayPal-Auth-Assertion", paypalAuthAssertion(sellerId));
+  }
 
   const res = await fetch(`${paypalApiBase()}${path}`, { ...init, headers });
   if (!res.ok) {

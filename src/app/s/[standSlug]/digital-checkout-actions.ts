@@ -43,6 +43,7 @@ export async function startCardCheckout(input: {
   deliverySuburb?: string;
   deliveryPostcode?: string;
   deliveryNotes?: string;
+  couponCode?: string | null;
 }) {
   try {
     const customerName = (input.customerName ?? "").trim().slice(0, 120);
@@ -68,7 +69,8 @@ export async function startCardCheckout(input: {
         ? await loadCustomerChoiceCheckout(input.standSlug, amount)
         : await loadStandCart(input.standSlug, input.items ?? [], {
             receiptEmail: customerEmail || null,
-            claimFirstOrder: Boolean(customerEmail),
+            claimFirstOrder: Boolean(customerEmail && !input.couponCode),
+            couponCode: input.couponCode ?? null,
           });
     if ("error" in loaded) return { error: loaded.error };
 
@@ -81,6 +83,12 @@ export async function startCardCheckout(input: {
       totalCents: cartTotalCents,
       preOrderCart,
     } = loaded;
+    const promotionId =
+      "promotionId" in loaded ? (loaded.promotionId ?? null) : null;
+    const promotionCodeSnapshot =
+      "promotionCodeSnapshot" in loaded
+        ? (loaded.promotionCodeSnapshot ?? null)
+        : null;
     const owner = stand.owner;
     const demo = isDemoStandSlug(stand.slug);
 
@@ -119,12 +127,12 @@ export async function startCardCheckout(input: {
         }
       }
     } else if (preOrderCart.handoverMode === HandoverMode.DELIVER) {
-      const { findPreOrderFulfilmentOption } = await import(
+      const { findScheduledFulfilmentOption } = await import(
         "@/lib/fulfilment/resolve-checkout"
       );
       const { deliveryAddressMatchesZone, deliveryZoneMismatchMessage } =
         await import("@/lib/fulfilment/delivery-match");
-      const linked = await findPreOrderFulfilmentOption(
+      const linked = await findScheduledFulfilmentOption(
         lineData.map((l) => l.productId),
       );
       if (linked) {
@@ -223,6 +231,8 @@ export async function startCardCheckout(input: {
         subtotalCents,
         discountCents,
         discountLabel,
+        promotionId,
+        promotionCodeSnapshot,
         totalCents: depositMode
           ? totalCents + (passOn ? applicationFee : 0)
           : chargeTotal,
@@ -295,13 +305,29 @@ export async function startCardCheckout(input: {
     }
 
     try {
+      const cookieStore = await cookies();
+      const token = cookieStore.get("vendl_campaign")?.value;
+      if (token) {
+        const { attributeOrderToCampaign } = await import("@/lib/grow/campaigns");
+        await attributeOrderToCampaign({
+          orderId: order.id,
+          ownerId: stand.ownerId,
+          clickToken: token,
+          totalCents: order.totalCents,
+        });
+      }
+    } catch (err) {
+      console.error("Campaign attribution failed", err);
+    }
+
+    try {
       const { snapshotFromLegacyPreOrder, snapshotOrderFulfilment } =
         await import("@/lib/fulfilment/snapshot-order");
-      const { findPreOrderFulfilmentOption } = await import(
+      const { findScheduledFulfilmentOption } = await import(
         "@/lib/fulfilment/resolve-checkout"
       );
       if (preOrderCart) {
-        const linked = await findPreOrderFulfilmentOption(
+        const linked = await findScheduledFulfilmentOption(
           lineData.map((l) => l.productId),
         );
         if (linked) {

@@ -11,6 +11,7 @@ import ProductLifecycleActions from "../ProductLifecycleActions";
 import ProductOptionsEditor from "./ProductOptionsEditor";
 import ProductStockCard from "./ProductStockCard";
 import ProductCatalogueFields from "./ProductCatalogueFields";
+import ProductProductionSection from "../ProductProductionSection";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import {
   normalizeBusinessMode,
@@ -54,6 +55,18 @@ export default async function EditProductPage({
       categoryLinks: { select: { categoryId: true } },
       fulfilmentOptions: {
         select: { fulfilmentOptionId: true, isEnabled: true },
+      },
+      productRecipe: {
+        include: {
+          recipe: {
+            select: {
+              id: true,
+              name: true,
+              yieldQuantity: true,
+              yieldLabel: true,
+            },
+          },
+        },
       },
     },
   });
@@ -197,6 +210,14 @@ export default async function EditProductPage({
       <ProductStockCard
         productId={product.id}
         stockQuantity={product.stockQuantity}
+      />
+      <ProductProductionSection
+        ownerId={owner.id}
+        productId={product.id}
+        priceCents={product.priceCents}
+        currency={product.currency}
+        packagingCostCents={product.packagingCostCents}
+        productRecipe={product.productRecipe}
       />
       <ProductOptionsEditor
         productId={product.id}

@@ -53,10 +53,14 @@ export default function StandPaymentOptions({
   ].join(":");
 
   function onSubmit(formData: FormData) {
+    const payload = new FormData();
+    for (const [key, value] of formData.entries()) {
+      payload.append(key, value);
+    }
     setMessage(null);
     startTransition(async () => {
       try {
-        const result = await save(formData);
+        const result = await save(payload);
         if (result && "error" in result && result.error) {
           setMessage(result.error);
           return;
@@ -81,6 +85,7 @@ export default function StandPaymentOptions({
         <StandPaymentToggles
           method={method}
           initialAlias={initialAlias}
+          currency={currency}
           acceptCash={acceptCash}
           acceptLocalTransfer={acceptLocalTransfer}
           acceptCard={acceptCard}
@@ -90,7 +95,13 @@ export default function StandPaymentOptions({
           paypalConnectAvailable={paypalConnectAvailable}
           cardTier={cardTier}
         />
-        {message ? <p className="text-sm text-[var(--muted)]">{message}</p> : null}
+        {message ? (
+          <p
+            className={`text-sm ${message === "Payment options saved." ? "text-[var(--muted)]" : "text-red-700"}`}
+          >
+            {message}
+          </p>
+        ) : null}
         <button
           type="submit"
           disabled={pending}

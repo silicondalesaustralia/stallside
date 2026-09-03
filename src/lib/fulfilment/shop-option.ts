@@ -1,12 +1,23 @@
+import { APP_DOMAIN } from "@/lib/constants";
+
 const COOKIE = "vendl_fulfilment_option";
 
 export function shopFulfilmentCookieName(): string {
   return COOKIE;
 }
 
+function cookieDomainAttr(): string {
+  if (typeof document === "undefined") return "";
+  const host = window.location.hostname.toLowerCase();
+  if (host === APP_DOMAIN || host.endsWith(`.${APP_DOMAIN}`)) {
+    return `; Domain=.${APP_DOMAIN}`;
+  }
+  return "";
+}
+
 export function writeShopFulfilmentOption(optionId: string): void {
   if (typeof document === "undefined") return;
-  document.cookie = `${COOKIE}=${encodeURIComponent(optionId)}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+  document.cookie = `${COOKIE}=${encodeURIComponent(optionId)}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax${cookieDomainAttr()}`;
 }
 
 export function readShopFulfilmentOptionClient(): string | null {
@@ -19,7 +30,7 @@ export function readShopFulfilmentOptionClient(): string | null {
 
 export function clearShopFulfilmentOptionClient(): void {
   if (typeof document === "undefined") return;
-  document.cookie = `${COOKIE}=; path=/; max-age=0`;
+  document.cookie = `${COOKIE}=; path=/; max-age=0${cookieDomainAttr()}`;
 }
 
 export function readShopFulfilmentOptionFromCookies(

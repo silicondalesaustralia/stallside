@@ -14,12 +14,16 @@ import {
 } from "@/lib/checkout";
 import { isPayPalConfigured, isPayPalConnectAvailable } from "@/lib/paypal";
 import { createPayPalCheckoutOrder } from "@/lib/paypal-orders";
+import { paypalCheckoutUserError } from "@/lib/paypal-checkout-errors";
 import { appBaseUrl } from "@/lib/app-url";
 import {
   checkoutCancelledUrl,
   orderAccessToken,
 } from "@/lib/order-access-token";
-import { computeVendlApplicationFee } from "@/lib/stallside-fee";
+import {
+  computeVendlCheckoutFees,
+  ownerPassesFeeToCustomer,
+} from "@/lib/stallside-fee";
 
 export async function startPayPalCheckout(input: {
   standSlug: string;
@@ -73,8 +77,14 @@ export async function startPayPalCheckout(input: {
       };
     }
 
+    const { applicationFeeCents, chargeTotalCents } = computeVendlCheckoutFees(
+      totalCents,
+      owner,
+    );
+    const passOn =
+      applicationFeeCents > 0 && ownerPassesFeeToCustomer(owner);
+
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
-    const trackedFee = computeVendlApplicationFee(totalCents, owner);
 
     const order = await prisma.order.create({
       data: {
@@ -86,25 +96,49 @@ export async function startPayPalCheckout(input: {
         subtotalCents,
         discountCents,
         discountLabel,
-        totalCents,
+        totalCents: chargeTotalCents,
         currency: stand.currency,
-        platformFeeCents: trackedFee,
+        platformFeeCents: applicationFeeCents,
         receiptChannel: email ? ReceiptChannel.EMAIL : ReceiptChannel.NONE,
         receiptEmail: email || null,
         items: { create: orderItemCreates(lineData) },
       },
     });
 
+    try {
+      const { linkOrderToCustomer } = await import("@/lib/catalogue/customers");
+      await linkOrderToCustomer({
+        orderId: order.id,
+        ownerId: stand.ownerId,
+        email,
+      });
+    } catch (err) {
+      console.error("Customer link failed", err);
+    }
+
     const base = appBaseUrl();
-    const { paypalOrderId, approveUrl } = await createPayPalCheckoutOrder({
-      merchantId: owner.paypalMerchantId,
-      orderId: order.id,
-      currency: stand.currency,
-      totalCents,
-      description: `${stand.name} · ${orderNumber}`,
-      successUrl: `${base}/checkout/success?order_id=${order.id}&paypal=1`,
-      cancelUrl: checkoutCancelledUrl(order.id),
-    });
+    let paypalOrderId: string;
+    let approveUrl: string;
+    try {
+      ({ paypalOrderId, approveUrl } = await createPayPalCheckoutOrder({
+        merchantId: owner.paypalMerchantId,
+        orderId: order.id,
+        currency: stand.currency,
+        totalCents: chargeTotalCents,
+        platformFeeCents: applicationFeeCents,
+        description: passOn
+          ? `${stand.name} · ${orderNumber} (incl. service fee)`
+          : `${stand.name} · ${orderNumber}`,
+        successUrl: `${base}/checkout/success?order_id=${order.id}&paypal=1`,
+        cancelUrl: checkoutCancelledUrl(order.id),
+      }));
+    } catch (error) {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { paymentStatus: PaymentStatus.CANCELLED },
+      });
+      throw error;
+    }
 
     await prisma.order.update({
       where: { id: order.id },
@@ -119,6 +153,6 @@ export async function startPayPalCheckout(input: {
     };
   } catch (error) {
     console.error("PayPal checkout failed", error);
-    return { error: "Could not start PayPal checkout." };
+    return { error: paypalCheckoutUserError(error) };
   }
 }

@@ -13,33 +13,11 @@ import {
   unpublishStorefront,
   uniqueStorefrontSlug,
 } from "@/lib/catalogue/storefront";
-import {
-  parseStorefrontConfig,
-  buildDefaultStorefrontConfig,
-} from "@/lib/storefront/config";
-import { normalizeBusinessMode } from "@/lib/business-mode";
+import { parseStorefrontConfig } from "@/lib/storefront/config";
 import { uploadStorefrontHero } from "@/lib/storefront/hero-upload";
 import { isStorefrontThemePreset } from "@/lib/storefront/themes";
-import type { StorefrontConfig } from "@/lib/storefront/types";
 
-function parseDraftConfig(raw: string | null): StorefrontConfig {
-  if (!raw) {
-    return buildDefaultStorefrontConfig({
-      businessMode: "FOOD_BUSINESS",
-      fulfilmentIntents: ["pickup"],
-    });
-  }
-  try {
-    return parseStorefrontConfig(JSON.parse(raw));
-  } catch {
-    return buildDefaultStorefrontConfig({
-      businessMode: "FOOD_BUSINESS",
-      fulfilmentIntents: ["pickup"],
-    });
-  }
-}
-
-export async function saveStorefrontDraft(formData: FormData) {
+export async function saveStorefrontDetails(formData: FormData) {
   const { owner } = await requireOwnerWrite();
   const headline = String(formData.get("headline") ?? "").trim().slice(0, 120);
   const subheadline =
@@ -48,35 +26,31 @@ export async function saveStorefrontDraft(formData: FormData) {
   const slugInput = slugifyStorefrontInput(
     String(formData.get("slug") ?? "").trim(),
   );
-  const themePresetRaw = String(formData.get("themePreset") ?? "market");
-  const themePreset = isStorefrontThemePreset(themePresetRaw)
-    ? themePresetRaw
-    : "market";
   const contactEmail =
     String(formData.get("contactEmail") ?? "").trim().slice(0, 200) || null;
   const showPhone = formData.get("showPhone") === "on";
-  const draftConfig = parseDraftConfig(
-    String(formData.get("draftConfig") ?? ""),
-  );
   const removeHero = formData.get("removeHero") === "on";
 
-  if (!headline) redirect("/dashboard/website?error=headline");
-  if (!slugInput) redirect("/dashboard/website?error=slug");
+  if (!headline) redirect("/dashboard/website/details?error=headline");
+  if (!slugInput) redirect("/dashboard/website/details?error=slug");
 
-  let storefront = await ensureStorefront(owner.id, owner.businessName);
+  const storefront = await ensureStorefront(owner.id, owner.businessName);
   let slug = storefront.slug;
   if (slugInput !== storefront.slug) {
     slug = await uniqueStorefrontSlug(slugInput, owner.id);
   }
 
   let heroImageUrl = storefront.heroImageUrl;
-  if (removeHero) {
-    heroImageUrl = null;
-  }
+  if (removeHero) heroImageUrl = null;
   const heroFile = formData.get("heroImage");
   if (heroFile instanceof File && heroFile.size > 0) {
     heroImageUrl = await uploadStorefrontHero(owner.id, heroFile);
   }
+
+  const themePreset = isStorefrontThemePreset(storefront.themePreset)
+    ? storefront.themePreset
+    : "market";
+  const draftConfig = parseStorefrontConfig(storefront.draftConfig);
 
   await saveStorefrontDraftData({
     ownerId: owner.id,
@@ -89,11 +63,13 @@ export async function saveStorefrontDraft(formData: FormData) {
     showPhone,
     heroImageUrl,
     draftConfig,
+    existingDraftConfigRaw: storefront.draftConfig,
   });
 
-  revalidatePath("/dashboard/website");
+  revalidatePath("/dashboard/website/details");
+  revalidatePath("/dashboard/website/studio");
   revalidatePath(storefrontPublicPath(slug));
-  redirect("/dashboard/website?saved=1");
+  redirect("/dashboard/website/details?saved=1");
 }
 
 export async function publishStorefrontAction() {
@@ -103,9 +79,10 @@ export async function publishStorefrontAction() {
     where: { ownerId: owner.id },
   });
   await publishStorefront(owner.id);
-  revalidatePath("/dashboard/website");
+  revalidatePath("/dashboard/website/details");
+  revalidatePath("/dashboard/website/studio");
   revalidatePath(storefrontPublicPath(sf.slug));
-  redirect("/dashboard/website?published=1");
+  redirect("/dashboard/website/details?published=1");
 }
 
 export async function unpublishStorefrontAction() {
@@ -114,9 +91,10 @@ export async function unpublishStorefrontAction() {
     where: { ownerId: owner.id },
   });
   await unpublishStorefront(owner.id);
-  revalidatePath("/dashboard/website");
+  revalidatePath("/dashboard/website/details");
+  revalidatePath("/dashboard/website/studio");
   revalidatePath(storefrontPublicPath(sf.slug));
-  redirect("/dashboard/website?unpublished=1");
+  redirect("/dashboard/website/details?unpublished=1");
 }
 
 export async function saveStorefrontDomain(formData: FormData) {
@@ -135,9 +113,4 @@ export async function saveStorefrontDomain(formData: FormData) {
 
   revalidatePath("/dashboard/website/domains");
   redirect("/dashboard/website/domains?saved=1");
-}
-
-/** @deprecated */
-export async function saveStorefront(formData: FormData) {
-  return saveStorefrontDraft(formData);
 }

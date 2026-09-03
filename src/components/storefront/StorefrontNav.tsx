@@ -25,6 +25,7 @@ export default function StorefrontNav({
   activePage,
   enabledPages,
   draft,
+  basePath,
 }: {
   storefrontSlug: string;
   standSlug: string;
@@ -32,6 +33,7 @@ export default function StorefrontNav({
   activePage: StorefrontPageId | "product";
   enabledPages: StorefrontPageId[];
   draft?: boolean;
+  basePath?: string;
 }) {
   const subscribe = useCallback(
     (onStoreChange: () => void) => subscribeStandCart(onStoreChange),
@@ -53,15 +55,15 @@ export default function StorefrontNav({
   ).filter((item) => enabledPages.includes(item.id));
 
   function hrefFor(page: StorefrontPageId) {
-    if (page === "home") return shopHomePath(storefrontSlug, draft);
-    return shopPagePath(storefrontSlug, page, draft);
+    if (page === "home") return shopHomePath(storefrontSlug, draft, basePath);
+    return shopPagePath(storefrontSlug, page, draft, basePath);
   }
 
   return (
     <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--panel)]/95 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <Link
-          href={shopHomePath(storefrontSlug, draft)}
+          href={shopHomePath(storefrontSlug, draft, basePath)}
           className="flex min-w-0 items-center gap-3"
         >
           {branding.logoUrl ? (

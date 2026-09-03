@@ -6,8 +6,10 @@ import StorefrontOriginTracker from "./StorefrontOriginTracker";
 import type { ShopFulfilmentOptionView } from "@/lib/fulfilment/shop-types";
 import StorefrontFulfilmentPicker from "./StorefrontFulfilmentPicker";
 import type { StorefrontPageId } from "@/lib/storefront/types";
+import { currentStorefrontBasePath } from "@/lib/tenancy/request-base-path";
+import { StorefrontLinkProvider } from "./StorefrontLinkProvider";
 
-export default function StorefrontShell({
+export default async function StorefrontShell({
   storefrontSlug,
   standSlug,
   branding,
@@ -30,6 +32,8 @@ export default function StorefrontShell({
   currency?: string;
   children: ReactNode;
 }) {
+  const basePath = await currentStorefrontBasePath(storefrontSlug);
+
   return (
     <div
       className="min-h-full bg-[var(--wash)] text-[var(--ink)]"
@@ -48,6 +52,7 @@ export default function StorefrontShell({
         activePage={activePage}
         enabledPages={enabledPages}
         draft={draft}
+        basePath={basePath}
       />
       {!draft && fulfilmentOptions.length > 1 ? (
         <StorefrontFulfilmentPicker
@@ -55,7 +60,13 @@ export default function StorefrontShell({
           currency={currency}
         />
       ) : null}
-      <div className="pb-28">{children}</div>
+      <StorefrontLinkProvider
+        slug={storefrontSlug}
+        basePath={basePath}
+        draft={draft}
+      >
+        <div className="pb-28">{children}</div>
+      </StorefrontLinkProvider>
     </div>
   );
 }

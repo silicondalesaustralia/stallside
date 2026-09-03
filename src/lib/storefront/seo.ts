@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { appBaseUrl } from "@/lib/app-url";
 import type { ResolvedStorefrontBranding } from "@/lib/storefront/types";
-import { storefrontPublicPath } from "@/lib/catalogue/storefront";
+import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 
 export function storefrontMetadata(input: {
   branding: ResolvedStorefrontBranding;
@@ -10,6 +9,8 @@ export function storefrontMetadata(input: {
   pageTitle?: string;
   description?: string;
   imageUrl?: string | null;
+  path?: string;
+  primaryCustomHostname?: string | null;
 }): Metadata {
   const title = input.pageTitle
     ? `${input.pageTitle} · ${input.branding.headline}`
@@ -21,7 +22,10 @@ export function storefrontMetadata(input: {
     input.branding.about ??
     `Shop ${input.branding.headline} online.`;
 
-  const canonical = `${appBaseUrl()}${storefrontPublicPath(input.slug)}`;
+  const canonical = storefrontPublicUrl(input.slug, {
+    path: input.path,
+    primaryCustomHostname: input.primaryCustomHostname,
+  });
   const ogImage = input.imageUrl ?? input.branding.heroImageUrl ?? input.branding.logoUrl;
 
   return {

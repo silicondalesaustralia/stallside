@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState, useTransition, type FormEvent } from "react";
 import { CURRENCIES } from "@/lib/constants";
 import {
   STAND_TIMEZONES,
@@ -27,11 +27,9 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
   const [pending, startTransition] = useTransition();
   const save = updateStand.bind(null, stand.id);
 
-  function onSubmit(formData: FormData) {
-    const payload = new FormData();
-    for (const [key, value] of formData.entries()) {
-      payload.append(key, value);
-    }
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const payload = new FormData(event.currentTarget);
     setMessage(null);
     startTransition(async () => {
       try {
@@ -50,7 +48,11 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
   }
 
   return (
-    <form action={onSubmit} className="grid w-full gap-4 sm:grid-cols-2">
+    <form
+      key={`${stand.id}:${stand.currency}`}
+      onSubmit={onSubmit}
+      className="grid w-full gap-4 sm:grid-cols-2"
+    >
       <input type="hidden" name="section" value="details" />
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Business name</span>
@@ -99,7 +101,7 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
         >
           {CURRENCIES.map((c) => (
             <option key={c} value={c}>
-              {c}
+              {c === "USD" ? "USD (United States)" : c}
             </option>
           ))}
         </select>

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import {
   FulfilmentOptionKind,
   HandoverMode,
+  MenuKind,
 } from "@/generated/prisma/client";
 import { readShopFulfilmentOptionFromCookies } from "@/lib/fulfilment/shop-option";
 import { readShopOriginFromCookies } from "@/lib/storefront/shop-origin";
@@ -147,4 +148,28 @@ export async function findPreOrderFulfilmentOption(productIds: string[]) {
     where: { preOrderPageId: link.preOrderPageId },
     select: { id: true },
   });
+}
+
+/** Find linked menu drop fulfilment option for snapshotting. */
+export async function findMenuFulfilmentOption(productIds: string[]) {
+  if (productIds.length === 0) return null;
+  const link = await prisma.menuProduct.findFirst({
+    where: {
+      productId: { in: productIds },
+      menu: { kind: MenuKind.PREORDER_DROP, isActive: true },
+    },
+    select: { menuId: true },
+  });
+  if (!link) return null;
+  return prisma.fulfilmentOption.findFirst({
+    where: { menuId: link.menuId },
+    select: { id: true },
+  });
+}
+
+/** Prefer menu drop, then legacy pre-order page. */
+export async function findScheduledFulfilmentOption(productIds: string[]) {
+  const menu = await findMenuFulfilmentOption(productIds);
+  if (menu) return menu;
+  return findPreOrderFulfilmentOption(productIds);
 }

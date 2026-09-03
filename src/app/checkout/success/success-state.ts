@@ -16,6 +16,9 @@ export type SuccessPageState = {
   demoCurrency?: string;
   restock: RestockOptInProps | null;
   preOrder: PreOrderSuccessInfo | null;
+  /** Stand storefront for the back link (non-demo orders). */
+  standSlug: string | null;
+  standName: string | null;
 };
 
 export const emptySuccessState = (): SuccessPageState => ({
@@ -24,7 +27,18 @@ export const emptySuccessState = (): SuccessPageState => ({
   demoProduct: null,
   restock: null,
   preOrder: null,
+  standSlug: null,
+  standName: null,
 });
+
+export function applyStandBack(
+  state: SuccessPageState,
+  stand: { slug: string; name: string } | null | undefined,
+) {
+  if (!stand) return;
+  state.standSlug = stand.slug;
+  state.standName = stand.name;
+}
 
 export function applyDemo(
   state: SuccessPageState,

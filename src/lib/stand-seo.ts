@@ -14,6 +14,14 @@ export function standCartPath(standSlug: string) {
   return `/s/${standSlug}/cart`;
 }
 
+export function standMenusPath(standSlug: string) {
+  return `/s/${standSlug}/menu`;
+}
+
+export function standMenuDetailPath(standSlug: string, menuSlug: string) {
+  return `/s/${standSlug}/menu/${menuSlug}`;
+}
+
 export function standPreOrdersPath(standSlug: string) {
   return `/s/${standSlug}/pre`;
 }

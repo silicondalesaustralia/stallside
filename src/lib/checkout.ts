@@ -174,7 +174,11 @@ export async function loadCustomerChoiceCheckout(
 export async function loadStandCart(
   standSlug: string,
   items: CartItemInput[],
-  opts?: { receiptEmail?: string | null; claimFirstOrder?: boolean },
+  opts?: {
+    receiptEmail?: string | null;
+    claimFirstOrder?: boolean;
+    couponCode?: string | null;
+  },
 ) {
   if (!items.length) {
     return { error: "Add at least one item." as const };
@@ -477,10 +481,30 @@ export async function loadStandCart(
 
   let discountCents = 0;
   let discountLabel: string | null = null;
+  let promotionId: string | null = null;
+  let promotionCodeSnapshot: string | null = null;
   const email = opts?.receiptEmail
     ? normalizeReceiptEmail(opts.receiptEmail)
     : "";
-  if (opts?.claimFirstOrder && email && stand.firstOrderDiscountEnabled) {
+
+  const couponCode = opts?.couponCode?.trim();
+  if (couponCode) {
+    const { evaluatePromotionCode } = await import("@/lib/grow/promotions");
+    const evaluated = await evaluatePromotionCode({
+      ownerId: stand.ownerId,
+      code: couponCode,
+      subtotalCents,
+      productIds: [...qtyByProduct.keys()],
+      customerEmail: email || null,
+    });
+    if ("error" in evaluated) {
+      return { error: evaluated.error };
+    }
+    discountCents = evaluated.discountCents;
+    discountLabel = evaluated.label;
+    promotionId = evaluated.promotionId;
+    promotionCodeSnapshot = evaluated.code;
+  } else if (opts?.claimFirstOrder && email && stand.firstOrderDiscountEnabled) {
     const already = await emailHasPriorOrderAtStand(stand.id, email);
     if (!already) {
       const d = computeFirstOrderDiscount({
@@ -510,6 +534,8 @@ export async function loadStandCart(
     subtotalCents,
     discountCents,
     discountLabel,
+    promotionId,
+    promotionCodeSnapshot,
     totalCents,
     preOrderCart,
     skipStock: false as const,

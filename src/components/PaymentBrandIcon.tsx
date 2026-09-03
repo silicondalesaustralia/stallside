@@ -75,6 +75,18 @@ export default function PaymentBrandIcon({
     );
   }
 
+  if (brand === "venmo") {
+    return (
+      <svg {...common} viewBox="0 0 24 24" fill="none" aria-hidden>
+        <rect width="24" height="24" rx="5" fill="#008CFF" />
+        <path
+          fill="#fff"
+          d="M18.2 5.2c.4.7.7 1.4.7 2.3 0 2.9-2.5 6.7-4 8.9H10.4L8.5 5.9h3.5l1.1 8c1.1-1.8 2.4-4.6 2.4-6.5 0-.5-.1-1-.2-1.4l3-.8Z"
+        />
+      </svg>
+    );
+  }
+
   return null;
 }
 

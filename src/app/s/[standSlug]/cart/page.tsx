@@ -11,10 +11,10 @@ import { mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { standCatalogPath } from "@/lib/stand-seo";
-import { readShopOriginFromCookies } from "@/lib/storefront/shop-origin";
+import { readShopOriginFromCookies, readShopReturnModeFromCookies } from "@/lib/storefront/shop-origin";
 import { readShopFulfilmentOptionFromCookies } from "@/lib/fulfilment/shop-option";
 import { FulfilmentOptionKind } from "@/generated/prisma/client";
-import { shopPagePath } from "@/lib/storefront/paths";
+import { storefrontReturnShopUrl } from "@/lib/tenancy/public-url";
 import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
@@ -167,6 +167,7 @@ export default async function StandCartPage({
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
   const shopOriginSlug = readShopOriginFromCookies(cookieHeader);
+  const shopReturnMode = readShopReturnModeFromCookies(cookieHeader);
   let backHref = standCatalogPath(stand.slug);
   let backLabel = "← Continue shopping";
   if (shopOriginSlug) {
@@ -175,7 +176,10 @@ export default async function StandCartPage({
       select: { slug: true },
     });
     if (originStorefront) {
-      backHref = shopPagePath(originStorefront.slug, "shop");
+      backHref = storefrontReturnShopUrl(
+        originStorefront.slug,
+        shopReturnMode,
+      );
       backLabel = "← Back to shop";
     }
   }

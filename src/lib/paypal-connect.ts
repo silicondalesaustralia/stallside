@@ -39,7 +39,7 @@ export async function createPartnerReferralLink(input: {
             integration_method: "PAYPAL",
             integration_type: "THIRD_PARTY",
             third_party_details: {
-              features: ["PAYMENT", "REFUND"],
+              features: ["PAYMENT", "REFUND", "PARTNER_FEE"],
             },
           },
         },
