@@ -126,6 +126,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(dest, 308);
   }
 
+  // Must reach the Node host-lookup route before custom-domain handling.
+  // Otherwise middleware fetches itself, gets /not-found, and stallside → vendl.
+  if (pathname.startsWith("/api/tenancy/host-lookup")) {
+    return NextResponse.next();
+  }
+
   const resolution = resolveHostname(hostHeader);
 
   if (resolution.type === "CUSTOM_DOMAIN") {

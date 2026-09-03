@@ -21,16 +21,23 @@ async function lookupCustomHost(
   if (hit && Date.now() - hit.at < TTL_MS) return hit.value;
 
   const secret = domainsInternalLookupSecret();
-  // Look up on this deployment so the domain row is read from the same env DB.
+  // Prefer this deployment's Vercel URL so lookup doesn't recurse through the
+  // custom hostname (and Cloudflare) before the API route can answer.
+  const vercelHost = process.env.VERCEL_URL?.replace(/^https?:\/\//, "").trim();
   const base =
+    (vercelHost ? `https://${vercelHost}` : null) ||
     requestUrl.origin ||
     process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
     `https://${APP_DOMAIN}`;
 
   try {
     const url = `${base}/api/tenancy/host-lookup?hostname=${encodeURIComponent(host)}`;
+    const headers = new Headers();
+    if (secret) headers.set("x-vendl-internal", secret);
+    const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET?.trim();
+    if (bypass) headers.set("x-vercel-protection-bypass", bypass);
     const res = await fetch(url, {
-      headers: secret ? { "x-vendl-internal": secret } : undefined,
+      headers,
       signal: AbortSignal.timeout(2500),
     });
     if (!res.ok) {
