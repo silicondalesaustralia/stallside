@@ -88,6 +88,11 @@ export default async function WebsiteDetailsPage({
       {sp.error === "slug" ? (
         <p className="text-sm font-medium text-[var(--gone)]">Enter a valid URL slug.</p>
       ) : null}
+      {sp.error === "slug_taken" ? (
+        <p className="text-sm font-medium text-[var(--gone)]">
+          That URL is already in use. Try a different slug.
+        </p>
+      ) : null}
 
       <ShopDetailsForm
         headline={storefront.headline ?? owner.businessName}

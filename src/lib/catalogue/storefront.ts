@@ -39,8 +39,13 @@ export async function uniqueStorefrontSlug(
       select: { id: true },
     });
     if (hit) return true;
+    // Same owner's stands share the brand URL space — don't block renaming
+    // storefront slug to match their own stand.
     const stand = await prisma.stand.findFirst({
-      where: { slug },
+      where: {
+        slug,
+        ...(excludeOwnerId ? { NOT: { ownerId: excludeOwnerId } } : {}),
+      },
       select: { id: true },
     });
     return Boolean(stand);
@@ -256,6 +261,30 @@ export async function saveStorefrontDraftData(input: {
       draftConfig: mergedDraftConfig as unknown as Prisma.InputJsonValue,
     },
   });
+
+  // Keep included Vendl subdomain row in sync when the slug changes.
+  const { APP_DOMAIN } = await import("@/lib/constants");
+  const sf = await prisma.storefront.findUniqueOrThrow({
+    where: { ownerId: input.ownerId },
+    select: { id: true, slug: true },
+  });
+  const vendlHost = `${sf.slug}.${APP_DOMAIN}`;
+  const subdomainRow = await prisma.storefrontDomain.findFirst({
+    where: { storefrontId: sf.id, type: "VENDL_SUBDOMAIN" },
+    select: { id: true, hostname: true },
+  });
+  if (subdomainRow && subdomainRow.hostname !== vendlHost) {
+    const clash = await prisma.storefrontDomain.findUnique({
+      where: { hostname: vendlHost },
+      select: { id: true },
+    });
+    if (!clash) {
+      await prisma.storefrontDomain.update({
+        where: { id: subdomainRow.id },
+        data: { hostname: vendlHost },
+      });
+    }
+  }
 }
 
 export async function publishStorefront(ownerId: string) {

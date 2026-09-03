@@ -38,6 +38,10 @@ export async function saveStorefrontDetails(formData: FormData) {
   let slug = storefront.slug;
   if (slugInput !== storefront.slug) {
     slug = await uniqueStorefrontSlug(slugInput, owner.id);
+    // Don't silently rename to jackos-buns-2 when the user asked for jackos-buns.
+    if (slug !== slugInput) {
+      redirect("/dashboard/website/details?error=slug_taken");
+    }
   }
 
   let heroImageUrl = storefront.heroImageUrl;
