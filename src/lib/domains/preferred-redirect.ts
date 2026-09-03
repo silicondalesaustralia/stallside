@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { permanentRedirect } from "next/navigation";
 import { resolveHostname } from "@/lib/tenancy/hostname";
+import { publicHostnameFromHeaders } from "@/lib/tenancy/request-hostname";
 import { customDomainsRoutingEnabled } from "@/lib/domains/config";
 import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
 import { prisma } from "@/lib/prisma";
@@ -26,7 +27,8 @@ export async function applyPreferredOriginRedirect(storefrontSlug: string) {
   const primary = await loadPrimaryCustomHostname(storefront.id);
   if (!primary) return;
 
-  const host = headersList.get("host");
+  // Use CF-preserved seller host when Host was rewritten to fallback.vendl.app
+  const host = publicHostnameFromHeaders(headersList);
   const resolution = resolveHostname(host);
   const onPreferred =
     resolution.type === "CUSTOM_DOMAIN" && resolution.hostname === primary;

@@ -15,7 +15,23 @@ export function isVendlInfraHostname(hostname: string): boolean {
   if (host === `staging.${apex}` || host === `www.staging.${apex}`) return true;
   if (host === `fallback.${apex}`) return true;
   if (host === `customers.${apex}`) return true;
+  if (host === `saas-origin.${apex}`) return true;
   return false;
+}
+
+/** Resolve seller-facing hostname from Host + CF-preserved original. */
+export function publicHostnameFromHeaders(getHeader: {
+  get(name: string): string | null;
+}): string {
+  const host = normalizeHostname(getHeader.get("host"));
+  const original = normalizeHostname(
+    getHeader.get("x-vendl-original-host") ||
+      getHeader.get("x-forwarded-host"),
+  );
+  if (original && isVendlInfraHostname(host) && !isVendlInfraHostname(original)) {
+    return original;
+  }
+  return host;
 }
 
 /**
@@ -25,13 +41,5 @@ export function isVendlInfraHostname(hostname: string): boolean {
 export function requestPublicHostname(
   request: Pick<NextRequest, "headers">,
 ): string {
-  const host = normalizeHostname(request.headers.get("host"));
-  const original = normalizeHostname(
-    request.headers.get("x-vendl-original-host") ||
-      request.headers.get("x-forwarded-host"),
-  );
-  if (original && isVendlInfraHostname(host) && !isVendlInfraHostname(original)) {
-    return original;
-  }
-  return host;
+  return publicHostnameFromHeaders(request.headers);
 }
