@@ -300,6 +300,8 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
     qrSignMessage: z.string().trim().max(8000).optional(),
     qrCallout: z.string().trim().max(8000).optional(),
     cartMode: z.enum(["PRODUCT", "CUSTOMER_CHOICE"]),
+    qrLinkMode: z.enum(["LEGACY_STAND", "WEBSITE_HOME", "WEBSITE_CATEGORY"]),
+    qrCategoryId: z.string().trim().optional(),
   });
 
   const parsed = printSchema.safeParse({
@@ -309,6 +311,8 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
     qrSignMessage: formData.get("qrSignMessage") || undefined,
     qrCallout: formData.get("qrCallout") || undefined,
     cartMode: formData.get("cartMode") || "PRODUCT",
+    qrLinkMode: formData.get("qrLinkMode") || "LEGACY_STAND",
+    qrCategoryId: formData.get("qrCategoryId") || undefined,
   });
   if (!parsed.success) return { error: "Check the print details and try again." };
 
@@ -326,6 +330,23 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
     parsed.data.cartMode === "CUSTOMER_CHOICE"
       ? CartMode.CUSTOMER_CHOICE
       : CartMode.PRODUCT;
+
+  let qrLinkMode = parsed.data.qrLinkMode;
+  if (nextMode === CartMode.CUSTOMER_CHOICE) {
+    qrLinkMode = "LEGACY_STAND";
+  }
+
+  let qrCategoryId: string | null = null;
+  if (qrLinkMode === "WEBSITE_CATEGORY") {
+    const categoryId = parsed.data.qrCategoryId?.trim() || "";
+    if (!categoryId) return { error: "Choose a category for the QR link." };
+    const cat = await prisma.category.findFirst({
+      where: { id: categoryId, ownerId: owner.id, isActive: true },
+      select: { id: true },
+    });
+    if (!cat) return { error: "Category not found." };
+    qrCategoryId = cat.id;
+  }
 
   let customerChoiceProductId = existing.customerChoiceProductId;
   if (nextMode === CartMode.CUSTOMER_CHOICE) {
@@ -356,6 +377,8 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
       qrSignMessage: signMessage || null,
       qrCallout: callout || null,
       cartMode: nextMode,
+      qrLinkMode,
+      qrCategoryId,
       customerChoiceProductId,
       posterShowCta: formData.get("posterShowCta") === "on",
       posterCtaText:

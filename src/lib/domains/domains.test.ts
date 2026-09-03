@@ -45,9 +45,9 @@ describe("preferred origin", () => {
     assert.equal(
       getCanonicalStorefrontUrl(
         { slug: "green-valley", primaryCustomHostname: "www.farm.com.au" },
-        "/product/loaf",
+        "/products/loaf",
       ),
-      "https://www.farm.com.au/product/loaf",
+      "https://www.farm.com.au/products/loaf",
     );
   });
 

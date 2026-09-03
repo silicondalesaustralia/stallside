@@ -17,12 +17,14 @@ export async function buildStudioMetadata(
     loadStorefrontReviews(ctx.owner.id, 6),
   ]);
 
-  const categories = ctx.categories.map((c) => ({
-    id: c.id,
-    slug: c.slug,
-    title: c.title,
-    imageUrl: c.imageUrl,
-  }));
+  const categories = ctx.categories
+    .filter((c) => c.showOnWebsite !== false)
+    .map((c) => ({
+      id: c.id,
+      slug: c.slug,
+      title: c.title,
+      imageUrl: c.imageUrl,
+    }));
 
   const fulfilmentOptions = ctx.fulfilmentOptions;
   const customPages = ensureCustomPages(ctx.storefront.draftConfig);

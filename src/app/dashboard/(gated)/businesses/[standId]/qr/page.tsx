@@ -3,11 +3,13 @@ import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { APP_DOMAIN } from "@/lib/constants";
-import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
+import { standQrDataUrl, standQrTargetUrl } from "@/lib/stand-qr";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import { formatMoney } from "@/lib/public-product";
 import { businessPageProductWhere } from "@/lib/product-visibility";
+import { publicApexHost } from "@/lib/tenancy/host-mode";
+import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
 import QrStudio from "./QrStudio";
 
 export default async function StandQrPage({
@@ -20,6 +22,7 @@ export default async function StandQrPage({
   const stand = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
     include: {
+      qrCategory: { select: { id: true, slug: true, title: true } },
       products: {
         where: {
           ...businessPageProductWhere,
@@ -33,9 +36,29 @@ export default async function StandQrPage({
   });
   if (!stand) notFound();
 
-  const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
+  const storefront = await prisma.storefront.findUnique({
+    where: { ownerId: owner.id },
+    select: { id: true, slug: true },
+  });
+  const categories = await prisma.category.findMany({
+    where: { ownerId: owner.id, isActive: true },
+    orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
+    select: { id: true, slug: true, title: true },
+  });
+  const primaryCustomHostname = storefront
+    ? await loadPrimaryCustomHostname(storefront.id)
+    : null;
+
+  const checkoutUrl = standQrTargetUrl({
+    linkMode: stand.qrLinkMode,
+    standSlug: stand.slug,
+    cartMode: stand.cartMode,
+    storefrontSlug: storefront?.slug,
+    categorySlug: stand.qrCategory?.slug,
+    primaryCustomHostname,
+  });
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 640);
-  const siteUrl = `https://${APP_DOMAIN}`;
+  const siteUrl = `https://${publicApexHost()}`;
   const paymentBrands = standPaymentBrands(stand, {
     ...owner,
     user: { email: user.email, role: user.role },
@@ -86,6 +109,8 @@ export default async function StandQrPage({
           qrSignMessage: stand.qrSignMessage,
           qrCallout: stand.qrCallout,
           cartMode: stand.cartMode,
+          qrLinkMode: stand.qrLinkMode,
+          qrCategoryId: stand.qrCategoryId,
           posterShowCta: stand.posterShowCta,
           posterCtaText: stand.posterCtaText,
           posterShowBundles: stand.posterShowBundles,
@@ -98,6 +123,9 @@ export default async function StandQrPage({
           accentColor: stand.accentColor,
           secondaryColor: stand.secondaryColor,
         }}
+        storefrontSlug={storefront?.slug ?? null}
+        categories={categories}
+        primaryCustomHostname={primaryCustomHostname}
         siteUrl={siteUrl}
         paymentBrands={paymentBrands}
         initialCheckoutUrl={checkoutUrl}

@@ -37,6 +37,19 @@ export function shopPagePath(
   return draft ? `${base}?draft=1` : base;
 }
 
+export function shopCategoryPath(
+  storefrontSlug: string,
+  categorySlug: string,
+  draft = false,
+  basePath?: string,
+): string {
+  const base = joinRoot(
+    rootFor(storefrontSlug, basePath),
+    `/shop/${encodeURIComponent(categorySlug)}`,
+  );
+  return draft ? `${base}?draft=1` : base;
+}
+
 export function shopProductPath(
   storefrontSlug: string,
   productSlug: string,
@@ -45,7 +58,7 @@ export function shopProductPath(
 ): string {
   const base = joinRoot(
     rootFor(storefrontSlug, basePath),
-    `/product/${encodeURIComponent(productSlug)}`,
+    `/products/${encodeURIComponent(productSlug)}`,
   );
   return draft ? `${base}?draft=1` : base;
 }

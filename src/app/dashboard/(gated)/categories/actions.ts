@@ -63,6 +63,7 @@ export async function updateCategory(categoryId: string, formData: FormData) {
   const description =
     String(formData.get("description") ?? "").trim().slice(0, 300) || null;
   const isActive = formData.get("isActive") === "on";
+  const showOnWebsite = formData.get("showOnWebsite") === "on";
 
   let slug = existing.slug;
   if (title !== existing.title) {
@@ -71,7 +72,7 @@ export async function updateCategory(categoryId: string, formData: FormData) {
 
   await prisma.category.update({
     where: { id: categoryId },
-    data: { title, slug, description, isActive },
+    data: { title, slug, description, isActive, showOnWebsite },
   });
   revalidatePath("/dashboard/categories");
   redirect("/dashboard/categories");

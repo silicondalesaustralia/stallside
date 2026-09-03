@@ -2,14 +2,18 @@ import { Suspense } from "react";
 import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import { loadStorefrontPage } from "@/lib/storefront/page-loader";
-import { storefrontMetadata } from "@/lib/storefront/seo";
+import {
+  buildStorefrontPageMetadata,
+  seoConfigSource,
+} from "@/lib/studio/resolve-seo-metadata";
 import { mapPublicProduct } from "@/lib/public-product";
 import StorefrontPageShell from "@/components/storefront/StorefrontPageShell";
 import StorefrontProductGrid from "@/components/storefront/StorefrontProductGrid";
 import StorefrontCategoryChips from "@/components/storefront/StorefrontCategoryChips";
 import StorefrontGoToCartBar from "@/components/storefront/StorefrontGoToCartBar";
 import { resolveStudioPublicContext, shopPageTitle } from "@/lib/studio/public-context";
-import { COMMERCE_SHOP_KEY } from "@/lib/studio/commerce-pages";
+import { prisma } from "@/lib/prisma";
+import { COMMERCE_CATEGORY_KEY } from "@/lib/studio/commerce-pages";
 import { withCommerceContext } from "@/lib/studio/commerce-context";
 import { studioPageNodes } from "@/lib/studio/storage";
 import StudioPublicSections from "@/lib/studio/public-render";
@@ -20,35 +24,57 @@ export async function generateMetadata({
   params,
   searchParams,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; categorySlug: string }>;
   searchParams: Promise<{ draft?: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, categorySlug } = await params;
   const sp = await searchParams;
   const draft = sp.draft === "1";
+  const catSlug = decodeURIComponent(categorySlug).trim().toLowerCase();
   try {
     const ctx = await loadStorefrontPage(slug, draft);
-    return storefrontMetadata({
+    const published = ctx.storefront.isPublished && !draft;
+    const configRaw = seoConfigSource(
+      ctx.storefront.draftConfig,
+      ctx.storefront.publishedConfig,
+      published,
+    );
+    const cat =
+      ctx.categories.find((c) => c.slug === catSlug) ??
+      (await prisma.category.findFirst({
+        where: { ownerId: ctx.owner.id, slug: catSlug, isActive: true },
+        select: { id: true, title: true, slug: true, description: true },
+      }));
+    if (!cat) return { title: "Shop", robots: { index: false, follow: false } };
+    return buildStorefrontPageMetadata({
       branding: ctx.branding,
       slug: ctx.storefront.slug,
-      published: ctx.storefront.isPublished && !draft,
-      pageTitle: "Shop",
+      published,
+      configRaw,
+      entityType: "category",
+      entityId: cat.id,
+      defaults: {
+        title: cat.title,
+        description: cat.description ?? `${cat.title} at ${ctx.branding.headline}`,
+      },
+      path: `/shop/${encodeURIComponent(cat.slug)}`,
     });
   } catch {
     return { title: "Shop", robots: { index: false, follow: false } };
   }
 }
 
-export default async function StorefrontShopPage({
+export default async function StorefrontCategoryPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; categorySlug: string }>;
   searchParams: Promise<{ draft?: string; category?: string }>;
 }) {
-  const { slug } = await params;
+  const { slug, categorySlug } = await params;
   const sp = await searchParams;
   const draft = sp.draft === "1";
+  const catSlug = decodeURIComponent(categorySlug).trim().toLowerCase();
   const basePath = await currentStorefrontBasePath(slug);
 
   if (sp.category?.trim()) {
@@ -66,15 +92,49 @@ export default async function StorefrontShopPage({
     }),
   );
 
+  let activeCategory = ctx.categories.find((c) => c.slug === catSlug);
+  if (!activeCategory) {
+    activeCategory =
+      (await prisma.category.findFirst({
+        where: { ownerId: ctx.owner.id, slug: catSlug, isActive: true },
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          description: true,
+          imageUrl: true,
+          showOnWebsite: true,
+        },
+      })) ?? undefined;
+  }
+  if (!activeCategory) notFound();
+
+  const links = await prisma.productCategory.findMany({
+    where: {
+      category: { ownerId: ctx.owner.id, slug: catSlug },
+      product: { ownerId: ctx.owner.id },
+    },
+    select: { productId: true },
+  });
+  const ids = new Set(links.map((l) => l.productId));
+  const filtered = catalogProducts.filter((p) => ids.has(p.id));
+
   const studioCtx = await resolveStudioPublicContext(ctx, draft);
   const nodes =
-    studioCtx.active ? studioPageNodes(studioCtx.studio, COMMERCE_SHOP_KEY) : undefined;
+    studioCtx.active ? studioPageNodes(studioCtx.studio, COMMERCE_CATEGORY_KEY) : undefined;
   const metadata =
     studioCtx.active && nodes
       ? withCommerceContext(studioCtx.metadata, {
-          kind: "shop",
+          kind: "category",
           ownerId: ctx.owner.id,
           catalogProducts,
+          category: {
+            id: activeCategory.id,
+            slug: activeCategory.slug,
+            title: activeCategory.title,
+            description: activeCategory.description,
+            imageUrl: activeCategory.imageUrl,
+          },
         })
       : undefined;
   const title = studioCtx.active ? shopPageTitle(studioCtx.templateId) : "Shop";
@@ -93,13 +153,14 @@ export default async function StorefrontShopPage({
                 : "font-[family-name:var(--font-display)] text-3xl font-bold text-[var(--field)]"
             }
           >
-            {title}
+            {activeCategory.title || title}
           </h1>
           <Suspense fallback={null}>
             <div className="mt-6">
               <StorefrontCategoryChips
                 storefrontSlug={ctx.storefront.slug}
                 categories={navCategories}
+                activeSlug={activeCategory.slug}
                 draft={draft}
                 basePath={basePath}
               />
@@ -110,7 +171,7 @@ export default async function StorefrontShopPage({
               storefrontSlug={ctx.storefront.slug}
               standSlug={ctx.stand.slug}
               currency={ctx.stand.currency}
-              products={catalogProducts}
+              products={filtered}
               branding={ctx.branding}
               draft={draft}
             />

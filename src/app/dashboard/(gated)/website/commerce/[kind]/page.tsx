@@ -58,12 +58,12 @@ export default async function WebsiteCommerceEditPage({
   else if (kind === "category") {
     const slug = commerceContext.category?.slug;
     previewPath += slug
-      ? `/shop?category=${encodeURIComponent(slug)}&draft=1`
+      ? `/shop/${encodeURIComponent(slug)}?draft=1`
       : "/shop?draft=1";
   } else if (kind === "product") {
     const slug = commerceContext.product?.slug;
     previewPath += slug
-      ? `/product/${encodeURIComponent(slug)}?draft=1`
+      ? `/products/${encodeURIComponent(slug)}?draft=1`
       : "/shop?draft=1";
   } else {
     const slug = commerceContext.menu?.slug;

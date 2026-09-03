@@ -19,7 +19,8 @@ export default async function CategoriesPage() {
           Categories
         </h1>
         <p className="mt-1 text-[var(--muted)]">
-          Organise your catalogue. Separate from sell tips in Getting Started.
+          Organise your catalogue. Uncheck “Show on website” for stall-only
+          categories — QR can still deep-link to that category URL.
         </p>
       </div>
 
@@ -60,7 +61,8 @@ export default async function CategoriesPage() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-xs text-[var(--muted)]">
                     {cat._count.products} product
-                    {cat._count.products === 1 ? "" : "s"} · /{cat.slug}
+                    {cat._count.products === 1 ? "" : "s"} · /shop/{cat.slug}
+                    {!cat.showOnWebsite ? " · stall-only" : ""}
                   </p>
                   <label className="flex items-center gap-2 text-sm">
                     <input
@@ -69,6 +71,14 @@ export default async function CategoriesPage() {
                       defaultChecked={cat.isActive}
                     />
                     Active
+                  </label>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      name="showOnWebsite"
+                      defaultChecked={cat.showOnWebsite}
+                    />
+                    Show on website
                   </label>
                 </div>
                 <input

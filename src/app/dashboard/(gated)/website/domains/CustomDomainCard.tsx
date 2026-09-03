@@ -1,11 +1,13 @@
 import { dashCtaClass } from "@/components/DashPrimaryCta";
-import DomainsCopyButton from "./DomainsCopyButton";
 import {
   checkDomainAction,
   disconnectDomainAction,
   makePrimaryDomainAction,
 } from "./actions";
 import type { StorefrontDomainStatus } from "@/generated/prisma/client";
+import { defaultCnameInstructions } from "@/lib/domains/provider/cloudflare";
+import CloudflareTrustBadge from "./CloudflareTrustBadge";
+import DnsRecordsList, { type DnsRecord } from "./DnsRecordsList";
 
 function sellerStatus(status: StorefrontDomainStatus): string {
   if (status === "ACTIVE") return "Active";
@@ -20,53 +22,90 @@ export type CustomDomainRow = {
   status: StorefrontDomainStatus;
   isPrimary: boolean;
   cnameTarget: string | null;
+  verificationMethod: string | null;
   verificationName: string | null;
   verificationValue: string | null;
   lastCheckedAt: Date | null;
   errorMessage: string | null;
 };
 
+function buildDnsRecords(domain: CustomDomainRow): DnsRecord[] {
+  const traffic = defaultCnameInstructions(domain.hostname);
+  const target = domain.cnameTarget || traffic.value;
+  const records: DnsRecord[] = [];
+
+  const ownershipName = domain.verificationName?.trim() || null;
+  const ownershipValue = domain.verificationValue?.trim() || null;
+  const method = (domain.verificationMethod || "cname").toLowerCase();
+  const ownershipLooksSeparate =
+    Boolean(ownershipName && ownershipValue) &&
+    ownershipName !== traffic.name &&
+    ownershipValue !== target;
+
+  if (ownershipLooksSeparate) {
+    records.push({
+      label: "1. Ownership check (required first)",
+      hint: "Proves you control this domain. Add exactly as shown.",
+      type: method === "txt" ? "TXT" : "CNAME",
+      name: ownershipName!,
+      value: ownershipValue!,
+    });
+  }
+
+  records.push({
+    label: ownershipLooksSeparate
+      ? "2. Point your domain at Vendl"
+      : "Point your domain at Vendl",
+    hint:
+      traffic.name === "@"
+        ? "Apex/root domain: some hosts call this @, blank, or ALIAS/ANAME."
+        : "Use the host label your DNS panel expects (often without the domain suffix).",
+    type: "CNAME",
+    name: traffic.name,
+    value: target,
+  });
+
+  return records;
+}
+
 export default function CustomDomainCard({ domain }: { domain: CustomDomainRow }) {
-  const cnameName = domain.verificationName || "www";
-  const cnameValue = domain.cnameTarget || "customers.vendl.app";
+  const records = buildDnsRecords(domain);
+  const waiting =
+    domain.status !== "ACTIVE" && domain.status !== "DISCONNECTED";
 
   return (
     <section className="dash-card flex max-w-lg flex-col gap-4 p-5">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[var(--field)]">
-            {domain.hostname}
-          </p>
-          <p className="mt-1 text-sm text-[var(--muted)]">
-            Status: {sellerStatus(domain.status)}
-            {domain.isPrimary ? " · Primary" : ""}
-          </p>
-        </div>
+      <div>
+        <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[var(--field)]">
+          {domain.hostname}
+        </p>
+        <p className="mt-1 text-sm text-[var(--muted)]">
+          Status: {sellerStatus(domain.status)}
+          {domain.isPrimary ? " · Primary" : ""}
+        </p>
       </div>
 
-      {domain.status !== "ACTIVE" && domain.status !== "DISCONNECTED" ? (
-        <div className="rounded-xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
-          <p className="font-semibold text-[var(--field)]">Add this DNS record</p>
-          <dl className="mt-3 space-y-2 text-[var(--muted)]">
-            <div className="flex justify-between gap-4">
-              <dt>Type</dt>
-              <dd className="font-mono text-[var(--field)]">CNAME</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt>Name</dt>
-              <dd className="font-mono text-[var(--field)]">{cnameName}</dd>
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <dt>Value</dt>
-              <dd className="flex items-center gap-2 font-mono text-[var(--field)]">
-                {cnameValue}
-                <DomainsCopyButton value={cnameValue} />
-              </dd>
-            </div>
-          </dl>
-          <p className="mt-3 text-xs text-[var(--muted)]">
-            DNS changes can take some time to appear. You can leave this page and come
-            back later.
+      {waiting ? (
+        <div className="flex flex-col gap-4 rounded-xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+          <div>
+            <p className="font-semibold text-[var(--field)]">
+              Add these DNS records
+            </p>
+            <p className="mt-2 text-[var(--muted)]">
+              Log in to wherever this domain&apos;s DNS is hosted (your registrar,
+              Cloudflare, GoDaddy, Namecheap, Google Domains, etc.) and add the
+              record{records.length > 1 ? "s" : ""} below. If someone else manages
+              your domain, send them this page or copy the values for your
+              webmaster.
+            </p>
+          </div>
+
+          <CloudflareTrustBadge />
+          <DnsRecordsList records={records} />
+
+          <p className="text-xs text-[var(--muted)]">
+            DNS can take a few minutes to a few hours. You can leave and come back —
+            then tap Check again.
             {domain.lastCheckedAt
               ? ` Last checked: ${domain.lastCheckedAt.toLocaleString()}.`
               : null}
@@ -79,7 +118,7 @@ export default function CustomDomainCard({ domain }: { domain: CustomDomainRow }
       ) : null}
 
       <div className="flex flex-wrap gap-2">
-        {domain.status !== "DISCONNECTED" && domain.status !== "ACTIVE" ? (
+        {waiting ? (
           <form action={checkDomainAction}>
             <input type="hidden" name="domainId" value={domain.id} />
             <button type="submit" className={dashCtaClass}>

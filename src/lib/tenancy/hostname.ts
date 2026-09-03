@@ -4,6 +4,7 @@ import { isReservedVendlSubdomain } from "@/lib/tenancy/reserved-subdomains";
 export type HostResolution =
   | { type: "APP" }
   | { type: "VENDL_SUBDOMAIN"; slug: string }
+  | { type: "STAGING_SUBDOMAIN"; slug: string }
   | { type: "CUSTOM_DOMAIN"; hostname: string }
   | { type: "LOCAL" }
   | { type: "LOCAL_SUBDOMAIN"; slug: string }
@@ -41,6 +42,23 @@ export function resolveHostname(
   }
 
   const apex = apexDomain.toLowerCase();
+  const stagingRoot = `staging.${apex}`;
+
+  if (host === stagingRoot || host === `www.${stagingRoot}`) {
+    return { type: "APP" };
+  }
+
+  if (host.endsWith(`.${stagingRoot}`)) {
+    const slug = host.slice(0, -(stagingRoot.length + 1));
+    if (!slug || slug.includes(".")) {
+      return { type: "UNKNOWN" };
+    }
+    if (isReservedVendlSubdomain(slug)) {
+      return { type: "APP" };
+    }
+    return { type: "STAGING_SUBDOMAIN", slug };
+  }
+
   if (host === apex || host === `www.${apex}`) {
     return { type: "APP" };
   }
@@ -56,7 +74,6 @@ export function resolveHostname(
     return { type: "VENDL_SUBDOMAIN", slug: label };
   }
 
-  // Phase 9: verified custom hostnames resolved via DB (middleware lookup).
   if (host.includes(".")) {
     return { type: "CUSTOM_DOMAIN", hostname: host };
   }
@@ -67,6 +84,7 @@ export function resolveHostname(
 export function isSellerStorefrontHost(resolution: HostResolution): boolean {
   return (
     resolution.type === "VENDL_SUBDOMAIN" ||
+    resolution.type === "STAGING_SUBDOMAIN" ||
     resolution.type === "LOCAL_SUBDOMAIN" ||
     resolution.type === "CUSTOM_DOMAIN"
   );

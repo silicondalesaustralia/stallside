@@ -1,11 +1,12 @@
 /**
- * Pure hostname / public-URL utilities for Phase 4C.
+ * Pure hostname / public-URL utilities for Phase 4C + URL architecture.
  * Run: npm run test:tenancy
  */
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { normalizeHostname, resolveHostname } from "./hostname";
 import { isReservedVendlSubdomain } from "./reserved-subdomains";
+import { legacyStorefrontRedirect } from "./legacy-redirects";
 import {
   storefrontBasePath,
   storefrontReturnShopUrl,
@@ -36,6 +37,14 @@ describe("resolveHostname", () => {
       type: "VENDL_SUBDOMAIN",
       slug: "jackos-buns",
     });
+  });
+
+  it("extracts staging seller subdomain", () => {
+    assert.deepEqual(resolveHostname("jackos-buns.staging.vendl.app"), {
+      type: "STAGING_SUBDOMAIN",
+      slug: "jackos-buns",
+    });
+    assert.deepEqual(resolveHostname("staging.vendl.app"), { type: "APP" });
   });
 
   it("treats reserved labels as APP", () => {
@@ -78,6 +87,30 @@ describe("reserved subdomains", () => {
   });
 });
 
+describe("legacyStorefrontRedirect", () => {
+  it("rewrites singular product paths", () => {
+    assert.equal(
+      legacyStorefrontRedirect("/product/sourdough", ""),
+      "/products/sourdough",
+    );
+    assert.equal(
+      legacyStorefrontRedirect("/shop/demo/product/loaf", "?draft=1"),
+      "/shop/demo/products/loaf?draft=1",
+    );
+  });
+
+  it("rewrites category query to path", () => {
+    assert.equal(
+      legacyStorefrontRedirect("/shop", "?category=farm-stand"),
+      "/shop/farm-stand",
+    );
+    assert.equal(
+      legacyStorefrontRedirect("/shop/demo/shop", "?category=Bread&draft=1"),
+      "/shop/demo/shop/bread?draft=1",
+    );
+  });
+});
+
 describe("public URL helpers", () => {
   it("builds subdomain host", () => {
     assert.equal(storefrontSubdomainHost("Jackos-Buns"), "jackos-buns.vendl.app");
@@ -86,6 +119,10 @@ describe("public URL helpers", () => {
   it("uses empty basePath on matching seller host", () => {
     assert.equal(
       storefrontBasePath("jackos-buns", "jackos-buns.vendl.app"),
+      "",
+    );
+    assert.equal(
+      storefrontBasePath("jackos-buns", "jackos-buns.staging.vendl.app"),
       "",
     );
     assert.equal(

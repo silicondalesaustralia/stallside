@@ -102,7 +102,7 @@ async function resolveEntityContext(
     };
     return {
       label: product.name,
-      pathLabel: `/product/${product.slug}`,
+      pathLabel: `/products/${product.slug}`,
       defaults,
       settings: {
         ...stored,
@@ -121,7 +121,7 @@ async function resolveEntityContext(
     if (!cat) return null;
     return {
       label: cat.title,
-      pathLabel: `/shop?category=${cat.slug}`,
+      pathLabel: `/shop/${cat.slug}`,
       defaults: {
         title: cat.title,
         description: cat.description ?? `${cat.title} at ${branding.headline}`,

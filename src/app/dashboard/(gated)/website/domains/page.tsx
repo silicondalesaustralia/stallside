@@ -110,7 +110,7 @@ export default async function WebsiteDomainsPage({
           <a href={liveUrl} target="_blank" rel="noreferrer" className={dashCtaClass}>
             View site
           </a>
-          <DomainsCopyButton value={liveUrl} />
+          <DomainsCopyButton value={liveUrl} label="Copy address" />
         </div>
         <p className="text-xs text-[var(--muted)]">
           Change your address in{" "}
@@ -150,6 +150,7 @@ export default async function WebsiteDomainsPage({
                 status: d.status,
                 isPrimary: d.isPrimary,
                 cnameTarget: d.cnameTarget,
+                verificationMethod: d.verificationMethod,
                 verificationName: d.verificationName,
                 verificationValue: d.verificationValue,
                 lastCheckedAt: d.lastCheckedAt,
@@ -172,7 +173,8 @@ export default async function WebsiteDomainsPage({
                   or a subdomain if you already have a website you don&apos;t want to
                   change (for example{" "}
                   <span className="font-mono text-[var(--field)]">shop.yourfarm.com</span>
-                  ). We&apos;ll show the DNS record to add next.
+                  ). Next we&apos;ll show the DNS records to add at your domain host —
+                  or to send your webmaster.
                 </p>
               </div>
               <label className="flex flex-col gap-2 text-sm">

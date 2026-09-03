@@ -63,6 +63,26 @@ AUTH_URL=https://staging.vendl.app
 
 Prefer a **separate** `AUTH_SECRET` for staging if you can rotate without breaking local.
 
+Also set:
+
+```text
+VENDL_HOST_ENV=staging
+```
+
+so Domains UI and QR links use `{slug}.staging.vendl.app` instead of production `{slug}.vendl.app`.
+
+### Seller staging hosts (`*.staging.vendl.app`)
+
+After apex staging works, add a Vercel domain for the wildcard (or per-shop) on the **staging** branch:
+
+| Type | Name | Value | Proxy |
+|------|------|-------|-------|
+| CNAME | `*.staging` | `cname.vercel-dns.com` (or Vercel’s value) | DNS only |
+
+App classifies `{slug}.staging.vendl.app` as a seller storefront host (same path map as prod).
+
+Until the wildcard is live, use path style: `https://staging.vendl.app/shop/{slug}`.
+
 Use Stripe/PayPal **test/sandbox** on Preview where possible. Do not register production webhooks against staging until intentional.
 
 Phase 9 flags (only after CF SaaS spike path is ready on staging):

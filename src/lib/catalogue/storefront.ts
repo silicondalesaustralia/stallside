@@ -174,7 +174,14 @@ export async function loadStorefrontContext(
         },
       },
       orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
-      select: { id: true, slug: true, title: true, description: true, imageUrl: true },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        description: true,
+        imageUrl: true,
+        showOnWebsite: true,
+      },
     }),
     prisma.productChannel.count({
       where: {

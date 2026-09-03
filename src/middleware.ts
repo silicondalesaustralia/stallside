@@ -8,6 +8,7 @@ import {
 } from "@/lib/auth-session";
 import { APP_DOMAIN } from "@/lib/constants";
 import { resolveHostname } from "@/lib/tenancy/hostname";
+import { legacyStorefrontRedirect } from "@/lib/tenancy/legacy-redirects";
 import { resolveCustomDomainSlug } from "@/lib/domains/middleware-lookup";
 
 const STALLSIDE_HOSTS = new Set(["stallside.app", "www.stallside.app"]);
@@ -112,6 +113,18 @@ export async function middleware(request: NextRequest) {
   const host = (hostHeader ?? "").split(":")[0].toLowerCase();
   const pathname = request.nextUrl.pathname;
 
+  const legacyDest = legacyStorefrontRedirect(
+    pathname,
+    request.nextUrl.search,
+  );
+  if (legacyDest) {
+    const dest = request.nextUrl.clone();
+    const [pathPart, queryPart] = legacyDest.split("?");
+    dest.pathname = pathPart || "/";
+    dest.search = queryPart ? `?${queryPart}` : "";
+    return NextResponse.redirect(dest, 308);
+  }
+
   const resolution = resolveHostname(hostHeader);
 
   if (resolution.type === "CUSTOM_DOMAIN") {
@@ -141,6 +154,7 @@ export async function middleware(request: NextRequest) {
 
   if (
     (resolution.type === "VENDL_SUBDOMAIN" ||
+      resolution.type === "STAGING_SUBDOMAIN" ||
       resolution.type === "LOCAL_SUBDOMAIN") &&
     "slug" in resolution
   ) {

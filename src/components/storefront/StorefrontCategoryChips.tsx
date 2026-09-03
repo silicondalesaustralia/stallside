@@ -1,38 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { shopCategoryPath, shopPagePath } from "@/lib/storefront/paths";
 
 export default function StorefrontCategoryChips({
   storefrontSlug,
   categories,
   draft,
+  basePath,
+  activeSlug,
 }: {
   storefrontSlug: string;
   categories: { slug: string; title: string }[];
   draft?: boolean;
+  basePath?: string;
+  activeSlug?: string | null;
 }) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const active = searchParams.get("category");
-
   if (categories.length === 0) return null;
-
-  function hrefFor(slug?: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (slug) params.set("category", slug);
-    else params.delete("category");
-    if (draft) params.set("draft", "1");
-    const qs = params.toString();
-    return qs ? `${pathname}?${qs}` : pathname;
-  }
 
   return (
     <div className="flex flex-wrap gap-2">
       <Link
-        href={hrefFor()}
+        href={shopPagePath(storefrontSlug, "shop", draft, basePath)}
         className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-          !active
+          !activeSlug
             ? "bg-[var(--leaf)] text-white"
             : "bg-[var(--wash)] text-[var(--muted)]"
         }`}
@@ -42,9 +33,9 @@ export default function StorefrontCategoryChips({
       {categories.map((c) => (
         <Link
           key={c.slug}
-          href={hrefFor(c.slug)}
+          href={shopCategoryPath(storefrontSlug, c.slug, draft, basePath)}
           className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-            active === c.slug
+            activeSlug === c.slug
               ? "bg-[var(--leaf)] text-white"
               : "bg-[var(--wash)] text-[var(--muted)]"
           }`}

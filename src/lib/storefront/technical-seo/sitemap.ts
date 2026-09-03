@@ -109,7 +109,7 @@ export async function buildStorefrontSitemap(
     entries.push(
       entry(
         slug,
-        `/product/${product.slug}`,
+        `/products/${product.slug}`,
         product.updatedAt,
         0.8,
         primaryCustomHostname,
@@ -122,7 +122,7 @@ export async function buildStorefrontSitemap(
     entries.push(
       entry(
         slug,
-        `/shop?category=${encodeURIComponent(cat.slug)}`,
+        `/shop/${encodeURIComponent(cat.slug)}`,
         lastModified,
         0.7,
         primaryCustomHostname,

@@ -4,6 +4,7 @@ import {
   isSellerStorefrontHost,
   resolveHostname,
 } from "@/lib/tenancy/hostname";
+import { publicApexHost, publicHostMode } from "@/lib/tenancy/host-mode";
 
 function pathStyleRoot(slug: string): string {
   return `/shop/${encodeURIComponent(slug.trim().toLowerCase())}`;
@@ -14,8 +15,13 @@ export function storefrontSubdomainPrimaryEnabled(): boolean {
   return process.env.NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY === "1";
 }
 
+/** Seller host: {slug}.vendl.app or {slug}.staging.vendl.app */
 export function storefrontSubdomainHost(slug: string): string {
-  return `${slug.trim().toLowerCase()}.${APP_DOMAIN}`;
+  const clean = slug.trim().toLowerCase();
+  if (publicHostMode() === "staging") {
+    return `${clean}.staging.${APP_DOMAIN}`;
+  }
+  return `${clean}.${APP_DOMAIN}`;
 }
 
 export function storefrontSubdomainOrigin(slug: string): string {
@@ -50,16 +56,18 @@ export function storefrontPublicUrl(
   options: {
     path?: string;
     draft?: boolean;
-    /** Force path-style even when subdomain primary is on (local/previews). */
     forcePath?: boolean;
     hostHeader?: string | null;
-    /** Active primary custom hostname (Phase 9). */
     primaryCustomHostname?: string | null;
   } = {},
 ): string {
   const cleanSlug = slug.trim().toLowerCase();
   const suffix = normalizePublicPath(options.path);
-  const draftQ = options.draft ? (suffix.includes("?") ? "&draft=1" : "?draft=1") : "";
+  const draftQ = options.draft
+    ? suffix.includes("?")
+      ? "&draft=1"
+      : "?draft=1"
+    : "";
   const custom = options.primaryCustomHostname?.trim().toLowerCase() || null;
 
   const resolution = options.hostHeader
@@ -84,11 +92,13 @@ export function storefrontPublicUrl(
     if (custom && !options.draft) {
       return `https://${custom}${suffix}${draftQ}`;
     }
-    const origin =
-      resolution.type === "LOCAL_SUBDOMAIN"
-        ? `http://${cleanSlug}.localhost:3000`
-        : storefrontSubdomainOrigin(cleanSlug);
-    return `${origin}${suffix}${draftQ}`;
+    if (resolution.type === "LOCAL_SUBDOMAIN") {
+      return `http://${cleanSlug}.localhost:3000${suffix}${draftQ}`;
+    }
+    if (resolution.type === "STAGING_SUBDOMAIN") {
+      return `https://${cleanSlug}.staging.${APP_DOMAIN}${suffix}${draftQ}`;
+    }
+    return `${storefrontSubdomainOrigin(cleanSlug)}${suffix}${draftQ}`;
   }
 
   if (!options.forcePath && !options.draft && custom) {
@@ -103,7 +113,10 @@ export function storefrontPublicUrl(
     return `${storefrontSubdomainOrigin(cleanSlug)}${suffix}${draftQ}`;
   }
 
-  return `${appBaseUrl()}${pathStyleRoot(cleanSlug)}${suffix}${draftQ}`;
+  const apex = publicApexHost();
+  const base =
+    publicHostMode() === "staging" ? `https://${apex}` : appBaseUrl();
+  return `${base}${pathStyleRoot(cleanSlug)}${suffix}${draftQ}`;
 }
 
 function normalizePublicPath(path?: string): string {

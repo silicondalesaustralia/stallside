@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { PuckSpikeMetadata } from "@/lib/puck/types";
-import { shopPagePath } from "@/lib/storefront/paths";
+import { shopCategoryPath } from "@/lib/storefront/paths";
 import type { CategoryPreset } from "@/lib/studio/preset-registry";
 import { mapCategoryPreset } from "@/lib/studio/preset-registry";
 
@@ -74,7 +74,12 @@ function CategoryTile({
   preset: "tiles" | "cards" | "compact" | "minimal";
   metadata: PuckSpikeMetadata;
 }) {
-  const href = shopPagePath(metadata.storefrontSlug, "shop", metadata.draft, metadata.basePath);
+  const href = shopCategoryPath(
+    metadata.storefrontSlug,
+    cat.slug,
+    metadata.draft,
+    metadata.basePath,
+  );
   const imageUrl = cat.imageUrl;
 
   if (preset === "compact" || preset === "minimal") {

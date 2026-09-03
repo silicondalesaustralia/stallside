@@ -44,7 +44,7 @@ export default async function WebsiteSeoRedirectsPage({
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
           Send old storefront paths to a new page after you change a slug. Paths
-          are relative to your shop (e.g. <code>/product/old-name</code>).
+          are relative to your shop (e.g. <code>/products/old-name</code>).
           Publish redirects for them to take effect on the live site.
         </p>
       </div>
@@ -62,7 +62,7 @@ export default async function WebsiteSeoRedirectsPage({
       ) : null}
       {sp.error === "invalid" ? (
         <p className="text-sm font-medium text-[var(--gone)]">
-          Check both paths — use storefront paths like /product/slug, or a full
+          Check both paths — use storefront paths like /products/slug, or a full
           https URL for the destination.
         </p>
       ) : null}
@@ -80,7 +80,7 @@ export default async function WebsiteSeoRedirectsPage({
             <input
               name="fromPath"
               required
-              placeholder="/product/old-slug"
+              placeholder="/products/old-slug"
               className={inputClass}
             />
           </label>
@@ -89,7 +89,7 @@ export default async function WebsiteSeoRedirectsPage({
             <input
               name="toPath"
               required
-              placeholder="/product/new-slug"
+              placeholder="/products/new-slug"
               className={inputClass}
             />
           </label>

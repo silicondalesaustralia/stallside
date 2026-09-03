@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition, type ReactNode } from "react";
 import QRCode from "qrcode";
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
-import { standCheckoutUrl } from "@/lib/stand-qr";
+import { standCheckoutUrl, standQrTargetUrl } from "@/lib/stand-qr";
 import { updateStandQrPrint } from "../../actions";
 import type { QrPrintSize } from "@/lib/print-qr-sheet";
 import QrActions from "./QrActions";
@@ -19,6 +19,8 @@ const SignHtmlEditor = dynamic(() => import("@/components/SignHtmlEditor"), {
   ),
 });
 
+export type QrLinkMode = "LEGACY_STAND" | "WEBSITE_HOME" | "WEBSITE_CATEGORY";
+
 export type QrStudioStand = {
   id: string;
   name: string;
@@ -27,6 +29,8 @@ export type QrStudioStand = {
   qrSignMessage: string | null;
   qrCallout: string | null;
   cartMode: "PRODUCT" | "CUSTOMER_CHOICE";
+  qrLinkMode: QrLinkMode;
+  qrCategoryId: string | null;
   posterShowCta: boolean;
   posterCtaText: string | null;
   posterShowBundles: boolean;
@@ -51,6 +55,9 @@ export default function QrStudio({
   firstOrderLine,
   freshnessLines,
   urlWarning,
+  storefrontSlug,
+  categories,
+  primaryCustomHostname,
 }: {
   stand: QrStudioStand;
   siteUrl: string;
@@ -62,6 +69,9 @@ export default function QrStudio({
   firstOrderLine: string | null;
   freshnessLines: string[];
   urlWarning?: ReactNode;
+  storefrontSlug: string | null;
+  categories: { id: string; slug: string; title: string }[];
+  primaryCustomHostname?: string | null;
 }) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
@@ -76,6 +86,8 @@ export default function QrStudio({
   const [cartMode, setCartMode] = useState<"PRODUCT" | "CUSTOMER_CHOICE">(
     stand.cartMode,
   );
+  const [qrLinkMode, setQrLinkMode] = useState<QrLinkMode>(stand.qrLinkMode);
+  const [qrCategoryId, setQrCategoryId] = useState(stand.qrCategoryId ?? "");
   const [posterShowCta, setPosterShowCta] = useState(stand.posterShowCta);
   const [posterCtaText, setPosterCtaText] = useState(
     stand.posterCtaText ?? "SCAN TO PAY - CASH OR CARD",
@@ -96,9 +108,30 @@ export default function QrStudio({
     stand.posterShowHowItWorks,
   );
 
+  const categorySlug =
+    categories.find((c) => c.id === qrCategoryId)?.slug ?? null;
+
+  const effectiveLinkMode: QrLinkMode =
+    cartMode === "CUSTOMER_CHOICE" ? "LEGACY_STAND" : qrLinkMode;
+
   const checkoutUrl = useMemo(
-    () => standCheckoutUrl(stand.slug, cartMode),
-    [stand.slug, cartMode],
+    () =>
+      standQrTargetUrl({
+        linkMode: effectiveLinkMode,
+        standSlug: stand.slug,
+        cartMode,
+        storefrontSlug,
+        categorySlug,
+        primaryCustomHostname,
+      }),
+    [
+      effectiveLinkMode,
+      stand.slug,
+      cartMode,
+      storefrontSlug,
+      categorySlug,
+      primaryCustomHostname,
+    ],
   );
   const [qrDataUrl, setQrDataUrl] = useState(initialQrDataUrl);
 
@@ -169,6 +202,86 @@ export default function QrStudio({
         <p className="text-sm text-[var(--muted)]">
           Changes update the preview as you type. Save to keep them for next time.
         </p>
+
+        <fieldset className="flex flex-col gap-2 text-sm">
+          <legend className="font-medium">QR destination</legend>
+          <p className="text-xs text-[var(--muted)]">
+            Prefer your website for new signs. Legacy /s/ links still work for
+            old posters.
+          </p>
+          <label className="flex items-start gap-2">
+            <input
+              type="radio"
+              name="qrLinkMode"
+              value="WEBSITE_HOME"
+              checked={qrLinkMode === "WEBSITE_HOME"}
+              onChange={() => setQrLinkMode("WEBSITE_HOME")}
+              disabled={!storefrontSlug}
+              className="mt-1"
+            />
+            <span>
+              <span className="font-medium">Website home</span>
+              <span className="block text-[var(--muted)]">
+                Opens your storefront homepage.
+              </span>
+            </span>
+          </label>
+          <label className="flex items-start gap-2">
+            <input
+              type="radio"
+              name="qrLinkMode"
+              value="WEBSITE_CATEGORY"
+              checked={qrLinkMode === "WEBSITE_CATEGORY"}
+              onChange={() => setQrLinkMode("WEBSITE_CATEGORY")}
+              disabled={!storefrontSlug || categories.length === 0}
+              className="mt-1"
+            />
+            <span>
+              <span className="font-medium">Website category</span>
+              <span className="block text-[var(--muted)]">
+                Deep-link to a category page (works for stall-only categories
+                too).
+              </span>
+            </span>
+          </label>
+          {qrLinkMode === "WEBSITE_CATEGORY" ? (
+            <label className="flex flex-col gap-1 pl-6 text-sm">
+              <span className="font-medium">Category</span>
+              <select
+                name="qrCategoryId"
+                value={qrCategoryId}
+                onChange={(e) => setQrCategoryId(e.target.value)}
+                className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+                required
+              >
+                <option value="">Select category</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <input type="hidden" name="qrCategoryId" value={qrCategoryId} />
+          )}
+          <label className="flex items-start gap-2">
+            <input
+              type="radio"
+              name="qrLinkMode"
+              value="LEGACY_STAND"
+              checked={qrLinkMode === "LEGACY_STAND"}
+              onChange={() => setQrLinkMode("LEGACY_STAND")}
+              className="mt-1"
+            />
+            <span>
+              <span className="font-medium">Legacy stand page</span>
+              <span className="block text-[var(--muted)]">
+                Classic stand checkout URL. Customer Choice requires this.
+              </span>
+            </span>
+          </label>
+        </fieldset>
 
         <fieldset className="flex flex-col gap-2 text-sm">
           <legend className="font-medium">Cart mode</legend>

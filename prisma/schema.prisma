@@ -492,6 +492,10 @@ model Stand {
   websiteUrl         String?
   /** Vertical config key: bakers | farm-stalls | firewood | … */
   verticalSlug       String?
+  /** Where printed QR codes should land. */
+  qrLinkMode         StandQrLinkMode      @default(LEGACY_STAND)
+  qrCategoryId       String?
+  qrCategory         Category?            @relation("StandQrCategory", fields: [qrCategoryId], references: [id], onDelete: SetNull)
   products           Product[]
   productChannels    ProductChannel[]
   preOrderPages      PreOrderPage[]
@@ -513,22 +517,32 @@ model Stand {
   updatedAt          DateTime             @updatedAt
 
   @@index([ownerId])
+  @@index([qrCategoryId])
+}
+
+enum StandQrLinkMode {
+  LEGACY_STAND
+  WEBSITE_HOME
+  WEBSITE_CATEGORY
 }
 
 /** Owner catalogue taxonomy (not onboarding sellCategories tips). */
 model Category {
-  id          String             @id @default(cuid())
-  ownerId     String
-  owner       Owner              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  title       String
-  slug        String
-  description String?
-  imageUrl    String?
-  sortOrder   Int                @default(0)
-  isActive    Boolean            @default(true)
-  products    ProductCategory[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  id             String             @id @default(cuid())
+  ownerId        String
+  owner          Owner              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title          String
+  slug           String
+  description    String?
+  imageUrl       String?
+  sortOrder      Int                @default(0)
+  isActive       Boolean            @default(true)
+  /** When false, hidden from main-site nav/chips; direct /shop/{slug} still works (QR/stall). */
+  showOnWebsite  Boolean            @default(true)
+  products       ProductCategory[]
+  qrStands       Stand[]            @relation("StandQrCategory")
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
 
   @@unique([ownerId, slug])
   @@index([ownerId, sortOrder])

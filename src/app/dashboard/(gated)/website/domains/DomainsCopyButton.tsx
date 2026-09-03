@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 
-export default function DomainsCopyButton({ value }: { value: string }) {
+export default function DomainsCopyButton({
+  value,
+  label = "Copy",
+}: {
+  value: string;
+  label?: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -19,9 +25,9 @@ export default function DomainsCopyButton({ value }: { value: string }) {
     <button
       type="button"
       onClick={() => void copy()}
-      className="rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:border-[var(--leaf)]"
+      className="shrink-0 rounded-md border border-[var(--line)] bg-white px-2 py-1 text-xs font-semibold hover:border-[var(--leaf)]"
     >
-      {copied ? "Copied" : "Copy address"}
+      {copied ? "Copied" : label}
     </button>
   );
 }
