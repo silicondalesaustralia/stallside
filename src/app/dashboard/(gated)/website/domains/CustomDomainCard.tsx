@@ -74,7 +74,7 @@ export default function CustomDomainCard({ domain }: { domain: CustomDomainRow }
     domain.status !== "ACTIVE" && domain.status !== "DISCONNECTED";
 
   return (
-    <section className="dash-card flex max-w-lg flex-col gap-4 p-5">
+    <section className="dash-card flex flex-col gap-4 p-5">
       <div>
         <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[var(--field)]">
           {domain.hostname}

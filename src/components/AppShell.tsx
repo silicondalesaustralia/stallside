@@ -16,7 +16,7 @@ export default function AppShell({
   showTopBar?: boolean;
 }) {
   return (
-    <div className="mx-auto w-full max-w-[86rem] flex-1 px-4 py-5 print:max-w-none print:px-0 print:py-0 md:px-7 md:py-7">
+    <div className="w-full min-w-0 flex-1 px-4 py-5 print:px-0 print:py-0 md:px-7 md:py-7">
       {showTopBar ? (
         <DashboardTopBar
           businessName={businessName}

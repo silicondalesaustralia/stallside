@@ -9,7 +9,7 @@ export default function CloudflareTrustBadge() {
         alt="Protected and accelerated by Cloudflare services"
         width={828}
         height={271}
-        className="h-auto w-full max-w-[280px]"
+        className="h-auto w-full max-w-md"
       />
       <p className="text-xs leading-snug text-[var(--muted)]">
         You only add DNS records at your domain host — never share registrar

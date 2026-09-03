@@ -95,7 +95,7 @@ export default async function WebsiteDomainsPage({
         <p className="text-sm text-[var(--gone)]">{ERROR_COPY[params.error]}</p>
       ) : null}
 
-      <section className="dash-card flex max-w-lg flex-col gap-3 p-5">
+      <section className="dash-card flex flex-col gap-3 p-5">
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
           Your Vendl address
         </p>
@@ -122,7 +122,7 @@ export default async function WebsiteDomainsPage({
       </section>
 
       {!canCustom ? (
-        <section className="dash-card flex max-w-lg flex-col gap-3 p-5">
+        <section className="dash-card flex flex-col gap-3 p-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
             Use your own domain
           </p>
@@ -135,7 +135,7 @@ export default async function WebsiteDomainsPage({
           </Link>
         </section>
       ) : !featureOn ? (
-        <section className="dash-card max-w-lg p-5 text-sm text-[var(--muted)]">
+        <section className="dash-card p-5 text-sm text-[var(--muted)]">
           Custom domain connect is coming online soon. Your {APP_DOMAIN} address stays
           available.
         </section>
@@ -161,7 +161,7 @@ export default async function WebsiteDomainsPage({
           {domains.length === 0 ? (
             <form
               action={connectDomainAction}
-              className="dash-card flex max-w-lg flex-col gap-4 p-5"
+              className="dash-card flex flex-col gap-4 p-5"
             >
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
