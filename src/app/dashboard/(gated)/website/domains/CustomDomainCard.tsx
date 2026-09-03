@@ -10,10 +10,22 @@ import { defaultCnameInstructions } from "@/lib/domains/provider/cloudflare";
 import CloudflareTrustBadge from "./CloudflareTrustBadge";
 import DnsRecordsList, { type DnsRecord } from "./DnsRecordsList";
 
-function sellerStatus(status: StorefrontDomainStatus): string {
+function sellerStatus(
+  status: StorefrontDomainStatus,
+  errorMessage: string | null,
+  hostnameStatus: string | null,
+  sslStatus: string | null,
+): string {
   if (status === "ACTIVE") return "Active";
   if (status === "ERROR") return "Needs attention";
   if (status === "DISCONNECTED") return "Disconnected";
+  if (errorMessage) return errorMessage;
+  if (hostnameStatus && hostnameStatus.toLowerCase() !== "active") {
+    return `Hostname: ${hostnameStatus}`;
+  }
+  if (sslStatus && sslStatus.toLowerCase() !== "active") {
+    return `Certificate: ${sslStatus}`;
+  }
   return "Waiting for DNS";
 }
 
@@ -28,6 +40,8 @@ export type CustomDomainRow = {
   verificationValue: string | null;
   lastCheckedAt: Date | null;
   errorMessage: string | null;
+  hostnameStatus: string | null;
+  sslStatus: string | null;
 };
 
 function suggestedWww(hostname: string): string {
@@ -86,9 +100,22 @@ export default function CustomDomainCard({ domain }: { domain: CustomDomainRow }
           {domain.hostname}
         </p>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          Status: {sellerStatus(domain.status)}
+          Status:{" "}
+          {sellerStatus(
+            domain.status,
+            domain.errorMessage,
+            domain.hostnameStatus,
+            domain.sslStatus,
+          )}
           {domain.isPrimary ? " · Primary" : ""}
         </p>
+        {domain.hostnameStatus || domain.sslStatus ? (
+          <p className="mt-1 text-xs text-[var(--muted)]">
+            Cloudflare hostname: {domain.hostnameStatus ?? "—"}
+            {" · "}
+            certificate: {domain.sslStatus ?? "—"}
+          </p>
+        ) : null}
       </div>
 
       {apex ? (

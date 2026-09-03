@@ -19,6 +19,8 @@ import {
   cloudflareDeleteCustomHostname,
   cloudflareGetCustomHostname,
   cloudflareHostnameProductionReady,
+  cloudflarePendingStatusLabel,
+  cloudflareRefreshCustomHostname,
   defaultCnameInstructions,
 } from "./provider/cloudflare";
 
@@ -183,21 +185,36 @@ export async function verifyCustomDomain(input: {
   let errorMessage: string | null = null;
   let verifiedAt = row.verifiedAt;
   let activatedAt = row.activatedAt;
+  let verificationMethod = row.verificationMethod;
+  let verificationName = row.verificationName;
+  let verificationValue = row.verificationValue;
 
   if (row.cloudflareCustomHostnameId && cloudflareConfigured()) {
     try {
-      const cf = await cloudflareGetCustomHostname(row.cloudflareCustomHostnameId);
+      // PATCH re-runs validation; fall back to GET if refresh fails.
+      let cf;
+      try {
+        cf = await cloudflareRefreshCustomHostname(
+          row.cloudflareCustomHostnameId,
+        );
+      } catch {
+        cf = await cloudflareGetCustomHostname(row.cloudflareCustomHostnameId);
+      }
       hostnameStatus = cf.status;
       sslStatus = cf.sslStatus;
+      if (cf.ownershipVerification?.name && cf.ownershipVerification.value) {
+        verificationMethod = cf.ownershipVerification.type ?? "txt";
+        verificationName = cf.ownershipVerification.name;
+        verificationValue = cf.ownershipVerification.value;
+      }
       if (cloudflareHostnameProductionReady(cf)) {
         status = StorefrontDomainStatus.ACTIVE;
         verifiedAt = verifiedAt ?? new Date();
         activatedAt = activatedAt ?? new Date();
+        errorMessage = null;
       } else {
         status = StorefrontDomainStatus.VERIFYING;
-        if (cf.verificationErrors.length) {
-          errorMessage = cf.verificationErrors.join("; ");
-        }
+        errorMessage = cloudflarePendingStatusLabel(cf);
       }
     } catch (e) {
       status = StorefrontDomainStatus.ERROR;
@@ -222,6 +239,9 @@ export async function verifyCustomDomain(input: {
       lastCheckedAt: new Date(),
       verifiedAt,
       activatedAt,
+      verificationMethod,
+      verificationName,
+      verificationValue,
       errorCode: status === StorefrontDomainStatus.ERROR ? "cf_status" : null,
       errorMessage,
     },

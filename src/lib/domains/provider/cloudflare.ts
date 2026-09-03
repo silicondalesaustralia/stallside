@@ -3,6 +3,11 @@ import {
   cloudflareSaasCnameTarget,
 } from "../config";
 
+export type CloudflareSslTxtRecord = {
+  name: string;
+  value: string;
+};
+
 export type CloudflareCustomHostnameResult = {
   id: string;
   hostname: string;
@@ -14,6 +19,7 @@ export type CloudflareCustomHostnameResult = {
     name: string | null;
     value: string | null;
   } | null;
+  sslTxtRecords: CloudflareSslTxtRecord[];
 };
 
 function cfHeaders(): HeadersInit {
@@ -29,6 +35,21 @@ function zoneBase(): string {
   const zoneId = process.env.CLOUDFLARE_ZONE_ID?.trim();
   if (!zoneId) throw new Error("CLOUDFLARE_ZONE_ID is not set");
   return `https://api.cloudflare.com/client/v4/zones/${zoneId}/custom_hostnames`;
+}
+
+function mapSslTxtRecords(ssl: Record<string, unknown> | null): CloudflareSslTxtRecord[] {
+  if (!ssl) return [];
+  const raw = ssl.validation_records;
+  if (!Array.isArray(raw)) return [];
+  const out: CloudflareSslTxtRecord[] = [];
+  for (const row of raw) {
+    if (!row || typeof row !== "object") continue;
+    const rec = row as Record<string, unknown>;
+    const name = rec.txt_name != null ? String(rec.txt_name) : "";
+    const value = rec.txt_value != null ? String(rec.txt_value) : "";
+    if (name && value) out.push({ name, value });
+  }
+  return out;
 }
 
 function mapResult(raw: Record<string, unknown>): CloudflareCustomHostnameResult {
@@ -50,6 +71,7 @@ function mapResult(raw: Record<string, unknown>): CloudflareCustomHostnameResult
           value: ownership.value != null ? String(ownership.value) : null,
         }
       : null,
+    sslTxtRecords: mapSslTxtRecords(ssl),
   };
 }
 
@@ -68,6 +90,9 @@ async function parseCfJson(res: Response): Promise<Record<string, unknown>> {
   return (body.result as Record<string, unknown>) ?? {};
 }
 
+/** HTTP DCV once the hostname CNAMEs to the SaaS zone (no extra SSL TXT). */
+const SSL_SETTINGS = { method: "http", type: "dv" } as const;
+
 /** Create a Cloudflare for SaaS custom hostname. */
 export async function cloudflareCreateCustomHostname(
   hostname: string,
@@ -80,7 +105,7 @@ export async function cloudflareCreateCustomHostname(
     headers: cfHeaders(),
     body: JSON.stringify({
       hostname,
-      ssl: { method: "txt", type: "dv" },
+      ssl: SSL_SETTINGS,
     }),
   });
   const result = await parseCfJson(res);
@@ -96,6 +121,22 @@ export async function cloudflareGetCustomHostname(
   const res = await fetch(`${zoneBase()}/${encodeURIComponent(id)}`, {
     method: "GET",
     headers: cfHeaders(),
+  });
+  const result = await parseCfJson(res);
+  return mapResult(result);
+}
+
+/** PATCH refresh — re-runs hostname + certificate validation. */
+export async function cloudflareRefreshCustomHostname(
+  id: string,
+): Promise<CloudflareCustomHostnameResult> {
+  if (!cloudflareConfigured()) {
+    throw new Error("Cloudflare custom hostnames are not configured");
+  }
+  const res = await fetch(`${zoneBase()}/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: cfHeaders(),
+    body: JSON.stringify({ ssl: SSL_SETTINGS }),
   });
   const result = await parseCfJson(res);
   return mapResult(result);
@@ -120,8 +161,6 @@ export function defaultCnameInstructions(hostname: string): {
   value: string;
 } {
   const labels = hostname.split(".");
-  // Apex (example.com): CNAME/ALIAS @ → customers.vendl.app (CF flattening).
-  // Subdomain (shop.example.com): CNAME shop → customers.vendl.app.
   const name =
     labels.length === 2 ||
     (labels.length === 3 &&
@@ -150,4 +189,17 @@ export function cloudflareHostnameProductionReady(
     result.status.toLowerCase() === "active" &&
     (result.sslStatus ?? "").toLowerCase() === "active"
   );
+}
+
+export function cloudflarePendingStatusLabel(
+  result: Pick<CloudflareCustomHostnameResult, "status" | "sslStatus" | "verificationErrors">,
+): string {
+  const host = result.status.toLowerCase();
+  const ssl = (result.sslStatus ?? "").toLowerCase();
+  if (result.verificationErrors.length) {
+    return result.verificationErrors[0] ?? "Waiting for DNS";
+  }
+  if (host !== "active") return "Waiting for DNS";
+  if (ssl && ssl !== "active") return "Waiting for certificate";
+  return "Waiting for DNS";
 }

@@ -71,6 +71,7 @@ describe("cloudflare readiness", () => {
         sslStatus: "active",
         verificationErrors: [],
         ownershipVerification: null,
+        sslTxtRecords: [],
       }),
       true,
     );
@@ -82,6 +83,7 @@ describe("cloudflare readiness", () => {
         sslStatus: "active",
         verificationErrors: [],
         ownershipVerification: null,
+        sslTxtRecords: [],
       }),
       false,
     );

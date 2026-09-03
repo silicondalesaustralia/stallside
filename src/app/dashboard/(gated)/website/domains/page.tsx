@@ -157,6 +157,8 @@ export default async function WebsiteDomainsPage({
                 verificationValue: d.verificationValue,
                 lastCheckedAt: d.lastCheckedAt,
                 errorMessage: d.errorMessage,
+                hostnameStatus: d.hostnameStatus,
+                sslStatus: d.sslStatus,
               }}
             />
           ))}
