@@ -108,6 +108,36 @@ NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY=0
 
 If the `Host` header arriving at Next.js is the fallback origin instead of the custom hostname, document whether a minimal Worker rewrite is required before enabling routing for sellers.
 
+## 10. Origin Host rewrite (required for Vercel — sellers do NOT add domains in Vercel)
+
+Vercel returns `DEPLOYMENT_NOT_FOUND` if `Host` is an unknown seller hostname. Cloudflare for SaaS forwards the seller `Host` by default. Fix at the edge:
+
+### A. Healthy fallback on Vercel
+
+1. Vercel project → Domains → add **`fallback.vendl.app`** (Production or the env SaaS should hit).
+2. Cloudflare DNS for `vendl.app`: **`fallback`** CNAME → Vercel target, **DNS only** (grey). Proxied fallback often causes **525**.
+
+### B. Preserve seller hostname + override origin Host
+
+In Cloudflare → zone `vendl.app` → **Rules**:
+
+1. **Transform Rule** (HTTP Request Header Modification) — runs first  
+   - When: Hostname does not equal `vendl.app` / `www.vendl.app` / `fallback.vendl.app` / `staging.vendl.app` / `*.vendl.app` seller patterns you want excluded — simplest match for SaaS:  
+     `http.host ne "fallback.vendl.app" and not ends with ".vendl.app"`  
+     (custom hostnames are external, e.g. `www.stallside.app`)  
+   - Then: Set static header **`X-Vendl-Original-Host`** = use dynamic value from `http.host`  
+     (In CF UI: “Set static” vs dynamic — use the field that copies the current Host.)
+
+2. **Origin Rule** — Host header override  
+   - Same when filter as above (external custom hostnames only)  
+   - Then: **Host Header** → `fallback.vendl.app`
+
+Vendl middleware reads `X-Vendl-Original-Host` (then `X-Forwarded-Host`) when `Host` is an infra host.
+
+### C. Same environment as Domains UI
+
+SaaS traffic hits whatever deployment `fallback.vendl.app` points at. The custom domain row must exist in **that** environment’s DB with routing enabled (`CUSTOM_DOMAINS_ROUTING_ENABLED=1`). Connecting only on staging while fallback → Production will 404 the shop.
+
 ## Spike result (fill in)
 
 | Check | Result |

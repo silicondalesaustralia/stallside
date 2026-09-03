@@ -45,6 +45,9 @@ export const RESERVED_VENDL_SUBDOMAINS = new Set([
   "stallside",
   "demo",
   "www-demo",
+  "fallback",
+  "customers",
+  "origin",
 ]);
 
 export function isReservedVendlSubdomain(label: string): boolean {

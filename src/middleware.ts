@@ -8,6 +8,7 @@ import {
 } from "@/lib/auth-session";
 import { APP_DOMAIN } from "@/lib/constants";
 import { resolveHostname } from "@/lib/tenancy/hostname";
+import { requestPublicHostname } from "@/lib/tenancy/request-hostname";
 import { legacyStorefrontRedirect } from "@/lib/tenancy/legacy-redirects";
 import { resolveCustomDomainSlug } from "@/lib/domains/middleware-lookup";
 
@@ -109,8 +110,8 @@ function applyTenantRewrite(
 }
 
 export async function middleware(request: NextRequest) {
-  const hostHeader = request.headers.get("host");
-  const host = (hostHeader ?? "").split(":")[0].toLowerCase();
+  const hostHeader = requestPublicHostname(request);
+  const host = hostHeader;
   const pathname = request.nextUrl.pathname;
 
   const legacyDest = legacyStorefrontRedirect(
