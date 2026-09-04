@@ -8,6 +8,7 @@ import {
   namecheapConfigured,
   namecheapUsername,
 } from "./config";
+import { proxiedFetch } from "../proxied-fetch";
 
 export class NamecheapApiError extends Error {
   constructor(
@@ -47,7 +48,7 @@ export async function namecheapCall(
     url.searchParams.set(k, v);
   }
 
-  const res = await fetch(url.toString(), {
+  const res = await proxiedFetch(url.toString(), {
     method: "GET",
     signal: AbortSignal.timeout(30_000),
   });

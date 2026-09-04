@@ -26,11 +26,15 @@ NAMECHEAP_PRODUCTION_API_URL=https://api.namecheap.com/xml.response
 
 Namecheap requires `ClientIp` and whitelisted IPv4.
 
-- Sandbox whitelist IPs: _(list)_
-- Production whitelist IPs: _(list)_
-- Vercel egress strategy: _(document after spike — fixed egress / proxy if needed)_
+**Egress:** Fixie HTTP proxy (`FIXIE_URL`) — Vercel functions call Namecheap through Fixie static outbound IPs.
 
-Do not use a developer home IP as production infrastructure.
+- Fixie outbound IPs (whitelist **both** in Namecheap API Access):
+  - `52.87.82.133`
+  - `52.5.155.132`
+- `NAMECHEAP_CLIENT_IP` = one of the above (e.g. `52.87.82.133`)
+- `FIXIE_URL` = Fixie proxy URL (Preview for staging; Production when live)
+
+Do not use a developer home IP or raw Vercel pool IPs as production infrastructure.
 
 ## Funding
 
@@ -39,7 +43,7 @@ Account balance / funding notes: _(fill — do not fund only for API thresholds 
 ## Production enable checklist
 
 1. Sandbox spike PASSED (incl. seller-as-registrant)
-2. `.com.au` / `.au` / `.com` verified
-3. Stable production egress IP whitelisted
+2. `.com.au` / `.com` / `.net.au` verified (`.au` out of scope)
+3. Fixie outbound IPs whitelisted + `FIXIE_URL` + `NAMECHEAP_CLIENT_IP` set
 4. Production API access enabled on account
-5. `NAMECHEAP_INTEGRATION_ENABLED=1` only after review
+5. Purchase flags reviewed before `DOMAIN_PURCHASE_ENABLED=1`
