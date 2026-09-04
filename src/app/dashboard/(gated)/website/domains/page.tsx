@@ -11,9 +11,14 @@ import {
 } from "@/lib/tenancy/public-url";
 import DomainsCopyButton from "./DomainsCopyButton";
 import CustomDomainCard from "./CustomDomainCard";
+import BuyDomainSearch from "./BuyDomainSearch";
 import { connectDomainAction } from "./actions";
 import { ownerCanUseCustomDomains } from "@/lib/domains/entitlements";
-import { customDomainsFeatureEnabled } from "@/lib/domains/config";
+import {
+  customDomainsFeatureEnabled,
+  domainPurchaseEnabled,
+  domainSearchEnabled,
+} from "@/lib/domains/config";
 import { getStorefrontUrl } from "@/lib/domains/preferred-origin";
 import { loadPreferredOriginInput } from "@/lib/domains/resolve";
 
@@ -38,6 +43,7 @@ export default async function WebsiteDomainsPage({
     checked?: string;
     primary?: string;
     disconnected?: string;
+    purchased?: string;
     error?: string;
   }>;
 }) {
@@ -54,6 +60,8 @@ export default async function WebsiteDomainsPage({
     lifetimeAccess: ownerRow.lifetimeAccess,
   });
   const featureOn = customDomainsFeatureEnabled();
+  const searchOn = domainSearchEnabled();
+  const purchaseOn = domainPurchaseEnabled();
 
   const domains = await prisma.storefrontDomain.findMany({
     where: {
@@ -81,6 +89,11 @@ export default async function WebsiteDomainsPage({
         </p>
       </div>
 
+      {params.purchased ? (
+        <p className="text-sm text-[var(--leaf-dark)]">
+          Payment received — we&apos;re registering and connecting your domain.
+        </p>
+      ) : null}
       {params.connected ? (
         <p className="text-sm text-[var(--leaf-dark)]">Domain connected — add the DNS record below.</p>
       ) : null}
@@ -143,6 +156,7 @@ export default async function WebsiteDomainsPage({
         </section>
       ) : (
         <>
+          {searchOn ? <BuyDomainSearch purchaseEnabled={purchaseOn} /> : null}
           {domains.map((d) => (
             <CustomDomainCard
               key={d.id}

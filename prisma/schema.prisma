@@ -326,6 +326,7 @@ model Owner {
   categories                Category[]
   customers                 Customer[]
   storefront                Storefront?
+  domainPurchases           DomainPurchase[]
   preOrderPages             PreOrderPage[]
   menus                     Menu[]
   subscriptionOffers        SubscriptionOffer[]
@@ -639,6 +640,7 @@ model Storefront {
   /** Legacy single field; prefer StorefrontDomain rows (Phase 9). */
   customDomain    String?
   domains         StorefrontDomain[]
+  domainPurchases DomainPurchase[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -656,6 +658,57 @@ enum StorefrontDomainStatus {
   ACTIVE
   ERROR
   DISCONNECTED
+}
+
+enum DomainPurchaseStatus {
+  AWAITING_PAYMENT
+  PAID
+  REGISTERING
+  REGISTERED
+  CONNECTING
+  ACTIVE
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+/** Phase 9A — Buy a Domain order (pay before Namecheap register). */
+model DomainPurchase {
+  id                      String               @id @default(cuid())
+  ownerId                 String
+  owner                   Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  storefrontId            String
+  storefront              Storefront           @relation(fields: [storefrontId], references: [id], onDelete: Cascade)
+  storefrontDomainId      String?
+  storefrontDomain        StorefrontDomain?    @relation(fields: [storefrontDomainId], references: [id], onDelete: SetNull)
+  registrar               String               @default("NAMECHEAP")
+  registrarDomainId       String?
+  /** Apex hostname purchased (e.g. farm.com.au). */
+  hostname                String
+  tld                     String
+  status                  DomainPurchaseStatus @default(AWAITING_PAYMENT)
+  registrationYears       Int                  @default(1)
+  registrarAmountCents    Int
+  registrarCurrency       String               @default("USD")
+  retailAmountCents       Int
+  retailCurrency          String               @default("AUD")
+  renewalRetailCents      Int?
+  taxAmountCents          Int                  @default(0)
+  stripeCheckoutSessionId String?
+  stripePaymentIntentId   String?
+  idempotencyKey          String               @unique
+  /** Minimal registrant snapshot for post-payment register (server-only). */
+  registrantJson          Json
+  auEligibilityJson       Json?
+  lastError               String?
+  registeredAt            DateTime?
+  expiresAt               DateTime?
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+
+  @@index([ownerId, status])
+  @@index([storefrontId, status])
+  @@index([hostname])
 }
 
 /** Phase 9 — hostname → storefront mapping (Vendl subdomain or Cloudflare custom hostname). */
@@ -680,6 +733,7 @@ model StorefrontDomain {
   activatedAt                DateTime?
   errorCode                  String?
   errorMessage               String?
+  domainPurchases            DomainPurchase[]
   createdAt                  DateTime               @default(now())
   updatedAt                  DateTime               @updatedAt
 

@@ -29,3 +29,29 @@ export function cloudflareConfigured(): boolean {
 export function domainsInternalLookupSecret(): string | null {
   return process.env.DOMAINS_INTERNAL_LOOKUP_SECRET?.trim() || null;
 }
+
+/** Phase 9A — Buy a Domain feature flags (off until spike + app gate). */
+export function domainSearchEnabled(): boolean {
+  return (
+    customDomainsFeatureEnabled() &&
+    process.env.DOMAIN_SEARCH_ENABLED === "1"
+  );
+}
+
+export function domainPurchaseEnabled(): boolean {
+  return (
+    domainSearchEnabled() &&
+    process.env.DOMAIN_PURCHASE_ENABLED === "1"
+  );
+}
+
+export function auDomainPurchaseEnabled(): boolean {
+  return (
+    domainPurchaseEnabled() &&
+    process.env.AU_DOMAIN_PURCHASE_ENABLED === "1"
+  );
+}
+
+export function premiumDomainPurchaseEnabled(): boolean {
+  return process.env.PREMIUM_DOMAIN_PURCHASE_ENABLED === "1";
+}

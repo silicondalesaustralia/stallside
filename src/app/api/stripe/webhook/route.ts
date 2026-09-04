@@ -21,6 +21,7 @@ import {
   handleShopperInvoicePaid,
   handleShopperSubscriptionEvent,
 } from "@/lib/shopper-subscription-webhook";
+import { markDomainPurchasePaid } from "@/lib/domains/purchase-fulfill";
 
 export const runtime = "nodejs";
 
@@ -29,6 +30,22 @@ async function handleCheckoutCompleted(
   livemode: boolean,
   connectedAccountId: string | undefined,
 ) {
+  if (
+    session.metadata?.purpose === "domain_purchase" &&
+    session.metadata.domainPurchaseId &&
+    session.payment_status === "paid"
+  ) {
+    const paymentIntentId =
+      typeof session.payment_intent === "string"
+        ? session.payment_intent
+        : session.payment_intent?.id ?? null;
+    await markDomainPurchasePaid(
+      session.metadata.domainPurchaseId,
+      paymentIntentId,
+    );
+    return;
+  }
+
   if (session.mode === "subscription") {
     const shopper = await handleShopperCheckoutCompleted(
       session,
