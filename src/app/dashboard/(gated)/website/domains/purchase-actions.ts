@@ -49,8 +49,11 @@ export async function startDomainCheckoutAction(formData: FormData) {
     };
   }
 
+  // redirect() throws NEXT_REDIRECT — must not sit inside try/catch or the
+  // Stripe Checkout hop is swallowed and the client lands on a broken route.
+  let checkoutUrl: string;
   try {
-    const { checkoutUrl } = await startDomainPurchaseCheckout({
+    ({ checkoutUrl } = await startDomainPurchaseCheckout({
       ownerId: owner.id,
       storefrontId: storefront.id,
       ownerEmail: user.email ?? null,
@@ -58,8 +61,7 @@ export async function startDomainCheckoutAction(formData: FormData) {
       registrant,
       au,
       retailCurrency,
-    });
-    redirect(checkoutUrl);
+    }));
   } catch (e) {
     if (e instanceof DomainPurchaseError) {
       redirect(
@@ -68,4 +70,5 @@ export async function startDomainCheckoutAction(formData: FormData) {
     }
     throw e;
   }
+  redirect(checkoutUrl);
 }

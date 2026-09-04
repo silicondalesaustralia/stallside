@@ -13,6 +13,7 @@ import { namecheapConfigured } from "@/lib/domains/registrar/namecheap/config";
 import { domainTld } from "@/lib/domains/registrar/namecheap/au-attrs";
 import { retailFromRegistrarUsd } from "@/lib/domains/registrar/retail-pricing";
 import { LAUNCH_TLDS } from "@/lib/domains/registrar/search";
+import { ensureStripeCustomerForOwner } from "@/lib/domains/stripe-customer";
 import type { AuEligibility, RegistrantContact } from "@/lib/domains/registrar/types";
 import type { BillingCurrency } from "@/lib/saas-pricing";
 
@@ -71,19 +72,12 @@ export async function startDomainPurchaseCheckout(input: {
   const owner = await prisma.owner.findUniqueOrThrow({
     where: { id: input.ownerId },
   });
-  let customerId = owner.stripeCustomerId;
-  if (!customerId) {
-    const customer = await getStripe().customers.create({
-      email: input.ownerEmail || owner.contactEmail || undefined,
-      name: owner.businessName,
-      metadata: { ownerId: owner.id },
-    });
-    customerId = customer.id;
-    await prisma.owner.update({
-      where: { id: owner.id },
-      data: { stripeCustomerId: customerId },
-    });
-  }
+  let customerId = await ensureStripeCustomerForOwner({
+    ownerId: owner.id,
+    existingCustomerId: owner.stripeCustomerId,
+    email: input.ownerEmail || owner.contactEmail || undefined,
+    name: owner.businessName,
+  });
 
   const purchase = await prisma.domainPurchase.create({
     data: {
