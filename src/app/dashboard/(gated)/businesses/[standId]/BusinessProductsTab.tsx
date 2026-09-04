@@ -43,6 +43,7 @@ export default function BusinessProductsTab({
               <div>
                 <Link
                   href={`/dashboard/products/${p.id}`}
+                  prefetch={false}
                   className="font-medium text-[var(--ink)] hover:underline"
                 >
                   {p.name}
@@ -53,6 +54,7 @@ export default function BusinessProductsTab({
               </div>
               <Link
                 href={`/dashboard/products/${p.id}`}
+                prefetch={false}
                 className="text-[var(--leaf-dark)] underline"
               >
                 Edit

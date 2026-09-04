@@ -44,6 +44,7 @@ export default function ProductListRow({
           <div className="flex flex-col items-stretch gap-2 sm:items-end">
             <Link
               href={`/dashboard/products/${product.id}`}
+              prefetch={false}
               className="inline-flex justify-center rounded-full bg-[var(--field)] px-4 py-2 text-sm font-bold text-[var(--ink-on-dark)]"
             >
               Edit

@@ -10,6 +10,9 @@ import ProductOptionsEditor from "./ProductOptionsEditor";
 import ProductStockCard from "./ProductStockCard";
 import { parsePriceTiers } from "@/lib/price-tiers";
 
+/** Auth-gated; never serve a cached anonymous RSC payload for Edit links. */
+export const dynamic = "force-dynamic";
+
 export default async function EditProductPage({
   params,
   searchParams,
@@ -17,28 +20,18 @@ export default async function EditProductPage({
   params: Promise<{ productId: string }>;
   searchParams: Promise<{ imageError?: string }>;
 }) {
-  const { productId } = await params;
+  const { productId: rawProductId } = await params;
+  const productId =
+    typeof rawProductId === "string" ? rawProductId.trim() : "";
   const { imageError } = await searchParams;
+  if (!productId) notFound();
+
   const { owner } = await requireOwner();
+
   const product = await prisma.product.findFirst({
     where: { id: productId, ownerId: owner.id },
     include: {
-      stand: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          products: {
-            where: {
-              isArchived: false,
-              isHidden: false,
-              NOT: { id: productId },
-            },
-            orderBy: { sortOrder: "asc" },
-            select: { id: true, name: true, priceCents: true },
-          },
-        },
-      },
+      stand: { select: { id: true, name: true, slug: true } },
       optionGroups: {
         orderBy: { sortOrder: "asc" },
         include: { choices: { orderBy: { sortOrder: "asc" } } },
@@ -46,6 +39,18 @@ export default async function EditProductPage({
     },
   });
   if (!product) notFound();
+
+  const siblingProducts = await prisma.product.findMany({
+    where: {
+      standId: product.stand.id,
+      ownerId: owner.id,
+      isArchived: false,
+      isHidden: false,
+      NOT: { id: productId },
+    },
+    orderBy: { sortOrder: "asc" },
+    select: { id: true, name: true, priceCents: true },
+  });
 
   const path = standProductPath(product.stand.slug, product.slug);
 
@@ -104,7 +109,7 @@ export default async function EditProductPage({
           hasOptions: product.optionGroups.length > 0,
           upsellProductId: product.upsellProductId,
           upsellPriceCents: product.upsellPriceCents,
-          siblingProducts: product.stand.products,
+          siblingProducts,
         }}
         initialImageError={imageError ?? null}
       />
