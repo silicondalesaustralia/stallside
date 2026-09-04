@@ -1,23 +1,42 @@
 import Link from "next/link";
-import AdminLoginAsButton from "@/components/AdminLoginAsButton";
+import AdminOwnersTable from "@/components/AdminOwnersTable";
+import AdminSearchForm from "@/components/AdminSearchForm";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { audRatesFromMarket, formatBillingWithAud } from "@/lib/fx-to-aud";
+import { audRatesFromMarket } from "@/lib/fx-to-aud";
+import { adminListHref } from "@/lib/admin-list-href";
+import type { Prisma } from "@/generated/prisma/client";
 
 const PAGE_SIZE = 50;
+const BASE = "/admin/owners";
 
 export default async function AdminOwnersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; q?: string }>;
 }) {
   await requireAdmin();
   const params = await searchParams;
+  const q = (params.q ?? "").trim();
   const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
   const skip = (page - 1) * PAGE_SIZE;
 
+  const where: Prisma.OwnerWhereInput = q
+    ? {
+        OR: [
+          { businessName: { contains: q, mode: "insensitive" } },
+          { contactEmail: { contains: q, mode: "insensitive" } },
+          { user: { email: { contains: q, mode: "insensitive" } } },
+          { id: { contains: q, mode: "insensitive" } },
+          { stands: { some: { name: { contains: q, mode: "insensitive" } } } },
+          { stands: { some: { slug: { contains: q, mode: "insensitive" } } } },
+        ],
+      }
+    : {};
+
   const [owners, total, fx] = await Promise.all([
     prisma.owner.findMany({
+      where,
       orderBy: { createdAt: "desc" },
       skip,
       take: PAGE_SIZE,
@@ -26,7 +45,7 @@ export default async function AdminOwnersPage({
         stands: { select: { id: true, name: true }, take: 4 },
       },
     }),
-    prisma.owner.count(),
+    prisma.owner.count({ where }),
     audRatesFromMarket(),
   ]);
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -40,71 +59,23 @@ export default async function AdminOwnersPage({
         </p>
       </div>
 
+      <AdminSearchForm
+        q={q}
+        placeholder="Search business, email, stall, or owner ID"
+        clearHref={BASE}
+      />
+
       {owners.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">No owners yet.</p>
+        <p className="text-sm text-[var(--muted)]">
+          {q ? `No subscribers match “${q}”.` : "No owners yet."}
+        </p>
       ) : (
-        <div className="dash-card overflow-x-auto p-4">
-          <table className="w-full min-w-[720px] border-collapse text-left text-sm">
-            <thead>
-              <tr className="border-b border-[var(--line)] text-xs uppercase tracking-wide text-[var(--muted)]">
-                <th className="py-2 pr-3 font-medium">Business / stalls</th>
-                <th className="py-2 pr-3 font-medium">Owner ID</th>
-                <th className="py-2 pr-3 font-medium">Email</th>
-                <th className="py-2 pr-3 font-medium">Plan</th>
-                <th className="py-2 pr-3 font-medium">LTV</th>
-                <th className="py-2 pr-3 font-medium">Status</th>
-                <th className="py-2 font-medium">Support</th>
-              </tr>
-            </thead>
-            <tbody>
-              {owners.map((owner) => (
-                <tr
-                  key={owner.id}
-                  className="border-b border-[var(--line)] align-top"
-                >
-                  <td className="py-3 pr-3">
-                    <Link
-                      href={`/admin/owners/${owner.id}`}
-                      className="font-medium underline"
-                    >
-                      {owner.businessName}
-                    </Link>
-                    <p className="mt-0.5 text-[var(--muted)]">
-                      {owner.stands.length === 0
-                        ? "No stalls"
-                        : owner.stands.map((s) => s.name).join(", ")}
-                    </p>
-                  </td>
-                  <td className="py-3 pr-3">
-                    <code className="text-xs">{owner.id}</code>
-                  </td>
-                  <td className="py-3 pr-3">{owner.user.email}</td>
-                  <td className="py-3 pr-3 capitalize">
-                    {owner.subscriptionPlan ?? "-"}
-                  </td>
-                  <td className="py-3 pr-3">
-                    {formatBillingWithAud(
-                      owner.lifetimePaidCents,
-                      owner.billingCurrency,
-                      fx,
-                    )}
-                  </td>
-                  <td className="py-3 pr-3 capitalize">
-                    {owner.subscriptionStatus.toLowerCase()}
-                  </td>
-                  <td className="py-3">
-                    <AdminLoginAsButton ownerId={owner.id} compact />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <AdminOwnersTable owners={owners} fx={fx} />
       )}
       {pageCount > 1 ? (
         <nav className="flex items-center gap-3 text-sm">
           {page > 1 ? (
-            <Link href={`/admin/owners?page=${page - 1}`} className="underline">
+            <Link href={adminListHref(BASE, page - 1, q)} className="underline">
               Previous
             </Link>
           ) : (
@@ -112,15 +83,20 @@ export default async function AdminOwnersPage({
           )}
           <span className="text-[var(--muted)]">
             Page {page} of {pageCount}
+            {q ? ` · ${total} match${total === 1 ? "" : "es"}` : ""}
           </span>
           {page < pageCount ? (
-            <Link href={`/admin/owners?page=${page + 1}`} className="underline">
+            <Link href={adminListHref(BASE, page + 1, q)} className="underline">
               Next
             </Link>
           ) : (
             <span className="text-[var(--muted)]">Next</span>
           )}
         </nav>
+      ) : q && total > 0 ? (
+        <p className="text-sm text-[var(--muted)]">
+          {total} match{total === 1 ? "" : "es"}
+        </p>
       ) : null}
     </main>
   );
