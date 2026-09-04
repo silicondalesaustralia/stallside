@@ -44,7 +44,11 @@ export default function ProductLifecycleActions({
           throw err;
         }
         console.error(err);
-        setError("Something went wrong. Try again.");
+        setError(
+          err instanceof Error && err.message
+            ? err.message
+            : "Something went wrong. Try again.",
+        );
       }
     });
   }
