@@ -9,10 +9,12 @@ import {
   storefrontSubdomainHost,
   storefrontSubdomainPrimaryEnabled,
 } from "@/lib/tenancy/public-url";
-import DomainsCopyButton from "./DomainsCopyButton";
 import CustomDomainCard from "./CustomDomainCard";
 import BuyDomainSearch from "./BuyDomainSearch";
-import { connectDomainAction } from "./actions";
+import DomainPathCards from "./DomainPathCards";
+import ConnectDomainForm from "./ConnectDomainForm";
+import VendlAddressCard from "./VendlAddressCard";
+import DomainsFlash from "./DomainsFlash";
 import { ownerCanUseCustomDomains } from "@/lib/domains/entitlements";
 import {
   customDomainsFeatureEnabled,
@@ -22,28 +24,16 @@ import {
 import { getStorefrontUrl } from "@/lib/domains/preferred-origin";
 import { loadPreferredOriginInput } from "@/lib/domains/resolve";
 
-const ERROR_COPY: Record<string, string> = {
-  feature_disabled: "Custom domains are not enabled on this environment yet.",
-  not_entitled: "Custom domains are included with Vendl Pro.",
-  invalid_hostname: "Enter a hostname such as www.yourdomain.com.",
-  apex_use_www:
-    "Connect www.yourdomain.com for now — bare domains (yourdomain.com) aren’t supported yet. You can redirect the bare domain to www at your DNS host.",
-  conflict: "This domain is already connected to another Vendl store.",
-  cloudflare_unconfigured: "Domain infrastructure is not configured yet.",
-  cloudflare_error: "Cloudflare could not process that domain. Try again shortly.",
-  not_found: "Domain not found.",
-};
-
 export default async function WebsiteDomainsPage({
   searchParams,
 }: {
   searchParams: Promise<{
-    saved?: string;
     connected?: string;
     checked?: string;
     primary?: string;
     disconnected?: string;
     purchased?: string;
+    path?: string;
     error?: string;
   }>;
 }) {
@@ -62,6 +52,8 @@ export default async function WebsiteDomainsPage({
   const featureOn = customDomainsFeatureEnabled();
   const searchOn = domainSearchEnabled();
   const purchaseOn = domainPurchaseEnabled();
+  const path =
+    params.path === "buy" || params.path === "connect" ? params.path : null;
 
   const domains = await prisma.storefrontDomain.findMany({
     where: {
@@ -74,9 +66,6 @@ export default async function WebsiteDomainsPage({
 
   const preferred = await loadPreferredOriginInput(storefront);
   const liveUrl = getStorefrontUrl(preferred);
-  const vendlHost = storefrontSubdomainHost(storefront.slug);
-  const subdomainLive = storefrontSubdomainPrimaryEnabled();
-  const pathUrl = storefrontPublicUrl(storefront.slug, { forcePath: true });
 
   return (
     <main className="flex flex-col gap-8">
@@ -89,52 +78,21 @@ export default async function WebsiteDomainsPage({
         </p>
       </div>
 
-      {params.purchased ? (
-        <p className="text-sm text-[var(--leaf-dark)]">
-          Payment received — we&apos;re registering and connecting your domain.
-        </p>
-      ) : null}
-      {params.connected ? (
-        <p className="text-sm text-[var(--leaf-dark)]">Domain connected — add the DNS record below.</p>
-      ) : null}
-      {params.checked ? (
-        <p className="text-sm text-[var(--leaf-dark)]">Status refreshed.</p>
-      ) : null}
-      {params.primary ? (
-        <p className="text-sm text-[var(--leaf-dark)]">Primary domain updated.</p>
-      ) : null}
-      {params.disconnected ? (
-        <p className="text-sm text-[var(--leaf-dark)]">Domain disconnected.</p>
-      ) : null}
-      {params.error && ERROR_COPY[params.error] ? (
-        <p className="text-sm text-[var(--gone)]">{ERROR_COPY[params.error]}</p>
-      ) : null}
+      <DomainsFlash
+        purchased={params.purchased}
+        connected={params.connected}
+        checked={params.checked}
+        primary={params.primary}
+        disconnected={params.disconnected}
+        error={params.error}
+      />
 
-      <section className="dash-card flex flex-col gap-3 p-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-          Your Vendl address
-        </p>
-        <p className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
-          {vendlHost}
-        </p>
-        <p className="text-sm text-[var(--muted)]">
-          Included with every account
-          {!subdomainLive ? ` · also ${pathUrl}` : null}.
-        </p>
-        <div className="mt-2 flex flex-wrap gap-3">
-          <a href={liveUrl} target="_blank" rel="noreferrer" className={dashCtaClass}>
-            View site
-          </a>
-          <DomainsCopyButton value={liveUrl} label="Copy address" />
-        </div>
-        <p className="text-xs text-[var(--muted)]">
-          Change your address in{" "}
-          <Link href="/dashboard/website/details" className="underline">
-            Shop details
-          </Link>{" "}
-          (slug).
-        </p>
-      </section>
+      <VendlAddressCard
+        vendlHost={storefrontSubdomainHost(storefront.slug)}
+        pathUrl={storefrontPublicUrl(storefront.slug, { forcePath: true })}
+        subdomainLive={storefrontSubdomainPrimaryEnabled()}
+        liveUrl={liveUrl}
+      />
 
       {!canCustom ? (
         <section className="dash-card flex flex-col gap-3 p-5">
@@ -156,7 +114,6 @@ export default async function WebsiteDomainsPage({
         </section>
       ) : (
         <>
-          {searchOn ? <BuyDomainSearch purchaseEnabled={purchaseOn} /> : null}
           {domains.map((d) => (
             <CustomDomainCard
               key={d.id}
@@ -176,48 +133,33 @@ export default async function WebsiteDomainsPage({
               }}
             />
           ))}
-          {domains.length === 0 ? (
-            <form
-              action={connectDomainAction}
-              className="dash-card flex flex-col gap-4 p-5"
-            >
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-                  Connect your domain
-                </p>
-                <p className="mt-1 text-sm text-[var(--muted)]">
-                  Enter your site as{" "}
-                  <span className="font-mono font-semibold text-[var(--field)]">
-                    www.yourfarm.com
-                  </span>{" "}
-                  (or{" "}
-                  <span className="font-mono text-[var(--field)]">shop.yourfarm.com</span>
-                  {" "}
-                  if the main site stays elsewhere).
-                </p>
-                <p className="mt-2 text-sm text-[var(--muted)]">
-                  Don&apos;t enter the bare domain alone (yourfarm.com) — that
-                  can&apos;t be activated yet. After www works, add a redirect from
-                  yourfarm.com → www at your DNS host so customers can still type
-                  the short address.
-                </p>
-              </div>
-              <label className="flex flex-col gap-2 text-sm">
-                <span className="font-medium">Hostname</span>
-                <input
-                  name="hostname"
-                  required
-                  placeholder="www.yourfarm.com"
-                  className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-                />
-                <span className="text-xs text-[var(--muted)]">
-                  Must include www or another subdomain (e.g. shop).
-                </span>
-              </label>
-              <button type="submit" className={dashCtaClass}>
-                Continue
-              </button>
-            </form>
+
+          {domains.length === 0 && !path ? (
+            <DomainPathCards searchEnabled={searchOn} />
+          ) : null}
+
+          {path === "buy" && searchOn ? (
+            <div className="flex flex-col gap-3">
+              <Link
+                href="/dashboard/website/domains"
+                className="text-sm text-[var(--muted)] underline"
+              >
+                ← Back
+              </Link>
+              <BuyDomainSearch purchaseEnabled={purchaseOn} />
+            </div>
+          ) : null}
+
+          {path === "connect" && domains.length === 0 ? (
+            <div className="flex flex-col gap-3">
+              <Link
+                href="/dashboard/website/domains"
+                className="text-sm text-[var(--muted)] underline"
+              >
+                ← Back
+              </Link>
+              <ConnectDomainForm />
+            </div>
           ) : null}
         </>
       )}
