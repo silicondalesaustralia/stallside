@@ -5,7 +5,11 @@ import { domainPurchaseEnabled } from "@/lib/domains/config";
 import { createNamecheapRegistrar } from "@/lib/domains/registrar/namecheap/provider";
 import { namecheapConfigured } from "@/lib/domains/registrar/namecheap/config";
 import { domainTld } from "@/lib/domains/registrar/namecheap/au-attrs";
-import { retailFromRegistrarUsd } from "@/lib/domains/registrar/retail-pricing";
+import {
+  parseDomainRetailCurrency,
+  retailFromRegistrarUsd,
+} from "@/lib/domains/registrar/retail-pricing";
+import { BILLING_CURRENCIES } from "@/lib/saas-pricing";
 import BuyDomainForm from "./BuyDomainForm";
 
 const ERRORS: Record<string, string> = {
@@ -20,12 +24,21 @@ const ERRORS: Record<string, string> = {
 export default async function BuyDomainPage({
   searchParams,
 }: {
-  searchParams: Promise<{ domain?: string; error?: string; cancelled?: string }>;
+  searchParams: Promise<{
+    domain?: string;
+    currency?: string;
+    error?: string;
+    cancelled?: string;
+  }>;
 }) {
   const { owner } = await requireOwner();
   const params = await searchParams;
   const domain = (params.domain || "").trim().toLowerCase();
   const purchaseOn = domainPurchaseEnabled();
+  const currency = parseDomainRetailCurrency(
+    params.currency,
+    parseDomainRetailCurrency(owner.billingCurrency, "AUD"),
+  );
 
   if (!domain) {
     return (
@@ -49,8 +62,8 @@ export default async function BuyDomainPage({
       const registrar = createNamecheapRegistrar();
       const wholesale = await registrar.getRegistrationPrice(domain, 1);
       const renewal = await registrar.getRenewalPrice(domain, 1);
-      const retail = retailFromRegistrarUsd(wholesale).retail;
-      const renew = retailFromRegistrarUsd(renewal).retail;
+      const retail = retailFromRegistrarUsd(wholesale, currency).retail;
+      const renew = retailFromRegistrarUsd(renewal, currency).retail;
       priceLine = `${retail.currencyCode} ${(retail.value / 100).toFixed(2)} first year · renews ${(renew.value / 100).toFixed(2)}/yr`;
     } catch {
       /* optional */
@@ -69,6 +82,22 @@ export default async function BuyDomainPage({
         <p className="mt-1 text-sm text-[var(--muted)]">
           You will be the legal registrant.
           {priceLine ? ` · ${priceLine}` : null}
+        </p>
+        <p className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+          <span className="text-[var(--muted)]">Currency:</span>
+          {BILLING_CURRENCIES.map((c) => (
+            <Link
+              key={c}
+              href={`/dashboard/website/domains/buy?domain=${encodeURIComponent(domain)}&currency=${c}`}
+              className={
+                c === currency
+                  ? "font-semibold text-[var(--field)] underline"
+                  : "text-[var(--muted)] underline"
+              }
+            >
+              {c}
+            </Link>
+          ))}
         </p>
       </div>
 
@@ -90,6 +119,7 @@ export default async function BuyDomainPage({
           needsAu={needsAu}
           businessName={owner.businessName}
           contactEmail={owner.contactEmail}
+          currency={currency}
         />
       )}
     </main>

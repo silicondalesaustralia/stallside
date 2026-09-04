@@ -9,6 +9,7 @@ import {
 } from "@/lib/domains/purchase-checkout";
 import type { AuEligibility, RegistrantContact } from "@/lib/domains/registrar/types";
 import { domainTld } from "@/lib/domains/registrar/namecheap/au-attrs";
+import { parseDomainRetailCurrency } from "@/lib/domains/registrar/retail-pricing";
 
 function field(formData: FormData, name: string): string {
   return String(formData.get(name) ?? "").trim();
@@ -19,6 +20,10 @@ export async function startDomainCheckoutAction(formData: FormData) {
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const domain = field(formData, "domain").toLowerCase();
   const tld = domainTld(domain);
+  const retailCurrency = parseDomainRetailCurrency(
+    field(formData, "currency"),
+    parseDomainRetailCurrency(owner.billingCurrency, "AUD"),
+  );
 
   const registrant: RegistrantContact = {
     firstName: field(formData, "firstName"),
@@ -52,12 +57,13 @@ export async function startDomainCheckoutAction(formData: FormData) {
       domain,
       registrant,
       au,
+      retailCurrency,
     });
     redirect(checkoutUrl);
   } catch (e) {
     if (e instanceof DomainPurchaseError) {
       redirect(
-        `/dashboard/website/domains/buy?domain=${encodeURIComponent(domain)}&error=${encodeURIComponent(e.code)}`,
+        `/dashboard/website/domains/buy?domain=${encodeURIComponent(domain)}&currency=${encodeURIComponent(retailCurrency)}&error=${encodeURIComponent(e.code)}`,
       );
     }
     throw e;

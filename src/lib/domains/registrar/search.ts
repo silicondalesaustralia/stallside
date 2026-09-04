@@ -4,6 +4,7 @@ import { createNamecheapRegistrar } from "./namecheap/provider";
 import { namecheapConfigured } from "./namecheap/config";
 import { domainSearchEnabled } from "../config";
 import { retailFromRegistrarUsd } from "./retail-pricing";
+import type { BillingCurrency } from "@/lib/saas-pricing";
 import type { AvailabilityResult, MoneyCents } from "./types";
 
 export const LAUNCH_TLDS = ["com.au", "com", "net.au"] as const;
@@ -28,6 +29,7 @@ function normalizeLabel(raw: string): string {
 
 export async function searchLaunchDomains(
   query: string,
+  retailCurrency: BillingCurrency = "AUD",
 ): Promise<DomainSearchHit[]> {
   if (!domainSearchEnabled()) {
     throw new Error("Domain search is not enabled");
@@ -53,8 +55,11 @@ export async function searchLaunchDomains(
       try {
         registration = await registrar.getRegistrationPrice(domain, 1);
         renewal = await registrar.getRenewalPrice(domain, 1);
-        retailRegistration = retailFromRegistrarUsd(registration).retail;
-        retailRenewal = retailFromRegistrarUsd(renewal).retail;
+        retailRegistration = retailFromRegistrarUsd(
+          registration,
+          retailCurrency,
+        ).retail;
+        retailRenewal = retailFromRegistrarUsd(renewal, retailCurrency).retail;
       } catch {
         /* pricing optional */
       }

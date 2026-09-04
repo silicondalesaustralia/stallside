@@ -14,6 +14,7 @@ import { domainTld } from "@/lib/domains/registrar/namecheap/au-attrs";
 import { retailFromRegistrarUsd } from "@/lib/domains/registrar/retail-pricing";
 import { LAUNCH_TLDS } from "@/lib/domains/registrar/search";
 import type { AuEligibility, RegistrantContact } from "@/lib/domains/registrar/types";
+import type { BillingCurrency } from "@/lib/saas-pricing";
 
 export class DomainPurchaseError extends Error {
   constructor(
@@ -33,6 +34,7 @@ export async function startDomainPurchaseCheckout(input: {
   registrant: RegistrantContact;
   au?: AuEligibility;
   years?: number;
+  retailCurrency?: BillingCurrency;
 }): Promise<{ checkoutUrl: string; purchaseId: string }> {
   if (!domainPurchaseEnabled()) {
     throw new DomainPurchaseError("Domain purchase is not enabled", "disabled");
@@ -60,10 +62,11 @@ export async function startDomainPurchaseCheckout(input: {
   }
 
   const years = input.years ?? 1;
+  const retailCurrency = input.retailCurrency ?? "AUD";
   const wholesale = await registrar.getRegistrationPrice(hostname, years);
   const renewal = await registrar.getRenewalPrice(hostname, 1);
-  const { retail } = retailFromRegistrarUsd(wholesale);
-  const renewalRetail = retailFromRegistrarUsd(renewal).retail;
+  const { retail } = retailFromRegistrarUsd(wholesale, retailCurrency);
+  const renewalRetail = retailFromRegistrarUsd(renewal, retailCurrency).retail;
 
   const owner = await prisma.owner.findUniqueOrThrow({
     where: { id: input.ownerId },
@@ -122,7 +125,7 @@ export async function startDomainPurchaseCheckout(input: {
       },
     ],
     success_url: `${base}/dashboard/website/domains?purchased=1`,
-    cancel_url: `${base}/dashboard/website/domains/buy?domain=${encodeURIComponent(hostname)}&cancelled=1`,
+    cancel_url: `${base}/dashboard/website/domains/buy?domain=${encodeURIComponent(hostname)}&currency=${encodeURIComponent(retailCurrency)}&cancelled=1`,
     metadata: {
       purpose: "domain_purchase",
       domainPurchaseId: purchase.id,

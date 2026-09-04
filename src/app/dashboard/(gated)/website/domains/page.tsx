@@ -21,6 +21,7 @@ import {
   domainPurchaseEnabled,
   domainSearchEnabled,
 } from "@/lib/domains/config";
+import { parseDomainRetailCurrency } from "@/lib/domains/registrar/retail-pricing";
 import { getStorefrontUrl } from "@/lib/domains/preferred-origin";
 import { loadPreferredOriginInput } from "@/lib/domains/resolve";
 
@@ -52,6 +53,10 @@ export default async function WebsiteDomainsPage({
   const featureOn = customDomainsFeatureEnabled();
   const searchOn = domainSearchEnabled();
   const purchaseOn = domainPurchaseEnabled();
+  const defaultCurrency = parseDomainRetailCurrency(
+    ownerRow.billingCurrency,
+    "AUD",
+  );
   const path =
     params.path === "buy" || params.path === "connect" ? params.path : null;
 
@@ -146,7 +151,10 @@ export default async function WebsiteDomainsPage({
               >
                 ← Back
               </Link>
-              <BuyDomainSearch purchaseEnabled={purchaseOn} />
+              <BuyDomainSearch
+                purchaseEnabled={purchaseOn}
+                defaultCurrency={defaultCurrency}
+              />
             </div>
           ) : null}
 

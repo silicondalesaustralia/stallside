@@ -8,16 +8,19 @@ export default function BuyDomainForm({
   needsAu,
   businessName,
   contactEmail,
+  currency,
 }: {
   domain: string;
   tld: string;
   needsAu: boolean;
   businessName: string;
   contactEmail: string;
+  currency: string;
 }) {
   return (
     <form action={startDomainCheckoutAction} className="flex flex-col gap-4">
       <input type="hidden" name="domain" value={domain} />
+      <input type="hidden" name="currency" value={currency} />
       <fieldset className="flex flex-col gap-3">
         <legend className="text-sm font-semibold">Registrant</legend>
         <div className="grid gap-3 sm:grid-cols-2">
