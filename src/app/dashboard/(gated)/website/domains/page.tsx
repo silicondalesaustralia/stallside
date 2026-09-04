@@ -15,6 +15,8 @@ import DomainPathCards from "./DomainPathCards";
 import ConnectDomainForm from "./ConnectDomainForm";
 import VendlAddressCard from "./VendlAddressCard";
 import DomainsFlash from "./DomainsFlash";
+import DomainPurchaseBanner from "./DomainPurchaseBanner";
+import StagingConnectedPreview from "./StagingConnectedPreview";
 import { ownerCanUseCustomDomains } from "@/lib/domains/entitlements";
 import {
   customDomainsFeatureEnabled,
@@ -24,6 +26,7 @@ import {
 import { parseDomainRetailCurrency } from "@/lib/domains/registrar/retail-pricing";
 import { getStorefrontUrl } from "@/lib/domains/preferred-origin";
 import { loadPreferredOriginInput } from "@/lib/domains/resolve";
+import { publicHostMode } from "@/lib/tenancy/host-mode";
 
 export default async function WebsiteDomainsPage({
   searchParams,
@@ -69,8 +72,35 @@ export default async function WebsiteDomainsPage({
     orderBy: { createdAt: "desc" },
   });
 
+  const latestPurchase = await prisma.domainPurchase.findFirst({
+    where: {
+      storefrontId: storefront.id,
+      status: {
+        notIn: ["AWAITING_PAYMENT", "CANCELLED"],
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    select: {
+      hostname: true,
+      status: true,
+      lastError: true,
+      storefrontDomainId: true,
+    },
+  });
+
   const preferred = await loadPreferredOriginInput(storefront);
   const liveUrl = getStorefrontUrl(preferred);
+  const isStaging = publicHostMode() === "staging";
+  const purchaseConnecting =
+    latestPurchase &&
+    ["PAID", "REGISTERING", "REGISTERED", "CONNECTING"].includes(
+      latestPurchase.status,
+    );
+  const showStagingConnectedPreview =
+    isStaging &&
+    latestPurchase &&
+    (purchaseConnecting || params.purchased) &&
+    domains.length === 0;
 
   return (
     <main className="flex flex-col gap-8">
@@ -91,6 +121,14 @@ export default async function WebsiteDomainsPage({
         disconnected={params.disconnected}
         error={params.error}
       />
+
+      {latestPurchase ? (
+        <DomainPurchaseBanner purchase={latestPurchase} />
+      ) : null}
+
+      {showStagingConnectedPreview ? (
+        <StagingConnectedPreview hostname={latestPurchase.hostname} />
+      ) : null}
 
       <VendlAddressCard
         vendlHost={storefrontSubdomainHost(storefront.slug)}
@@ -139,7 +177,7 @@ export default async function WebsiteDomainsPage({
             />
           ))}
 
-          {domains.length === 0 && !path ? (
+          {domains.length === 0 && !path && !purchaseConnecting ? (
             <DomainPathCards searchEnabled={searchOn} />
           ) : null}
 

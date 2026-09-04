@@ -29,7 +29,9 @@ export default function DomainsFlash({
     <>
       {purchased ? (
         <p className="text-sm text-[var(--leaf-dark)]">
-          Payment received — we&apos;re registering and connecting your domain.
+          Payment received. We are now connecting your domain — come back later
+          to check. It usually takes a few minutes, and can take up to about an
+          hour.
         </p>
       ) : null}
       {connected ? (
