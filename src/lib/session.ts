@@ -78,15 +78,9 @@ export const requireOwner = cache(async () => {
   };
 });
 
-/** Owner gate for server actions that mutate data (blocks admin login-as). */
+/** Owner gate for server actions that mutate data (includes admin login-as). */
 export async function requireOwnerWrite() {
-  const session = await requireOwner();
-  if (session.impersonator) {
-    throw new Error(
-      "Not allowed while viewing as another user. Exit admin login-as first.",
-    );
-  }
-  return session;
+  return requireOwner();
 }
 
 export const requireAdmin = cache(async () => {

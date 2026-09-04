@@ -5,11 +5,7 @@ export async function getSessionImpersonator() {
   return session?.impersonator ?? null;
 }
 
-/** Block destructive owner actions while an admin is viewing as them. */
+/** @deprecated Admins may write while login-as; kept as a no-op for older callers. */
 export async function assertNotImpersonating(): Promise<{ error: string } | null> {
-  const impersonator = await getSessionImpersonator();
-  if (!impersonator) return null;
-  return {
-    error: "Not allowed while viewing as another user. Exit admin login-as first.",
-  };
+  return null;
 }
