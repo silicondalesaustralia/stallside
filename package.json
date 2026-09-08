@@ -14,6 +14,7 @@
     "test:ops": "npx tsx --test src/lib/ops/ops.test.ts",
     "test:calendar": "npx tsx --test src/lib/calendar/calendar.test.ts",
     "test:ia": "npx tsx --test src/lib/dash-ia.test.ts",
+    "test:square": "npx tsx --test src/lib/square/square.test.ts src/lib/commerce/sale-origin.test.ts",
     "seed:green-valley-demo": "npx tsx scripts/seed-green-valley-demo.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

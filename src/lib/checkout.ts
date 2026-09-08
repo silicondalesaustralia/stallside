@@ -554,7 +554,8 @@ export async function decrementStockForOrder(
       | typeof InventorySource.ORDER_CASH
       | typeof InventorySource.ORDER_LOCAL_TRANSFER
       | typeof InventorySource.ORDER_CARD
-      | typeof InventorySource.ORDER_PAYPAL;
+      | typeof InventorySource.ORDER_PAYPAL
+      | typeof InventorySource.ORDER_SQUARE;
     reason: string;
   },
 ) {

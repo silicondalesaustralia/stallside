@@ -7,6 +7,7 @@ import { stripeCheckoutBrandsForCurrency } from "@/lib/payment-brand-assets";
 import { formatMoney } from "@/lib/public-product";
 import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
+import SquareWebPayButton from "./SquareWebPayButton";
 import PreOrderContactFields from "./PreOrderContactFields";
 
 type CartItem = {
@@ -19,6 +20,7 @@ type CartItem = {
 type CheckoutPayStepProps = {
   cashEnabled: boolean;
   cardEnabled: boolean;
+  squareEnabled?: boolean;
   paypalEnabled: boolean;
   paypalClientId: string | null;
   paypalMerchantId: string | null;
@@ -60,6 +62,7 @@ type CheckoutPayStepProps = {
   onCash: () => void;
   onLocalTransfer: () => void;
   onCard: () => void;
+  onSquareSuccess?: (orderNumber: string) => void;
   onPayPalError: (message: string) => void;
   onBack: () => void;
   backLabel?: string;
@@ -68,6 +71,7 @@ type CheckoutPayStepProps = {
 export default function CheckoutPayStep({
   cashEnabled,
   cardEnabled,
+  squareEnabled = false,
   paypalEnabled,
   paypalClientId,
   paypalMerchantId,
@@ -105,6 +109,7 @@ export default function CheckoutPayStep({
   onCash,
   onLocalTransfer,
   onCard,
+  onSquareSuccess,
   onPayPalError,
   onBack,
   backLabel = "Back to cart",
@@ -190,6 +195,20 @@ export default function CheckoutPayStep({
           <span>{localTransferLabel}</span>
         </button>
       ) : null}
+      {squareEnabled ? (
+        <SquareWebPayButton
+          standSlug={standSlug}
+          items={customerChoiceAmountCents != null ? undefined : items}
+          customerChoiceAmountCents={customerChoiceAmountCents}
+          customerName={customerName}
+          customerEmail={customerEmail}
+          customerPhone={customerPhone}
+          couponCode={couponCode || null}
+          disabled={pending}
+          onError={onPayPalError}
+          onSuccess={(orderNumber) => onSquareSuccess?.(orderNumber)}
+        />
+      ) : null}
       {cardEnabled ? (
         <>
           {cardFeeCents > 0 ? (
@@ -255,7 +274,7 @@ export default function CheckoutPayStep({
           onError={onPayPalError}
         />
       ) : null}
-      {!showCash && !showLt && !cardEnabled && !showPayPal ? (
+      {!showCash && !showLt && !cardEnabled && !squareEnabled && !showPayPal ? (
         <p className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-lg text-[var(--muted)]">
           No payment methods are available at this stand right now.
         </p>

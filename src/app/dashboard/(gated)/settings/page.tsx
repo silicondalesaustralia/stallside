@@ -166,6 +166,21 @@ export default async function SettingsPage() {
                 : "Connect PayPal"}
         </Link>
       </section>
+
+      <section id="square" className="space-y-3 text-sm scroll-mt-8">
+        <h2 className="text-lg font-semibold">Square</h2>
+        <p className="text-[var(--muted)]">
+          Connect Square for website payments and POS inventory sync. Free still
+          collects 2.5% on Vendl-originated Square checkout; POS sales never take
+          a Vendl fee.
+        </p>
+        <Link
+          href="/dashboard/settings/square"
+          className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+        >
+          Manage Square
+        </Link>
+      </section>
     </main>
   );
 }

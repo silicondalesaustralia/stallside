@@ -6,6 +6,8 @@ import {
 } from "@/lib/payment-brand-assets";
 import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
+import { isSquarePaymentsEnabled } from "@/lib/square/config";
+import { OnlinePaymentProvider } from "@/generated/prisma/client";
 
 type StandPaymentFlags = {
   slug?: string;
@@ -14,6 +16,7 @@ type StandPaymentFlags = {
   acceptLocalTransfer: boolean;
   acceptCard: boolean;
   acceptPayPal: boolean;
+  acceptSquare?: boolean;
   localTransferAlias: string | null;
   localTransferMethodId: string | null;
 };
@@ -25,6 +28,8 @@ type OwnerPaymentReady = {
   paypalMerchantId?: string | null;
   paypalOnboardingComplete?: boolean;
   paypalPaymentsEnabled?: boolean;
+  onlinePaymentProvider?: OnlinePaymentProvider | string | null;
+  squarePaymentsReady?: boolean;
   user?: { email?: string | null; role?: string | null } | null;
 };
 
@@ -48,7 +53,9 @@ export function standPaymentBrands(
     brands.push("payid");
   }
 
-  if (standOffersCard(stand, owner)) {
+  if (standOffersSquare(stand, owner)) {
+    brands.push("card");
+  } else if (standOffersCard(stand, owner)) {
     brands.push(...stripeCheckoutBrandsForCurrency(stand.currency));
   }
 
@@ -75,12 +82,24 @@ export function standOffersPayPal(
 
 /** Card / Tap & Go available for this stand (includes demo test-Stripe path). */
 export function standOffersCard(
-  stand: Pick<StandPaymentFlags, "slug" | "acceptCard">,
+  stand: Pick<StandPaymentFlags, "slug" | "acceptCard" | "acceptSquare">,
   owner: OwnerPaymentReady,
 ): boolean {
+  if (standOffersSquare(stand, owner)) return false;
   if (!stand.acceptCard) return false;
   if (stand.slug && isDemoCardReady(stand.slug, owner)) return true;
   return Boolean(owner.stripeAccountId && owner.stripeChargesEnabled);
+}
+
+/** Square Web Payments when seller prefers Square and connection is healthy. */
+export function standOffersSquare(
+  stand: Pick<StandPaymentFlags, "acceptSquare">,
+  owner: OwnerPaymentReady,
+): boolean {
+  if (!isSquarePaymentsEnabled()) return false;
+  if (!(stand.acceptSquare ?? false)) return false;
+  if (owner.onlinePaymentProvider !== OnlinePaymentProvider.SQUARE) return false;
+  return Boolean(owner.squarePaymentsReady);
 }
 
 /**

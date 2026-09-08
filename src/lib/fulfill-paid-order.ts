@@ -38,16 +38,35 @@ export async function fulfillPaidPayPalOrder(
   });
 }
 
+export async function fulfillPaidSquareOrder(
+  orderId: string,
+  squarePaymentId?: string | null,
+) {
+  return fulfillPaidOnlineOrder(orderId, {
+    method: PaymentMethod.SQUARE,
+    source: InventorySource.ORDER_SQUARE,
+    reason: "Square sale",
+    patch: { squarePaymentId: squarePaymentId ?? undefined },
+  });
+}
+
 async function fulfillPaidOnlineOrder(
   orderId: string,
   options: {
-    method: typeof PaymentMethod.CARD | typeof PaymentMethod.PAYPAL;
-    source: typeof InventorySource.ORDER_CARD | typeof InventorySource.ORDER_PAYPAL;
+    method:
+      | typeof PaymentMethod.CARD
+      | typeof PaymentMethod.PAYPAL
+      | typeof PaymentMethod.SQUARE;
+    source:
+      | typeof InventorySource.ORDER_CARD
+      | typeof InventorySource.ORDER_PAYPAL
+      | typeof InventorySource.ORDER_SQUARE;
     reason: string;
     patch: {
       stripePaymentIntentId?: string;
       stripePaymentMethodId?: string;
       paypalCaptureId?: string;
+      squarePaymentId?: string;
     };
   },
 ) {
@@ -113,6 +132,8 @@ async function fulfillPaidOnlineOrder(
               order.stripePaymentMethodId,
             paypalCaptureId:
               options.patch.paypalCaptureId ?? order.paypalCaptureId,
+            squarePaymentId:
+              options.patch.squarePaymentId ?? order.squarePaymentId,
           },
         });
       },
@@ -157,15 +178,7 @@ async function fulfillPaidOnlineOrder(
       try {
         const fresh = await prisma.order.findUnique({
           where: { id: orderId },
-          select: {
-            id: true,
-            ownerId: true,
-            customerId: true,
-            totalCents: true,
-            currency: true,
-            campaignId: true,
-            promotionId: true,
-          },
+          include: { items: true },
         });
         if (!fresh) return;
         if (fresh.customerId) {
@@ -184,8 +197,22 @@ async function fulfillPaidOnlineOrder(
           );
           await incrementPromotionUsage(fresh.promotionId);
         }
+        // Keep Square inventory aligned via Inventory API (not Orders API).
+        if (!skipStock) {
+          const { pushVendlSaleToSquareInventory } = await import(
+            "@/lib/square/push-inventory"
+          );
+          await pushVendlSaleToSquareInventory({
+            ownerId: fresh.ownerId,
+            orderId: fresh.id,
+            items: fresh.items.map((i) => ({
+              productId: i.productId,
+              quantity: i.quantity,
+            })),
+          });
+        }
       } catch (err) {
-        console.error("Growth post-pay hooks failed", err);
+        console.error("Growth/Square inventory post-pay hooks failed", err);
       }
     })();
   });

@@ -17,6 +17,7 @@ enum PaymentMethod {
   LOCAL_TRANSFER
   CARD
   PAYPAL
+  SQUARE
 }
 
 enum PaymentStatus {
@@ -51,7 +52,44 @@ enum InventorySource {
   ORDER_LOCAL_TRANSFER
   ORDER_CARD
   ORDER_PAYPAL
+  ORDER_SQUARE
+  /** Mirrored from an external commerce provider (Square POS, Dashboard, etc.). */
+  EXTERNAL_SYNC
+  /** Observed external POS sale (no Vendl platform fee). */
+  EXTERNAL_POS
+  RECONCILIATION
   SYSTEM
+}
+
+/** Provider-neutral external commerce systems (Phase 10/11). */
+enum CommerceProvider {
+  SQUARE
+}
+
+enum ExternalConnectionStatus {
+  PENDING
+  ACTIVE
+  NEEDS_REAUTH
+  DISCONNECTED
+  ERROR
+}
+
+/**
+ * Where a sale originated for fee + reporting rules.
+ * Vendl fee applies only to Vendl-originated online payments on Free plan.
+ */
+enum SaleOrigin {
+  VENDL_WEB
+  FARM_STAND
+  SQUARE_POS
+  MARKET
+  MANUAL
+}
+
+/** Seller-selected online card rail (Stripe Connect vs Square). */
+enum OnlinePaymentProvider {
+  STRIPE
+  SQUARE
 }
 
 enum SubscriptionStatus {
@@ -355,6 +393,9 @@ model Owner {
   customOrderForms          CustomOrderForm[]
   customOrderRequests       CustomOrderRequest[]
   sellerEvents              SellerEvent[]
+  externalCommerceConnections ExternalCommerceConnection[]
+  /** Preferred online card rail when both Stripe and Square are connected. */
+  onlinePaymentProvider     OnlinePaymentProvider @default(STRIPE)
   /** Soft-close: data retained, login/emails/stands stopped. */
   deletedAt                 DateTime?
   /** Ad click ids + UTMs from first signup (for Perform/Meta pushback). */
@@ -447,6 +488,8 @@ model Stand {
   acceptLocalTransfer Boolean             @default(true)
   acceptCard         Boolean              @default(true)
   acceptPayPal       Boolean              @default(false)
+  /** Square Web Payments at stand checkout (requires healthy Square connection). */
+  acceptSquare       Boolean              @default(false)
   showExactStock     Boolean              @default(false)
   /** Show “Only N left” when stock ≤ lowStockThreshold (public). */
   showPublicScarcity Boolean              @default(true)
@@ -499,6 +542,7 @@ model Stand {
   qrCategory         Category?            @relation("StandQrCategory", fields: [qrCategoryId], references: [id], onDelete: SetNull)
   products           Product[]
   productChannels    ProductChannel[]
+  externalLocationMappings ExternalLocationMapping[]
   preOrderPages      PreOrderPage[]
   menus              Menu[]
   subscriptionOffers SubscriptionOffer[]
@@ -946,6 +990,12 @@ model ChannelInterest {
   @@index([standId, createdAt])
 }
 
+/**
+ * Catalogue item owned by Owner (`ownerId`).
+ * `standId` is the primary selling channel for URL/slug uniqueness and default
+ * inventory location — not exclusive ownership. Multi-channel availability is
+ * via ProductChannel. External commerce IDs live in External*Mapping tables.
+ */
 model Product {
   id                 String               @id @default(cuid())
   standId            String
@@ -1019,6 +1069,8 @@ model Product {
   inventoryAdjustments InventoryAdjustment[]
   lowStockAlerts     LowStockAlert[]
   eventProducts      SellerEventProduct[]
+  externalProductMappings ExternalProductMapping[]
+  externalVariantMappings ExternalVariantMapping[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 
@@ -1259,10 +1311,16 @@ model Order {
   campaign                Campaign?         @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   currency                String
   platformFeeCents        Int               @default(0)
+  /** Fee + reporting: Vendl-originated vs observed external (e.g. Square POS). */
+  saleOrigin              SaleOrigin        @default(VENDL_WEB)
+  onlinePaymentProvider   OnlinePaymentProvider?
   stripeCheckoutSessionId String?
   stripePaymentIntentId   String?
   paypalOrderId           String?
   paypalCaptureId         String?
+  squarePaymentId         String?           @unique
+  squareOrderId           String?
+  squareLocationId        String?
   receiptEmail            String?
   receiptChannel          ReceiptChannel    @default(NONE)
   customerId              String?
@@ -1319,6 +1377,7 @@ model Order {
   @@index([promotionId])
   @@index([campaignId])
   @@index([sellerEventId])
+  @@index([squarePaymentId])
 }
 
 model OrderItem {
@@ -1355,9 +1414,14 @@ model InventoryAdjustment {
   source           InventorySource
   orderId          String?
   order            Order?          @relation(fields: [orderId], references: [id])
+  /** Idempotent external event id (Square webhook event_id, adjust request id, …). */
+  externalEventId  String?         @unique
+  /** Provider-side reference for echo-loop detection (e.g. Square adjustment id). */
+  externalReference String?
   createdAt        DateTime        @default(now())
 
   @@index([productId, createdAt])
+  @@index([externalReference])
 }
 
 model LowStockAlert {
@@ -2029,5 +2093,115 @@ model SellerEventProduct {
 
   @@unique([eventId, productId])
   @@index([productId])
+}
+
+/** Provider-neutral OAuth connection (Square today; extensible later). */
+model ExternalCommerceConnection {
+  id                   String                   @id @default(cuid())
+  ownerId              String
+  owner                Owner                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  provider             CommerceProvider
+  providerMerchantId   String
+  status               ExternalConnectionStatus @default(PENDING)
+  /** AES-GCM ciphertext (AUTH_SECRET); never send to browser. */
+  accessTokenEnc       String?
+  refreshTokenEnc      String?
+  tokenExpiresAt       DateTime?
+  scopes               String[]                 @default([])
+  merchantName         String?
+  /** Primary synced Square location id (multi-location mappings also exist). */
+  primaryLocationId    String?
+  paymentsEnabled      Boolean                  @default(false)
+  inventorySyncEnabled Boolean                  @default(false)
+  catalogSyncEnabled   Boolean                  @default(false)
+  lastSyncAt           DateTime?
+  lastError            String?
+  disconnectedAt       DateTime?
+  locations            ExternalLocationMapping[]
+  productMappings      ExternalProductMapping[]
+  variantMappings      ExternalVariantMapping[]
+  webhookReceipts      SquareWebhookReceipt[]
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+
+  @@unique([ownerId, provider])
+  @@unique([provider, providerMerchantId])
+  @@index([ownerId, status])
+}
+
+model ExternalLocationMapping {
+  id                     String                     @id @default(cuid())
+  connectionId           String
+  connection             ExternalCommerceConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  providerLocationId     String
+  providerLocationName   String?
+  /** Vendl stand used as operational location reference (nullable until mapped). */
+  standId                String?
+  stand                  Stand?                     @relation(fields: [standId], references: [id], onDelete: SetNull)
+  isPrimary              Boolean                    @default(false)
+  createdAt              DateTime                   @default(now())
+  updatedAt              DateTime                   @updatedAt
+
+  @@unique([connectionId, providerLocationId])
+  @@index([standId])
+}
+
+model ExternalProductMapping {
+  id                 String                     @id @default(cuid())
+  connectionId       String
+  connection         ExternalCommerceConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  productId          String
+  product            Product                    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  providerProductId  String
+  inventorySyncEnabled Boolean                  @default(true)
+  /** Seller confirmed this mapping (never auto from fuzzy name alone). */
+  confirmedAt        DateTime?
+  lastSyncedAt       DateTime?
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  @@unique([connectionId, productId])
+  @@unique([connectionId, providerProductId])
+  @@index([productId])
+}
+
+/**
+ * Maps a Vendl sellable unit to a Square CatalogItemVariation.
+ * Vendl has no ProductVariant SKU table yet — productId is the stock unit.
+ */
+model ExternalVariantMapping {
+  id                   String                     @id @default(cuid())
+  connectionId         String
+  connection           ExternalCommerceConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  productId            String
+  product              Product                    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  providerVariationId  String
+  providerSku          String?
+  inventorySyncEnabled Boolean                    @default(true)
+  confirmedAt          DateTime?
+  lastSyncedAt         DateTime?
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
+
+  @@unique([connectionId, productId])
+  @@unique([connectionId, providerVariationId])
+  @@index([productId])
+}
+
+/** Idempotent Square webhook receipt (process async after ACK). */
+model SquareWebhookReceipt {
+  id             String                     @id @default(cuid())
+  connectionId   String?
+  connection     ExternalCommerceConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+  eventId        String                     @unique
+  eventType      String
+  merchantId     String?
+  payload        Json
+  processedAt    DateTime?
+  processError   String?
+  createdAt      DateTime                   @default(now())
+
+  @@index([processedAt, createdAt])
+  @@index([merchantId])
 }
 

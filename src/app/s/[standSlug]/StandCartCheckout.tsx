@@ -94,6 +94,7 @@ export default function StandCartCheckout({
   products,
   cashEnabled,
   cardEnabled,
+  squareEnabled = false,
   paypalEnabled,
   paypalClientId,
   paypalMerchantId,
@@ -116,6 +117,7 @@ export default function StandCartCheckout({
   products: PublicProductCard[];
   cashEnabled: boolean;
   cardEnabled: boolean;
+  squareEnabled?: boolean;
   paypalEnabled: boolean;
   paypalClientId: string | null;
   paypalMerchantId: string | null;
@@ -139,7 +141,7 @@ export default function StandCartCheckout({
   const [step, setStep] = useState<"cart" | "pay" | "cash-confirm" | "lt-confirm">(
     "cart",
   );
-  const [paidVia, setPaidVia] = useState<"cash" | "local_transfer" | null>(null);
+  const [paidVia, setPaidVia] = useState<"cash" | "local_transfer" | "square" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cardTabHint, setCardTabHint] = useState(false);
   const [done, setDone] = useState(false);
@@ -328,9 +330,9 @@ export default function StandCartCheckout({
     );
   }
 
-  function finishOk(via: "cash" | "local_transfer") {
+  function finishOk(via: "cash" | "local_transfer" | "square") {
     persist([]);
-    const sale = { standSlug, via, totalCents: total, currency };
+    const sale = { standSlug, via: via === "square" ? "cash" : via, totalCents: total, currency };
     if (demoProduct) {
       storePendingDemoSale(sale);
       if (isEmbeddedCheckout()) {
@@ -463,13 +465,15 @@ export default function StandCartCheckout({
           <p className="mt-3 text-xl text-[var(--muted)]">
             {paidVia === "local_transfer"
               ? "Marked as paid. The owner will see this in their account shortly."
-              : "Cash payment confirmed. You're all set."}
+              : paidVia === "square"
+                ? "Square payment confirmed. You're all set."
+                : "Cash payment confirmed. You're all set."}
           </p>
           {restockStandId ? (
             <RestockOptIn standId={restockStandId} inputId="restock-email-cash" />
           ) : null}
         </div>
-        {!cardEnabled && !paypalEnabled ? (
+        {!cardEnabled && !squareEnabled && !paypalEnabled ? (
           <TapAndGoInterestCta standSlug={standSlug} />
         ) : null}
         <Link
@@ -542,6 +546,7 @@ export default function StandCartCheckout({
         <CheckoutPayStep
           cashEnabled={cashEnabled}
           cardEnabled={cardEnabled}
+          squareEnabled={squareEnabled}
           paypalEnabled={paypalEnabled}
           paypalClientId={paypalClientId}
           paypalMerchantId={paypalMerchantId}
@@ -577,6 +582,9 @@ export default function StandCartCheckout({
           onCash={() => setStep("cash-confirm")}
           onLocalTransfer={() => setStep("lt-confirm")}
           onCard={payCard}
+          onSquareSuccess={() => {
+            finishOk("square");
+          }}
           onPayPalError={setError}
           onBack={() => setStep("cart")}
         />

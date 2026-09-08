@@ -33,7 +33,9 @@ export async function notifySale(orderId: string) {
       ? "Cash"
       : order.paymentMethod === "PAYPAL"
         ? "PayPal"
-        : "Card";
+        : order.paymentMethod === "SQUARE"
+          ? "Square"
+          : "Card";
   const lines = order.items
     .map((i) => `${i.quantity}× ${i.productNameSnapshot}`)
     .join(", ");
