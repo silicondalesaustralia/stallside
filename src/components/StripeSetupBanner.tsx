@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import type { StripeSetupBanner } from "@/lib/load-stripe-setup-banner";
-
-const STRIPE_SETTINGS_HREF = "/dashboard/settings/stripe";
+import type { PaymentSetupBanner } from "@/lib/load-stripe-setup-banner";
 
 const STORAGE_KEY = "vendl-stripe-setup-banner-collapsed";
 
@@ -16,7 +14,11 @@ function readCollapsed(): boolean {
   }
 }
 
-export default function StripeSetupBannerClient({ banner }: { banner: StripeSetupBanner }) {
+export default function StripeSetupBannerClient({
+  banner,
+}: {
+  banner: PaymentSetupBanner;
+}) {
   const [collapsed, setCollapsed] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const urgent = banner.mode === "restricted";
@@ -60,18 +62,30 @@ export default function StripeSetupBannerClient({ banner }: { banner: StripeSetu
             aria-hidden
           />
           <span className="pl-3">{banner.title}</span>
-          <span className="text-xs font-medium text-[var(--muted)]">Show details</span>
+          <span className="text-xs font-medium text-[var(--muted)]">
+            Show details
+          </span>
         </button>
-        <Link
-          href={STRIPE_SETTINGS_HREF}
-          className="relative inline-flex shrink-0 rounded-full bg-[var(--marigold)] px-4 py-2 text-sm font-bold text-[var(--field)] shadow-[0_2px_12px_-4px_rgb(23_54_31_/_0.35)] transition hover:brightness-95"
-        >
-          {banner.ctaLabel}
-          <span
-            className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--panel)] bg-[var(--gone)]"
-            aria-hidden
-          />
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href={banner.ctaHref}
+            className="relative inline-flex shrink-0 rounded-full bg-[var(--marigold)] px-4 py-2 text-sm font-bold text-[var(--field)] shadow-[0_2px_12px_-4px_rgb(23_54_31_/_0.35)] transition hover:brightness-95"
+          >
+            {banner.ctaLabel}
+            <span
+              className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--panel)] bg-[var(--gone)]"
+              aria-hidden
+            />
+          </Link>
+          {banner.secondaryCtaLabel && banner.secondaryCtaHref ? (
+            <Link
+              href={banner.secondaryCtaHref}
+              className="inline-flex shrink-0 rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-bold text-[var(--field)] hover:bg-[var(--wash)]"
+            >
+              {banner.secondaryCtaLabel}
+            </Link>
+          ) : null}
+        </div>
       </div>
     );
   }
@@ -133,12 +147,22 @@ export default function StripeSetupBannerClient({ banner }: { banner: StripeSetu
             ))}
           </ul>
         </div>
-        <Link
-          href={STRIPE_SETTINGS_HREF}
-          className="inline-flex shrink-0 rounded-full bg-[var(--marigold)] px-5 py-2.5 text-sm font-bold text-[var(--field)] shadow-[0_2px_12px_-4px_rgb(23_54_31_/_0.35)] transition hover:brightness-95"
-        >
-          {banner.ctaLabel}
-        </Link>
+        <div className="flex shrink-0 flex-col gap-2">
+          <Link
+            href={banner.ctaHref}
+            className="inline-flex rounded-full bg-[var(--marigold)] px-5 py-2.5 text-center text-sm font-bold text-[var(--field)] shadow-[0_2px_12px_-4px_rgb(23_54_31_/_0.35)] transition hover:brightness-95"
+          >
+            {banner.ctaLabel}
+          </Link>
+          {banner.secondaryCtaLabel && banner.secondaryCtaHref ? (
+            <Link
+              href={banner.secondaryCtaHref}
+              className="inline-flex rounded-full border border-[var(--line)] bg-white px-5 py-2.5 text-center text-sm font-bold text-[var(--field)] hover:bg-[var(--wash)]"
+            >
+              {banner.secondaryCtaLabel}
+            </Link>
+          ) : null}
+        </div>
       </div>
     </div>
   );

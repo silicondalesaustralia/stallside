@@ -20,6 +20,7 @@ export function setupNavBadge(
   if (href === "/dashboard/products" && alerts.needsProducts) return 1;
   if (
     (href === "/dashboard/settings" ||
+      href === "/dashboard/settings/payments" ||
       href === "/dashboard/settings/stripe") &&
     alerts.needsStripe
   ) {

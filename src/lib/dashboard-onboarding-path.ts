@@ -90,8 +90,8 @@ export function resolveDashboardNextMove(input: {
       return {
         title: "Connect Stripe to take payment",
         body: "Required for pre-orders and subscription boxes. Bakers and collection-day sellers usually share a checkout link, not a stall QR.",
-        href: "/dashboard/settings/stripe",
-        cta: input.stripeStarted ? "Continue Stripe" : "Connect Stripe",
+        href: "/dashboard/settings/payments",
+        cta: input.stripeStarted ? "Continue Stripe" : "Set up payments",
       };
     }
     if (
@@ -113,7 +113,7 @@ export function resolveDashboardNextMove(input: {
       body: "Farm stands: print a QR at the stall. Bakers, pre-orders, and subscription boxes: connect Stripe and share a link.",
       href: input.qrHref,
       cta: "Print stall QR",
-      secondaryHref: "/dashboard/settings/stripe",
+      secondaryHref: "/dashboard/settings/payments",
       secondaryCta: input.stripeStarted
         ? "Continue Stripe setup"
         : "Connect Stripe & share link",
@@ -126,8 +126,8 @@ export function resolveDashboardNextMove(input: {
       body: input.stripeStarted
         ? "You started Stripe but card is not live yet. Finish setup when you are ready. Cash still works."
         : `${input.cashAndLocalLabel} work already. Connect Stripe for ${input.stripeMethodsPhrase}, pre-orders, or subscription boxes.`,
-      href: "/dashboard/settings/stripe",
-      cta: input.stripeStarted ? "Continue Stripe" : "Connect Stripe (optional)",
+      href: "/dashboard/settings/payments",
+      cta: input.stripeStarted ? "Continue Stripe" : "Set up payments (optional)",
     };
   }
 

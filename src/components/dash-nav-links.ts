@@ -80,7 +80,7 @@ export function secondaryNavForMode(modeInput?: string | null): DashNavItem[] {
     { href: "/dashboard/operate", label: "Operate overview" },
     { href: "/dashboard/businesses", label: locationsLabel },
     { href: "/dashboard/knowledge", label: "Help" },
-    { href: "/dashboard/settings/stripe", label: "Payments" },
+    { href: "/dashboard/settings/payments", label: "Payments" },
     { href: "/dashboard/settings/billing", label: "Billing" },
   ];
 }
@@ -195,9 +195,9 @@ export const WEBSITE_HUB_NAV: HubNavItem[] = [
 export const SETTINGS_HUB_NAV: HubNavItem[] = [
   { href: "/dashboard/settings", label: "General", matchPrefix: "/dashboard/settings" },
   {
-    href: "/dashboard/settings/stripe",
+    href: "/dashboard/settings/payments",
     label: "Payments",
-    matchPrefix: "/dashboard/settings/stripe",
+    matchPrefix: "/dashboard/settings/payments",
   },
   {
     href: "/dashboard/settings/billing",
@@ -294,6 +294,19 @@ export function hubNavItemActive(pathname: string, item: HubNavItem): boolean {
       pathname === "/dashboard/website" ||
       pathname.startsWith("/dashboard/website/craft-spike") ||
       pathname.startsWith("/dashboard/website/puck-spike")
+    );
+  }
+  // General settings: exact path only (not /payments, /stripe, /billing, …)
+  if (item.href === "/dashboard/settings" && item.label === "General") {
+    return pathname === "/dashboard/settings" || pathname === "/dashboard/settings/";
+  }
+  // Payments hub + provider detail pages
+  if (item.href === "/dashboard/settings/payments") {
+    return (
+      pathname.startsWith("/dashboard/settings/payments") ||
+      pathname.startsWith("/dashboard/settings/stripe") ||
+      pathname.startsWith("/dashboard/settings/paypal") ||
+      pathname.startsWith("/dashboard/settings/square")
     );
   }
   return pathname.startsWith(prefix);

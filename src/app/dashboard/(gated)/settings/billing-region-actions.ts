@@ -45,6 +45,7 @@ export async function updateBillingRegionAction(formData: FormData) {
   });
 
   revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard/settings/payments");
   revalidatePath("/dashboard/settings/square");
   revalidatePath("/dashboard/settings/stripe");
   revalidatePath("/dashboard/settings/billing");

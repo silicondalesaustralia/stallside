@@ -53,8 +53,8 @@ export default async function SquareSettingsPage({
   return (
     <main className="flex w-full max-w-3xl flex-col gap-8">
       <p className="text-sm text-[var(--muted)]">
-        <Link href="/dashboard/settings" className="underline">
-          Settings
+        <Link href="/dashboard/settings/payments" className="underline">
+          Payments
         </Link>
       </p>
       <div>

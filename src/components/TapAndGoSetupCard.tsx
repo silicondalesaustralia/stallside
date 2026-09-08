@@ -40,10 +40,10 @@ export default function TapAndGoSetupCard({
           : `${CASH_AND_LOCAL_PAYMENTS_LABEL} work without Stripe. Connect when you want ${STRIPE_CHECKOUT_METHODS_PHRASE} — required for pre-orders and subscriptions.`}
       </p>
       <Link
-        href="/dashboard/settings/stripe"
+        href="/dashboard/settings/payments"
         className="mt-4 inline-flex rounded-[var(--radius-pill)] bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
       >
-        {stripeStarted ? "Continue Stripe setup" : "Connect Stripe (optional)"}
+        {stripeStarted ? "Continue payment setup" : "Set up payments (optional)"}
       </Link>
     </section>
   );

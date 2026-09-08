@@ -248,7 +248,7 @@ export function setupTaskHref(
     case "products_new":
       return "/dashboard/products/new";
     case "stripe":
-      return "/dashboard/settings/stripe";
+      return "/dashboard/settings/payments";
     case "qr":
       return id
         ? `/dashboard/businesses/${id}/qr`
