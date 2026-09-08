@@ -9,20 +9,11 @@ import {
   continueSquareCardPay,
   type SquarePaySession,
 } from "./continue-square-card-pay";
-import { useSquareSdk } from "./use-square-sdk";
+import { getSquarePayConfig } from "./square-checkout-actions";
+import SquareWalletButtons from "./SquareWalletButtons";
+import { useSquareSdk, type SquarePayments } from "./use-square-sdk";
 
-export default function SquareWebPayButton({
-  standSlug,
-  items,
-  customerChoiceAmountCents,
-  customerName,
-  customerEmail,
-  customerPhone,
-  couponCode,
-  disabled,
-  onError,
-  onSuccess,
-}: {
+type Props = {
   standSlug: string;
   items?: CartItemInput[];
   customerChoiceAmountCents?: number;
@@ -30,29 +21,52 @@ export default function SquareWebPayButton({
   customerEmail?: string;
   customerPhone?: string;
   couponCode?: string | null;
+  amountCents: number;
+  currency: string;
   disabled?: boolean;
   onError: (message: string) => void;
   onSuccess: (orderNumber: string) => void;
-}) {
+};
+
+export default function SquareWebPayButton(props: Props) {
+  const {
+    standSlug,
+    amountCents,
+    currency,
+    disabled,
+    onError,
+    onSuccess,
+  } = props;
   const [pending, start] = useTransition();
   const ready = useSquareSdk(onError);
+  const [payments, setPayments] = useState<SquarePayments | null>(null);
+  const [countryCode, setCountryCode] = useState("AU");
   const [session, setSession] = useState<SquarePaySession | null>(null);
   const cardRef = useRef<{
     tokenize: () => Promise<{ status: string; token?: string }>;
   } | null>(null);
 
   useEffect(() => {
-    if (!ready || !session || !window.Square) return;
+    if (!ready || !window.Square) return;
     let cancelled = false;
     void (async () => {
+      const config = await getSquarePayConfig(standSlug);
+      if (cancelled) return;
+      if ("error" in config) {
+        if (config.error) onError(config.error);
+        return;
+      }
       try {
-        const payments = await window.Square!.payments(
-          session.applicationId,
-          session.locationId,
+        const instance = await window.Square!.payments(
+          config.applicationId,
+          config.locationId,
         );
-        const card = await payments.card();
+        const card = await instance.card();
         await card.attach("#square-card-container");
-        if (!cancelled) cardRef.current = card;
+        if (cancelled) return;
+        cardRef.current = card;
+        setPayments(instance);
+        setCountryCode(config.countryCode);
       } catch {
         if (!cancelled) onError("Could not initialize the card form.");
       }
@@ -60,7 +74,7 @@ export default function SquareWebPayButton({
     return () => {
       cancelled = true;
     };
-  }, [ready, session, onError]);
+  }, [ready, standSlug, onError]);
 
   return (
     <div className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4">
@@ -69,7 +83,7 @@ export default function SquareWebPayButton({
           Pay with credit card
         </p>
         <p className="mt-0.5 text-base text-[var(--muted)]">
-          Enter your card details below
+          Card, Apple Pay, or Google Pay when available
         </p>
         <div className="mt-3 flex w-full justify-center rounded-[var(--radius)] bg-[var(--wash)] px-3 py-3">
           <PaymentIconRow
@@ -79,22 +93,24 @@ export default function SquareWebPayButton({
           />
         </div>
       </div>
+      {payments ? (
+        <SquareWalletButtons
+          {...props}
+          payments={payments}
+          countryCode={countryCode}
+          disabled={disabled || pending}
+        />
+      ) : null}
       <div id="square-card-container" className="min-h-[56px]" />
       <button
         type="button"
-        disabled={disabled || pending}
+        disabled={disabled || pending || !payments}
         className="w-full rounded-lg bg-[var(--leaf)] px-4 py-3 text-base font-semibold text-white disabled:opacity-50"
         onClick={() => {
           start(async () => {
             try {
               const result = await continueSquareCardPay({
-                standSlug,
-                items,
-                customerChoiceAmountCents,
-                customerName,
-                customerEmail,
-                customerPhone,
-                couponCode,
+                ...props,
                 session,
                 card: cardRef.current,
               });
@@ -113,7 +129,7 @@ export default function SquareWebPayButton({
           });
         }}
       >
-        {pending ? "Processing…" : session ? "Pay now" : "Continue"}
+        {pending ? "Processing…" : session ? "Pay now" : "Pay with card"}
       </button>
       <PoweredByRail rail="square" />
     </div>

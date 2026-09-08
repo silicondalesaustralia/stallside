@@ -3,22 +3,37 @@
 import { useEffect, useState } from "react";
 import { squareEnvironment } from "@/lib/square/public-env";
 
+export type SquarePayments = {
+  paymentRequest: (options: {
+    countryCode: string;
+    currencyCode: string;
+    total: { amount: string; label: string };
+  }) => SquarePaymentRequest;
+  card: () => Promise<SquareCard>;
+  applePay: (req: SquarePaymentRequest) => Promise<SquareWalletMethod>;
+  googlePay: (req: SquarePaymentRequest) => Promise<SquareWalletMethod>;
+};
+
+export type SquarePaymentRequest = object;
+
+export type SquareCard = {
+  attach: (selector: string) => Promise<void>;
+  tokenize: () => Promise<{ status: string; token?: string }>;
+};
+
+export type SquareWalletMethod = {
+  tokenize: () => Promise<{ status: string; token?: string }>;
+  attach?: (selector: string) => Promise<void>;
+  destroy?: () => Promise<void>;
+};
+
 declare global {
   interface Window {
     Square?: {
       payments: (
         applicationId: string,
         locationId: string,
-      ) => Promise<{
-        card: () => Promise<{
-          attach: (selector: string) => Promise<void>;
-          tokenize: () => Promise<{
-            status: string;
-            token?: string;
-            errors?: unknown;
-          }>;
-        }>;
-      }>;
+      ) => Promise<SquarePayments>;
     };
   }
 }

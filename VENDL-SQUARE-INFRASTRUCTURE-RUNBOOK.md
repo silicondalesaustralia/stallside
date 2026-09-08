@@ -28,6 +28,28 @@ Sandbox authorize will white-screen until you launch a seller test account:
 3. Then click **Connect Square** in Vendl (authorize host is
    `https://connect.squareupsandbox.com/...`)
 
+### Apple Pay / Google Pay (Web Payments)
+
+Card form works without this. Wallets need HTTPS + domain setup.
+
+**Apple Pay**
+
+1. Developer Console → your app → **Apple Pay**
+2. Add Sandbox domain (e.g. `staging.vendl.app`), then Production domains at go-live
+3. Host Square’s domain association file at  
+   `https://{host}/.well-known/apple-developer-merchantid-domain-association`  
+   (Square provides the file contents when you add the domain)
+4. Test on Safari (iOS/macOS) with a real card in Apple Wallet — Sandbox does not charge it
+5. Localhost HTTP is not supported
+
+**Google Pay**
+
+1. No Apple-style domain file; still requires HTTPS
+2. Test on supported Chrome with a Google account that has Google Pay
+3. Use Sandbox application ID / location on Preview
+
+If init fails for a wallet, Vendl hides that button and keeps the card form.
+
 ## Required OAuth scopes
 
 See `src/lib/square/scopes.ts`:

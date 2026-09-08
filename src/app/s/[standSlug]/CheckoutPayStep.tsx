@@ -205,6 +205,10 @@ export default function CheckoutPayStep({
           customerEmail={customerEmail}
           customerPhone={customerPhone}
           couponCode={couponCode || null}
+          amountCents={
+            cardTotalCents || subtotalCents + cardFeeCents || subtotalCents
+          }
+          currency={currency}
           disabled={pending}
           onError={onPayPalError}
           onSuccess={(orderNumber) => onSquareSuccess?.(orderNumber)}
