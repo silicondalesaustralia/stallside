@@ -6,6 +6,7 @@ import {
   startSquareCheckout,
 } from "./square-checkout-actions";
 import type { CartItemInput } from "@/lib/checkout";
+import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import { squareEnvironment } from "@/lib/square/public-env";
 
 declare global {
@@ -101,7 +102,10 @@ export default function SquareWebPayButton({
 
   return (
     <div className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4">
-      <p className="text-xl font-semibold">Pay with Square</p>
+      <p className="flex items-center gap-2 text-xl font-semibold">
+        <PaymentBrandIcon brand="square" className="size-6" />
+        Pay with Square
+      </p>
       <div id="square-card-container" className="min-h-[56px]" />
       <button
         type="button"

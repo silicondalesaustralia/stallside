@@ -44,6 +44,26 @@ export function isSquareConnectEnabled(): boolean {
   );
 }
 
+/** Operator-facing checks (no secret values). */
+export function squareConnectDiagnostics(): {
+  vercelEnv: string;
+  integrationEnabled: boolean;
+  connectAllowed: boolean;
+  hasApplicationId: boolean;
+  hasApplicationSecret: boolean;
+} {
+  return {
+    vercelEnv:
+      process.env.VERCEL_ENV?.trim() ||
+      process.env.NODE_ENV?.trim() ||
+      "unknown",
+    integrationEnabled: isSquareIntegrationEnabled(),
+    connectAllowed: process.env.SQUARE_CONNECT_ENABLED !== "0",
+    hasApplicationId: Boolean(squareApplicationId()),
+    hasApplicationSecret: Boolean(squareApplicationSecret()),
+  };
+}
+
 export function isSquarePaymentsEnabled(): boolean {
   return isSquareConnectEnabled() && process.env.SQUARE_PAYMENTS_ENABLED === "1";
 }

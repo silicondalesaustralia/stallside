@@ -15,7 +15,13 @@ export default function PaymentBrandIcon({
   className?: string;
 }) {
   const asset = paymentBrandSrc(brand);
-  if (asset && (WORDMARK_BRANDS.has(brand) || brand === "stripe" || brand === "cashapp")) {
+  if (
+    asset &&
+    (WORDMARK_BRANDS.has(brand) ||
+      brand === "stripe" ||
+      brand === "square" ||
+      brand === "cashapp")
+  ) {
     return <WordmarkImg brand={brand} src={asset} className={className} />;
   }
 
@@ -102,6 +108,7 @@ function WordmarkImg({
   // size-* without max-w = square slot (settings toggles) - do not expand wide.
   const squareSlot =
     brand === "stripe" ||
+    brand === "square" ||
     brand === "cashapp" ||
     (/\bsize-\d+\b/.test(className) && !className.includes("max-w-"));
   if (squareSlot) {

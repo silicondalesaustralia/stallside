@@ -6,6 +6,7 @@ export type PaymentBrand =
   | "paypal"
   | "venmo"
   | "stripe"
+  | "square"
   | "payid"
   | "payto"
   | "cashapp"
@@ -78,6 +79,8 @@ export function paymentBrandSrc(brand: PaymentBrand): string | null {
       return "/brand/link.png";
     case "stripe":
       return "/brand/stripe.png";
+    case "square":
+      return "/brand/square.svg";
     case "zip":
       return "/brand/zip.svg";
     case "klarna":
@@ -111,6 +114,8 @@ export function paymentBrandLabel(brand: PaymentBrand): string {
       return "Venmo";
     case "stripe":
       return "Stripe";
+    case "square":
+      return "Square";
     case "zip":
       return "Zip";
     case "klarna":

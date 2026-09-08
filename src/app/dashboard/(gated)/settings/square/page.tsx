@@ -6,11 +6,13 @@ import {
   isSquareConnectEnabled,
   isSquarePaymentsEnabled,
   isSquareAppFeesEnabled,
+  squareConnectDiagnostics,
   squareEnvironment,
 } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
 import { shouldChargeVendlFee } from "@/lib/stallside-fee";
 import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
+import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import SquareConnectForm from "./SquareConnectForm";
 import SquareCapabilityForm from "./SquareCapabilityForm";
 import SquareLocationForm from "./SquareLocationForm";
@@ -34,6 +36,7 @@ export default async function SquareSettingsPage({
   }
 
   const enabled = isSquareConnectEnabled();
+  const diagnostics = enabled ? null : squareConnectDiagnostics();
   const conn = enabled ? await getSquareConnection(owner.id) : null;
   const stands = await prisma.stand.findMany({
     where: { ownerId: owner.id, isActive: true },
@@ -56,7 +59,10 @@ export default async function SquareSettingsPage({
         </Link>
       </p>
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Square</h1>
+        <h1 className="flex flex-wrap items-center gap-3 text-3xl font-semibold tracking-tight">
+          <PaymentBrandIcon brand="square" className="size-8" />
+          Square
+        </h1>
         <p className="mt-2 text-[var(--muted)]">
           Connect your existing Square account to accept Square payments on your
           Vendl website and keep product stock in sync with Square POS. Online
@@ -64,11 +70,44 @@ export default async function SquareSettingsPage({
         </p>
       </div>
 
-      {!enabled ? (
-        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm">
-          Square integration is not enabled in this environment yet. Ask your
-          operator to set Square app credentials and feature flags.
-        </p>
+      {!enabled && diagnostics ? (
+        <div className="space-y-2 rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm">
+          <p>
+            Square Connect is off in this runtime. Vars must be on the same
+            Vercel environment this host uses, then redeploy.
+          </p>
+          <ul className="list-inside list-disc text-[var(--muted)]">
+            <li>
+              Runtime env:{" "}
+              <span className="font-medium text-[var(--ink)]">
+                {diagnostics.vercelEnv}
+              </span>
+            </li>
+            <li>
+              SQUARE_INTEGRATION_ENABLED=1:{" "}
+              {diagnostics.integrationEnabled ? "yes" : "no"}
+            </li>
+            <li>
+              SQUARE_CONNECT_ENABLED not 0:{" "}
+              {diagnostics.connectAllowed ? "yes" : "no"}
+            </li>
+            <li>
+              SQUARE_APPLICATION_ID present:{" "}
+              {diagnostics.hasApplicationId ? "yes" : "no"}
+            </li>
+            <li>
+              SQUARE_APPLICATION_SECRET present:{" "}
+              {diagnostics.hasApplicationSecret ? "yes" : "no"}
+            </li>
+          </ul>
+          {diagnostics.vercelEnv === "production" ? (
+            <p className="text-[var(--muted)]">
+              This deployment is Production. Preview-only Square vars will not
+              apply — add them to Production, or point staging.vendl.app at a
+              Preview/Staging deployment and redeploy.
+            </p>
+          ) : null}
+        </div>
       ) : null}
 
       {params.connected === "1" ? (

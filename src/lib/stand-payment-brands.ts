@@ -56,7 +56,7 @@ export function standPaymentBrands(
   }
 
   if (standOffersSquare(stand, owner)) {
-    brands.push("card");
+    brands.push("square");
   } else if (standOffersCard(stand, owner)) {
     brands.push(...stripeCheckoutBrandsForCurrency(stand.currency));
   }

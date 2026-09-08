@@ -73,7 +73,10 @@ export default async function PaymentsSettingsPage() {
 
       {showSquare ? (
         <section id="square" className="space-y-3 text-sm scroll-mt-8">
-          <h2 className="text-lg font-semibold">Square</h2>
+          <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+            <PaymentBrandIcon brand="square" className="size-6" />
+            Square
+          </h2>
           <p>
             Status:{" "}
             {!squareEnvReady
@@ -96,6 +99,7 @@ export default async function PaymentsSettingsPage() {
             href="/dashboard/settings/square"
             className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
           >
+            <PaymentBrandIcon brand="square" className="size-5" />
             {!squareEnvReady
               ? "Open Square settings"
               : squareActive
