@@ -6,11 +6,13 @@ import {
   type OnboardingStep,
 } from "@/lib/business-mode";
 import { STAND_TIMEZONES, DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
+import { BILLING_REGIONS } from "@/lib/saas-pricing";
 import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import {
   saveBusinessMode,
+  saveBillingRegion,
   saveBusinessProfile,
   completeOnboarding,
 } from "./actions";
@@ -72,9 +74,9 @@ export default async function OnboardingPage({
 
   const step: OnboardingStep = isOnboardingStep(params.step)
     ? params.step
-    : owner.businessMode
-      ? "profile"
-      : "mode";
+    : !owner.businessMode
+      ? "mode"
+      : "region";
 
   if (step === "mode") {
     return (
@@ -119,6 +121,53 @@ export default async function OnboardingPage({
     );
   }
 
+  if (step === "region") {
+    return (
+      <OnboardingStepShell
+        step="region"
+        title="Where do you sell?"
+        subtitle="This sets your billing region and which card payment options you can use. Australia can use Stripe or Square; other regions use Stripe."
+      >
+        <form action={saveBillingRegion} className="flex flex-col gap-3">
+          {BILLING_REGIONS.map((region) => (
+            <label
+              key={region.currency}
+              className="cursor-pointer rounded-[var(--radius-card)] border border-[var(--line)] bg-[var(--panel)] p-4 shadow-[var(--dash-shadow)] has-[:checked]:border-[var(--leaf)]"
+            >
+              <input
+                type="radio"
+                name="billingCurrency"
+                value={region.currency}
+                required
+                defaultChecked={
+                  (owner.billingCurrency ?? "AUD") === region.currency
+                }
+                className="sr-only"
+              />
+              <span className="block font-semibold text-[var(--field)]">
+                {region.label}
+              </span>
+              <span className="mt-1 block text-sm text-[var(--muted)]">
+                {region.currency}
+                {region.currency === "AUD"
+                  ? " · Stripe or Square"
+                  : " · Stripe"}
+              </span>
+            </label>
+          ))}
+          <button
+            type="submit"
+            className="mt-4 rounded-[var(--radius-pill)] bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
+          >
+            Continue
+          </button>
+        </form>
+      </OnboardingStepShell>
+    );
+  }
+
+  const isAud = (owner.billingCurrency ?? "AUD").toUpperCase() === "AUD";
+
   return (
     <OnboardingStepShell
       step="profile"
@@ -140,28 +189,41 @@ export default async function OnboardingPage({
           <input
             name="suburb"
             defaultValue={owner.suburb ?? ""}
-            placeholder="Woodend"
+            placeholder={isAud ? "Woodend" : "City or town"}
             className="rounded-[var(--radius)] border border-[var(--line)] bg-white px-3 py-2.5"
           />
         </label>
+        {isAud ? (
+          <label className="flex flex-col gap-2 text-sm">
+            <span className="font-medium">State / territory</span>
+            <select
+              name="stateTerritory"
+              required
+              defaultValue={owner.stateTerritory ?? ""}
+              className="rounded-[var(--radius)] border border-[var(--line)] bg-white px-3 py-2.5"
+            >
+              <option value="">Select…</option>
+              {AU_STATES.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : (
+          <label className="flex flex-col gap-2 text-sm">
+            <span className="font-medium">State / region (optional)</span>
+            <input
+              name="stateTerritory"
+              defaultValue={owner.stateTerritory ?? ""}
+              className="rounded-[var(--radius)] border border-[var(--line)] bg-white px-3 py-2.5"
+            />
+          </label>
+        )}
         <label className="flex flex-col gap-2 text-sm">
-          <span className="font-medium">State / territory</span>
-          <select
-            name="stateTerritory"
-            required
-            defaultValue={owner.stateTerritory ?? ""}
-            className="rounded-[var(--radius)] border border-[var(--line)] bg-white px-3 py-2.5"
-          >
-            <option value="">Select…</option>
-            {AU_STATES.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-2 text-sm">
-          <span className="font-medium">Postcode (optional)</span>
+          <span className="font-medium">
+            {isAud ? "Postcode (optional)" : "Postcode / ZIP (optional)"}
+          </span>
           <input
             name="postcode"
             defaultValue={owner.postcode ?? ""}

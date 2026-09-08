@@ -8,6 +8,7 @@ import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { isSquarePaymentsEnabled } from "@/lib/square/config";
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
+import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 
 type StandPaymentFlags = {
   slug?: string;
@@ -29,6 +30,7 @@ type OwnerPaymentReady = {
   paypalOnboardingComplete?: boolean;
   paypalPaymentsEnabled?: boolean;
   onlinePaymentProvider?: OnlinePaymentProvider | string | null;
+  billingCurrency?: string | null;
   squarePaymentsReady?: boolean;
   user?: { email?: string | null; role?: string | null } | null;
 };
@@ -97,6 +99,7 @@ export function standOffersSquare(
   owner: OwnerPaymentReady,
 ): boolean {
   if (!isSquarePaymentsEnabled()) return false;
+  if (!squareEligibleBillingCurrency(owner.billingCurrency)) return false;
   if (!(stand.acceptSquare ?? false)) return false;
   if (owner.onlinePaymentProvider !== OnlinePaymentProvider.SQUARE) return false;
   return Boolean(owner.squarePaymentsReady);

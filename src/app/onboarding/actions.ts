@@ -14,6 +14,11 @@ import {
   type OnboardingStep,
 } from "@/lib/business-mode";
 import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
+import {
+  isBillingCurrency,
+  type BillingCurrency,
+} from "@/lib/saas-pricing";
+import { countryFromBillingCurrency } from "@/lib/commerce/payment-rail";
 
 async function loadOwnerForUser(userId: string) {
   return prisma.owner.findUnique({ where: { userId } });
@@ -42,18 +47,40 @@ export async function saveBusinessMode(formData: FormData) {
     data: {
       businessMode: mode,
       fulfilmentIntents: defaultFulfilmentIntents(mode),
-      country: owner.country || "AU",
+    },
+  });
+
+  redirectStep("region");
+}
+
+export async function saveBillingRegion(formData: FormData) {
+  const user = await requireUser();
+  const owner = await loadOwnerForUser(user.id);
+  if (!owner) redirectStep("mode");
+
+  const raw = String(formData.get("billingCurrency") ?? "")
+    .trim()
+    .toUpperCase();
+  if (!isBillingCurrency(raw)) redirectStep("region");
+  const billingCurrency: BillingCurrency = raw;
+
+  await prisma.owner.update({
+    where: { id: owner.id },
+    data: {
+      billingCurrency,
+      country: countryFromBillingCurrency(billingCurrency),
     },
   });
 
   redirectStep("profile");
 }
 
-/** Mandatory gate: name + location/state, then dashboard. */
+/** Mandatory gate: name + location, then dashboard. */
 export async function saveBusinessProfile(formData: FormData) {
   const user = await requireUser();
   const owner = await loadOwnerForUser(user.id);
   if (!owner) redirectStep("mode");
+  if (!owner.billingCurrency) redirectStep("region");
 
   const businessName = String(formData.get("businessName") ?? "").trim();
   const suburb = String(formData.get("suburb") ?? "").trim() || null;
@@ -65,22 +92,26 @@ export async function saveBusinessProfile(formData: FormData) {
 
   if (businessName.length < 2) redirectStep("profile");
 
+  const isAud = (owner.billingCurrency ?? "AUD").toUpperCase() === "AUD";
   const validState = AU_STATES.some((s) => s.id === stateTerritory)
     ? stateTerritory
     : null;
-  if (!validState) redirectStep("profile");
+  if (isAud && !validState) redirectStep("profile");
 
   const mode = (owner.businessMode ?? "BOTH") as BusinessMode;
+  const billingCurrency = isBillingCurrency(owner.billingCurrency)
+    ? owner.billingCurrency
+    : "AUD";
 
   await prisma.owner.update({
     where: { id: owner.id },
     data: {
       businessName,
       suburb,
-      stateTerritory: validState,
+      stateTerritory: isAud ? validState : stateTerritory,
       postcode,
       defaultTimezone: timezone,
-      country: "AU",
+      country: countryFromBillingCurrency(billingCurrency),
       contactEmail: owner.contactEmail || user.email || owner.contactEmail,
     },
   });
@@ -89,10 +120,21 @@ export async function saveBusinessProfile(formData: FormData) {
     where: { id: owner.id },
   });
 
-  // Food / Both: create catalogue container now so the dashboard has a live shop URL.
   if (mode === "FOOD_BUSINESS" || mode === "BOTH") {
     await ensurePrimaryStand(refreshed);
+  } else {
+    // Still sync primary stand currency if one already exists
+    await prisma.stand.updateMany({
+      where: { ownerId: owner.id },
+      data: { currency: billingCurrency },
+    });
   }
+
+  // Keep stand currency aligned with billing region for new accounts
+  await prisma.stand.updateMany({
+    where: { ownerId: owner.id },
+    data: { currency: billingCurrency },
+  });
 
   await prisma.owner.update({
     where: { id: owner.id },

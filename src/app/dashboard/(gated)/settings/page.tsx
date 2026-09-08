@@ -8,7 +8,9 @@ import { isPayPalConnectAvailable } from "@/lib/paypal";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
+import { squareSettingsVisible } from "@/lib/commerce/payment-rail";
 import BusinessNameForm from "./BusinessNameForm";
+import BillingRegionForm from "./BillingRegionForm";
 import DeleteAccountButton from "./DeleteAccountButton";
 
 export default async function SettingsPage() {
@@ -20,6 +22,7 @@ export default async function SettingsPage() {
   });
   const billingRegion = billingRegionDisplay(owner.billingCurrency);
   const paypalConnectAvailable = isPayPalConnectAvailable();
+  const showSquare = squareSettingsVisible(owner.billingCurrency);
 
   return (
     <main className="flex w-full max-w-3xl flex-col gap-8">
@@ -81,12 +84,17 @@ export default async function SettingsPage() {
         <h2 className="text-lg font-semibold">Vendl subscription</h2>
         <p>{subscriptionLine}</p>
         <p>
-          Billing region: <strong>{billingRegion}</strong>
+          Current region: <strong>{billingRegion}</strong>
         </p>
         <p className="text-[var(--muted)]">
-          Pays Vendl for the app. Also sets your Stripe Connect country for
-          Card / Tap &amp; Go. Separate from stand display currency.
+          Pays Vendl for the app. Also sets your Stripe Connect country for card
+          payments. Australia can use Stripe or Square; other regions use Stripe.
+          Separate from stand display currency.
         </p>
+        <BillingRegionForm
+          billingCurrency={owner.billingCurrency ?? "AUD"}
+          stripeConnected={Boolean(owner.stripeAccountId)}
+        />
         <Link
           href="/dashboard/settings/billing"
           className="inline-flex rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
@@ -113,6 +121,9 @@ export default async function SettingsPage() {
           Connect Stripe for {STRIPE_CHECKOUT_METHODS_PHRASE}. Funds go to your
           account. Free includes a 2.5% Vendl fee on card sales unless you
           upgrade to Pro.
+          {showSquare
+            ? " Australian accounts can choose Square instead under Square settings."
+            : null}
         </p>
         <Link
           href="/dashboard/settings/stripe"
@@ -167,20 +178,23 @@ export default async function SettingsPage() {
         </Link>
       </section>
 
-      <section id="square" className="space-y-3 text-sm scroll-mt-8">
-        <h2 className="text-lg font-semibold">Square</h2>
-        <p className="text-[var(--muted)]">
-          Connect Square for website payments and POS inventory sync. Free still
-          collects 2.5% on Vendl-originated Square checkout; POS sales never take
-          a Vendl fee.
-        </p>
-        <Link
-          href="/dashboard/settings/square"
-          className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
-        >
-          Manage Square
-        </Link>
-      </section>
+      {showSquare ? (
+        <section id="square" className="space-y-3 text-sm scroll-mt-8">
+          <h2 className="text-lg font-semibold">Square</h2>
+          <p className="text-[var(--muted)]">
+            Connect Square for website payments and POS inventory sync. Choose
+            Stripe or Square as your online card provider — not both at once.
+            Free still collects 2.5% on Vendl-originated Square checkout; POS
+            sales never take a Vendl fee.
+          </p>
+          <Link
+            href="/dashboard/settings/square"
+            className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+          >
+            Manage Square
+          </Link>
+        </section>
+      ) : null}
     </main>
   );
 }

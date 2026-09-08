@@ -28,7 +28,10 @@ import {
 } from "@/lib/square/connection";
 import { createSquarePayment } from "@/lib/square/payments";
 import { fulfillPaidSquareOrder } from "@/lib/fulfill-paid-order";
-import { saleOriginIncursVendlFee } from "@/lib/commerce/sale-origin";
+import {
+  saleOriginIncursVendlFee,
+} from "@/lib/commerce/sale-origin";
+import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 
 export async function startSquareCheckout(input: {
   standSlug: string;
@@ -61,6 +64,9 @@ export async function startSquareCheckout(input: {
       loaded;
     if (!stand.acceptSquare) {
       return { error: "This stand is not accepting Square." };
+    }
+    if (!squareEligibleBillingCurrency(stand.owner.billingCurrency)) {
+      return { error: "Square checkout is only available for Australian sellers." };
     }
 
     const conn = await getSquareConnection(stand.ownerId);

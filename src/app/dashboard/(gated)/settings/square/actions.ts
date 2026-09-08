@@ -17,12 +17,19 @@ import {
 } from "@/lib/square/connection";
 import { listSquareCatalogItems, suggestCatalogMatches } from "@/lib/square/catalog";
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
+import {
+  assertOnlineProviderAllowed,
+  squareEligibleBillingCurrency,
+} from "@/lib/commerce/payment-rail";
 
 export async function startSquareConnect(): Promise<void> {
   if (!isSquareConnectEnabled()) {
     throw new Error("Square is not enabled.");
   }
-  await requireOwner();
+  const { owner } = await requireOwner();
+  if (!squareEligibleBillingCurrency(owner.billingCurrency)) {
+    throw new Error("Square is only available for Australian (AUD) accounts.");
+  }
   const state = createOAuthState();
   const jar = await cookies();
   jar.set("square_oauth_state", state, {
@@ -71,6 +78,16 @@ export async function setOnlinePaymentProvider(
   provider: "STRIPE" | "SQUARE",
 ) {
   const { owner } = await requireOwner();
+  try {
+    assertOnlineProviderAllowed(owner.billingCurrency, provider);
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : "Square is only available for Australian accounts.",
+    };
+  }
   if (provider === "SQUARE") {
     const conn = await getSquareConnection(owner.id);
     if (!conn?.paymentsEnabled || conn.status !== "ACTIVE") {

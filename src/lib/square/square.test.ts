@@ -68,7 +68,7 @@ describe("square webhook signature", () => {
 });
 
 describe("online payment rail", () => {
-  it("prefers Square when healthy and selected", () => {
+  it("prefers Square when healthy and selected for AUD", () => {
     process.env.SQUARE_INTEGRATION_ENABLED = "1";
     process.env.SQUARE_PAYMENTS_ENABLED = "1";
     process.env.SQUARE_APPLICATION_ID = "sandbox-sq0id";
@@ -79,8 +79,26 @@ describe("online payment rail", () => {
         stripeReady: true,
         squareReady: true,
         standAcceptSquare: true,
+        billingCurrency: "AUD",
       }),
       "square",
+    );
+  });
+
+  it("never uses Square for USD accounts", () => {
+    process.env.SQUARE_INTEGRATION_ENABLED = "1";
+    process.env.SQUARE_PAYMENTS_ENABLED = "1";
+    process.env.SQUARE_APPLICATION_ID = "sandbox-sq0id";
+    process.env.SQUARE_APPLICATION_SECRET = "secret";
+    assert.equal(
+      resolveOnlinePaymentRail({
+        preferred: OnlinePaymentProvider.SQUARE,
+        stripeReady: true,
+        squareReady: true,
+        standAcceptSquare: true,
+        billingCurrency: "USD",
+      }),
+      "stripe",
     );
   });
 });

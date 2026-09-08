@@ -218,6 +218,7 @@ export default async function StandCartPage({
   const ownerForPay = {
     ...stand.owner,
     user: stand.owner.user,
+    billingCurrency: stand.owner.billingCurrency,
     squarePaymentsReady: Boolean(
       squareConn?.status === "ACTIVE" &&
         squareConn.paymentsEnabled &&

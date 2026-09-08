@@ -13,6 +13,7 @@ export async function ensurePrimaryStand(owner: {
   brandSecondaryColor: string | null;
   brandLogoUrl: string | null;
   shortDescription: string | null;
+  billingCurrency?: string | null;
 }) {
   const existing = await prisma.stand.findFirst({
     where: { ownerId: owner.id },
@@ -28,24 +29,29 @@ export async function ensurePrimaryStand(owner: {
     return Boolean(found);
   });
 
-  return prisma.stand.create({
-    data: {
-      ownerId: owner.id,
-      name: owner.businessName,
-      slug,
-      locationLabel: owner.suburb,
-      description: owner.shortDescription,
-      currency: "AUD",
-      timezone: owner.defaultTimezone || DEFAULT_TIMEZONE,
-      accentColor: owner.brandAccentColor,
-      secondaryColor: owner.brandSecondaryColor,
-      logoUrl: owner.brandLogoUrl,
-      acceptCash: true,
-      acceptLocalTransfer: true,
-      acceptCard: true,
-    },
-  }).then(async (stand) => {
-    await ensureStandImmediateOption(stand);
-    return stand;
-  });
+  const currency =
+    (owner.billingCurrency ?? "AUD").trim().toUpperCase() || "AUD";
+
+  return prisma.stand
+    .create({
+      data: {
+        ownerId: owner.id,
+        name: owner.businessName,
+        slug,
+        locationLabel: owner.suburb,
+        description: owner.shortDescription,
+        currency,
+        timezone: owner.defaultTimezone || DEFAULT_TIMEZONE,
+        accentColor: owner.brandAccentColor,
+        secondaryColor: owner.brandSecondaryColor,
+        logoUrl: owner.brandLogoUrl,
+        acceptCash: true,
+        acceptLocalTransfer: true,
+        acceptCard: true,
+      },
+    })
+    .then(async (stand) => {
+      await ensureStandImmediateOption(stand);
+      return stand;
+    });
 }

@@ -104,7 +104,7 @@ export const AU_STATES = [
 ] as const;
 
 /** Gate only — progressive setup lives on Getting Started after dashboard. */
-export const ONBOARDING_STEPS = ["mode", "profile"] as const;
+export const ONBOARDING_STEPS = ["mode", "region", "profile"] as const;
 
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 

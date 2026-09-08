@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireOwner } from "@/lib/session";
 import { isSquareConnectEnabled } from "@/lib/square/config";
 import { completeSquareOAuth } from "@/lib/square/connection";
+import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -37,6 +38,11 @@ export async function GET(req: Request) {
 
   try {
     const { owner } = await requireOwner();
+    if (!squareEligibleBillingCurrency(owner.billingCurrency)) {
+      return NextResponse.redirect(
+        new URL("/dashboard/settings/square?error=region", url.origin),
+      );
+    }
     await completeSquareOAuth({ ownerId: owner.id, code });
     return NextResponse.redirect(
       new URL("/dashboard/settings/square?connected=1", url.origin),
