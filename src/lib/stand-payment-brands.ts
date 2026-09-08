@@ -3,10 +3,15 @@ import { isPayPalConnectAvailable } from "@/lib/paypal";
 import {
   paypalCheckoutBrandsForCurrency,
   stripeCheckoutBrandsForCurrency,
+  SQUARE_CHECKOUT_BRANDS,
 } from "@/lib/payment-brand-assets";
 import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
-import { isSquarePaymentsEnabled } from "@/lib/square/config";
+import {
+  isSquareConnectEnabled,
+  isSquarePaymentsEnabled,
+} from "@/lib/square/config";
+import { getSquareConnection } from "@/lib/square/connection";
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
 import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 
@@ -22,7 +27,8 @@ type StandPaymentFlags = {
   localTransferMethodId: string | null;
 };
 
-type OwnerPaymentReady = {
+export type OwnerPaymentReady = {
+  id?: string;
   subscriptionPlan?: string | null;
   stripeAccountId?: string | null;
   stripeChargesEnabled?: boolean;
@@ -34,6 +40,25 @@ type OwnerPaymentReady = {
   squarePaymentsReady?: boolean;
   user?: { email?: string | null; role?: string | null } | null;
 };
+
+/** Resolve Square connection readiness for brand / checkout gates. */
+export async function withSquarePaymentsReady<T extends OwnerPaymentReady>(
+  owner: T & { id: string },
+): Promise<T & { squarePaymentsReady: boolean }> {
+  if (
+    !isSquareConnectEnabled() ||
+    !squareEligibleBillingCurrency(owner.billingCurrency)
+  ) {
+    return { ...owner, squarePaymentsReady: false };
+  }
+  const conn = await getSquareConnection(owner.id);
+  const squarePaymentsReady = Boolean(
+    conn?.status === "ACTIVE" &&
+      conn.paymentsEnabled &&
+      conn.primaryLocationId,
+  );
+  return { ...owner, squarePaymentsReady };
+}
 
 /** Brands to show on QR signs / checkout based on what’s actually offerable. */
 export function standPaymentBrands(
@@ -56,7 +81,7 @@ export function standPaymentBrands(
   }
 
   if (standOffersSquare(stand, owner)) {
-    brands.push("square");
+    brands.push(...SQUARE_CHECKOUT_BRANDS);
   } else if (standOffersCard(stand, owner)) {
     brands.push(...stripeCheckoutBrandsForCurrency(stand.currency));
   }

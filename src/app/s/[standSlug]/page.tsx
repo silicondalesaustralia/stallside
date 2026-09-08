@@ -11,7 +11,7 @@ import { isDemoStandSlug } from "@/lib/demo";
 import { mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { standPaymentBrands } from "@/lib/stand-payment-brands";
+import { standPaymentBrands, withSquarePaymentsReady } from "@/lib/stand-payment-brands";
 import { standSocialFromStand } from "@/lib/stand-social";
 import { catalogMetadata, standCatalogPath } from "@/lib/stand-seo";
 import { businessPageProductWhere } from "@/lib/product-visibility";
@@ -101,10 +101,13 @@ export default async function PublicStandPage({
   );
 
   const branded = publicStandBranding(stand, stand.owner);
-  const paymentBrands = standPaymentBrands(stand, {
-    ...stand.owner,
-    user: stand.owner.user,
-  });
+  const paymentBrands = standPaymentBrands(
+    stand,
+    await withSquarePaymentsReady({
+      ...stand.owner,
+      user: stand.owner.user,
+    }),
+  );
   const social = standSocialFromStand(branded);
   const hasSocial = Boolean(
     social.instagramUrl ||

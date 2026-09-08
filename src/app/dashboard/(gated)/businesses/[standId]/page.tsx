@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
-import { standPaymentBrands } from "@/lib/stand-payment-brands";
+import { standPaymentBrands, withSquarePaymentsReady } from "@/lib/stand-payment-brands";
 import BusinessCheckoutStrip from "./BusinessCheckoutStrip";
 import BusinessPageHeader from "./BusinessPageHeader";
 import BusinessSetupPrompt from "./BusinessSetupPrompt";
@@ -48,10 +48,13 @@ export default async function StandDetailPage({
 
   const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 240);
-  const paymentBrands = standPaymentBrands(stand, {
-    ...owner,
-    user: { email: user.email, role: user.role },
-  });
+  const paymentBrands = standPaymentBrands(
+    stand,
+    await withSquarePaymentsReady({
+      ...owner,
+      user: { email: user.email, role: user.role },
+    }),
+  );
   const productOpts = stand.products
     .filter((p) => !p.isHidden)
     .map((p) => ({

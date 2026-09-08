@@ -466,7 +466,7 @@ export default function StandCartCheckout({
             {paidVia === "local_transfer"
               ? "Marked as paid. The owner will see this in their account shortly."
               : paidVia === "square"
-                ? "Square payment confirmed. You're all set."
+                ? "Card payment confirmed. You're all set."
                 : "Cash payment confirmed. You're all set."}
           </p>
           {restockStandId ? (

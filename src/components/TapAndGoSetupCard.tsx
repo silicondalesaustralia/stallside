@@ -37,7 +37,7 @@ export default function TapAndGoSetupCard({
       <p className={`mt-2 text-sm ${bodyClass}`}>
         {stripeStarted
           ? "Stripe Connect is started but charges are not enabled yet. Finish onboarding so you can take card at checkout, pre-orders, and subscription boxes."
-          : `${CASH_AND_LOCAL_PAYMENTS_LABEL} work without Stripe. Connect when you want ${STRIPE_CHECKOUT_METHODS_PHRASE} — required for pre-orders and subscriptions.`}
+          : `${CASH_AND_LOCAL_PAYMENTS_LABEL} work without Stripe or Square. Connect when you want ${STRIPE_CHECKOUT_METHODS_PHRASE} — required for pre-orders and subscriptions.`}
       </p>
       <Link
         href="/dashboard/settings/payments"

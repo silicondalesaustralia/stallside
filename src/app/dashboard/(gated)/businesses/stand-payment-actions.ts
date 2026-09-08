@@ -37,6 +37,7 @@ export async function updateStandPayments(standId: string, formData: FormData) {
     squareReady =
       conn?.status === "ACTIVE" &&
       Boolean(conn.paymentsEnabled) &&
+      Boolean(conn.primaryLocationId) &&
       owner.onlinePaymentProvider === OnlinePaymentProvider.SQUARE;
   }
 

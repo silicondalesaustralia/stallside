@@ -81,6 +81,7 @@ export default async function CheckoutSettingsPage() {
     squareReady =
       conn?.status === "ACTIVE" &&
       Boolean(conn.paymentsEnabled) &&
+      Boolean(conn.primaryLocationId) &&
       owner.onlinePaymentProvider === OnlinePaymentProvider.SQUARE;
   }
 

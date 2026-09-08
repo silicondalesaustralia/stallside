@@ -33,6 +33,16 @@ export const STRIPE_CHECKOUT_BRANDS: PaymentBrand[] = [
   "klarna",
 ];
 
+/**
+ * Customer-facing card methods for Square Web Payments (card form today;
+ * Apple/Google Pay need extra SDK + Square domain setup).
+ */
+export const SQUARE_CHECKOUT_BRANDS: PaymentBrand[] = [
+  "card",
+  "apple",
+  "google",
+];
+
 /** AUD checkout extras shown beside Stripe methods (PayTo is Australia-only). */
 export const AUD_STRIPE_CHECKOUT_BRANDS: PaymentBrand[] = [
   ...STRIPE_CHECKOUT_BRANDS,

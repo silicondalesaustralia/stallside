@@ -2,6 +2,7 @@
 
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
+import PoweredByRail from "@/components/PoweredByRail";
 import DemoCardHint from "@/components/DemoCardHint";
 import { stripeCheckoutBrandsForCurrency } from "@/lib/payment-brand-assets";
 import { formatMoney } from "@/lib/public-product";
@@ -256,6 +257,7 @@ export default function CheckoutPayStep({
                 />
               </span>
             ) : null}
+            <PoweredByRail rail="stripe" />
           </button>
           {showDemoCardHint ? <DemoCardHint /> : null}
         </>
@@ -279,7 +281,7 @@ export default function CheckoutPayStep({
           No payment methods are available at this stand right now.
         </p>
       ) : null}
-      {!cardEnabled && !preOrderOnly ? (
+      {!cardEnabled && !squareEnabled && !preOrderOnly ? (
         <CardInterestButton
           standSlug={standSlug}
           subtotalCents={subtotalCents}

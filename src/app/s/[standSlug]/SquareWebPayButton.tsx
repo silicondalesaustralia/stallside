@@ -1,39 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import {
-  completeSquareCheckout,
-  startSquareCheckout,
-} from "./square-checkout-actions";
 import type { CartItemInput } from "@/lib/checkout";
-import PaymentBrandIcon from "@/components/PaymentBrandIcon";
-import { squareEnvironment } from "@/lib/square/public-env";
-
-declare global {
-  interface Window {
-    Square?: {
-      payments: (
-        applicationId: string,
-        locationId: string,
-      ) => Promise<{
-        card: () => Promise<{
-          attach: (selector: string) => Promise<void>;
-          tokenize: () => Promise<{
-            status: string;
-            token?: string;
-            errors?: unknown;
-          }>;
-        }>;
-      }>;
-    };
-  }
-}
-
-function squareSdkUrl(): string {
-  return squareEnvironment() === "production"
-    ? "https://web.squarecdn.com/v1/square.js"
-    : "https://sandbox.web.squarecdn.com/v1/square.js";
-}
+import PaymentIconRow from "@/components/PaymentIconRow";
+import PoweredByRail from "@/components/PoweredByRail";
+import { SQUARE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
+import {
+  continueSquareCardPay,
+  type SquarePaySession,
+} from "./continue-square-card-pay";
+import { useSquareSdk } from "./use-square-sdk";
 
 export default function SquareWebPayButton({
   standSlug,
@@ -59,25 +35,11 @@ export default function SquareWebPayButton({
   onSuccess: (orderNumber: string) => void;
 }) {
   const [pending, start] = useTransition();
-  const [ready, setReady] = useState(false);
-  const [session, setSession] = useState<{
-    orderId: string;
-    applicationId: string;
-    locationId: string;
+  const ready = useSquareSdk(onError);
+  const [session, setSession] = useState<SquarePaySession | null>(null);
+  const cardRef = useRef<{
+    tokenize: () => Promise<{ status: string; token?: string }>;
   } | null>(null);
-  const cardRef = useRef<{ tokenize: () => Promise<{ status: string; token?: string }> } | null>(null);
-  const mounted = useRef(false);
-
-  useEffect(() => {
-    if (mounted.current) return;
-    mounted.current = true;
-    const script = document.createElement("script");
-    script.src = squareSdkUrl();
-    script.async = true;
-    script.onload = () => setReady(true);
-    script.onerror = () => onError("Could not load Square payments.");
-    document.body.appendChild(script);
-  }, [onError]);
 
   useEffect(() => {
     if (!ready || !session || !window.Square) return;
@@ -92,7 +54,7 @@ export default function SquareWebPayButton({
         await card.attach("#square-card-container");
         if (!cancelled) cardRef.current = card;
       } catch {
-        if (!cancelled) onError("Could not initialize Square card form.");
+        if (!cancelled) onError("Could not initialize the card form.");
       }
     })();
     return () => {
@@ -102,10 +64,21 @@ export default function SquareWebPayButton({
 
   return (
     <div className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--field)] bg-[var(--panel)] px-5 py-4">
-      <p className="flex items-center gap-2 text-xl font-semibold">
-        <PaymentBrandIcon brand="square" className="size-6" />
-        Pay with Square
-      </p>
+      <div>
+        <p className="text-xl font-semibold text-[var(--ink)]">
+          Pay with credit card
+        </p>
+        <p className="mt-0.5 text-base text-[var(--muted)]">
+          Enter your card details below
+        </p>
+        <div className="mt-3 flex w-full justify-center rounded-[var(--radius)] bg-[var(--wash)] px-3 py-3">
+          <PaymentIconRow
+            brands={SQUARE_CHECKOUT_BRANDS}
+            className="w-full justify-center gap-2.5"
+            size="lg"
+          />
+        </div>
+      </div>
       <div id="square-card-container" className="min-h-[56px]" />
       <button
         type="button"
@@ -114,63 +87,35 @@ export default function SquareWebPayButton({
         onClick={() => {
           start(async () => {
             try {
-              if (!session) {
-                const started = await startSquareCheckout({
-                  standSlug,
-                  items,
-                  customerChoiceAmountCents,
-                  customerName,
-                  customerEmail,
-                  customerPhone,
-                  couponCode,
-                });
-                if ("error" in started && started.error) {
-                  onError(started.error);
-                  return;
-                }
-                if (!("orderId" in started) || !started.orderId) {
-                  onError("Could not start Square checkout.");
-                  return;
-                }
-                setSession({
-                  orderId: started.orderId,
-                  applicationId: started.applicationId!,
-                  locationId: started.locationId!,
-                });
-                return;
-              }
-              if (!cardRef.current) {
-                onError("Card form is still loading.");
-                return;
-              }
-              const result = await cardRef.current.tokenize();
-              if (result.status !== "OK" || !result.token) {
-                onError("Card was not accepted. Try again.");
-                return;
-              }
-              const done = await completeSquareCheckout({
-                orderId: session.orderId,
-                sourceId: result.token,
+              const result = await continueSquareCardPay({
+                standSlug,
+                items,
+                customerChoiceAmountCents,
+                customerName,
+                customerEmail,
+                customerPhone,
+                couponCode,
+                session,
+                card: cardRef.current,
               });
-              if ("error" in done && done.error) {
-                onError(done.error);
+              if (result.kind === "error") {
+                onError(result.message);
                 return;
               }
-              if ("orderNumber" in done && done.orderNumber) {
-                onSuccess(done.orderNumber);
+              if (result.kind === "session") {
+                setSession(result.session);
+                return;
               }
+              onSuccess(result.orderNumber);
             } catch {
-              onError("Square checkout failed.");
+              onError("Card payment failed.");
             }
           });
         }}
       >
-        {pending
-          ? "Processing…"
-          : session
-            ? "Pay now"
-            : "Continue to Square"}
+        {pending ? "Processing…" : session ? "Pay now" : "Continue"}
       </button>
+      <PoweredByRail rail="square" />
     </div>
   );
 }

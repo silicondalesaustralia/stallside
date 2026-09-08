@@ -4,7 +4,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { APP_DOMAIN } from "@/lib/constants";
 import { standQrDataUrl, standQrTargetUrl } from "@/lib/stand-qr";
-import { standPaymentBrands } from "@/lib/stand-payment-brands";
+import { standPaymentBrands, withSquarePaymentsReady } from "@/lib/stand-payment-brands";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import { formatMoney } from "@/lib/public-product";
 import { businessPageProductWhere } from "@/lib/product-visibility";
@@ -59,10 +59,13 @@ export default async function StandQrPage({
   });
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 640);
   const siteUrl = `https://${publicApexHost()}`;
-  const paymentBrands = standPaymentBrands(stand, {
-    ...owner,
-    user: { email: user.email, role: user.role },
-  });
+  const paymentBrands = standPaymentBrands(
+    stand,
+    await withSquarePaymentsReady({
+      ...owner,
+      user: { email: user.email, role: user.role },
+    }),
+  );
 
   const bundleLines: string[] = [];
   for (const p of stand.products) {
