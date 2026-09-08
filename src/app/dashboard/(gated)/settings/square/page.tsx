@@ -153,7 +153,10 @@ export default async function SquareSettingsPage({
               ? " · app fees on"
               : " · production app fees off"}
           </p>
-          <SquareConnectForm connected={Boolean(active)} />
+          <SquareConnectForm
+            connected={Boolean(active)}
+            sandbox={squareEnvironment() === "sandbox"}
+          />
         </section>
       ) : null}
 

@@ -19,6 +19,15 @@ catalogue mapping, and inventory sync. Credentials never belong in Git.
      `catalog.version.updated` when catalogue sync is on.
 6. Copy webhook signature key into env.
 
+### Sandbox OAuth blank page
+
+Sandbox authorize will white-screen until you launch a seller test account:
+
+1. Developer Dashboard → your app → **Sandbox test accounts**
+2. Click **Open** on Default Test Account (leave that tab open)
+3. Then click **Connect Square** in Vendl (authorize host is
+   `https://connect.squareupsandbox.com/...`)
+
 ## Required OAuth scopes
 
 See `src/lib/square/scopes.ts`:
