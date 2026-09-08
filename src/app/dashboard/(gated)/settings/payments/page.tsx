@@ -6,15 +6,18 @@ import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
 import {
-  squareSettingsVisible,
+  squareEligibleBillingCurrency,
 } from "@/lib/commerce/payment-rail";
 import { getSquareConnection } from "@/lib/square/connection";
+import { isSquareConnectEnabled } from "@/lib/square/config";
 
 export default async function PaymentsSettingsPage() {
   const { owner } = await requireOwner();
   const paypalConnectAvailable = isPayPalConnectAvailable();
-  const showSquare = squareSettingsVisible(owner.billingCurrency);
-  const squareConn = showSquare ? await getSquareConnection(owner.id) : null;
+  const showSquare = squareEligibleBillingCurrency(owner.billingCurrency);
+  const squareEnvReady = isSquareConnectEnabled();
+  const squareConn =
+    showSquare && squareEnvReady ? await getSquareConnection(owner.id) : null;
   const squareActive = squareConn?.status === "ACTIVE";
 
   return (
@@ -73,13 +76,15 @@ export default async function PaymentsSettingsPage() {
           <h2 className="text-lg font-semibold">Square</h2>
           <p>
             Status:{" "}
-            {squareActive
-              ? squareConn?.paymentsEnabled
-                ? "Connected · payments enabled"
-                : "Connected · finish setup"
-              : squareConn
-                ? squareConn.status
-                : "Not connected"}
+            {!squareEnvReady
+              ? "Available for Australia · waiting on Square app credentials in this environment"
+              : squareActive
+                ? squareConn?.paymentsEnabled
+                  ? "Connected · payments enabled"
+                  : "Connected · finish setup"
+                : squareConn
+                  ? squareConn.status
+                  : "Not connected"}
           </p>
           <p className="text-[var(--muted)]">
             Connect Square for website payments and POS inventory sync. Choose
@@ -91,7 +96,11 @@ export default async function PaymentsSettingsPage() {
             href="/dashboard/settings/square"
             className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
           >
-            {squareActive ? "Manage Square" : "Connect Square"}
+            {!squareEnvReady
+              ? "Open Square settings"
+              : squareActive
+                ? "Manage Square"
+                : "Connect Square"}
           </Link>
         </section>
       ) : null}

@@ -8,7 +8,6 @@ import {
 import { productDashboardWhere } from "@/lib/product-visibility";
 import {
   squareEligibleBillingCurrency,
-  squareSettingsVisible,
 } from "@/lib/commerce/payment-rail";
 import { CommerceProvider } from "@/generated/prisma/client";
 
@@ -39,7 +38,7 @@ export async function loadStripeSetupBanner(input: {
   stripeChargesEnabled: boolean;
   billingCurrency?: string | null;
 }): Promise<PaymentSetupBanner | null> {
-  const audSquare = squareSettingsVisible(input.billingCurrency);
+  const audSquare = squareEligibleBillingCurrency(input.billingCurrency);
 
   let squarePaymentsReady = false;
   if (audSquare) {

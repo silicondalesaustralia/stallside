@@ -18,13 +18,21 @@ export function squareEligibleBillingCurrency(
   return raw === "AUD";
 }
 
-/** Env + region gate for Settings hub / Square pages. */
+/** Show Square in Settings UI for AUD accounts (Connect still needs env flags). */
 export function squareSettingsVisible(
   billingCurrency?: string | null,
 ): boolean {
-  if (!isSquareConnectEnabled()) return false;
   if (billingCurrency === undefined) return true;
   return squareEligibleBillingCurrency(billingCurrency);
+}
+
+/** Env ready to start OAuth / live Square connect. */
+export function squareConnectAvailable(
+  billingCurrency?: string | null,
+): boolean {
+  return (
+    isSquareConnectEnabled() && squareSettingsVisible(billingCurrency)
+  );
 }
 
 export function onlineProviderAllowed(

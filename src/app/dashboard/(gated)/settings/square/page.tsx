@@ -3,16 +3,14 @@ import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import {
+  isSquareConnectEnabled,
   isSquarePaymentsEnabled,
   isSquareAppFeesEnabled,
   squareEnvironment,
 } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
 import { shouldChargeVendlFee } from "@/lib/stallside-fee";
-import {
-  squareEligibleBillingCurrency,
-  squareSettingsVisible,
-} from "@/lib/commerce/payment-rail";
+import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 import SquareConnectForm from "./SquareConnectForm";
 import SquareCapabilityForm from "./SquareCapabilityForm";
 import SquareLocationForm from "./SquareLocationForm";
@@ -32,10 +30,10 @@ export default async function SquareSettingsPage({
   const params = await searchParams;
 
   if (!squareEligibleBillingCurrency(owner.billingCurrency)) {
-    redirect("/dashboard/settings");
+    redirect("/dashboard/settings/payments");
   }
 
-  const enabled = squareSettingsVisible(owner.billingCurrency);
+  const enabled = isSquareConnectEnabled();
   const conn = enabled ? await getSquareConnection(owner.id) : null;
   const stands = await prisma.stand.findMany({
     where: { ownerId: owner.id, isActive: true },
