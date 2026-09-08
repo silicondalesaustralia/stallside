@@ -1,14 +1,11 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasProAccess } from "@/lib/owner-trial";
-import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import BusinessCheckoutStrip from "./BusinessCheckoutStrip";
 import BusinessPageHeader from "./BusinessPageHeader";
 import BusinessSetupPrompt from "./BusinessSetupPrompt";
-import BusinessPaymentsTab from "./BusinessPaymentsTab";
 import BusinessProductsTab from "./BusinessProductsTab";
 import BusinessSetupTabs, {
   isBusinessTabId,
@@ -30,6 +27,9 @@ export default async function StandDetailPage({
 }) {
   const { standId } = await params;
   const { tab: tabParam, new: newParam } = await searchParams;
+  if (tabParam === "payments") {
+    redirect("/dashboard/checkout");
+  }
   const tab: BusinessTabId = isBusinessTabId(tabParam) ? tabParam : "details";
   const isNewBusiness = newParam === "1";
 
@@ -48,10 +48,6 @@ export default async function StandDetailPage({
 
   const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 240);
-  const cardTier = ownerHasProAccess(owner, {
-    email: user.email,
-    role: user.role,
-  });
   const paymentBrands = standPaymentBrands(stand, {
     ...owner,
     user: { email: user.email, role: user.role },
@@ -93,31 +89,6 @@ export default async function StandDetailPage({
       <BusinessSetupTabs standId={stand.id} active={tab} />
 
       {tab === "details" ? <StandEditForm stand={stand} /> : null}
-      {tab === "payments" ? (
-        <BusinessPaymentsTab
-          standId={stand.id}
-          currency={stand.currency}
-          localTransferAlias={stand.localTransferAlias}
-          localTransferMethodId={stand.localTransferMethodId}
-          acceptCash={stand.acceptCash}
-          acceptLocalTransfer={stand.acceptLocalTransfer}
-          acceptCard={stand.acceptCard}
-          acceptPayPal={stand.acceptPayPal}
-          cardReady={Boolean(
-            owner.stripeAccountId && owner.stripeChargesEnabled,
-          )}
-          paypalReady={Boolean(
-            owner.paypalMerchantId &&
-              owner.paypalOnboardingComplete &&
-              owner.paypalPaymentsEnabled,
-          )}
-          paypalConnectAvailable={isPayPalConnectAvailable()}
-          cardTier={cardTier}
-          stripeConnected={owner.stripeChargesEnabled}
-          stripeStarted={Boolean(owner.stripeAccountId)}
-          productCount={stand.products.length}
-        />
-      ) : null}
       {tab === "branding" ? (
         <StandBrandingForm
           standId={stand.id}

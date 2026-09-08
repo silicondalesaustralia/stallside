@@ -2,7 +2,6 @@ import Link from "next/link";
 
 export const BUSINESS_TABS = [
   { id: "details", label: "Business Details" },
-  { id: "payments", label: "Checkout payments" },
   { id: "branding", label: "Branding" },
   { id: "products", label: "Products" },
   { id: "upsells", label: "Upsells" },

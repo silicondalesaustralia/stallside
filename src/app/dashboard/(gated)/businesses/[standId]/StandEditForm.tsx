@@ -106,7 +106,7 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
           ))}
         </select>
         <span className="text-[var(--muted)]">
-          PayID only appears for AUD under Checkout payments.
+          PayID only appears for AUD under Checkout.
         </span>
       </label>
       <label className="flex flex-col gap-2 text-sm">

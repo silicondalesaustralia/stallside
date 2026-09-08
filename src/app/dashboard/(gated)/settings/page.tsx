@@ -102,14 +102,23 @@ export default async function SettingsPage() {
           {(owner.billingCurrency ?? "AUD").toUpperCase() === "AUD"
             ? ", Square,"
             : ""}{" "}
-          and PayPal under Payments.
+          and PayPal under Payments. Choose which methods appear at QR and
+          website checkout under Checkout.
         </p>
-        <Link
-          href="/dashboard/settings/payments"
-          className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
-        >
-          Open payments
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/dashboard/settings/payments"
+            className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+          >
+            Open payments
+          </Link>
+          <Link
+            href="/dashboard/checkout"
+            className="inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+          >
+            Checkout methods
+          </Link>
+        </div>
       </section>
     </main>
   );

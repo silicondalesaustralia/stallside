@@ -15,10 +15,15 @@ export type StandPaymentOptionsProps = {
   acceptLocalTransfer: boolean;
   acceptCard: boolean;
   acceptPayPal: boolean;
+  acceptSquare: boolean;
   cardReady: boolean;
   paypalReady: boolean;
   paypalConnectAvailable: boolean;
+  squareEligible: boolean;
+  squareReady: boolean;
   cardTier: boolean;
+  heading?: string;
+  description?: string;
 };
 
 export default function StandPaymentOptions({
@@ -30,10 +35,15 @@ export default function StandPaymentOptions({
   acceptLocalTransfer,
   acceptCard,
   acceptPayPal,
+  acceptSquare,
   cardReady,
   paypalReady,
   paypalConnectAvailable,
+  squareEligible,
+  squareReady,
   cardTier,
+  heading = "Payment methods",
+  description,
 }: StandPaymentOptionsProps) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
@@ -49,6 +59,7 @@ export default function StandPaymentOptions({
     acceptLocalTransfer,
     acceptCard,
     acceptPayPal,
+    acceptSquare,
     localTransferAlias,
   ].join(":");
 
@@ -76,9 +87,10 @@ export default function StandPaymentOptions({
 
   return (
     <section className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4">
-      <h2 className="text-lg font-semibold">Checkout payments</h2>
+      <h2 className="text-lg font-semibold">{heading}</h2>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        Enable or disable what customers see at checkout. Currency: {currency}.
+        {description ??
+          `Enable or disable what customers see at checkout. Currency: ${currency}.`}
       </p>
 
       <form key={formKey} action={onSubmit} className="mt-4 flex flex-col gap-4">
@@ -90,9 +102,12 @@ export default function StandPaymentOptions({
           acceptLocalTransfer={acceptLocalTransfer}
           acceptCard={acceptCard}
           acceptPayPal={acceptPayPal}
+          acceptSquare={acceptSquare}
           cardReady={cardReady}
           paypalReady={paypalReady}
           paypalConnectAvailable={paypalConnectAvailable}
+          squareEligible={squareEligible}
+          squareReady={squareReady}
           cardTier={cardTier}
         />
         {message ? (

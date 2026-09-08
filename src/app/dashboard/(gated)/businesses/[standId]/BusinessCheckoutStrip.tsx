@@ -26,7 +26,7 @@ export default function BusinessCheckoutStrip({
       <div className="min-w-0 flex-1">
         <h2 className="font-semibold">QR code</h2>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          Print or download anytime. Icons reflect Checkout payments.
+          Print or download anytime. Icons reflect Checkout methods.
         </p>
         <div className="mt-3 flex flex-wrap gap-3 text-sm">
           <Link

@@ -81,6 +81,7 @@ export function secondaryNavForMode(modeInput?: string | null): DashNavItem[] {
     { href: "/dashboard/businesses", label: locationsLabel },
     { href: "/dashboard/knowledge", label: "Help" },
     { href: "/dashboard/settings/payments", label: "Payments" },
+    { href: "/dashboard/checkout", label: "Checkout" },
     { href: "/dashboard/settings/billing", label: "Billing" },
   ];
 }
@@ -200,6 +201,11 @@ export const SETTINGS_HUB_NAV: HubNavItem[] = [
     matchPrefix: "/dashboard/settings/payments",
   },
   {
+    href: "/dashboard/checkout",
+    label: "Checkout",
+    matchPrefix: "/dashboard/checkout",
+  },
+  {
     href: "/dashboard/settings/billing",
     label: "Plan & billing",
     matchPrefix: "/dashboard/settings/billing",
@@ -254,6 +260,7 @@ export function hubNavForPath(pathname: string): HubNavItem[] | null {
   }
   if (
     pathname.startsWith("/dashboard/settings") ||
+    pathname.startsWith("/dashboard/checkout") ||
     pathname === "/dashboard/fulfilment" ||
     pathname.startsWith("/dashboard/fulfilment/") ||
     pathname.startsWith("/dashboard/notifications")
@@ -261,6 +268,7 @@ export function hubNavForPath(pathname: string): HubNavItem[] | null {
     if (pathname.startsWith("/dashboard/fulfilment/orders")) return null;
     if (
       pathname.startsWith("/dashboard/settings") ||
+      pathname.startsWith("/dashboard/checkout") ||
       pathname === "/dashboard/fulfilment" ||
       pathname.startsWith("/dashboard/fulfilment/locations") ||
       pathname.startsWith("/dashboard/fulfilment/pickup") ||

@@ -16,9 +16,12 @@ type StandPaymentTogglesProps = {
   acceptLocalTransfer: boolean;
   acceptCard: boolean;
   acceptPayPal: boolean;
+  acceptSquare: boolean;
   cardReady: boolean;
   paypalReady: boolean;
   paypalConnectAvailable: boolean;
+  squareEligible: boolean;
+  squareReady: boolean;
   cardTier: boolean;
 };
 
@@ -30,9 +33,12 @@ export default function StandPaymentToggles({
   acceptLocalTransfer,
   acceptCard,
   acceptPayPal,
+  acceptSquare,
   cardReady,
   paypalReady,
   paypalConnectAvailable,
+  squareEligible,
+  squareReady,
   cardTier: _cardTier,
 }: StandPaymentTogglesProps) {
   const paypalEditable = paypalConnectAvailable && paypalReady;
@@ -68,10 +74,10 @@ export default function StandPaymentToggles({
               className="mt-1 size-4"
             />
             <span className="min-w-0">
-                <span className="flex flex-wrap items-center gap-2 font-medium">
-                  <PaymentBrandIcon brand="payid" className="size-6" />
-                  <span className="sr-only">PayID</span>
-                </span>
+              <span className="flex flex-wrap items-center gap-2 font-medium">
+                <PaymentBrandIcon brand="payid" className="size-6" />
+                <span className="sr-only">PayID</span>
+              </span>
               <span className="mt-0.5 block text-[var(--muted)]">
                 AUD only. Customer pays your PayID, then confirms.
               </span>
@@ -103,12 +109,12 @@ export default function StandPaymentToggles({
         <span className="min-w-0">
           <span className="flex flex-wrap items-center gap-2 font-medium">
             <PaymentIconRow brands={STRIPE_CHECKOUT_BRANDS} />
-            Card / Tap &amp; Go
+            Card / Tap &amp; Go (Stripe)
           </span>
           <span className="mt-0.5 block text-[var(--muted)]">
             {cardReady
               ? `${STRIPE_CHECKOUT_METHODS_PHRASE}. Money to your Stripe.`
-              : "Finish Stripe setup in Settings before enabling card, pre-orders, or subscriptions."}
+              : "Finish Stripe setup in Payments before enabling card, pre-orders, or subscriptions."}
           </span>
         </span>
       </label>
@@ -121,6 +127,39 @@ export default function StandPaymentToggles({
           Manage Stripe Connect
         </Link>
       </p>
+
+      {squareEligible ? (
+        <>
+          <label className="flex items-start gap-3 text-sm">
+            <input
+              type="checkbox"
+              name="acceptSquare"
+              defaultChecked={acceptSquare}
+              disabled={!squareReady}
+              className="mt-1 size-4 disabled:opacity-50"
+            />
+            <span className="min-w-0">
+              <span className="flex flex-wrap items-center gap-2 font-medium">
+                <PaymentBrandIcon brand="square" className="size-5" />
+                Square
+              </span>
+              <span className="mt-0.5 block text-[var(--muted)]">
+                {squareReady
+                  ? "Square card checkout for QR and website. Pick Square as your online card provider under Payments."
+                  : "Connect Square, enable payments, and set Square as online card provider before enabling."}
+              </span>
+            </span>
+          </label>
+          <p className="text-sm">
+            <Link
+              href="/dashboard/settings/square"
+              className="font-medium text-[var(--leaf-dark)] underline"
+            >
+              Manage Square
+            </Link>
+          </p>
+        </>
+      ) : null}
 
       {paypalConnectAvailable ? (
         <>
@@ -142,7 +181,7 @@ export default function StandPaymentToggles({
                   ? currency.toUpperCase() === "USD"
                     ? "PayPal and Venmo at checkout. Money to your PayPal."
                     : "PayPal wallet at checkout. Money to your PayPal."
-                  : "Connect PayPal in Settings before enabling."}
+                  : "Connect PayPal in Payments before enabling."}
               </span>
             </span>
           </label>

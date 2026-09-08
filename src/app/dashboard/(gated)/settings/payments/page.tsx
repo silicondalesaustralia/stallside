@@ -34,6 +34,12 @@ export default async function PaymentsSettingsPage() {
           Square for cards (pick one as the live provider). Other regions use
           Stripe.
         </p>
+        <Link
+          href="/dashboard/checkout"
+          className="mt-4 inline-flex rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+        >
+          Choose checkout methods
+        </Link>
       </div>
 
       <section id="stripe" className="space-y-3 text-sm scroll-mt-8">
