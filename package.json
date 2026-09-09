@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:tenancy": "npx tsx --test src/lib/tenancy/hostname.test.ts src/lib/domains/domains.test.ts",
-    "test:production": "npx tsx --test src/lib/production/units-costing.test.ts src/lib/production/flatten-ingredients.test.ts",
+    "test:production": "npx tsx --test src/lib/production/units-costing.test.ts src/lib/production/flatten-ingredients.test.ts src/lib/production/production-demand.test.ts",
     "test:grow": "npx tsx --test src/lib/grow/grow.test.ts",
     "test:ops": "npx tsx --test src/lib/ops/ops.test.ts",
     "test:calendar": "npx tsx --test src/lib/calendar/calendar.test.ts",

@@ -82,7 +82,8 @@ export default async function ProductionPage({
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Production</h1>
           <p className="mt-1 text-[var(--muted)]">
-            Quantities from paid orders — recipes add ingredient & cost estimates.
+            Bake list from paid pre-orders and scheduled pickups — not farmstand
+            takeaways. Recipes add ingredient and cost estimates.
           </p>
         </div>
         <div className="flex flex-wrap gap-2 text-sm">

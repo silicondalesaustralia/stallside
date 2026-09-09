@@ -57,8 +57,6 @@ export function primaryNavForMode(modeInput?: string | null): DashNavItem[] {
     items.push({ href: "/dashboard/businesses", label: farmLabel });
   }
 
-  items.push({ href: "/dashboard/settings", label: "Settings" });
-
   return items;
 }
 
@@ -83,6 +81,7 @@ export function secondaryNavForMode(modeInput?: string | null): DashNavItem[] {
     { href: "/dashboard/settings/payments", label: "Payments" },
     { href: "/dashboard/checkout", label: "Checkout" },
     { href: "/dashboard/settings/billing", label: "Billing" },
+    { href: "/dashboard/settings", label: "Settings" },
   ];
 }
 

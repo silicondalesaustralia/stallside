@@ -1,4 +1,7 @@
-import { PaymentStatus } from "@/generated/prisma/client";
+import {
+  FulfilmentOptionKind,
+  PaymentStatus,
+} from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   batchesForProductDemand,
@@ -7,6 +10,7 @@ import {
   surplusFromBatches,
   toNumber,
 } from "@/lib/production/costing";
+import { PRODUCTION_CLOSED_FULFILMENT } from "@/lib/production/production-demand";
 import { costRecipe } from "@/lib/production/recipe-cost";
 import { flattenRecipeIngredientsForOwner } from "@/lib/production/flatten-ingredients-db";
 import {
@@ -17,7 +21,7 @@ import {
   unitLabel,
 } from "@/lib/production/units";
 
-/** Same paid-demand set as Collections/sales metrics. */
+/** Confirmed / partially paid demand for the bake list. */
 export const PRODUCTION_PAYMENT_STATUSES: PaymentStatus[] = [
   PaymentStatus.PAID,
   PaymentStatus.CUSTOMER_CONFIRMED,
@@ -25,6 +29,8 @@ export const PRODUCTION_PAYMENT_STATUSES: PaymentStatus[] = [
   PaymentStatus.BALANCE_DUE,
   PaymentStatus.BALANCE_FAILED,
 ];
+
+export { isProductionDemandOrder } from "@/lib/production/production-demand";
 
 export type ProductionProductRow = {
   productId: string;
@@ -91,18 +97,25 @@ export async function loadProductionOrders(input: {
   from: Date;
   to: Date;
 }) {
+  // Bake/make demand for a collection window — not take-now stand/QR sales.
   return prisma.order.findMany({
     where: {
       ownerId: input.ownerId,
       standId: input.standId,
       paymentStatus: { in: PRODUCTION_PAYMENT_STATUSES },
+      collectionAt: { gte: input.from, lt: input.to },
+      NOT: {
+        fulfilment: { is: { kind: FulfilmentOptionKind.STAND_IMMEDIATE } },
+      },
       OR: [
-        { collectionAt: { gte: input.from, lt: input.to } },
+        { isPreOrder: true },
         {
-          AND: [
-            { isPreOrder: false },
-            { createdAt: { gte: input.from, lt: input.to } },
-          ],
+          fulfilment: {
+            is: {
+              kind: { not: FulfilmentOptionKind.STAND_IMMEDIATE },
+              fulfilmentStatus: { notIn: PRODUCTION_CLOSED_FULFILMENT },
+            },
+          },
         },
       ],
     },
@@ -121,6 +134,8 @@ export async function loadProductionOrders(input: {
           optionLabel: true,
           windowLabel: true,
           collectionStartsAt: true,
+          kind: true,
+          fulfilmentStatus: true,
         },
       },
       items: {

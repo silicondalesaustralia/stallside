@@ -26,6 +26,12 @@ describe("dashboard IA (Phase 8C)", () => {
     const primaryHrefs = new Set(primaryNavForMode("BOTH").map((i) => i.href));
     assert.ok(secondary.some((i) => i.href === "/dashboard/production"));
     assert.ok(secondary.some((i) => i.href === "/dashboard/operate"));
+    const billingIdx = secondary.findIndex(
+      (i) => i.href === "/dashboard/settings/billing",
+    );
+    assert.ok(billingIdx >= 0);
+    assert.equal(secondary[billingIdx + 1]?.href, "/dashboard/settings");
+    assert.equal(secondary[billingIdx + 1]?.label, "Settings");
     for (const item of secondary) {
       if (item.href !== "/dashboard/businesses") {
         assert.equal(primaryHrefs.has(item.href), false);
