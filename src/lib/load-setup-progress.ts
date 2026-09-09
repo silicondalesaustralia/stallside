@@ -8,6 +8,7 @@ import {
   type SetupFacts,
   type SetupTaskStatus,
 } from "@/lib/setup-tasks";
+import { withSquarePaymentsReady } from "@/lib/stand-payment-brands";
 
 export type SetupProgressPayload = {
   tasks: SetupTaskStatus[];
@@ -52,14 +53,21 @@ export const loadSetupProgress = cache(async (input: {
         brandAccentColor: true,
         brandSecondaryColor: true,
         brandLogoUrl: true,
+        billingCurrency: true,
       },
     }),
   ]);
+
+  const { squarePaymentsReady } = await withSquarePaymentsReady({
+    id: input.ownerId,
+    billingCurrency: ownerExtras?.billingCurrency,
+  });
 
   const facts: SetupFacts = {
     standCount: input.standCount,
     productCount,
     stripeChargesEnabled: input.stripeChargesEnabled,
+    squarePaymentsReady,
     emailAlertsEnabled: input.emailAlertsEnabled,
     pushAlertsEnabled: input.pushAlertsEnabled,
     orderCount,

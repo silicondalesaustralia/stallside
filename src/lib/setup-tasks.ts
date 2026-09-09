@@ -121,7 +121,7 @@ function copyForMode(mode: BusinessMode): Record<
     CONNECT_PAYMENTS: {
       title: "Connect card payments",
       description:
-        "Optional. Cash and PayID work without Stripe. Connect for Tap & Go.",
+        "Optional. Cash and PayID work without cards. Connect Stripe or Square for card checkout.",
       required: false,
     },
     BRANDING: {
@@ -214,6 +214,8 @@ export type SetupFacts = {
   standCount: number;
   productCount: number;
   stripeChargesEnabled: boolean;
+  /** Square Connect ready to take card payments (ACTIVE + location). */
+  squarePaymentsReady: boolean;
   emailAlertsEnabled: boolean;
   pushAlertsEnabled: boolean;
   orderCount: number;
@@ -278,7 +280,7 @@ export function isSetupTaskComplete(
     case "CREATE_FIRST_PRODUCT":
       return facts.productCount > 0;
     case "CONNECT_PAYMENTS":
-      return facts.stripeChargesEnabled;
+      return facts.stripeChargesEnabled || facts.squarePaymentsReady;
     case "BRANDING":
       return Boolean(facts.hasBranding);
     case "GENERATE_QR":
