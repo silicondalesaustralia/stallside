@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { customOrderFormPublicUrl } from "@/lib/custom-order-form-url";
 import { loadPreferredOriginInput } from "@/lib/domains/resolve";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
-import { updateCustomOrderForm } from "../actions";
+import { updateCustomOrderForm, deleteCustomOrderForm } from "../actions";
 
 export default async function CustomOrderFormDetailPage({
   params,
@@ -43,6 +43,7 @@ export default async function CustomOrderFormDetailPage({
     ? await loadPreferredOriginInput(storefront)
     : null;
   const publicUrl = customOrderFormPublicUrl(form.id, preferred);
+  const remove = deleteCustomOrderForm.bind(null, form.id);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-8">
@@ -107,6 +108,18 @@ export default async function CustomOrderFormDetailPage({
         <button type="submit" className={dashCtaClass}>
           Save
         </button>
+      </form>
+
+      <form action={remove}>
+        <button
+          type="submit"
+          className="text-sm text-[var(--gone)] underline"
+        >
+          Delete form
+        </button>
+        <p className="mt-1 text-xs text-[var(--muted)]">
+          Removes this form and its requests. Converted orders stay in Orders.
+        </p>
       </form>
 
       <section>

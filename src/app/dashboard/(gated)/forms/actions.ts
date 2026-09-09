@@ -105,6 +105,21 @@ export async function updateCustomOrderForm(formData: FormData) {
   redirect(`/dashboard/forms/${id}`);
 }
 
+export async function deleteCustomOrderForm(formId: string) {
+  const { owner } = await requireOwnerWrite();
+  const existing = await prisma.customOrderForm.findFirst({
+    where: { id: formId, ownerId: owner.id },
+    select: { id: true },
+  });
+  if (!existing) {
+    redirect("/dashboard/forms");
+  }
+
+  await prisma.customOrderForm.delete({ where: { id: existing.id } });
+  revalidatePath("/dashboard/forms");
+  redirect("/dashboard/forms");
+}
+
 export async function setRequestStatus(formData: FormData) {
   const { owner } = await requireOwnerWrite();
   const id = String(formData.get("id") ?? "");
