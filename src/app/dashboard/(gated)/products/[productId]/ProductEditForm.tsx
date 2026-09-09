@@ -83,30 +83,28 @@ export default function ProductEditForm({
           slug={product.slug}
           onError={setMessage}
         />
-        {product.cardTier ? (
-          <label className="flex items-start gap-3 text-sm">
-            <input
-              type="checkbox"
-              name="preOrderEligible"
-              checked={preOrderEligible}
-              onChange={(e) => setPreOrderEligible(e.target.checked)}
-              className="mt-0.5 size-4"
-            />
-            <span>
-              <span className="font-medium">Available for pre-order pages</span>
-              <span className="mt-1 block text-[var(--muted)]">
-                Add this to a{" "}
-                <Link
-                  href="/dashboard/pre-order-pages"
-                  className="text-[var(--leaf-dark)] underline"
-                >
-                  pre-order page
-                </Link>
-                . Collection day is set on the page.
-              </span>
+        <label className="flex items-start gap-3 text-sm">
+          <input
+            type="checkbox"
+            name="preOrderEligible"
+            checked={preOrderEligible}
+            onChange={(e) => setPreOrderEligible(e.target.checked)}
+            className="mt-0.5 size-4"
+          />
+          <span>
+            <span className="font-medium">Available for pre-order pages</span>
+            <span className="mt-1 block text-[var(--muted)]">
+              Add this to a{" "}
+              <Link
+                href="/dashboard/pre-order-pages"
+                className="text-[var(--leaf-dark)] underline"
+              >
+                pre-order page
+              </Link>
+              . Collection day is set on the page.
             </span>
-          </label>
-        ) : null}
+          </span>
+        </label>
       </DashFormSection>
 
       <DashFormSection title="Price">

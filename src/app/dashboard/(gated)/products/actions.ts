@@ -8,6 +8,7 @@ import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { dollarsToCents } from "@/lib/money";
 import { InventorySource } from "@/generated/prisma/client";
+import { ProductChannelType } from "@/generated/prisma/client";
 import { notifyLowStockForProducts } from "@/lib/notify";
 import { uploadProductImage } from "@/lib/product-image-upload";
 import {
@@ -82,7 +83,15 @@ export async function createProduct(formData: FormData) {
     return { error: "Stand not found." };
   }
 
+  const sellOnStand = formData.get("sellOnStand") === "on";
+  const showOnline = formData.get("showOnline") === "on";
   const preOrderEligible = formData.get("preOrderEligible") === "on";
+
+  if (!sellOnStand && !showOnline && !preOrderEligible) {
+    return {
+      error: "Choose at least farm stand, website, or pre-order pages.",
+    };
+  }
 
   let priceCents: number;
   try {
@@ -123,14 +132,26 @@ export async function createProduct(formData: FormData) {
     },
   });
 
-  const { ensureDefaultProductChannels } = await import(
-    "@/lib/catalogue/channels"
-  );
-  await ensureDefaultProductChannels({
-    productId: product.id,
-    standId: stand.id,
-    ownerId: owner.id,
-  });
+  if (sellOnStand) {
+    await prisma.productChannel.create({
+      data: {
+        productId: product.id,
+        channelType: ProductChannelType.STAND,
+        standId: stand.id,
+        isEnabled: true,
+      },
+    });
+  }
+  if (showOnline) {
+    await prisma.productChannel.create({
+      data: {
+        productId: product.id,
+        channelType: ProductChannelType.ONLINE,
+        standId: stand.id,
+        isEnabled: true,
+      },
+    });
+  }
 
   const imageFile = formData.get("image");
   if (imageFile instanceof File && imageFile.size > 0) {

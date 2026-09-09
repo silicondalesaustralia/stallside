@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import NewProductForm from "./NewProductForm";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
+import { primaryStandIdForOwner } from "@/lib/catalogue/channels";
 
 export default async function NewProductPage({
   searchParams,
@@ -17,7 +18,6 @@ export default async function NewProductPage({
     orderBy: { name: "asc" },
     select: { id: true, name: true, currency: true },
   });
-  const cardTier = true;
   const stripeConnected = Boolean(
     owner.stripeAccountId && owner.stripeChargesEnabled,
   );
@@ -36,6 +36,8 @@ export default async function NewProductPage({
   const defaultId = standId ?? selected?.id ?? stands[0].id;
   const defaultCurrency =
     stands.find((s) => s.id === defaultId)?.currency ?? stands[0].currency;
+  const primaryId = await primaryStandIdForOwner(owner.id);
+  const defaultShowOnline = !primaryId || primaryId === defaultId;
 
   return (
     <main className="flex flex-col gap-6">
@@ -46,7 +48,7 @@ export default async function NewProductPage({
         stands={stands}
         defaultStandId={defaultId}
         defaultCurrency={defaultCurrency}
-        cardTier={cardTier}
+        defaultShowOnline={defaultShowOnline}
         stripeConnected={stripeConnected}
       />
     </main>
