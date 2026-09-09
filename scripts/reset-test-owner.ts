@@ -31,10 +31,9 @@ async function main() {
 
   if (!user) {
     console.log("No user found.");
-    return;
   }
 
-  if (mode === "reset-onboarding" && user.owner) {
+  if (mode === "reset-onboarding" && user?.owner) {
     await prisma.owner.update({
       where: { id: user.owner.id },
       data: {
@@ -49,7 +48,7 @@ async function main() {
   }
 
   if (mode === "purge") {
-    if (user.owner) {
+    if (user?.owner) {
       const ownerId = user.owner.id;
       // OrderItem.productId has no onDelete Cascade — clear orders first.
       await prisma.orderItem.deleteMany({
@@ -59,11 +58,25 @@ async function main() {
       await prisma.owner.delete({ where: { id: ownerId } });
       console.log("Deleted owner", ownerId);
     }
-    await prisma.signupIntent.deleteMany({ where: { email } });
-    await prisma.session.deleteMany({ where: { userId: user.id } });
-    await prisma.account.deleteMany({ where: { userId: user.id } });
-    await prisma.user.delete({ where: { id: user.id } });
-    console.log("Purged user", email);
+    if (user) {
+      await prisma.session.deleteMany({ where: { userId: user.id } });
+      await prisma.account.deleteMany({ where: { userId: user.id } });
+      await prisma.user.delete({ where: { id: user.id } });
+      console.log("Deleted user", user.id);
+    }
+    const extras = await Promise.all([
+      prisma.signupIntent.deleteMany({ where: { email } }),
+      prisma.waitlistEntry.deleteMany({ where: { email } }),
+      prisma.verificationToken.deleteMany({ where: { identifier: email } }),
+      prisma.lifetimeInviteRedemption.deleteMany({ where: { email } }),
+    ]);
+    console.log("Cleared related email rows", {
+      signupIntent: extras[0].count,
+      waitlist: extras[1].count,
+      verificationToken: extras[2].count,
+      inviteRedemption: extras[3].count,
+    });
+    console.log("Purged", email);
   }
 }
 

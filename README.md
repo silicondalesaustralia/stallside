@@ -2,7 +2,9 @@
 
 QR self-checkout and inventory for unmanned farm stands. Domain: **[vendl.app](https://vendl.app)**
 
-Repo: [silicondalesaustralia/vendl](https://github.com/silicondalesaustralia/vendl)
+Repo: [silicondalesaustralia/stallside](https://github.com/silicondalesaustralia/stallside)
+
+**New developers:** see [`docs/NEW-DEVELOPER.md`](docs/NEW-DEVELOPER.md) (daily git startup, staging-only push, staging Postgres) and the [GitHub wiki](https://github.com/silicondalesaustralia/stallside/wiki).
 
 ## Stack
 
