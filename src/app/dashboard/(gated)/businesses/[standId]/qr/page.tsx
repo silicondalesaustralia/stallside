@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { APP_DOMAIN } from "@/lib/constants";
-import { standQrDataUrl, standQrTargetUrl } from "@/lib/stand-qr";
+import { standQrDataUrl, standQrTargetUrl, resolveStandQrLinkMode } from "@/lib/stand-qr";
 import { standPaymentBrands, withSquarePaymentsReady } from "@/lib/stand-payment-brands";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import { formatMoney } from "@/lib/public-product";
@@ -49,8 +49,27 @@ export default async function StandQrPage({
     ? await loadPrimaryCustomHostname(storefront.id)
     : null;
 
-  const checkoutUrl = standQrTargetUrl({
+  const effectiveLinkMode = resolveStandQrLinkMode({
     linkMode: stand.qrLinkMode,
+    cartMode: stand.cartMode,
+    storefrontSlug: storefront?.slug,
+  });
+
+  // Soft-migrate: primary QR should open the website once a storefront exists.
+  if (
+    storefront?.slug &&
+    stand.qrLinkMode === "LEGACY_STAND" &&
+    stand.cartMode !== "CUSTOMER_CHOICE" &&
+    effectiveLinkMode === "WEBSITE_HOME"
+  ) {
+    await prisma.stand.update({
+      where: { id: stand.id },
+      data: { qrLinkMode: "WEBSITE_HOME", qrCategoryId: null },
+    });
+  }
+
+  const checkoutUrl = standQrTargetUrl({
+    linkMode: effectiveLinkMode,
     standSlug: stand.slug,
     cartMode: stand.cartMode,
     storefrontSlug: storefront?.slug,
@@ -112,8 +131,9 @@ export default async function StandQrPage({
           qrSignMessage: stand.qrSignMessage,
           qrCallout: stand.qrCallout,
           cartMode: stand.cartMode,
-          qrLinkMode: stand.qrLinkMode,
-          qrCategoryId: stand.qrCategoryId,
+          qrLinkMode: effectiveLinkMode,
+          qrCategoryId:
+            effectiveLinkMode === "WEBSITE_CATEGORY" ? stand.qrCategoryId : null,
           posterShowCta: stand.posterShowCta,
           posterCtaText: stand.posterCtaText,
           posterShowBundles: stand.posterShowBundles,

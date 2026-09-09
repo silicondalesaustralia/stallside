@@ -537,8 +537,8 @@ model Stand {
   websiteUrl         String?
   /** Vertical config key: bakers | farm-stalls | firewood | … */
   verticalSlug       String?
-  /** Where printed QR codes should land. */
-  qrLinkMode         StandQrLinkMode      @default(LEGACY_STAND)
+  /** Where printed QR codes should land. Prefer website when a storefront exists. */
+  qrLinkMode         StandQrLinkMode      @default(WEBSITE_HOME)
   qrCategoryId       String?
   qrCategory         Category?            @relation("StandQrCategory", fields: [qrCategoryId], references: [id], onDelete: SetNull)
   products           Product[]

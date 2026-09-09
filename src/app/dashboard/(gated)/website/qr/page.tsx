@@ -90,8 +90,16 @@ export default async function WebsiteQrListPage() {
         </h2>
         <ul className="flex flex-col gap-3">
           {stands.map((stand) => {
+            const effectiveMode =
+              stand.cartMode === "CUSTOMER_CHOICE"
+                ? "LEGACY_STAND"
+                : stand.qrLinkMode === "WEBSITE_CATEGORY"
+                  ? "WEBSITE_CATEGORY"
+                  : storefront?.slug
+                    ? "WEBSITE_HOME"
+                    : stand.qrLinkMode;
             const target = standQrTargetUrl({
-              linkMode: stand.qrLinkMode,
+              linkMode: effectiveMode,
               standSlug: stand.slug,
               cartMode: stand.cartMode,
               storefrontSlug: storefront?.slug,
@@ -99,10 +107,12 @@ export default async function WebsiteQrListPage() {
               primaryCustomHostname,
             });
             const destLabel =
-              stand.qrLinkMode === "WEBSITE_CATEGORY" && stand.qrCategory
+              effectiveMode === "WEBSITE_CATEGORY" && stand.qrCategory
                 ? `Category · ${stand.qrCategory.title}`
-                : stand.qrLinkMode === "WEBSITE_HOME"
-                  ? "Website home"
+                : effectiveMode === "WEBSITE_HOME"
+                  ? primaryCustomHostname
+                    ? `Website · ${primaryCustomHostname}`
+                    : "Website home"
                   : "Stand checkout";
             return (
               <li

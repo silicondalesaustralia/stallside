@@ -21,9 +21,29 @@ export type StandQrTargetInput = {
   primaryCustomHostname?: string | null;
 };
 
+/**
+ * Prefer website home when a storefront exists (unless Customer Choice forces
+ * legacy stand checkout, or the owner explicitly chose a category).
+ */
+export function resolveStandQrLinkMode(input: {
+  linkMode: StandQrLinkMode | string;
+  cartMode?: CartMode | "PRODUCT" | "CUSTOMER_CHOICE";
+  storefrontSlug?: string | null;
+}): StandQrLinkMode | "LEGACY_STAND" | "WEBSITE_HOME" | "WEBSITE_CATEGORY" {
+  if (input.cartMode === "CUSTOMER_CHOICE") return "LEGACY_STAND";
+  if (input.linkMode === "WEBSITE_CATEGORY") return "WEBSITE_CATEGORY";
+  if (input.storefrontSlug?.trim()) return "WEBSITE_HOME";
+  if (input.linkMode === "WEBSITE_HOME") return "WEBSITE_HOME";
+  return "LEGACY_STAND";
+}
+
 /** Public URL encoded into stand QR posters. */
 export function standQrTargetUrl(input: StandQrTargetInput): string {
-  const mode = input.linkMode;
+  const mode = resolveStandQrLinkMode({
+    linkMode: input.linkMode,
+    cartMode: input.cartMode,
+    storefrontSlug: input.storefrontSlug,
+  });
   const storefrontSlug = input.storefrontSlug?.trim().toLowerCase() || null;
   const categorySlug = input.categorySlug?.trim().toLowerCase() || null;
 
@@ -44,7 +64,10 @@ export function standQrTargetUrl(input: StandQrTargetInput): string {
   return standCheckoutUrl(input.standSlug, input.cartMode ?? "PRODUCT");
 }
 
-export async function standQrDataUrl(checkoutUrl: string, width = 512): Promise<string> {
+export async function standQrDataUrl(
+  checkoutUrl: string,
+  width = 512,
+): Promise<string> {
   return QRCode.toDataURL(checkoutUrl, {
     margin: 2,
     width,

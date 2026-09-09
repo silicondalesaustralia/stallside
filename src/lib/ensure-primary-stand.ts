@@ -48,6 +48,7 @@ export async function ensurePrimaryStand(owner: {
         acceptCash: true,
         acceptLocalTransfer: true,
         acceptCard: true,
+        qrLinkMode: "WEBSITE_HOME",
       },
     })
     .then(async (stand) => {
