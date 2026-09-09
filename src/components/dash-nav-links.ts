@@ -189,6 +189,11 @@ export const WEBSITE_HUB_NAV: HubNavItem[] = [
     label: "Domains",
     matchPrefix: "/dashboard/website/domains",
   },
+  {
+    href: "/dashboard/website/qr",
+    label: "QR codes",
+    matchPrefix: "/dashboard/website/qr",
+  },
 ];
 
 /** Settings sections (configuration, not day-to-day ops). */

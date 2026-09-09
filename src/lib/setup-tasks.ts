@@ -254,9 +254,7 @@ export function setupTaskHref(
     case "stripe":
       return "/dashboard/settings/payments";
     case "qr":
-      return id
-        ? `/dashboard/businesses/${id}/qr`
-        : "/dashboard/businesses/new";
+      return "/dashboard/website/qr";
     case "notifications":
       return "/dashboard/notifications";
     case "preview":

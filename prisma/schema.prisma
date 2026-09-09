@@ -362,6 +362,7 @@ model Owner {
   stands                    Stand[]
   products                  Product[]
   categories                Category[]
+  qrCodes                   QrCode[]
   customers                 Customer[]
   storefront                Storefront?
   domainPurchases           DomainPurchase[]
@@ -558,6 +559,7 @@ model Stand {
   fulfilmentOptions  FulfilmentOption[]
   pickupLocations    PickupLocation[]
   sellerEvents       SellerEvent[]
+  qrCodes            QrCode[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 
@@ -569,6 +571,28 @@ enum StandQrLinkMode {
   LEGACY_STAND
   WEBSITE_HOME
   WEBSITE_CATEGORY
+}
+
+/**
+ * Extra printable QR posters (e.g. Farm Stand category).
+ * Primary business QR still lives on Stand.qrLinkMode.
+ */
+model QrCode {
+  id         String          @id @default(cuid())
+  ownerId    String
+  owner      Owner           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  standId    String
+  stand      Stand           @relation(fields: [standId], references: [id], onDelete: Cascade)
+  name       String
+  linkMode   StandQrLinkMode @default(WEBSITE_CATEGORY)
+  categoryId String?
+  category   Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@index([ownerId])
+  @@index([standId])
+  @@index([categoryId])
 }
 
 /** Owner catalogue taxonomy (not onboarding sellCategories tips). */
@@ -586,6 +610,7 @@ model Category {
   showOnWebsite  Boolean            @default(true)
   products       ProductCategory[]
   qrStands       Stand[]            @relation("StandQrCategory")
+  qrCodes        QrCode[]
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
 
