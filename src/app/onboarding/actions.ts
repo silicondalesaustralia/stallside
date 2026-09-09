@@ -8,7 +8,6 @@ import { createOwnerWithTrial } from "@/lib/owner-trial";
 import { ensurePrimaryStand } from "@/lib/ensure-primary-stand";
 import {
   AU_STATES,
-  defaultFulfilmentIntents,
   isBusinessMode,
   type BusinessMode,
   type OnboardingStep,
@@ -46,7 +45,8 @@ export async function saveBusinessMode(formData: FormData) {
     where: { id: owner.id },
     data: {
       businessMode: mode,
-      fulfilmentIntents: defaultFulfilmentIntents(mode),
+      // Leave empty so Getting Started "fulfilment" stays incomplete until they confirm.
+      fulfilmentIntents: [],
     },
   });
 
@@ -145,7 +145,8 @@ export async function saveBusinessProfile(formData: FormData) {
   });
 
   revalidatePath("/dashboard");
-  redirect("/dashboard");
+  revalidatePath("/dashboard/getting-started");
+  redirect("/dashboard/getting-started");
 }
 
 /** Legacy fallback when User has no Owner row. */

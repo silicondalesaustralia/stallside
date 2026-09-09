@@ -26,6 +26,9 @@ export async function createOwnerWithTrial(input: {
       subscriptionStartedAt: now,
       trialEndsAt: null,
       monthlyFeeCents: 0,
+      // Off until they confirm in Getting Started / Settings.
+      emailAlertsEnabled: false,
+      pushAlertsEnabled: false,
       ...(input.adAttribution
         ? { adAttribution: input.adAttribution as Prisma.InputJsonValue }
         : {}),

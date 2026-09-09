@@ -248,11 +248,12 @@ export default async function OnboardingPage({
           type="submit"
           className="mt-2 rounded-[var(--radius-pill)] bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
         >
-          Open dashboard
+          Continue to Getting Started
         </button>
       </form>
       <p className="mt-4 text-sm text-[var(--muted)]">
-        Next: add a product from Getting Started. Payments and branding can wait.
+        Next: finish Getting Started — add a product, then payments and branding
+        when you are ready.
       </p>
     </OnboardingStepShell>
   );
