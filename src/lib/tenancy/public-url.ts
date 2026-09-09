@@ -10,9 +10,9 @@ function pathStyleRoot(slug: string): string {
   return `/shop/${encodeURIComponent(slug.trim().toLowerCase())}`;
 }
 
-/** After Cloudflare/Vercel wildcard is proven, set to "1" in production. */
+/** After Cloudflare/Vercel wildcard is live, subdomain is the public URL (default on). Set to "0" to force /shop/{slug} paths. */
 export function storefrontSubdomainPrimaryEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY === "1";
+  return process.env.NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY !== "0";
 }
 
 /** Seller host: {slug}.vendl.app or {slug}.staging.vendl.app */

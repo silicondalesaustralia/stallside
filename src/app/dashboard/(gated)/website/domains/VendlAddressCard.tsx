@@ -4,35 +4,45 @@ import DomainsCopyButton from "./DomainsCopyButton";
 
 export default function VendlAddressCard({
   vendlHost,
-  pathUrl,
-  subdomainLive,
   liveUrl,
+  customHostname,
 }: {
   vendlHost: string;
-  pathUrl: string;
-  subdomainLive: boolean;
   liveUrl: string;
+  /** When set, live site prefers this over the Vendl subdomain. */
+  customHostname?: string | null;
 }) {
+  const primaryHost = customHostname?.trim() || vendlHost;
+  const primaryUrl = customHostname?.trim()
+    ? `https://${customHostname.trim()}`
+    : liveUrl;
+
   return (
     <section className="dash-card flex flex-col gap-3 p-5">
       <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-        Your Vendl address
+        Your public address
       </p>
       <p className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
-        {vendlHost}
+        {primaryHost}
       </p>
       <p className="text-sm text-[var(--muted)]">
-        Included with every account
-        {!subdomainLive ? ` · also ${pathUrl}` : null}.
+        {customHostname?.trim()
+          ? `Custom domain connected. Vendl address stays ${vendlHost}.`
+          : "Included with every account. Add a custom domain below if you want your own web address."}
       </p>
       <div className="mt-2 flex flex-wrap gap-3">
-        <a href={liveUrl} target="_blank" rel="noreferrer" className={dashCtaClass}>
+        <a
+          href={primaryUrl}
+          target="_blank"
+          rel="noreferrer"
+          className={dashCtaClass}
+        >
           View site
         </a>
-        <DomainsCopyButton value={liveUrl} label="Copy address" />
+        <DomainsCopyButton value={primaryUrl} label="Copy address" />
       </div>
       <p className="text-xs text-[var(--muted)]">
-        Change your address in{" "}
+        Change your Vendl address in{" "}
         <Link href="/dashboard/website/details" className="underline">
           Shop details
         </Link>{" "}

@@ -1,5 +1,5 @@
 import { dashCtaClass } from "@/components/DashPrimaryCta";
-import { APP_DOMAIN } from "@/lib/constants";
+import { storefrontSubdomainHost } from "@/lib/tenancy/public-url";
 import { saveStorefrontDetails } from "../actions";
 
 const inputClass =
@@ -24,6 +24,7 @@ export default function ShopDetailsForm({
   showPhone,
   heroImageUrl,
 }: Props) {
+  const publicHost = storefrontSubdomainHost(slug || "your-shop");
   return (
     <form
       action={saveStorefrontDetails}
@@ -60,7 +61,8 @@ export default function ShopDetailsForm({
         <span className="font-medium">URL slug</span>
         <input name="slug" required defaultValue={slug} className={inputClass} />
         <span className="mt-1 block text-xs text-[var(--muted)]">
-          {APP_DOMAIN}/shop/{slug} · also {slug}.{APP_DOMAIN}
+          Your site: {publicHost}
+          {slug ? "" : " (updates with the slug)"}
         </span>
       </label>
       <label className="block text-sm">
