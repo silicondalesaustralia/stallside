@@ -170,9 +170,11 @@ function copyForMode(mode: BusinessMode): Record<
   return {
     ...sharedEarly,
     CREATE_STAND: {
-      title:
-        mode === "BOTH" ? "Create your farm stand" : "Create your farm stand",
-      description: "Add a stand with a public URL for QR checkout.",
+      title: "Create your business",
+      description:
+        mode === "BOTH"
+          ? "Add your business with a public URL for QR and online checkout."
+          : "Add your business with a public URL for QR checkout.",
       required: true,
     },
     CREATE_FIRST_PRODUCT: {
