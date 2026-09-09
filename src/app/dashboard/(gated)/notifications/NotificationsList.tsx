@@ -64,6 +64,10 @@ function NotificationCard({
     typeof metadata?.email === "string" ? metadata.email : null;
   const setupPath =
     typeof metadata?.setupPath === "string" ? metadata.setupPath : null;
+  const linkLabel =
+    typeof metadata?.linkLabel === "string"
+      ? metadata.linkLabel
+      : "Open setup";
   const isOpen = status === "OPEN";
 
   return (
@@ -111,7 +115,7 @@ function NotificationCard({
                 href={setupPath}
                 className="text-sm font-semibold text-[var(--leaf-dark)] underline"
               >
-                Open setup →
+                {linkLabel} →
               </Link>
             </p>
           ) : null}

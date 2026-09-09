@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { appBaseUrl } from "@/lib/app-url";
+import { customOrderFormPublicUrl } from "@/lib/custom-order-form-url";
+import { loadPreferredOriginInput } from "@/lib/domains/resolve";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { updateCustomOrderForm } from "../actions";
 
@@ -13,26 +14,35 @@ export default async function CustomOrderFormDetailPage({
 }) {
   const { owner } = await requireOwner();
   const { formId } = await params;
-  const form = await prisma.customOrderForm.findFirst({
-    where: { id: formId, ownerId: owner.id },
-    include: {
-      fields: { orderBy: { sortOrder: "asc" } },
-      requests: {
-        orderBy: { createdAt: "desc" },
-        take: 40,
-        select: {
-          id: true,
-          status: true,
-          customerName: true,
-          email: true,
-          createdAt: true,
+  const [form, storefront] = await Promise.all([
+    prisma.customOrderForm.findFirst({
+      where: { id: formId, ownerId: owner.id },
+      include: {
+        fields: { orderBy: { sortOrder: "asc" } },
+        requests: {
+          orderBy: { createdAt: "desc" },
+          take: 40,
+          select: {
+            id: true,
+            status: true,
+            customerName: true,
+            email: true,
+            createdAt: true,
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.storefront.findUnique({
+      where: { ownerId: owner.id },
+      select: { id: true, slug: true },
+    }),
+  ]);
   if (!form) notFound();
 
-  const publicUrl = `${appBaseUrl()}/f/${form.id}`;
+  const preferred = storefront
+    ? await loadPreferredOriginInput(storefront)
+    : null;
+  const publicUrl = customOrderFormPublicUrl(form.id, preferred);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-8">

@@ -47,9 +47,10 @@ export default async function PublicCustomOrderFormPage({
 
       <form action={submitCustomOrderRequest} className="flex flex-col gap-4">
         <input type="hidden" name="formId" value={form.id} />
+        {/* Obscure name — "website" is often autofilled and would discard real submits. */}
         <input
           type="text"
-          name="website"
+          name="vendl_hp_url"
           tabIndex={-1}
           autoComplete="off"
           className="absolute left-[-9999px] h-0 w-0 opacity-0"

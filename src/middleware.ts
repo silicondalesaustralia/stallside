@@ -56,7 +56,9 @@ function tenantRewritePath(slug: string, pathname: string): string | null {
     pathname.startsWith("/admin") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/login") ||
-    pathname.startsWith("/signup")
+    pathname.startsWith("/signup") ||
+    pathname === "/f" ||
+    pathname.startsWith("/f/")
   ) {
     return null;
   }

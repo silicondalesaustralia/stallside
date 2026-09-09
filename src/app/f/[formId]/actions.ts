@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { APP_NAME } from "@/lib/constants";
+import { notifyCustomOrderRequest } from "@/lib/notify-custom-order";
 
 export async function submitCustomOrderRequest(formData: FormData) {
   const formId = String(formData.get("formId") ?? "");
@@ -12,8 +14,8 @@ export async function submitCustomOrderRequest(formData: FormData) {
   });
   if (!form) throw new Error("Form not available");
 
-  // Honeypot
-  if (String(formData.get("website") ?? "").trim()) {
+  // Honeypot (avoid name="website" — browsers autofill it)
+  if (String(formData.get("vendl_hp_url") ?? "").trim()) {
     redirect(`/f/${formId}?thanks=1`);
   }
 
@@ -31,7 +33,7 @@ export async function submitCustomOrderRequest(formData: FormData) {
     if (raw) answers[field.label] = raw.slice(0, 2000);
   }
 
-  await prisma.customOrderRequest.create({
+  const created = await prisma.customOrderRequest.create({
     data: {
       ownerId: form.ownerId,
       formId: form.id,
@@ -42,6 +44,11 @@ export async function submitCustomOrderRequest(formData: FormData) {
     },
   });
 
+  await notifyCustomOrderRequest(created.id).catch((error) => {
+    console.error(`[${APP_NAME}] custom order notify failed`, error);
+  });
+
+  revalidatePath(`/dashboard/forms`);
   revalidatePath(`/dashboard/forms/${form.id}`);
   redirect(`/f/${formId}?thanks=1`);
 }
