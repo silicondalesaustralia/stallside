@@ -11,10 +11,13 @@ import ProductsTabs, {
   type ProductTabId,
 } from "./ProductsTabs";
 import ProductListRow from "./ProductListRow";
+import ProductsSearchForm from "./ProductsSearchForm";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { productOnStandWhere } from "@/lib/catalogue/product-on-stand";
+import { productsListHref } from "./products-list-href";
+import type { Prisma } from "@/generated/prisma/client";
 
 export default async function ProductsPage({
   searchParams,
@@ -24,17 +27,23 @@ export default async function ProductsPage({
     tab?: string;
     scope?: string;
     category?: string;
+    q?: string;
   }>;
 }) {
   const { user, owner } = await requireOwner();
   const { businesses, selected } = await resolveSelectedBusiness(owner.id);
-  const { view, tab: tabParam, scope, category: categorySlug } =
-    await searchParams;
+  const {
+    view,
+    tab: tabParam,
+    scope,
+    category: categorySlug,
+    q: qParam,
+  } = await searchParams;
+  const q = (qParam ?? "").trim();
   const showArchived = view === "archived";
   const tab: ProductTabId = isProductTabId(tabParam) ? tabParam : "standard";
   const isPreOrder = tab === "preorder";
-  const showAll =
-    scope === "all" || (!selected && businesses.length > 0);
+  const showAll = scope === "all" || (!selected && businesses.length > 0);
 
   if (!selected && businesses.length === 0) {
     return (
@@ -72,6 +81,16 @@ export default async function ProductsPage({
       : Promise.resolve(null),
   ]);
 
+  const searchWhere: Prisma.ProductWhereInput | undefined = q
+    ? {
+        OR: [
+          { name: { contains: q, mode: "insensitive" } },
+          { sku: { contains: q, mode: "insensitive" } },
+          { upc: { contains: q, mode: "insensitive" } },
+        ],
+      }
+    : undefined;
+
   const [products, restockPanels] = await Promise.all([
     prisma.product.findMany({
       where: {
@@ -81,10 +100,9 @@ export default async function ProductsPage({
         isHidden: false,
         ...(showArchived ? { isArchived: true } : productDashboardWhere),
         ...(categoryRow
-          ? {
-              categoryLinks: { some: { categoryId: categoryRow.id } },
-            }
+          ? { categoryLinks: { some: { categoryId: categoryRow.id } } }
           : {}),
+        ...searchWhere,
       },
       select: {
         id: true,
@@ -105,36 +123,23 @@ export default async function ProductsPage({
       : Promise.resolve([]),
   ]);
 
-  function listHref(
-    nextView?: "archived",
-    nextScope?: "all" | "selected",
-    nextCategory?: string | null,
-  ) {
-    const params = new URLSearchParams();
-    if (tab !== "standard") params.set("tab", tab);
-    if (nextView) params.set("view", nextView);
-    const scopeVal =
-      nextScope === "all"
-        ? "all"
-        : nextScope === "selected"
-          ? undefined
-          : showAll
-            ? "all"
-            : undefined;
-    if (scopeVal === "all") params.set("scope", "all");
-    const cat =
-      nextCategory === null
-        ? undefined
-        : nextCategory ?? categorySlug ?? undefined;
-    if (cat) params.set("category", cat);
-    const qs = params.toString();
-    return qs ? `/dashboard/products?${qs}` : "/dashboard/products";
-  }
+  const href = (opts: {
+    nextView?: "archived" | "active";
+    nextScope?: "all" | "selected";
+    nextCategory?: string | null;
+  }) =>
+    productsListHref({
+      tab,
+      showArchived,
+      showAll,
+      categorySlug,
+      q,
+      ...opts,
+    });
 
-  const scopeLabel = showAll
-    ? "all locations"
-    : selected?.name ?? "catalogue";
+  const scopeLabel = showAll ? "all locations" : selected?.name ?? "catalogue";
   const categoryLabel = categoryRow ? ` · ${categoryRow.title}` : "";
+  const searchLabel = q ? ` · “${q}”` : "";
 
   return (
     <main className="flex flex-col gap-6">
@@ -148,6 +153,7 @@ export default async function ProductsPage({
             {products.length === 1 ? "" : "s"}
             {showArchived ? " archived" : ""} · {scopeLabel}
             {categoryLabel}
+            {searchLabel}
           </p>
         </div>
         <DashPrimaryCta
@@ -163,12 +169,26 @@ export default async function ProductsPage({
         </DashPrimaryCta>
       </div>
 
+      <ProductsSearchForm
+        q={q}
+        tab={tab}
+        view={view}
+        scope={showAll ? "all" : undefined}
+        category={categorySlug}
+      />
+
       <div className="flex flex-wrap items-center gap-2">
-        <ProductsTabs active={tab} view={view} scope={showAll ? "all" : undefined} />
+        <ProductsTabs
+          active={tab}
+          view={view}
+          scope={showAll ? "all" : undefined}
+          category={categorySlug}
+          q={q || undefined}
+        />
         {businesses.length > 1 ? (
           <>
             <Link
-              href={listHref(showArchived ? "archived" : undefined, "selected")}
+              href={href({ nextScope: "selected" })}
               className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
                 !showAll
                   ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
@@ -178,7 +198,7 @@ export default async function ProductsPage({
               Selected
             </Link>
             <Link
-              href={listHref(showArchived ? "archived" : undefined, "all")}
+              href={href({ nextScope: "all" })}
               className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
                 showAll
                   ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
@@ -190,7 +210,7 @@ export default async function ProductsPage({
           </>
         ) : null}
         <Link
-          href={listHref(undefined, showAll ? "all" : "selected")}
+          href={href({ nextView: "active" })}
           className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
             !showArchived
               ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
@@ -200,7 +220,7 @@ export default async function ProductsPage({
           Active
         </Link>
         <Link
-          href={listHref("archived", showAll ? "all" : "selected")}
+          href={href({ nextView: "archived" })}
           className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
             showArchived
               ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
@@ -214,7 +234,7 @@ export default async function ProductsPage({
       {categories.length > 0 && !isPreOrder ? (
         <div className="flex flex-wrap gap-2">
           <Link
-            href={listHref(showArchived ? "archived" : undefined, undefined, null)}
+            href={href({ nextCategory: null })}
             className={`rounded-full px-3 py-1.5 text-sm font-semibold ${
               !categorySlug
                 ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
@@ -226,11 +246,7 @@ export default async function ProductsPage({
           {categories.map((c) => (
             <Link
               key={c.id}
-              href={listHref(
-                showArchived ? "archived" : undefined,
-                undefined,
-                c.slug,
-              )}
+              href={href({ nextCategory: c.slug })}
               className={`rounded-full px-3 py-1.5 text-sm font-semibold ${
                 categorySlug === c.slug
                   ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
@@ -266,9 +282,11 @@ export default async function ProductsPage({
 
       {products.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">
-          {showArchived
-            ? `No archived ${isPreOrder ? "pre-order" : "standard"} products.`
-            : `No ${isPreOrder ? "pre-order" : "standard"} products yet.`}
+          {q
+            ? `No products match “${q}”.`
+            : showArchived
+              ? `No archived ${isPreOrder ? "pre-order" : "standard"} products.`
+              : `No ${isPreOrder ? "pre-order" : "standard"} products yet.`}
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
@@ -286,4 +304,3 @@ export default async function ProductsPage({
     </main>
   );
 }
-

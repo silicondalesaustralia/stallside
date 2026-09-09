@@ -15,10 +15,14 @@ export default function ProductsTabs({
   active,
   view,
   scope,
+  category,
+  q,
 }: {
   active: ProductTabId;
   view?: string;
   scope?: string;
+  category?: string;
+  q?: string;
 }) {
   const archived = view === "archived";
   return (
@@ -29,6 +33,8 @@ export default function ProductsTabs({
         if (tab.id !== "standard") params.set("tab", tab.id);
         if (archived) params.set("view", "archived");
         if (scope === "all") params.set("scope", "all");
+        if (category) params.set("category", category);
+        if (q?.trim()) params.set("q", q.trim());
         const qs = params.toString();
         return (
           <Link
