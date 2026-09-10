@@ -71,6 +71,10 @@ export default async function WebsiteStudioPage({
             <Link href="/dashboard/website/details" className="underline">
               Shop details
             </Link>
+            {" · "}
+            <Link href="/dashboard/website/ai" className="underline">
+              Try AI builder (beta)
+            </Link>
           </p>
         </div>
       </div>

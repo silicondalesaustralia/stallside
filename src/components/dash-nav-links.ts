@@ -155,6 +155,11 @@ export const WEBSITE_HUB_NAV: HubNavItem[] = [
     matchPrefix: "/dashboard/website/studio",
   },
   {
+    href: "/dashboard/website/ai",
+    label: "AI builder",
+    matchPrefix: "/dashboard/website/ai",
+  },
+  {
     href: "/dashboard/website/details",
     label: "Details",
     matchPrefix: "/dashboard/website/details",
@@ -307,6 +312,9 @@ export function hubNavItemActive(pathname: string, item: HubNavItem): boolean {
       pathname.startsWith("/dashboard/website/craft-spike") ||
       pathname.startsWith("/dashboard/website/puck-spike")
     );
+  }
+  if (item.matchPrefix === "/dashboard/website/ai") {
+    return pathname.startsWith("/dashboard/website/ai");
   }
   // General settings: exact path only (not /payments, /stripe, /billing, …)
   if (item.href === "/dashboard/settings" && item.label === "General") {
