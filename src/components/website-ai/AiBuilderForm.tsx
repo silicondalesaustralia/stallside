@@ -6,6 +6,7 @@ import {
   generateAiWebsiteDraft,
   type AiGenerateState,
 } from "@/app/dashboard/(gated)/website/ai/actions";
+import type { WebsiteIntakeNeeds } from "@/lib/website-ai/assess-context";
 
 const initial: AiGenerateState = { ok: false };
 
@@ -16,6 +17,9 @@ const STYLE_OPTIONS = [
   { id: "modern", label: "Clean / modern" },
   { id: "market", label: "Bold / market" },
 ] as const;
+
+const inputClass =
+  "mt-1 w-full rounded-md border border-[var(--border)] bg-white px-3 py-2 text-sm";
 
 function ChoiceChip({
   label,
@@ -44,22 +48,29 @@ function ChoiceChip({
 
 export default function AiBuilderForm({
   focusOptions,
-  previewUrl,
+  previewPath,
   suggestedQuestions,
   readiness,
+  intake,
 }: {
   focusOptions: { id: string; label: string }[];
-  previewUrl: string;
+  previewPath: string;
   suggestedQuestions: string[];
   readiness: string;
+  intake: WebsiteIntakeNeeds;
 }) {
   const [state, action, pending] = useActionState(generateAiWebsiteDraft, initial);
   const [focus, setFocus] = useState("vendl-decide");
   const [style, setStyle] = useState("vendl-decide");
+  const resolvedPreview = state.previewPath ?? previewPath;
 
   return (
     <div className="flex flex-col gap-6">
-      <form action={action} className="flex flex-col gap-5">
+      <form
+        action={action}
+        encType="multipart/form-data"
+        className="flex flex-col gap-5"
+      >
         <fieldset className="flex flex-col gap-2">
           <legend className="text-sm font-medium text-[var(--field)]">
             What should your website focus on?
@@ -95,9 +106,76 @@ export default function AiBuilderForm({
           <input type="hidden" name="style" value={style} />
         </fieldset>
 
+        {(intake.askAbout || intake.askHeroImage || intake.askStoryImage) && (
+          <div className="flex flex-col gap-4 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-4">
+            <div>
+              <p className="text-sm font-medium text-[var(--field)]">
+                A few details make a much better site
+              </p>
+              <p className="mt-1 text-xs text-[var(--muted)]">
+                Optional — you can skip and still build a draft.
+              </p>
+            </div>
+
+            {intake.askAbout ? (
+              <label className="block text-sm">
+                <span className="font-medium text-[var(--field)]">
+                  Your story / About us
+                </span>
+                <span className="mt-0.5 block text-xs text-[var(--muted)]">
+                  What makes your business different? History, what you grow or bake,
+                  why locals come back.
+                </span>
+                <textarea
+                  name="about"
+                  rows={4}
+                  defaultValue={intake.existingAbout}
+                  placeholder="e.g. We grow seasonal veg and bake sourdough for our roadside stand…"
+                  className={inputClass}
+                />
+              </label>
+            ) : null}
+
+            {intake.askHeroImage ? (
+              <label className="block text-sm">
+                <span className="font-medium text-[var(--field)]">
+                  Hero photo
+                </span>
+                <span className="mt-0.5 block text-xs text-[var(--muted)]">
+                  Main homepage image — farm, stand, bakery, or best product shot.
+                  {intake.hasHeroImage ? " Upload to replace the current hero." : ""}
+                </span>
+                <input
+                  name="heroImage"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className={inputClass}
+                />
+              </label>
+            ) : null}
+
+            {intake.askStoryImage ? (
+              <label className="block text-sm">
+                <span className="font-medium text-[var(--field)]">
+                  About / story photo
+                </span>
+                <span className="mt-0.5 block text-xs text-[var(--muted)]">
+                  A second photo for the story section (you, the farm, the kitchen…).
+                </span>
+                <input
+                  name="storyImage"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className={inputClass}
+                />
+              </label>
+            ) : null}
+          </div>
+        )}
+
         <label className="flex flex-col gap-1.5">
           <span className="text-sm font-medium text-[var(--field)]">
-            Or tell us what you want
+            Anything else for Vendl?
           </span>
           <textarea
             name="notes"
@@ -106,7 +184,7 @@ export default function AiBuilderForm({
               suggestedQuestions[0] ??
               "e.g. Warm country-style site focused on our farm stand and fresh eggs."
             }
-            className="rounded-md border border-[var(--border)] bg-white px-3 py-2 text-sm"
+            className={inputClass}
           />
         </label>
 
@@ -161,20 +239,24 @@ export default function AiBuilderForm({
           ) : null}
           <div className="mt-4 flex flex-wrap gap-3">
             <a
-              href={previewUrl}
+              href={resolvedPreview}
               target="_blank"
               rel="noreferrer"
               className="rounded-md bg-[var(--field)] px-4 py-2 text-sm font-medium text-white"
             >
-              Preview website
+              Open customer preview
             </a>
             <Link
               href="/dashboard/website/studio"
               className="rounded-md border border-[var(--border)] px-4 py-2 text-sm"
             >
-              Edit manually
+              Open drag-and-drop editor
             </Link>
           </div>
+          <p className="mt-2 text-xs text-[var(--muted)]">
+            Preview shows the public storefront. The editor is only for manual section
+            tweaks.
+          </p>
         </div>
       ) : null}
     </div>

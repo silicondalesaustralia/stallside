@@ -59,6 +59,10 @@ export type WebsiteGenerationIntent = {
   stylePreference?: string;
   sellerNotes?: string;
   selectedFocusEntities?: string[];
+  /** Seller-provided About / story copy for this generation. */
+  sellerAbout?: string;
+  /** Uploaded story/about image URL for ImageText sections. */
+  storyImageUrl?: string;
 };
 
 export type AiSectionConfig = {

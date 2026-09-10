@@ -5,7 +5,6 @@ import {
   loadStorefrontContext,
   storefrontPublicPath,
 } from "@/lib/catalogue/storefront";
-import { appBaseUrl } from "@/lib/app-url";
 import { extractWebsiteStudio } from "@/lib/studio/storage";
 import { canUseAiWebsiteBuilder, aiWebsiteBuilderEnabled } from "@/lib/website-ai/config";
 import { buildWebsiteBusinessContext } from "@/lib/website-ai/business-context";
@@ -65,8 +64,7 @@ export default async function AiWebsiteBuilderPage({
   const businessContext = await buildWebsiteBusinessContext(ctx);
   const assessment = assessWebsiteContext(businessContext);
   const studio = extractWebsiteStudio(storefront.draftConfig);
-  const base = appBaseUrl();
-  const previewUrl = `${base}${storefrontPublicPath(storefront.slug)}/studio-preview?draft=1`;
+  const previewPath = `${storefrontPublicPath(storefront.slug)}/studio-preview?draft=1`;
 
   return (
     <main className="flex max-w-2xl flex-col gap-6 pb-8">
@@ -96,27 +94,36 @@ export default async function AiWebsiteBuilderPage({
             Generating again will replace the homepage draft (not the live site until you
             publish). Template: {studio.templateId}.
           </p>
-          <div className="mt-3 flex flex-wrap gap-3">
-            <a href={previewUrl} target="_blank" rel="noreferrer" className="underline">
-              Preview draft
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+            <a
+              href={previewPath}
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-[var(--field)] underline"
+            >
+              Open customer preview
             </a>
-            <Link href="/dashboard/website/studio" className="underline">
-              Edit in Studio
+            <Link href="/dashboard/website/studio" className="underline text-[var(--muted)]">
+              Open drag-and-drop editor
             </Link>
             <form action={publishAiWebsiteDraft}>
-              <button type="submit" className="underline">
+              <button type="submit" className="underline text-[var(--muted)]">
                 Publish draft
               </button>
             </form>
           </div>
+          <p className="mt-2 text-xs text-[var(--muted)]">
+            Preview = public storefront ({previewPath}). Editor = dashboard Studio.
+          </p>
         </div>
       ) : null}
 
       <AiBuilderForm
         focusOptions={assessment.focusOptions}
-        previewUrl={previewUrl}
+        previewPath={previewPath}
         suggestedQuestions={assessment.suggestedQuestions}
         readiness={assessment.readiness}
+        intake={assessment.intake}
       />
     </main>
   );

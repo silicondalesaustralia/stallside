@@ -2,17 +2,23 @@ import type { WebsiteBusinessContext, WebsiteGenerationIntent } from "./types";
 
 export type ContextQuality = "GOOD" | "WEAK" | "UNKNOWN" | "MISSING";
 
+export type WebsiteIntakeNeeds = {
+  askAbout: boolean;
+  askHeroImage: boolean;
+  askStoryImage: boolean;
+  existingAbout: string;
+  hasHeroImage: boolean;
+};
+
 export type WebsiteContextAssessment = {
   readiness: "READY" | "NEEDS_CONTEXT" | "SPARSE";
   dimensions: Record<string, ContextQuality>;
   focusOptions: { id: string; label: string }[];
   suggestedQuestions: string[];
+  intake: WebsiteIntakeNeeds;
 };
 
-function quality(
-  good: boolean,
-  weak?: boolean,
-): ContextQuality {
+function quality(good: boolean, weak?: boolean): ContextQuality {
   if (good) return "GOOD";
   if (weak) return "WEAK";
   return "MISSING";
@@ -26,7 +32,10 @@ export function assessWebsiteContext(
     products: quality(ctx.productCount >= 3, ctx.productCount > 0),
     commerceSetup: quality(ctx.hasPickup || ctx.hasDelivery || ctx.hasFarmStand),
     primaryGoal: "UNKNOWN" as ContextQuality,
-    businessStory: quality(Boolean(ctx.about && ctx.about.length > 40), Boolean(ctx.about)),
+    businessStory: quality(
+      Boolean(ctx.about && ctx.about.length > 40),
+      Boolean(ctx.about),
+    ),
     brandAssets: quality(Boolean(ctx.logoUrl)),
     photography: quality(Boolean(ctx.heroImageUrl)),
     location: quality(Boolean(ctx.regionLabel)),
@@ -54,17 +63,30 @@ export function assessWebsiteContext(
     suggestedQuestions.push("What makes your business different?");
   }
 
-  return { readiness, dimensions, focusOptions, suggestedQuestions };
+  const intake: WebsiteIntakeNeeds = {
+    askAbout: dimensions.businessStory !== "GOOD",
+    askHeroImage: dimensions.photography !== "GOOD",
+    askStoryImage: dimensions.businessStory !== "GOOD" || dimensions.photography !== "GOOD",
+    existingAbout: ctx.about ?? "",
+    hasHeroImage: Boolean(ctx.heroImageUrl),
+  };
+
+  return { readiness, dimensions, focusOptions, suggestedQuestions, intake };
 }
 
 export function intentFromForm(input: {
   focus?: string;
   style?: string;
   notes?: string;
+  about?: string;
+  storyImageUrl?: string;
 }): WebsiteGenerationIntent {
   return {
     primaryGoal: input.focus && input.focus !== "vendl-decide" ? input.focus : undefined,
-    stylePreference: input.style && input.style !== "vendl-decide" ? input.style : undefined,
+    stylePreference:
+      input.style && input.style !== "vendl-decide" ? input.style : undefined,
     sellerNotes: input.notes?.trim() || undefined,
+    sellerAbout: input.about?.trim() || undefined,
+    storyImageUrl: input.storyImageUrl?.trim() || undefined,
   };
 }

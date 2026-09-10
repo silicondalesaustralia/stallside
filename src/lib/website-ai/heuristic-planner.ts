@@ -30,7 +30,12 @@ function sid(prefix: string, i: number): string {
   return `${prefix}-${i}`;
 }
 
-function factualAbout(ctx: WebsiteBusinessContext): string {
+function factualAbout(
+  ctx: WebsiteBusinessContext,
+  intent?: WebsiteGenerationIntent,
+): string {
+  const seller = intent?.sellerAbout?.trim();
+  if (seller) return seller;
   if (ctx.about?.trim()) return ctx.about.trim();
   const parts = [`${ctx.businessName} is a local food business`];
   if (ctx.regionLabel) parts.push(`based in ${ctx.regionLabel}`);
@@ -114,11 +119,16 @@ function homeSections(
     });
   }
 
+  const aboutBody = factualAbout(ctx, intent);
+
   sections.push({
     id: sid("story", i++),
     type: "ImageText",
-    heading: focus === "story" || ctx.about ? "Our story" : "About us",
-    body: factualAbout(ctx),
+    heading: focus === "story" || aboutBody ? "Our story" : "About us",
+    body: aboutBody,
+    props: intent?.storyImageUrl
+      ? { imageUrl: intent.storyImageUrl }
+      : undefined,
   });
 
   sections.push({
@@ -151,7 +161,7 @@ function homeSections(
       id: sid("text", i++),
       type: "Text",
       heading: ctx.businessName,
-      body: ctx.subheadline ?? factualAbout(ctx),
+      body: ctx.subheadline ?? factualAbout(ctx, intent),
     });
   }
 
@@ -165,7 +175,7 @@ export function planSiteHeuristic(input: SiteGenerationInput): SiteGenerationRes
   const sections = homeSections(ctx, designSystem, intent);
 
   const missing: AISitePlan["missingInformation"] = [];
-  if (!ctx.about) {
+  if (!intent?.sellerAbout && !ctx.about) {
     missing.push({
       code: "BUSINESS_STORY",
       message: "Add a short business story to strengthen your About section.",
@@ -176,6 +186,13 @@ export function planSiteHeuristic(input: SiteGenerationInput): SiteGenerationRes
     missing.push({
       code: "PHOTOGRAPHY",
       message: "A farm or business photo would make the site more personal.",
+      blocking: false,
+    });
+  }
+  if (!intent?.storyImageUrl) {
+    missing.push({
+      code: "STORY_IMAGE",
+      message: "An About photo helps the story section feel real.",
       blocking: false,
     });
   }

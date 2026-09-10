@@ -11,6 +11,7 @@ import {
   storefrontPublicPath,
 } from "@/lib/catalogue/storefront";
 import { mergeWebsiteStudioIntoRaw } from "@/lib/studio/storage";
+import { uploadStorefrontHero } from "@/lib/storefront/hero-upload";
 import { canUseAiWebsiteBuilder } from "@/lib/website-ai/config";
 import { buildWebsiteBusinessContext } from "@/lib/website-ai/business-context";
 import { intentFromForm } from "@/lib/website-ai/assess-context";
@@ -24,7 +25,14 @@ export type AiGenerateState = {
   designSystem?: string;
   provider?: string;
   missing?: { code: string; message: string }[];
+  previewPath?: string;
 };
+
+function fileFromForm(formData: FormData, key: string): File | null {
+  const value = formData.get(key);
+  if (value instanceof File && value.size > 0) return value;
+  return null;
+}
 
 export async function generateAiWebsiteDraft(
   _prev: AiGenerateState,
@@ -36,22 +44,53 @@ export async function generateAiWebsiteDraft(
   }
 
   const storefront = await ensureStorefront(owner.id, owner.businessName);
-  const ctx = await loadStorefrontContext(storefront.slug, {
-    draft: true,
-    ownerId: owner.id,
-  });
-  if (!ctx) {
-    return { ok: false, error: "Storefront context unavailable." };
-  }
-
-  const intent = intentFromForm({
-    focus: String(formData.get("focus") ?? ""),
-    style: String(formData.get("style") ?? ""),
-    notes: String(formData.get("notes") ?? ""),
-  });
 
   try {
+    const about = String(formData.get("about") ?? "").trim().slice(0, 2000);
+    const heroFile = fileFromForm(formData, "heroImage");
+    const storyFile = fileFromForm(formData, "storyImage");
+
+    let heroImageUrl = storefront.heroImageUrl;
+    if (heroFile) {
+      heroImageUrl = await uploadStorefrontHero(owner.id, heroFile);
+    }
+
+    let storyImageUrl: string | undefined;
+    if (storyFile) {
+      storyImageUrl = await uploadStorefrontHero(owner.id, storyFile);
+    }
+
+    if (about || heroFile) {
+      await prisma.storefront.update({
+        where: { ownerId: owner.id },
+        data: {
+          ...(about ? { about } : {}),
+          ...(heroFile ? { heroImageUrl } : {}),
+        },
+      });
+    }
+
+    const refreshed = await ensureStorefront(owner.id, owner.businessName);
+    const ctx = await loadStorefrontContext(refreshed.slug, {
+      draft: true,
+      ownerId: owner.id,
+    });
+    if (!ctx) {
+      return { ok: false, error: "Storefront context unavailable." };
+    }
+
+    const intent = intentFromForm({
+      focus: String(formData.get("focus") ?? ""),
+      style: String(formData.get("style") ?? ""),
+      notes: String(formData.get("notes") ?? ""),
+      about: about || undefined,
+      storyImageUrl,
+    });
+
     const businessContext = await buildWebsiteBusinessContext(ctx);
+    if (about) businessContext.about = about;
+    if (heroImageUrl) businessContext.heroImageUrl = heroImageUrl;
+
     const generated = await generateWebsiteDraft({ businessContext, intent });
     if (!generated.ok) {
       return {
@@ -62,7 +101,7 @@ export async function generateAiWebsiteDraft(
     }
 
     const merged = mergeWebsiteStudioIntoRaw(
-      storefront.draftConfig,
+      refreshed.draftConfig,
       generated.studio.templateId,
       generated.studio.nodes,
     );
@@ -71,9 +110,11 @@ export async function generateAiWebsiteDraft(
       data: { draftConfig: merged },
     });
 
+    const previewPath = `${storefrontPublicPath(refreshed.slug)}/studio-preview?draft=1`;
     revalidatePath("/dashboard/website/ai");
     revalidatePath("/dashboard/website/studio");
-    revalidatePath(`${storefrontPublicPath(storefront.slug)}/studio-preview`);
+    revalidatePath("/dashboard/website/details");
+    revalidatePath(previewPath);
 
     return {
       ok: true,
@@ -84,6 +125,7 @@ export async function generateAiWebsiteDraft(
         code: m.code,
         message: m.message,
       })),
+      previewPath,
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Generation failed";
