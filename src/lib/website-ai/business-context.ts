@@ -47,6 +47,7 @@ export async function buildWebsiteBusinessContext(
       id: p.id,
       title: p.name,
     })),
+    productPhotoCount: ctx.products.filter((p) => Boolean(p.imageUrl)).length,
     logoUrl: ctx.branding.logoUrl,
     heroImageUrl: ctx.branding.heroImageUrl,
     existingTemplateId: studio?.templateId ?? null,

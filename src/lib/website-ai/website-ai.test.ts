@@ -25,6 +25,7 @@ function sampleCtx(
     reviewCount: 3,
     categories: [{ id: "c1", title: "Eggs", slug: "eggs" }],
     featuredProducts: [{ id: "p1", title: "Farm eggs" }],
+    productPhotoCount: 1,
     logoUrl: null,
     heroImageUrl: null,
     existingTemplateId: null,

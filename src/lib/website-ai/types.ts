@@ -117,6 +117,7 @@ export type WebsiteBusinessContext = {
   reviewCount: number;
   categories: { id: string; title: string; slug: string }[];
   featuredProducts: { id: string; title: string }[];
+  productPhotoCount: number;
   logoUrl: string | null;
   heroImageUrl: string | null;
   existingTemplateId: StudioTemplateId | null;

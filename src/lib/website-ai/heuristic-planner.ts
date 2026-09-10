@@ -15,12 +15,31 @@ function pickDesignSystem(
   intent?: WebsiteGenerationIntent,
 ): StudioTemplateId {
   const style = intent?.stylePreference?.toLowerCase() ?? "";
-  if (style.includes("artisan") || style.includes("premium")) return "artisan";
-  if (style.includes("market") || style.includes("bold") || style.includes("modern")) {
+  if (
+    style.includes("premium") ||
+    style.includes("handcrafted") ||
+    style.includes("artisan")
+  ) {
+    return "artisan";
+  }
+  if (
+    style.includes("bold") ||
+    style.includes("energetic") ||
+    style.includes("market")
+  ) {
     return "market";
   }
-  if (style.includes("rustic") || style.includes("farm") || style.includes("country")) {
+  if (
+    style.includes("warm") ||
+    style.includes("local") ||
+    style.includes("rustic") ||
+    style.includes("farm") ||
+    style.includes("country")
+  ) {
     return "farmhouse";
+  }
+  if (style.includes("modern") || style.includes("clean")) {
+    return ctx.businessMode === "FOOD_BUSINESS" ? "artisan" : "market";
   }
   if (ctx.existingTemplateId) return ctx.existingTemplateId;
   return defaultTemplateForMode(ctx.businessMode);

@@ -76,8 +76,7 @@ export default async function AiWebsiteBuilderPage({
           Create your website
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          We already know about your business, products and how you sell. Classic Studio
-          stays available for manual editing and comparison.
+          We already know your business. Tell us what matters most — or let Vendl decide.
         </p>
       </div>
 
@@ -101,10 +100,10 @@ export default async function AiWebsiteBuilderPage({
               rel="noreferrer"
               className="font-medium text-[var(--field)] underline"
             >
-              Open customer preview
+              Preview website
             </a>
             <Link href="/dashboard/website/studio" className="underline text-[var(--muted)]">
-              Open drag-and-drop editor
+              Edit manually
             </Link>
             <form action={publishAiWebsiteDraft}>
               <button type="submit" className="underline text-[var(--muted)]">
@@ -112,9 +111,6 @@ export default async function AiWebsiteBuilderPage({
               </button>
             </form>
           </div>
-          <p className="mt-2 text-xs text-[var(--muted)]">
-            Preview = public storefront ({previewPath}). Editor = dashboard Studio.
-          </p>
         </div>
       ) : null}
 
@@ -122,8 +118,10 @@ export default async function AiWebsiteBuilderPage({
         focusOptions={assessment.focusOptions}
         previewPath={previewPath}
         suggestedQuestions={assessment.suggestedQuestions}
-        readiness={assessment.readiness}
         intake={assessment.intake}
+        knownFacts={assessment.knownFacts}
+        businessName={businessContext.businessName}
+        path={assessment.path}
       />
     </main>
   );
