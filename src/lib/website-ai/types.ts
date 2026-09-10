@@ -1,5 +1,7 @@
 import type { BusinessMode } from "@/lib/business-mode";
 import type { StudioSectionType, StudioTemplateId } from "@/lib/studio/types";
+import type { WebsiteCapabilityId } from "./capabilities";
+import type { PlaceholderKind } from "./placeholders";
 
 export const WEBSITE_AI_SPEC_VERSION = 1 as const;
 
@@ -22,7 +24,9 @@ export type WebsitePageType =
   | "PRIVACY"
   | "TERMS"
   | "SHIPPING_PICKUP"
-  | "REFUNDS";
+  | "REFUNDS"
+  | "DELIVERY_POLICY"
+  | "BLOG";
 
 export type WebsiteAiSectionType =
   | "Hero"
@@ -50,8 +54,17 @@ export type WebsiteDataSourceId =
   | "DELIVERY_ZONES"
   | "TOP_REVIEWS"
   | "ACTIVE_SUBSCRIPTIONS"
+  | "SUBSCRIPTION_PLANS"
+  | "ORDER_FORM"
+  | "PICKUP_OPTIONS"
   | "UPCOMING_EVENTS"
+  | "SIGNUP_DESTINATION"
   | "LATEST_BLOG_POSTS";
+
+export type ContextAnswer = {
+  questionId: "STORY" | "AREA";
+  answer: string;
+};
 
 export type WebsiteGenerationIntent = {
   primaryGoal?: string;
@@ -59,10 +72,13 @@ export type WebsiteGenerationIntent = {
   stylePreference?: string;
   sellerNotes?: string;
   selectedFocusEntities?: string[];
-  /** Seller-provided About / story copy for this generation. */
   sellerAbout?: string;
-  /** Uploaded story/about image URL for ImageText sections. */
   storyImageUrl?: string;
+  contextAnswers?: ContextAnswer[];
+  selectedPages?: string[];
+  selectedCapabilities?: WebsiteCapabilityId[];
+  useAiDecorativePlaceholders?: boolean;
+  includeSampleProducts?: boolean;
 };
 
 export type AiSectionConfig = {
@@ -76,6 +92,10 @@ export type AiSectionConfig = {
   ctaLabel?: string;
   dataSource?: WebsiteDataSourceId;
   props?: Record<string, string | number | boolean | string[]>;
+  copyKind?: "INSTRUCTIONAL" | "GENERIC" | "SELLER";
+  placeholderKind?: PlaceholderKind;
+  visibility?: "ALL" | "EDITOR_ONLY";
+  productPresentation?: "LIVE" | "SAMPLE";
 };
 
 export type AiSitePage = {
@@ -97,6 +117,7 @@ export type AISitePlan = {
   navigation: { label: string; pageType: WebsitePageType }[];
   pages: AiSitePage[];
   missingInformation?: { code: string; message: string; blocking: boolean }[];
+  suggestions?: { label: string; examplePrompt?: string }[];
   changeSummary?: string;
 };
 

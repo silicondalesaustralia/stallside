@@ -114,15 +114,7 @@ export default async function AiWebsiteBuilderPage({
         </div>
       ) : null}
 
-      <AiBuilderForm
-        focusOptions={assessment.focusOptions}
-        previewPath={previewPath}
-        suggestedQuestions={assessment.suggestedQuestions}
-        intake={assessment.intake}
-        knownFacts={assessment.knownFacts}
-        businessName={businessContext.businessName}
-        path={assessment.path}
-      />
+      <AiBuilderForm assessment={assessment} previewPath={previewPath} />
     </main>
   );
 }

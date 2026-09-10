@@ -155,6 +155,20 @@ export const WEBSITE_PAGE_REGISTRY: Record<WebsitePageType, WebsitePageDefinitio
       aiComposable: false,
       routeStrategy: "fixed",
     },
+    DELIVERY_POLICY: {
+      type: "DELIVERY_POLICY",
+      aiCreatable: false,
+      aiDeletable: false,
+      aiComposable: false,
+      routeStrategy: "fixed",
+    },
+    BLOG: {
+      type: "BLOG",
+      aiCreatable: false,
+      aiDeletable: false,
+      aiComposable: false,
+      routeStrategy: "fixed",
+    },
   };
 
 export function aiComposablePageTypes(): WebsitePageType[] {

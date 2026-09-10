@@ -3,6 +3,7 @@ import { planSiteHeuristic } from "./heuristic-planner";
 import { planSiteWithOpenAI } from "./openai-planner";
 import { validateAiSitePlan } from "./validate-plan";
 import { compilePlanToStudioPayload } from "./compile-nodes";
+import { computeMissingInformation } from "./missing-info";
 import type { SiteGenerationInput, SiteGenerationResult, AISitePlan } from "./types";
 import type { StudioPayload } from "@/lib/studio/types";
 
@@ -15,7 +16,6 @@ function astraOrOpenAIProvider(): WebsiteAIProvider {
     async createSitePlan(input) {
       const result = await planSiteWithOpenAI(input);
       if (result.ok) return result;
-      // Controlled fallback — never leave seller without a draft path.
       const fallback = planSiteHeuristic(input);
       if (fallback.ok) {
         return {
@@ -49,6 +49,7 @@ export type GenerateWebsiteDraftResult =
       studio: StudioPayload;
       provider: string;
       model: string;
+      missing: { code: string; message: string }[];
     }
   | { ok: false; error: string; details?: string[] };
 
@@ -64,7 +65,6 @@ export async function generateWebsiteDraft(
   let plan = result.plan;
   const validated = validateAiSitePlan(plan, input.businessContext);
   if (!validated.ok) {
-    // One repair attempt via heuristic when AI plan fails validation.
     const repaired = planSiteHeuristic(input);
     if (!repaired.ok) {
       return { ok: false, error: "Plan validation failed", details: validated.errors };
@@ -77,6 +77,16 @@ export async function generateWebsiteDraft(
   } else {
     plan = validated.plan;
   }
+
+  const missing = computeMissingInformation(
+    input.businessContext,
+    input.intent ?? {},
+  ).map((m) => ({
+    code: m.id,
+    message: m.label,
+    blocking: m.severity === "MUST_FIX",
+  }));
+  plan = { ...plan, missingInformation: missing };
 
   const compiled = compilePlanToStudioPayload(plan);
   if (compiled.errors.length || !compiled.payload) {
@@ -93,5 +103,6 @@ export async function generateWebsiteDraft(
     studio: compiled.payload,
     provider: result.provider,
     model: result.model,
+    missing: missing.map((m) => ({ code: m.code, message: m.message })),
   };
 }

@@ -16,11 +16,13 @@ const pageTypeSchema = z.enum([
   "REVIEWS",
   "BLOG_INDEX",
   "BLOG_POST",
+  "BLOG",
   "CUSTOM_INFO",
   "PRIVACY",
   "TERMS",
   "SHIPPING_PICKUP",
   "REFUNDS",
+  "DELIVERY_POLICY",
 ]);
 
 const sectionTypeSchema = z.enum([
@@ -60,13 +62,31 @@ const sectionSchema = z.object({
       "DELIVERY_ZONES",
       "TOP_REVIEWS",
       "ACTIVE_SUBSCRIPTIONS",
+      "SUBSCRIPTION_PLANS",
+      "ORDER_FORM",
+      "PICKUP_OPTIONS",
       "UPCOMING_EVENTS",
+      "SIGNUP_DESTINATION",
       "LATEST_BLOG_POSTS",
     ])
     .optional(),
   props: z
     .record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]))
     .optional(),
+  copyKind: z.enum(["INSTRUCTIONAL", "GENERIC", "SELLER"]).optional(),
+  placeholderKind: z
+    .enum([
+      "COPY_INSTRUCTIONAL",
+      "COPY_GENERIC",
+      "IMAGE_DECORATIVE",
+      "LOGO_MARK",
+      "SAMPLE_PRODUCTS",
+      "SETUP_STUB",
+      "POLICY_VARIABLE",
+    ])
+    .optional(),
+  visibility: z.enum(["ALL", "EDITOR_ONLY"]).optional(),
+  productPresentation: z.enum(["LIVE", "SAMPLE"]).optional(),
 });
 
 export const aiSitePlanSchema = z.object({

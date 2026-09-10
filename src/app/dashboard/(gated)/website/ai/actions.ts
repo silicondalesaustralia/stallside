@@ -11,10 +11,9 @@ import {
   storefrontPublicPath,
 } from "@/lib/catalogue/storefront";
 import { mergeWebsiteStudioIntoRaw } from "@/lib/studio/storage";
-import { uploadStorefrontHero } from "@/lib/storefront/hero-upload";
 import { canUseAiWebsiteBuilder } from "@/lib/website-ai/config";
 import { buildWebsiteBusinessContext } from "@/lib/website-ai/business-context";
-import { intentFromForm } from "@/lib/website-ai/assess-context";
+import { assessWebsiteContext, intentFromForm } from "@/lib/website-ai/assess-context";
 import { generateWebsiteDraft } from "@/lib/website-ai/provider";
 
 export type AiGenerateState = {
@@ -28,12 +27,6 @@ export type AiGenerateState = {
   previewPath?: string;
 };
 
-function fileFromForm(formData: FormData, key: string): File | null {
-  const value = formData.get(key);
-  if (value instanceof File && value.size > 0) return value;
-  return null;
-}
-
 export async function generateAiWebsiteDraft(
   _prev: AiGenerateState,
   formData: FormData,
@@ -46,32 +39,7 @@ export async function generateAiWebsiteDraft(
   const storefront = await ensureStorefront(owner.id, owner.businessName);
 
   try {
-    const about = String(formData.get("about") ?? "").trim().slice(0, 2000);
-    const heroFile = fileFromForm(formData, "heroImage");
-    const storyFile = fileFromForm(formData, "storyImage");
-
-    let heroImageUrl = storefront.heroImageUrl;
-    if (heroFile) {
-      heroImageUrl = await uploadStorefrontHero(owner.id, heroFile);
-    }
-
-    let storyImageUrl: string | undefined;
-    if (storyFile) {
-      storyImageUrl = await uploadStorefrontHero(owner.id, storyFile);
-    }
-
-    if (about || heroFile) {
-      await prisma.storefront.update({
-        where: { ownerId: owner.id },
-        data: {
-          ...(about ? { about } : {}),
-          ...(heroFile ? { heroImageUrl } : {}),
-        },
-      });
-    }
-
-    const refreshed = await ensureStorefront(owner.id, owner.businessName);
-    const ctx = await loadStorefrontContext(refreshed.slug, {
+    const ctx = await loadStorefrontContext(storefront.slug, {
       draft: true,
       ownerId: owner.id,
     });
@@ -79,17 +47,22 @@ export async function generateAiWebsiteDraft(
       return { ok: false, error: "Storefront context unavailable." };
     }
 
-    const intent = intentFromForm({
-      focus: String(formData.get("focus") ?? ""),
-      style: String(formData.get("style") ?? ""),
-      notes: String(formData.get("notes") ?? ""),
-      about: about || undefined,
-      storyImageUrl,
-    });
-
     const businessContext = await buildWebsiteBusinessContext(ctx);
-    if (about) businessContext.about = about;
-    if (heroImageUrl) businessContext.heroImageUrl = heroImageUrl;
+    const assessment = assessWebsiteContext(businessContext);
+    const intent = intentFromForm(formData, assessment);
+
+    if (intent.sellerAbout && intent.sellerAbout.length > 40) {
+      await prisma.storefront.update({
+        where: { ownerId: owner.id },
+        data: { about: intent.sellerAbout.slice(0, 2000) },
+      });
+      businessContext.about = intent.sellerAbout.slice(0, 2000);
+    }
+
+    const areaAnswer = intent.contextAnswers?.find((a) => a.questionId === "AREA");
+    if (areaAnswer?.answer && !businessContext.regionLabel) {
+      businessContext.regionLabel = areaAnswer.answer.slice(0, 120);
+    }
 
     const generated = await generateWebsiteDraft({ businessContext, intent });
     if (!generated.ok) {
@@ -100,6 +73,7 @@ export async function generateAiWebsiteDraft(
       };
     }
 
+    const refreshed = await ensureStorefront(owner.id, owner.businessName);
     const merged = mergeWebsiteStudioIntoRaw(
       refreshed.draftConfig,
       generated.studio.templateId,
@@ -121,10 +95,7 @@ export async function generateAiWebsiteDraft(
       summary: generated.plan.changeSummary ?? "Draft website created.",
       designSystem: generated.studio.templateId,
       provider: `${generated.provider}/${generated.model}`,
-      missing: generated.plan.missingInformation?.map((m) => ({
-        code: m.code,
-        message: m.message,
-      })),
+      missing: generated.missing,
       previewPath,
     };
   } catch (err) {

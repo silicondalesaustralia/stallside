@@ -8,25 +8,20 @@ import type {
   SiteGenerationResult,
   WebsiteBusinessContext,
   WebsiteGenerationIntent,
+  WebsitePageType,
 } from "./types";
+import { instructionalCopy } from "./placeholders";
+import type { WebsiteCapabilityId } from "./capabilities";
 
 function pickDesignSystem(
   ctx: WebsiteBusinessContext,
   intent?: WebsiteGenerationIntent,
 ): StudioTemplateId {
   const style = intent?.stylePreference?.toLowerCase() ?? "";
-  if (
-    style.includes("premium") ||
-    style.includes("handcrafted") ||
-    style.includes("artisan")
-  ) {
+  if (style.includes("premium") || style.includes("handcrafted") || style.includes("artisan")) {
     return "artisan";
   }
-  if (
-    style.includes("bold") ||
-    style.includes("energetic") ||
-    style.includes("market")
-  ) {
+  if (style.includes("bold") || style.includes("energetic") || style.includes("market")) {
     return "market";
   }
   if (
@@ -49,17 +44,36 @@ function sid(prefix: string, i: number): string {
   return `${prefix}-${i}`;
 }
 
-function factualAbout(
+function caps(
   ctx: WebsiteBusinessContext,
   intent?: WebsiteGenerationIntent,
-): string {
-  const seller = intent?.sellerAbout?.trim();
-  if (seller) return seller;
-  if (ctx.about?.trim()) return ctx.about.trim();
-  const parts = [`${ctx.businessName} is a local food business`];
-  if (ctx.regionLabel) parts.push(`based in ${ctx.regionLabel}`);
-  parts.push(".");
-  return parts.join(" ").replace(" .", ".");
+): Set<WebsiteCapabilityId> {
+  if (intent?.selectedCapabilities?.length) {
+    return new Set(intent.selectedCapabilities);
+  }
+  const inferred = new Set<WebsiteCapabilityId>();
+  if (ctx.productCount > 0) inferred.add("SHOP");
+  if (ctx.hasMenus) inferred.add("MENUS_PREORDERS");
+  if (ctx.hasPickup || ctx.hasFarmStand) inferred.add("PICKUP");
+  if (ctx.hasDelivery) inferred.add("DELIVERY");
+  inferred.add("NEWSLETTER");
+  return inferred;
+}
+
+function pages(intent?: WebsiteGenerationIntent): Set<string> {
+  return new Set(intent?.selectedPages ?? ["HOME", "ABOUT", "CONTACT", "FAQ", "SHOP"]);
+}
+
+function storyBody(
+  ctx: WebsiteBusinessContext,
+  intent?: WebsiteGenerationIntent,
+): { body: string; copyKind: "INSTRUCTIONAL" | "GENERIC" | "SELLER" } {
+  const seller = intent?.sellerAbout?.trim() || ctx.about?.trim();
+  if (seller) return { body: seller, copyKind: "SELLER" };
+  return {
+    body: instructionalCopy("what you grow or bake"),
+    copyKind: "INSTRUCTIONAL",
+  };
 }
 
 function homeSections(
@@ -68,8 +82,10 @@ function homeSections(
   intent?: WebsiteGenerationIntent,
 ): AiSectionConfig[] {
   const focus = intent?.primaryGoal ?? "";
+  const c = caps(ctx, intent);
   const sections: AiSectionConfig[] = [];
   let i = 0;
+  const useSamples = Boolean(intent?.includeSampleProducts && ctx.productCount === 0);
 
   sections.push({
     id: sid("hero", i++),
@@ -82,39 +98,56 @@ function homeSections(
         : focus === "preorders"
           ? "Order this week"
           : "Browse",
+    copyKind: "GENERIC",
   });
 
-  const preferStand = focus === "farm-stand" || (!focus && ctx.hasFarmStand);
-  const preferMenu = focus === "preorders" || (!focus && ctx.hasMenus && !preferStand);
-
-  if (preferStand && ctx.hasFarmStand) {
+  if (c.has("PICKUP") && ctx.hasFarmStand) {
     sections.push({
       id: sid("stand", i++),
       type: "FarmStand",
       heading: "Visit the stand",
     });
   }
-  if (preferMenu && ctx.hasMenus) {
+
+  if (c.has("MENUS_PREORDERS")) {
+    if (ctx.hasMenus) {
+      sections.push({
+        id: sid("drop", i++),
+        type: "NextDrop",
+        heading: templateId === "farmhouse" ? "Next collection" : "This week's menu",
+        dataSource: "NEXT_DROP",
+      });
+    } else {
+      sections.push({
+        id: sid("drop-stub", i++),
+        type: "Text",
+        heading: "Weekly preorders",
+        body: "Set up weekly menus in Vendl — this section stays hidden from visitors until then.",
+        visibility: "EDITOR_ONLY",
+        placeholderKind: "SETUP_STUB",
+        copyKind: "INSTRUCTIONAL",
+      });
+    }
+  }
+
+  if (c.has("SHOP")) {
     sections.push({
-      id: sid("drop", i++),
-      type: "NextDrop",
-      heading: templateId === "farmhouse" ? "Next collection" : "This week's menu",
+      id: sid("products", i++),
+      type: "ProductGrid",
+      heading:
+        templateId === "farmhouse"
+          ? "Fresh from the farm"
+          : templateId === "market"
+            ? "Shop all"
+            : "Fresh from the oven",
+      dataSource: "FEATURED_PRODUCTS",
+      productPresentation: useSamples ? "SAMPLE" : "LIVE",
+      placeholderKind: useSamples ? "SAMPLE_PRODUCTS" : undefined,
+      visibility: useSamples ? "EDITOR_ONLY" : "ALL",
     });
   }
 
-  sections.push({
-    id: sid("products", i++),
-    type: "ProductGrid",
-    heading:
-      templateId === "farmhouse"
-        ? "Fresh from the farm"
-        : templateId === "market"
-          ? "Shop all"
-          : "Fresh from the oven",
-    dataSource: "FEATURED_PRODUCTS",
-  });
-
-  if (ctx.categoryCount > 0) {
+  if (c.has("SHOP") && ctx.categoryCount > 0) {
     sections.push({
       id: sid("cats", i++),
       type: "CategoryGrid",
@@ -123,40 +156,31 @@ function homeSections(
     });
   }
 
-  if (!preferStand && ctx.hasFarmStand) {
-    sections.push({
-      id: sid("stand", i++),
-      type: "FarmStand",
-      heading: "Visit the stand",
-    });
-  }
-  if (!preferMenu && ctx.hasMenus) {
-    sections.push({
-      id: sid("drop", i++),
-      type: "NextDrop",
-      heading: "Next drop",
-    });
-  }
-
-  const aboutBody = factualAbout(ctx, intent);
-
+  const story = storyBody(ctx, intent);
   sections.push({
     id: sid("story", i++),
     type: "ImageText",
-    heading: focus === "story" || aboutBody ? "Our story" : "About us",
-    body: aboutBody,
-    props: intent?.storyImageUrl
-      ? { imageUrl: intent.storyImageUrl }
-      : undefined,
+    heading: "Our story",
+    body: story.body,
+    copyKind: story.copyKind,
+    placeholderKind:
+      story.copyKind === "INSTRUCTIONAL" ? "COPY_INSTRUCTIONAL" : undefined,
+    props: intent?.storyImageUrl ? { imageUrl: intent.storyImageUrl } : undefined,
   });
 
-  sections.push({
-    id: sid("pickup", i++),
-    type: "Pickup",
-    heading: ctx.hasFarmStand ? "Location & pickup" : "Pickup & delivery",
-  });
+  if (c.has("PICKUP") || c.has("DELIVERY")) {
+    sections.push({
+      id: sid("pickup", i++),
+      type: "Pickup",
+      heading: ctx.hasFarmStand ? "Location & pickup" : "Pickup & delivery",
+      dataSource: c.has("DELIVERY") ? "DELIVERY_ZONES" : "PICKUP_OPTIONS",
+      visibility: ctx.hasPickup || ctx.hasDelivery ? "ALL" : "EDITOR_ONLY",
+      placeholderKind:
+        ctx.hasPickup || ctx.hasDelivery ? undefined : "SETUP_STUB",
+    });
+  }
 
-  if (ctx.reviewCount > 0) {
+  if (pages(intent).has("REVIEWS") && ctx.reviewCount > 0) {
     sections.push({
       id: sid("reviews", i++),
       type: "Reviews",
@@ -165,70 +189,132 @@ function homeSections(
     });
   }
 
-  sections.push({
-    id: sid("signup", i++),
-    type: "Signup",
-    heading: ctx.hasFarmStand ? "Join the farm list" : "Stay in the loop",
-    body: "Get updates when new products and menus are available.",
-    ctaLabel: "Subscribe",
-  });
+  if (c.has("SUBSCRIPTIONS")) {
+    sections.push({
+      id: sid("subs", i++),
+      type: "Text",
+      heading: "Subscriptions",
+      body: "Set up subscriptions in Vendl to offer boxes and recurring orders.",
+      visibility: "EDITOR_ONLY",
+      placeholderKind: "SETUP_STUB",
+      copyKind: "INSTRUCTIONAL",
+    });
+  }
 
-  // Complexity budget 5–10
+  if (c.has("NEWSLETTER")) {
+    sections.push({
+      id: sid("signup", i++),
+      type: "Signup",
+      heading: ctx.hasFarmStand ? "Join the farm list" : "Stay in the loop",
+      body: "Get updates when new products and menus are available.",
+      ctaLabel: "Subscribe",
+      dataSource: "SIGNUP_DESTINATION",
+      copyKind: "GENERIC",
+    });
+  }
+
   while (sections.length > 10) sections.splice(sections.length - 2, 1);
   while (sections.length < 5) {
     sections.splice(sections.length - 1, 0, {
       id: sid("text", i++),
       type: "Text",
       heading: ctx.businessName,
-      body: ctx.subheadline ?? factualAbout(ctx, intent),
+      body: ctx.subheadline ?? `Welcome to ${ctx.businessName}.`,
+      copyKind: "GENERIC",
+      placeholderKind: "COPY_GENERIC",
     });
   }
 
   return sections;
 }
 
-/** Deterministic planner — used for A/B without OpenAI, and as OpenAI fallback. */
+function buildNavigation(
+  intent: WebsiteGenerationIntent | undefined,
+  ctx: WebsiteBusinessContext,
+): AISitePlan["navigation"] {
+  const p = pages(intent);
+  const nav: AISitePlan["navigation"] = [{ label: "Home", pageType: "HOME" }];
+  if (p.has("SHOP")) nav.push({ label: "Shop", pageType: "SHOP" });
+  if (p.has("FARM_STAND") && ctx.hasFarmStand) {
+    nav.push({ label: "Farm stand", pageType: "FARM_STAND" });
+  }
+  if (p.has("ABOUT")) nav.push({ label: "About", pageType: "ABOUT" });
+  if (p.has("CONTACT")) nav.push({ label: "Contact", pageType: "CONTACT" });
+  if (p.has("FAQ")) nav.push({ label: "FAQ", pageType: "FAQ" });
+  return nav.slice(0, 7);
+}
+
+function extraPages(
+  intent: WebsiteGenerationIntent | undefined,
+  ctx: WebsiteBusinessContext,
+): AISitePlan["pages"] {
+  const p = pages(intent);
+  const out: AISitePlan["pages"] = [];
+  const story = storyBody(ctx, intent);
+
+  if (p.has("ABOUT")) {
+    out.push({
+      pageType: "ABOUT",
+      title: "About",
+      slug: "about",
+      sections: [
+        {
+          id: "about-main",
+          type: "About",
+          heading: `About ${ctx.businessName}`,
+          body: story.body,
+          copyKind: story.copyKind,
+          placeholderKind:
+            story.copyKind === "INSTRUCTIONAL" ? "COPY_INSTRUCTIONAL" : undefined,
+        },
+      ],
+    });
+  }
+  if (p.has("CONTACT")) {
+    out.push({
+      pageType: "CONTACT",
+      title: "Contact",
+      slug: "contact",
+      sections: [
+        {
+          id: "contact-main",
+          type: "Text",
+          heading: "Get in touch",
+          body: "Questions? Get in touch.",
+          copyKind: "GENERIC",
+          placeholderKind: "COPY_GENERIC",
+        },
+      ],
+    });
+  }
+  if (p.has("FAQ")) {
+    out.push({
+      pageType: "FAQ",
+      title: "FAQ",
+      slug: "faq",
+      sections: [
+        {
+          id: "faq-main",
+          type: "Text",
+          heading: "Common questions",
+          body: instructionalCopy("how ordering, pickup and your products work"),
+          copyKind: "INSTRUCTIONAL",
+          placeholderKind: "COPY_INSTRUCTIONAL",
+        },
+      ],
+    });
+  }
+  return out;
+}
+
+/** Deterministic planner — scaffold-aware composition + Astra fallback. */
 export function planSiteHeuristic(input: SiteGenerationInput): SiteGenerationResult {
   const { businessContext: ctx, intent } = input;
   const designSystem = pickDesignSystem(ctx, intent);
   const sections = homeSections(ctx, designSystem, intent);
-
-  const missing: AISitePlan["missingInformation"] = [];
-  if (!intent?.sellerAbout && !ctx.about) {
-    missing.push({
-      code: "BUSINESS_STORY",
-      message: "Add a short business story to strengthen your About section.",
-      blocking: false,
-    });
-  }
-  if (!ctx.heroImageUrl) {
-    missing.push({
-      code: "PHOTOGRAPHY",
-      message: "A farm or business photo would make the site more personal.",
-      blocking: false,
-    });
-  }
-  if (!intent?.storyImageUrl) {
-    missing.push({
-      code: "STORY_IMAGE",
-      message: "An About photo helps the story section feel real.",
-      blocking: false,
-    });
-  }
-
   const primaryGoal =
     intent?.primaryGoal ??
     (ctx.hasFarmStand ? "farm-stand" : ctx.hasMenus ? "preorders" : "shop");
-
-  const navigation: AISitePlan["navigation"] = [
-    { label: "Home", pageType: "HOME" },
-    { label: "Shop", pageType: "SHOP" },
-  ];
-  if (ctx.hasFarmStand) {
-    navigation.push({ label: "Farm stand", pageType: "FARM_STAND" });
-  }
-  navigation.push({ label: "About", pageType: "ABOUT" });
-  navigation.push({ label: "Contact", pageType: "CONTACT" });
 
   const plan: AISitePlan = {
     version: WEBSITE_AI_SPEC_VERSION,
@@ -240,10 +326,10 @@ export function planSiteHeuristic(input: SiteGenerationInput): SiteGenerationRes
         : "Local customers looking for fresh food",
       contentPriorities: sections.map((s) => s.type).slice(0, 6),
     },
-    navigation: navigation.slice(0, 7),
+    navigation: buildNavigation(intent, ctx),
     pages: [
       {
-        pageType: "HOME",
+        pageType: "HOME" as WebsitePageType,
         title: "Home",
         sections,
         seo: {
@@ -253,9 +339,13 @@ export function planSiteHeuristic(input: SiteGenerationInput): SiteGenerationRes
             `Shop from ${ctx.businessName} — local food online and nearby.`,
         },
       },
+      ...extraPages(intent, ctx),
     ],
-    missingInformation: missing,
-    changeSummary: `Draft ${designSystem} homepage focused on ${primaryGoal}.`,
+    changeSummary: `Draft ${designSystem} site focused on ${primaryGoal}${
+      intent?.selectedCapabilities?.length
+        ? ` · capabilities: ${intent.selectedCapabilities.join(", ")}`
+        : ""
+    }.`,
   };
 
   return { ok: true, plan, provider: "heuristic", model: "rules-v1" };

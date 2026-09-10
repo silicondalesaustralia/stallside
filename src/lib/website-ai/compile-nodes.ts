@@ -26,7 +26,17 @@ export function compileHomeNodes(plan: AISitePlan): SerializedNodes {
       isCanvas: false,
       props: craftPropsForAiSection(section, plan.designSystem),
       displayName: craftType,
-      custom: { aiSectionId: section.id, aiType: section.type },
+      custom: {
+        aiSectionId: section.id,
+        aiType: section.type,
+        visibility: section.visibility ?? "ALL",
+        productPresentation: section.productPresentation ?? "LIVE",
+        copyKind: section.copyKind,
+        placeholderKind: section.placeholderKind,
+        placeholderRefs: section.placeholderKind
+          ? [{ placeholderId: `${section.id}:${section.placeholderKind}`, propPath: "body" }]
+          : undefined,
+      },
       hidden: false,
       nodes: [],
       linkedNodes: {},

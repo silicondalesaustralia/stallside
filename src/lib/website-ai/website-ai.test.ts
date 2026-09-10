@@ -3,6 +3,8 @@ import { describe, it } from "node:test";
 import { planSiteHeuristic } from "./heuristic-planner";
 import { validateAiSitePlan } from "./validate-plan";
 import { compilePlanToStudioPayload } from "./compile-nodes";
+import { assessWebsiteContext } from "./assess-context";
+import { computeMissingInformation } from "./missing-info";
 import type { WebsiteBusinessContext } from "./types";
 
 function sampleCtx(
@@ -70,8 +72,49 @@ describe("website-ai heuristic planner", () => {
     const story = result.plan.pages[0]!.sections.find((s) => s.type === "ImageText");
     assert.ok(story?.body);
     assert.equal(/three generations|organic|award/i.test(story!.body!), false);
-    assert.ok(
-      result.plan.missingInformation?.some((m) => m.code === "BUSINESS_STORY"),
+    assert.equal(story!.copyKind, "INSTRUCTIONAL");
+    const missing = computeMissingInformation(ctx, {});
+    assert.ok(missing.some((m) => m.id === "NO_ABOUT"));
+  });
+
+  it("respects selected capabilities and sample products", () => {
+    const ctx = sampleCtx({ productCount: 0, featuredProducts: [] });
+    const result = planSiteHeuristic({
+      businessContext: ctx,
+      intent: {
+        selectedPages: ["HOME", "ABOUT", "CONTACT", "FAQ", "SHOP"],
+        selectedCapabilities: ["SHOP", "NEWSLETTER"],
+        includeSampleProducts: true,
+      },
+    });
+    assert.equal(result.ok, true);
+    if (!result.ok) return;
+    const grid = result.plan.pages[0]!.sections.find((s) => s.type === "ProductGrid");
+    assert.ok(grid);
+    assert.equal(grid!.productPresentation, "SAMPLE");
+    assert.equal(grid!.visibility, "EDITOR_ONLY");
+    assert.ok(result.plan.pages.some((p) => p.pageType === "ABOUT"));
+  });
+
+  it("assesses site-shape mode for sparse sellers", () => {
+    const assessment = assessWebsiteContext(
+      sampleCtx({
+        productCount: 0,
+        categoryCount: 0,
+        reviewCount: 0,
+        hasFarmStand: false,
+        hasMenus: false,
+        hasDelivery: false,
+        hasPickup: false,
+        about: null,
+        regionLabel: null,
+        featuredProducts: [],
+        categories: [],
+        productPhotoCount: 0,
+      }),
     );
+    assert.equal(assessment.readiness, "SPARSE");
+    assert.equal(assessment.siteShapeMode, "expanded");
+    assert.ok(assessment.pageOptions.some((p) => p.id === "HOME" && p.disabled));
   });
 });

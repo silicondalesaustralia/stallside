@@ -1,26 +1,40 @@
 import type { WebsiteBusinessContext, WebsiteGenerationIntent } from "./types";
+import {
+  defaultCapabilities,
+  defaultPages,
+  isCapabilityId,
+  type CheckboxOption,
+  type WebsiteCapabilityId,
+} from "./capabilities";
 
 export type ContextQuality = "GOOD" | "WEAK" | "UNKNOWN" | "MISSING";
+export type WebsiteReadiness = "READY" | "NEEDS_CONTEXT" | "SPARSE";
 
 export type WebsiteIntakeNeeds = {
-  /** Only for sparse accounts — blank About is not enough to interrupt. */
-  askAbout: boolean;
-  /** Optional soft photo prompt; never blocks generation. */
-  askHeroImage: boolean;
-  askStoryImage: boolean;
+  askStory: boolean;
+  askArea: boolean;
   existingAbout: string;
   hasHeroImage: boolean;
   productPhotosReady: boolean;
+  showDecorativeImageOption: boolean;
+  nudgeDecorativeImages: boolean;
+  showSampleProductsOption: boolean;
 };
 
+export type SiteShapeMode = "skipped" | "collapsed" | "expanded";
+
 export type WebsiteContextAssessment = {
-  readiness: "READY" | "NEEDS_CONTEXT" | "SPARSE";
+  readiness: WebsiteReadiness;
   dimensions: Record<string, ContextQuality>;
   focusOptions: { id: string; label: string }[];
   knownFacts: string[];
   suggestedQuestions: string[];
   intake: WebsiteIntakeNeeds;
   path: "A" | "B" | "C";
+  siteShapeMode: SiteShapeMode;
+  pageOptions: CheckboxOption[];
+  capabilityOptions: CheckboxOption[];
+  siteShapeSummary: string;
 };
 
 function quality(good: boolean, weak?: boolean): ContextQuality {
@@ -57,19 +71,18 @@ export function assessWebsiteContext(
       Boolean(ctx.about),
     ),
     brandAssets: quality(Boolean(ctx.logoUrl)),
-    photography: quality(
-      Boolean(ctx.heroImageUrl),
-      ctx.productPhotoCount > 0,
-    ),
+    photography: quality(Boolean(ctx.heroImageUrl), ctx.productPhotoCount > 0),
     location: quality(Boolean(ctx.regionLabel)),
     fulfilment: quality(ctx.hasPickup || ctx.hasDelivery || ctx.hasFarmStand),
     socialProof: quality(ctx.reviewCount >= 2, ctx.reviewCount > 0),
   };
 
   const goodCount = Object.values(dimensions).filter((d) => d === "GOOD").length;
-  const readiness =
+  const readiness: WebsiteReadiness =
     goodCount >= 6 ? "READY" : goodCount >= 3 ? "NEEDS_CONTEXT" : "SPARSE";
   const path = readiness === "READY" ? "A" : readiness === "NEEDS_CONTEXT" ? "B" : "C";
+  const siteShapeMode: SiteShapeMode =
+    readiness === "READY" ? "skipped" : readiness === "NEEDS_CONTEXT" ? "collapsed" : "expanded";
 
   const focusOptions: { id: string; label: string }[] = [
     { id: "vendl-decide", label: "Let Vendl decide" },
@@ -81,15 +94,12 @@ export function assessWebsiteContext(
       focusOptions.push({ id: "menu", label: "This week's menu" });
     }
   }
-  if (ctx.productCount > 0) {
-    focusOptions.push({
-      id: "shop",
-      label: ctx.hasFarmStand ? "Fresh products" : "Online shop",
-    });
-  }
+  focusOptions.push({
+    id: "shop",
+    label: ctx.hasFarmStand ? "Fresh products" : "Online shop",
+  });
   focusOptions.push({ id: "story", label: "Tell our story" });
 
-  // Deduplicate by id while preserving order
   const seen = new Set<string>();
   const uniqueFocus = focusOptions.filter((o) => {
     if (seen.has(o.id)) return false;
@@ -97,47 +107,106 @@ export function assessWebsiteContext(
     return true;
   });
 
-  const knownFacts = buildKnownFacts(ctx);
-  const suggestedQuestions: string[] = [];
-  if (path === "C") {
-    suggestedQuestions.push("What do you sell and what makes your business special?");
-  }
+  const capabilityOptions = defaultCapabilities(ctx, readiness);
+  const defaultCapIds = new Set(
+    capabilityOptions.filter((c) => c.defaultChecked).map((c) => c.id),
+  );
+  const pageOptions = defaultPages(ctx, readiness, defaultCapIds);
+  const siteShapeSummary = pageOptions
+    .filter((p) => p.defaultChecked)
+    .map((p) => p.label)
+    .join(", ");
 
-  // Generate-early: blank About / weak story does NOT interrupt Path A/B.
-  // Sparse Path C may ask one story question. Optional photo never blocks.
-  const intake: WebsiteIntakeNeeds = {
-    askAbout: path === "C",
-    askHeroImage: !ctx.heroImageUrl && ctx.productPhotoCount > 0,
-    askStoryImage: false,
-    existingAbout: ctx.about ?? "",
-    hasHeroImage: Boolean(ctx.heroImageUrl),
-    productPhotosReady: ctx.productPhotoCount > 0,
-  };
+  const askStory =
+    readiness === "SPARSE" &&
+    !ctx.about &&
+    ctx.productCount === 0;
+  const askArea =
+    (readiness === "SPARSE" || readiness === "NEEDS_CONTEXT") &&
+    !ctx.regionLabel &&
+    (defaultCapIds.has("PICKUP") ||
+      defaultCapIds.has("DELIVERY") ||
+      ctx.hasFarmStand);
 
   return {
     readiness,
     dimensions,
     focusOptions: uniqueFocus,
-    knownFacts,
-    suggestedQuestions,
-    intake,
+    knownFacts: buildKnownFacts(ctx),
+    suggestedQuestions: askStory
+      ? ["In a sentence or two, what do you make or grow?"]
+      : [],
+    intake: {
+      askStory,
+      askArea: askArea && !askStory, // max priority: story first; area if story not needed
+      existingAbout: ctx.about ?? "",
+      hasHeroImage: Boolean(ctx.heroImageUrl),
+      productPhotosReady: ctx.productPhotoCount > 0,
+      showDecorativeImageOption: true,
+      nudgeDecorativeImages:
+        readiness === "SPARSE" && !ctx.heroImageUrl && ctx.productPhotoCount === 0,
+      showSampleProductsOption: defaultCapIds.has("SHOP") && ctx.productCount === 0,
+    },
     path,
+    siteShapeMode,
+    pageOptions,
+    capabilityOptions,
+    siteShapeSummary,
   };
 }
 
-export function intentFromForm(input: {
-  focus?: string;
-  style?: string;
-  notes?: string;
-  about?: string;
-  storyImageUrl?: string;
-}): WebsiteGenerationIntent {
+function parseChecked(form: FormData, prefix: string): string[] {
+  const values: string[] = [];
+  for (const [key, value] of form.entries()) {
+    if (key === prefix || key.startsWith(`${prefix}[`)) {
+      const v = String(value);
+      if (v) values.push(v);
+    }
+  }
+  // Also support multiple same-name fields
+  const all = form.getAll(prefix).map(String).filter(Boolean);
+  return [...new Set([...values, ...all])];
+}
+
+export function intentFromForm(
+  formData: FormData,
+  assessment: WebsiteContextAssessment,
+): WebsiteGenerationIntent {
+  const focus = String(formData.get("focus") ?? "");
+  const style = String(formData.get("style") ?? "");
+  const notes = String(formData.get("notes") ?? "").trim();
+  const about = String(formData.get("about") ?? "").trim();
+  const storyAnswer = String(formData.get("contextStory") ?? "").trim();
+  const areaAnswer = String(formData.get("contextArea") ?? "").trim();
+
+  let pages = parseChecked(formData, "page");
+  let caps = parseChecked(formData, "capability");
+
+  if (pages.length === 0) {
+    pages = assessment.pageOptions.filter((p) => p.defaultChecked).map((p) => p.id);
+  }
+  if (caps.length === 0) {
+    caps = assessment.capabilityOptions
+      .filter((c) => c.defaultChecked)
+      .map((c) => c.id);
+  }
+  if (!pages.includes("HOME")) pages = ["HOME", ...pages];
+
+  const selectedCapabilities = caps.filter(isCapabilityId) as WebsiteCapabilityId[];
+
+  const contextAnswers: WebsiteGenerationIntent["contextAnswers"] = [];
+  if (storyAnswer) contextAnswers.push({ questionId: "STORY", answer: storyAnswer });
+  if (areaAnswer) contextAnswers.push({ questionId: "AREA", answer: areaAnswer });
+
   return {
-    primaryGoal: input.focus && input.focus !== "vendl-decide" ? input.focus : undefined,
-    stylePreference:
-      input.style && input.style !== "vendl-decide" ? input.style : undefined,
-    sellerNotes: input.notes?.trim() || undefined,
-    sellerAbout: input.about?.trim() || undefined,
-    storyImageUrl: input.storyImageUrl?.trim() || undefined,
+    primaryGoal: focus && focus !== "vendl-decide" ? focus : undefined,
+    stylePreference: style && style !== "vendl-decide" ? style : undefined,
+    sellerNotes: notes || undefined,
+    sellerAbout: about || storyAnswer || undefined,
+    contextAnswers,
+    selectedPages: pages,
+    selectedCapabilities,
+    useAiDecorativePlaceholders: formData.get("aiPlaceholders") === "on",
+    includeSampleProducts: formData.get("sampleProducts") === "on",
   };
 }

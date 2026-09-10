@@ -10,6 +10,7 @@ import { WEBSITE_AI_SPEC_VERSION } from "./types";
 
 function compactContext(input: SiteGenerationInput) {
   const c = input.businessContext;
+  const intent = input.intent ?? null;
   return {
     businessMode: c.businessMode,
     businessName: c.businessName,
@@ -26,7 +27,15 @@ function compactContext(input: SiteGenerationInput) {
     reviewCount: c.reviewCount,
     categories: c.categories.map((x) => x.title),
     featuredProducts: c.featuredProducts.map((x) => x.title),
-    intent: input.intent ?? null,
+    selectedPages: intent?.selectedPages ?? null,
+    selectedCapabilities: intent?.selectedCapabilities ?? null,
+    useAiDecorativePlaceholders: intent?.useAiDecorativePlaceholders ?? false,
+    includeSampleProducts: intent?.includeSampleProducts ?? false,
+    primaryGoal: intent?.primaryGoal ?? null,
+    stylePreference: intent?.stylePreference ?? null,
+    sellerNotes: intent?.sellerNotes ?? null,
+    sellerAbout: intent?.sellerAbout ?? null,
+    contextAnswers: intent?.contextAnswers ?? null,
   };
 }
 
@@ -36,14 +45,17 @@ Rules:
 - Output JSON only. version must be ${WEBSITE_AI_SPEC_VERSION}.
 - designSystem must be artisan | farmhouse | market (internal Vendl systems — never ask the seller to name them).
 - Translate feel preferences: warm/local → farmhouse tendency; premium/handcrafted → artisan; bold/energetic → market; clean/modern → artisan or market from business mode.
-- Include exactly one HOME page with 5–10 sections.
+- Respect selectedPages and selectedCapabilities. Do not invent unpaid commerce capabilities as live.
+- Include exactly one HOME page with 5–10 sections. Also include ABOUT/CONTACT/FAQ pages when selected.
 - Allowed HOME section types: Hero, ProductGrid, CategoryGrid, NextDrop, FarmStand, ImageText, About, Reviews, Pickup, Signup, Text, Image.
 - First section must be Hero. Only one Hero.
-- FarmStand only if hasFarmStand. NextDrop only if hasMenus.
+- FarmStand only if hasFarmStand. NextDrop only if hasMenus. Otherwise use Text with visibility EDITOR_ONLY and placeholderKind SETUP_STUB.
+- For unknown story copy use instructional phrasing ("Tell customers…") with copyKind INSTRUCTIONAL and placeholderKind COPY_INSTRUCTIONAL — never invent heritage/organic/awards.
+- Sample products: productPresentation SAMPLE and visibility EDITOR_ONLY only when includeSampleProducts and productCount is 0.
 - Do NOT invent prices, hours, addresses, certifications, reviews, organic claims, heritage, or farming practices.
 - Prefer factual copy from business context; omit unknown facts.
 - Do not generate React, CSS, or HTML.
-- Write a short changeSummary for the seller.`;
+- Write a short changeSummary for the seller. Do not invent missingInformation — the server computes it.`;
 
 type ResponsesApiJson = {
   output_text?: string;
