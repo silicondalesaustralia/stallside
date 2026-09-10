@@ -6,14 +6,48 @@ export function aiWebsiteBuilderEnabled(): boolean {
   return process.env.AI_WEBSITE_BUILDER_ENABLED === "1";
 }
 
-export function websiteAiProviderName(): "openai" | "heuristic" {
+export type WebsiteAiProviderId = "astra" | "openai" | "heuristic";
+
+/**
+ * Primary planner. `astra` / `openai` both call OpenAI;
+ * `astra` defaults the model to gpt-6-astra.
+ */
+export function websiteAiProviderName(): WebsiteAiProviderId {
   const raw = process.env.WEBSITE_AI_PROVIDER?.trim().toLowerCase();
+  if (raw === "heuristic") return "heuristic";
   if (raw === "openai") return "openai";
-  return "heuristic";
+  if (raw === "astra" || raw === "gpt-6-astra" || raw === "gpt6") return "astra";
+  // Prefer Astra when a key is present; otherwise stay on heuristic for local/dev.
+  return openaiApiKey() ? "astra" : "heuristic";
 }
 
 export function websiteAiModel(): string {
-  return process.env.WEBSITE_AI_MODEL?.trim() || "gpt-4o";
+  const configured = process.env.WEBSITE_AI_MODEL?.trim();
+  if (configured) return configured;
+  const provider = websiteAiProviderName();
+  if (provider === "astra") return "gpt-6-astra";
+  if (provider === "openai") return "gpt-4o";
+  return "rules-v1";
+}
+
+/** Reasoning effort for GPT-6 Astra Responses API. */
+export function websiteAiReasoningEffort():
+  | "low"
+  | "medium"
+  | "high"
+  | "xhigh"
+  | "max" {
+  const raw = process.env.WEBSITE_AI_REASONING_EFFORT?.trim().toLowerCase();
+  if (
+    raw === "low" ||
+    raw === "medium" ||
+    raw === "high" ||
+    raw === "xhigh" ||
+    raw === "max"
+  ) {
+    return raw;
+  }
+  return "medium";
 }
 
 export function openaiApiKey(): string | null {

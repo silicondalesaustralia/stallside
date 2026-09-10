@@ -10,27 +10,32 @@ export type WebsiteAIProvider = {
   createSitePlan(input: SiteGenerationInput): Promise<SiteGenerationResult>;
 };
 
+function astraOrOpenAIProvider(): WebsiteAIProvider {
+  return {
+    async createSitePlan(input) {
+      const result = await planSiteWithOpenAI(input);
+      if (result.ok) return result;
+      // Controlled fallback — never leave seller without a draft path.
+      const fallback = planSiteHeuristic(input);
+      if (fallback.ok) {
+        return {
+          ...fallback,
+          plan: {
+            ...fallback.plan,
+            changeSummary:
+              `${fallback.plan.changeSummary ?? ""} (Astra unavailable: ${result.error})`.trim(),
+          },
+        };
+      }
+      return result;
+    },
+  };
+}
+
 export function getWebsiteAIProvider(): WebsiteAIProvider {
   const name = websiteAiProviderName();
-  if (name === "openai") {
-    return {
-      async createSitePlan(input) {
-        const result = await planSiteWithOpenAI(input);
-        if (result.ok) return result;
-        // Controlled fallback — never leave seller without a draft path.
-        const fallback = planSiteHeuristic(input);
-        if (fallback.ok) {
-          return {
-            ...fallback,
-            plan: {
-              ...fallback.plan,
-              changeSummary: `${fallback.plan.changeSummary ?? ""} (OpenAI unavailable: ${result.error})`.trim(),
-            },
-          };
-        }
-        return result;
-      },
-    };
+  if (name === "astra" || name === "openai") {
+    return astraOrOpenAIProvider();
   }
   return {
     createSitePlan: async (input) => planSiteHeuristic(input),
