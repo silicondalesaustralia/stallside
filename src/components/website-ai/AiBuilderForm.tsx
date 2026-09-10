@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import {
   generateAiWebsiteDraft,
@@ -8,6 +8,39 @@ import {
 } from "@/app/dashboard/(gated)/website/ai/actions";
 
 const initial: AiGenerateState = { ok: false };
+
+const STYLE_OPTIONS = [
+  { id: "vendl-decide", label: "Let Vendl decide" },
+  { id: "rustic", label: "Rustic / local" },
+  { id: "premium", label: "Premium / artisan" },
+  { id: "modern", label: "Clean / modern" },
+  { id: "market", label: "Bold / market" },
+] as const;
+
+function ChoiceChip({
+  label,
+  selected,
+  onSelect,
+}: {
+  label: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={
+        selected
+          ? "rounded-md border border-[var(--field)] bg-[var(--field)] px-3 py-2 text-sm font-medium text-white"
+          : "rounded-md border border-[var(--border)] bg-white px-3 py-2 text-sm text-[var(--field)] hover:border-[var(--field)]"
+      }
+    >
+      {label}
+    </button>
+  );
+}
 
 export default function AiBuilderForm({
   focusOptions,
@@ -21,6 +54,8 @@ export default function AiBuilderForm({
   readiness: string;
 }) {
   const [state, action, pending] = useActionState(generateAiWebsiteDraft, initial);
+  const [focus, setFocus] = useState("vendl-decide");
+  const [style, setStyle] = useState("vendl-decide");
 
   return (
     <div className="flex flex-col gap-6">
@@ -34,48 +69,30 @@ export default function AiBuilderForm({
           </p>
           <div className="flex flex-wrap gap-2">
             {focusOptions.map((opt) => (
-              <label
+              <ChoiceChip
                 key={opt.id}
-                className="cursor-pointer rounded-md border border-[var(--border)] px-3 py-2 text-sm has-[:checked]:border-[var(--field)] has-[:checked]:bg-[var(--surface)]"
-              >
-                <input
-                  type="radio"
-                  name="focus"
-                  value={opt.id}
-                  defaultChecked={opt.id === "vendl-decide"}
-                  className="sr-only"
-                />
-                {opt.label}
-              </label>
+                label={opt.label}
+                selected={focus === opt.id}
+                onSelect={() => setFocus(opt.id)}
+              />
             ))}
           </div>
+          <input type="hidden" name="focus" value={focus} />
         </fieldset>
 
         <fieldset className="flex flex-col gap-2">
           <legend className="text-sm font-medium text-[var(--field)]">Style</legend>
           <div className="flex flex-wrap gap-2">
-            {[
-              { id: "vendl-decide", label: "Let Vendl decide" },
-              { id: "rustic", label: "Rustic / local" },
-              { id: "premium", label: "Premium / artisan" },
-              { id: "modern", label: "Clean / modern" },
-              { id: "market", label: "Bold / market" },
-            ].map((opt) => (
-              <label
+            {STYLE_OPTIONS.map((opt) => (
+              <ChoiceChip
                 key={opt.id}
-                className="cursor-pointer rounded-md border border-[var(--border)] px-3 py-2 text-sm has-[:checked]:border-[var(--field)] has-[:checked]:bg-[var(--surface)]"
-              >
-                <input
-                  type="radio"
-                  name="style"
-                  value={opt.id}
-                  defaultChecked={opt.id === "vendl-decide"}
-                  className="sr-only"
-                />
-                {opt.label}
-              </label>
+                label={opt.label}
+                selected={style === opt.id}
+                onSelect={() => setStyle(opt.id)}
+              />
             ))}
           </div>
+          <input type="hidden" name="style" value={style} />
         </fieldset>
 
         <label className="flex flex-col gap-1.5">
