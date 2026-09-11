@@ -20,7 +20,7 @@ export default function CraftReviewsSection(props: CraftReviewsProps) {
   return (
     <div ref={(dom) => { if (dom) connect(drag(dom)); }}>
       <CraftSectionChrome>
-        <StudioReviewsBlock {...props} metadata={metadata} isEditing />
+        <StudioReviewsBlock {...props} metadata={metadata} isEditing editable />
       </CraftSectionChrome>
     </div>
   );

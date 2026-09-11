@@ -10,8 +10,12 @@ import {
 import type { WebsiteContextAssessment } from "@/lib/website-ai/assess-context";
 import type { CheckboxOption } from "@/lib/website-ai/capabilities";
 import type { BrandLookCombo } from "@/lib/website/brand-looks";
-import { LAYOUT_RECIPES } from "@/lib/website-ai/layout-recipes";
+import {
+  recommendWebsiteBlueprint,
+  type BlueprintRecommendation,
+} from "@/lib/website/blueprints";
 import AiLookPicker from "./AiLookPicker";
+import BlueprintStylePicker from "./BlueprintStylePicker";
 
 const initial: AiGenerateState = { ok: false };
 
@@ -21,11 +25,6 @@ const FEEL_OPTIONS = [
   { id: "premium-handcrafted", label: "Premium & handcrafted" },
   { id: "clean-modern", label: "Clean & modern" },
   { id: "bold-energetic", label: "Bold & energetic" },
-] as const;
-
-const LAYOUT_OPTIONS = [
-  { id: "vendl-decide", label: "Let Vendl decide" },
-  ...LAYOUT_RECIPES.map((r) => ({ id: r.id, label: r.label })),
 ] as const;
 
 const inputClass =
@@ -141,7 +140,7 @@ export default function AiBuilderForm({
   );
   const [focus, setFocus] = useState("vendl-decide");
   const [feel, setFeel] = useState("vendl-decide");
-  const [layout, setLayout] = useState("vendl-decide");
+  const [blueprintId, setBlueprintId] = useState("vendl-choose");
   const [shapeOpen, setShapeOpen] = useState(assessment.siteShapeMode === "expanded");
   const [pages, setPages] = useState(
     () => new Set(assessment.pageOptions.filter((p) => p.defaultChecked).map((p) => p.id)),
@@ -160,6 +159,52 @@ export default function AiBuilderForm({
   const built = buildState.ok && buildState.phase === "built";
   const pending = scaffoldPending || buildPending;
   const error = buildState.error || scaffoldState.error;
+
+  const recommendation: BlueprintRecommendation = useMemo(() => {
+    if (scaffoldState.recommendedBlueprintId && scaffoldState.recommendationReason) {
+      return {
+        recommendedBlueprintId: scaffoldState.recommendedBlueprintId as BlueprintRecommendation["recommendedBlueprintId"],
+        confidence: "medium",
+        reasonCodes: ["GENERAL_ECOMMERCE"],
+        userFacingReason: scaffoldState.recommendationReason,
+      };
+    }
+    return recommendWebsiteBlueprint(
+      {
+        ownerId: "local",
+        businessMode: "BOTH",
+        businessName: scaffoldState.businessName ?? "Your shop",
+        headline: scaffoldState.businessName ?? "Your shop",
+        subheadline: null,
+        about: null,
+        regionLabel: null,
+        hasFarmStand: assessment.knownFacts.includes("Farm stand"),
+        hasMenus: assessment.knownFacts.includes("Weekly preorders"),
+        hasDelivery: assessment.knownFacts.includes("Local delivery"),
+        hasPickup: assessment.knownFacts.includes("Pickup"),
+        productCount: assessment.knownFacts.includes("Your products") ? 4 : 0,
+        categoryCount: 1,
+        reviewCount: assessment.knownFacts.includes("Reviews") ? 2 : 0,
+        categories: [],
+        featuredProducts: [],
+        productPhotoCount: assessment.knownFacts.includes("Brand images") ? 2 : 0,
+        logoUrl: null,
+        heroImageUrl: null,
+        accentColor: null,
+        secondaryColor: null,
+        existingTemplateId: null,
+        hasExistingStudio: false,
+      },
+      [...pages],
+      {
+        primaryGoal: focus !== "vendl-decide" ? focus : undefined,
+        stylePreference: feel !== "vendl-decide" ? feel : undefined,
+        selectedPages: [...pages],
+      },
+    );
+  }, [scaffoldState, assessment.knownFacts, pages, focus, feel]);
+
+  const businessName = scaffoldState.businessName ?? "Your shop";
 
   const showSamples = useMemo(
     () => capabilities.has("SHOP") && assessment.intake.showSampleProductsOption,
@@ -301,26 +346,6 @@ export default function AiBuilderForm({
             ))}
           </div>
           <input type="hidden" name="style" value={feel} />
-        </fieldset>
-
-        <fieldset className="flex flex-col gap-2">
-          <legend className="text-sm font-medium text-[var(--field)]">
-            Homepage layout
-          </legend>
-          <p className="text-xs text-[var(--muted)]">
-            Section order inspired by proven storefronts — you can rearrange after build.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {LAYOUT_OPTIONS.map((opt) => (
-              <ChoiceChip
-                key={opt.id}
-                label={opt.label}
-                selected={layout === opt.id}
-                onSelect={() => setLayout(opt.id)}
-              />
-            ))}
-          </div>
-          <input type="hidden" name="layout" value={layout} />
         </fieldset>
 
         {assessment.siteShapeMode !== "skipped" ? (
@@ -494,15 +519,24 @@ export default function AiBuilderForm({
       </form>
 
       {showLookStep && looks.length > 0 ? (
-        <form action={buildAction} className="flex flex-col gap-4 rounded-md border border-[var(--border)] px-4 py-4">
+        <form action={buildAction} className="flex flex-col gap-6 rounded-md border border-[var(--border)] px-4 py-4">
           <p className="text-sm text-[var(--muted)]">
-            {scaffoldState.summary ?? "Scaffold ready — pick a look to finish."}
+            {scaffoldState.summary ?? "Scaffold ready — choose a starting style, then a look."}
           </p>
-          <AiLookPicker
-            looks={looks}
-            selectedId={lookId || looks[0]!.id}
-            onSelect={setLookId}
+          <BlueprintStylePicker
+            selectedId={blueprintId}
+            onSelect={setBlueprintId}
+            recommendation={recommendation}
+            businessName={businessName}
           />
+          <input type="hidden" name="blueprintId" value={blueprintId} />
+          <div className="border-t border-[var(--border)] pt-4">
+            <AiLookPicker
+              looks={looks}
+              selectedId={lookId || looks[0]!.id}
+              onSelect={setLookId}
+            />
+          </div>
           <button
             type="submit"
             disabled={pending || !(lookId || looks[0]?.id)}

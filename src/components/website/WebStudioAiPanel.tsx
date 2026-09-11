@@ -59,7 +59,7 @@ export default function WebStudioAiPanel({
           AI builder
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          Build a scaffold, pick a colour palette, then generate your draft.
+          Build a scaffold, choose a starting style, pick a colour palette, then generate your draft.
         </p>
       </div>
 

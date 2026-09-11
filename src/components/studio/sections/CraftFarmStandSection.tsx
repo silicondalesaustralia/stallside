@@ -34,7 +34,7 @@ export default function CraftFarmStandSection(props: CraftFarmStandProps) {
   return (
     <div ref={(dom) => { if (dom) connect(drag(dom)); }}>
       <CraftSectionChrome>
-        <StudioFarmStandBlock {...props} metadata={metadata} isEditing />
+        <StudioFarmStandBlock {...props} metadata={metadata} isEditing editable />
       </CraftSectionChrome>
     </div>
   );

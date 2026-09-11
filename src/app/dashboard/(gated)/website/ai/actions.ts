@@ -27,6 +27,10 @@ import {
 import { applySelectedPagesToDraft } from "@/lib/website-ai/apply-selected-pages";
 import type { BrandLookCombo } from "@/lib/website/brand-looks";
 import { getPalette } from "@/lib/website/brand-looks";
+import {
+  recommendWebsiteBlueprint,
+  resolveBlueprintChoice,
+} from "@/lib/website/blueprints";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
 
 export type AiGenerateState = {
@@ -40,6 +44,9 @@ export type AiGenerateState = {
   missing?: { code: string; message: string }[];
   previewPath?: string;
   looks?: BrandLookCombo[];
+  recommendedBlueprintId?: string;
+  recommendationReason?: string;
+  businessName?: string;
 };
 
 async function prepareIntent(ownerId: string, businessName: string, formData: FormData) {
@@ -92,6 +99,12 @@ export async function scaffoldAiWebsiteDraft(
       return { ok: false, error: generated.error, details: generated.details };
     }
 
+    const recommendation = recommendWebsiteBlueprint(
+      prepared.businessContext,
+      prepared.intent.selectedPages ?? [],
+      prepared.intent,
+    );
+
     const refreshed = await ensureStorefront(owner.id, owner.businessName);
     const draft = mergeWebsiteAiScaffoldIntoRaw(refreshed.draftConfig, {
       version: WEBSITE_AI_SCAFFOLD_VERSION,
@@ -109,10 +122,13 @@ export async function scaffoldAiWebsiteDraft(
     return {
       ok: true,
       phase: "scaffold",
-      summary: "Pick a colour palette, then build your site.",
+      summary: "Pick a starting style and colour palette, then build your site.",
       provider: `${generated.provider}/${generated.model}`,
       missing: generated.missing,
       looks: generated.looks,
+      recommendedBlueprintId: recommendation.recommendedBlueprintId,
+      recommendationReason: recommendation.userFacingReason,
+      businessName: prepared.businessContext.businessName,
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Scaffold failed";
@@ -132,6 +148,7 @@ export async function buildAiWebsiteDraft(
 
   const lookId = String(formData.get("lookId") ?? "").trim();
   if (!lookId) return { ok: false, error: "Choose a look first." };
+  const blueprintChoice = String(formData.get("blueprintId") ?? "vendl-choose").trim();
 
   try {
     const storefront = await ensureStorefront(owner.id, owner.businessName);
@@ -147,12 +164,30 @@ export async function buildAiWebsiteDraft(
     if (!ctx) return { ok: false, error: "Storefront context unavailable." };
     const businessContext = await buildWebsiteBusinessContext(ctx);
 
+    const recommendation = recommendWebsiteBlueprint(
+      businessContext,
+      scaffold.intent.selectedPages ?? [],
+      scaffold.intent,
+    );
+    const { blueprintId } = resolveBlueprintChoice(blueprintChoice, recommendation);
+    const intent = { ...scaffold.intent, blueprintId };
+
+    const replanned = await scaffoldWebsiteDraft({
+      businessContext,
+      intent,
+    });
+    if (!replanned.ok) {
+      return { ok: false, error: replanned.error, details: replanned.details };
+    }
+
     const generated = await finalizeWebsiteDraft({
       businessContext,
-      intent: scaffold.intent,
-      plan: scaffold.plan,
+      intent,
+      plan: replanned.plan,
       lookId,
       looks: scaffold.looks,
+      provider: replanned.provider,
+      model: replanned.model,
     });
     if (!generated.ok) {
       return { ok: false, error: generated.error, details: generated.details };
@@ -187,6 +222,7 @@ export async function buildAiWebsiteDraft(
         ...baseConfig.themeOverrides,
         ...generated.themeOverrides,
       },
+      initialBlueprintId: blueprintId,
     };
     delete nextDraft.websiteAiScaffold;
 

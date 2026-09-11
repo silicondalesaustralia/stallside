@@ -5,6 +5,8 @@ import {
   subscribeRestockAlert,
   type RestockSubscribeState,
 } from "@/app/checkout/success/restock-actions";
+import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
+import InlineEditableText from "@/components/studio/InlineEditableText";
 
 const initial: RestockSubscribeState = { ok: false };
 
@@ -14,6 +16,7 @@ type Props = {
   buttonLabel: string;
   standId: string;
   isEditing?: boolean;
+  editable?: boolean;
 };
 
 export default function StudioSignupBlock({
@@ -22,14 +25,31 @@ export default function StudioSignupBlock({
   buttonLabel,
   standId,
   isEditing,
+  editable = false,
 }: Props) {
   const [state, action, pending] = useActionState(subscribeRestockAlert, initial);
 
   return (
     <section className="studio-section studio-section--panel">
       <div className="studio-section__inner mx-auto max-w-[var(--studio-prose-max)] text-center">
-        <h2 className="studio-heading">{heading || "Stay in the loop"}</h2>
-        {body ? <p className="mt-3 text-[var(--muted)]">{body}</p> : null}
+        <StudioSectionHeading
+          editable={editable}
+          value={heading}
+          fallback="Stay in the loop"
+          placeholder="Signup heading"
+        />
+        {editable ? (
+          <InlineEditableText
+            prop="body"
+            value={body}
+            as="p"
+            className="mt-3 text-[var(--muted)]"
+            multiline
+            placeholder="Signup supporting text"
+          />
+        ) : body ? (
+          <p className="mt-3 text-[var(--muted)]">{body}</p>
+        ) : null}
         {state.ok ? (
           <p className="mt-6 text-sm text-[var(--ok)]">Thanks — we&apos;ll be in touch.</p>
         ) : (

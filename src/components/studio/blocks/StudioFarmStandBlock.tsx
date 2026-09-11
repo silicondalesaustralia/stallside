@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { shopPagePath } from "@/lib/storefront/paths";
+import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
 
 type Props = {
   heading: string;
@@ -9,6 +10,7 @@ type Props = {
   showDirections: boolean;
   metadata: StudioMetadata;
   isEditing?: boolean;
+  editable?: boolean;
 };
 
 export default function StudioFarmStandBlock({
@@ -17,6 +19,7 @@ export default function StudioFarmStandBlock({
   showLocation,
   showDirections,
   metadata: meta,
+  editable = false,
 }: Props) {
   const region = meta.branding.regionLabel;
   const fulfilment = meta.fulfilmentOptions.filter((o) => o.kind === "PICKUP" || o.kind === "LOCAL_DELIVERY");
@@ -25,7 +28,12 @@ export default function StudioFarmStandBlock({
   return (
     <section className="studio-section studio-section--wash studio-farm-stand">
       <div className="studio-section__inner">
-        <h2 className="studio-heading">{heading || "Visit the stand"}</h2>
+        <StudioSectionHeading
+          editable={editable}
+          value={heading}
+          fallback="Visit the stand"
+          placeholder="Farm stand heading"
+        />
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
           {showLocation ? (
             <div className="studio-farm-stand__card rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-[var(--panel)] p-6 shadow-[var(--shadow-card)]">

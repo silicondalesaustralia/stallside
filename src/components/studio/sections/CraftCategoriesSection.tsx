@@ -30,6 +30,7 @@ export default function CraftCategoriesSection(props: CraftCategoriesProps) {
           heading={props.heading}
           metadata={metadata}
           isEditing
+          editable
         />
       </CraftSectionChrome>
     </div>

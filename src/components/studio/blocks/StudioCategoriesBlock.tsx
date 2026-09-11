@@ -4,6 +4,7 @@ import type { PuckSpikeMetadata } from "@/lib/puck/types";
 import { shopCategoryPath } from "@/lib/storefront/paths";
 import type { CategoryPreset } from "@/lib/studio/preset-registry";
 import { mapCategoryPreset } from "@/lib/studio/preset-registry";
+import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
 
 export default function StudioCategoriesBlock({
   source,
@@ -12,6 +13,7 @@ export default function StudioCategoriesBlock({
   heading,
   metadata,
   isEditing,
+  editable = false,
 }: {
   source: "all" | "selected";
   categoryIds: string[];
@@ -19,18 +21,28 @@ export default function StudioCategoriesBlock({
   heading: string;
   metadata: PuckSpikeMetadata;
   isEditing?: boolean;
+  editable?: boolean;
 }) {
   let categories = metadata.categories;
   if (source === "selected" && categoryIds.length > 0) {
     categories = categories.filter((c) => categoryIds.includes(c.id));
   }
 
+  const title = (
+    <StudioSectionHeading
+      editable={editable}
+      value={heading}
+      fallback="Browse categories"
+      placeholder="Categories heading"
+    />
+  );
+
   if (categories.length === 0) {
     if (!isEditing) return null;
     return (
       <section className="studio-section">
         <div className="studio-section__inner">
-          <h2 className="studio-heading">{heading}</h2>
+          {title}
           <p className="mt-3 text-sm text-[var(--muted)]">Add categories to show them here.</p>
         </div>
       </section>
@@ -52,7 +64,7 @@ export default function StudioCategoriesBlock({
   return (
     <section className="studio-section">
       <div className="studio-section__inner">
-        <h2 className="studio-heading">{heading}</h2>
+        {title}
         <ul className={`mt-8 ${gridClass}`}>
           {categories.map((cat) => (
             <li key={cat.id}>

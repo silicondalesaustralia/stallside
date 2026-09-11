@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { shopMenuPath } from "@/lib/storefront/paths";
 import type { NextDropPreset } from "@/lib/studio/preset-registry";
+import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
 
 type Props = {
   maxItems: number;
@@ -11,6 +12,7 @@ type Props = {
   showPickupDate: boolean;
   metadata: StudioMetadata;
   isEditing?: boolean;
+  editable?: boolean;
 };
 
 export default function StudioNextDropBlock({
@@ -21,15 +23,24 @@ export default function StudioNextDropBlock({
   showPickupDate,
   metadata: meta,
   isEditing,
+  editable = false,
 }: Props) {
   const menus = meta.menus.slice(0, Math.max(1, Math.min(maxItems, 6)));
+  const title = (
+    <StudioSectionHeading
+      editable={editable}
+      value={heading}
+      fallback="Next bake"
+      placeholder="Next drop heading"
+    />
+  );
 
   if (menus.length === 0) {
     if (!isEditing) return null;
     return (
       <section className="studio-section studio-section--wash">
         <div className="studio-section__inner">
-          <h2 className="studio-heading">{heading || "Next bake"}</h2>
+          {title}
           <p className="mt-3 rounded-xl border border-dashed border-[var(--line)] bg-white/60 p-6 text-sm text-[var(--muted)]">
             No upcoming menu yet. Create a menu to use this section.
           </p>
@@ -43,7 +54,7 @@ export default function StudioNextDropBlock({
   return (
     <section className="studio-section studio-section--wash">
       <div className="studio-section__inner">
-        <h2 className="studio-heading">{heading || "Next bake"}</h2>
+        {title}
         {featured ? (
           <FeaturedMenuCard
             menu={featured}

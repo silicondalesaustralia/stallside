@@ -80,6 +80,8 @@ export type WebsiteGenerationIntent = {
   selectedCapabilities?: WebsiteCapabilityId[];
   /** Homepage composition recipe — omit / undefined = auto-pick. */
   layoutRecipe?: LayoutRecipeId;
+  /** Starting style blueprint — omit = recommend at plan time. */
+  blueprintId?: import("@/lib/website/blueprints").WebsiteBlueprintId;
   useAiDecorativePlaceholders?: boolean;
   includeSampleProducts?: boolean;
 };

@@ -1,4 +1,5 @@
 import type { StudioMetadata } from "@/lib/studio/types";
+import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
 
 type Props = {
   preset: "cards" | "quote" | "featured";
@@ -6,6 +7,7 @@ type Props = {
   maxItems: number;
   metadata: StudioMetadata;
   isEditing?: boolean;
+  editable?: boolean;
 };
 
 function Stars({ rating }: { rating: number }) {
@@ -23,15 +25,24 @@ export default function StudioReviewsBlock({
   maxItems,
   metadata: meta,
   isEditing,
+  editable = false,
 }: Props) {
   const reviews = meta.reviews.slice(0, Math.max(1, Math.min(maxItems, 8)));
+  const title = (
+    <StudioSectionHeading
+      editable={editable}
+      value={heading}
+      fallback="What customers say"
+      placeholder="Reviews heading"
+    />
+  );
 
   if (reviews.length === 0) {
     if (!isEditing) return null;
     return (
       <section className="studio-section">
         <div className="studio-section__inner">
-          <h2 className="studio-heading">{heading || "What customers say"}</h2>
+          {title}
           <p className="mt-3 rounded-xl border border-dashed border-[var(--line)] bg-[var(--wash)] p-6 text-sm text-[var(--muted)]">
             No reviews yet. Approved customer reviews will appear here.
           </p>
@@ -45,7 +56,7 @@ export default function StudioReviewsBlock({
     return (
       <section className="studio-section studio-section--panel">
         <div className="studio-section__inner mx-auto max-w-[var(--studio-prose-max)] text-center">
-          <h2 className="studio-heading">{heading || "What customers say"}</h2>
+          {title}
           <blockquote className="mt-8">
             <Stars rating={r.rating} />
             <p className="mt-4 text-xl leading-relaxed text-[var(--field)] sm:text-2xl">
@@ -61,7 +72,7 @@ export default function StudioReviewsBlock({
   return (
     <section className="studio-section">
       <div className="studio-section__inner">
-        <h2 className="studio-heading">{heading || "What customers say"}</h2>
+        {title}
         <ul className={`mt-8 grid gap-4 ${preset === "quote" ? "grid-cols-1" : "sm:grid-cols-2"}`}>
           {reviews.map((r) => (
             <li

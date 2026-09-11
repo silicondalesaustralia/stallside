@@ -45,6 +45,7 @@ export default function CraftProductGridSection(props: CraftProductGridProps) {
             showAvailability={props.showAvailability}
             metadata={metadata}
             isEditing
+            editable
           />
         ) : (
           <PuckFeaturedProductsBlock

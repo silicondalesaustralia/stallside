@@ -24,6 +24,7 @@ export default function CraftSignupSection(props: CraftSignupProps) {
           {...props}
           standId={metadata.standId}
           isEditing
+          editable
         />
       </CraftSectionChrome>
     </div>

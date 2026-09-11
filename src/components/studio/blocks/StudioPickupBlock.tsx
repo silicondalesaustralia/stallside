@@ -1,11 +1,13 @@
 import type { StudioMetadata } from "@/lib/studio/types";
 import { formatMoney } from "@/lib/public-product";
+import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
 
 type Props = {
   preset: "simple" | "split" | "cards" | "visit-stand" | "info-band";
   heading: string;
   metadata: StudioMetadata;
   isEditing?: boolean;
+  editable?: boolean;
 };
 
 function normalizePickupPreset(preset: Props["preset"]): "simple" | "split" | "cards" {
@@ -33,16 +35,25 @@ export default function StudioPickupBlock({
   heading,
   metadata: meta,
   isEditing,
+  editable = false,
 }: Props) {
   const viewPreset = normalizePickupPreset(preset);
   const options = meta.fulfilmentOptions;
+  const title = (
+    <StudioSectionHeading
+      editable={editable}
+      value={heading}
+      fallback="Pickup & delivery"
+      placeholder="Pickup heading"
+    />
+  );
 
   if (options.length === 0) {
     if (!isEditing) return null;
     return (
       <section className="studio-section studio-section--wash">
         <div className="studio-section__inner">
-          <h2 className="studio-heading">{heading || "Pickup & delivery"}</h2>
+          {title}
           <p className="mt-3 text-sm text-[var(--muted)]">
             Set up pickup or delivery in Fulfilment settings to show details here.
           </p>
@@ -54,7 +65,7 @@ export default function StudioPickupBlock({
   return (
     <section className="studio-section studio-section--wash">
       <div className="studio-section__inner">
-        <h2 className="studio-heading">{heading || "Pickup & delivery"}</h2>
+        {title}
         <ul className={`mt-8 grid gap-4 ${viewPreset === "simple" ? "grid-cols-1 max-w-xl" : "sm:grid-cols-2"}`}>
           {options.map((opt) => {
             const details =

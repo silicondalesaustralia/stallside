@@ -38,6 +38,7 @@ export default function CraftNextDropSection(props: CraftNextDropProps) {
             showPickupDate={props.showPickupDate}
             metadata={metadata}
             isEditing
+            editable
           />
         ) : (
           <PuckUpcomingMenusBlock

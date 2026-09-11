@@ -142,6 +142,9 @@ function ProductGridSettings({
   const metadata = useStudioMetadata();
   return (
     <>
+      <p className="text-xs text-[var(--muted)]">
+        Edit the heading directly on the page.
+      </p>
       <Field label="Show">
         {(["all", "category", "manual", "activeCategory"] as const).map((opt) => (
           <label key={opt} className="flex items-center gap-2 text-sm">
@@ -201,9 +204,9 @@ function CategoriesSettings({
   const metadata = useStudioMetadata();
   return (
     <>
-      <Field label="Heading">
-        <input className={INPUT} value={props.heading} onChange={(e) => setProp("heading", e.target.value)} />
-      </Field>
+      <p className="text-xs text-[var(--muted)]">
+        Edit the heading directly on the page.
+      </p>
       <Field label="Layout">
         <select className={INPUT} value={props.layout} onChange={(e) => setProp("layout", e.target.value)}>
           <option value="tiles">Tiles</option>
@@ -255,6 +258,9 @@ function NextDropSettings({
 }) {
   return (
     <>
+      <p className="text-xs text-[var(--muted)]">
+        Edit the heading directly on the page.
+      </p>
       <Field label="Maximum">
         <select className={INPUT} value={props.maxItems} onChange={(e) => setProp("maxItems", Number(e.target.value))}>
           {[1, 2, 3, 4, 5, 6].map((n) => (

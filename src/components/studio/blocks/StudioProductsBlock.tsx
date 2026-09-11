@@ -5,6 +5,7 @@ import { formatMoney } from "@/lib/public-product";
 import { shopProductPath } from "@/lib/storefront/paths";
 import type { ProductPreset as ExtendedProductPreset } from "@/lib/studio/preset-registry";
 import { mapProductPreset } from "@/lib/studio/preset-registry";
+import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
 
 type Props = {
   source: "all" | "category" | "manual" | "activeCategory";
@@ -18,6 +19,7 @@ type Props = {
   showAvailability: boolean;
   metadata: StudioMetadata;
   isEditing?: boolean;
+  editable?: boolean;
 };
 
 export default function StudioProductsBlock({
@@ -32,6 +34,7 @@ export default function StudioProductsBlock({
   showAvailability,
   metadata: meta,
   isEditing,
+  editable = false,
 }: Props) {
   const mappedPreset = mapProductPreset(meta.templateId, preset);
   const isDense = meta.templateId === "market" || preset === "dense" || preset === "list";
@@ -51,19 +54,29 @@ export default function StudioProductsBlock({
     pool = meta.products.filter((p) => p.categoryIds.includes(categoryId));
   }
 
-  const headingText =
-    source === "activeCategory" && meta.commerceContext?.category?.title
+  const displayHeading =
+    !editable &&
+    source === "activeCategory" &&
+    meta.commerceContext?.category?.title
       ? meta.commerceContext.category.title
       : heading;
 
   const products = pool.slice(0, Math.max(1, Math.min(limit, 12)));
+  const title = (
+    <StudioSectionHeading
+      editable={editable}
+      value={heading}
+      fallback={displayHeading || "Our bakes"}
+      placeholder="Product section heading"
+    />
+  );
 
   if (products.length === 0) {
     if (!isEditing) return null;
     return (
       <section className="studio-section">
         <div className="studio-section__inner">
-          <h2 className="studio-heading">{headingText || "Our bakes"}</h2>
+          {title}
           <p className="mt-3 text-[var(--muted)]">Add products to show them here.</p>
           <Link href="/dashboard/products/new" className="studio-btn studio-btn--secondary mt-4">
             Add product
@@ -90,7 +103,7 @@ export default function StudioProductsBlock({
   return (
     <section className={sectionClass}>
       <div className="studio-section__inner">
-        <h2 className="studio-heading">{headingText || "Our bakes"}</h2>
+        {title}
         <ul className={`mt-8 grid ${isDense ? "gap-3" : "gap-5"} ${colClass}`}>
           {products.map((product) => (
             <li key={product.id}>

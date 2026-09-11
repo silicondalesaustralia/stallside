@@ -19,11 +19,19 @@ import {
   type HomeSlot,
   type LayoutRecipeId,
 } from "./layout-recipes";
+import {
+  getWebsiteBlueprint,
+  recommendWebsiteBlueprint,
+  resolveWebsiteBlueprint,
+} from "@/lib/website/blueprints";
 
 function pickDesignSystem(
   ctx: WebsiteBusinessContext,
   intent?: WebsiteGenerationIntent,
 ): StudioTemplateId {
+  const blueprint = resolveWebsiteBlueprint(intent?.blueprintId);
+  if (blueprint) return blueprint.designSystem;
+
   const style = intent?.stylePreference?.toLowerCase() ?? "";
   if (style.includes("premium") || style.includes("handcrafted") || style.includes("artisan")) {
     return "artisan";
@@ -45,6 +53,25 @@ function pickDesignSystem(
   }
   if (ctx.existingTemplateId) return ctx.existingTemplateId;
   return defaultTemplateForMode(ctx.businessMode);
+}
+
+function resolveRecipe(
+  ctx: WebsiteBusinessContext,
+  intent?: WebsiteGenerationIntent,
+): LayoutRecipeId {
+  const blueprint = resolveWebsiteBlueprint(intent?.blueprintId);
+  if (blueprint) return blueprint.layoutRecipe;
+  return pickLayoutRecipe(ctx, intent);
+}
+
+function resolveHomeSlots(
+  ctx: WebsiteBusinessContext,
+  intent?: WebsiteGenerationIntent,
+  recipe?: LayoutRecipeId,
+): HomeSlot[] {
+  const blueprint = resolveWebsiteBlueprint(intent?.blueprintId);
+  if (blueprint?.preferredHomeSlots?.length) return blueprint.preferredHomeSlots;
+  return slotsForRecipe(recipe ?? pickLayoutRecipe(ctx, intent));
 }
 
 function sid(prefix: string, i: number): string {
@@ -237,7 +264,8 @@ function homeSections(
 ): AiSectionConfig[] {
   const focus = intent?.primaryGoal ?? "";
   const c = caps(ctx, intent);
-  const recipe = pickLayoutRecipe(ctx, intent);
+  const recipe = resolveRecipe(ctx, intent);
+  const blueprint = resolveWebsiteBlueprint(intent?.blueprintId);
   const sections: AiSectionConfig[] = [];
   const i = { n: 0 };
 
@@ -252,7 +280,8 @@ function homeSections(
         : focus === "preorders"
           ? "Order this week"
           : "Browse",
-    preset: heroPresetForRecipe(recipe, templateId),
+    preset:
+      blueprint?.preferredPresets.Hero ?? heroPresetForRecipe(recipe, templateId),
     copyKind: "GENERIC",
     placeholderKind: intent?.useAiDecorativePlaceholders
       ? "IMAGE_DECORATIVE"
@@ -260,11 +289,15 @@ function homeSections(
   });
 
   const seen = new Set<HomeSlot>();
-  for (const slot of slotsForRecipe(recipe)) {
+  for (const slot of resolveHomeSlots(ctx, intent, recipe)) {
     if (seen.has(slot)) continue;
     seen.add(slot);
     const section = buildSlot(slot, ctx, templateId, intent, c, recipe, i);
-    if (section) sections.push(section);
+    if (section) {
+      const preferred = blueprint?.preferredPresets[section.type];
+      if (preferred) section.preset = preferred;
+      sections.push(section);
+    }
   }
 
   // Always-on core: commerce + story + trust/fulfilment + signup if missing
@@ -396,9 +429,19 @@ function extraPages(
 
 /** Deterministic planner — scaffold-aware composition + Astra fallback. */
 export function planSiteHeuristic(input: SiteGenerationInput): SiteGenerationResult {
-  const { businessContext: ctx, intent } = input;
+  const { businessContext: ctx } = input;
+  let intent = input.intent;
+  if (!intent?.blueprintId) {
+    const rec = recommendWebsiteBlueprint(
+      ctx,
+      intent?.selectedPages ?? [],
+      intent,
+    );
+    intent = { ...intent, blueprintId: rec.recommendedBlueprintId };
+  }
   const designSystem = pickDesignSystem(ctx, intent);
-  const recipe = pickLayoutRecipe(ctx, intent);
+  const recipe = resolveRecipe(ctx, intent);
+  const blueprint = getWebsiteBlueprint(intent.blueprintId!);
   const sections = homeSections(ctx, designSystem, intent);
   const primaryGoal =
     intent?.primaryGoal ??
@@ -429,7 +472,7 @@ export function planSiteHeuristic(input: SiteGenerationInput): SiteGenerationRes
       },
       ...extraPages(intent, ctx),
     ],
-    changeSummary: `Draft ${designSystem} · ${recipe} layout focused on ${primaryGoal}${
+    changeSummary: `Draft ${designSystem} · ${blueprint.name} starting style · ${recipe} layout focused on ${primaryGoal}${
       intent?.selectedCapabilities?.length
         ? ` · capabilities: ${intent.selectedCapabilities.join(", ")}`
         : ""

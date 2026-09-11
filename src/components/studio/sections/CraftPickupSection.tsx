@@ -19,7 +19,7 @@ export default function CraftPickupSection(props: CraftPickupProps) {
   return (
     <div ref={(dom) => { if (dom) connect(drag(dom)); }}>
       <CraftSectionChrome>
-        <StudioPickupBlock {...props} metadata={metadata} isEditing />
+        <StudioPickupBlock {...props} metadata={metadata} isEditing editable />
       </CraftSectionChrome>
     </div>
   );
