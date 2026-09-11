@@ -6,6 +6,7 @@ import {
   resolveBlueprintChoice,
   WEBSITE_BLUEPRINT_IDS,
   getWebsiteBlueprint,
+  assertBlueprintDistinctness,
 } from "@/lib/website/blueprints";
 import { planSiteHeuristic } from "@/lib/website-ai/heuristic-planner";
 import { validateAiSitePlan } from "@/lib/website-ai/validate-plan";
@@ -46,6 +47,17 @@ describe("website blueprints", () => {
   it("registers all 10 starting styles", () => {
     assert.equal(listWebsiteBlueprints().length, 10);
     assert.equal(WEBSITE_BLUEPRINT_IDS.length, 10);
+  });
+
+  it("includes layout, brandKit, cardDescription and about-safe metadata", () => {
+    assert.doesNotThrow(() => assertBlueprintDistinctness());
+    for (const bp of listWebsiteBlueprints()) {
+      assert.ok(bp.layout.hero);
+      assert.ok(bp.brandKit.palette.primary);
+      assert.ok(bp.cardDescription.length <= 50);
+      assert.equal(bp.layoutTags.length, 3);
+      assert.ok(bp.assetNeeds.minPhotos >= 0);
+    }
   });
 
   it("recommends Local for farm stand sellers", () => {

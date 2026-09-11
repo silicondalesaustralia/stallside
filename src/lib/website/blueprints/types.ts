@@ -1,6 +1,11 @@
 import type { StudioTemplateId } from "@/lib/studio/types";
 import type { HomeSlot, LayoutRecipeId } from "@/lib/website-ai/layout-recipes";
 import type { WebsiteAiSectionType } from "@/lib/website-ai/types";
+import type {
+  BlueprintAssetNeeds,
+  BlueprintBrandKit,
+  BlueprintLayout,
+} from "./layout-types";
 
 export const WEBSITE_BLUEPRINT_IDS = [
   "editorial",
@@ -24,17 +29,25 @@ export type BlueprintCommerceEmphasis = "story-led" | "balanced" | "commerce-led
 export type WebsiteBlueprint = {
   id: WebsiteBlueprintId;
   name: string;
+  /** Longer marketing description — UI list only; never render inside a site. */
   description: string;
+  /** ≤ 50 chars for style cards — UI only. */
+  cardDescription: string;
+  /** Three short layout tags — UI only. */
+  layoutTags: [string, string, string];
   designSystem: StudioTemplateId;
   traits: string[];
   suitableFor: string[];
-  /** Maps onto existing recipe slot engine for composition. */
   layoutRecipe: LayoutRecipeId;
   preferredHomeSlots: HomeSlot[];
   preferredPresets: Partial<Record<WebsiteAiSectionType, string>>;
   contentDensity: BlueprintContentDensity;
   imageEmphasis: BlueprintImageEmphasis;
   commerceEmphasis: BlueprintCommerceEmphasis;
+  layout: BlueprintLayout;
+  brandKit: BlueprintBrandKit;
+  assetNeeds: BlueprintAssetNeeds;
+  /** @deprecated Prefer brandKit + layout; kept for older preview helpers. */
   previewTone: {
     bg: string;
     ink: string;
@@ -68,3 +81,12 @@ export type BlueprintRecommendation = {
 export function isWebsiteBlueprintId(value: string): value is WebsiteBlueprintId {
   return (WEBSITE_BLUEPRINT_IDS as readonly string[]).includes(value);
 }
+
+export type {
+  BlueprintLayout,
+  BlueprintBrandKit,
+  BlueprintAssetNeeds,
+  HeaderPattern,
+  HeroVariant,
+  MerchPattern,
+} from "./layout-types";

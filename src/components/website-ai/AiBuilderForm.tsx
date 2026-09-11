@@ -14,6 +14,7 @@ import {
   recommendWebsiteBlueprint,
   type BlueprintRecommendation,
 } from "@/lib/website/blueprints";
+import { recommendDemoKit } from "@/lib/website/demo-kits";
 import AiLookPicker from "./AiLookPicker";
 import BlueprintStylePicker from "./BlueprintStylePicker";
 
@@ -528,6 +529,10 @@ export default function AiBuilderForm({
             onSelect={setBlueprintId}
             recommendation={recommendation}
             businessName={businessName}
+            defaultKitId={recommendDemoKit({
+              hasFarmStand: assessment.knownFacts.includes("Farm stand"),
+              hasMenus: assessment.knownFacts.includes("Weekly preorders"),
+            })}
           />
           <input type="hidden" name="blueprintId" value={blueprintId} />
           <div className="border-t border-[var(--border)] pt-4">

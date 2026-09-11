@@ -2,6 +2,7 @@ import type { SerializedNodes } from "@craftjs/core";
 import type { StudioPayload } from "@/lib/studio/types";
 import { STUDIO_VERSION } from "@/lib/studio/types";
 import { validateStudioNodes } from "@/lib/studio/validate-state";
+import { assertNoDemoAssets } from "@/lib/website/demo-assets/reject-demo-assets";
 import { AI_TO_CRAFT_SECTION, craftPropsForAiSection } from "./section-map";
 import type { AISitePlan, AiSitePage, WebsitePageType } from "./types";
 import { FAQ_PAGE_ID } from "./apply-selected-pages";
@@ -86,6 +87,15 @@ export function compilePlanToStudioPayload(plan: AISitePlan): {
   payload: StudioPayload | null;
   errors: string[];
 } {
+  try {
+    assertNoDemoAssets(plan, "AI site plan");
+  } catch (err) {
+    return {
+      payload: null,
+      errors: [err instanceof Error ? err.message : "Demo assets forbidden"],
+    };
+  }
+
   const home = plan.pages.find((p) => p.pageType === "HOME");
   if (!home) {
     return { payload: null, errors: ["No HOME page in plan"] };

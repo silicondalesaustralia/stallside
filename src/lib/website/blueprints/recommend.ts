@@ -5,6 +5,7 @@ import {
   type BlueprintRecommendReason,
   type WebsiteBlueprintId,
 } from "./types";
+import { getWebsiteBlueprint } from "./registry";
 
 const REASON_COPY: Record<BlueprintRecommendReason, string> = {
   LARGE_CATALOGUE: "your store has a larger catalogue and multiple categories",
@@ -88,6 +89,17 @@ export function recommendWebsiteBlueprint(
     id = "modern-store";
     confidence = "low";
     reasons.push("GENERAL_ECOMMERCE");
+  }
+
+  // Phase 8D.1 §11: deprioritise image-led styles when the seller has few photos.
+  const needs = getWebsiteBlueprint(id).assetNeeds;
+  if (
+    businessContext.productPhotoCount < needs.minPhotos &&
+    (id === "editorial" || id === "minimal" || id === "studio" || id === "boutique")
+  ) {
+    id = "modern-store";
+    confidence = "medium";
+    if (!reasons.includes("GENERAL_ECOMMERCE")) reasons.push("GENERAL_ECOMMERCE");
   }
 
   const primary = reasons[0] ?? "GENERAL_ECOMMERCE";

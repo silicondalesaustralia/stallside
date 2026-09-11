@@ -3,6 +3,12 @@ export type {
   WebsiteBlueprintId,
   BlueprintRecommendation,
   BlueprintRecommendReason,
+  BlueprintLayout,
+  BlueprintBrandKit,
+  BlueprintAssetNeeds,
+  HeaderPattern,
+  HeroVariant,
+  MerchPattern,
 } from "./types";
 export {
   WEBSITE_BLUEPRINT_IDS,
@@ -17,6 +23,7 @@ export {
   recommendWebsiteBlueprint,
   resolveBlueprintChoice,
 } from "./recommend";
+export { assertBlueprintDistinctness } from "./distinctness";
 export {
   DEMO_PRODUCTS,
   DEMO_CATEGORIES,

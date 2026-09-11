@@ -1,8 +1,62 @@
 import type { WebsiteBlueprint, WebsiteBlueprintId } from "./types";
 import { WEBSITE_BLUEPRINT_IDS, isWebsiteBlueprintId } from "./types";
+import { BLUEPRINT_LAYOUTS } from "./layouts";
+import { BLUEPRINT_BRAND_KITS } from "./brand-kits";
+import { BLUEPRINT_CARD_META } from "./card-meta";
+
+type Core = Omit<
+  WebsiteBlueprint,
+  "layout" | "brandKit" | "assetNeeds" | "cardDescription" | "layoutTags" | "previewTone"
+>;
+
+function toneFromBrand(
+  id: WebsiteBlueprintId,
+  layout: WebsiteBlueprint["layout"],
+): WebsiteBlueprint["previewTone"] {
+  const p = BLUEPRINT_BRAND_KITS[id].palette;
+  const cols = layout.gridColumns.desktop;
+  const productCols = (typeof cols === "number" ? Math.min(4, Math.max(2, cols)) : 3) as
+    | 2
+    | 3
+    | 4;
+  const heroStyle =
+    layout.hero === "FRAMED_INSET"
+      ? "minimal"
+      : layout.hero === "TYPE_BLOCK"
+        ? "bold"
+        : layout.hero === "COLLAGE_TRIO"
+          ? "collage"
+          : layout.hero === "EDITORIAL_STACK" || layout.hero === "PROMO_BANNER"
+            ? "full"
+            : "split";
+  return {
+    bg: p.background,
+    ink: p.text,
+    muted: p.muted,
+    accent: p.primary,
+    wash: p.surface,
+    heroStyle,
+    productCols,
+    cardRadius: `${BLUEPRINT_BRAND_KITS[id].shape.radiusPx}px`,
+  };
+}
+
+function define(core: Core): WebsiteBlueprint {
+  const layout = BLUEPRINT_LAYOUTS[core.id];
+  const meta = BLUEPRINT_CARD_META[core.id];
+  return {
+    ...core,
+    layout,
+    brandKit: BLUEPRINT_BRAND_KITS[core.id],
+    assetNeeds: meta.assetNeeds,
+    cardDescription: meta.cardDescription,
+    layoutTags: meta.layoutTags,
+    previewTone: toneFromBrand(core.id, layout),
+  };
+}
 
 const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
-  editorial: {
+  editorial: define({
     id: "editorial",
     name: "Editorial",
     description: "Image-led and spacious, with strong storytelling and a premium product focus.",
@@ -15,18 +69,8 @@ const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
     contentDensity: "low",
     imageEmphasis: "high",
     commerceEmphasis: "balanced",
-    previewTone: {
-      bg: "#faf8f5",
-      ink: "#1c1917",
-      muted: "#78716c",
-      accent: "#44403c",
-      wash: "#f5f0e8",
-      heroStyle: "split",
-      productCols: 2,
-      cardRadius: "0.25rem",
-    },
-  },
-  marketplace: {
+  }),
+  marketplace: define({
     id: "marketplace",
     name: "Marketplace",
     description: "Category-rich and discovery-focused — practical shopping with clear navigation.",
@@ -39,18 +83,8 @@ const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
     contentDensity: "high",
     imageEmphasis: "medium",
     commerceEmphasis: "commerce-led",
-    previewTone: {
-      bg: "#ffffff",
-      ink: "#0f172a",
-      muted: "#64748b",
-      accent: "#0f766e",
-      wash: "#f1f5f9",
-      heroStyle: "full",
-      productCols: 3,
-      cardRadius: "0.75rem",
-    },
-  },
-  heritage: {
+  }),
+  heritage: define({
     id: "heritage",
     name: "Heritage",
     description: "Warm and established — story-led craft without feeling outdated.",
@@ -63,18 +97,8 @@ const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
     contentDensity: "medium",
     imageEmphasis: "medium",
     commerceEmphasis: "story-led",
-    previewTone: {
-      bg: "#f7f3eb",
-      ink: "#3f2a1d",
-      muted: "#8b7355",
-      accent: "#6b4f3a",
-      wash: "#efe6d6",
-      heroStyle: "split",
-      productCols: 3,
-      cardRadius: "0.5rem",
-    },
-  },
-  minimal: {
+  }),
+  minimal: define({
     id: "minimal",
     name: "Minimal",
     description: "Clean whitespace with product photography front and centre.",
@@ -87,18 +111,8 @@ const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
     contentDensity: "low",
     imageEmphasis: "high",
     commerceEmphasis: "balanced",
-    previewTone: {
-      bg: "#ffffff",
-      ink: "#171717",
-      muted: "#a3a3a3",
-      accent: "#171717",
-      wash: "#fafafa",
-      heroStyle: "minimal",
-      productCols: 2,
-      cardRadius: "0",
-    },
-  },
-  bold: {
+  }),
+  bold: define({
     id: "bold",
     name: "Bold",
     description: "High-impact type and punchy blocks for energetic modern brands.",
@@ -111,18 +125,8 @@ const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
     contentDensity: "medium",
     imageEmphasis: "high",
     commerceEmphasis: "commerce-led",
-    previewTone: {
-      bg: "#0a0a0a",
-      ink: "#fafafa",
-      muted: "#a3a3a3",
-      accent: "#f97316",
-      wash: "#171717",
-      heroStyle: "bold",
-      productCols: 2,
-      cardRadius: "1rem",
-    },
-  },
-  local: {
+  }),
+  local: define({
     id: "local",
     name: "Local",
     description: "Approachable and location-first — visit, pickup, and what’s available.",
@@ -135,18 +139,8 @@ const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
     contentDensity: "medium",
     imageEmphasis: "medium",
     commerceEmphasis: "balanced",
-    previewTone: {
-      bg: "#f4f7f0",
-      ink: "#1a2e1a",
-      muted: "#5c735c",
-      accent: "#3d6b3d",
-      wash: "#e8f0e4",
-      heroStyle: "full",
-      productCols: 3,
-      cardRadius: "0.75rem",
-    },
-  },
-  studio: {
+  }),
+  studio: define({
     id: "studio",
     name: "Studio",
     description: "Maker-led visual storytelling with a gallery feel.",
@@ -159,18 +153,8 @@ const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
     contentDensity: "low",
     imageEmphasis: "high",
     commerceEmphasis: "story-led",
-    previewTone: {
-      bg: "#f8f6f3",
-      ink: "#292524",
-      muted: "#78716c",
-      accent: "#57534e",
-      wash: "#efece7",
-      heroStyle: "collage",
-      productCols: 2,
-      cardRadius: "0.25rem",
-    },
-  },
-  "modern-store": {
+  }),
+  "modern-store": define({
     id: "modern-store",
     name: "Modern Store",
     description: "Polished contemporary ecommerce — balanced brand and shopping.",
@@ -183,18 +167,8 @@ const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
     contentDensity: "medium",
     imageEmphasis: "medium",
     commerceEmphasis: "balanced",
-    previewTone: {
-      bg: "#ffffff",
-      ink: "#18181b",
-      muted: "#71717a",
-      accent: "#2563eb",
-      wash: "#f4f4f5",
-      heroStyle: "split",
-      productCols: 3,
-      cardRadius: "0.5rem",
-    },
-  },
-  catalogue: {
+  }),
+  catalogue: define({
     id: "catalogue",
     name: "Catalogue",
     description: "Dense and efficient — built for larger ranges and fast discovery.",
@@ -207,18 +181,8 @@ const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
     contentDensity: "high",
     imageEmphasis: "medium",
     commerceEmphasis: "commerce-led",
-    previewTone: {
-      bg: "#ffffff",
-      ink: "#111827",
-      muted: "#6b7280",
-      accent: "#111827",
-      wash: "#f9fafb",
-      heroStyle: "collage",
-      productCols: 4,
-      cardRadius: "0.375rem",
-    },
-  },
-  boutique: {
+  }),
+  boutique: define({
     id: "boutique",
     name: "Boutique",
     description: "Premium and curated — warm refinement without stark minimalism.",
@@ -231,17 +195,7 @@ const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
     contentDensity: "low",
     imageEmphasis: "high",
     commerceEmphasis: "balanced",
-    previewTone: {
-      bg: "#faf7f5",
-      ink: "#3b2f2f",
-      muted: "#9a8b8b",
-      accent: "#8b5e5e",
-      wash: "#f3ebe8",
-      heroStyle: "split",
-      productCols: 2,
-      cardRadius: "0.75rem",
-    },
-  },
+  }),
 };
 
 export function listWebsiteBlueprints(): WebsiteBlueprint[] {
