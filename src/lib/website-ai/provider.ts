@@ -107,6 +107,9 @@ export async function scaffoldWebsiteDraft(
   const looks = proposeBrandLooks({
     stylePreference: input.intent?.stylePreference,
     businessMode: input.businessContext.businessMode,
+    seedAccent: input.businessContext.accentColor,
+    seedSecondary: input.businessContext.secondaryColor,
+    hasLogo: Boolean(input.businessContext.logoUrl),
   });
 
   return {
@@ -142,10 +145,11 @@ export async function finalizeWebsiteDraft(input: {
   intent?: SiteGenerationInput["intent"];
   plan: AISitePlan;
   lookId: string;
+  looks?: BrandLookCombo[];
   provider?: string;
   model?: string;
 }): Promise<GenerateWebsiteDraftResult> {
-  const applied = applyLookToPlan(input.plan, input.lookId);
+  const applied = applyLookToPlan(input.plan, input.lookId, input.looks);
   if (!applied) {
     return { ok: false, error: "Unknown look selection." };
   }
@@ -204,6 +208,7 @@ export async function generateWebsiteDraft(
     intent: input.intent,
     plan: scaffold.plan,
     lookId,
+    looks: scaffold.looks,
     provider: scaffold.provider,
     model: scaffold.model,
   });

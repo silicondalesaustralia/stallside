@@ -1,5 +1,9 @@
+"use client";
+
+import { useRef, useState } from "react";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { saveStorefrontBranding } from "../actions";
+import { sampleLogoColours } from "@/lib/website/sample-logo-colours";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
@@ -48,11 +52,38 @@ export default function BrandingForm({
   logoUrl,
   faviconUrl,
   heroImageUrl,
+  accentColor,
+  secondaryColor,
 }: {
   logoUrl: string | null;
   faviconUrl: string | null;
   heroImageUrl: string | null;
+  accentColor: string;
+  secondaryColor: string;
 }) {
+  const accentRef = useRef<HTMLInputElement>(null);
+  const secondaryRef = useRef<HTMLInputElement>(null);
+  const [sampleMsg, setSampleMsg] = useState<string | null>(null);
+  const [sampling, setSampling] = useState(false);
+
+  async function onSampleLogo() {
+    if (!logoUrl) return;
+    setSampling(true);
+    setSampleMsg(null);
+    try {
+      const sampled = await sampleLogoColours(logoUrl);
+      if (!sampled) {
+        setSampleMsg("Couldn’t read colours from that logo. Pick them manually.");
+        return;
+      }
+      if (accentRef.current) accentRef.current.value = sampled.accent;
+      if (secondaryRef.current) secondaryRef.current.value = sampled.secondary;
+      setSampleMsg("Colours sampled from your logo — save to keep them.");
+    } finally {
+      setSampling(false);
+    }
+  }
+
   return (
     <form
       action={saveStorefrontBranding}
@@ -68,6 +99,48 @@ export default function BrandingForm({
         emptyLabel="No logo yet — or use a text wordmark from AI later"
         previewClass="mt-2 max-h-24 max-w-xs object-contain"
       />
+
+      <div className="space-y-3 text-sm">
+        <span className="font-medium text-[var(--field)]">Brand colours</span>
+        <p className="text-xs text-[var(--muted)]">
+          Used on your live site now. AI also uses these (and your logo) when
+          recommending looks.
+        </p>
+        <div className="flex flex-wrap gap-6">
+          <label className="flex flex-col gap-2">
+            <span className="text-xs font-medium text-[var(--muted)]">Primary</span>
+            <input
+              ref={accentRef}
+              name="accentColor"
+              type="color"
+              defaultValue={accentColor}
+              className="h-10 w-14 cursor-pointer rounded border border-[var(--line)] bg-white"
+            />
+          </label>
+          <label className="flex flex-col gap-2">
+            <span className="text-xs font-medium text-[var(--muted)]">Secondary</span>
+            <input
+              ref={secondaryRef}
+              name="secondaryColor"
+              type="color"
+              defaultValue={secondaryColor}
+              className="h-10 w-14 cursor-pointer rounded border border-[var(--line)] bg-white"
+            />
+          </label>
+        </div>
+        {logoUrl ? (
+          <button
+            type="button"
+            onClick={onSampleLogo}
+            disabled={sampling}
+            className="text-sm font-medium underline text-[var(--field)] disabled:opacity-60"
+          >
+            {sampling ? "Sampling logo…" : "Suggest colours from logo"}
+          </button>
+        ) : null}
+        {sampleMsg ? <p className="text-xs text-[var(--muted)]">{sampleMsg}</p> : null}
+      </div>
+
       <ImageField
         title="Favicon"
         hint="Small icon in the browser tab. Square PNG works best."

@@ -1,4 +1,4 @@
-import { getLookCombo, getPalette } from "@/lib/website/brand-looks";
+import { getLookCombo, getPalette, type BrandLookCombo } from "@/lib/website/brand-looks";
 import type { AISitePlan } from "./types";
 import type { StorefrontConfig } from "@/lib/storefront/types";
 
@@ -6,10 +6,14 @@ import type { StorefrontConfig } from "@/lib/storefront/types";
 export function applyLookToPlan(
   plan: AISitePlan,
   lookId: string,
+  looks?: BrandLookCombo[],
 ): { plan: AISitePlan; themeOverrides: StorefrontConfig["themeOverrides"] } | null {
-  const look = getLookCombo(lookId);
-  const palette = look ? getPalette(look.paletteId) : undefined;
-  if (!look || !palette) return null;
+  const look = looks?.find((l) => l.id === lookId) ?? getLookCombo(lookId);
+  if (!look) return null;
+  const palette = getPalette(look.paletteId);
+  const accent = look.accentOverride ?? palette?.accent;
+  const secondary = look.secondaryOverride ?? palette?.secondary;
+  if (!accent || !secondary) return null;
 
   return {
     plan: {
@@ -19,9 +23,9 @@ export function applyLookToPlan(
         `${plan.changeSummary ?? "Draft website created."} Look: ${look.label}.`.trim(),
     },
     themeOverrides: {
-      accentColor: palette.accent,
-      secondaryColor: palette.secondary,
-      paletteId: look.paletteId,
+      accentColor: accent,
+      secondaryColor: secondary,
+      paletteId: look.accentOverride ? "custom" : look.paletteId,
       fontPairId: look.fontPairId,
     },
   };

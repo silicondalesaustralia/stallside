@@ -150,6 +150,7 @@ export async function buildAiWebsiteDraft(
       intent: scaffold.intent,
       plan: scaffold.plan,
       lookId,
+      looks: scaffold.looks,
     });
     if (!generated.ok) {
       return { ok: false, error: generated.error, details: generated.details };

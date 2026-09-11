@@ -26,6 +26,9 @@ export type BrandLookCombo = {
   paletteId: string;
   fontPairId: string;
   designSystem: StudioTemplateId;
+  /** When set (e.g. seller brand colours / logo sample), override catalog palette. */
+  accentOverride?: string;
+  secondaryOverride?: string;
 };
 
 export const BRAND_PALETTES: BrandPalette[] = [
@@ -179,13 +182,71 @@ export function getLookCombo(id: string | null | undefined): BrandLookCombo | un
   return BRAND_LOOK_COMBOS.find((c) => c.id === id);
 }
 
-/** Pick 3 looks from the catalog based on style preference / mode. */
+function hexToHue(hex: string): number | null {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m?.[1]) return null;
+  const n = m[1];
+  const r = parseInt(n.slice(0, 2), 16) / 255;
+  const g = parseInt(n.slice(2, 4), 16) / 255;
+  const b = parseInt(n.slice(4, 6), 16) / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  if (max === min) return 0;
+  let h = 0;
+  const d = max - min;
+  switch (max) {
+    case r:
+      h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+      break;
+    case g:
+      h = ((b - r) / d + 2) / 6;
+      break;
+    default:
+      h = ((r - g) / d + 4) / 6;
+  }
+  return h * 360;
+}
+
+function hueDistance(a: number, b: number): number {
+  const d = Math.abs(a - b) % 360;
+  return d > 180 ? 360 - d : d;
+}
+
+function colourScore(seed: string | null | undefined, paletteAccent: string): number {
+  if (!seed) return 0;
+  const seedHue = hexToHue(seed);
+  const palHue = hexToHue(paletteAccent);
+  if (seedHue == null || palHue == null) return 0;
+  const dist = hueDistance(seedHue, palHue);
+  if (dist < 25) return 4;
+  if (dist < 45) return 2;
+  if (dist < 70) return 1;
+  return 0;
+}
+
+function pickFontForMode(businessMode?: string): string {
+  if (businessMode === "FOOD_BUSINESS") return "kiln-literata";
+  if (businessMode === "FARM_STAND") return "orchard-serif";
+  return "market-default";
+}
+
+function pickTemplateForMode(businessMode?: string): StudioTemplateId {
+  if (businessMode === "FOOD_BUSINESS") return "artisan";
+  if (businessMode === "FARM_STAND") return "farmhouse";
+  return "market";
+}
+
+/** Pick 3 looks from the catalog, biased by style + seller brand / logo colours. */
 export function proposeBrandLooks(input: {
   stylePreference?: string;
   businessMode?: string;
+  seedAccent?: string | null;
+  seedSecondary?: string | null;
+  hasLogo?: boolean;
 }): BrandLookCombo[] {
   const style = (input.stylePreference ?? "").toLowerCase();
   const scored = BRAND_LOOK_COMBOS.map((look) => {
+    const palette = getPalette(look.paletteId);
     let score = 0;
     if (style.includes("warm") || style.includes("local")) {
       if (look.id === "warm-orchard" || look.id === "berry-table") score += 3;
@@ -211,10 +272,38 @@ export function proposeBrandLooks(input: {
     ) {
       score += 1;
     }
+    if (palette) {
+      score += colourScore(input.seedAccent, palette.accent);
+      score += colourScore(input.seedSecondary, palette.secondary) * 0.5;
+    }
     return { look, score };
   });
   scored.sort((a, b) => b.score - a.score || a.look.id.localeCompare(b.look.id));
-  const top = scored.slice(0, 3).map((s) => s.look);
-  if (top.length >= 3) return top;
-  return BRAND_LOOK_COMBOS.slice(0, 3);
+
+  const catalogTop = scored.slice(0, 3).map((s) => s.look);
+  const seedAccent = input.seedAccent?.trim();
+  const seedSecondary = input.seedSecondary?.trim() || seedAccent;
+  if (!seedAccent || !seedSecondary) {
+    return catalogTop.length >= 3 ? catalogTop : BRAND_LOOK_COMBOS.slice(0, 3);
+  }
+
+  const yourColours: BrandLookCombo = {
+    id: "your-colours",
+    label: input.hasLogo ? "Your logo colours" : "Your brand colours",
+    tagline: input.hasLogo
+      ? "Built from the colours you set (and your logo)"
+      : "Keeps the primary and secondary you chose in Branding",
+    paletteId: "orchard-green",
+    fontPairId: pickFontForMode(input.businessMode),
+    designSystem: pickTemplateForMode(input.businessMode),
+    accentOverride: seedAccent,
+    secondaryOverride: seedSecondary,
+  };
+
+  const companions = scored
+    .map((s) => s.look)
+    .filter((l) => l.id !== "your-colours")
+    .slice(0, 2);
+
+  return [yourColours, ...companions].slice(0, 3);
 }

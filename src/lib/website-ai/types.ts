@@ -141,6 +141,8 @@ export type WebsiteBusinessContext = {
   productPhotoCount: number;
   logoUrl: string | null;
   heroImageUrl: string | null;
+  accentColor: string | null;
+  secondaryColor: string | null;
   existingTemplateId: StudioTemplateId | null;
   hasExistingStudio: boolean;
 };

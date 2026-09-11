@@ -20,6 +20,7 @@ import {
   uploadStorefrontLogo,
 } from "@/lib/storefront/brand-asset-upload";
 import { isStorefrontThemePreset } from "@/lib/storefront/themes";
+import { parseAccentColor } from "@/lib/stand-brand";
 
 export async function saveStorefrontDetails(formData: FormData) {
   const { owner } = await requireOwnerWrite();
@@ -82,7 +83,7 @@ export async function saveStorefrontBranding(formData: FormData) {
   const stand = await prisma.stand.findFirst({
     where: { ownerId: owner.id },
     orderBy: { createdAt: "asc" },
-    select: { id: true, logoUrl: true },
+    select: { id: true, logoUrl: true, accentColor: true, secondaryColor: true },
   });
 
   let heroImageUrl = storefront.heroImageUrl;
@@ -118,14 +119,29 @@ export async function saveStorefrontBranding(formData: FormData) {
     }
   }
 
+  const accentParsed = parseAccentColor(String(formData.get("accentColor") ?? ""));
+  const secondaryParsed = parseAccentColor(String(formData.get("secondaryColor") ?? ""));
+  const accentColor =
+    accentParsed ?? owner.brandAccentColor ?? stand?.accentColor ?? "#2e7d3f";
+  const secondaryColor =
+    secondaryParsed ?? owner.brandSecondaryColor ?? stand?.secondaryColor ?? accentColor;
+
   await prisma.owner.update({
     where: { id: owner.id },
-    data: { brandLogoUrl: logoUrl },
+    data: {
+      brandLogoUrl: logoUrl,
+      brandAccentColor: accentColor,
+      brandSecondaryColor: secondaryColor,
+    },
   });
   if (stand) {
     await prisma.stand.update({
       where: { id: stand.id },
-      data: { logoUrl },
+      data: {
+        logoUrl,
+        accentColor,
+        secondaryColor,
+      },
     });
   }
 
@@ -133,6 +149,11 @@ export async function saveStorefrontBranding(formData: FormData) {
     ? storefront.themePreset
     : "market";
   const draftConfig = parseStorefrontConfig(storefront.draftConfig);
+  draftConfig.themeOverrides = {
+    ...draftConfig.themeOverrides,
+    accentColor,
+    secondaryColor,
+  };
 
   await saveStorefrontDraftData({
     ownerId: owner.id,

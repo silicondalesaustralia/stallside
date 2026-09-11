@@ -2,6 +2,8 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
+import { parseStorefrontConfig } from "@/lib/storefront/config";
+import { parseAccentColor } from "@/lib/stand-brand";
 import WebStudioSteps from "@/components/website/WebStudioSteps";
 import BrandingForm from "./BrandingForm";
 
@@ -16,9 +18,20 @@ export default async function WebsiteBrandingPage({
   const stand = await prisma.stand.findFirst({
     where: { ownerId: owner.id },
     orderBy: { createdAt: "asc" },
-    select: { logoUrl: true },
+    select: { logoUrl: true, accentColor: true, secondaryColor: true },
   });
   const logoUrl = owner.brandLogoUrl ?? stand?.logoUrl ?? null;
+  const overrides = parseStorefrontConfig(storefront.draftConfig).themeOverrides;
+  const accentColor =
+    parseAccentColor(overrides?.accentColor) ??
+    parseAccentColor(owner.brandAccentColor) ??
+    parseAccentColor(stand?.accentColor) ??
+    "#2e7d3f";
+  const secondaryColor =
+    parseAccentColor(overrides?.secondaryColor) ??
+    parseAccentColor(owner.brandSecondaryColor) ??
+    parseAccentColor(stand?.secondaryColor) ??
+    accentColor;
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 pb-12">
@@ -28,8 +41,8 @@ export default async function WebsiteBrandingPage({
           Branding
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          Logo, favicon and hero photo. Colours and fonts are chosen when you
-          build with AI.
+          Logo, colours, favicon and hero. Change colours anytime — AI uses them
+          when recommending looks.
         </p>
       </div>
 
@@ -46,6 +59,8 @@ export default async function WebsiteBrandingPage({
         logoUrl={logoUrl}
         faviconUrl={storefront.faviconUrl}
         heroImageUrl={storefront.heroImageUrl}
+        accentColor={accentColor}
+        secondaryColor={secondaryColor}
       />
 
       <p className="text-sm text-[var(--muted)]">

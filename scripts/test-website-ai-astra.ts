@@ -36,6 +36,8 @@ const ctx: WebsiteBusinessContext = {
   productPhotoCount: 1,
   logoUrl: null,
   heroImageUrl: null,
+  accentColor: null,
+  secondaryColor: null,
   existingTemplateId: null,
   hasExistingStudio: false,
 };

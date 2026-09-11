@@ -50,6 +50,8 @@ export async function buildWebsiteBusinessContext(
     productPhotoCount: ctx.products.filter((p) => Boolean(p.imageUrl)).length,
     logoUrl: ctx.branding.logoUrl,
     heroImageUrl: ctx.branding.heroImageUrl,
+    accentColor: ctx.branding.accentColor,
+    secondaryColor: ctx.branding.secondaryColor,
     existingTemplateId: studio?.templateId ?? null,
     hasExistingStudio: Boolean(studio?.nodes),
   };

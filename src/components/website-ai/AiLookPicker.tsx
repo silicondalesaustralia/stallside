@@ -23,6 +23,9 @@ export default function AiLookPicker({
       <div className="grid gap-3 sm:grid-cols-3">
         {looks.map((look) => {
           const palette = getPalette(look.paletteId);
+          const accent = look.accentOverride ?? palette?.accent ?? "#333";
+          const secondary = look.secondaryOverride ?? palette?.secondary ?? "#999";
+          const wash = palette?.wash ?? "#f5f5f5";
           const fonts = getFontPair(look.fontPairId);
           const selected = selectedId === look.id;
           return (
@@ -38,18 +41,9 @@ export default function AiLookPicker({
               }`}
             >
               <div className="flex h-14 overflow-hidden rounded-lg">
-                <span
-                  className="flex-1"
-                  style={{ background: palette?.accent ?? "#333" }}
-                />
-                <span
-                  className="w-1/3"
-                  style={{ background: palette?.secondary ?? "#999" }}
-                />
-                <span
-                  className="w-1/4"
-                  style={{ background: palette?.wash ?? "#f5f5f5" }}
-                />
+                <span className="flex-1" style={{ background: accent }} />
+                <span className="w-1/3" style={{ background: secondary }} />
+                <span className="w-1/4" style={{ background: wash }} />
               </div>
               <p className="mt-3 text-sm font-semibold text-[var(--field)]">{look.label}</p>
               <p className="mt-1 text-xs text-[var(--muted)]">{look.tagline}</p>
