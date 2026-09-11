@@ -116,7 +116,8 @@ export async function planSiteWithOpenAI(
   }
 
   const effort = websiteAiReasoningEffort();
-  const userContent = `Create a Vendl website plan for this business context:\n${JSON.stringify(compactContext(input))}`;
+  // Responses API requires the word "json" in the input when using json_object format.
+  const userContent = `Return a json object website plan for this business context:\n${JSON.stringify(compactContext(input))}`;
 
   try {
     const res = await fetch("https://api.openai.com/v1/responses", {
