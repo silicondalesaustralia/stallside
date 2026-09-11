@@ -65,7 +65,7 @@ export default function FooterColumnsEditor({
             Brand
           </p>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Business name, tagline, region and contact email — from Shop details.
+            Business name, tagline, region and contact email — from Business details.
           </p>
         </div>
 

@@ -44,7 +44,7 @@ export default function VendlAddressCard({
       <p className="text-xs text-[var(--muted)]">
         Change your Vendl address in{" "}
         <Link href="/dashboard/website/details" className="underline">
-          Shop details
+          Business details
         </Link>{" "}
         (slug).
       </p>

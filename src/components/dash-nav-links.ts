@@ -50,7 +50,7 @@ export function primaryNavForMode(modeInput?: string | null): DashNavItem[] {
   items.push(
     { href: "/dashboard/calendar", label: "Calendar" },
     { href: "/dashboard/marketing", label: "Marketing" },
-    { href: "/dashboard/website/studio", label: "Website" },
+    { href: "/dashboard/website/details", label: "Website" },
   );
 
   if (mode !== "FOOD_BUSINESS") {
@@ -147,22 +147,12 @@ export const MARKETING_HUB_NAV: HubNavItem[] = [
   { href: "/dashboard/gift-cards", label: "Gift cards", matchPrefix: "/dashboard/gift-cards" },
 ];
 
-/** Website hub — studio, pages, navigation, blog, seo, domains. */
+/** Website hub — Web Studio create-flow first, then site tools. */
 export const WEBSITE_HUB_NAV: HubNavItem[] = [
   {
-    href: "/dashboard/website/studio",
-    label: "Studio",
-    matchPrefix: "/dashboard/website/studio",
-  },
-  {
-    href: "/dashboard/website/ai",
-    label: "AI builder",
-    matchPrefix: "/dashboard/website/ai",
-  },
-  {
     href: "/dashboard/website/details",
-    label: "Details",
-    matchPrefix: "/dashboard/website/details",
+    label: "Web Studio",
+    matchPrefix: "/dashboard/website/web-studio",
   },
   {
     href: "/dashboard/website/pages",
@@ -305,16 +295,36 @@ export function hubNavItemActive(pathname: string, item: HubNavItem): boolean {
       !pathname.includes("/print/")
     );
   }
+  if (item.matchPrefix === "/dashboard/website/web-studio") {
+    return (
+      pathname.startsWith("/dashboard/website/details") ||
+      pathname.startsWith("/dashboard/website/basics") ||
+      pathname.startsWith("/dashboard/website/branding") ||
+      pathname.startsWith("/dashboard/website/ai") ||
+      pathname.startsWith("/dashboard/website/studio") ||
+      pathname.startsWith("/dashboard/website/craft-spike") ||
+      pathname.startsWith("/dashboard/website/puck-spike") ||
+      pathname === "/dashboard/website"
+    );
+  }
   if (item.matchPrefix === "/dashboard/website/studio") {
     return (
       pathname.startsWith("/dashboard/website/studio") ||
-      pathname === "/dashboard/website" ||
       pathname.startsWith("/dashboard/website/craft-spike") ||
       pathname.startsWith("/dashboard/website/puck-spike")
     );
   }
   if (item.matchPrefix === "/dashboard/website/ai") {
     return pathname.startsWith("/dashboard/website/ai");
+  }
+  if (item.matchPrefix === "/dashboard/website/details") {
+    return (
+      pathname.startsWith("/dashboard/website/details") ||
+      pathname.startsWith("/dashboard/website/basics")
+    );
+  }
+  if (item.matchPrefix === "/dashboard/website/branding") {
+    return pathname.startsWith("/dashboard/website/branding");
   }
   // General settings: exact path only (not /payments, /stripe, /billing, …)
   if (item.href === "/dashboard/settings" && item.label === "General") {
@@ -391,6 +401,9 @@ export function dashLinkActive(pathname: string, href: string) {
       pathname.startsWith("/dashboard/campaigns") ||
       pathname.startsWith("/dashboard/coupons")
     );
+  }
+  if (base === "/dashboard/website/details" || base === "/dashboard/website") {
+    return pathname.startsWith("/dashboard/website");
   }
   return pathname.startsWith(base);
 }

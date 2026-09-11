@@ -360,7 +360,7 @@ export default function AiBuilderForm({
             {pending ? "Building your website…" : "Build my website"}
           </button>
           <Link href="/dashboard/website/studio" className="text-sm text-[var(--muted)] underline">
-            Use classic studio instead
+            Use classic editor instead
           </Link>
         </div>
       </form>

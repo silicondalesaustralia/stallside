@@ -10,6 +10,7 @@ import { extractWebsiteStudio, defaultTemplateId } from "@/lib/studio/storage";
 import { buildStudioMetadata } from "@/lib/studio/build-metadata";
 import type { StudioTemplateId } from "@/lib/studio/types";
 import StudioEditor from "@/components/studio/StudioEditor";
+import WebStudioSteps from "@/components/website/WebStudioSteps";
 
 function resolveTemplateId(
   stored: ReturnType<typeof extractWebsiteStudio>,
@@ -55,10 +56,11 @@ export default async function WebsiteStudioPage({
 
   return (
     <main className="flex flex-col gap-6 pb-8">
+      <WebStudioSteps />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
-            Website studio
+            Edit layout
           </h1>
           <p className="mt-1 text-sm text-[var(--muted)]">
             Drag sections onto your homepage, edit in place, then publish when ready.
@@ -68,12 +70,8 @@ export default async function WebsiteStudioPage({
               Change template
             </Link>
             {" · "}
-            <Link href="/dashboard/website/details" className="underline">
-              Shop details
-            </Link>
-            {" · "}
             <Link href="/dashboard/website/ai" className="underline">
-              Try AI builder (beta)
+              AI builder
             </Link>
           </p>
         </div>

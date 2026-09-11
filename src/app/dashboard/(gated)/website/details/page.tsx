@@ -6,6 +6,7 @@ import {
   storefrontPublicPath,
 } from "@/lib/catalogue/storefront";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
+import WebStudioSteps from "@/components/website/WebStudioSteps";
 import {
   publishStorefrontAction,
   unpublishStorefrontAction,
@@ -28,19 +29,15 @@ export default async function WebsiteDetailsPage({
   const liveUrl = storefrontFullUrl(storefront.slug);
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-8 pb-12">
+    <main className="mx-auto flex max-w-2xl flex-col gap-6 pb-12">
+      <WebStudioSteps />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
-            Shop details
+            Business details
           </h1>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Name, URL, hero image and contact used across your storefront.
-            Layout is edited in{" "}
-            <Link href="/dashboard/website/studio" className="underline">
-              Studio
-            </Link>
-            .
+            Name, story, URL and contact — the facts AI and your storefront use.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -101,11 +98,14 @@ export default async function WebsiteDetailsPage({
         slug={storefront.slug}
         contactEmail={storefront.contactEmail ?? owner.contactEmail}
         showPhone={storefront.showPhone}
-        heroImageUrl={storefront.heroImageUrl}
       />
 
       <p className="text-sm text-[var(--muted)]">
-        Public path:{" "}
+        Next:{" "}
+        <Link href="/dashboard/website/branding" className="font-medium underline">
+          Branding
+        </Link>{" "}
+        · Public path{" "}
         <code className="text-xs">{storefrontPublicPath(storefront.slug)}</code>
       </p>
     </main>

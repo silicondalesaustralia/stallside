@@ -12,7 +12,6 @@ type Props = {
   slug: string;
   contactEmail: string;
   showPhone: boolean;
-  heroImageUrl: string | null;
 };
 
 export default function ShopDetailsForm({
@@ -22,13 +21,11 @@ export default function ShopDetailsForm({
   slug,
   contactEmail,
   showPhone,
-  heroImageUrl,
 }: Props) {
   const publicHost = storefrontSubdomainHost(slug || "your-shop");
   return (
     <form
       action={saveStorefrontDetails}
-      encType="multipart/form-data"
       className="space-y-5 rounded-2xl border border-[var(--line)] bg-white p-5"
     >
       <label className="block text-sm">
@@ -78,24 +75,6 @@ export default function ShopDetailsForm({
         <input type="checkbox" name="showPhone" defaultChecked={showPhone} />
         Show phone number on the storefront
       </label>
-      <div className="space-y-2 text-sm">
-        <span className="font-medium">Hero image</span>
-        {heroImageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={heroImageUrl}
-            alt=""
-            className="mt-2 max-h-40 rounded-xl object-cover"
-          />
-        ) : null}
-        <input name="heroImage" type="file" accept="image/*" className={inputClass} />
-        {heroImageUrl ? (
-          <label className="flex items-center gap-2">
-            <input type="checkbox" name="removeHero" />
-            Remove current hero image
-          </label>
-        ) : null}
-      </div>
       <button type="submit" className={dashCtaClass}>
         Save details
       </button>

@@ -29,7 +29,6 @@ export async function saveStorefrontDetails(formData: FormData) {
   const contactEmail =
     String(formData.get("contactEmail") ?? "").trim().slice(0, 200) || null;
   const showPhone = formData.get("showPhone") === "on";
-  const removeHero = formData.get("removeHero") === "on";
 
   if (!headline) redirect("/dashboard/website/details?error=headline");
   if (!slugInput) redirect("/dashboard/website/details?error=slug");
@@ -38,17 +37,9 @@ export async function saveStorefrontDetails(formData: FormData) {
   let slug = storefront.slug;
   if (slugInput !== storefront.slug) {
     slug = await uniqueStorefrontSlug(slugInput, owner.id);
-    // Don't silently rename to jackos-buns-2 when the user asked for jackos-buns.
     if (slug !== slugInput) {
       redirect("/dashboard/website/details?error=slug_taken");
     }
-  }
-
-  let heroImageUrl = storefront.heroImageUrl;
-  if (removeHero) heroImageUrl = null;
-  const heroFile = formData.get("heroImage");
-  if (heroFile instanceof File && heroFile.size > 0) {
-    heroImageUrl = await uploadStorefrontHero(owner.id, heroFile);
   }
 
   const themePreset = isStorefrontThemePreset(storefront.themePreset)
@@ -65,15 +56,60 @@ export async function saveStorefrontDetails(formData: FormData) {
     themePreset,
     contactEmail,
     showPhone,
-    heroImageUrl,
+    heroImageUrl: storefront.heroImageUrl,
     draftConfig,
     existingDraftConfigRaw: storefront.draftConfig,
   });
 
   revalidatePath("/dashboard/website/details");
+  revalidatePath("/dashboard/website/branding");
   revalidatePath("/dashboard/website/studio");
+  revalidatePath("/dashboard/website/ai");
   revalidatePath(storefrontPublicPath(slug));
   redirect("/dashboard/website/details?saved=1");
+}
+
+export async function saveStorefrontBranding(formData: FormData) {
+  const { owner } = await requireOwnerWrite();
+  const removeHero = formData.get("removeHero") === "on";
+  const storefront = await ensureStorefront(owner.id, owner.businessName);
+
+  let heroImageUrl = storefront.heroImageUrl;
+  if (removeHero) heroImageUrl = null;
+  const heroFile = formData.get("heroImage");
+  if (heroFile instanceof File && heroFile.size > 0) {
+    try {
+      heroImageUrl = await uploadStorefrontHero(owner.id, heroFile);
+    } catch {
+      redirect("/dashboard/website/branding?error=1");
+    }
+  }
+
+  const themePreset = isStorefrontThemePreset(storefront.themePreset)
+    ? storefront.themePreset
+    : "market";
+  const draftConfig = parseStorefrontConfig(storefront.draftConfig);
+
+  await saveStorefrontDraftData({
+    ownerId: owner.id,
+    headline: storefront.headline ?? owner.businessName,
+    subheadline: storefront.subheadline,
+    about: storefront.about,
+    slug: storefront.slug,
+    themePreset,
+    contactEmail: storefront.contactEmail,
+    showPhone: storefront.showPhone,
+    heroImageUrl,
+    draftConfig,
+    existingDraftConfigRaw: storefront.draftConfig,
+  });
+
+  revalidatePath("/dashboard/website/branding");
+  revalidatePath("/dashboard/website/details");
+  revalidatePath("/dashboard/website/studio");
+  revalidatePath("/dashboard/website/ai");
+  revalidatePath(storefrontPublicPath(storefront.slug));
+  redirect("/dashboard/website/branding?saved=1");
 }
 
 export async function publishStorefrontAction() {

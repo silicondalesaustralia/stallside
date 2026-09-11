@@ -84,6 +84,31 @@ describe("dashboard IA (Phase 8C)", () => {
     );
   });
 
+  it("website hub leads with Web Studio create-flow", () => {
+    const hub = hubNavForPath("/dashboard/website/ai");
+    assert.ok(hub);
+    assert.equal(hub[0]?.label, "Web Studio");
+    assert.equal(hub[0]?.href, "/dashboard/website/details");
+    assert.ok(hub.some((i) => i.label === "Pages"));
+    assert.ok(hub.some((i) => i.label === "Domains"));
+    assert.equal(
+      hubNavItemActive("/dashboard/website/branding", hub[0]!),
+      true,
+    );
+    assert.equal(
+      hubNavItemActive("/dashboard/website/studio", hub[0]!),
+      true,
+    );
+    assert.equal(
+      hubNavItemActive("/dashboard/website/pages", hub[0]!),
+      false,
+    );
+    assert.equal(
+      dashLinkActive("/dashboard/website/ai", "/dashboard/website/details"),
+      true,
+    );
+  });
+
   it("mobile tabs simplify by mode", () => {
     assert.equal(mobileTabsForMode("FARM_STAND").length, 4);
     assert.equal(mobileTabsForMode("FOOD_BUSINESS").length, 5);

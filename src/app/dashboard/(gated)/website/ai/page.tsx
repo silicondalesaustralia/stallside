@@ -10,6 +10,7 @@ import { canUseAiWebsiteBuilder, aiWebsiteBuilderEnabled } from "@/lib/website-a
 import { buildWebsiteBusinessContext } from "@/lib/website-ai/business-context";
 import { assessWebsiteContext } from "@/lib/website-ai/assess-context";
 import AiBuilderForm from "@/components/website-ai/AiBuilderForm";
+import WebStudioSteps from "@/components/website/WebStudioSteps";
 import { publishAiWebsiteDraft } from "./actions";
 
 export default async function AiWebsiteBuilderPage({
@@ -22,16 +23,16 @@ export default async function AiWebsiteBuilderPage({
 
   if (!aiWebsiteBuilderEnabled()) {
     return (
-      <main className="flex flex-col gap-4 pb-8">
+      <main className="flex max-w-2xl flex-col gap-4 pb-8">
+        <WebStudioSteps />
         <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
-          AI website builder
+          AI builder
         </h1>
         <p className="text-sm text-[var(--muted)]">
-          This beta path is turned off in this environment. Classic Website Studio is
-          unchanged.
+          This beta path is turned off in this environment.
         </p>
         <Link href="/dashboard/website/studio" className="text-sm underline">
-          Open Website Studio
+          Open Edit layout
         </Link>
       </main>
     );
@@ -39,16 +40,16 @@ export default async function AiWebsiteBuilderPage({
 
   if (!canUseAiWebsiteBuilder(owner.id)) {
     return (
-      <main className="flex flex-col gap-4 pb-8">
+      <main className="flex max-w-2xl flex-col gap-4 pb-8">
+        <WebStudioSteps />
         <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
-          AI website builder
+          AI builder
         </h1>
         <p className="text-sm text-[var(--muted)]">
-          You&apos;re in the classic Studio cohort for this A/B test. Your existing builder
-          is unchanged.
+          You&apos;re in the classic Studio cohort for this A/B test.
         </p>
         <Link href="/dashboard/website/studio" className="text-sm underline">
-          Open Website Studio
+          Open Edit layout
         </Link>
       </main>
     );
@@ -68,12 +69,10 @@ export default async function AiWebsiteBuilderPage({
 
   return (
     <main className="flex max-w-2xl flex-col gap-6 pb-8">
+      <WebStudioSteps />
       <div>
-        <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
-          Beta · A/B path
-        </p>
-        <h1 className="mt-1 font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
-          Create your website
+        <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
+          AI builder
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
           We already know your business. Tell us what matters most — or let Vendl decide.
@@ -103,7 +102,7 @@ export default async function AiWebsiteBuilderPage({
               Preview website
             </a>
             <Link href="/dashboard/website/studio" className="underline text-[var(--muted)]">
-              Edit manually
+              Edit layout
             </Link>
             <form action={publishAiWebsiteDraft}>
               <button type="submit" className="underline text-[var(--muted)]">

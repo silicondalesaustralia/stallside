@@ -11,7 +11,15 @@ export type DecorativeImageAssets = {
 };
 
 function imageModel(): string {
-  return process.env.WEBSITE_AI_IMAGE_MODEL?.trim() || "dall-e-3";
+  return process.env.WEBSITE_AI_IMAGE_MODEL?.trim() || "gpt-image-2";
+}
+
+function imageQuality(): string {
+  return process.env.WEBSITE_AI_IMAGE_QUALITY?.trim() || "medium";
+}
+
+function imageSize(kind: "hero" | "story"): string {
+  return kind === "hero" ? "1536x1024" : "1024x1024";
 }
 
 function moodPrompt(
@@ -37,6 +45,7 @@ function moodPrompt(
 
 async function generateOneImage(
   key: string,
+  kind: "hero" | "story",
   prompt: string,
 ): Promise<{ bytes: Buffer; contentType: string }> {
   const res = await fetch("https://api.openai.com/v1/images/generations", {
@@ -49,9 +58,8 @@ async function generateOneImage(
       model: imageModel(),
       prompt,
       n: 1,
-      size: "1792x1024",
-      quality: "standard",
-      response_format: "b64_json",
+      size: imageSize(kind),
+      quality: imageQuality(),
     }),
   });
   if (!res.ok) {
@@ -105,8 +113,8 @@ export async function generateDecorativePlaceholders(
 
   try {
     const [heroImg, storyImg] = await Promise.all([
-      generateOneImage(key, heroSpec.prompt),
-      generateOneImage(key, storySpec.prompt),
+      generateOneImage(key, "hero", heroSpec.prompt),
+      generateOneImage(key, "story", storySpec.prompt),
     ]);
     const [heroUrl, storyUrl] = await Promise.all([
       uploadBytes(ctx.ownerId, "hero", heroImg.bytes, heroImg.contentType),

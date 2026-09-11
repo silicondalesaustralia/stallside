@@ -4,6 +4,7 @@ import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { extractWebsiteStudio, defaultTemplateId } from "@/lib/studio/storage";
 import { STUDIO_TEMPLATE_LIST } from "@/lib/studio/templates";
 import { normalizeBusinessMode } from "@/lib/business-mode";
+import WebStudioSteps from "@/components/website/WebStudioSteps";
 import { applyWebsiteStudioTemplate } from "../actions";
 
 export default async function WebsiteStudioTemplatesPage() {
@@ -14,10 +15,11 @@ export default async function WebsiteStudioTemplatesPage() {
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-8 pb-12">
+      <WebStudioSteps />
       <div>
         <p className="text-sm">
           <Link href="/dashboard/website/studio" className="font-semibold text-[var(--leaf-dark)] underline">
-            ← Back to editor
+            ← Back to Edit layout
           </Link>
         </p>
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold text-[var(--field)]">

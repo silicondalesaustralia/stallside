@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-/** Website hub root → Studio (Craft editor). */
+/** Website hub root → Web Studio create flow (business details). */
 export default function WebsitePage() {
-  redirect("/dashboard/website/studio");
+  redirect("/dashboard/website/details");
 }
