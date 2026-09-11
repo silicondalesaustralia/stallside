@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
+import { webStudioPath } from "@/lib/website/web-studio-nav";
 
-/** Website hub root → Web Studio create flow (business details). */
+/** Website hub root → Web Studio create flow. */
 export default function WebsitePage() {
-  redirect("/dashboard/website/details");
+  redirect(webStudioPath("details"));
 }

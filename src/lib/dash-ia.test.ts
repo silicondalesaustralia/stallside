@@ -88,7 +88,7 @@ describe("dashboard IA (Phase 8C)", () => {
     const hub = hubNavForPath("/dashboard/website/ai");
     assert.ok(hub);
     assert.equal(hub[0]?.label, "Web Studio");
-    assert.equal(hub[0]?.href, "/dashboard/website/details");
+    assert.equal(hub[0]?.href, "/dashboard/website/web-studio");
     assert.ok(hub.some((i) => i.label === "Pages"));
     assert.ok(hub.some((i) => i.label === "Domains"));
     assert.equal(
@@ -100,11 +100,15 @@ describe("dashboard IA (Phase 8C)", () => {
       true,
     );
     assert.equal(
+      hubNavItemActive("/dashboard/website/web-studio", hub[0]!),
+      true,
+    );
+    assert.equal(
       hubNavItemActive("/dashboard/website/pages", hub[0]!),
       false,
     );
     assert.equal(
-      dashLinkActive("/dashboard/website/ai", "/dashboard/website/details"),
+      dashLinkActive("/dashboard/website/ai", "/dashboard/website/web-studio"),
       true,
     );
   });

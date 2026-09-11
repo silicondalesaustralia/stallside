@@ -18,7 +18,7 @@ export default async function WebsiteStudioTemplatesPage() {
       <WebStudioSteps />
       <div>
         <p className="text-sm">
-          <Link href="/dashboard/website/studio" className="font-semibold text-[var(--leaf-dark)] underline">
+          <Link href="/dashboard/website/web-studio?tab=studio" className="font-semibold text-[var(--leaf-dark)] underline">
             ← Back to Edit layout
           </Link>
         </p>

@@ -24,8 +24,10 @@ import {
   mergeWebsiteAiScaffoldIntoRaw,
   WEBSITE_AI_SCAFFOLD_VERSION,
 } from "@/lib/website-ai/scaffold-storage";
+import { applySelectedPagesToDraft } from "@/lib/website-ai/apply-selected-pages";
 import type { BrandLookCombo } from "@/lib/website/brand-looks";
 import { getPalette } from "@/lib/website/brand-looks";
+import { webStudioPath } from "@/lib/website/web-studio-nav";
 
 export type AiGenerateState = {
   ok: boolean;
@@ -163,16 +165,23 @@ export async function buildAiWebsiteDraft(
       !Array.isArray(storefront.draftConfig)
         ? { ...(storefront.draftConfig as Record<string, unknown>) }
         : {};
-    const studioMerged = mergeWebsiteStudioIntoRaw(
+    const withPages = applySelectedPagesToDraft(
       baseRaw,
+      scaffold.intent.selectedPages ?? [],
+      scaffold.intent.selectedCapabilities ?? [],
+    );
+    const studioMerged = mergeWebsiteStudioIntoRaw(
+      withPages,
       generated.studio.templateId,
       generated.studio.nodes,
+      generated.studio.pageNodes,
     );
     const studioObj =
       studioMerged && typeof studioMerged === "object"
         ? (studioMerged as Record<string, unknown>)
         : {};
     const nextDraft: Record<string, unknown> = {
+      ...withPages,
       ...studioObj,
       themeOverrides: {
         ...baseConfig.themeOverrides,
@@ -217,10 +226,13 @@ export async function buildAiWebsiteDraft(
     });
 
     const previewPath = `${storefrontPublicPath(storefront.slug)}/studio-preview?draft=1`;
+    revalidatePath("/dashboard/website/web-studio");
     revalidatePath("/dashboard/website/ai");
     revalidatePath("/dashboard/website/studio");
     revalidatePath("/dashboard/website/details");
     revalidatePath("/dashboard/website/branding");
+    revalidatePath("/dashboard/website/pages");
+    revalidatePath("/dashboard/website/navigation");
     revalidatePath(previewPath);
 
     return {
@@ -249,12 +261,13 @@ export async function generateAiWebsiteDraft(
 export async function publishAiWebsiteDraft() {
   const { owner } = await requireOwnerWrite();
   if (!canUseAiWebsiteBuilder(owner.id)) {
-    redirect("/dashboard/website/studio");
+    redirect(webStudioPath("studio"));
   }
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   await publishStorefront(owner.id);
+  revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/ai");
   revalidatePath("/dashboard/website/studio");
   revalidatePath(storefrontPublicPath(storefront.slug));
-  redirect("/dashboard/website/ai?published=1");
+  redirect(webStudioPath("ai", { published: "1" }));
 }

@@ -16,10 +16,11 @@ import {
 } from "@/lib/studio/storage";
 import { validateStudioNodes } from "@/lib/studio/validate-state";
 import type { StudioTemplateId } from "@/lib/studio/types";
+import { webStudioPath } from "@/lib/website/web-studio-nav";
 
 function parseTemplateId(raw: string): StudioTemplateId {
   if (raw === "artisan" || raw === "farmhouse" || raw === "market") return raw;
-  redirect("/dashboard/website/studio?error=invalid");
+  redirect(webStudioPath("studio", { error: "invalid" }));
 }
 
 function parseNodesJson(nodesJson: string): SerializedNodes {
@@ -27,11 +28,11 @@ function parseNodesJson(nodesJson: string): SerializedNodes {
     const parsed = JSON.parse(nodesJson) as SerializedNodes;
     const validation = validateStudioNodes(parsed);
     if (!validation.ok) {
-      redirect("/dashboard/website/studio?error=invalid");
+      redirect(webStudioPath("studio", { error: "invalid" }));
     }
     return parsed;
   } catch {
-    redirect("/dashboard/website/studio?error=invalid");
+    redirect(webStudioPath("studio", { error: "invalid" }));
   }
 }
 
@@ -56,9 +57,10 @@ export async function saveWebsiteStudioDraft(nodesJson: string, templateIdRaw: s
   const nodes = parseNodesJson(nodesJson);
   const slug = await persistWebsiteStudioDraft(owner.id, owner.businessName, templateId, nodes);
 
+  revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/studio");
   revalidatePath(`${storefrontPublicPath(slug)}/studio-preview`);
-  redirect("/dashboard/website/studio?saved=1");
+  redirect(webStudioPath("studio", { saved: "1" }));
 }
 
 export async function publishWebsiteStudioDraft(nodesJson: string, templateIdRaw: string) {
@@ -68,9 +70,10 @@ export async function publishWebsiteStudioDraft(nodesJson: string, templateIdRaw
   const slug = await persistWebsiteStudioDraft(owner.id, owner.businessName, templateId, nodes);
   await publishStorefront(owner.id);
 
+  revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/studio");
   revalidatePath(`${storefrontPublicPath(slug)}/studio-preview`);
-  redirect("/dashboard/website/studio?published=1");
+  redirect(webStudioPath("studio", { published: "1" }));
 }
 
 export async function applyWebsiteStudioTemplate(templateIdRaw: string) {
@@ -89,9 +92,10 @@ export async function applyWebsiteStudioTemplate(templateIdRaw: string) {
       where: { ownerId: owner.id },
       data: { draftConfig: merged },
     });
+    revalidatePath("/dashboard/website/web-studio");
     revalidatePath("/dashboard/website/studio");
-    redirect("/dashboard/website/studio?template=applied");
+    redirect(webStudioPath("studio", { template: "applied" }));
   }
 
-  redirect(`/dashboard/website/studio?template=${templateId}`);
+  redirect(webStudioPath("studio", { template: templateId }));
 }

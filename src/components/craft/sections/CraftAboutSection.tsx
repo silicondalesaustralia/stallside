@@ -16,7 +16,7 @@ export default function CraftAboutSection(props: CraftAboutProps) {
   return (
     <div ref={(dom) => { if (dom) connect(drag(dom)); }}>
       <CraftSectionChrome>
-        <PuckAboutBlock {...props} />
+        <PuckAboutBlock {...props} editable />
       </CraftSectionChrome>
     </div>
   );

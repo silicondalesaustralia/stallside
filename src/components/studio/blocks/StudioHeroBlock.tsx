@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { shopPagePath } from "@/lib/storefront/paths";
 import type { HeroPreset } from "@/lib/studio/preset-registry";
+import InlineEditableText from "@/components/studio/InlineEditableText";
 
 type Props = {
   headline: string;
@@ -12,6 +15,7 @@ type Props = {
   showCta: boolean;
   metadata: StudioMetadata;
   isEditing?: boolean;
+  editable?: boolean;
   /** Optional section-level image (e.g. AI decorative placeholder). */
   backgroundImageUrl?: string | null;
 };
@@ -45,6 +49,60 @@ function resolveVariant(templateId: StudioMetadata["templateId"], layout: Props[
   return "background";
 }
 
+function HeroTitle({
+  editable,
+  value,
+  display,
+  className,
+  placeholder,
+}: {
+  editable?: boolean;
+  value: string;
+  display: string;
+  className: string;
+  placeholder?: string;
+}) {
+  if (editable) {
+    return (
+      <InlineEditableText
+        prop="headline"
+        value={value}
+        as="h1"
+        className={className}
+        placeholder={placeholder || "Add a headline"}
+      />
+    );
+  }
+  return <h1 className={className}>{display}</h1>;
+}
+
+function HeroSubtitle({
+  editable,
+  value,
+  display,
+  className,
+}: {
+  editable?: boolean;
+  value: string;
+  display: string;
+  className: string;
+}) {
+  if (editable) {
+    return (
+      <InlineEditableText
+        prop="supportingText"
+        value={value}
+        as="p"
+        className={className}
+        multiline
+        placeholder="Add supporting text"
+      />
+    );
+  }
+  if (!display) return null;
+  return <p className={className}>{display}</p>;
+}
+
 export default function StudioHeroBlock({
   headline,
   supportingText,
@@ -53,6 +111,7 @@ export default function StudioHeroBlock({
   showCta,
   metadata: meta,
   backgroundImageUrl,
+  editable = false,
 }: Props) {
   const variant = resolveVariant(meta.templateId, layout);
   const title = headline.trim() || meta.branding.headline;
@@ -61,6 +120,7 @@ export default function StudioHeroBlock({
   const shopHref = shopPagePath(meta.storefrontSlug, "shop", meta.draft, meta.basePath);
   const showButton = showCta && meta.products.length > 0;
   const templateClass = `studio-hero--${variant}`;
+  const brandHeadline = meta.branding.headline || "Add a headline";
 
   const cta = showButton ? (
     <Link href={shopHref} className="studio-btn studio-btn--primary">
@@ -76,8 +136,19 @@ export default function StudioHeroBlock({
             {variant === "promo" ? (
               <p className="studio-eyebrow text-[var(--leaf-dark)]">This week</p>
             ) : null}
-            <h1 className="studio-display text-3xl text-[var(--field)] sm:text-4xl">{title}</h1>
-            {subtitle ? <p className="mt-3 text-base text-[var(--muted)] sm:text-lg">{subtitle}</p> : null}
+            <HeroTitle
+              editable={editable}
+              value={headline}
+              display={title}
+              className="studio-display text-3xl text-[var(--field)] sm:text-4xl"
+              placeholder={brandHeadline}
+            />
+            <HeroSubtitle
+              editable={editable}
+              value={supportingText}
+              display={subtitle}
+              className="mt-3 text-base text-[var(--muted)] sm:text-lg"
+            />
           </div>
           {cta ? <div className="shrink-0">{cta}</div> : null}
         </div>
@@ -91,14 +162,34 @@ export default function StudioHeroBlock({
       <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--wash)]`}>
         <div className="mx-auto max-w-[var(--studio-content-max)] px-4 py-10 sm:px-8 sm:py-12">
           <p className="studio-eyebrow text-[var(--leaf-dark)]">Current menu</p>
-          <h1 className="studio-display mt-2 text-3xl text-[var(--field)] sm:text-4xl">
-            {menu?.title ?? title}
-          </h1>
-          {menu?.description ? (
-            <p className="mt-3 max-w-2xl text-[var(--muted)]">{menu.description}</p>
-          ) : subtitle ? (
-            <p className="mt-3 max-w-2xl text-[var(--muted)]">{subtitle}</p>
-          ) : null}
+          {editable ? (
+            <>
+              <HeroTitle
+                editable
+                value={headline}
+                display={title}
+                className="studio-display mt-2 text-3xl text-[var(--field)] sm:text-4xl"
+                placeholder={menu?.title || brandHeadline}
+              />
+              <HeroSubtitle
+                editable
+                value={supportingText}
+                display={subtitle}
+                className="mt-3 max-w-2xl text-[var(--muted)]"
+              />
+            </>
+          ) : (
+            <>
+              <h1 className="studio-display mt-2 text-3xl text-[var(--field)] sm:text-4xl">
+                {menu?.title ?? title}
+              </h1>
+              {menu?.description ? (
+                <p className="mt-3 max-w-2xl text-[var(--muted)]">{menu.description}</p>
+              ) : subtitle ? (
+                <p className="mt-3 max-w-2xl text-[var(--muted)]">{subtitle}</p>
+              ) : null}
+            </>
+          )}
           {cta ? <div className="mt-6">{cta}</div> : null}
         </div>
       </section>
@@ -111,8 +202,19 @@ export default function StudioHeroBlock({
       <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
         <div className="mx-auto grid max-w-[var(--studio-content-max)] gap-8 px-4 py-10 lg:grid-cols-2 lg:items-center sm:px-8">
           <div>
-            <h1 className="studio-display text-3xl text-[var(--field)] sm:text-4xl">{title}</h1>
-            {subtitle ? <p className="mt-3 text-[var(--muted)]">{subtitle}</p> : null}
+            <HeroTitle
+              editable={editable}
+              value={headline}
+              display={title}
+              className="studio-display text-3xl text-[var(--field)] sm:text-4xl"
+              placeholder={brandHeadline}
+            />
+            <HeroSubtitle
+              editable={editable}
+              value={supportingText}
+              display={subtitle}
+              className="mt-3 text-[var(--muted)]"
+            />
             {cta ? <div className="mt-6">{cta}</div> : null}
           </div>
           <ul className="grid grid-cols-2 gap-3">
@@ -138,8 +240,19 @@ export default function StudioHeroBlock({
           {meta.branding.regionLabel ? (
             <p className="studio-eyebrow text-[var(--site-accent,#a0522d)]">{meta.branding.regionLabel}</p>
           ) : null}
-          <h1 className="studio-display mt-2 text-4xl text-[var(--field)] sm:text-5xl">{title}</h1>
-          {subtitle ? <p className="mt-4 max-w-2xl text-lg text-[var(--muted)]">{subtitle}</p> : null}
+          <HeroTitle
+            editable={editable}
+            value={headline}
+            display={title}
+            className="studio-display mt-2 text-4xl text-[var(--field)] sm:text-5xl"
+            placeholder={brandHeadline}
+          />
+          <HeroSubtitle
+            editable={editable}
+            value={supportingText}
+            display={subtitle}
+            className="mt-4 max-w-2xl text-lg text-[var(--muted)]"
+          />
           <div className="mt-6 inline-flex flex-wrap gap-3">
             <span className="rounded-md border border-[var(--line)] bg-[var(--panel)] px-3 py-1.5 text-sm font-semibold text-[var(--field)]">
               Farm stand open
@@ -165,8 +278,19 @@ export default function StudioHeroBlock({
             {meta.branding.regionLabel ? (
               <p className="studio-eyebrow mb-3 text-white/80">{meta.branding.regionLabel}</p>
             ) : null}
-            <h1 className="studio-display text-4xl sm:text-5xl lg:text-6xl">{title}</h1>
-            {subtitle ? <p className="mt-4 text-lg leading-relaxed text-white/90 sm:text-xl">{subtitle}</p> : null}
+            <HeroTitle
+              editable={editable}
+              value={headline}
+              display={title}
+              className="studio-display text-4xl sm:text-5xl lg:text-6xl"
+              placeholder={brandHeadline}
+            />
+            <HeroSubtitle
+              editable={editable}
+              value={supportingText}
+              display={subtitle}
+              className="mt-4 text-lg leading-relaxed text-white/90 sm:text-xl"
+            />
             {cta ? <div className="mt-8">{cta}</div> : null}
           </div>
         </div>
@@ -182,8 +306,19 @@ export default function StudioHeroBlock({
             {meta.branding.regionLabel ? (
               <p className="studio-eyebrow text-[var(--leaf-dark)]">{meta.branding.regionLabel}</p>
             ) : null}
-            <h1 className="studio-display mt-2 text-4xl text-[var(--field)] sm:text-5xl">{title}</h1>
-            {subtitle ? <p className="mt-4 text-lg leading-relaxed text-[var(--muted)]">{subtitle}</p> : null}
+            <HeroTitle
+              editable={editable}
+              value={headline}
+              display={title}
+              className="studio-display mt-2 text-4xl text-[var(--field)] sm:text-5xl"
+              placeholder={brandHeadline}
+            />
+            <HeroSubtitle
+              editable={editable}
+              value={supportingText}
+              display={subtitle}
+              className="mt-4 text-lg leading-relaxed text-[var(--muted)]"
+            />
             {cta ? <div className="mt-8">{cta}</div> : null}
           </div>
           <div className="relative aspect-[4/3] bg-[var(--wash)] lg:aspect-auto lg:min-h-[28rem]">
@@ -207,8 +342,19 @@ export default function StudioHeroBlock({
           {meta.branding.regionLabel ? (
             <p className="studio-eyebrow text-[var(--leaf-dark)]">{meta.branding.regionLabel}</p>
           ) : null}
-          <h1 className="studio-display mt-2 text-4xl text-[var(--field)] sm:text-5xl">{title}</h1>
-          {subtitle ? <p className="mt-5 text-lg leading-relaxed text-[var(--muted)]">{subtitle}</p> : null}
+          <HeroTitle
+            editable={editable}
+            value={headline}
+            display={title}
+            className="studio-display mt-2 text-4xl text-[var(--field)] sm:text-5xl"
+            placeholder={brandHeadline}
+          />
+          <HeroSubtitle
+            editable={editable}
+            value={supportingText}
+            display={subtitle}
+            className="mt-5 text-lg leading-relaxed text-[var(--muted)]"
+          />
           {cta ? <div className="mt-8 flex justify-center">{cta}</div> : null}
         </div>
       </section>
@@ -225,8 +371,19 @@ export default function StudioHeroBlock({
           {meta.branding.regionLabel ? (
             <p className="studio-eyebrow text-[var(--leaf-dark)]">{meta.branding.regionLabel}</p>
           ) : null}
-          <h1 className="studio-display mt-2 text-4xl text-[var(--field)] sm:text-5xl">{title}</h1>
-          {subtitle ? <p className="mt-4 text-lg leading-relaxed text-[var(--muted)]">{subtitle}</p> : null}
+          <HeroTitle
+            editable={editable}
+            value={headline}
+            display={title}
+            className="studio-display mt-2 text-4xl text-[var(--field)] sm:text-5xl"
+            placeholder={brandHeadline}
+          />
+          <HeroSubtitle
+            editable={editable}
+            value={supportingText}
+            display={subtitle}
+            className="mt-4 text-lg leading-relaxed text-[var(--muted)]"
+          />
           {cta ? <div className="mt-8 flex justify-center">{cta}</div> : null}
         </div>
       </div>

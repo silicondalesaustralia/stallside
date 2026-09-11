@@ -1,20 +1,47 @@
+"use client";
+
+import InlineEditableText from "@/components/studio/InlineEditableText";
+
 type AboutProps = {
   heading: string;
   body: string;
   layout: "simple" | "card";
+  editable?: boolean;
 };
 
-export default function PuckAboutBlock({ heading, body, layout }: AboutProps) {
-  const inner = (
+export default function PuckAboutBlock({
+  heading,
+  body,
+  layout,
+  editable = false,
+}: AboutProps) {
+  const headingClass =
+    "font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]";
+  const bodyClass =
+    "mt-4 whitespace-pre-wrap text-lg leading-relaxed text-[var(--muted)]";
+
+  const inner = editable ? (
     <>
-      <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
-        {heading || "About us"}
-      </h2>
-      {body ? (
-        <p className="mt-4 whitespace-pre-wrap text-lg leading-relaxed text-[var(--muted)]">
-          {body}
-        </p>
-      ) : null}
+      <InlineEditableText
+        prop="heading"
+        value={heading}
+        as="h2"
+        className={headingClass}
+        placeholder="About us"
+      />
+      <InlineEditableText
+        prop="body"
+        value={body}
+        as="p"
+        className={bodyClass}
+        multiline
+        placeholder="Tell your story — click to edit"
+      />
+    </>
+  ) : (
+    <>
+      <h2 className={headingClass}>{heading || "About us"}</h2>
+      {body ? <p className={bodyClass}>{body}</p> : null}
     </>
   );
 

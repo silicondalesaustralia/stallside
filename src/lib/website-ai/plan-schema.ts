@@ -201,7 +201,7 @@ function normalizeNavigation(value: unknown): { label: string; pageType: Website
   if (!out.some((n) => n.pageType === "HOME")) {
     out.unshift({ label: "Home", pageType: "HOME" });
   }
-  return out.slice(0, 7);
+  return out.slice(0, 12);
 }
 
 function normalizeSiteStrategy(value: unknown): {

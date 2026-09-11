@@ -57,7 +57,7 @@ export default async function NewWebsiteQrPage() {
       {!storefront ? (
         <p className="text-sm text-[var(--warn)]">
           Set up your{" "}
-          <Link href="/dashboard/website/details" className="underline">
+          <Link href="/dashboard/website/web-studio?tab=details" className="underline">
             website details
           </Link>{" "}
           first so the QR can open your shop.

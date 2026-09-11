@@ -248,7 +248,17 @@ function buildNavigation(
   if (p.has("ABOUT")) nav.push({ label: "About", pageType: "ABOUT" });
   if (p.has("CONTACT")) nav.push({ label: "Contact", pageType: "CONTACT" });
   if (p.has("FAQ")) nav.push({ label: "FAQ", pageType: "FAQ" });
-  return nav.slice(0, 7);
+  if (p.has("BLOG")) nav.push({ label: "Blog", pageType: "BLOG" });
+  if (p.has("REVIEWS") && ctx.reviewCount > 0) {
+    nav.push({ label: "Reviews", pageType: "REVIEWS" });
+  }
+  if (p.has("PRIVACY")) nav.push({ label: "Privacy", pageType: "PRIVACY" });
+  if (p.has("TERMS")) nav.push({ label: "Terms", pageType: "TERMS" });
+  if (p.has("REFUNDS")) nav.push({ label: "Returns", pageType: "REFUNDS" });
+  if (p.has("DELIVERY_POLICY")) {
+    nav.push({ label: "Shipping", pageType: "DELIVERY_POLICY" });
+  }
+  return nav;
 }
 
 function extraPages(

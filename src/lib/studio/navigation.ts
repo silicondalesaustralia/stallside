@@ -104,32 +104,67 @@ export function navPoolItems(items: NavEditorItem[]): NavEditorItem[] {
   return items.filter((i) => i.enabled || i.placement === "blog");
 }
 
+export type StudioNavItem = {
+  slug: string;
+  label: string;
+  href: string;
+  children?: { slug: string; label: string; href: string }[];
+};
+
 export function buildStudioHeaderNav(
   pages: StorefrontCustomPage[],
   blogSettings: StorefrontBlogSettings,
   storefrontSlug: string,
   draft?: boolean,
   basePath?: string,
-): { slug: string; label: string; href: string }[] {
+): StudioNavItem[] {
   const items = buildNavEditorItems(pages, blogSettings);
-  return headerNavItems(items).map((item) => {
+  const flat = headerNavItems(items).map((item) => {
     if (item.placement === "blog") {
       return {
         slug: "blog",
         label: item.navLabel,
         href: shopBlogPath(storefrontSlug, draft, basePath),
+        footerColumn: "visit" as FooterColumnId,
       };
     }
     const page = pages.find((p) => p.id === item.key);
     if (!page) {
-      return { slug: item.key, label: item.navLabel, href: "#" };
+      return {
+        slug: item.key,
+        label: item.navLabel,
+        href: "#",
+        footerColumn: "visit" as FooterColumnId,
+      };
     }
     return {
       slug: page.slug,
       label: item.navLabel,
       href: customPagePublicPath(storefrontSlug, page, draft, basePath),
+      footerColumn: resolveFooterColumn(page),
     };
   });
+
+  const top: StudioNavItem[] = [];
+  const policies: { slug: string; label: string; href: string }[] = [];
+  for (const item of flat) {
+    if (item.footerColumn === "policies") {
+      policies.push({ slug: item.slug, label: item.label, href: item.href });
+    } else {
+      top.push({ slug: item.slug, label: item.label, href: item.href });
+    }
+  }
+  if (policies.length === 1) {
+    top.push(policies[0]!);
+  } else if (policies.length > 1) {
+    top.push({
+      slug: "policies",
+      label: "Policies",
+      href: policies[0]!.href,
+      children: policies,
+    });
+  }
+  return top;
 }
 
 export function applyNavigationLayout(

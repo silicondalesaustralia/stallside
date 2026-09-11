@@ -15,7 +15,7 @@ export default function CraftTextSection(props: CraftTextProps) {
   return (
     <div ref={(dom) => { if (dom) connect(drag(dom)); }}>
       <CraftSectionChrome>
-        <StudioTextBlock {...props} />
+        <StudioTextBlock {...props} editable />
       </CraftSectionChrome>
     </div>
   );

@@ -21,6 +21,7 @@ import {
 } from "@/lib/storefront/brand-asset-upload";
 import { isStorefrontThemePreset } from "@/lib/storefront/themes";
 import { parseAccentColor } from "@/lib/stand-brand";
+import { webStudioPath } from "@/lib/website/web-studio-nav";
 
 export async function saveStorefrontDetails(formData: FormData) {
   const { owner } = await requireOwnerWrite();
@@ -35,15 +36,15 @@ export async function saveStorefrontDetails(formData: FormData) {
     String(formData.get("contactEmail") ?? "").trim().slice(0, 200) || null;
   const showPhone = formData.get("showPhone") === "on";
 
-  if (!headline) redirect("/dashboard/website/details?error=headline");
-  if (!slugInput) redirect("/dashboard/website/details?error=slug");
+  if (!headline) redirect(webStudioPath("details", { error: "headline" }));
+  if (!slugInput) redirect(webStudioPath("details", { error: "slug" }));
 
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   let slug = storefront.slug;
   if (slugInput !== storefront.slug) {
     slug = await uniqueStorefrontSlug(slugInput, owner.id);
     if (slug !== slugInput) {
-      redirect("/dashboard/website/details?error=slug_taken");
+      redirect(webStudioPath("details", { error: "slug_taken" }));
     }
   }
 
@@ -66,12 +67,13 @@ export async function saveStorefrontDetails(formData: FormData) {
     existingDraftConfigRaw: storefront.draftConfig,
   });
 
+  revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/details");
   revalidatePath("/dashboard/website/branding");
   revalidatePath("/dashboard/website/studio");
   revalidatePath("/dashboard/website/ai");
   revalidatePath(storefrontPublicPath(slug));
-  redirect("/dashboard/website/details?saved=1");
+  redirect(webStudioPath("details", { saved: "1" }));
 }
 
 export async function saveStorefrontBranding(formData: FormData) {
@@ -93,7 +95,7 @@ export async function saveStorefrontBranding(formData: FormData) {
     try {
       heroImageUrl = await uploadStorefrontHero(owner.id, heroFile);
     } catch {
-      redirect("/dashboard/website/branding?error=1");
+      redirect(webStudioPath("branding", { error: "1" }));
     }
   }
 
@@ -104,7 +106,7 @@ export async function saveStorefrontBranding(formData: FormData) {
     try {
       faviconUrl = await uploadStorefrontFavicon(owner.id, faviconFile);
     } catch {
-      redirect("/dashboard/website/branding?error=1");
+      redirect(webStudioPath("branding", { error: "1" }));
     }
   }
 
@@ -115,7 +117,7 @@ export async function saveStorefrontBranding(formData: FormData) {
     try {
       logoUrl = await uploadStorefrontLogo(owner.id, logoFile);
     } catch {
-      redirect("/dashboard/website/branding?error=1");
+      redirect(webStudioPath("branding", { error: "1" }));
     }
   }
 
@@ -170,13 +172,14 @@ export async function saveStorefrontBranding(formData: FormData) {
     existingDraftConfigRaw: storefront.draftConfig,
   });
 
+  revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/branding");
   revalidatePath("/dashboard/website/details");
   revalidatePath("/dashboard/website/studio");
   revalidatePath("/dashboard/website/ai");
   revalidatePath("/dashboard/businesses");
   revalidatePath(storefrontPublicPath(storefront.slug));
-  redirect("/dashboard/website/branding?saved=1");
+  redirect(webStudioPath("branding", { saved: "1" }));
 }
 
 export async function publishStorefrontAction() {
@@ -186,10 +189,11 @@ export async function publishStorefrontAction() {
     where: { ownerId: owner.id },
   });
   await publishStorefront(owner.id);
+  revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/details");
   revalidatePath("/dashboard/website/studio");
   revalidatePath(storefrontPublicPath(sf.slug));
-  redirect("/dashboard/website/details?published=1");
+  redirect(webStudioPath("details", { published: "1" }));
 }
 
 export async function unpublishStorefrontAction() {
@@ -198,10 +202,11 @@ export async function unpublishStorefrontAction() {
     where: { ownerId: owner.id },
   });
   await unpublishStorefront(owner.id);
+  revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/details");
   revalidatePath("/dashboard/website/studio");
   revalidatePath(storefrontPublicPath(sf.slug));
-  redirect("/dashboard/website/details?unpublished=1");
+  redirect(webStudioPath("details", { unpublished: "1" }));
 }
 
 export async function saveStorefrontDomain(formData: FormData) {

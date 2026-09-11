@@ -39,6 +39,7 @@ export default function CraftHeroSection(props: CraftHeroProps) {
             backgroundImageUrl={backgroundImageUrl}
             metadata={metadata}
             isEditing
+            editable
           />
         ) : (
           <PuckHeroBlock

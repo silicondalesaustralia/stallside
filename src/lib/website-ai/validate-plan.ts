@@ -62,8 +62,8 @@ export function validateAiSitePlan(
     }
   }
 
-  if (plan.navigation.length > 7) {
-    errors.push("Navigation should have at most 7 primary items");
+  if (plan.navigation.length > 12) {
+    errors.push("Navigation should have at most 12 primary items");
   }
 
   validateModeSections(plan, ctx.businessMode, errors);

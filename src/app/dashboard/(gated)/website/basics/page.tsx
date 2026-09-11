@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
+import { webStudioPath } from "@/lib/website/web-studio-nav";
 
-/** Legacy Phase 4B editor removed — shop identity lives under Details. */
-export default function WebsiteBasicsRedirectPage() {
-  redirect("/dashboard/website/details");
+/** Legacy basics route → Web Studio business details tab. */
+export default function WebsiteBasicsRedirect() {
+  redirect(webStudioPath("details"));
 }

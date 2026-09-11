@@ -45,7 +45,7 @@ export default function StudioSettingsPanel() {
     return (
       <aside className="vendl-studio-settings vendl-studio-settings--empty">
         <p className="text-sm text-[var(--muted)]">
-          Click a section on your website to edit it.
+          Click text on the page to edit it. Select a section for layout options.
         </p>
       </aside>
     );
@@ -110,12 +110,9 @@ function HeroSettings({
 }) {
   return (
     <>
-      <Field label="Headline">
-        <input className={INPUT} value={props.headline} onChange={(e) => setProp("headline", e.target.value)} />
-      </Field>
-      <Field label="Text">
-        <textarea className={INPUT} rows={3} value={props.supportingText} onChange={(e) => setProp("supportingText", e.target.value)} />
-      </Field>
+      <p className="text-xs text-[var(--muted)]">
+        Edit the headline and text directly on the page.
+      </p>
       <Field label="Button">
         <input className={INPUT} value={props.ctaLabel} onChange={(e) => setProp("ctaLabel", e.target.value)} />
       </Field>
@@ -288,12 +285,9 @@ function TextSettings({
 }) {
   return (
     <>
-      <Field label="Heading">
-        <input className={INPUT} value={props.heading} onChange={(e) => setProp("heading", e.target.value)} />
-      </Field>
-      <Field label="Text">
-        <textarea className={INPUT} rows={5} value={props.body} onChange={(e) => setProp("body", e.target.value)} />
-      </Field>
+      <p className="text-xs text-[var(--muted)]">
+        Edit the heading and text directly on the page.
+      </p>
       <Field label="Alignment">
         <select className={INPUT} value={props.alignment} onChange={(e) => setProp("alignment", e.target.value)}>
           <option value="left">Left</option>
@@ -342,14 +336,11 @@ function ImageTextSettings({
 }) {
   return (
     <>
+      <p className="text-xs text-[var(--muted)]">
+        Edit the heading and text directly on the page.
+      </p>
       <Field label="Image URL">
         <input className={INPUT} value={props.imageUrl} onChange={(e) => setProp("imageUrl", e.target.value)} />
-      </Field>
-      <Field label="Heading">
-        <input className={INPUT} value={props.heading} onChange={(e) => setProp("heading", e.target.value)} />
-      </Field>
-      <Field label="Text">
-        <textarea className={INPUT} rows={4} value={props.body} onChange={(e) => setProp("body", e.target.value)} />
       </Field>
       <Field label="Button label">
         <input className={INPUT} value={props.ctaLabel} onChange={(e) => setProp("ctaLabel", e.target.value)} />
@@ -374,12 +365,9 @@ function AboutSettings({
 }) {
   return (
     <>
-      <Field label="Heading">
-        <input className={INPUT} value={props.heading} onChange={(e) => setProp("heading", e.target.value)} />
-      </Field>
-      <Field label="Story">
-        <textarea className={INPUT} rows={5} value={props.body} onChange={(e) => setProp("body", e.target.value)} />
-      </Field>
+      <p className="text-xs text-[var(--muted)]">
+        Edit the heading and story directly on the page.
+      </p>
       <Field label="Layout">
         <select className={INPUT} value={props.layout} onChange={(e) => setProp("layout", e.target.value)}>
           <option value="simple">Simple</option>

@@ -58,6 +58,9 @@ const ICONS: Record<string, React.ReactNode> = {
   "/dashboard/website": (
     <Icon d="M4 6h16v12H4zM4 9h16M8 13h8" />
   ),
+  "/dashboard/website/web-studio": (
+    <Icon d="M4 6h16v12H4zM4 9h16M8 13h8" />
+  ),
   "/dashboard/website/details": (
     <Icon d="M4 6h16v12H4zM4 9h16M8 13h8" />
   ),

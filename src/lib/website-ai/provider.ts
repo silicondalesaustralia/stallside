@@ -171,7 +171,7 @@ export async function finalizeWebsiteDraft(input: {
   }
 
   const compiled = compilePlanToStudioPayload(plan);
-  if (compiled.errors.length || !compiled.payload) {
+  if (!compiled.payload) {
     return {
       ok: false,
       error: "Failed to compile plan to studio nodes",

@@ -62,7 +62,7 @@ function CheckboxGroup({
   onToggle: (id: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
       {options.map((opt) => (
         <label
           key={opt.id}
@@ -78,7 +78,12 @@ function CheckboxGroup({
             className="mt-0.5"
           />
           <span>
-            <span className="text-[var(--field)]">{opt.label}</span>
+            <span className="font-medium text-[var(--field)]">{opt.label}</span>
+            {opt.description ? (
+              <span className="mt-0.5 block text-xs text-[var(--muted)]">
+                {opt.description}
+              </span>
+            ) : null}
             {opt.hint ? (
               <span className="mt-0.5 block text-xs text-[var(--muted)]">{opt.hint}</span>
             ) : null}
@@ -132,6 +137,30 @@ export default function AiBuilderForm({
     [capabilities, assessment.intake.showSampleProductsOption],
   );
 
+  const pageOptionsLive = useMemo(() => {
+    return assessment.pageOptions.map((opt) => {
+      if (opt.id === "SHOP") {
+        return {
+          ...opt,
+          disabled: false,
+          hint: capabilities.has("SHOP")
+            ? undefined
+            : "Also turns on Online shop / products",
+        };
+      }
+      if (opt.id === "DELIVERY_POLICY") {
+        return {
+          ...opt,
+          disabled: false,
+          hint: capabilities.has("DELIVERY")
+            ? undefined
+            : "Also turns on Delivery under selling",
+        };
+      }
+      return opt;
+    });
+  }, [assessment.pageOptions, capabilities]);
+
   const resolvedPreview = buildState.previewPath ?? previewPath;
 
   function toggle(set: Set<string>, id: string, locked?: boolean): Set<string> {
@@ -140,6 +169,52 @@ export default function AiBuilderForm({
     if (next.has(id)) next.delete(id);
     else next.add(id);
     return next;
+  }
+
+  function onTogglePage(id: string) {
+    const locked = pageOptionsLive.find((p) => p.id === id)?.disabled;
+    setPages((prev) => {
+      const next = toggle(prev, id, locked);
+      if (id === "SHOP" && next.has("SHOP")) {
+        setCapabilities((caps) => {
+          const c = new Set(caps);
+          c.add("SHOP");
+          return c;
+        });
+      }
+      if (id === "DELIVERY_POLICY" && next.has("DELIVERY_POLICY")) {
+        setCapabilities((caps) => {
+          const c = new Set(caps);
+          c.add("DELIVERY");
+          return c;
+        });
+      }
+      return next;
+    });
+  }
+
+  function onToggleCapability(id: string) {
+    const locked = assessment.capabilityOptions.find((c) => c.id === id)?.disabled;
+    setCapabilities((prev) => {
+      const next = toggle(prev, id, locked);
+      if (id === "SHOP") {
+        setPages((p) => {
+          const pagesNext = new Set(p);
+          if (next.has("SHOP")) pagesNext.add("SHOP");
+          else pagesNext.delete("SHOP");
+          return pagesNext;
+        });
+      }
+      if (id === "DELIVERY") {
+        setPages((p) => {
+          const pagesNext = new Set(p);
+          if (next.has("DELIVERY")) pagesNext.add("DELIVERY_POLICY");
+          else pagesNext.delete("DELIVERY_POLICY");
+          return pagesNext;
+        });
+      }
+      return next;
+    });
   }
 
   return (
@@ -157,7 +232,7 @@ export default function AiBuilderForm({
         )}
         <p className="mt-3 text-xs text-[var(--muted)]">
           Something wrong? Update{" "}
-          <Link href="/dashboard/website/details" className="underline">
+          <Link href="/dashboard/website/web-studio?tab=details" className="underline">
             Website details
           </Link>
           , products, or fulfilment — not here.
@@ -225,17 +300,9 @@ export default function AiBuilderForm({
                   </p>
                   <CheckboxGroup
                     name="page"
-                    options={assessment.pageOptions}
+                    options={pageOptionsLive}
                     selected={pages}
-                    onToggle={(id) =>
-                      setPages((prev) =>
-                        toggle(
-                          prev,
-                          id,
-                          assessment.pageOptions.find((p) => p.id === id)?.disabled,
-                        ),
-                      )
-                    }
+                    onToggle={onTogglePage}
                   />
                 </div>
                 <div>
@@ -246,15 +313,7 @@ export default function AiBuilderForm({
                     name="capability"
                     options={assessment.capabilityOptions}
                     selected={capabilities}
-                    onToggle={(id) =>
-                      setCapabilities((prev) =>
-                        toggle(
-                          prev,
-                          id,
-                          assessment.capabilityOptions.find((c) => c.id === id)?.disabled,
-                        ),
-                      )
-                    }
+                    onToggle={onToggleCapability}
                   />
                 </div>
               </div>
@@ -287,15 +346,15 @@ export default function AiBuilderForm({
               <div className="grid gap-6 rounded-md border border-[var(--border)] px-4 py-4 sm:grid-cols-2">
                 <CheckboxGroup
                   name="page"
-                  options={assessment.pageOptions}
+                  options={pageOptionsLive}
                   selected={pages}
-                  onToggle={(id) => setPages((prev) => toggle(prev, id))}
+                  onToggle={onTogglePage}
                 />
                 <CheckboxGroup
                   name="capability"
                   options={assessment.capabilityOptions}
                   selected={capabilities}
-                  onToggle={(id) => setCapabilities((prev) => toggle(prev, id))}
+                  onToggle={onToggleCapability}
                 />
               </div>
             ) : (
@@ -379,7 +438,7 @@ export default function AiBuilderForm({
           >
             {scaffoldPending ? "Building scaffold…" : "Build scaffold"}
           </button>
-          <Link href="/dashboard/website/studio" className="text-sm text-[var(--muted)] underline">
+          <Link href="/dashboard/website/web-studio?tab=studio" className="text-sm text-[var(--muted)] underline">
             Use classic editor instead
           </Link>
         </div>
@@ -438,7 +497,7 @@ export default function AiBuilderForm({
               Preview website
             </a>
             <Link
-              href="/dashboard/website/studio"
+              href="/dashboard/website/web-studio?tab=studio"
               className="rounded-md border border-[var(--border)] px-4 py-2 text-sm"
             >
               Edit layout

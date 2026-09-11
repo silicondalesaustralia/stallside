@@ -50,7 +50,7 @@ export function primaryNavForMode(modeInput?: string | null): DashNavItem[] {
   items.push(
     { href: "/dashboard/calendar", label: "Calendar" },
     { href: "/dashboard/marketing", label: "Marketing" },
-    { href: "/dashboard/website/details", label: "Website" },
+    { href: "/dashboard/website/web-studio", label: "Website" },
   );
 
   if (mode !== "FOOD_BUSINESS") {
@@ -150,7 +150,7 @@ export const MARKETING_HUB_NAV: HubNavItem[] = [
 /** Website hub — Web Studio create-flow first, then site tools. */
 export const WEBSITE_HUB_NAV: HubNavItem[] = [
   {
-    href: "/dashboard/website/details",
+    href: "/dashboard/website/web-studio",
     label: "Web Studio",
     matchPrefix: "/dashboard/website/web-studio",
   },
@@ -297,6 +297,7 @@ export function hubNavItemActive(pathname: string, item: HubNavItem): boolean {
   }
   if (item.matchPrefix === "/dashboard/website/web-studio") {
     return (
+      pathname.startsWith("/dashboard/website/web-studio") ||
       pathname.startsWith("/dashboard/website/details") ||
       pathname.startsWith("/dashboard/website/basics") ||
       pathname.startsWith("/dashboard/website/branding") ||
@@ -402,7 +403,7 @@ export function dashLinkActive(pathname: string, href: string) {
       pathname.startsWith("/dashboard/coupons")
     );
   }
-  if (base === "/dashboard/website/details" || base === "/dashboard/website") {
+  if (base === "/dashboard/website/web-studio" || base === "/dashboard/website/details" || base === "/dashboard/website") {
     return pathname.startsWith("/dashboard/website");
   }
   return pathname.startsWith(base);

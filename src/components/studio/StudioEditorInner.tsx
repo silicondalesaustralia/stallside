@@ -66,7 +66,7 @@ export default function StudioEditorInner({
   const template = resolveStudioTemplate(templateId, metadata.businessMode);
   const [viewportWidth, setViewportWidth] = useState(1280);
   const [addAtIndex, setAddAtIndex] = useState<number | null>(null);
-  const [paletteCollapsed, setPaletteCollapsed] = useState(false);
+  const [paletteCollapsed, setPaletteCollapsed] = useState(true);
   const [dirty, setDirty] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [pending, startTransition] = useTransition();
@@ -166,7 +166,7 @@ export default function StudioEditorInner({
 
   return (
     <StudioEditorProvider value={chrome}>
-      <div className="vendl-studio-editor overflow-hidden rounded-xl border border-[var(--line)] bg-[#f5f5f4]">
+      <div className="vendl-studio-editor vendl-studio-editor--preview-first overflow-hidden rounded-xl border border-[var(--line)] bg-[#f5f5f4]">
         <Editor
           resolver={studioResolver}
           indicator={{

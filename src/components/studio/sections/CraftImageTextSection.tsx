@@ -17,7 +17,11 @@ export default function CraftImageTextSection(props: CraftImageTextProps) {
   return (
     <div ref={(dom) => { if (dom) connect(drag(dom)); }}>
       <CraftSectionChrome>
-        <StudioImageTextBlock {...props} imageUrl={props.imageUrl || null} />
+        <StudioImageTextBlock
+          {...props}
+          imageUrl={props.imageUrl || null}
+          editable
+        />
       </CraftSectionChrome>
     </div>
   );

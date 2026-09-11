@@ -25,7 +25,7 @@ export type StudioMetadata = PuckSpikeMetadata & {
   reviews: StorefrontReviewView[];
   fulfilmentOptions: ShopFulfilmentOptionView[];
   standId: string;
-  customNavPages: { slug: string; label: string; href: string }[];
+  customNavPages: import("./navigation").StudioNavItem[];
   customFooterPages: {
     label: string;
     href: string;

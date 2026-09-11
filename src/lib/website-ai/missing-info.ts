@@ -24,7 +24,7 @@ export function computeMissingInformation(
       id: "NO_ABOUT",
       severity: "MUST_FIX",
       label: "Write your story on the About page (instructional copy must be replaced before publish)",
-      settingsLink: "/dashboard/website/details",
+      settingsLink: "/dashboard/website/web-studio?tab=details",
     });
   }
 
@@ -69,7 +69,7 @@ export function computeMissingInformation(
       id: "NO_HERO_IMAGE",
       severity: "IMPROVES_SITE",
       label: "Add a farm or business photo to strengthen the homepage",
-      settingsLink: "/dashboard/website/details",
+      settingsLink: "/dashboard/website/web-studio?tab=details",
     });
   }
 
