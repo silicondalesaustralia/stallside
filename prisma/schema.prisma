@@ -698,6 +698,8 @@ model Storefront {
   subheadline     String?
   about           String?
   heroImageUrl    String?
+  /** Browser tab icon for the shop storefront. */
+  faviconUrl      String?
   themePreset     String    @default("market")
   /** Working copy — saved on “Save draft”. */
   draftConfig     Json      @default("{}")

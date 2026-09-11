@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { parseAccentColor, darkenHex } from "@/lib/stand-brand";
 import { STOREFRONT_THEMES, isStorefrontThemePreset } from "@/lib/storefront/themes";
+import { getFontPair } from "@/lib/website/brand-looks";
 import type {
   ResolvedStorefrontBranding,
   StorefrontConfig,
@@ -35,6 +36,7 @@ type StorefrontBrandingSource = {
   subheadline: string | null;
   about: string | null;
   heroImageUrl: string | null;
+  faviconUrl?: string | null;
   themePreset: string;
   contactEmail: string | null;
   showPhone: boolean;
@@ -82,11 +84,14 @@ export function resolveStorefrontBranding(input: {
       input.owner.shortDescription?.trim() ||
       null,
     logoUrl: input.owner.brandLogoUrl ?? input.stand.logoUrl,
+    faviconUrl: input.storefront.faviconUrl ?? null,
     heroImageUrl: input.storefront.heroImageUrl,
     accentColor,
     secondaryColor,
     buttonStyle: overrides.buttonStyle ?? theme.buttonStyle,
     themePreset: preset,
+    paletteId: overrides.paletteId ?? null,
+    fontPairId: overrides.fontPairId ?? null,
     regionLabel: regionParts.length > 0 ? regionParts.join(", ") : null,
     contactEmail: input.storefront.contactEmail?.trim() || input.owner.contactEmail,
     contactPhone: input.storefront.showPhone ? input.owner.contactPhone : null,
@@ -102,6 +107,7 @@ export function resolveStorefrontBranding(input: {
 export function storefrontThemeStyle(
   branding: ResolvedStorefrontBranding,
 ): CSSProperties {
+  const fonts = getFontPair(branding.fontPairId);
   const style: Record<string, string> = {
     "--leaf": branding.accentColor,
     "--leaf-dark": darkenHex(branding.accentColor),
@@ -109,6 +115,11 @@ export function storefrontThemeStyle(
     "--stand-secondary": branding.secondaryColor,
     "--storefront-radius": STOREFRONT_THEMES[branding.themePreset].cardRadius,
   };
+  if (fonts && fonts.id !== "market-default") {
+    style["--font-display"] = fonts.displayFamily;
+    style["--font-body"] = fonts.bodyFamily;
+    style["--font-sans"] = fonts.bodyFamily;
+  }
   return style as CSSProperties;
 }
 

@@ -15,6 +15,10 @@ import {
 } from "@/lib/catalogue/storefront";
 import { parseStorefrontConfig } from "@/lib/storefront/config";
 import { uploadStorefrontHero } from "@/lib/storefront/hero-upload";
+import {
+  uploadStorefrontFavicon,
+  uploadStorefrontLogo,
+} from "@/lib/storefront/brand-asset-upload";
 import { isStorefrontThemePreset } from "@/lib/storefront/themes";
 
 export async function saveStorefrontDetails(formData: FormData) {
@@ -72,7 +76,14 @@ export async function saveStorefrontDetails(formData: FormData) {
 export async function saveStorefrontBranding(formData: FormData) {
   const { owner } = await requireOwnerWrite();
   const removeHero = formData.get("removeHero") === "on";
+  const removeLogo = formData.get("removeLogo") === "on";
+  const removeFavicon = formData.get("removeFavicon") === "on";
   const storefront = await ensureStorefront(owner.id, owner.businessName);
+  const stand = await prisma.stand.findFirst({
+    where: { ownerId: owner.id },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, logoUrl: true },
+  });
 
   let heroImageUrl = storefront.heroImageUrl;
   if (removeHero) heroImageUrl = null;
@@ -83,6 +94,39 @@ export async function saveStorefrontBranding(formData: FormData) {
     } catch {
       redirect("/dashboard/website/branding?error=1");
     }
+  }
+
+  let faviconUrl = storefront.faviconUrl;
+  if (removeFavicon) faviconUrl = null;
+  const faviconFile = formData.get("favicon");
+  if (faviconFile instanceof File && faviconFile.size > 0) {
+    try {
+      faviconUrl = await uploadStorefrontFavicon(owner.id, faviconFile);
+    } catch {
+      redirect("/dashboard/website/branding?error=1");
+    }
+  }
+
+  let logoUrl = owner.brandLogoUrl ?? stand?.logoUrl ?? null;
+  if (removeLogo) logoUrl = null;
+  const logoFile = formData.get("logo");
+  if (logoFile instanceof File && logoFile.size > 0) {
+    try {
+      logoUrl = await uploadStorefrontLogo(owner.id, logoFile);
+    } catch {
+      redirect("/dashboard/website/branding?error=1");
+    }
+  }
+
+  await prisma.owner.update({
+    where: { id: owner.id },
+    data: { brandLogoUrl: logoUrl },
+  });
+  if (stand) {
+    await prisma.stand.update({
+      where: { id: stand.id },
+      data: { logoUrl },
+    });
   }
 
   const themePreset = isStorefrontThemePreset(storefront.themePreset)
@@ -100,6 +144,7 @@ export async function saveStorefrontBranding(formData: FormData) {
     contactEmail: storefront.contactEmail,
     showPhone: storefront.showPhone,
     heroImageUrl,
+    faviconUrl,
     draftConfig,
     existingDraftConfigRaw: storefront.draftConfig,
   });
@@ -108,6 +153,7 @@ export async function saveStorefrontBranding(formData: FormData) {
   revalidatePath("/dashboard/website/details");
   revalidatePath("/dashboard/website/studio");
   revalidatePath("/dashboard/website/ai");
+  revalidatePath("/dashboard/businesses");
   revalidatePath(storefrontPublicPath(storefront.slug));
   redirect("/dashboard/website/branding?saved=1");
 }

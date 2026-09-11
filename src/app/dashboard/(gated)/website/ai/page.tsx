@@ -6,6 +6,7 @@ import {
   storefrontPublicPath,
 } from "@/lib/catalogue/storefront";
 import { extractWebsiteStudio } from "@/lib/studio/storage";
+import { extractWebsiteAiScaffold } from "@/lib/website-ai/scaffold-storage";
 import { canUseAiWebsiteBuilder, aiWebsiteBuilderEnabled } from "@/lib/website-ai/config";
 import { buildWebsiteBusinessContext } from "@/lib/website-ai/business-context";
 import { assessWebsiteContext } from "@/lib/website-ai/assess-context";
@@ -65,6 +66,7 @@ export default async function AiWebsiteBuilderPage({
   const businessContext = await buildWebsiteBusinessContext(ctx);
   const assessment = assessWebsiteContext(businessContext);
   const studio = extractWebsiteStudio(storefront.draftConfig);
+  const scaffold = extractWebsiteAiScaffold(storefront.draftConfig);
   const previewPath = `${storefrontPublicPath(storefront.slug)}/studio-preview?draft=1`;
 
   return (
@@ -75,7 +77,7 @@ export default async function AiWebsiteBuilderPage({
           AI builder
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          We already know your business. Tell us what matters most — or let Vendl decide.
+          Build a scaffold, pick a colour and font look, then generate your draft.
         </p>
       </div>
 
@@ -113,7 +115,11 @@ export default async function AiWebsiteBuilderPage({
         </div>
       ) : null}
 
-      <AiBuilderForm assessment={assessment} previewPath={previewPath} />
+      <AiBuilderForm
+        assessment={assessment}
+        previewPath={previewPath}
+        initialLooks={scaffold?.looks ?? []}
+      />
     </main>
   );
 }

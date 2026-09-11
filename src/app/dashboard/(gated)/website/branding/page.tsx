@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import WebStudioSteps from "@/components/website/WebStudioSteps";
 import BrandingForm from "./BrandingForm";
@@ -12,6 +13,12 @@ export default async function WebsiteBrandingPage({
   const { owner } = await requireOwner();
   const sp = await searchParams;
   const storefront = await ensureStorefront(owner.id, owner.businessName);
+  const stand = await prisma.stand.findFirst({
+    where: { ownerId: owner.id },
+    orderBy: { createdAt: "asc" },
+    select: { logoUrl: true },
+  });
+  const logoUrl = owner.brandLogoUrl ?? stand?.logoUrl ?? null;
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 pb-12">
@@ -21,12 +28,8 @@ export default async function WebsiteBrandingPage({
           Branding
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          Add a hero photo so your site feels like your business. Logo upload
-          stays in{" "}
-          <Link href="/dashboard/businesses" className="underline">
-            Locations
-          </Link>{" "}
-          for now.
+          Logo, favicon and hero photo. Colours and fonts are chosen when you
+          build with AI.
         </p>
       </div>
 
@@ -39,7 +42,11 @@ export default async function WebsiteBrandingPage({
         </p>
       ) : null}
 
-      <BrandingForm heroImageUrl={storefront.heroImageUrl} />
+      <BrandingForm
+        logoUrl={logoUrl}
+        faviconUrl={storefront.faviconUrl}
+        heroImageUrl={storefront.heroImageUrl}
+      />
 
       <p className="text-sm text-[var(--muted)]">
         Next:{" "}

@@ -43,6 +43,8 @@ export type StorefrontThemeOverrides = {
   accentColor?: string;
   secondaryColor?: string;
   buttonStyle?: "pill" | "rounded";
+  paletteId?: string;
+  fontPairId?: string;
 };
 
 export type StorefrontConfig = {
@@ -59,11 +61,14 @@ export type ResolvedStorefrontBranding = {
   subheadline: string | null;
   about: string | null;
   logoUrl: string | null;
+  faviconUrl: string | null;
   heroImageUrl: string | null;
   accentColor: string;
   secondaryColor: string;
   buttonStyle: "pill" | "rounded";
   themePreset: StorefrontThemePreset;
+  paletteId: string | null;
+  fontPairId: string | null;
   regionLabel: string | null;
   contactEmail: string;
   contactPhone: string | null;

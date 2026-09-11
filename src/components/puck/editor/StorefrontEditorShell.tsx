@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import StorefrontNav from "@/components/storefront/StorefrontNav";
+import StorefrontFontLoader from "@/components/storefront/StorefrontFontLoader";
 import { storefrontThemeStyle } from "@/lib/storefront/branding";
 import type { ResolvedStorefrontBranding } from "@/lib/storefront/types";
 import type { StorefrontPageId } from "@/lib/storefront/types";
@@ -34,6 +35,7 @@ export default function StorefrontEditorShell({
       className="min-h-full bg-[var(--wash)] text-[var(--ink)]"
       style={storefrontThemeStyle(branding)}
     >
+      <StorefrontFontLoader fontPairId={branding.fontPairId} />
       <StorefrontLinkProvider slug={storefrontSlug} basePath={basePath} draft>
         <StorefrontNav
           storefrontSlug={storefrontSlug}
@@ -44,18 +46,7 @@ export default function StorefrontEditorShell({
           draft
           basePath={basePath}
         />
-        <main>{children}</main>
-        <footer className="border-t border-[var(--line)] bg-[var(--panel)] px-4 py-10 text-center text-sm text-[var(--muted)]">
-          <p className="font-semibold text-[var(--field)]">{branding.businessName}</p>
-          {branding.regionLabel ? (
-            <p className="mt-1">{branding.regionLabel}</p>
-          ) : null}
-          <p className="mt-3">
-            <a href={`mailto:${branding.contactEmail}`} className="underline">
-              Contact
-            </a>
-          </p>
-        </footer>
+        <div className="pb-28">{children}</div>
       </StorefrontLinkProvider>
     </div>
   );

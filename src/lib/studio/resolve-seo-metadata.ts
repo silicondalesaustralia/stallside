@@ -91,6 +91,14 @@ export async function buildStorefrontPageMetadata(input: {
           ? { images: [{ url: input.branding.heroImageUrl ?? input.branding.logoUrl! }] }
           : {}),
     },
+    ...(input.branding.faviconUrl
+      ? {
+          icons: {
+            icon: [{ url: input.branding.faviconUrl }],
+            apple: input.branding.faviconUrl,
+          },
+        }
+      : {}),
   };
 }
 

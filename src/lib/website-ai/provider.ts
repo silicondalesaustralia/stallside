@@ -6,8 +6,11 @@ import { compilePlanToStudioPayload } from "./compile-nodes";
 import { computeMissingInformation } from "./missing-info";
 import { generateDecorativePlaceholders } from "./decorative-images";
 import { applyDecorativeImagesToPlan } from "./apply-decorative";
+import { applyLookToPlan } from "./apply-look";
+import { proposeBrandLooks, type BrandLookCombo } from "@/lib/website/brand-looks";
 import type { SiteGenerationInput, SiteGenerationResult, AISitePlan } from "./types";
 import type { StudioPayload } from "@/lib/studio/types";
+import type { StorefrontThemeOverrides } from "@/lib/storefront/types";
 
 export type WebsiteAIProvider = {
   createSitePlan(input: SiteGenerationInput): Promise<SiteGenerationResult>;
@@ -44,26 +47,15 @@ export function getWebsiteAIProvider(): WebsiteAIProvider {
   };
 }
 
-export type GenerateWebsiteDraftResult =
-  | {
-      ok: true;
-      plan: AISitePlan;
-      studio: StudioPayload;
-      provider: string;
-      model: string;
-      missing: { code: string; message: string }[];
-      decorativeHeroUrl?: string;
-    }
-  | { ok: false; error: string; details?: string[] };
-
-export async function generateWebsiteDraft(
+async function createValidatedPlan(
   input: SiteGenerationInput,
-): Promise<GenerateWebsiteDraftResult> {
+): Promise<
+  | { ok: true; plan: AISitePlan; provider: string; model: string }
+  | { ok: false; error: string; details?: string[] }
+> {
   const provider = getWebsiteAIProvider();
   const result = await provider.createSitePlan(input);
-  if (!result.ok) {
-    return { ok: false, error: result.error };
-  }
+  if (!result.ok) return { ok: false, error: result.error };
 
   let plan = result.plan;
   const validated = validateAiSitePlan(plan, input.businessContext);
@@ -81,6 +73,84 @@ export async function generateWebsiteDraft(
     plan = validated.plan;
   }
 
+  const missing = computeMissingInformation(
+    input.businessContext,
+    input.intent ?? {},
+  ).map((m) => ({
+    code: m.id,
+    message: m.label,
+    blocking: m.severity === "MUST_FIX",
+  }));
+  plan = { ...plan, missingInformation: missing };
+
+  return { ok: true, plan, provider: result.provider, model: result.model };
+}
+
+export type ScaffoldWebsiteResult =
+  | {
+      ok: true;
+      plan: AISitePlan;
+      looks: BrandLookCombo[];
+      provider: string;
+      model: string;
+      missing: { code: string; message: string }[];
+    }
+  | { ok: false; error: string; details?: string[] };
+
+/** Step 1: plan site shape + propose 3 colour/font looks (no Craft compile yet). */
+export async function scaffoldWebsiteDraft(
+  input: SiteGenerationInput,
+): Promise<ScaffoldWebsiteResult> {
+  const validated = await createValidatedPlan(input);
+  if (!validated.ok) return validated;
+
+  const looks = proposeBrandLooks({
+    stylePreference: input.intent?.stylePreference,
+    businessMode: input.businessContext.businessMode,
+  });
+
+  return {
+    ok: true,
+    plan: validated.plan,
+    looks,
+    provider: validated.provider,
+    model: validated.model,
+    missing: (validated.plan.missingInformation ?? []).map((m) => ({
+      code: m.code,
+      message: m.message,
+    })),
+  };
+}
+
+export type GenerateWebsiteDraftResult =
+  | {
+      ok: true;
+      plan: AISitePlan;
+      studio: StudioPayload;
+      provider: string;
+      model: string;
+      missing: { code: string; message: string }[];
+      decorativeHeroUrl?: string;
+      themeOverrides?: StorefrontThemeOverrides;
+      lookId?: string;
+    }
+  | { ok: false; error: string; details?: string[] };
+
+/** Step 2: apply look, optional decorative images, compile to Craft. */
+export async function finalizeWebsiteDraft(input: {
+  businessContext: SiteGenerationInput["businessContext"];
+  intent?: SiteGenerationInput["intent"];
+  plan: AISitePlan;
+  lookId: string;
+  provider?: string;
+  model?: string;
+}): Promise<GenerateWebsiteDraftResult> {
+  const applied = applyLookToPlan(input.plan, input.lookId);
+  if (!applied) {
+    return { ok: false, error: "Unknown look selection." };
+  }
+
+  let plan = applied.plan;
   let decorativeHeroUrl: string | undefined;
   if (input.intent?.useAiDecorativePlaceholders) {
     const assets = await generateDecorativePlaceholders(input.businessContext);
@@ -96,16 +166,6 @@ export async function generateWebsiteDraft(
     }
   }
 
-  const missing = computeMissingInformation(
-    input.businessContext,
-    input.intent ?? {},
-  ).map((m) => ({
-    code: m.id,
-    message: m.label,
-    blocking: m.severity === "MUST_FIX",
-  }));
-  plan = { ...plan, missingInformation: missing };
-
   const compiled = compilePlanToStudioPayload(plan);
   if (compiled.errors.length || !compiled.payload) {
     return {
@@ -119,9 +179,32 @@ export async function generateWebsiteDraft(
     ok: true,
     plan,
     studio: compiled.payload,
-    provider: result.provider,
-    model: result.model,
-    missing: missing.map((m) => ({ code: m.code, message: m.message })),
+    provider: input.provider ?? "heuristic",
+    model: input.model ?? "local",
+    missing: (plan.missingInformation ?? []).map((m) => ({
+      code: m.code,
+      message: m.message,
+    })),
     decorativeHeroUrl,
+    themeOverrides: applied.themeOverrides,
+    lookId: input.lookId,
   };
+}
+
+/** One-shot helper (tests / legacy): scaffold then finalize with top look. */
+export async function generateWebsiteDraft(
+  input: SiteGenerationInput,
+): Promise<GenerateWebsiteDraftResult> {
+  const scaffold = await scaffoldWebsiteDraft(input);
+  if (!scaffold.ok) return scaffold;
+  const lookId = scaffold.looks[0]?.id;
+  if (!lookId) return { ok: false, error: "No look options available." };
+  return finalizeWebsiteDraft({
+    businessContext: input.businessContext,
+    intent: input.intent,
+    plan: scaffold.plan,
+    lookId,
+    provider: scaffold.provider,
+    model: scaffold.model,
+  });
 }

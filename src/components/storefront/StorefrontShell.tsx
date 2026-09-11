@@ -3,6 +3,7 @@ import { storefrontThemeStyle } from "@/lib/storefront/branding";
 import type { ResolvedStorefrontBranding } from "@/lib/storefront/types";
 import StorefrontNav from "./StorefrontNav";
 import StorefrontOriginTracker from "./StorefrontOriginTracker";
+import StorefrontFontLoader from "./StorefrontFontLoader";
 import type { ShopFulfilmentOptionView } from "@/lib/fulfilment/shop-types";
 import StorefrontFulfilmentPicker from "./StorefrontFulfilmentPicker";
 import type { StorefrontPageId } from "@/lib/storefront/types";
@@ -39,6 +40,7 @@ export default async function StorefrontShell({
       className="min-h-full bg-[var(--wash)] text-[var(--ink)]"
       style={storefrontThemeStyle(branding)}
     >
+      <StorefrontFontLoader fontPairId={branding.fontPairId} />
       {!draft ? <StorefrontOriginTracker storefrontSlug={storefrontSlug} /> : null}
       {isDraftPreview ? (
         <div className="bg-[var(--field)] px-4 py-2 text-center text-xs font-semibold text-white">

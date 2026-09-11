@@ -3,11 +3,14 @@
 import { useActionState, useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  generateAiWebsiteDraft,
+  scaffoldAiWebsiteDraft,
+  buildAiWebsiteDraft,
   type AiGenerateState,
 } from "@/app/dashboard/(gated)/website/ai/actions";
 import type { WebsiteContextAssessment } from "@/lib/website-ai/assess-context";
 import type { CheckboxOption } from "@/lib/website-ai/capabilities";
+import type { BrandLookCombo } from "@/lib/website/brand-looks";
+import AiLookPicker from "./AiLookPicker";
 
 const initial: AiGenerateState = { ok: false };
 
@@ -89,11 +92,20 @@ function CheckboxGroup({
 export default function AiBuilderForm({
   assessment,
   previewPath,
+  initialLooks = [],
 }: {
   assessment: WebsiteContextAssessment;
   previewPath: string;
+  initialLooks?: BrandLookCombo[];
 }) {
-  const [state, action, pending] = useActionState(generateAiWebsiteDraft, initial);
+  const [scaffoldState, scaffoldAction, scaffoldPending] = useActionState(
+    scaffoldAiWebsiteDraft,
+    initial,
+  );
+  const [buildState, buildAction, buildPending] = useActionState(
+    buildAiWebsiteDraft,
+    initial,
+  );
   const [focus, setFocus] = useState("vendl-decide");
   const [feel, setFeel] = useState("vendl-decide");
   const [shapeOpen, setShapeOpen] = useState(assessment.siteShapeMode === "expanded");
@@ -106,13 +118,21 @@ export default function AiBuilderForm({
         assessment.capabilityOptions.filter((c) => c.defaultChecked).map((c) => c.id),
       ),
   );
+  const looks = scaffoldState.looks?.length ? scaffoldState.looks : initialLooks;
+  const [lookId, setLookId] = useState(looks[0]?.id ?? "");
+  const showLookStep =
+    (scaffoldState.ok && scaffoldState.phase === "scaffold") ||
+    (looks.length > 0 && buildState.phase !== "built");
+  const built = buildState.ok && buildState.phase === "built";
+  const pending = scaffoldPending || buildPending;
+  const error = buildState.error || scaffoldState.error;
 
   const showSamples = useMemo(
     () => capabilities.has("SHOP") && assessment.intake.showSampleProductsOption,
     [capabilities, assessment.intake.showSampleProductsOption],
   );
 
-  const resolvedPreview = state.previewPath ?? previewPath;
+  const resolvedPreview = buildState.previewPath ?? previewPath;
 
   function toggle(set: Set<string>, id: string, locked?: boolean): Set<string> {
     if (locked || id === "HOME") return set;
@@ -144,7 +164,7 @@ export default function AiBuilderForm({
         </p>
       </div>
 
-      <form action={action} encType="multipart/form-data" className="flex flex-col gap-5">
+      <form action={scaffoldAction} encType="multipart/form-data" className="flex flex-col gap-5">
         <fieldset className="flex flex-col gap-2">
           <legend className="text-sm font-medium text-[var(--field)]">
             What should your website focus on?
@@ -357,7 +377,7 @@ export default function AiBuilderForm({
             disabled={pending}
             className="rounded-md bg-[var(--field)] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
           >
-            {pending ? "Building your website…" : "Build my website"}
+            {scaffoldPending ? "Building scaffold…" : "Build scaffold"}
           </button>
           <Link href="/dashboard/website/studio" className="text-sm text-[var(--muted)] underline">
             Use classic editor instead
@@ -365,25 +385,45 @@ export default function AiBuilderForm({
         </div>
       </form>
 
-      {state.error ? (
+      {showLookStep && looks.length > 0 ? (
+        <form action={buildAction} className="flex flex-col gap-4 rounded-md border border-[var(--border)] px-4 py-4">
+          <p className="text-sm text-[var(--muted)]">
+            {scaffoldState.summary ?? "Scaffold ready — pick a look to finish."}
+          </p>
+          <AiLookPicker
+            looks={looks}
+            selectedId={lookId || looks[0]!.id}
+            onSelect={setLookId}
+          />
+          <button
+            type="submit"
+            disabled={pending || !(lookId || looks[0]?.id)}
+            className="w-fit rounded-md bg-[var(--field)] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+          >
+            {buildPending ? "Building your website…" : "Build site"}
+          </button>
+        </form>
+      ) : null}
+
+      {error ? (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
-          <p className="font-medium">We couldn&apos;t finish the website draft.</p>
-          <p className="mt-1">{state.error}</p>
+          <p className="font-medium">We couldn&apos;t finish this step.</p>
+          <p className="mt-1">{error}</p>
         </div>
       ) : null}
 
-      {state.ok ? (
+      {built ? (
         <div className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-4 text-sm">
           <p className="font-medium text-[var(--field)]">✓ Your draft website is ready.</p>
-          <p className="mt-1 text-[var(--muted)]">{state.summary}</p>
-          {state.provider ? (
+          <p className="mt-1 text-[var(--muted)]">{buildState.summary}</p>
+          {buildState.provider ? (
             <p className="mt-1 text-xs text-[var(--muted)]">
-              {state.designSystem} · {state.provider}
+              {buildState.designSystem} · {buildState.provider}
             </p>
           ) : null}
-          {state.missing?.length ? (
+          {buildState.missing?.length ? (
             <ul className="mt-3 list-disc pl-5 text-[var(--muted)]">
-              {state.missing.map((m) => (
+              {buildState.missing.map((m) => (
                 <li key={m.code}>{m.message}</li>
               ))}
             </ul>
@@ -401,7 +441,7 @@ export default function AiBuilderForm({
               href="/dashboard/website/studio"
               className="rounded-md border border-[var(--border)] px-4 py-2 text-sm"
             >
-              Edit manually
+              Edit layout
             </Link>
           </div>
         </div>

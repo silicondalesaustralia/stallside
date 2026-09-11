@@ -2,8 +2,9 @@
 
 import type { ReactNode } from "react";
 import { storefrontThemeStyle } from "@/lib/storefront/branding";
-import type { ResolvedStorefrontBranding, StorefrontPageId } from "@/lib/storefront/types";
+import type { StorefrontPageId } from "@/lib/storefront/types";
 import { StorefrontLinkProvider } from "@/components/storefront/StorefrontLinkProvider";
+import StorefrontFontLoader from "@/components/storefront/StorefrontFontLoader";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
 import StudioStorefrontNav from "./StudioStorefrontNav";
@@ -20,17 +21,19 @@ export default function StudioEditorShell({
 }) {
   const template = resolveStudioTemplate(metadata.templateId, metadata.businessMode);
   const enabledPages = metadata.enabledPages ?? DEFAULT_PAGES;
+  const branding = metadata.resolvedBranding;
 
   return (
     <div
       className={`min-h-full text-[var(--ink)] ${template.cssClass}`}
-      style={{ ...storefrontThemeStyle(metadata.resolvedBranding), ...template.style }}
+      style={{ ...storefrontThemeStyle(branding), ...template.style }}
     >
+      <StorefrontFontLoader fontPairId={branding.fontPairId} />
       <StorefrontLinkProvider slug={metadata.storefrontSlug} basePath={metadata.basePath} draft>
         <StudioStorefrontNav
           storefrontSlug={metadata.storefrontSlug}
           standSlug={metadata.standSlug}
-          branding={metadata.resolvedBranding}
+          branding={branding}
           activePage="home"
           enabledPages={enabledPages}
           draft
@@ -40,7 +43,7 @@ export default function StudioEditorShell({
         />
         <main>{children}</main>
         <StudioStorefrontFooter
-          branding={metadata.resolvedBranding}
+          branding={branding}
           storefrontSlug={metadata.storefrontSlug}
           enabledPages={enabledPages}
           draft

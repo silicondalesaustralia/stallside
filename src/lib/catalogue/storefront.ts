@@ -238,6 +238,7 @@ export async function saveStorefrontDraftData(input: {
   contactEmail: string | null;
   showPhone: boolean;
   heroImageUrl?: string | null;
+  faviconUrl?: string | null;
   draftConfig: StorefrontConfig;
   existingDraftConfigRaw?: unknown;
 }) {
@@ -264,6 +265,9 @@ export async function saveStorefrontDraftData(input: {
       showPhone: input.showPhone,
       ...(input.heroImageUrl !== undefined
         ? { heroImageUrl: input.heroImageUrl }
+        : {}),
+      ...(input.faviconUrl !== undefined
+        ? { faviconUrl: input.faviconUrl }
         : {}),
       draftConfig: mergedDraftConfig as unknown as Prisma.InputJsonValue,
     },
