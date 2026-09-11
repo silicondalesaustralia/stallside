@@ -1,4 +1,9 @@
-import { getLookCombo, getPalette, type BrandLookCombo } from "@/lib/website/brand-looks";
+import {
+  getLookCombo,
+  getPalette,
+  getFontPair,
+  type BrandLookCombo,
+} from "@/lib/website/brand-looks";
 import type { AISitePlan } from "./types";
 import type { StorefrontConfig } from "@/lib/storefront/types";
 
@@ -7,6 +12,7 @@ export function applyLookToPlan(
   plan: AISitePlan,
   lookId: string,
   looks?: BrandLookCombo[],
+  fontPairIdOverride?: string | null,
 ): { plan: AISitePlan; themeOverrides: StorefrontConfig["themeOverrides"] } | null {
   const look = looks?.find((l) => l.id === lookId) ?? getLookCombo(lookId);
   if (!look) return null;
@@ -14,6 +20,11 @@ export function applyLookToPlan(
   const accent = look.accentOverride ?? palette?.accent;
   const secondary = look.secondaryOverride ?? palette?.secondary;
   if (!accent || !secondary) return null;
+
+  const fontPairId =
+    fontPairIdOverride && getFontPair(fontPairIdOverride)
+      ? fontPairIdOverride
+      : look.fontPairId;
 
   return {
     plan: {
@@ -26,8 +37,7 @@ export function applyLookToPlan(
       accentColor: accent,
       secondaryColor: secondary,
       paletteId: look.accentOverride ? "custom" : look.paletteId,
-      // Colour pick step does not choose fonts — keep the default stack.
-      fontPairId: "market-default",
+      fontPairId,
     },
   };
 }

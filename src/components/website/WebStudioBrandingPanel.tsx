@@ -6,6 +6,7 @@ type Props = {
   heroImageUrl: string | null;
   accentColor: string;
   secondaryColor: string;
+  fontPairId?: string | null;
   flash?: { saved?: boolean; error?: boolean };
 };
 
@@ -15,6 +16,7 @@ export default function WebStudioBrandingPanel({
   heroImageUrl,
   accentColor,
   secondaryColor,
+  fontPairId,
   flash,
 }: Props) {
   return (
@@ -24,7 +26,7 @@ export default function WebStudioBrandingPanel({
           Branding
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          Logo, colours, favicon and hero. Change colours anytime — AI uses them when
+          Logo, colours, fonts, favicon and hero. Change these anytime — AI uses them when
           recommending looks.
         </p>
       </div>
@@ -39,12 +41,13 @@ export default function WebStudioBrandingPanel({
       ) : null}
 
       <BrandingForm
-        key={`branding-${logoUrl ?? ""}-${faviconUrl ?? ""}-${heroImageUrl ?? ""}`}
+        key={`branding-${logoUrl ?? ""}-${faviconUrl ?? ""}-${heroImageUrl ?? ""}-${fontPairId ?? ""}`}
         logoUrl={logoUrl}
         faviconUrl={faviconUrl}
         heroImageUrl={heroImageUrl}
         accentColor={accentColor}
         secondaryColor={secondaryColor}
+        fontPairId={fontPairId}
       />
 
       <p className="text-sm text-[var(--muted)]">

@@ -149,6 +149,7 @@ export async function buildAiWebsiteDraft(
   const lookId = String(formData.get("lookId") ?? "").trim();
   if (!lookId) return { ok: false, error: "Choose a look first." };
   const blueprintChoice = String(formData.get("blueprintId") ?? "vendl-choose").trim();
+  const fontPairId = String(formData.get("fontPairId") ?? "").trim() || null;
 
   try {
     const storefront = await ensureStorefront(owner.id, owner.businessName);
@@ -186,6 +187,7 @@ export async function buildAiWebsiteDraft(
       plan: replanned.plan,
       lookId,
       looks: scaffold.looks,
+      fontPairId,
       provider: replanned.provider,
       model: replanned.model,
     });

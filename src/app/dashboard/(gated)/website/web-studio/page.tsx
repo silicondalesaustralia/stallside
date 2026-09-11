@@ -131,6 +131,7 @@ export default async function WebStudioPage({
             heroImageUrl={storefront.heroImageUrl}
             accentColor={accentColor}
             secondaryColor={secondaryColor}
+            fontPairId={overrides?.fontPairId ?? "market-default"}
             flash={{
               saved: sp.saved === "1" && initialTab === "branding",
               error: initialTab === "branding" && Boolean(sp.error),

@@ -14,7 +14,7 @@
     "test:ops": "npx tsx --test src/lib/ops/ops.test.ts",
     "test:calendar": "npx tsx --test src/lib/calendar/calendar.test.ts",
     "test:ia": "npx tsx --test src/lib/dash-ia.test.ts",
-    "test:website-ai": "npx tsx --test src/lib/website-ai/website-ai.test.ts src/lib/website-ai/plan-normalize.test.ts src/lib/website-ai/layout-recipes.test.ts src/lib/website/blueprints/blueprints.test.ts",
+    "test:website-ai": "npx tsx --test src/lib/website-ai/website-ai.test.ts src/lib/website-ai/plan-normalize.test.ts src/lib/website-ai/layout-recipes.test.ts src/lib/website/blueprints/blueprints.test.ts src/lib/website/brand-looks.test.ts",
     "test:website-ai-astra": "npx tsx --tsconfig tsconfig.json scripts/test-website-ai-astra.ts",
     "seed:green-valley-demo": "npx tsx scripts/seed-green-valley-demo.ts",
     "db:generate": "prisma generate",

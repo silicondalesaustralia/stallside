@@ -1,4 +1,13 @@
 import type { StudioTemplateId } from "@/lib/studio/types";
+import { pickFontForMode } from "./brand-fonts";
+
+export type { BrandFontPair } from "./brand-fonts";
+export {
+  BRAND_FONT_PAIRS,
+  getFontPair,
+  listFontPairs,
+  pickFontForMode,
+} from "./brand-fonts";
 
 export type BrandPalette = {
   id: string;
@@ -6,16 +15,6 @@ export type BrandPalette = {
   accent: string;
   secondary: string;
   wash: string;
-};
-
-export type BrandFontPair = {
-  id: string;
-  label: string;
-  /** CSS font-family value for display / headlines */
-  displayFamily: string;
-  /** CSS font-family value for body */
-  bodyFamily: string;
-  googleFontsHref: string;
 };
 
 /** Curated look = palette + fonts + studio template. */
@@ -76,48 +75,6 @@ export const BRAND_PALETTES: BrandPalette[] = [
   },
 ];
 
-export const BRAND_FONT_PAIRS: BrandFontPair[] = [
-  {
-    id: "market-default",
-    label: "Market",
-    displayFamily: "var(--font-display), system-ui, sans-serif",
-    bodyFamily: "var(--font-body), system-ui, sans-serif",
-    googleFontsHref: "",
-  },
-  {
-    id: "orchard-serif",
-    label: "Orchard",
-    displayFamily: '"Fraunces", Georgia, serif',
-    bodyFamily: '"Source Sans 3", system-ui, sans-serif',
-    googleFontsHref:
-      "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600&display=swap",
-  },
-  {
-    id: "kiln-literata",
-    label: "Kiln",
-    displayFamily: '"Literata", Georgia, serif',
-    bodyFamily: '"Atkinson Hyperlegible", system-ui, sans-serif',
-    googleFontsHref:
-      "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Literata:opsz,wght@7..72,500;7..72,700&display=swap",
-  },
-  {
-    id: "coast-news",
-    label: "Coast",
-    displayFamily: '"Newsreader", Georgia, serif',
-    bodyFamily: '"Outfit", system-ui, sans-serif',
-    googleFontsHref:
-      "https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,700&family=Outfit:wght@400;600&display=swap",
-  },
-  {
-    id: "bold-syne",
-    label: "Bold",
-    displayFamily: '"Syne", system-ui, sans-serif',
-    bodyFamily: '"Outfit", system-ui, sans-serif',
-    googleFontsHref:
-      "https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&family=Syne:wght@600;700&display=swap",
-  },
-];
-
 /** Fixed catalog of recommended combinations (AI ranks 3 of these). */
 export const BRAND_LOOK_COMBOS: BrandLookCombo[] = [
   {
@@ -125,7 +82,7 @@ export const BRAND_LOOK_COMBOS: BrandLookCombo[] = [
     label: "Warm orchard",
     tagline: "Friendly farm energy with soft greens",
     paletteId: "orchard-green",
-    fontPairId: "market-default",
+    fontPairId: "orchard-serif",
     designSystem: "farmhouse",
   },
   {
@@ -133,7 +90,7 @@ export const BRAND_LOOK_COMBOS: BrandLookCombo[] = [
     label: "Quiet coast",
     tagline: "Calm blues with soft contrast",
     paletteId: "coast-ink",
-    fontPairId: "market-default",
+    fontPairId: "coast-news",
     designSystem: "artisan",
   },
   {
@@ -141,7 +98,7 @@ export const BRAND_LOOK_COMBOS: BrandLookCombo[] = [
     label: "Kiln craft",
     tagline: "Handcrafted warmth for makers",
     paletteId: "kiln-umber",
-    fontPairId: "market-default",
+    fontPairId: "kiln-literata",
     designSystem: "artisan",
   },
   {
@@ -149,7 +106,7 @@ export const BRAND_LOOK_COMBOS: BrandLookCombo[] = [
     label: "Berry table",
     tagline: "Rich food-led colour with soft contrast",
     paletteId: "berry-row",
-    fontPairId: "market-default",
+    fontPairId: "heritage-crimson",
     designSystem: "farmhouse",
   },
   {
@@ -157,7 +114,7 @@ export const BRAND_LOOK_COMBOS: BrandLookCombo[] = [
     label: "Meadow day",
     tagline: "Light sage and approachable greens",
     paletteId: "meadow-sage",
-    fontPairId: "market-default",
+    fontPairId: "friendly-nunito",
     designSystem: "market",
   },
   {
@@ -165,17 +122,13 @@ export const BRAND_LOOK_COMBOS: BrandLookCombo[] = [
     label: "Night stall",
     tagline: "Bold contrast for energetic brands",
     paletteId: "night-market",
-    fontPairId: "market-default",
+    fontPairId: "bold-syne",
     designSystem: "market",
   },
 ];
 
 export function getPalette(id: string | null | undefined): BrandPalette | undefined {
   return BRAND_PALETTES.find((p) => p.id === id);
-}
-
-export function getFontPair(id: string | null | undefined): BrandFontPair | undefined {
-  return BRAND_FONT_PAIRS.find((f) => f.id === id);
 }
 
 export function getLookCombo(id: string | null | undefined): BrandLookCombo | undefined {
@@ -222,11 +175,6 @@ function colourScore(seed: string | null | undefined, paletteAccent: string): nu
   if (dist < 45) return 2;
   if (dist < 70) return 1;
   return 0;
-}
-
-function pickFontForMode(_businessMode?: string): string {
-  // Colour recommendations only — site uses the default Vendl type stack for now.
-  return "market-default";
 }
 
 function pickTemplateForMode(businessMode?: string): StudioTemplateId {
@@ -293,7 +241,7 @@ export function proposeBrandLooks(input: {
       ? "Built from the colours you set (and your logo)"
       : "Keeps the primary and secondary you chose in Branding",
     paletteId: "orchard-green",
-    fontPairId: pickFontForMode(input.businessMode),
+    fontPairId: pickFontForMode(input.businessMode, input.stylePreference),
     designSystem: pickTemplateForMode(input.businessMode),
     accentOverride: seedAccent,
     secondaryOverride: seedSecondary,

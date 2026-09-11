@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { saveStorefrontBranding } from "../actions";
 import { sampleLogoColours } from "@/lib/website/sample-logo-colours";
+import FontPairPicker from "@/components/website/FontPairPicker";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
@@ -63,17 +64,20 @@ export default function BrandingForm({
   heroImageUrl,
   accentColor,
   secondaryColor,
+  fontPairId: initialFontPairId = "market-default",
 }: {
   logoUrl: string | null;
   faviconUrl: string | null;
   heroImageUrl: string | null;
   accentColor: string;
   secondaryColor: string;
+  fontPairId?: string | null;
 }) {
   const accentRef = useRef<HTMLInputElement>(null);
   const secondaryRef = useRef<HTMLInputElement>(null);
   const [sampleMsg, setSampleMsg] = useState<string | null>(null);
   const [sampling, setSampling] = useState(false);
+  const [fontPairId, setFontPairId] = useState(initialFontPairId || "market-default");
 
   async function onSampleLogo() {
     if (!logoUrl) return;
@@ -149,6 +153,8 @@ export default function BrandingForm({
         ) : null}
         {sampleMsg ? <p className="text-xs text-[var(--muted)]">{sampleMsg}</p> : null}
       </div>
+
+      <FontPairPicker selectedId={fontPairId} onSelect={setFontPairId} />
 
       <ImageField
         title="Favicon"

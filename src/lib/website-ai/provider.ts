@@ -146,10 +146,16 @@ export async function finalizeWebsiteDraft(input: {
   plan: AISitePlan;
   lookId: string;
   looks?: BrandLookCombo[];
+  fontPairId?: string | null;
   provider?: string;
   model?: string;
 }): Promise<GenerateWebsiteDraftResult> {
-  const applied = applyLookToPlan(input.plan, input.lookId, input.looks);
+  const applied = applyLookToPlan(
+    input.plan,
+    input.lookId,
+    input.looks,
+    input.fontPairId,
+  );
   if (!applied) {
     return { ok: false, error: "Unknown look selection." };
   }

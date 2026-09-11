@@ -23,6 +23,7 @@ import { isStorefrontThemePreset } from "@/lib/storefront/themes";
 import { parseAccentColor } from "@/lib/stand-brand";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
 import { clearHeroDecorativeFromDraftRaw } from "@/lib/studio/storage";
+import { getFontPair } from "@/lib/website/brand-looks";
 
 function removeFlag(formData: FormData, name: string): boolean {
   return formData.has(name);
@@ -160,6 +161,11 @@ export async function saveStorefrontBranding(formData: FormData) {
     ...draftConfig.themeOverrides,
     accentColor,
     secondaryColor,
+    fontPairId: (() => {
+      const raw = String(formData.get("fontPairId") ?? "").trim();
+      if (raw && getFontPair(raw)) return raw;
+      return draftConfig.themeOverrides?.fontPairId || "market-default";
+    })(),
   };
 
   let existingDraftConfigRaw: unknown = storefront.draftConfig;
