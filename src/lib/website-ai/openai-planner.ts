@@ -1,6 +1,7 @@
 import { aiSitePlanSchema } from "./plan-schema";
 import {
   openaiApiKey,
+  openaiApiKeyLooksInvalid,
   websiteAiModel,
   websiteAiProviderName,
   websiteAiReasoningEffort,
@@ -105,6 +106,14 @@ export async function planSiteWithOpenAI(
       provider,
     };
   }
+  if (openaiApiKeyLooksInvalid(key)) {
+    return {
+      ok: false,
+      error:
+        "OPENAI_API_KEY is set to a placeholder (expected a key starting with sk-). Update the Vercel env value, then redeploy the staging alias.",
+      provider,
+    };
+  }
 
   const effort = websiteAiReasoningEffort();
   const userContent = `Create a Vendl website plan for this business context:\n${JSON.stringify(compactContext(input))}`;
@@ -128,9 +137,21 @@ export async function planSiteWithOpenAI(
 
     if (!res.ok) {
       const text = await res.text().catch(() => "");
+      let detail = text.slice(0, 180);
+      try {
+        const parsed = JSON.parse(text) as { error?: { code?: string; message?: string } };
+        if (parsed.error?.code === "invalid_api_key") {
+          detail =
+            "invalid API key — confirm Vercel OPENAI_API_KEY starts with sk- and staging was redeployed after changing it";
+        } else if (parsed.error?.message) {
+          detail = parsed.error.message.slice(0, 180);
+        }
+      } catch {
+        /* keep raw slice */
+      }
       return {
         ok: false,
-        error: `OpenAI HTTP ${res.status}: ${text.slice(0, 280)}`,
+        error: `OpenAI HTTP ${res.status}: ${detail}`,
         provider,
       };
     }

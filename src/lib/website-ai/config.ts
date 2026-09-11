@@ -54,6 +54,14 @@ export function openaiApiKey(): string | null {
   return cleanEnvSecret(process.env.OPENAI_API_KEY);
 }
 
+/** True when the env value is the variable name / a non-key placeholder. */
+export function openaiApiKeyLooksInvalid(key: string | null): boolean {
+  if (!key) return true;
+  if (key === "OPENAI_API_KEY" || key === "$OPENAI_API_KEY") return true;
+  if (!key.startsWith("sk-")) return true;
+  return false;
+}
+
 function allowlistedOwnerIds(): Set<string> {
   const raw = process.env.AI_WEBSITE_BUILDER_OWNER_IDS?.trim() ?? "";
   if (!raw) return new Set();
