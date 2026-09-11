@@ -18,7 +18,8 @@ export function compileHomeNodes(plan: AISitePlan): SerializedNodes {
   const nodes: SerializedNodes = {} as SerializedNodes;
 
   home.sections.forEach((section, index) => {
-    const id = section.id || nodeId("sec", index);
+    const rawId = section.id || nodeId("sec", index);
+    const id = String(rawId).replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 64) || nodeId("sec", index);
     sectionIds.push(id);
     const craftType = AI_TO_CRAFT_SECTION[section.type];
     nodes[id] = {

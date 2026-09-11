@@ -8,6 +8,7 @@ import {
 } from "./storage";
 import { canInsertStudioSection } from "./section-registry";
 import { validateStudioNodes } from "./validate-state";
+import { findStudioCanvasParentId } from "./page-canvas";
 import {
   defaultHeroPreset,
   defaultProductPreset,
@@ -469,5 +470,67 @@ describe("studio validate-state", () => {
       },
     } as import("@craftjs/core").SerializedNodes);
     assert.equal(result.ok, true);
+  });
+});
+
+describe("findStudioCanvasParentId", () => {
+  it("finds nested CraftPageRoot canvas under ROOT", () => {
+    const nodes = {
+      ROOT: {
+        type: { resolvedName: "div" },
+        isCanvas: true,
+        props: {},
+        nodes: ["page"],
+        linkedNodes: {},
+        parent: null,
+      },
+      page: {
+        type: { resolvedName: "CraftPageRoot" },
+        isCanvas: true,
+        props: {},
+        nodes: ["hero"],
+        linkedNodes: {},
+        parent: "ROOT",
+      },
+      hero: {
+        type: { resolvedName: "CraftHeroSection" },
+        isCanvas: false,
+        props: { headline: "Hi" },
+        nodes: [],
+        linkedNodes: {},
+        parent: "page",
+      },
+    } as unknown as import("@craftjs/core").SerializedNodes;
+    assert.equal(findStudioCanvasParentId(nodes), "page");
+  });
+
+  it("finds flat AI canvas when sections hang off ROOT", () => {
+    const nodes = {
+      ROOT: {
+        type: { resolvedName: "CraftPageRoot" },
+        isCanvas: true,
+        props: {},
+        nodes: ["hero", "text"],
+        linkedNodes: {},
+        parent: null,
+      },
+      hero: {
+        type: { resolvedName: "CraftHeroSection" },
+        isCanvas: false,
+        props: { headline: "Hi" },
+        nodes: [],
+        linkedNodes: {},
+        parent: "ROOT",
+      },
+      text: {
+        type: { resolvedName: "CraftTextSection" },
+        isCanvas: false,
+        props: { body: "x" },
+        nodes: [],
+        linkedNodes: {},
+        parent: "ROOT",
+      },
+    } as unknown as import("@craftjs/core").SerializedNodes;
+    assert.equal(findStudioCanvasParentId(nodes), "ROOT");
   });
 });

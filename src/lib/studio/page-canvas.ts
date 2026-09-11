@@ -10,7 +10,12 @@ function resolvedName(
   return typeof node.type === "string" ? node.type : node.type?.resolvedName;
 }
 
-/** Craft page canvas node — sections live here, not under ROOT directly. */
+/**
+ * Parent id whose `nodes` array lists page sections.
+ * Supports:
+ * - Editor/demo: ROOT → CraftPageRoot(canvas) → sections
+ * - Flat AI compile: ROOT(CraftPageRoot) → sections
+ */
 export function findStudioCanvasParentId(nodes: SerializedNodes): string {
   const root = nodes[ROOT_NODE];
   if (!root?.nodes?.length) return ROOT_NODE;
@@ -19,10 +24,11 @@ export function findStudioCanvasParentId(nodes: SerializedNodes): string {
     const child = nodes[childId];
     const name = resolvedName(child);
     if (name && PAGE_ROOT_NAMES.has(name)) return childId;
-    if (child && "isCanvas" in child && child.isCanvas) return childId;
+    if (child?.isCanvas) return childId;
   }
 
-  return root.nodes[root.nodes.length - 1] ?? ROOT_NODE;
+  // Flat tree: sections hang directly off ROOT
+  return ROOT_NODE;
 }
 
 export function studioSectionInsertIndex(
