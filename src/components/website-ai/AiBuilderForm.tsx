@@ -20,41 +20,8 @@ import BlueprintStylePicker from "./BlueprintStylePicker";
 
 const initial: AiGenerateState = { ok: false };
 
-const FEEL_OPTIONS = [
-  { id: "vendl-decide", label: "Let Vendl decide" },
-  { id: "warm-local", label: "Warm & local" },
-  { id: "premium-handcrafted", label: "Premium & handcrafted" },
-  { id: "clean-modern", label: "Clean & modern" },
-  { id: "bold-energetic", label: "Bold & energetic" },
-] as const;
-
 const inputClass =
   "mt-1 w-full rounded-md border border-[var(--border)] bg-white px-3 py-2 text-sm";
-
-function ChoiceChip({
-  label,
-  selected,
-  onSelect,
-}: {
-  label: string;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onSelect}
-      aria-pressed={selected}
-      className={
-        selected
-          ? "rounded-md border border-[var(--field)] bg-[var(--field)] px-3 py-2 text-sm font-medium text-white"
-          : "rounded-md border border-[var(--border)] bg-white px-3 py-2 text-sm text-[var(--field)] hover:border-[var(--field)]"
-      }
-    >
-      {label}
-    </button>
-  );
-}
 
 function CheckboxGroup({
   name,
@@ -139,8 +106,6 @@ export default function AiBuilderForm({
     buildAiWebsiteDraft,
     initial,
   );
-  const [focus, setFocus] = useState("vendl-decide");
-  const [feel, setFeel] = useState("vendl-decide");
   const [blueprintId, setBlueprintId] = useState("vendl-choose");
   const [shapeOpen, setShapeOpen] = useState(assessment.siteShapeMode === "expanded");
   const [pages, setPages] = useState(
@@ -197,13 +162,9 @@ export default function AiBuilderForm({
         hasExistingStudio: false,
       },
       [...pages],
-      {
-        primaryGoal: focus !== "vendl-decide" ? focus : undefined,
-        stylePreference: feel !== "vendl-decide" ? feel : undefined,
-        selectedPages: [...pages],
-      },
+      { selectedPages: [...pages] },
     );
-  }, [scaffoldState, assessment.knownFacts, pages, focus, feel]);
+  }, [scaffoldState, assessment.knownFacts, pages]);
 
   const businessName = scaffoldState.businessName ?? "Your shop";
 
@@ -294,61 +255,16 @@ export default function AiBuilderForm({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="rounded-md border border-[var(--border)] px-4 py-4 text-sm">
-        <p className="font-medium text-[var(--field)]">{assessment.knownFacts.length ? "We'll build using:" : "We don't have much yet"}</p>
-        {assessment.knownFacts.length > 0 ? (
-          <ul className="mt-2 grid gap-1 text-[var(--field)] sm:grid-cols-2">
-            {assessment.knownFacts.map((fact) => (
-              <li key={fact}>✓ {fact}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-2 text-[var(--muted)]">Pick what to include below.</p>
-        )}
-        <p className="mt-3 text-xs text-[var(--muted)]">
-          Something wrong? Update{" "}
-          <Link href="/dashboard/website/web-studio?tab=details" className="underline">
-            Website details
-          </Link>
-          , products, or fulfilment — not here.
-        </p>
-      </div>
+      <p className="text-sm text-[var(--muted)]">
+        We use your{" "}
+        <Link href="/dashboard/website/web-studio?tab=details" className="underline">
+          Website details
+        </Link>
+        , products, and fulfilment automatically. Pick pages below, then choose a starting
+        style.
+      </p>
 
       <form action={scaffoldAction} encType="multipart/form-data" className="flex flex-col gap-5">
-        <fieldset className="flex flex-col gap-2">
-          <legend className="text-sm font-medium text-[var(--field)]">
-            What should your website focus on?
-          </legend>
-          <div className="flex flex-wrap gap-2">
-            {assessment.focusOptions.map((opt) => (
-              <ChoiceChip
-                key={opt.id}
-                label={opt.label}
-                selected={focus === opt.id}
-                onSelect={() => setFocus(opt.id)}
-              />
-            ))}
-          </div>
-          <input type="hidden" name="focus" value={focus} />
-        </fieldset>
-
-        <fieldset className="flex flex-col gap-2">
-          <legend className="text-sm font-medium text-[var(--field)]">
-            How should your website feel?
-          </legend>
-          <div className="flex flex-wrap gap-2">
-            {FEEL_OPTIONS.map((opt) => (
-              <ChoiceChip
-                key={opt.id}
-                label={opt.label}
-                selected={feel === opt.id}
-                onSelect={() => setFeel(opt.id)}
-              />
-            ))}
-          </div>
-          <input type="hidden" name="style" value={feel} />
-        </fieldset>
-
         {assessment.siteShapeMode !== "skipped" ? (
           <div className="rounded-md border border-[var(--border)] px-4 py-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -445,22 +361,8 @@ export default function AiBuilderForm({
           </>
         )}
 
-        <div className="flex flex-col gap-3 rounded-md border border-[var(--border)] px-4 py-4 text-sm">
-          <label className="flex items-start gap-2">
-            <input type="checkbox" name="aiPlaceholders" className="mt-0.5" />
-            <span>
-              <span className="font-medium text-[var(--field)]">
-                Use AI decorative images as placeholders
-              </span>
-              <span className="mt-0.5 block text-xs text-[var(--muted)]">
-                Mood images for hero and story, plus a text logo from your business name.
-                {assessment.intake.nudgeDecorativeImages
-                  ? " Your draft will look emptier without images."
-                  : ""}
-              </span>
-            </span>
-          </label>
-          {showSamples ? (
+        {showSamples ? (
+          <div className="rounded-md border border-[var(--border)] px-4 py-4 text-sm">
             <label className="flex items-start gap-2">
               <input type="checkbox" name="sampleProducts" className="mt-0.5" />
               <span>
@@ -472,8 +374,8 @@ export default function AiBuilderForm({
                 </span>
               </span>
             </label>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
 
         <label className="flex flex-col gap-1.5">
           <span className="text-sm font-medium text-[var(--field)]">
