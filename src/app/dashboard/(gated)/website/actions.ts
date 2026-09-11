@@ -22,6 +22,11 @@ import {
 import { isStorefrontThemePreset } from "@/lib/storefront/themes";
 import { parseAccentColor } from "@/lib/stand-brand";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
+import { clearHeroDecorativeFromDraftRaw } from "@/lib/studio/storage";
+
+function removeFlag(formData: FormData, name: string): boolean {
+  return formData.has(name);
+}
 
 export async function saveStorefrontDetails(formData: FormData) {
   const { owner } = await requireOwnerWrite();
@@ -78,9 +83,9 @@ export async function saveStorefrontDetails(formData: FormData) {
 
 export async function saveStorefrontBranding(formData: FormData) {
   const { owner } = await requireOwnerWrite();
-  const removeHero = formData.get("removeHero") === "on";
-  const removeLogo = formData.get("removeLogo") === "on";
-  const removeFavicon = formData.get("removeFavicon") === "on";
+  const removeHero = removeFlag(formData, "removeHero");
+  const removeLogo = removeFlag(formData, "removeLogo");
+  const removeFavicon = removeFlag(formData, "removeFavicon");
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const stand = await prisma.stand.findFirst({
     where: { ownerId: owner.id },
@@ -91,7 +96,7 @@ export async function saveStorefrontBranding(formData: FormData) {
   let heroImageUrl = storefront.heroImageUrl;
   if (removeHero) heroImageUrl = null;
   const heroFile = formData.get("heroImage");
-  if (heroFile instanceof File && heroFile.size > 0) {
+  if (!removeHero && heroFile instanceof File && heroFile.size > 0) {
     try {
       heroImageUrl = await uploadStorefrontHero(owner.id, heroFile);
     } catch {
@@ -102,7 +107,7 @@ export async function saveStorefrontBranding(formData: FormData) {
   let faviconUrl = storefront.faviconUrl;
   if (removeFavicon) faviconUrl = null;
   const faviconFile = formData.get("favicon");
-  if (faviconFile instanceof File && faviconFile.size > 0) {
+  if (!removeFavicon && faviconFile instanceof File && faviconFile.size > 0) {
     try {
       faviconUrl = await uploadStorefrontFavicon(owner.id, faviconFile);
     } catch {
@@ -113,7 +118,7 @@ export async function saveStorefrontBranding(formData: FormData) {
   let logoUrl = owner.brandLogoUrl ?? stand?.logoUrl ?? null;
   if (removeLogo) logoUrl = null;
   const logoFile = formData.get("logo");
-  if (logoFile instanceof File && logoFile.size > 0) {
+  if (!removeLogo && logoFile instanceof File && logoFile.size > 0) {
     try {
       logoUrl = await uploadStorefrontLogo(owner.id, logoFile);
     } catch {
@@ -157,6 +162,11 @@ export async function saveStorefrontBranding(formData: FormData) {
     secondaryColor,
   };
 
+  let existingDraftConfigRaw: unknown = storefront.draftConfig;
+  if (removeHero) {
+    existingDraftConfigRaw = clearHeroDecorativeFromDraftRaw(storefront.draftConfig);
+  }
+
   await saveStorefrontDraftData({
     ownerId: owner.id,
     headline: storefront.headline ?? owner.businessName,
@@ -169,7 +179,7 @@ export async function saveStorefrontBranding(formData: FormData) {
     heroImageUrl,
     faviconUrl,
     draftConfig,
-    existingDraftConfigRaw: storefront.draftConfig,
+    existingDraftConfigRaw,
   });
 
   revalidatePath("/dashboard/website/web-studio");

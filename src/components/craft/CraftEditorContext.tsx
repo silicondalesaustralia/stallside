@@ -28,6 +28,10 @@ export type CraftEditorChrome = {
   paletteCollapsed?: boolean;
   setPaletteCollapsed?: (v: boolean) => void;
   commercePageKind?: CommercePageKind | null;
+  /** Where the editor is mounted — storefront-preview uses exit-to-view chrome. */
+  surface?: "dashboard" | "storefront-preview";
+  /** Read-only preview URL (no edit=1) when editing on the public route. */
+  viewPreviewUrl?: string;
 };
 
 const CraftEditorContext = createContext<CraftEditorChrome | null>(null);

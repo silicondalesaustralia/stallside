@@ -151,6 +151,52 @@ export function mergeWebsiteStudioPageIntoRaw(
   return { ...base, websiteStudio } as Prisma.InputJsonValue;
 }
 
+function nodeResolvedName(node: unknown): string | undefined {
+  if (!node || typeof node !== "object") return undefined;
+  const type = (node as { type?: { resolvedName?: string } | string }).type;
+  return typeof type === "string" ? type : type?.resolvedName;
+}
+
+/** Strip section-level hero images so branding remove actually clears the canvas. */
+export function clearHeroDecorativeFromNodes(
+  nodes: SerializedNodes,
+): SerializedNodes {
+  const next: SerializedNodes = { ...nodes };
+  for (const [id, node] of Object.entries(nodes)) {
+    if (nodeResolvedName(node) !== "CraftHeroSection") continue;
+    const props = {
+      ...((node as { props?: Record<string, unknown> }).props ?? {}),
+    };
+    delete props.decorativeImageUrl;
+    delete props.imageUrl;
+    next[id] = { ...node, props } as (typeof nodes)[string];
+  }
+  return next;
+}
+
+/** Clear hero decorative URLs from homepage (+ home pageNodes) in draft JSON. */
+export function clearHeroDecorativeFromDraftRaw(
+  existingRaw: unknown,
+): unknown {
+  const studio = extractWebsiteStudio(existingRaw);
+  if (!studio) return existingRaw;
+  const nodes = clearHeroDecorativeFromNodes(studio.nodes);
+  const pageNodes = studio.pageNodes
+    ? {
+        ...studio.pageNodes,
+        [STUDIO_HOME_PAGE_KEY]: clearHeroDecorativeFromNodes(
+          studio.pageNodes[STUDIO_HOME_PAGE_KEY] ?? studio.nodes,
+        ),
+      }
+    : undefined;
+  return mergeWebsiteStudioIntoRaw(
+    existingRaw,
+    studio.templateId,
+    nodes,
+    pageNodes,
+  );
+}
+
 export function readStudioFromStorefrontJson(
   raw: unknown,
   usePublished: boolean,

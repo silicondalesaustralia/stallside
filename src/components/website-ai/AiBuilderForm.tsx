@@ -10,6 +10,7 @@ import {
 import type { WebsiteContextAssessment } from "@/lib/website-ai/assess-context";
 import type { CheckboxOption } from "@/lib/website-ai/capabilities";
 import type { BrandLookCombo } from "@/lib/website/brand-looks";
+import { LAYOUT_RECIPES } from "@/lib/website-ai/layout-recipes";
 import AiLookPicker from "./AiLookPicker";
 
 const initial: AiGenerateState = { ok: false };
@@ -20,6 +21,11 @@ const FEEL_OPTIONS = [
   { id: "premium-handcrafted", label: "Premium & handcrafted" },
   { id: "clean-modern", label: "Clean & modern" },
   { id: "bold-energetic", label: "Bold & energetic" },
+] as const;
+
+const LAYOUT_OPTIONS = [
+  { id: "vendl-decide", label: "Let Vendl decide" },
+  ...LAYOUT_RECIPES.map((r) => ({ id: r.id, label: r.label })),
 ] as const;
 
 const inputClass =
@@ -63,33 +69,55 @@ function CheckboxGroup({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      {options.map((opt) => (
-        <label
-          key={opt.id}
-          className={`flex items-start gap-2 text-sm ${opt.disabled ? "opacity-50" : ""}`}
-        >
-          <input
-            type="checkbox"
-            name={name}
-            value={opt.id}
-            checked={selected.has(opt.id)}
-            disabled={opt.disabled}
-            onChange={() => onToggle(opt.id)}
-            className="mt-0.5"
-          />
-          <span>
-            <span className="font-medium text-[var(--field)]">{opt.label}</span>
-            {opt.description ? (
-              <span className="mt-0.5 block text-xs text-[var(--muted)]">
-                {opt.description}
+      {options.map((opt) => {
+        if (opt.id === "HOME") {
+          return (
+            <div key={opt.id} className="flex items-start gap-2 text-sm">
+              <span
+                className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded border border-[var(--field)] bg-[var(--field)] text-[10px] font-bold text-white"
+                aria-hidden
+              >
+                ✓
               </span>
-            ) : null}
-            {opt.hint ? (
-              <span className="mt-0.5 block text-xs text-[var(--muted)]">{opt.hint}</span>
-            ) : null}
-          </span>
-        </label>
-      ))}
+              <span>
+                <span className="font-medium text-[var(--field)]">{opt.label}</span>
+                <span className="mt-0.5 block text-xs text-[var(--muted)]">
+                  {opt.hint ?? "Always included"}
+                  {opt.description ? ` — ${opt.description}` : ""}
+                </span>
+                <input type="hidden" name={name} value="HOME" />
+              </span>
+            </div>
+          );
+        }
+        return (
+          <label
+            key={opt.id}
+            className={`flex items-start gap-2 text-sm ${opt.disabled ? "opacity-50" : ""}`}
+          >
+            <input
+              type="checkbox"
+              name={name}
+              value={opt.id}
+              checked={selected.has(opt.id)}
+              disabled={opt.disabled}
+              onChange={() => onToggle(opt.id)}
+              className="mt-0.5"
+            />
+            <span>
+              <span className="font-medium text-[var(--field)]">{opt.label}</span>
+              {opt.description ? (
+                <span className="mt-0.5 block text-xs text-[var(--muted)]">
+                  {opt.description}
+                </span>
+              ) : null}
+              {opt.hint ? (
+                <span className="mt-0.5 block text-xs text-[var(--muted)]">{opt.hint}</span>
+              ) : null}
+            </span>
+          </label>
+        );
+      })}
     </div>
   );
 }
@@ -113,6 +141,7 @@ export default function AiBuilderForm({
   );
   const [focus, setFocus] = useState("vendl-decide");
   const [feel, setFeel] = useState("vendl-decide");
+  const [layout, setLayout] = useState("vendl-decide");
   const [shapeOpen, setShapeOpen] = useState(assessment.siteShapeMode === "expanded");
   const [pages, setPages] = useState(
     () => new Set(assessment.pageOptions.filter((p) => p.defaultChecked).map((p) => p.id)),
@@ -272,6 +301,26 @@ export default function AiBuilderForm({
             ))}
           </div>
           <input type="hidden" name="style" value={feel} />
+        </fieldset>
+
+        <fieldset className="flex flex-col gap-2">
+          <legend className="text-sm font-medium text-[var(--field)]">
+            Homepage layout
+          </legend>
+          <p className="text-xs text-[var(--muted)]">
+            Section order inspired by proven storefronts — you can rearrange after build.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {LAYOUT_OPTIONS.map((opt) => (
+              <ChoiceChip
+                key={opt.id}
+                label={opt.label}
+                selected={layout === opt.id}
+                onSelect={() => setLayout(opt.id)}
+              />
+            ))}
+          </div>
+          <input type="hidden" name="layout" value={layout} />
         </fieldset>
 
         {assessment.siteShapeMode !== "skipped" ? (

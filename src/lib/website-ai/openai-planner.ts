@@ -30,6 +30,7 @@ function compactContext(input: SiteGenerationInput) {
     featuredProducts: c.featuredProducts.map((x) => x.title),
     selectedPages: intent?.selectedPages ?? null,
     selectedCapabilities: intent?.selectedCapabilities ?? null,
+    layoutRecipe: intent?.layoutRecipe ?? null,
     useAiDecorativePlaceholders: intent?.useAiDecorativePlaceholders ?? false,
     includeSampleProducts: intent?.includeSampleProducts ?? false,
     primaryGoal: intent?.primaryGoal ?? null,
@@ -52,7 +53,9 @@ Rules:
 - Allowed pageType values only: HOME ABOUT CONTACT FAQ SHOP FARM_STAND MENU SUBSCRIPTIONS EVENTS REVIEWS BLOG PRIVACY TERMS REFUNDS DELIVERY_POLICY.
 - Allowed section type values only: Hero ProductGrid CategoryGrid NextDrop FarmStand ImageText About Reviews Pickup Signup Text Image.
 - Include exactly one HOME page with 5–10 sections. First section must be Hero.
-- FarmStand only if hasFarmStand. NextDrop only if hasMenus.
+- HOME core (always): Hero, commerce (ProductGrid or NextDrop), story (ImageText/About), trust/fulfilment (Reviews/Pickup/FarmStand), Signup.
+- If layoutRecipe is set (shop_first|story_led|local_visit|weekly_drop|browse_catalog), follow that section order.
+- FarmStand only if hasFarmStand (or visibility EDITOR_ONLY stub). NextDrop only if hasMenus.
 - Do NOT invent prices, hours, addresses, certifications, reviews, organic claims, heritage, or farming practices.
 - Do not generate React, CSS, or HTML.
 - Write a short changeSummary string.

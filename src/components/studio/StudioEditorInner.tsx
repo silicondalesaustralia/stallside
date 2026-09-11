@@ -36,17 +36,21 @@ export default function StudioEditorInner({
   metadata,
   templateId,
   previewUrl,
+  viewPreviewUrl,
   isPublished,
   starter,
   pageId,
   pageTitle,
   pageTemplate,
   commercePageKind,
+  returnTo,
+  surface = "dashboard",
 }: {
   initialNodes: SerializedNodes | null;
   metadata: StudioMetadata;
   templateId: StudioTemplateId;
   previewUrl: string;
+  viewPreviewUrl?: string;
   isPublished: boolean;
   starter: {
     headline: string;
@@ -58,6 +62,8 @@ export default function StudioEditorInner({
   pageTitle?: string;
   pageTemplate?: CustomPageTemplateId;
   commercePageKind?: CommercePageKind;
+  returnTo?: string;
+  surface?: "dashboard" | "storefront-preview";
 }) {
   const editorMetadata = useMemo(
     () => ({ ...metadata, templateId }),
@@ -80,12 +86,12 @@ export default function StudioEditorInner({
       } else if (pageId) {
         await saveCustomPageDraft(pageId, serializedRef.current);
       } else {
-        await saveWebsiteStudioDraft(serializedRef.current, templateId);
+        await saveWebsiteStudioDraft(serializedRef.current, templateId, returnTo);
       }
       setDirty(false);
       setSaveStatus("saved");
     });
-  }, [templateId, pageId, commercePageKind]);
+  }, [templateId, pageId, commercePageKind, returnTo]);
 
   const onPublish = useCallback(() => {
     setSaveStatus("saving");
@@ -95,12 +101,12 @@ export default function StudioEditorInner({
       } else if (pageId) {
         await publishCustomPageDraft(pageId, serializedRef.current);
       } else {
-        await publishWebsiteStudioDraft(serializedRef.current, templateId);
+        await publishWebsiteStudioDraft(serializedRef.current, templateId, returnTo);
       }
       setDirty(false);
       setSaveStatus("saved");
     });
-  }, [templateId, pageId, commercePageKind]);
+  }, [templateId, pageId, commercePageKind, returnTo]);
 
   const chrome = useMemo(
     () => ({
@@ -111,6 +117,7 @@ export default function StudioEditorInner({
       addAtIndex,
       setAddAtIndex,
       previewUrl,
+      viewPreviewUrl,
       isPublished,
       dirty,
       saveStatus,
@@ -124,6 +131,7 @@ export default function StudioEditorInner({
       paletteCollapsed,
       setPaletteCollapsed,
       commercePageKind: commercePageKind ?? null,
+      surface,
     }),
     [
       editorMetadata,
@@ -131,6 +139,7 @@ export default function StudioEditorInner({
       viewportWidth,
       addAtIndex,
       previewUrl,
+      viewPreviewUrl,
       isPublished,
       dirty,
       saveStatus,
@@ -142,6 +151,7 @@ export default function StudioEditorInner({
       template.style,
       paletteCollapsed,
       commercePageKind,
+      surface,
     ],
   );
 
@@ -166,7 +176,13 @@ export default function StudioEditorInner({
 
   return (
     <StudioEditorProvider value={chrome}>
-      <div className="vendl-studio-editor vendl-studio-editor--preview-first overflow-hidden rounded-xl border border-[var(--line)] bg-[#f5f5f4]">
+      <div
+        className={`vendl-studio-editor vendl-studio-editor--preview-first bg-[#f5f5f4] ${
+          surface === "storefront-preview"
+            ? "min-h-screen border-0"
+            : "overflow-hidden rounded-xl border border-[var(--line)]"
+        }`}
+      >
         <Editor
           resolver={studioResolver}
           indicator={{

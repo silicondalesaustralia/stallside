@@ -131,7 +131,9 @@ export function defaultPages(
       label: "Home",
       defaultChecked: true,
       disabled: true,
-      description: "Your main landing page with hero, story and key sections.",
+      description:
+        "Included on every site — hero, story and key sections. Edit layout after build.",
+      hint: "Always included",
     },
     {
       id: "ABOUT",
@@ -167,20 +169,22 @@ export function defaultPages(
       id: "FARM_STAND",
       label: "Farm stand",
       defaultChecked: ctx.hasFarmStand,
-      disabled: !ctx.hasFarmStand,
+      disabled: false,
       description: "Points visitors to your farm stand location and hours.",
       hint: !ctx.hasFarmStand
-        ? "Available when your business includes a farm stand"
+        ? "We’ll add a placeholder until you set up a farm stand"
         : undefined,
     },
     {
       id: "REVIEWS",
       label: "Reviews",
       defaultChecked: ctx.reviewCount > 0,
-      disabled: ctx.reviewCount === 0,
+      disabled: false,
       description: "Shows customer reviews on your site when you have them.",
       hint:
-        ctx.reviewCount === 0 ? "Available once you have reviews" : undefined,
+        ctx.reviewCount === 0
+          ? "We’ll add a placeholder until you have reviews"
+          : undefined,
     },
     {
       id: "BLOG",

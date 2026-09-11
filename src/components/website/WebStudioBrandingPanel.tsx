@@ -39,6 +39,7 @@ export default function WebStudioBrandingPanel({
       ) : null}
 
       <BrandingForm
+        key={`branding-${logoUrl ?? ""}-${faviconUrl ?? ""}-${heroImageUrl ?? ""}`}
         logoUrl={logoUrl}
         faviconUrl={faviconUrl}
         heroImageUrl={heroImageUrl}

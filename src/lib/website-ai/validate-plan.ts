@@ -30,6 +30,25 @@ export function validateAiSitePlan(
     if (!types.includes("Hero")) errors.push("HOME must include a Hero section");
     const heroes = types.filter((t) => t === "Hero").length;
     if (heroes > 1) errors.push("HOME may only have one Hero");
+    if (home.sections[0]?.type !== "Hero") {
+      errors.push("HOME first section must be Hero");
+    }
+    if (!types.includes("ProductGrid") && !types.includes("NextDrop")) {
+      errors.push("HOME must include a commerce section (ProductGrid or NextDrop)");
+    }
+    if (!types.includes("ImageText") && !types.includes("About")) {
+      errors.push("HOME must include a story section (ImageText or About)");
+    }
+    if (
+      !types.includes("Reviews") &&
+      !types.includes("Pickup") &&
+      !types.includes("FarmStand")
+    ) {
+      errors.push("HOME must include a trust or fulfilment section");
+    }
+    if (!types.includes("Signup")) {
+      errors.push("HOME must include a Signup section");
+    }
 
     for (const section of home.sections) {
       if (!HOME_AI_SECTIONS.includes(section.type)) {
@@ -40,10 +59,16 @@ export function validateAiSitePlan(
       }
     }
 
-    if (types.includes("FarmStand") && !ctx.hasFarmStand) {
+    const liveFarm = home.sections.find(
+      (s) => s.type === "FarmStand" && s.visibility !== "EDITOR_ONLY",
+    );
+    if (liveFarm && !ctx.hasFarmStand) {
       errors.push("FarmStand section requires farm-stand business mode/data");
     }
-    if (types.includes("NextDrop") && !ctx.hasMenus) {
+    const liveDrop = home.sections.find(
+      (s) => s.type === "NextDrop" && s.visibility !== "EDITOR_ONLY",
+    );
+    if (liveDrop && !ctx.hasMenus) {
       errors.push("NextDrop section requires menus");
     }
   }
@@ -81,9 +106,15 @@ function validateModeSections(
   if (!home) return;
   const types = new Set(home.sections.map((s) => s.type as WebsiteAiSectionType));
   if (types.has("FarmStand") && mode === "FOOD_BUSINESS") {
-    errors.push("FarmStand is not allowed for FOOD_BUSINESS mode");
+    const live = home.sections.some(
+      (s) => s.type === "FarmStand" && s.visibility !== "EDITOR_ONLY",
+    );
+    if (live) errors.push("FarmStand is not allowed for FOOD_BUSINESS mode");
   }
   if (types.has("NextDrop") && mode === "FARM_STAND") {
-    errors.push("NextDrop is not allowed for FARM_STAND-only mode");
+    const live = home.sections.some(
+      (s) => s.type === "NextDrop" && s.visibility !== "EDITOR_ONLY",
+    );
+    if (live) errors.push("NextDrop is not allowed for FARM_STAND-only mode");
   }
 }

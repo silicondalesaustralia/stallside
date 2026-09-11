@@ -2,6 +2,7 @@ import type { BusinessMode } from "@/lib/business-mode";
 import type { StudioSectionType, StudioTemplateId } from "@/lib/studio/types";
 import type { WebsiteCapabilityId } from "./capabilities";
 import type { PlaceholderKind } from "./placeholders";
+import type { LayoutRecipeId } from "./layout-recipes";
 
 export const WEBSITE_AI_SPEC_VERSION = 1 as const;
 
@@ -77,6 +78,8 @@ export type WebsiteGenerationIntent = {
   contextAnswers?: ContextAnswer[];
   selectedPages?: string[];
   selectedCapabilities?: WebsiteCapabilityId[];
+  /** Homepage composition recipe — omit / undefined = auto-pick. */
+  layoutRecipe?: LayoutRecipeId;
   useAiDecorativePlaceholders?: boolean;
   includeSampleProducts?: boolean;
 };

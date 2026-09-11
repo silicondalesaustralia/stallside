@@ -17,6 +17,7 @@ import {
 import { validateStudioNodes } from "@/lib/studio/validate-state";
 import type { StudioTemplateId } from "@/lib/studio/types";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
+import { safeStudioPreviewReturnTo } from "@/lib/studio/return-to";
 
 function parseTemplateId(raw: string): StudioTemplateId {
   if (raw === "artisan" || raw === "farmhouse" || raw === "market") return raw;
@@ -36,6 +37,22 @@ function parseNodesJson(nodesJson: string): SerializedNodes {
   }
 }
 
+function redirectAfterSave(
+  slug: string,
+  returnTo: string | undefined,
+  query: Record<string, string>,
+) {
+  const safe = safeStudioPreviewReturnTo(slug, returnTo);
+  if (safe) {
+    const url = new URL(safe, "https://vendl.local");
+    for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
+    url.searchParams.set("draft", "1");
+    url.searchParams.set("edit", "1");
+    redirect(`${url.pathname}?${url.searchParams.toString()}`);
+  }
+  redirect(webStudioPath("studio", query));
+}
+
 async function persistWebsiteStudioDraft(
   ownerId: string,
   businessName: string,
@@ -51,7 +68,11 @@ async function persistWebsiteStudioDraft(
   return storefront.slug;
 }
 
-export async function saveWebsiteStudioDraft(nodesJson: string, templateIdRaw: string) {
+export async function saveWebsiteStudioDraft(
+  nodesJson: string,
+  templateIdRaw: string,
+  returnTo?: string,
+) {
   const { owner } = await requireOwnerWrite();
   const templateId = parseTemplateId(templateIdRaw);
   const nodes = parseNodesJson(nodesJson);
@@ -60,10 +81,14 @@ export async function saveWebsiteStudioDraft(nodesJson: string, templateIdRaw: s
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/studio");
   revalidatePath(`${storefrontPublicPath(slug)}/studio-preview`);
-  redirect(webStudioPath("studio", { saved: "1" }));
+  redirectAfterSave(slug, returnTo, { saved: "1" });
 }
 
-export async function publishWebsiteStudioDraft(nodesJson: string, templateIdRaw: string) {
+export async function publishWebsiteStudioDraft(
+  nodesJson: string,
+  templateIdRaw: string,
+  returnTo?: string,
+) {
   const { owner } = await requireOwnerWrite();
   const templateId = parseTemplateId(templateIdRaw);
   const nodes = parseNodesJson(nodesJson);
@@ -73,7 +98,7 @@ export async function publishWebsiteStudioDraft(nodesJson: string, templateIdRaw
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/studio");
   revalidatePath(`${storefrontPublicPath(slug)}/studio-preview`);
-  redirect(webStudioPath("studio", { published: "1" }));
+  redirectAfterSave(slug, returnTo, { published: "1" });
 }
 
 export async function applyWebsiteStudioTemplate(templateIdRaw: string) {

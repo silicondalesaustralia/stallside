@@ -25,22 +25,31 @@ function ImageField({
   emptyLabel: string;
   previewClass: string;
 }) {
+  const [removing, setRemoving] = useState(false);
+  const showPreview = Boolean(url) && !removing;
+
   return (
     <div className="space-y-2 text-sm">
       <span className="font-medium text-[var(--field)]">{title}</span>
       <p className="text-xs text-[var(--muted)]">{hint}</p>
-      {url ? (
+      {showPreview ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={url} alt="" className={previewClass} />
+        <img src={url!} alt="" className={previewClass} />
       ) : (
         <p className="rounded-lg border border-dashed border-[var(--line)] px-3 py-6 text-center text-xs text-[var(--muted)]">
-          {emptyLabel}
+          {removing ? `${title} will be removed on save` : emptyLabel}
         </p>
       )}
       <input name={name} type="file" accept="image/*" className={inputClass} />
       {url ? (
         <label className="flex items-center gap-2">
-          <input type="checkbox" name={removeName} />
+          <input
+            type="checkbox"
+            name={removeName}
+            value="on"
+            checked={removing}
+            onChange={(e) => setRemoving(e.target.checked)}
+          />
           Remove current {title.toLowerCase()}
         </label>
       ) : null}

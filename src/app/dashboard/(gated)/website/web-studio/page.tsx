@@ -27,6 +27,8 @@ import WebStudioBrandingPanel from "@/components/website/WebStudioBrandingPanel"
 import WebStudioAiPanel from "@/components/website/WebStudioAiPanel";
 import WebStudioLayoutPanel from "@/components/website/WebStudioLayoutPanel";
 
+export const dynamic = "force-dynamic";
+
 function resolveTemplateId(
   stored: ReturnType<typeof extractWebsiteStudio>,
   param: string | undefined,

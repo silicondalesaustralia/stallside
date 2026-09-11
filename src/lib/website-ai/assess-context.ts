@@ -6,6 +6,7 @@ import {
   type CheckboxOption,
   type WebsiteCapabilityId,
 } from "./capabilities";
+import { isLayoutRecipeId } from "./layout-recipes";
 
 export type ContextQuality = "GOOD" | "WEAK" | "UNKNOWN" | "MISSING";
 export type WebsiteReadiness = "READY" | "NEEDS_CONTEXT" | "SPARSE";
@@ -198,6 +199,9 @@ export function intentFromForm(
   if (storyAnswer) contextAnswers.push({ questionId: "STORY", answer: storyAnswer });
   if (areaAnswer) contextAnswers.push({ questionId: "AREA", answer: areaAnswer });
 
+  const layoutRaw = String(formData.get("layout") ?? "");
+  const layoutRecipe = isLayoutRecipeId(layoutRaw) ? layoutRaw : undefined;
+
   return {
     primaryGoal: focus && focus !== "vendl-decide" ? focus : undefined,
     stylePreference: style && style !== "vendl-decide" ? style : undefined,
@@ -206,6 +210,7 @@ export function intentFromForm(
     contextAnswers,
     selectedPages: pages,
     selectedCapabilities,
+    layoutRecipe,
     useAiDecorativePlaceholders: formData.get("aiPlaceholders") === "on",
     includeSampleProducts: formData.get("sampleProducts") === "on",
   };

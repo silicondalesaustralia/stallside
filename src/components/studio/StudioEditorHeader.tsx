@@ -16,6 +16,7 @@ export default function StudioEditorHeader() {
     viewportWidth,
     setViewportWidth,
     previewUrl,
+    viewPreviewUrl,
     isPublished,
     dirty,
     saveStatus,
@@ -23,6 +24,7 @@ export default function StudioEditorHeader() {
     onPublish,
     pending,
     templateId,
+    surface,
   } = useStudioEditorChrome();
 
   const { actions, canUndo, canRedo } = useEditor((_, query) => ({
@@ -31,11 +33,19 @@ export default function StudioEditorHeader() {
   }));
 
   const templateLabel = templateId ? STUDIO_TEMPLATES[templateId].label : "Template";
+  const onStorefront = surface === "storefront-preview";
+  const viewHref = viewPreviewUrl ?? previewUrl;
 
   return (
     <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] bg-white px-4 py-2.5">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm font-semibold text-[var(--field)]">Home</span>
+        {onStorefront ? (
+          <span className="rounded-full bg-[var(--field)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+            Editing draft
+          </span>
+        ) : (
+          <span className="text-sm font-semibold text-[var(--field)]">Home</span>
+        )}
         <Link
           href="/dashboard/website/studio/templates"
           className="rounded-lg border border-[var(--line)] px-2.5 py-1 text-xs font-semibold text-[var(--field)]"
@@ -71,9 +81,26 @@ export default function StudioEditorHeader() {
         <button type="button" disabled={!canRedo} onClick={() => actions.history.redo()} className="rounded-lg border border-[var(--line)] px-2 py-1 text-xs font-semibold disabled:opacity-40">
           Redo
         </button>
-        <a href={previewUrl} target="_blank" rel="noreferrer" className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-semibold">
-          Preview
-        </a>
+        {onStorefront ? (
+          <>
+            <Link
+              href="/dashboard/website/web-studio?tab=studio"
+              className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-semibold"
+            >
+              Web Studio
+            </Link>
+            <Link
+              href={viewHref}
+              className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-semibold"
+            >
+              Done
+            </Link>
+          </>
+        ) : (
+          <a href={previewUrl} target="_blank" rel="noreferrer" className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-semibold">
+            Preview
+          </a>
+        )}
         <button type="button" disabled={pending} onClick={onSave} className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-semibold disabled:opacity-60">
           Save draft
         </button>
