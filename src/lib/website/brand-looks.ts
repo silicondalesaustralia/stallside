@@ -125,15 +125,15 @@ export const BRAND_LOOK_COMBOS: BrandLookCombo[] = [
     label: "Warm orchard",
     tagline: "Friendly farm energy with soft greens",
     paletteId: "orchard-green",
-    fontPairId: "orchard-serif",
+    fontPairId: "market-default",
     designSystem: "farmhouse",
   },
   {
     id: "quiet-coast",
     label: "Quiet coast",
-    tagline: "Calm blues and editorial type",
+    tagline: "Calm blues with soft contrast",
     paletteId: "coast-ink",
-    fontPairId: "coast-news",
+    fontPairId: "market-default",
     designSystem: "artisan",
   },
   {
@@ -141,7 +141,7 @@ export const BRAND_LOOK_COMBOS: BrandLookCombo[] = [
     label: "Kiln craft",
     tagline: "Handcrafted warmth for makers",
     paletteId: "kiln-umber",
-    fontPairId: "kiln-literata",
+    fontPairId: "market-default",
     designSystem: "artisan",
   },
   {
@@ -149,13 +149,13 @@ export const BRAND_LOOK_COMBOS: BrandLookCombo[] = [
     label: "Berry table",
     tagline: "Rich food-led colour with soft contrast",
     paletteId: "berry-row",
-    fontPairId: "orchard-serif",
+    fontPairId: "market-default",
     designSystem: "farmhouse",
   },
   {
     id: "meadow-day",
     label: "Meadow day",
-    tagline: "Light sage and approachable type",
+    tagline: "Light sage and approachable greens",
     paletteId: "meadow-sage",
     fontPairId: "market-default",
     designSystem: "market",
@@ -165,7 +165,7 @@ export const BRAND_LOOK_COMBOS: BrandLookCombo[] = [
     label: "Night stall",
     tagline: "Bold contrast for energetic brands",
     paletteId: "night-market",
-    fontPairId: "bold-syne",
+    fontPairId: "market-default",
     designSystem: "market",
   },
 ];
@@ -224,9 +224,8 @@ function colourScore(seed: string | null | undefined, paletteAccent: string): nu
   return 0;
 }
 
-function pickFontForMode(businessMode?: string): string {
-  if (businessMode === "FOOD_BUSINESS") return "kiln-literata";
-  if (businessMode === "FARM_STAND") return "orchard-serif";
+function pickFontForMode(_businessMode?: string): string {
+  // Colour recommendations only — site uses the default Vendl type stack for now.
   return "market-default";
 }
 

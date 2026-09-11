@@ -107,7 +107,7 @@ export async function scaffoldAiWebsiteDraft(
     return {
       ok: true,
       phase: "scaffold",
-      summary: "Pick a colour and font look, then build your site.",
+      summary: "Pick a colour palette, then build your site.",
       provider: `${generated.provider}/${generated.model}`,
       missing: generated.missing,
       looks: generated.looks,

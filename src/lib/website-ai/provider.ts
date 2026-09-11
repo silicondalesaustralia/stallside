@@ -97,7 +97,7 @@ export type ScaffoldWebsiteResult =
     }
   | { ok: false; error: string; details?: string[] };
 
-/** Step 1: plan site shape + propose 3 colour/font looks (no Craft compile yet). */
+/** Step 1: plan site shape + propose 3 colour palettes (no Craft compile yet). */
 export async function scaffoldWebsiteDraft(
   input: SiteGenerationInput,
 ): Promise<ScaffoldWebsiteResult> {

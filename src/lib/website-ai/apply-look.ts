@@ -26,7 +26,8 @@ export function applyLookToPlan(
       accentColor: accent,
       secondaryColor: secondary,
       paletteId: look.accentOverride ? "custom" : look.paletteId,
-      fontPairId: look.fontPairId,
+      // Colour pick step does not choose fonts — keep the default stack.
+      fontPairId: "market-default",
     },
   };
 }

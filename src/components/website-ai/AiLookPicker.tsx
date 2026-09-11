@@ -1,7 +1,7 @@
 "use client";
 
 import type { BrandLookCombo } from "@/lib/website/brand-looks";
-import { getFontPair, getPalette } from "@/lib/website/brand-looks";
+import { getPalette } from "@/lib/website/brand-looks";
 
 export default function AiLookPicker({
   looks,
@@ -15,10 +15,10 @@ export default function AiLookPicker({
   return (
     <fieldset className="flex flex-col gap-3">
       <legend className="text-sm font-medium text-[var(--field)]">
-        Choose a colour and font look
+        Choose a colour palette
       </legend>
       <p className="text-xs text-[var(--muted)]">
-        Three combinations matched to your style. You can refine in Edit layout later.
+        Three palettes matched to your brand. You can change colours again in Branding anytime.
       </p>
       <div className="grid gap-3 sm:grid-cols-3">
         {looks.map((look) => {
@@ -26,7 +26,6 @@ export default function AiLookPicker({
           const accent = look.accentOverride ?? palette?.accent ?? "#333";
           const secondary = look.secondaryOverride ?? palette?.secondary ?? "#999";
           const wash = palette?.wash ?? "#f5f5f5";
-          const fonts = getFontPair(look.fontPairId);
           const selected = selectedId === look.id;
           return (
             <button
@@ -47,9 +46,6 @@ export default function AiLookPicker({
               </div>
               <p className="mt-3 text-sm font-semibold text-[var(--field)]">{look.label}</p>
               <p className="mt-1 text-xs text-[var(--muted)]">{look.tagline}</p>
-              <p className="mt-2 text-[10px] uppercase tracking-wide text-[var(--muted)]">
-                {fonts?.label ?? "Fonts"} · {palette?.label ?? "Palette"}
-              </p>
             </button>
           );
         })}
