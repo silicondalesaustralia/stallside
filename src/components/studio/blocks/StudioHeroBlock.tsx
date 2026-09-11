@@ -12,6 +12,8 @@ type Props = {
   showCta: boolean;
   metadata: StudioMetadata;
   isEditing?: boolean;
+  /** Optional section-level image (e.g. AI decorative placeholder). */
+  backgroundImageUrl?: string | null;
 };
 
 type ResolvedVariant =
@@ -50,11 +52,12 @@ export default function StudioHeroBlock({
   ctaLabel,
   showCta,
   metadata: meta,
+  backgroundImageUrl,
 }: Props) {
   const variant = resolveVariant(meta.templateId, layout);
   const title = headline.trim() || meta.branding.headline;
   const subtitle = supportingText.trim() || meta.branding.subheadline || "";
-  const heroImage = meta.branding.heroImageUrl;
+  const heroImage = backgroundImageUrl || meta.branding.heroImageUrl;
   const shopHref = shopPagePath(meta.storefrontSlug, "shop", meta.draft, meta.basePath);
   const showButton = showCta && meta.products.length > 0;
   const templateClass = `studio-hero--${variant}`;

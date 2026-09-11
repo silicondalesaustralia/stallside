@@ -99,6 +99,9 @@ function homeSections(
           ? "Order this week"
           : "Browse",
     copyKind: "GENERIC",
+    placeholderKind: intent?.useAiDecorativePlaceholders
+      ? "IMAGE_DECORATIVE"
+      : undefined,
   });
 
   if (c.has("PICKUP") && ctx.hasFarmStand) {
@@ -164,7 +167,11 @@ function homeSections(
     body: story.body,
     copyKind: story.copyKind,
     placeholderKind:
-      story.copyKind === "INSTRUCTIONAL" ? "COPY_INSTRUCTIONAL" : undefined,
+      story.copyKind === "INSTRUCTIONAL"
+        ? "COPY_INSTRUCTIONAL"
+        : intent?.useAiDecorativePlaceholders
+          ? "IMAGE_DECORATIVE"
+          : undefined,
     props: intent?.storyImageUrl ? { imageUrl: intent.storyImageUrl } : undefined,
   });
 

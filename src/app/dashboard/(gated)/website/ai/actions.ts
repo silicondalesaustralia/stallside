@@ -81,7 +81,12 @@ export async function generateAiWebsiteDraft(
     );
     await prisma.storefront.update({
       where: { ownerId: owner.id },
-      data: { draftConfig: merged },
+      data: {
+        draftConfig: merged,
+        ...(generated.decorativeHeroUrl
+          ? { heroImageUrl: generated.decorativeHeroUrl }
+          : {}),
+      },
     });
 
     const previewPath = `${storefrontPublicPath(refreshed.slug)}/studio-preview?draft=1`;

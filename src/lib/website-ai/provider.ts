@@ -4,6 +4,8 @@ import { planSiteWithOpenAI } from "./openai-planner";
 import { validateAiSitePlan } from "./validate-plan";
 import { compilePlanToStudioPayload } from "./compile-nodes";
 import { computeMissingInformation } from "./missing-info";
+import { generateDecorativePlaceholders } from "./decorative-images";
+import { applyDecorativeImagesToPlan } from "./apply-decorative";
 import type { SiteGenerationInput, SiteGenerationResult, AISitePlan } from "./types";
 import type { StudioPayload } from "@/lib/studio/types";
 
@@ -50,6 +52,7 @@ export type GenerateWebsiteDraftResult =
       provider: string;
       model: string;
       missing: { code: string; message: string }[];
+      decorativeHeroUrl?: string;
     }
   | { ok: false; error: string; details?: string[] };
 
@@ -78,6 +81,21 @@ export async function generateWebsiteDraft(
     plan = validated.plan;
   }
 
+  let decorativeHeroUrl: string | undefined;
+  if (input.intent?.useAiDecorativePlaceholders) {
+    const assets = await generateDecorativePlaceholders(input.businessContext);
+    if (assets) {
+      plan = applyDecorativeImagesToPlan(plan, assets);
+      decorativeHeroUrl = assets.heroUrl;
+    } else {
+      plan = {
+        ...plan,
+        changeSummary:
+          `${plan.changeSummary ?? ""} (Decorative images skipped — image API or blob storage unavailable.)`.trim(),
+      };
+    }
+  }
+
   const missing = computeMissingInformation(
     input.businessContext,
     input.intent ?? {},
@@ -104,5 +122,6 @@ export async function generateWebsiteDraft(
     provider: result.provider,
     model: result.model,
     missing: missing.map((m) => ({ code: m.code, message: m.message })),
+    decorativeHeroUrl,
   };
 }

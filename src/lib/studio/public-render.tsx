@@ -85,6 +85,13 @@ function StudioSectionRender({
           layout={(p.layout as HeroPreset) ?? "background"}
           ctaLabel={String(p.ctaLabel ?? "Shop now")}
           showCta={Boolean(p.showCta ?? true)}
+          backgroundImageUrl={
+            p.decorativeImageUrl
+              ? String(p.decorativeImageUrl)
+              : p.imageUrl
+                ? String(p.imageUrl)
+                : null
+          }
           metadata={metadata}
         />
       );

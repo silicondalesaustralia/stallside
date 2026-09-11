@@ -13,6 +13,8 @@ export type CraftHeroProps = {
   layout: string;
   ctaLabel: string;
   showCta: boolean;
+  decorativeImageUrl?: string;
+  imageUrl?: string;
 };
 
 function isStudioMetadata(meta: unknown): meta is StudioMetadata {
@@ -22,20 +24,28 @@ function isStudioMetadata(meta: unknown): meta is StudioMetadata {
 export default function CraftHeroSection(props: CraftHeroProps) {
   const { connectors: { connect, drag } } = useNode();
   const metadata = useCraftMetadata();
+  const backgroundImageUrl = props.decorativeImageUrl || props.imageUrl || null;
 
   return (
     <div ref={(dom) => { if (dom) connect(drag(dom)); }}>
       <CraftSectionChrome>
         {isStudioMetadata(metadata) ? (
           <StudioHeroBlock
-            {...props}
+            headline={props.headline}
+            supportingText={props.supportingText}
             layout={props.layout as import("@/lib/studio/preset-registry").HeroPreset}
+            ctaLabel={props.ctaLabel}
+            showCta={props.showCta}
+            backgroundImageUrl={backgroundImageUrl}
             metadata={metadata}
             isEditing
           />
         ) : (
           <PuckHeroBlock
-            {...props}
+            headline={props.headline}
+            supportingText={props.supportingText}
+            ctaLabel={props.ctaLabel}
+            showCta={props.showCta}
             layout={
               props.layout === "editorial" || props.layout === "minimal"
                 ? "simple"
