@@ -14,6 +14,7 @@ export type HeroVariant =
   | "FRAMED_INSET"
   | "TYPE_BLOCK"
   | "INFO_PANEL"
+  | "FULL_BLEED"
   | "COLLAGE_TRIO"
   | "SPLIT_MEDIA"
   | "PROMO_BANNER"

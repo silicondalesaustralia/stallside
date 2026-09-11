@@ -45,6 +45,8 @@ export type StorefrontThemeOverrides = {
   buttonStyle?: "pill" | "rounded";
   paletteId?: string;
   fontPairId?: string;
+  headerLayout?: import("./header-style").HeaderLayout;
+  brandMark?: import("./header-style").BrandMarkMode;
 };
 
 export type StorefrontConfig = {
@@ -69,6 +71,8 @@ export type ResolvedStorefrontBranding = {
   themePreset: StorefrontThemePreset;
   paletteId: string | null;
   fontPairId: string | null;
+  headerLayout: import("./header-style").HeaderLayout;
+  brandMark: import("./header-style").BrandMarkMode;
   regionLabel: string | null;
   contactEmail: string;
   contactPhone: string | null;

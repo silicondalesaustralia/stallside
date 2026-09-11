@@ -54,7 +54,7 @@ export const BLUEPRINT_LAYOUTS: Record<WebsiteBlueprintId, BlueprintLayout> = {
   },
   local: {
     header: "INFO_BAR",
-    hero: "INFO_PANEL",
+    hero: "FULL_BLEED",
     merch: "AVAILABLE_NOW",
     gridColumns: { desktop: 3, mobile: 2 },
     cardTreatment: "SOFT_SHADOW",

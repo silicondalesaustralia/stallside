@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
 import { useEditor } from "@craftjs/core";
 import { studioSectionLabel } from "@/lib/studio/section-registry";
 import ProductPickerField from "@/components/puck/editor/fields/ProductPickerField";
 import CategoryPickerField from "@/components/puck/editor/fields/CategoryPickerField";
-import { useStudioMetadata } from "./StudioEditorContext";
+import { useStudioMetadata, useStudioEditorChrome } from "./StudioEditorContext";
+import HeaderStyleSettings from "./HeaderStyleSettings";
 import type { CraftHeroProps } from "@/components/craft/sections/CraftHeroSection";
 import type { CraftProductGridProps } from "@/components/craft/sections/CraftProductGridSection";
 import type { CraftNextDropProps } from "@/components/craft/sections/CraftNextDropSection";
@@ -27,6 +29,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 export default function StudioSettingsPanel() {
+  const { chromeTarget, setChromeTarget } = useStudioEditorChrome();
   const { actions, selected } = useEditor((state, query) => {
     const ids = Array.from(state.events.selected);
     const id = ids[0] ?? null;
@@ -41,12 +44,32 @@ export default function StudioSettingsPanel() {
     };
   });
 
+  useEffect(() => {
+    if (selected && chromeTarget === "header") {
+      setChromeTarget?.(null);
+    }
+  }, [selected, chromeTarget, setChromeTarget]);
+
+  if (chromeTarget === "header") {
+    return <HeaderStyleSettings />;
+  }
+
   if (!selected) {
     return (
       <aside className="vendl-studio-settings vendl-studio-settings--empty">
         <p className="text-sm text-[var(--muted)]">
-          Click text on the page to edit it. Select a section for layout options.
+          Click the header or a section to edit.
         </p>
+        <button
+          type="button"
+          className="mt-3 text-sm font-semibold text-[var(--field)] underline"
+          onClick={() => {
+            actions.selectNode(undefined);
+            setChromeTarget?.("header");
+          }}
+        >
+          Edit header style
+        </button>
       </aside>
     );
   }

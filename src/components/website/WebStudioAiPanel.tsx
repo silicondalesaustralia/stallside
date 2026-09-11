@@ -13,6 +13,8 @@ type Props = {
   initialLooks?: BrandLookCombo[];
   draftTemplateId?: string | null;
   publishedFlash?: boolean;
+  businessName?: string;
+  logoUrl?: string | null;
 };
 
 export default function WebStudioAiPanel({
@@ -23,6 +25,8 @@ export default function WebStudioAiPanel({
   initialLooks = [],
   draftTemplateId,
   publishedFlash,
+  businessName,
+  logoUrl,
 }: Props) {
   if (!enabled) {
     return (
@@ -102,6 +106,8 @@ export default function WebStudioAiPanel({
           assessment={assessment}
           previewPath={previewPath}
           initialLooks={initialLooks}
+          businessName={businessName}
+          logoUrl={logoUrl}
         />
       ) : null}
     </>

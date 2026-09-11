@@ -1,13 +1,20 @@
 import type { StudioTemplateId } from "@/lib/studio/types";
-import { pickFontForMode } from "./brand-fonts";
-
-export type { BrandFontPair } from "./brand-fonts";
-export {
+import {
   BRAND_FONT_PAIRS,
-  getFontPair,
+  getFontPair as getCatalogFontPair,
   listFontPairs,
   pickFontForMode,
+  type BrandFontPair,
 } from "./brand-fonts";
+import { BLUEPRINT_FONT_PAIRS } from "./blueprints/font-pairs";
+
+export type { BrandFontPair };
+export { BRAND_FONT_PAIRS, listFontPairs, pickFontForMode };
+
+/** Catalog pairs plus starting-style blueprint pairs. */
+export function getFontPair(id: string | null | undefined): BrandFontPair | undefined {
+  return getCatalogFontPair(id) ?? BLUEPRINT_FONT_PAIRS.find((f) => f.id === id);
+}
 
 export type BrandPalette = {
   id: string;

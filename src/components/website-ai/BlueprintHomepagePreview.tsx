@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import type { WebsiteBlueprint } from "@/lib/website/blueprints";
 import type { DemoKit } from "@/lib/website/demo-kits";
 import { brandKitCssVars } from "@/lib/website/presets/logo-placement";
+import DemoBrandMark from "./demo/DemoBrandMark";
 import DemoHeader from "./demo/DemoHeader";
 import DemoHero from "./demo/DemoHero";
 import DemoMerch from "./demo/DemoMerch";
@@ -30,8 +31,8 @@ export default function BlueprintHomepagePreview({
     <div
       className={
         expanded
-          ? "mx-auto w-full max-w-3xl overflow-hidden rounded-lg border border-black/10 shadow-lg"
-          : "pointer-events-none h-full w-full overflow-hidden"
+          ? "mx-auto w-full max-w-3xl overflow-hidden rounded-lg border border-black/10 bg-white shadow-sm"
+          : "h-full w-full overflow-hidden"
       }
       style={{
         ...vars,
@@ -45,29 +46,32 @@ export default function BlueprintHomepagePreview({
         businessName={name}
         logoUrl={logoUrl}
         announcement={
-          blueprint.layout.header === "UTILITY_SEARCH" ||
-          blueprint.id === "boutique"
+          blueprint.layout.header === "UTILITY_SEARCH" || blueprint.id === "boutique"
             ? kit.copy.announcement
             : undefined
         }
       />
-      <DemoHero
-        blueprint={blueprint}
-        kit={kit}
-        businessName={name}
-        expanded={expanded}
-      />
-      <DemoMerch
-        blueprint={blueprint}
-        kit={kit}
-        businessName={name}
-        expanded={expanded}
-      />
+      <DemoHero blueprint={blueprint} kit={kit} businessName={name} expanded={expanded} />
+      <DemoMerch blueprint={blueprint} kit={kit} businessName={name} expanded={expanded} />
       <div
-        className="px-2 py-2 text-center text-[7px]"
+        className="flex flex-col items-center gap-1 px-2 py-3 text-center"
         style={{ background: "var(--demo-text)", color: "var(--demo-bg)" }}
       >
-        {name}
+        <DemoBrandMark
+          businessName={name}
+          logoUrl={logoUrl}
+          brandKit={{
+            ...blueprint.brandKit,
+            logoPlacement: {
+              ...blueprint.brandKit.logoPlacement,
+              plate: "NONE",
+              maxHeightPx: blueprint.brandKit.logoPlacement.footerMaxHeightPx,
+            },
+          }}
+          maxHeightPx={blueprint.brandKit.logoPlacement.footerMaxHeightPx}
+          align="center"
+        />
+        <p className="text-[6px] opacity-80">{kit.business.locality}</p>
       </div>
     </div>
   );

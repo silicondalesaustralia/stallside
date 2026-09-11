@@ -36,7 +36,7 @@ export const BLUEPRINT_CARD_META: Record<
   },
   local: {
     cardDescription: "Hours, pickup and what’s available, first.",
-    layoutTags: ["Visit-card hero", "Available now", "Pickup & delivery"],
+    layoutTags: ["Full-bleed hero", "Available now", "Pickup & delivery"],
     assetNeeds: { minPhotos: 2, minProductsWithPhotos: 3, usesCutouts: false },
   },
   studio: {

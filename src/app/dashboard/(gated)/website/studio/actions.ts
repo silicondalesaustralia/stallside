@@ -18,6 +18,13 @@ import { validateStudioNodes } from "@/lib/studio/validate-state";
 import type { StudioTemplateId } from "@/lib/studio/types";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
 import { safeStudioPreviewReturnTo } from "@/lib/studio/return-to";
+import { parseStorefrontConfig } from "@/lib/storefront/config";
+import {
+  isBrandMarkMode,
+  isHeaderLayout,
+  type BrandMarkMode,
+  type HeaderLayout,
+} from "@/lib/storefront/header-style";
 
 function parseTemplateId(raw: string): StudioTemplateId {
   if (raw === "artisan" || raw === "farmhouse" || raw === "market") return raw;
@@ -123,4 +130,45 @@ export async function applyWebsiteStudioTemplate(templateIdRaw: string) {
   }
 
   redirect(webStudioPath("studio", { template: templateId }));
+}
+
+export async function saveStorefrontHeaderStyle(input: {
+  headerLayout?: string;
+  brandMark?: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const { owner } = await requireOwnerWrite();
+    const storefront = await ensureStorefront(owner.id, owner.businessName);
+    const base = parseStorefrontConfig(storefront.draftConfig);
+    const patch: { headerLayout?: HeaderLayout; brandMark?: BrandMarkMode } = {};
+    if (isHeaderLayout(input.headerLayout)) patch.headerLayout = input.headerLayout;
+    if (isBrandMarkMode(input.brandMark)) patch.brandMark = input.brandMark;
+    if (!patch.headerLayout && !patch.brandMark) {
+      return { ok: false, error: "Invalid header style." };
+    }
+    const nextDraft = {
+      ...(storefront.draftConfig &&
+      typeof storefront.draftConfig === "object" &&
+      !Array.isArray(storefront.draftConfig)
+        ? (storefront.draftConfig as Record<string, unknown>)
+        : {}),
+      themeOverrides: {
+        ...base.themeOverrides,
+        ...patch,
+      },
+    };
+    await prisma.storefront.update({
+      where: { ownerId: owner.id },
+      data: { draftConfig: nextDraft as object },
+    });
+    revalidatePath("/dashboard/website/web-studio");
+    revalidatePath("/dashboard/website/studio");
+    revalidatePath(`${storefrontPublicPath(storefront.slug)}/studio-preview`);
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "Could not save header style.",
+    };
+  }
 }

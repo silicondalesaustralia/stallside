@@ -30,6 +30,7 @@ export default function DemoBrandMark({
         };
 
   if (logoUrl) {
+    const displayHeight = Math.min(height, 36);
     return (
       <span
         className={align === "center" ? "inline-flex justify-center" : "inline-flex"}
@@ -39,7 +40,13 @@ export default function DemoBrandMark({
         <img
           src={logoUrl}
           alt={businessName}
-          style={{ height, width: "auto", maxWidth: "40%", objectFit: "contain" }}
+          style={{
+            height: displayHeight,
+            width: "auto",
+            maxWidth: 140,
+            objectFit: "contain",
+            display: "block",
+          }}
         />
       </span>
     );
@@ -65,7 +72,7 @@ export default function DemoBrandMark({
         fontSize: `${Math.max(7, 11 * fontSizeScale)}px`,
         fontWeight: 600,
         lineHeight: 1.1,
-        color: "var(--demo-text)",
+        color: "currentColor",
       }}
     >
       {lines.map((line) => (

@@ -60,7 +60,7 @@ export function MerchAvailableNow({ kit, aboutHeading, aboutShort }: Props) {
         ))}
       </div>
       <div className="grid grid-cols-3 gap-1.5">
-        {kit.products.slice(0, 3).map((p) => (
+        {kit.products.slice(0, 6).map((p) => (
           <ProductCell
             key={p.id}
             name={p.name}
@@ -70,6 +70,20 @@ export function MerchAvailableNow({ kit, aboutHeading, aboutShort }: Props) {
         ))}
       </div>
       <AboutSplit heading={aboutHeading} body={aboutShort} imageSrc={kit.images.place} />
+      <div className="mt-2 grid grid-cols-2 gap-2 text-[6px]">
+        <div className="p-2" style={{ background: "var(--demo-surface)", borderRadius: "var(--demo-radius)" }}>
+          <p className="font-semibold text-[7px]">Pickup</p>
+          <p className="mt-0.5" style={{ color: "var(--demo-muted)" }}>
+            Saturday mornings at the farm gate
+          </p>
+        </div>
+        <div className="p-2" style={{ background: "var(--demo-surface)", borderRadius: "var(--demo-radius)" }}>
+          <p className="font-semibold text-[7px]">Delivery</p>
+          <p className="mt-0.5" style={{ color: "var(--demo-muted)" }}>
+            Local routes — fees at checkout
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

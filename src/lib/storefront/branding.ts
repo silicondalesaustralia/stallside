@@ -2,6 +2,11 @@ import type { CSSProperties } from "react";
 import { parseAccentColor, darkenHex } from "@/lib/stand-brand";
 import { STOREFRONT_THEMES, isStorefrontThemePreset } from "@/lib/storefront/themes";
 import { getFontPair } from "@/lib/website/brand-looks";
+import {
+  defaultHeaderStyle,
+  isBrandMarkMode,
+  isHeaderLayout,
+} from "@/lib/storefront/header-style";
 import type {
   ResolvedStorefrontBranding,
   StorefrontConfig,
@@ -72,6 +77,9 @@ export function resolveStorefrontBranding(input: {
     Boolean,
   );
 
+  const logoUrl = input.owner.brandLogoUrl ?? input.stand.logoUrl;
+  const headerDefaults = defaultHeaderStyle(Boolean(logoUrl));
+
   return {
     businessName: input.owner.businessName,
     headline: input.storefront.headline?.trim() || input.owner.businessName,
@@ -83,7 +91,7 @@ export function resolveStorefrontBranding(input: {
       input.storefront.about?.trim() ||
       input.owner.shortDescription?.trim() ||
       null,
-    logoUrl: input.owner.brandLogoUrl ?? input.stand.logoUrl,
+    logoUrl,
     faviconUrl: input.storefront.faviconUrl ?? null,
     heroImageUrl: input.storefront.heroImageUrl,
     accentColor,
@@ -92,6 +100,12 @@ export function resolveStorefrontBranding(input: {
     themePreset: preset,
     paletteId: overrides.paletteId ?? null,
     fontPairId: overrides.fontPairId ?? null,
+    headerLayout: isHeaderLayout(overrides.headerLayout)
+      ? overrides.headerLayout
+      : headerDefaults.headerLayout,
+    brandMark: isBrandMarkMode(overrides.brandMark)
+      ? overrides.brandMark
+      : headerDefaults.brandMark,
     regionLabel: regionParts.length > 0 ? regionParts.join(", ") : null,
     contactEmail: input.storefront.contactEmail?.trim() || input.owner.contactEmail,
     contactPhone: input.storefront.showPhone ? input.owner.contactPhone : null,

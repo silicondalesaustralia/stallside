@@ -14,6 +14,7 @@ import {
 } from "@/lib/website/demo-assets/reject-demo-assets";
 import { compilePlanToStudioPayload } from "@/lib/website-ai/compile-nodes";
 import { planSiteHeuristic } from "@/lib/website-ai/heuristic-planner";
+import { applyDecorativeImagesToPlan } from "@/lib/website-ai/apply-decorative";
 import type { WebsiteBusinessContext } from "@/lib/website-ai/types";
 
 describe("demo kits", () => {
@@ -65,9 +66,16 @@ describe("blueprint distinctness", () => {
 });
 
 describe("demo asset rejection", () => {
-  it("detects demo kit URLs", () => {
+  it("allows demo kit starter URLs", () => {
     const hits = findDemoAssetReferences({
-      hero: "/demo/kits/green-valley/hero-wide.svg",
+      hero: "/demo/kits/green-valley/hero-wide.png",
+    });
+    assert.equal(hits.length, 0);
+  });
+
+  it("rejects other /demo/ paths", () => {
+    const hits = findDemoAssetReferences({
+      hero: "/demo/other/placeholder.svg",
     });
     assert.equal(hits.length, 1);
   });
@@ -109,13 +117,56 @@ describe("demo asset rejection", () => {
     assert.equal(compiled.errors.length, 0);
   });
 
-  it("rejects plans that inject demo assets", () => {
+  it("rejects plans that inject non-kit demo assets", () => {
     assert.throws(
       () =>
         assertNoDemoAssets({
-          pages: [{ sections: [{ imageUrl: "/demo/kits/x.svg" }] }],
+          pages: [{ sections: [{ imageUrl: "/demo/legacy/x.svg" }] }],
         }),
       /demo assets/,
     );
+  });
+
+  it("compiles plans that seed kit starter images", () => {
+    const ctx: WebsiteBusinessContext = {
+      ownerId: "o1",
+      businessMode: "BOTH",
+      businessName: "Test Farm",
+      headline: "Test",
+      subheadline: null,
+      about: "About us text for the farm.",
+      regionLabel: null,
+      hasFarmStand: true,
+      hasMenus: false,
+      hasDelivery: false,
+      hasPickup: true,
+      productCount: 4,
+      categoryCount: 2,
+      reviewCount: 0,
+      categories: [],
+      featuredProducts: [],
+      productPhotoCount: 2,
+      logoUrl: null,
+      heroImageUrl: null,
+      accentColor: null,
+      secondaryColor: null,
+      existingTemplateId: null,
+      hasExistingStudio: false,
+    };
+    const planned = planSiteHeuristic({
+      businessContext: ctx,
+      intent: { blueprintId: "local", selectedPages: ["HOME", "ABOUT", "SHOP"] },
+    });
+    assert.equal(planned.ok, true);
+    if (!planned.ok) return;
+    const withKit = applyDecorativeImagesToPlan(planned.plan, {
+      heroUrl: "/demo/kits/green-valley/hero-wide.png",
+      storyUrl: "/demo/kits/green-valley/place.png",
+      heroAlt: "Hero",
+      storyAlt: "Place",
+    });
+    const compiled = compilePlanToStudioPayload(withKit);
+    assert.equal(compiled.errors.length, 0);
+    assert.ok(compiled.payload);
   });
 });

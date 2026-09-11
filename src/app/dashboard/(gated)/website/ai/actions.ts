@@ -31,6 +31,7 @@ import {
   recommendWebsiteBlueprint,
   resolveBlueprintChoice,
 } from "@/lib/website/blueprints";
+import { resolveDemoKit } from "@/lib/website/demo-kits";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
 
 export type AiGenerateState = {
@@ -150,6 +151,8 @@ export async function buildAiWebsiteDraft(
   if (!lookId) return { ok: false, error: "Choose a look first." };
   const blueprintChoice = String(formData.get("blueprintId") ?? "vendl-choose").trim();
   const fontPairId = String(formData.get("fontPairId") ?? "").trim() || null;
+  const demoKitRaw = String(formData.get("demoKitId") ?? "").trim();
+  const demoKitId = resolveDemoKit(demoKitRaw)?.id ?? null;
 
   try {
     const storefront = await ensureStorefront(owner.id, owner.businessName);
@@ -188,6 +191,7 @@ export async function buildAiWebsiteDraft(
       lookId,
       looks: scaffold.looks,
       fontPairId,
+      demoKitId,
       provider: replanned.provider,
       model: replanned.model,
     });
@@ -228,13 +232,18 @@ export async function buildAiWebsiteDraft(
     };
     delete nextDraft.websiteAiScaffold;
 
-    const palette = getPalette(generated.themeOverrides?.paletteId);
-    if (palette) {
+    const accent =
+      generated.themeOverrides?.accentColor ??
+      getPalette(generated.themeOverrides?.paletteId)?.accent;
+    const secondary =
+      generated.themeOverrides?.secondaryColor ??
+      getPalette(generated.themeOverrides?.paletteId)?.secondary;
+    if (accent && secondary) {
       await prisma.owner.update({
         where: { id: owner.id },
         data: {
-          brandAccentColor: palette.accent,
-          brandSecondaryColor: palette.secondary,
+          brandAccentColor: accent,
+          brandSecondaryColor: secondary,
         },
       });
       const stand = await prisma.stand.findFirst({
@@ -246,8 +255,8 @@ export async function buildAiWebsiteDraft(
         await prisma.stand.update({
           where: { id: stand.id },
           data: {
-            accentColor: palette.accent,
-            secondaryColor: palette.secondary,
+            accentColor: accent,
+            secondaryColor: secondary,
           },
         });
       }

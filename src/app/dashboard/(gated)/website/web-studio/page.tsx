@@ -147,6 +147,8 @@ export default async function WebStudioPage({
             initialLooks={scaffoldLooks}
             draftTemplateId={websiteStudio?.templateId ?? null}
             publishedFlash={sp.published === "1" && initialTab === "ai"}
+            businessName={owner.businessName}
+            logoUrl={logoUrl}
           />
         }
         studio={

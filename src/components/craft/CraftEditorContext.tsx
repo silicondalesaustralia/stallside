@@ -5,6 +5,9 @@ import type { CraftSpikeMetadata } from "@/lib/craft/types";
 import type { BusinessMode } from "@/lib/business-mode";
 import type { StudioTemplateId } from "@/lib/studio/types";
 import type { CommercePageKind } from "@/lib/studio/commerce-pages";
+import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style";
+
+export type ChromeTarget = "header" | null;
 
 export type CraftEditorChrome = {
   metadata: CraftSpikeMetadata;
@@ -20,7 +23,6 @@ export type CraftEditorChrome = {
   onSave: () => void;
   onPublish: () => void;
   pending: boolean;
-  /** Studio editor uses expanded section registry + right panel */
   registryMode?: "craft" | "studio";
   templateId?: StudioTemplateId;
   templateClass?: string;
@@ -28,10 +30,17 @@ export type CraftEditorChrome = {
   paletteCollapsed?: boolean;
   setPaletteCollapsed?: (v: boolean) => void;
   commercePageKind?: CommercePageKind | null;
-  /** Where the editor is mounted — storefront-preview uses exit-to-view chrome. */
   surface?: "dashboard" | "storefront-preview";
-  /** Read-only preview URL (no edit=1) when editing on the public route. */
   viewPreviewUrl?: string;
+  chromeTarget?: ChromeTarget;
+  setChromeTarget?: (t: ChromeTarget) => void;
+  headerLayout?: HeaderLayout;
+  brandMark?: BrandMarkMode;
+  setHeaderStyle?: (patch: {
+    headerLayout?: HeaderLayout;
+    brandMark?: BrandMarkMode;
+  }) => void;
+  headerStyleStatus?: "idle" | "saving" | "saved" | "error";
 };
 
 const CraftEditorContext = createContext<CraftEditorChrome | null>(null);

@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import type { WebsiteBlueprint } from "@/lib/website/blueprints";
 import type { DemoKit } from "@/lib/website/demo-kits";
 import { formatKitPrice, resolveKitText } from "@/lib/website/demo-kits";
+import { HeroEditorialStack, HeroFullBleed } from "./DemoHeroFeatured";
 
 type Props = {
   blueprint: WebsiteBlueprint;
@@ -30,17 +31,23 @@ export default function DemoHero({ blueprint, kit, businessName, expanded }: Pro
 
   if (hero === "EDITORIAL_STACK") {
     return (
-      <div className={pad}>
-        <h3 className="text-[13px] leading-tight sm:text-lg" style={{ fontFamily: "var(--demo-display)", letterSpacing: "var(--demo-tracking)" }}>
-          {copy.headline.long}
-        </h3>
-        <p className="mt-1 max-w-[90%] text-[7px] sm:text-[9px]" style={{ color: "var(--demo-muted)", fontFamily: "var(--demo-body)" }}>
-          {copy.subhead}
-        </p>
-        <div className="mt-2 aspect-[21/9] overflow-hidden">
-          <Img src={kit.images.heroWide} className="h-full w-full object-cover" />
-        </div>
-      </div>
+      <HeroEditorialStack
+        kit={kit}
+        headline={copy.headline.long}
+        subhead={copy.subhead}
+        cta={copy.cta.primary}
+      />
+    );
+  }
+
+  if (hero === "FULL_BLEED") {
+    return (
+      <HeroFullBleed
+        kit={kit}
+        headline={copy.headline.medium}
+        subhead={copy.subhead}
+        cta={copy.cta.primary}
+      />
     );
   }
 
@@ -115,26 +122,6 @@ export default function DemoHero({ blueprint, kit, businessName, expanded }: Pro
     );
   }
 
-  if (hero === "INFO_PANEL") {
-    return (
-      <div className={`grid grid-cols-2 gap-2 ${pad}`}>
-        <div>
-          <h3 className="text-[11px] leading-tight sm:text-base" style={{ fontFamily: "var(--demo-display)" }}>{title}</h3>
-          <Img src={kit.images.place} className="mt-2 aspect-[4/3] w-full object-cover" style={{ borderRadius: "var(--demo-radius)" }} />
-        </div>
-        <div className="rounded-lg p-2 text-[6px]" style={{ background: "var(--demo-surface)", borderRadius: "var(--demo-radius)" }}>
-          <p className="font-semibold text-[8px]">Visit us</p>
-          <p className="mt-1" style={{ color: "var(--demo-muted)" }}>Hours · 8am–1pm Sat</p>
-          <p style={{ color: "var(--demo-muted)" }}>Pickup at the stand</p>
-          <p style={{ color: "var(--demo-muted)" }}>Next drop · Saturday</p>
-          <span className="mt-2 inline-block px-2 py-0.5 text-[6px]" style={{ background: "var(--demo-primary)", color: "var(--demo-on-primary)", borderRadius: 999 }}>
-            Directions
-          </span>
-        </div>
-      </div>
-    );
-  }
-
   if (hero === "COLLAGE_TRIO") {
     return (
       <div className={`grid grid-cols-2 gap-1 ${pad}`}>
@@ -154,15 +141,13 @@ export default function DemoHero({ blueprint, kit, businessName, expanded }: Pro
 
   if (hero === "PROMO_BANNER") {
     return (
-      <div>
-        <div className="relative aspect-[4/1] overflow-hidden">
-          <Img src={kit.images.heroWide} className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 flex items-center justify-between px-3" style={{ background: "linear-gradient(90deg, rgba(0,0,0,.45), transparent)" }}>
-            <p className="text-[9px] font-semibold text-white sm:text-xs">{copy.promo}</p>
-            <span className="px-2 py-0.5 text-[6px] font-semibold text-white" style={{ background: "var(--demo-accent)", color: "var(--demo-on-accent)" }}>
-              {copy.cta.primary}
-            </span>
-          </div>
+      <div className="relative aspect-[4/1] overflow-hidden">
+        <Img src={kit.images.heroWide} className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 flex items-center justify-between px-3" style={{ background: "linear-gradient(90deg, rgba(0,0,0,.45), transparent)" }}>
+          <p className="text-[9px] font-semibold text-white sm:text-xs">{copy.promo}</p>
+          <span className="px-2 py-0.5 text-[6px] font-semibold" style={{ background: "var(--demo-accent)", color: "var(--demo-on-accent)" }}>
+            {copy.cta.primary}
+          </span>
         </div>
       </div>
     );
@@ -187,7 +172,6 @@ export default function DemoHero({ blueprint, kit, businessName, expanded }: Pro
     );
   }
 
-  // SPLIT_MEDIA (modern-store default)
   return (
     <div className={`grid grid-cols-2 gap-2 ${pad}`}>
       <div className="flex flex-col justify-center gap-1">

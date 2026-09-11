@@ -82,6 +82,8 @@ export type WebsiteGenerationIntent = {
   layoutRecipe?: LayoutRecipeId;
   /** Starting style blueprint — omit = recommend at plan time. */
   blueprintId?: import("@/lib/website/blueprints").WebsiteBlueprintId;
+  /** Demo kit used for style preview / starter images. */
+  demoKitId?: import("@/lib/website/demo-kits").DemoKitId;
   useAiDecorativePlaceholders?: boolean;
   includeSampleProducts?: boolean;
 };

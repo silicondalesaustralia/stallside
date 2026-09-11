@@ -26,7 +26,9 @@ function toneFromBrand(
         ? "bold"
         : layout.hero === "COLLAGE_TRIO"
           ? "collage"
-          : layout.hero === "EDITORIAL_STACK" || layout.hero === "PROMO_BANNER"
+          : layout.hero === "EDITORIAL_STACK" ||
+              layout.hero === "PROMO_BANNER" ||
+              layout.hero === "FULL_BLEED"
             ? "full"
             : "split";
   return {

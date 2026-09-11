@@ -7,7 +7,19 @@ import { computeMissingInformation } from "./missing-info";
 import { generateDecorativePlaceholders } from "./decorative-images";
 import { applyDecorativeImagesToPlan } from "./apply-decorative";
 import { applyLookToPlan } from "./apply-look";
+import {
+  applyBlueprintBrandToTheme,
+  applyBlueprintDesignSystem,
+} from "./apply-blueprint-brand";
+import { materializeKitStarterImages } from "./seed-kit-images";
 import { proposeBrandLooks, type BrandLookCombo } from "@/lib/website/brand-looks";
+import {
+  getDemoKit,
+  recommendDemoKit,
+  resolveDemoKit,
+  type DemoKitId,
+} from "@/lib/website/demo-kits";
+import { isWebsiteBlueprintId } from "@/lib/website/blueprints";
 import type { SiteGenerationInput, SiteGenerationResult, AISitePlan } from "./types";
 import type { StudioPayload } from "@/lib/studio/types";
 import type { StorefrontThemeOverrides } from "@/lib/storefront/types";
@@ -139,7 +151,7 @@ export type GenerateWebsiteDraftResult =
     }
   | { ok: false; error: string; details?: string[] };
 
-/** Step 2: apply look, optional decorative images, compile to Craft. */
+/** Step 2: apply look + style brand kit, seed kit images, compile to Craft. */
 export async function finalizeWebsiteDraft(input: {
   businessContext: SiteGenerationInput["businessContext"];
   intent?: SiteGenerationInput["intent"];
@@ -147,6 +159,7 @@ export async function finalizeWebsiteDraft(input: {
   lookId: string;
   looks?: BrandLookCombo[];
   fontPairId?: string | null;
+  demoKitId?: DemoKitId | null;
   provider?: string;
   model?: string;
 }): Promise<GenerateWebsiteDraftResult> {
@@ -160,7 +173,16 @@ export async function finalizeWebsiteDraft(input: {
     return { ok: false, error: "Unknown look selection." };
   }
 
-  let plan = applied.plan;
+  const blueprintId = input.intent?.blueprintId;
+  let plan = applyBlueprintDesignSystem(applied.plan, blueprintId);
+  let themeOverrides: StorefrontThemeOverrides = applied.themeOverrides ?? {};
+  if (blueprintId && isWebsiteBlueprintId(blueprintId)) {
+    // Starting style brand kit wins for colours + fonts (look still sets designSystem fallback).
+    themeOverrides = applyBlueprintBrandToTheme(themeOverrides, blueprintId, {
+      hasLogo: Boolean(input.businessContext.logoUrl),
+    });
+  }
+
   let decorativeHeroUrl: string | undefined;
   if (input.intent?.useAiDecorativePlaceholders) {
     const assets = await generateDecorativePlaceholders(input.businessContext);
@@ -174,6 +196,26 @@ export async function finalizeWebsiteDraft(input: {
           `${plan.changeSummary ?? ""} (Decorative images skipped — image API or blob storage unavailable.)`.trim(),
       };
     }
+  } else {
+    const kit =
+      resolveDemoKit(input.demoKitId) ??
+      getDemoKit(
+        recommendDemoKit({
+          hasFarmStand: input.businessContext.hasFarmStand,
+          hasMenus: input.businessContext.hasMenus,
+        }),
+      );
+    const assets = await materializeKitStarterImages(
+      kit,
+      input.businessContext.ownerId,
+    );
+    plan = applyDecorativeImagesToPlan(plan, assets);
+    decorativeHeroUrl = assets.heroUrl;
+    plan = {
+      ...plan,
+      changeSummary:
+        `${plan.changeSummary ?? ""} Kit images: ${kit.id}.`.trim(),
+    };
   }
 
   const compiled = compilePlanToStudioPayload(plan);
@@ -196,7 +238,7 @@ export async function finalizeWebsiteDraft(input: {
       message: m.message,
     })),
     decorativeHeroUrl,
-    themeOverrides: applied.themeOverrides,
+    themeOverrides,
     lookId: input.lookId,
   };
 }

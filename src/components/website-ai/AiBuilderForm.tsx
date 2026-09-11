@@ -93,10 +93,14 @@ export default function AiBuilderForm({
   assessment,
   previewPath,
   initialLooks = [],
+  businessName: businessNameProp,
+  logoUrl = null,
 }: {
   assessment: WebsiteContextAssessment;
   previewPath: string;
   initialLooks?: BrandLookCombo[];
+  businessName?: string;
+  logoUrl?: string | null;
 }) {
   const [scaffoldState, scaffoldAction, scaffoldPending] = useActionState(
     scaffoldAiWebsiteDraft,
@@ -107,7 +111,7 @@ export default function AiBuilderForm({
     initial,
   );
   const [blueprintId, setBlueprintId] = useState("vendl-choose");
-  const [shapeOpen, setShapeOpen] = useState(assessment.siteShapeMode === "expanded");
+  const [shapeOpen, setShapeOpen] = useState(true);
   const [pages, setPages] = useState(
     () => new Set(assessment.pageOptions.filter((p) => p.defaultChecked).map((p) => p.id)),
   );
@@ -166,7 +170,8 @@ export default function AiBuilderForm({
     );
   }, [scaffoldState, assessment.knownFacts, pages]);
 
-  const businessName = scaffoldState.businessName ?? "Your shop";
+  const businessName =
+    scaffoldState.businessName ?? businessNameProp ?? "Your shop";
 
   const showSamples = useMemo(
     () => capabilities.has("SHOP") && assessment.intake.showSampleProductsOption,
@@ -271,17 +276,15 @@ export default function AiBuilderForm({
               <p className="text-sm font-medium text-[var(--field)]">
                 What should this site include?
               </p>
-              {assessment.siteShapeMode === "collapsed" ? (
-                <button
-                  type="button"
-                  className="text-sm underline text-[var(--muted)]"
-                  onClick={() => setShapeOpen((v) => !v)}
-                >
-                  {shapeOpen ? "Hide" : "Edit"}
-                </button>
-              ) : null}
+              <button
+                type="button"
+                className="rounded-md border border-[var(--border)] bg-white px-3 py-1.5 text-sm font-medium text-[var(--field)] hover:border-[var(--field)]"
+                onClick={() => setShapeOpen((v) => !v)}
+              >
+                {shapeOpen ? "Hide pages" : "Edit pages"}
+              </button>
             </div>
-            {!shapeOpen && assessment.siteShapeMode === "collapsed" ? (
+            {!shapeOpen ? (
               <p className="mt-2 text-sm text-[var(--muted)]">{assessment.siteShapeSummary}</p>
             ) : (
               <div className="mt-4 grid gap-6 sm:grid-cols-2">
@@ -310,12 +313,12 @@ export default function AiBuilderForm({
               </div>
             )}
             {/* Ensure defaults submit when collapsed */}
-            {!shapeOpen && assessment.siteShapeMode === "collapsed"
+            {!shapeOpen
               ? [...pages].map((id) => (
                   <input key={`p-${id}`} type="hidden" name="page" value={id} />
                 ))
               : null}
-            {!shapeOpen && assessment.siteShapeMode === "collapsed"
+            {!shapeOpen
               ? [...capabilities].map((id) => (
                   <input key={`c-${id}`} type="hidden" name="capability" value={id} />
                 ))
@@ -323,16 +326,18 @@ export default function AiBuilderForm({
           </div>
         ) : (
           <>
-            <p className="text-xs text-[var(--muted)]">
-              Pages derived from your Vendl setup.{" "}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm text-[var(--muted)]">
+                Pages derived from your Vendl setup.
+              </p>
               <button
                 type="button"
-                className="underline"
-                onClick={() => setShapeOpen(true)}
+                className="rounded-md border border-[var(--border)] bg-white px-3 py-1.5 text-sm font-medium text-[var(--field)] hover:border-[var(--field)]"
+                onClick={() => setShapeOpen((v) => !v)}
               >
-                Customise pages
+                {shapeOpen ? "Hide pages" : "Customise pages"}
               </button>
-            </p>
+            </div>
             {shapeOpen ? (
               <div className="grid gap-6 rounded-md border border-[var(--border)] px-4 py-4 sm:grid-cols-2">
                 <CheckboxGroup
@@ -431,6 +436,7 @@ export default function AiBuilderForm({
             onSelect={setBlueprintId}
             recommendation={recommendation}
             businessName={businessName}
+            logoUrl={logoUrl}
             defaultKitId={recommendDemoKit({
               hasFarmStand: assessment.knownFacts.includes("Farm stand"),
               hasMenus: assessment.knownFacts.includes("Weekly preorders"),

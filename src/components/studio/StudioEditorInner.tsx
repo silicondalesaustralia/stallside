@@ -10,6 +10,7 @@ import { resolveStudioTemplate } from "@/lib/studio/templates";
 import {
   publishWebsiteStudioDraft,
   saveWebsiteStudioDraft,
+  saveStorefrontHeaderStyle,
 } from "@/app/dashboard/(gated)/website/studio/actions";
 import {
   publishCustomPageDraft,
@@ -23,6 +24,8 @@ import { buildCustomPageStarterTree } from "@/lib/studio/page-starters";
 import { buildCommerceStarterTree } from "@/lib/studio/commerce-starters";
 import type { CustomPageTemplateId } from "@/lib/studio/custom-pages";
 import type { CommercePageKind } from "@/lib/studio/commerce-pages";
+import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style";
+import type { ChromeTarget } from "@/components/craft/CraftEditorContext";
 import StudioEditorShell from "@/components/studio/shell/StudioEditorShell";
 import { StudioEditorProvider } from "./StudioEditorContext";
 import StudioEditorHeader from "./StudioEditorHeader";
@@ -77,6 +80,29 @@ export default function StudioEditorInner({
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [pending, startTransition] = useTransition();
   const serializedRef = useRef<string>("");
+  const [chromeTarget, setChromeTarget] = useState<ChromeTarget>(null);
+  const [headerLayout, setHeaderLayout] = useState<HeaderLayout>(
+    metadata.resolvedBranding.headerLayout,
+  );
+  const [brandMark, setBrandMark] = useState<BrandMarkMode>(
+    metadata.resolvedBranding.brandMark,
+  );
+  const [headerStyleStatus, setHeaderStyleStatus] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
+
+  const setHeaderStyle = useCallback(
+    (patch: { headerLayout?: HeaderLayout; brandMark?: BrandMarkMode }) => {
+      if (patch.headerLayout) setHeaderLayout(patch.headerLayout);
+      if (patch.brandMark) setBrandMark(patch.brandMark);
+      setHeaderStyleStatus("saving");
+      startTransition(async () => {
+        const result = await saveStorefrontHeaderStyle(patch);
+        setHeaderStyleStatus(result.ok ? "saved" : "error");
+      });
+    },
+    [],
+  );
 
   const onSave = useCallback(() => {
     setSaveStatus("saving");
@@ -132,6 +158,12 @@ export default function StudioEditorInner({
       setPaletteCollapsed,
       commercePageKind: commercePageKind ?? null,
       surface,
+      chromeTarget,
+      setChromeTarget,
+      headerLayout,
+      brandMark,
+      setHeaderStyle,
+      headerStyleStatus,
     }),
     [
       editorMetadata,
@@ -152,6 +184,11 @@ export default function StudioEditorInner({
       paletteCollapsed,
       commercePageKind,
       surface,
+      chromeTarget,
+      headerLayout,
+      brandMark,
+      setHeaderStyle,
+      headerStyleStatus,
     ],
   );
 

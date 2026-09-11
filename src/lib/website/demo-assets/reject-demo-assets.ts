@@ -1,13 +1,13 @@
 /**
- * Seller site specs must never reference demo kit assets (Phase 8D.1 §11).
+ * Seller drafts may use /demo/kits/* as editable style starters.
+ * Other /demo/ paths remain forbidden in site specs.
  */
-const DEMO_PATH = /(?:^|["'\s(])\/demo\//i;
-const DEMO_HOST_HINT = /demo\/kits\//i;
+const FORBIDDEN_DEMO = /(?:^|["'\s(])\/demo\/(?!kits\/)/i;
 
 export function findDemoAssetReferences(value: unknown, path = "$"): string[] {
   const hits: string[] = [];
   if (typeof value === "string") {
-    if (DEMO_PATH.test(value) || DEMO_HOST_HINT.test(value)) {
+    if (FORBIDDEN_DEMO.test(value)) {
       hits.push(`${path}: ${value.slice(0, 120)}`);
     }
     return hits;
