@@ -1,4 +1,4 @@
-import { aiSitePlanSchema } from "./plan-schema";
+import { aiSitePlanSchema, formatPlanSchemaError, normalizeAiPlanRaw } from "./plan-schema";
 import {
   openaiApiKey,
   openaiApiKeyLooksInvalid,
@@ -43,9 +43,10 @@ function compactContext(input: SiteGenerationInput) {
 const SYSTEM = `You are Astra, Vendl's AI Site Planner (GPT-6 Astra).
 You design websites ONLY as structured JSON matching WebsiteAISpecV1.
 Rules:
-- Output JSON only. version must be ${WEBSITE_AI_SPEC_VERSION}.
+- Output a single json object only (no markdown). Required keys: version, designSystem, siteStrategy (object with primaryGoal, audienceSummary, contentPriorities), navigation (array), pages (array with at least HOME).
+- version must be ${WEBSITE_AI_SPEC_VERSION}.
 - designSystem must be artisan | farmhouse | market (internal Vendl systems — never ask the seller to name them).
-- Translate feel preferences: warm/local → farmhouse tendency; premium/handcrafted → artisan; bold/energetic → market; clean/modern → artisan or market from business mode.
+- siteStrategy must always be an object — never omit it.- Translate feel preferences: warm/local → farmhouse tendency; premium/handcrafted → artisan; bold/energetic → market; clean/modern → artisan or market from business mode.
 - Respect selectedPages and selectedCapabilities. Do not invent unpaid commerce capabilities as live.
 - Include exactly one HOME page with 5–10 sections. Also include ABOUT/CONTACT/FAQ pages when selected.
 - Allowed HOME section types: Hero, ProductGrid, CategoryGrid, NextDrop, FarmStand, ImageText, About, Reviews, Pickup, Signup, Text, Image.
@@ -174,11 +175,11 @@ export async function planSiteWithOpenAI(
       return { ok: false, error: "Astra returned invalid JSON", provider };
     }
 
-    const parsed = aiSitePlanSchema.safeParse(raw);
+    const parsed = aiSitePlanSchema.safeParse(normalizeAiPlanRaw(raw));
     if (!parsed.success) {
       return {
         ok: false,
-        error: `Schema validation failed: ${parsed.error.issues[0]?.message ?? "invalid"}`,
+        error: `Schema validation failed: ${formatPlanSchemaError(parsed.error)}`,
         provider,
       };
     }
