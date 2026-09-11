@@ -34,6 +34,7 @@ export function headerStyleFromBlueprint(
     case "CENTRED":
       return { headerLayout: "centred", brandMark: defaults.brandMark };
     case "STACKED":
+    case "INFO_BAR":
       return { headerLayout: "stacked", brandMark: defaults.brandMark };
     case "MINIMAL_ICON":
       return {
@@ -42,7 +43,6 @@ export function headerStyleFromBlueprint(
       };
     case "CLASSIC":
     case "UTILITY_SEARCH":
-    case "INFO_BAR":
     case "BOLD_BAR":
     default:
       return defaults;

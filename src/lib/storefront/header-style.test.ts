@@ -30,6 +30,7 @@ describe("header-style", () => {
       brandMark: "logo-only",
     });
     assert.equal(headerStyleFromBlueprint("BOLD_BAR", true).headerLayout, "classic");
+    assert.equal(headerStyleFromBlueprint("INFO_BAR", true).headerLayout, "stacked");
   });
 
   it("validates layout and brand mark enums", () => {

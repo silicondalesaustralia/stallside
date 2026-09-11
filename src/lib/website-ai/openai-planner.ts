@@ -31,6 +31,7 @@ function compactContext(input: SiteGenerationInput) {
     selectedPages: intent?.selectedPages ?? null,
     selectedCapabilities: intent?.selectedCapabilities ?? null,
     layoutRecipe: intent?.layoutRecipe ?? null,
+    blueprintId: intent?.blueprintId ?? null,
     useAiDecorativePlaceholders: intent?.useAiDecorativePlaceholders ?? false,
     includeSampleProducts: intent?.includeSampleProducts ?? false,
     primaryGoal: intent?.primaryGoal ?? null,
@@ -46,13 +47,16 @@ You design websites ONLY as structured JSON matching WebsiteAISpecV1.
 Rules:
 - Output a single json object only (no markdown fences).
 - designSystem MUST be exactly one string: "artisan" | "farmhouse" | "market". Never an object.
+- When blueprintId is set, use that starting style's designSystem (editorial/boutique/studio→artisan, local/heritage→farmhouse, marketplace/bold/catalogue/modern-store→market) and layoutRecipe if provided.
 - navigation MUST be an array of { "label": string, "pageType": PageType }. Never { items, href }.
+- navigation MUST have at most 10 items. Include only customer-facing pages (HOME, SHOP, FARM_STAND, MENU, ABOUT, CONTACT, FAQ, BLOG, REVIEWS, EVENTS, SUBSCRIPTIONS). Never put PRIVACY, TERMS, REFUNDS, or DELIVERY_POLICY in navigation.
 - pages MUST be an array of { pageType, title, sections[] }.
 - siteStrategy MUST be { primaryGoal, audienceSummary, contentPriorities }.
 - version must be ${WEBSITE_AI_SPEC_VERSION}.
 - Allowed pageType values only: HOME ABOUT CONTACT FAQ SHOP FARM_STAND MENU SUBSCRIPTIONS EVENTS REVIEWS BLOG PRIVACY TERMS REFUNDS DELIVERY_POLICY.
 - Allowed section type values only: Hero ProductGrid CategoryGrid NextDrop FarmStand ImageText About Reviews Pickup Signup Text Image.
 - Include exactly one HOME page with 5–10 sections. First section must be Hero.
+- For local/farm styles, Hero preset should be "background" (full-bleed photo).
 - HOME core (always): Hero, commerce (ProductGrid or NextDrop), story (ImageText/About), trust/fulfilment (Reviews/Pickup/FarmStand), Signup.
 - If layoutRecipe is set (shop_first|story_led|local_visit|weekly_drop|browse_catalog), follow that section order.
 - FarmStand only if hasFarmStand (or visibility EDITOR_ONLY stub). NextDrop only if hasMenus.
@@ -61,7 +65,7 @@ Rules:
 - Write a short changeSummary string.
 
 Example shape:
-{"version":1,"designSystem":"farmhouse","siteStrategy":{"primaryGoal":"farm-stand","audienceSummary":"Local customers","contentPriorities":["Hero","FarmStand"]},"navigation":[{"label":"Home","pageType":"HOME"},{"label":"Shop","pageType":"SHOP"}],"pages":[{"pageType":"HOME","title":"Home","sections":[{"id":"hero-0","type":"Hero","headline":"Welcome"}]}],"changeSummary":"Draft farmhouse homepage."}`;
+{"version":1,"designSystem":"farmhouse","siteStrategy":{"primaryGoal":"farm-stand","audienceSummary":"Local customers","contentPriorities":["Hero","FarmStand"]},"navigation":[{"label":"Home","pageType":"HOME"},{"label":"Shop","pageType":"SHOP"}],"pages":[{"pageType":"HOME","title":"Home","sections":[{"id":"hero-0","type":"Hero","headline":"Welcome","preset":"background"}]}],"changeSummary":"Draft farmhouse homepage."}`;
 
 type ResponsesApiJson = {
   output_text?: string;

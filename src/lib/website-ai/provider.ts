@@ -203,6 +203,8 @@ export async function finalizeWebsiteDraft(input: {
         recommendDemoKit({
           hasFarmStand: input.businessContext.hasFarmStand,
           hasMenus: input.businessContext.hasMenus,
+          businessMode: input.businessContext.businessMode,
+          blueprintId,
         }),
       );
     const assets = await materializeKitStarterImages(
@@ -214,7 +216,7 @@ export async function finalizeWebsiteDraft(input: {
     plan = {
       ...plan,
       changeSummary:
-        `${plan.changeSummary ?? ""} Kit images: ${kit.id}.`.trim(),
+        `${plan.changeSummary ?? ""} Starter kit images: ${kit.id}.`.trim(),
     };
   }
 

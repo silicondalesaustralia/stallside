@@ -19,6 +19,7 @@ import {
   type HomeSlot,
   type LayoutRecipeId,
 } from "./layout-recipes";
+import { heroPresetFromBlueprintHero } from "./blueprint-hero-preset";
 import {
   getWebsiteBlueprint,
   recommendWebsiteBlueprint,
@@ -281,7 +282,11 @@ function homeSections(
           ? "Order this week"
           : "Browse",
     preset:
-      blueprint?.preferredPresets.Hero ?? heroPresetForRecipe(recipe, templateId),
+      (blueprint
+        ? heroPresetFromBlueprintHero(blueprint.layout.hero)
+        : undefined) ??
+      blueprint?.preferredPresets.Hero ??
+      heroPresetForRecipe(recipe, templateId),
     copyKind: "GENERIC",
     placeholderKind: intent?.useAiDecorativePlaceholders
       ? "IMAGE_DECORATIVE"
@@ -350,18 +355,18 @@ function buildNavigation(
   if (p.has("FARM_STAND")) {
     nav.push({ label: "Farm stand", pageType: "FARM_STAND" });
   }
+  if (p.has("MENU")) nav.push({ label: "Menus", pageType: "MENU" });
   if (p.has("ABOUT")) nav.push({ label: "About", pageType: "ABOUT" });
   if (p.has("CONTACT")) nav.push({ label: "Contact", pageType: "CONTACT" });
   if (p.has("FAQ")) nav.push({ label: "FAQ", pageType: "FAQ" });
   if (p.has("BLOG")) nav.push({ label: "Blog", pageType: "BLOG" });
   if (p.has("REVIEWS")) nav.push({ label: "Reviews", pageType: "REVIEWS" });
-  if (p.has("PRIVACY")) nav.push({ label: "Privacy", pageType: "PRIVACY" });
-  if (p.has("TERMS")) nav.push({ label: "Terms", pageType: "TERMS" });
-  if (p.has("REFUNDS")) nav.push({ label: "Returns", pageType: "REFUNDS" });
-  if (p.has("DELIVERY_POLICY")) {
-    nav.push({ label: "Shipping", pageType: "DELIVERY_POLICY" });
+  if (p.has("EVENTS")) nav.push({ label: "Events", pageType: "EVENTS" });
+  if (p.has("SUBSCRIPTIONS")) {
+    nav.push({ label: "Subscriptions", pageType: "SUBSCRIPTIONS" });
   }
-  return nav;
+  // Policy pages stay in the footer — keep header nav lean for Astra schema.
+  return nav.slice(0, 12);
 }
 
 function extraPages(

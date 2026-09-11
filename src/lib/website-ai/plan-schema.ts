@@ -201,7 +201,23 @@ function normalizeNavigation(value: unknown): { label: string; pageType: Website
   if (!out.some((n) => n.pageType === "HOME")) {
     out.unshift({ label: "Home", pageType: "HOME" });
   }
-  return out.slice(0, 12);
+  // Keep primary commerce/nav pages; drop policy links if over the limit.
+  const primary = new Set([
+    "HOME",
+    "SHOP",
+    "FARM_STAND",
+    "MENU",
+    "ABOUT",
+    "CONTACT",
+    "FAQ",
+    "BLOG",
+    "REVIEWS",
+    "EVENTS",
+    "SUBSCRIPTIONS",
+  ]);
+  const preferred = out.filter((n) => primary.has(n.pageType));
+  const rest = out.filter((n) => !primary.has(n.pageType));
+  return [...preferred, ...rest].slice(0, 12);
 }
 
 function normalizeSiteStrategy(value: unknown): {
@@ -248,7 +264,7 @@ export const aiSitePlanSchema = z.object({
         pageType: pageTypeSchema,
       }),
     )
-    .max(10),
+    .max(12),
   pages: z
     .array(
       z.object({

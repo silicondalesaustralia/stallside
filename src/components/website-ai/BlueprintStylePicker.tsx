@@ -8,6 +8,7 @@ import {
 import {
   DEMO_KIT_IDS,
   getDemoKit,
+  recommendDemoKit,
   type DemoKitId,
 } from "@/lib/website/demo-kits";
 import StyleSlideCard from "./demo/StyleSlideCard";
@@ -61,6 +62,15 @@ export default function BlueprintStylePicker({
     const idx = ordered.findIndex((b) => b.id === selectedId);
     if (idx >= 0) setSlideIndex(idx);
   }, [selectedId, ordered]);
+
+  useEffect(() => {
+    if (!selectedId || selectedId === "vendl-choose") return;
+    setKitId(
+      recommendDemoKit({
+        blueprintId: selectedId,
+      }),
+    );
+  }, [selectedId]);
 
   function go(delta: number) {
     setSlideIndex((i) => (i + delta + total) % total);

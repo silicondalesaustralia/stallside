@@ -137,7 +137,7 @@ const BLUEPRINTS: Record<WebsiteBlueprintId, WebsiteBlueprint> = {
     suitableFor: ["farm stands", "florists", "market sellers", "local producers"],
     layoutRecipe: "local_visit",
     preferredHomeSlots: ["farm_stand", "commerce", "pickup", "story", "signup"],
-    preferredPresets: { Hero: "farm-landscape", FarmStand: "visit", Pickup: "cards" },
+    preferredPresets: { Hero: "background", FarmStand: "visit", Pickup: "cards" },
     contentDensity: "medium",
     imageEmphasis: "medium",
     commerceEmphasis: "balanced",

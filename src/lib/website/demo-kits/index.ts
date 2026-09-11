@@ -28,9 +28,27 @@ export function recommendDemoKit(signals: {
   hasFarmStand?: boolean;
   hasMenus?: boolean;
   businessMode?: string | null;
+  blueprintId?: string | null;
 }): DemoKitId {
-  if (signals.hasFarmStand) return "green-valley";
-  if (signals.hasMenus || signals.businessMode === "MENU") return "mill-and-crumb";
+  const bp = signals.blueprintId ?? "";
+  if (
+    bp === "local" ||
+    bp === "heritage" ||
+    bp === "marketplace" ||
+    signals.hasFarmStand
+  ) {
+    return "green-valley";
+  }
+  if (
+    bp === "editorial" ||
+    bp === "boutique" ||
+    bp === "studio" ||
+    signals.hasMenus ||
+    signals.businessMode === "MENU" ||
+    signals.businessMode === "FOOD_BUSINESS"
+  ) {
+    return "mill-and-crumb";
+  }
   return "north-and-field";
 }
 

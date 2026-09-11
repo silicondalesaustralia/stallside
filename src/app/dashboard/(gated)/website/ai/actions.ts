@@ -30,6 +30,7 @@ import { getPalette } from "@/lib/website/brand-looks";
 import {
   recommendWebsiteBlueprint,
   resolveBlueprintChoice,
+  getWebsiteBlueprint,
 } from "@/lib/website/blueprints";
 import { resolveDemoKit } from "@/lib/website/demo-kits";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
@@ -174,7 +175,12 @@ export async function buildAiWebsiteDraft(
       scaffold.intent,
     );
     const { blueprintId } = resolveBlueprintChoice(blueprintChoice, recommendation);
-    const intent = { ...scaffold.intent, blueprintId };
+    const blueprint = getWebsiteBlueprint(blueprintId);
+    const intent = {
+      ...scaffold.intent,
+      blueprintId,
+      layoutRecipe: scaffold.intent.layoutRecipe ?? blueprint.layoutRecipe,
+    };
 
     const replanned = await scaffoldWebsiteDraft({
       businessContext,

@@ -79,7 +79,7 @@ export function heroPresetForRecipe(
     return templateId === "farmhouse" ? "split" : "editorial";
   }
   if (recipe === "local_visit") {
-    return templateId === "farmhouse" ? "farm-landscape" : "stand-status";
+    return "background";
   }
   if (recipe === "weekly_drop") {
     return templateId === "market" ? "current-menu" : "promo";

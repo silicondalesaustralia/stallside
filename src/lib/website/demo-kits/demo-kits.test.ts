@@ -47,6 +47,7 @@ describe("demo kits", () => {
     assert.equal(recommendDemoKit({ hasFarmStand: true }), "green-valley");
     assert.equal(recommendDemoKit({ hasMenus: true }), "mill-and-crumb");
     assert.equal(recommendDemoKit({}), "north-and-field");
+    assert.equal(recommendDemoKit({ blueprintId: "local" }), "green-valley");
   });
 
   it("uses only local /demo/kits paths", () => {

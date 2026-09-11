@@ -62,7 +62,7 @@ export function applyDecorativeImagesToPlan(
       return { ...page, sections };
     }),
     changeSummary: plan.changeSummary
-      ? `${plan.changeSummary} Decorative placeholder images added.`
-      : "Decorative placeholder images added.",
+      ? `${plan.changeSummary} Images added.`
+      : "Images added.",
   };
 }

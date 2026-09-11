@@ -24,7 +24,7 @@ describe("applyBlueprintBrand", () => {
     assert.equal(next.fontPairId, fontPairIdForBlueprint("local"));
     assert.ok(getFontPair(next.fontPairId));
     assert.equal(next.buttonStyle, "pill");
-    assert.equal(next.headerLayout, "classic");
+    assert.equal(next.headerLayout, "stacked");
     assert.equal(next.brandMark, "name-only");
   });
 
