@@ -82,10 +82,10 @@ export default async function ProductsPage({
       : Promise.resolve([]),
   ]);
 
-  function listHref(nextView?: "archived") {
+  function listHref(nextView?: "archived", nextTab: ProductTabId = tab) {
     const params = new URLSearchParams();
-    if (tab !== "standard") params.set("tab", tab);
-    if (nextView) params.set("view", nextView);
+    if (nextTab !== "standard") params.set("tab", nextTab);
+    if (nextView === "archived") params.set("view", "archived");
     const qs = params.toString();
     return qs ? `/dashboard/products?${qs}` : "/dashboard/products";
   }
@@ -142,6 +142,16 @@ export default async function ProductsPage({
           }`}
         >
           Archived
+        </Link>
+        <Link
+          href={listHref(showArchived ? "archived" : undefined, "supplier")}
+          className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
+            isSupplier
+              ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
+              : "bg-white text-[var(--ink)] outline outline-[var(--line)]"
+          }`}
+        >
+          Supplier
         </Link>
       </div>
 

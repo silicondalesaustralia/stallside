@@ -3,13 +3,12 @@ import Link from "next/link";
 export const PRODUCT_TABS = [
   { id: "standard", label: "Standard" },
   { id: "preorder", label: "Pre Order" },
-  { id: "supplier", label: "Supplier products" },
 ] as const;
 
-export type ProductTabId = (typeof PRODUCT_TABS)[number]["id"];
+export type ProductTabId = (typeof PRODUCT_TABS)[number]["id"] | "supplier";
 
 export function isProductTabId(value: string | undefined): value is ProductTabId {
-  return PRODUCT_TABS.some((t) => t.id === value);
+  return value === "supplier" || PRODUCT_TABS.some((t) => t.id === value);
 }
 
 export default function ProductsTabs({

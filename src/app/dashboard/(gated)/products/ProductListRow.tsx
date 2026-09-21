@@ -26,12 +26,18 @@ export default function ProductListRow({
       <DashListCard>
         <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-4">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
-              {product.sku ? `SKU ${product.sku}` : "Product"}
-              {product.supplierName ? ` · ${product.supplierName}` : null}
-              {product.isArchived ? " · Archived" : null}
-              {product.isHidden && !product.isArchived ? " · Hidden" : null}
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
+                {product.sku ? `SKU ${product.sku}` : "Product"}
+                {product.isArchived ? " · Archived" : null}
+                {product.isHidden && !product.isArchived ? " · Hidden" : null}
+              </p>
+              {product.supplierName != null ? (
+                <span className="rounded-full bg-[var(--leaf)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--leaf-dark)]">
+                  Supplier
+                </span>
+              ) : null}
+            </div>
             <p className="mt-1 font-[family-name:var(--font-display)] text-lg font-bold leading-tight">
               {product.name}
             </p>
