@@ -4,13 +4,16 @@ import { loadOwnerPaymentLedger } from "@/lib/owner-payment-ledger";
 export default async function OwnerPaymentLedger({
   ownerId,
   stripeCustomerId,
+  stripeAccountId,
 }: {
   ownerId: string;
   stripeCustomerId: string | null;
+  stripeAccountId: string | null;
 }) {
   const { rows, invoiceError } = await loadOwnerPaymentLedger({
     ownerId,
     stripeCustomerId,
+    stripeAccountId,
   });
 
   return (
@@ -18,7 +21,7 @@ export default async function OwnerPaymentLedger({
       <div>
         <h2 className="text-lg font-semibold">Payments to Vendl</h2>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          Every counted transaction fee and paid subscription invoice.
+          Every Vendl.app fee and paid subscription invoice.
         </p>
       </div>
       {invoiceError ? (

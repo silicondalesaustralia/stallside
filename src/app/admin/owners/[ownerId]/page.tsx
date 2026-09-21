@@ -108,6 +108,7 @@ export default async function AdminOwnerDetailPage({
       <OwnerPaymentLedger
         ownerId={owner.id}
         stripeCustomerId={owner.stripeCustomerId}
+        stripeAccountId={owner.stripeAccountId}
       />
       <AdminOwnerTools ownerId={owner.id} />
       <AdminDeleteOwnerButton

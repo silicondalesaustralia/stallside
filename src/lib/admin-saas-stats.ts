@@ -5,6 +5,11 @@ import { demoStandSlugs } from "@/lib/demo";
 import { COUNTED_STATUSES } from "@/lib/order-metrics";
 import { audRatesFromMarket, billingCentsToAud } from "@/lib/fx-to-aud";
 import { bucketsToAud, platformFeesByCurrency } from "@/lib/owner-ltv";
+import { getStripe, isStripeConfigured } from "@/lib/stripe";
+import {
+  applicationFeesToAud,
+  listApplicationFeeEvents,
+} from "@/lib/stripe-application-fees";
 
 /** Statuses that still bill (exclude comps). */
 const BILLING_LIVE: SubscriptionStatus[] = [
@@ -77,17 +82,34 @@ export async function getSaasStats() {
       sum + billingCentsToAud(o.monthlyFeeCents, o.billingCurrency, fx),
     0,
   );
+  const arrCents = mrrCents * 12;
   const subscriptionLtvCents = ltvOwners.reduce(
     (sum, o) =>
       sum + billingCentsToAud(o.lifetimePaidCents, o.billingCurrency, fx),
     0,
   );
-  const totalLtvCents = subscriptionLtvCents + bucketsToAud(feeBuckets, fx);
+
+  let feesAllTimeCents = bucketsToAud(feeBuckets, fx);
+  let feesFromStripe = false;
+  if (isStripeConfigured()) {
+    try {
+      const fees = await listApplicationFeeEvents(getStripe());
+      feesAllTimeCents = applicationFeesToAud(fees, fx);
+      feesFromStripe = true;
+    } catch (error) {
+      console.error("Admin SaaS stats: application fees", error);
+    }
+  }
+
+  const totalLtvCents = subscriptionLtvCents + feesAllTimeCents;
 
   return {
     owners,
     currency: DEFAULT_CURRENCY,
     mrrCents,
+    arrCents,
+    feesAllTimeCents,
+    feesFromStripe,
     totalLtvCents,
     liveSubscribers: paidSubscribers.length,
     active: statusCounts.ACTIVE ?? 0,

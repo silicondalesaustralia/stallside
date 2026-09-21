@@ -30,7 +30,8 @@ export default function AdminSaasPanels({
         title={`${windowLabel} · LTV collected`}
       />
       <p className="-mt-6 text-sm text-[var(--muted)]">
-        Fees {formatMoney(ltv.feeAudCents, saas.currency)} · Subscriptions{" "}
+        Fees {formatMoney(ltv.feeAudCents, saas.currency)}
+        {ltv.feesFromStripe ? " (Stripe)" : ""} · Subscriptions{" "}
         {formatMoney(ltv.subscriptionAudCents, saas.currency)}
         {ltv.subscriptionsLoaded
           ? ""
@@ -45,6 +46,21 @@ export default function AdminSaasPanels({
           value={formatMoney(saas.mrrCents, saas.currency)}
         />
         <DashboardStat
+          label="ARR (AUD)"
+          value={formatMoney(saas.arrCents, saas.currency)}
+        />
+        <DashboardStat
+          label="Fees all-time (AUD)"
+          value={formatMoney(saas.feesAllTimeCents, saas.currency)}
+        />
+        <DashboardStat
+          label="Paying subs"
+          value={String(saas.liveSubscribers)}
+        />
+      </section>
+
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <DashboardStat
           label={`LTV · ${windowLabel}`}
           value={formatMoney(ltv.totalAudCents, saas.currency)}
           current={ltv.totalAudCents}
@@ -53,10 +69,6 @@ export default function AdminSaasPanels({
         <DashboardStat
           label="LTV all-time (AUD)"
           value={formatMoney(saas.totalLtvCents, saas.currency)}
-        />
-        <DashboardStat
-          label="Paying subs"
-          value={String(saas.liveSubscribers)}
         />
         <DashboardStat label="Owners" value={String(saas.owners)} />
       </section>
