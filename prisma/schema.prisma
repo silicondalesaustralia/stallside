@@ -122,6 +122,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   owner         Owner?
+  standMemberships StandMember[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -283,6 +284,7 @@ model Owner {
   shopperSubscriptions      ShopperSubscription[]
   orders                    Order[]
   inventoryAdjustments      InventoryAdjustment[]
+  standMembers              StandMember[]
   lowStockAlerts            LowStockAlert[]
   pushDevices               PushDevice[]
   galleryStands             GalleryStand[]
@@ -406,6 +408,7 @@ model Stand {
   shopperSubscriptions ShopperSubscription[]
   orders             Order[]
   inventoryAdjustments InventoryAdjustment[]
+  standMembers       StandMember[]
   lowStockAlerts     LowStockAlert[]
   restockSubscribers RestockSubscriber[]
   restockNotifications RestockNotification[]
@@ -509,6 +512,11 @@ model Product {
   optionGroups       ProductOptionGroup[]
   preOrderPageItems  PreOrderPageProduct[]
   subscriptionOfferItems SubscriptionOfferProduct[]
+  /** Supplier who owns this product. Null means the stand owner. */
+  memberId           String?
+  member             StandMember?         @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  /** Amount the owner owes the supplier per unit sold. Not the retail price. */
+  supplierUnitCents  Int?
   orderItems         OrderItem[]
   inventoryAdjustments InventoryAdjustment[]
   lowStockAlerts     LowStockAlert[]
@@ -518,6 +526,7 @@ model Product {
   @@unique([standId, slug])
   @@index([standId, isActive])
   @@index([ownerId])
+  @@index([memberId])
 }
 
 /** Recurring box / membership basket built from catalog products. */
@@ -754,9 +763,15 @@ model OrderItem {
   quantity            Int
   unitPriceCents      Int
   lineTotalCents      Int
+  /** Supplier attributed at sale time. */
+  memberId            String?
+  member              StandMember? @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  /** Owed to the supplier per unit, copied at sale time. */
+  supplierUnitCents   Int?
   createdAt           DateTime @default(now())
 
   @@index([orderId])
+  @@index([memberId])
 }
 
 model InventoryAdjustment {
@@ -774,9 +789,58 @@ model InventoryAdjustment {
   source           InventorySource
   orderId          String?
   order            Order?          @relation(fields: [orderId], references: [id])
+  /** Set when a supplier changed stock. Contribution history. */
+  memberId         String?
+  member           StandMember?    @relation(fields: [memberId], references: [id], onDelete: SetNull)
   createdAt        DateTime        @default(now())
 
   @@index([productId, createdAt])
+  @@index([memberId, createdAt])
+}
+
+enum StandMemberStatus {
+  INVITED
+  ACTIVE
+  REVOKED
+}
+
+/** Neighbour or other producer with limited access to one stand. */
+model StandMember {
+  id          String            @id @default(cuid())
+  standId     String
+  stand       Stand             @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId     String
+  owner       Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  email       String
+  name        String
+  userId      String?
+  user        User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status      StandMemberStatus @default(INVITED)
+  inviteToken String            @unique
+  products    Product[]
+  adjustments InventoryAdjustment[]
+  orderItems  OrderItem[]
+  payouts     SupplierPayout[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([standId, email])
+  @@index([ownerId])
+  @@index([userId, status])
+  @@index([email])
+}
+
+/** Manual record that the owner paid a supplier outside Vendl. */
+model SupplierPayout {
+  id          String      @id @default(cuid())
+  memberId    String
+  member      StandMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  amountCents Int
+  note        String?
+  paidAt      DateTime    @default(now())
+  createdAt   DateTime    @default(now())
+
+  @@index([memberId, paidAt])
 }
 
 model LowStockAlert {
@@ -851,6 +915,7 @@ enum NotificationType {
   SUBSCRIPTION_PAUSED
   SUBSCRIPTION_CANCELLED
   PAYMENT_FAILED
+  SUPPLIER_STOCK
   OTHER
 }
 

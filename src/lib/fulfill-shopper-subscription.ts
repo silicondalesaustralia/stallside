@@ -14,6 +14,7 @@ import { decrementStockForOrder } from "@/lib/checkout";
 import { notifySale } from "@/lib/notify";
 import { notifyOrderCustomer } from "@/lib/notify-order-customer";
 import { nextCollectionAt } from "@/lib/subscription-offer";
+import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
 import {
   paymentIntentIdFromInvoice,
   subscriptionIdFromInvoice,
@@ -106,6 +107,7 @@ export async function fulfillShopperSubscriptionInvoice(
     quantity: i.quantity,
     unitPriceCents: i.product.priceCents,
     lineTotalCents: i.product.priceCents * i.quantity,
+    ...supplierLineSnapshot(i.product),
   }));
   const subtotalCents = lineCreates.reduce((s, l) => s + l.lineTotalCents, 0);
   const fee = 0;

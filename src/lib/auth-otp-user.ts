@@ -12,6 +12,7 @@ import {
 } from "@/lib/lifecycle-emails/send-and-mark";
 import { normalizeAttribution } from "@/lib/ad-attribution";
 import { Prisma } from "@/generated/prisma/client";
+import { claimSupplierInvite, hasSupplierSeat } from "@/lib/suppliers/claim-invite";
 
 /** Verify email code and return the Auth.js user (creating owner on first sign-in). */
 export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
@@ -22,6 +23,9 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
 
   let user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
+    const supplierUser = await claimSupplierInvite(email);
+    if (supplierUser) return supplierUser;
+
     const intent = await prisma.signupIntent.findUnique({ where: { email } });
     const name = (intent?.name || email.split("@")[0] || "My stand").trim();
     const inviteToken = intent?.inviteToken?.trim() || null;
@@ -95,7 +99,7 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
     const intent = await prisma.signupIntent.findUnique({ where: { email } });
     const adAttribution = normalizeAttribution(intent?.adAttribution);
     const owner = await prisma.owner.findUnique({ where: { userId: user.id } });
-    if (!owner) {
+    if (!owner && !(await hasSupplierSeat(email))) {
       const created = await createOwnerWithTrial({
         userId: user.id,
         name: user.name || "My stand",
@@ -103,7 +107,7 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
         adAttribution,
       });
       await sendAndMarkTrialWelcome(created.id);
-    } else if (intent) {
+    } else if (owner && intent) {
       // Re-signup with an existing (incl. soft-closed) account: store click ids
       // and clear deletedAt so they can use the product again.
       await prisma.owner.update({

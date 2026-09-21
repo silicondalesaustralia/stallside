@@ -69,6 +69,13 @@ export const requireOwner = cache(async () => {
     where: { userId: user.id },
   });
   if (!owner || owner.deletedAt) {
+    if (!owner) {
+      const membership = await prisma.standMember.findFirst({
+        where: { userId: user.id, status: "ACTIVE" },
+        select: { id: true },
+      });
+      if (membership) redirect("/supply");
+    }
     redirect("/onboarding");
   }
   return {

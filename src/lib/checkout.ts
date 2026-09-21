@@ -16,6 +16,7 @@ import {
 import { parsePriceTiers, lineTotalWithTiers } from "@/lib/price-tiers";
 import { productLiveWhere } from "@/lib/product-visibility";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
+import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
 import {
   CUSTOMER_CHOICE_MAX_CENTS,
   CUSTOMER_CHOICE_MIN_CENTS,
@@ -55,6 +56,8 @@ export type CartLineData = {
   lineTotalCents: number;
   usedTier: boolean;
   usedUpsell: boolean;
+  memberId: string | null;
+  supplierUnitCents: number | null;
 };
 
 /** True if this email already has a completed order at the stand. */
@@ -86,6 +89,8 @@ export function orderItemCreates(lineData: CartLineData[]) {
       quantity,
       unitPriceCents,
       lineTotalCents,
+      memberId,
+      supplierUnitCents,
     }) => ({
       productId,
       productNameSnapshot,
@@ -93,6 +98,8 @@ export function orderItemCreates(lineData: CartLineData[]) {
       quantity,
       unitPriceCents,
       lineTotalCents,
+      memberId,
+      supplierUnitCents,
     }),
   );
 }
@@ -150,6 +157,7 @@ export async function loadCustomerChoiceCheckout(
       lineTotalCents: amountCents,
       usedTier: false,
       usedUpsell: false,
+      ...supplierLineSnapshot(product),
     },
   ];
 
@@ -447,6 +455,7 @@ export async function loadStandCart(
         lineTotalCents: unit * item.quantity,
         usedTier: false,
         usedUpsell: true,
+        ...supplierLineSnapshot(product),
       };
     }
 
@@ -466,6 +475,7 @@ export async function loadStandCart(
       lineTotalCents: priced.lineTotalCents,
       usedTier: priced.usedTier,
       usedUpsell: false,
+      ...supplierLineSnapshot(product),
     };
   });
 
