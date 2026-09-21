@@ -4,6 +4,7 @@ import AdminSearchForm from "@/components/AdminSearchForm";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { audRatesFromMarket } from "@/lib/fx-to-aud";
+import { platformFeesByOwner } from "@/lib/owner-ltv";
 import { adminListHref } from "@/lib/admin-list-href";
 import type { Prisma } from "@/generated/prisma/client";
 
@@ -48,6 +49,7 @@ export default async function AdminOwnersPage({
     prisma.owner.count({ where }),
     audRatesFromMarket(),
   ]);
+  const feesByOwner = await platformFeesByOwner(owners.map((owner) => owner.id));
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
@@ -55,7 +57,7 @@ export default async function AdminOwnersPage({
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Subscribers</h1>
         <p className="mt-1 text-[var(--muted)]">
-          Business, stalls, plan, LTV (billing currency + AUD), and status.
+          LTV is transaction fees plus subscription payments.
         </p>
       </div>
 
@@ -70,7 +72,7 @@ export default async function AdminOwnersPage({
           {q ? `No subscribers match “${q}”.` : "No owners yet."}
         </p>
       ) : (
-        <AdminOwnersTable owners={owners} fx={fx} />
+        <AdminOwnersTable owners={owners} fx={fx} feesByOwner={feesByOwner} />
       )}
       {pageCount > 1 ? (
         <nav className="flex items-center gap-3 text-sm">

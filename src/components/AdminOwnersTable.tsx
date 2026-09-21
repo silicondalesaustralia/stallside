@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AdminLoginAsButton from "@/components/AdminLoginAsButton";
-import { formatBillingWithAud, type AudRates } from "@/lib/fx-to-aud";
+import type { AudRates } from "@/lib/fx-to-aud";
+import { formatOwnerLtv, type FeeBucket } from "@/lib/owner-ltv";
 
 type OwnerRow = {
   id: string;
@@ -16,9 +17,11 @@ type OwnerRow = {
 export default function AdminOwnersTable({
   owners,
   fx,
+  feesByOwner,
 }: {
   owners: OwnerRow[];
   fx: AudRates;
+  feesByOwner: Map<string, FeeBucket[]>;
 }) {
   return (
     <div className="dash-card overflow-x-auto p-4">
@@ -61,11 +64,12 @@ export default function AdminOwnersTable({
                 {owner.subscriptionPlan ?? "-"}
               </td>
               <td className="py-3 pr-3">
-                {formatBillingWithAud(
-                  owner.lifetimePaidCents,
-                  owner.billingCurrency,
-                  fx,
-                )}
+                {formatOwnerLtv({
+                  subscriptionCents: owner.lifetimePaidCents,
+                  billingCurrency: owner.billingCurrency,
+                  fees: feesByOwner.get(owner.id) ?? [],
+                  rates: fx,
+                })}
               </td>
               <td className="py-3 pr-3 capitalize">
                 {owner.subscriptionStatus.toLowerCase()}

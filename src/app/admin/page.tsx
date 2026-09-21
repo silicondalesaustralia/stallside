@@ -43,7 +43,7 @@ export default async function AdminOverviewPage({
             SaaS overview
           </h1>
           <p className="mt-1 text-[var(--muted)]">
-            Subscriptions and Vendl revenue in AUD — not stall checkout sales.
+            LTV is transaction fees plus subscription payments, in AUD — not stall sales.
           </p>
           <Suspense
             fallback={
@@ -96,7 +96,7 @@ export default async function AdminOverviewPage({
           value={formatMoney(saas.mrrCents, saas.currency)}
         />
         <DashboardStat
-          label="LTV collected (AUD)"
+          label="LTV fees + subs (AUD)"
           value={formatMoney(saas.totalLtvCents, saas.currency)}
         />
         <DashboardStat
