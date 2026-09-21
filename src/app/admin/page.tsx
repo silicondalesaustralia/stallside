@@ -3,16 +3,15 @@ import { Suspense } from "react";
 import AdminRecentOwners from "@/components/AdminRecentOwners";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { formatMoney } from "@/lib/money";
 import { getSaasStats } from "@/lib/admin-saas-stats";
 import { getSaasSeries } from "@/lib/admin-saas-series";
+import { getLtvWindow } from "@/lib/admin-ltv-window";
 import { resolveDateWindow } from "@/lib/date-range";
 import { isStripeBillingConfigured } from "@/lib/stripe";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
-import DashboardStat from "@/components/DashboardStat";
 import DateRangeFilter from "@/components/DateRangeFilter";
-import SaasSeriesChart from "@/components/SaasSeriesChart";
 import { medianSignupToFirstLiveMs } from "@/lib/signup-timing";
+import AdminSaasPanels from "./AdminSaasPanels";
 
 export default async function AdminOverviewPage({
   searchParams,
@@ -27,9 +26,11 @@ export default async function AdminOverviewPage({
     to: params.to,
   });
 
-  const [saas, series] = await Promise.all([
+  const [saas, series, ltv, ltvPrev] = await Promise.all([
     getSaasStats(),
     getSaasSeries(window.start, window.end),
+    getLtvWindow(window.start, window.end),
+    getLtvWindow(window.prevStart, window.prevEnd),
   ]);
 
   const billingReady = isStripeBillingConfigured();
@@ -88,45 +89,13 @@ export default async function AdminOverviewPage({
         to={window.toParam}
       />
 
-      <SaasSeriesChart points={series} title={`${window.label} · SaaS activity`} />
-
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <DashboardStat
-          label="MRR (AUD)"
-          value={formatMoney(saas.mrrCents, saas.currency)}
-        />
-        <DashboardStat
-          label="LTV fees + subs (AUD)"
-          value={formatMoney(saas.totalLtvCents, saas.currency)}
-        />
-        <DashboardStat
-          label="Paying subs"
-          value={String(saas.liveSubscribers)}
-        />
-        <DashboardStat label="Owners" value={String(saas.owners)} />
-      </section>
-
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <DashboardStat label="Active" value={String(saas.active)} />
-        <DashboardStat label="Stripe trialing" value={String(saas.trialing)} />
-        <DashboardStat label="Past due" value={String(saas.pastDue)} />
-        <DashboardStat label="Cancelled" value={String(saas.cancelled)} />
-      </section>
-
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <DashboardStat
-          label="Demo completions"
-          value={String(saas.demoCompletions)}
-        />
-        <DashboardStat
-          label="Demo last 7 days"
-          value={String(saas.demoCompletions7d)}
-        />
-        <DashboardStat
-          label="Demo stands"
-          value={String(saas.demoStandCount)}
-        />
-      </section>
+      <AdminSaasPanels
+        windowLabel={window.label}
+        saas={saas}
+        series={series}
+        ltv={ltv}
+        ltvPrev={ltvPrev}
+      />
 
       <Suspense
         fallback={

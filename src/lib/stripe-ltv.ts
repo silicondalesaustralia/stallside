@@ -34,6 +34,37 @@ export async function listPaidSubscriptionInvoices(
   return rows;
 }
 
+/** Paid SaaS subscription invoices whose paid time falls in the window. */
+export async function listPaidSubscriptionInvoicesInRange(
+  stripe: Stripe,
+  start: Date,
+  end: Date,
+): Promise<PaidSubscriptionInvoice[]> {
+  const rows: PaidSubscriptionInvoice[] = [];
+  for await (const invoice of stripe.invoices.list({
+    status: "paid",
+    created: {
+      gte: Math.floor(start.getTime() / 1000),
+      lte: Math.floor(end.getTime() / 1000),
+    },
+    limit: 100,
+  })) {
+    if (!invoice.id || !subscriptionIdFromInvoice(invoice)) continue;
+    if (invoice.amount_paid <= 0) continue;
+    const paidAtUnix = invoice.status_transitions?.paid_at ?? invoice.created;
+    const paidAt = new Date(paidAtUnix * 1000);
+    if (paidAt < start || paidAt > end) continue;
+    rows.push({
+      id: invoice.id,
+      number: invoice.number,
+      amountCents: invoice.amount_paid,
+      currency: invoice.currency.toUpperCase(),
+      paidAt,
+    });
+  }
+  return rows;
+}
+
 /** Sum amount_paid on paid subscription invoices for a Stripe customer. */
 export async function sumPaidSubscriptionInvoiceCents(
   stripe: Stripe,

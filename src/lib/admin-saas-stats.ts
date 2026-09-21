@@ -47,7 +47,7 @@ export async function getSaasStats() {
       where: { lifetimePaidCents: { gt: 0 } },
       select: { lifetimePaidCents: true, billingCurrency: true },
     }),
-    platformFeesByCurrency(),
+    platformFeesByCurrency(demoSlugs),
     demoSlugs.length
       ? prisma.order.count({
           where: {
