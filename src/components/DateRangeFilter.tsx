@@ -1,21 +1,26 @@
 import Link from "next/link";
-import { RANGE_PRESETS, type RangeKey } from "@/lib/date-range";
+import {
+  DEFAULT_RANGE_PRESETS,
+  type RangeKey,
+} from "@/lib/date-range";
 
 export default function DateRangeFilter({
   pathname,
   activeKey,
   from,
   to,
+  presets = DEFAULT_RANGE_PRESETS,
 }: {
   pathname: string;
   activeKey: RangeKey;
   from: string;
   to: string;
+  presets?: readonly { key: RangeKey; label: string }[];
 }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap gap-2">
-        {RANGE_PRESETS.map((preset) => {
+        {presets.map((preset) => {
           const href =
             preset.key === "custom"
               ? `${pathname}?range=custom&from=${from}&to=${to}`

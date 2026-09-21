@@ -6,8 +6,14 @@ export const RANGE_PRESETS = [
   { key: "30d", label: "30 days" },
   { key: "6m", label: "6 months" },
   { key: "12m", label: "12 months" },
+  { key: "all", label: "All time" },
   { key: "custom", label: "Custom" },
 ] as const;
+
+/** Owner dashboards keep the shorter set. Admin opts into All time. */
+export const DEFAULT_RANGE_PRESETS = RANGE_PRESETS.filter(
+  (preset) => preset.key !== "all",
+);
 
 export type RangeKey = (typeof RANGE_PRESETS)[number]["key"];
 
@@ -107,6 +113,14 @@ export function resolveDateWindow(searchParams: {
   }
   if (key === "12m") {
     return withCompare(addMonths(todayStart, -12), todayEnd, key, "Last 12 months");
+  }
+  if (key === "all") {
+    return withCompare(
+      startOfLocalDay(new Date(2024, 0, 1)),
+      todayEnd,
+      key,
+      "All time",
+    );
   }
   if (key === "custom") {
     const from = parseDateInput(searchParams.from) ?? addDays(todayStart, -29);

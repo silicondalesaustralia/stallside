@@ -19,13 +19,13 @@ export default function AdminSaasPanels({
   saas: SaasStats;
   series: SaasSeriesPoint[];
   ltv: LtvWindow;
-  ltvPrev: LtvWindow;
+  ltvPrev: LtvWindow | null;
 }) {
   return (
     <>
       <SalesSeriesChart
         points={ltv.points}
-        previousPoints={ltvPrev.points}
+        previousPoints={ltvPrev?.points}
         currency={saas.currency}
         title={`${windowLabel} · LTV collected`}
       />
@@ -63,8 +63,8 @@ export default function AdminSaasPanels({
         <DashboardStat
           label={`LTV · ${windowLabel}`}
           value={formatMoney(ltv.totalAudCents, saas.currency)}
-          current={ltv.totalAudCents}
-          previous={ltvPrev.totalAudCents}
+          current={ltvPrev ? ltv.totalAudCents : undefined}
+          previous={ltvPrev?.totalAudCents}
         />
         <DashboardStat
           label="LTV all-time (AUD)"

@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getSaasStats } from "@/lib/admin-saas-stats";
 import { getSaasSeries } from "@/lib/admin-saas-series";
 import { getLtvWindow } from "@/lib/admin-ltv-window";
-import { resolveDateWindow } from "@/lib/date-range";
+import { RANGE_PRESETS, resolveDateWindow } from "@/lib/date-range";
 import { isStripeBillingConfigured } from "@/lib/stripe";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import DateRangeFilter from "@/components/DateRangeFilter";
@@ -26,11 +26,14 @@ export default async function AdminOverviewPage({
     to: params.to,
   });
 
+  const compare = window.key !== "all";
   const [saas, series, ltv, ltvPrev] = await Promise.all([
     getSaasStats(),
     getSaasSeries(window.start, window.end),
     getLtvWindow(window.start, window.end),
-    getLtvWindow(window.prevStart, window.prevEnd),
+    compare
+      ? getLtvWindow(window.prevStart, window.prevEnd)
+      : Promise.resolve(null),
   ]);
 
   const billingReady = isStripeBillingConfigured();
@@ -87,6 +90,7 @@ export default async function AdminOverviewPage({
         activeKey={window.key}
         from={window.fromParam}
         to={window.toParam}
+        presets={RANGE_PRESETS}
       />
 
       <AdminSaasPanels
