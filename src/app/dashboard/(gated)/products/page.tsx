@@ -26,6 +26,7 @@ export default async function ProductsPage({
   const showArchived = view === "archived";
   const tab: ProductTabId = isProductTabId(tabParam) ? tabParam : "standard";
   const isPreOrder = tab === "preorder";
+  const isSupplier = tab === "supplier";
 
   if (!selected) {
     return (
@@ -53,8 +54,13 @@ export default async function ProductsPage({
       where: {
         ownerId: owner.id,
         standId: selected.id,
-        preOrderEligible: isPreOrder,
-        isHidden: false,
+        ...(isSupplier
+          ? { memberId: { not: null } }
+          : {
+              memberId: null,
+              preOrderEligible: isPreOrder,
+              isHidden: false,
+            }),
         ...(showArchived ? { isArchived: true } : productDashboardWhere),
       },
       select: {
@@ -67,6 +73,7 @@ export default async function ProductsPage({
         costCents: true,
         stockQuantity: true,
         sku: true,
+        member: { select: { name: true } },
       },
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     }),
@@ -91,19 +98,26 @@ export default async function ProductsPage({
             Products
           </h1>
           <p className="mt-1 text-[var(--muted)]">
-            {products.length} {isPreOrder ? "pre-order" : ""} product
+            {products.length}{" "}
+            {isSupplier ? "supplier" : isPreOrder ? "pre-order" : ""} product
             {products.length === 1 ? "" : "s"}
             {showArchived ? " archived" : " in progress"} · {selected.name}
           </p>
         </div>
         <DashPrimaryCta
           href={
-            isPreOrder
-              ? "/dashboard/pre-order-pages/new"
-              : `/dashboard/products/new?standId=${selected.id}`
+            isSupplier
+              ? "/dashboard/suppliers"
+              : isPreOrder
+                ? "/dashboard/pre-order-pages/new"
+                : `/dashboard/products/new?standId=${selected.id}`
           }
         >
-          {isPreOrder ? "+ New pre-order page" : "+ Add product"}
+          {isSupplier
+            ? "Suppliers"
+            : isPreOrder
+              ? "+ New pre-order page"
+              : "+ Add product"}
         </DashPrimaryCta>
       </div>
 
@@ -131,6 +145,21 @@ export default async function ProductsPage({
         </Link>
       </div>
 
+      {isSupplier && !showArchived ? (
+        <p className="text-sm text-[var(--muted)]">
+          These are products a supplier added. Hide on stand takes them off the
+          stall and your website. They stay in this list so you can show them
+          again. Set the price and publish from{" "}
+          <Link
+            href="/dashboard/suppliers"
+            className="font-medium text-[var(--leaf-dark)] underline"
+          >
+            Suppliers
+          </Link>{" "}
+          before they can be sold. Unpublished ones are under Archived.
+        </p>
+      ) : null}
+
       {isPreOrder && !showArchived ? (
         <p className="text-sm text-[var(--muted)]">
           Group several products on one shareable{" "}
@@ -155,13 +184,19 @@ export default async function ProductsPage({
       {products.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">
           {showArchived
-            ? `No archived ${isPreOrder ? "pre-order" : "standard"} products.`
-            : `No ${isPreOrder ? "pre-order" : "standard"} products yet.`}
+            ? `No archived ${isSupplier ? "supplier" : isPreOrder ? "pre-order" : "standard"} products.`
+            : `No ${isSupplier ? "supplier" : isPreOrder ? "pre-order" : "standard"} products yet.`}
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
           {products.map((product) => (
-            <ProductListRow key={product.id} product={product} />
+            <ProductListRow
+              key={product.id}
+              product={{
+                ...product,
+                supplierName: product.member?.name ?? null,
+              }}
+            />
           ))}
         </ul>
       )}

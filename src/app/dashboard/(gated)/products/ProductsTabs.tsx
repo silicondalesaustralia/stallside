@@ -3,6 +3,7 @@ import Link from "next/link";
 export const PRODUCT_TABS = [
   { id: "standard", label: "Standard" },
   { id: "preorder", label: "Pre Order" },
+  { id: "supplier", label: "Supplier products" },
 ] as const;
 
 export type ProductTabId = (typeof PRODUCT_TABS)[number]["id"];

@@ -3,6 +3,7 @@ import { gettingStartedArticles } from "./getting-started";
 import { ordersAlertsBillingArticles } from "./orders-alerts-billing";
 import { storefrontArticles } from "./storefront";
 import { sellingMoreArticles } from "./selling-more";
+import { supplierArticles } from "./suppliers";
 
 export type { KnowledgeArticle, KnowledgeCategory, KnowledgeCta } from "./types";
 
@@ -17,6 +18,11 @@ export const knowledgeCategories: KnowledgeCategory[] = [
     id: "selling-more",
     title: "Selling more",
     articles: sellingMoreArticles,
+  },
+  {
+    id: "suppliers",
+    title: "Suppliers",
+    articles: supplierArticles,
   },
   {
     id: "alerts",
