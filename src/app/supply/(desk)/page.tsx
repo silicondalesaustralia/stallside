@@ -58,8 +58,7 @@ export default async function SupplyPage({
           Your stock
         </h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          Add units to products the owner linked for you on{" "}
-          {membership.stand.name}. They set what they owe you per unit.
+          On {membership.stand.name}. The owner sets what they owe you per unit.
         </p>
       </div>
       {params.error ? (
@@ -73,48 +72,79 @@ export default async function SupplyPage({
         </p>
       ) : null}
 
-      <ul className="flex flex-col gap-3">
-        {linked.map((row) => (
-          <li key={row.id} className="dash-card flex flex-col gap-3 p-4">
-            <div>
-              <p className="font-semibold text-[var(--field)]">
-                {row.product.name}
-              </p>
-              <p className="text-sm text-[var(--muted)]">
-                Stand has {row.product.stockQuantity} · Your units on hand{" "}
-                {myUnits.get(row.productId) ?? 0}
-                {row.autoApprove ? "" : " · New adds need owner approval"}
-              </p>
-            </div>
-            <SupplyStockForm
-              productId={row.productId}
-              standId={membership.standId}
-            />
-          </li>
-        ))}
-        {owned.map((product) => (
-          <li key={product.id} className="dash-card flex flex-col gap-3 p-4">
-            <div>
-              <p className="font-semibold text-[var(--field)]">{product.name}</p>
-              <p className="text-sm text-[var(--muted)]">
-                {product.stockQuantity} on hand
-                {product.isArchived
-                  ? " · Waiting for the owner to publish"
-                  : ""}
-              </p>
-            </div>
-            <SupplyStockForm
-              productId={product.id}
-              standId={membership.standId}
-            />
-            <SupplyDeleteProductButton
-              standId={membership.standId}
-              productId={product.id}
-              productName={product.name}
-            />
-          </li>
-        ))}
-      </ul>
+      {linked.length > 0 ? (
+        <section className="flex flex-col gap-3">
+          <div>
+            <h2 className="font-semibold text-[var(--field)]">
+              You have approval to add these products
+            </h2>
+            <p className="mt-1 text-sm text-[var(--muted)]">
+              These are the owner’s products. Add your units into their stock.
+            </p>
+          </div>
+          <ul className="flex flex-col gap-3">
+            {linked.map((row) => (
+              <li key={row.id} className="dash-card flex flex-col gap-3 p-4">
+                <div>
+                  <p className="font-semibold text-[var(--field)]">
+                    {row.product.name}
+                  </p>
+                  <p className="text-sm text-[var(--muted)]">
+                    Stand has {row.product.stockQuantity} · Your units on hand{" "}
+                    {myUnits.get(row.productId) ?? 0}
+                    {row.autoApprove
+                      ? ""
+                      : " · New adds need the owner to approve"}
+                  </p>
+                </div>
+                <SupplyStockForm
+                  productId={row.productId}
+                  standId={membership.standId}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {owned.length > 0 ? (
+        <section className="flex flex-col gap-3">
+          <div>
+            <h2 className="font-semibold text-[var(--field)]">
+              Your separate products
+            </h2>
+            <p className="mt-1 text-sm text-[var(--muted)]">
+              These are only yours until the owner publishes them.
+            </p>
+          </div>
+          <ul className="flex flex-col gap-3">
+            {owned.map((product) => (
+              <li key={product.id} className="dash-card flex flex-col gap-3 p-4">
+                <div>
+                  <p className="font-semibold text-[var(--field)]">
+                    {product.name}
+                  </p>
+                  <p className="text-sm text-[var(--muted)]">
+                    {product.stockQuantity} on hand
+                    {product.isArchived
+                      ? " · Waiting for the owner to publish"
+                      : ""}
+                  </p>
+                </div>
+                <SupplyStockForm
+                  productId={product.id}
+                  standId={membership.standId}
+                />
+                <SupplyDeleteProductButton
+                  standId={membership.standId}
+                  productId={product.id}
+                  productName={product.name}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <details className="dash-card p-4">
         <summary className="cursor-pointer font-semibold text-[var(--field)]">
