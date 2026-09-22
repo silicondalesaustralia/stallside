@@ -296,6 +296,9 @@ model Owner {
   subscriptionOffers        SubscriptionOffer[]
   shopperSubscriptions      ShopperSubscription[]
   orders                    Order[]
+  customers                 Customer[]
+  campaigns                 Campaign[]
+  marketingSuppressions     MarketingSuppression[]
   inventoryAdjustments      InventoryAdjustment[]
   standMembers              StandMember[]
   lowStockAlerts            LowStockAlert[]
@@ -628,6 +631,8 @@ model ShopperSubscription {
   customerName           String
   customerEmail          String
   customerPhone          String?
+  customerId             String?
+  customer               Customer?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
   deliveryAddressLine1   String?
   deliverySuburb         String?
   deliveryPostcode       String?
@@ -649,6 +654,7 @@ model ShopperSubscription {
   @@index([standId, status])
   @@index([ownerId, createdAt])
   @@index([offerId])
+  @@index([customerId])
   @@index([status, nextCollectionAt])
 }
 
@@ -783,6 +789,10 @@ model Order {
   shopperSubscription     ShopperSubscription? @relation(fields: [shopperSubscriptionId], references: [id], onDelete: SetNull)
   /** Connect invoice id — idempotency for subscription cycle orders. */
   stripeInvoiceId         String?           @unique
+  customerId              String?
+  customer                Customer?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  campaignId              String?
+  campaign                Campaign?         @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   items                   OrderItem[]
   inventoryAdjustments    InventoryAdjustment[]
   createdAt               DateTime          @default(now())
@@ -793,6 +803,8 @@ model Order {
   @@index([standId, collectionAt, collectionStatus])
   @@index([paymentStatus, balanceDueAt])
   @@index([shopperSubscriptionId])
+  @@index([customerId])
+  @@index([campaignId])
 }
 
 model OrderItem {
@@ -945,11 +957,130 @@ model LowStockAlert {
   @@index([productId, sentAt])
 }
 
+
+/** Lightweight CRM — only created when an email exists (never for cash anonymity). */
+model Customer {
+  id                   String                 @id @default(cuid())
+  ownerId              String
+  owner                Owner                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  /** Normalised lowercase email when known. */
+  email                String?
+  name                 String?
+  phone                String?
+  notes                String?
+  marketingConsent     Boolean                @default(false)
+  marketingConsentAt   DateTime?
+  /** First-seen channel hint e.g. order | subscription | restock */
+  source               String?
+  orders               Order[]
+  shopperSubscriptions ShopperSubscription[]
+  restockSubscribers   RestockSubscriber[]
+  campaignRecipients   CampaignRecipient[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  @@unique([ownerId, email])
+  @@index([ownerId, createdAt])
+}
+
+enum CampaignStatus {
+  DRAFT
+  SENDING
+  SENT
+  FAILED
+  CANCELLED
+}
+
+enum CampaignRecipientStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
+model MarketingSuppression {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  email     String
+  reason    String   @default("unsubscribed")
+  token     String
+  createdAt DateTime @default(now())
+
+  @@unique([ownerId, email])
+  @@index([ownerId])
+}
+
+model Campaign {
+  id                     String              @id @default(cuid())
+  ownerId                String
+  owner                  Owner               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name                   String
+  status                 CampaignStatus      @default(DRAFT)
+  subject                String
+  previewText            String?
+  heading                String?
+  body                   String
+  imageUrl               String?
+  ctaLabel               String?
+  ctaUrl                 String?
+  /** all_marketing | product | customer */
+  audienceType           String              @default("all_marketing")
+  audienceRefId          String?
+  templateKey            String?
+  sentAt                 DateTime?
+  recipientCount         Int                 @default(0)
+  sentCount              Int                 @default(0)
+  failedCount            Int                 @default(0)
+  clickCount             Int                 @default(0)
+  attributedOrders       Int                 @default(0)
+  attributedRevenueCents Int                 @default(0)
+  recipients             CampaignRecipient[]
+  clicks                 CampaignClick[]
+  orders                 Order[]
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+
+  @@index([ownerId, status])
+}
+
+model CampaignRecipient {
+  id           String                  @id @default(cuid())
+  campaignId   String
+  campaign     Campaign                @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  customerId   String?
+  customer     Customer?               @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  email        String
+  status       CampaignRecipientStatus @default(PENDING)
+  errorMessage String?
+  resendId     String?
+  sentAt       DateTime?
+  createdAt    DateTime                @default(now())
+
+  @@unique([campaignId, email])
+  @@index([campaignId, status])
+  @@index([customerId])
+}
+
+model CampaignClick {
+  id         String   @id @default(cuid())
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  token      String   @unique
+  email      String?
+  clickedAt  DateTime @default(now())
+  orderId    String?
+
+  @@index([campaignId, clickedAt])
+}
+
 model RestockSubscriber {
   id             String    @id @default(cuid())
   standId        String
   stand          Stand     @relation(fields: [standId], references: [id], onDelete: Cascade)
   email          String
+  customerId     String?
+  customer       Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   status         SubStatus @default(ACTIVE)
   consentText    String
   consentAt      DateTime  @default(now())
@@ -960,6 +1091,7 @@ model RestockSubscriber {
 
   @@unique([standId, email])
   @@index([standId, status])
+  @@index([customerId])
 }
 
 model RestockNotification {

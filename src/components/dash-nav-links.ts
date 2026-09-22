@@ -2,12 +2,14 @@ export const primaryLinks = [
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/products", label: "Products" },
   { href: "/dashboard/orders", label: "Orders" },
+  { href: "/dashboard/customers", label: "Customers" },
   { href: "/dashboard/collections", label: "Collections" },
 ] as const;
 
 export const secondaryLinks = [
   { href: "/dashboard/pre-order-pages", label: "Pre-order pages" },
   { href: "/dashboard/subscriptions", label: "Subscriptions" },
+  { href: "/dashboard/communication", label: "Communication" },
   { href: "/dashboard/notifications", label: "Notifications" },
   { href: "/dashboard/suppliers", label: "Suppliers" },
   { href: "/dashboard/knowledge", label: "Guides" },

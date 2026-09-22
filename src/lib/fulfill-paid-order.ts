@@ -138,6 +138,33 @@ async function fulfillPaidOnlineOrder(
     void notifyOrderCustomer(orderId).catch((error) => {
       console.error("Customer order email failed", error);
     });
+    void (async () => {
+      try {
+        const fresh = await prisma.order.findUnique({
+          where: { id: orderId },
+          select: {
+            ownerId: true,
+            receiptEmail: true,
+            customerName: true,
+            customerPhone: true,
+            customerId: true,
+          },
+        });
+        if (!fresh || fresh.customerId) return;
+        const { linkOrderToCustomer } = await import(
+          "@/lib/catalogue/customers"
+        );
+        await linkOrderToCustomer({
+          orderId,
+          ownerId: fresh.ownerId,
+          email: fresh.receiptEmail,
+          name: fresh.customerName,
+          phone: fresh.customerPhone,
+        });
+      } catch (error) {
+        console.error("Link order to customer failed", error);
+      }
+    })();
   });
 
   return { orderNumber: order.orderNumber, alreadyPaid: false as const };
