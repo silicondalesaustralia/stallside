@@ -43,6 +43,25 @@ const ICONS: Record<string, React.ReactNode> = {
   "/dashboard/subscriptions": (
     <Icon d="M5 12a7 7 0 0 1 12-4l2-2v6h-6M19 12a7 7 0 0 1-12 4l-2 2v-6h6" />
   ),
+  "/dashboard/customers": (
+    <Icon
+      d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+      extra={
+        <>
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+        </>
+      }
+    />
+  ),
+  "/dashboard/communication": (
+    <Icon
+      d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+    />
+  ),
+  "/dashboard/suppliers": (
+    <Icon d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.27 7 12 12l8.73-5M12 22V12" />
+  ),
   "/dashboard/notifications": (
     <Icon d="M6 9a6 6 0 1 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9M10 21h4" />
   ),
