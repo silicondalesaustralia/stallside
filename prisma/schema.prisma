@@ -372,6 +372,8 @@ model Stand {
   showExactStock     Boolean              @default(false)
   /** Show “Only N left” when stock ≤ lowStockThreshold (public). */
   showPublicScarcity Boolean              @default(true)
+  /** Show Subscriptions / Memberships in the public stand header nav. */
+  showSubscriptionsOnStand Boolean        @default(false)
   isActive           Boolean              @default(true)
   /** PRODUCT = catalog cart (default); CUSTOMER_CHOICE = open dollar amount. */
   cartMode           CartMode             @default(PRODUCT)

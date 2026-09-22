@@ -9,10 +9,12 @@ import {
   membershipOfferReady,
   offerDisplayPriceCents,
   subscriptionOfferPath,
+  subscriptionOffersPath,
 } from "@/lib/subscription-offer";
 import { formatMoney } from "@/lib/money";
 import { SITE_URL } from "@/lib/legal";
 import { SubscriptionOfferKind } from "@/generated/prisma/client";
+import StandSubscriptionsNavToggle from "./StandSubscriptionsNavToggle";
 
 export default async function SubscriptionsListPage() {
   const { owner } = await requireOwner();
@@ -26,6 +28,11 @@ export default async function SubscriptionsListPage() {
       </main>
     );
   }
+
+  const stand = await prisma.stand.findFirst({
+    where: { id: selected.id, ownerId: owner.id },
+    select: { id: true, slug: true, showSubscriptionsOnStand: true },
+  });
 
   const offers = await prisma.subscriptionOffer.findMany({
     where: { standId: selected.id, ownerId: owner.id },
@@ -51,6 +58,14 @@ export default async function SubscriptionsListPage() {
           + New subscription
         </DashPrimaryCta>
       </div>
+
+      {stand ? (
+        <StandSubscriptionsNavToggle
+          standId={stand.id}
+          enabled={stand.showSubscriptionsOnStand}
+          publicPath={subscriptionOffersPath(stand.slug)}
+        />
+      ) : null}
 
       {offers.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">

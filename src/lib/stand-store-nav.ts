@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 export type StandStoreNav = {
   showShop: boolean;
+  showMenus: boolean;
   showPreOrders: boolean;
   showSubscriptions: boolean;
   showCart: boolean;
@@ -18,12 +19,12 @@ export async function resolveStandStoreNav(
       id: true,
       isActive: true,
       cartMode: true,
+      showSubscriptionsOnStand: true,
       _count: {
         select: {
           preOrderPages: { where: { isActive: true } },
-          subscriptionOffers: {
-            where: { isActive: true, stripePriceId: { not: null } },
-          },
+          menus: { where: { isActive: true, showOnStand: true } },
+          subscriptionOffers: { where: { isActive: true } },
         },
       },
     },
@@ -32,6 +33,7 @@ export async function resolveStandStoreNav(
   if (!stand || !stand.isActive) {
     return {
       showShop: false,
+      showMenus: false,
       showPreOrders: false,
       showSubscriptions: false,
       showCart: false,
@@ -41,8 +43,10 @@ export async function resolveStandStoreNav(
   const showShop = stand.cartMode !== "CUSTOMER_CHOICE";
   return {
     showShop,
+    showMenus: stand._count.menus > 0,
     showPreOrders: stand._count.preOrderPages > 0,
-    showSubscriptions: stand._count.subscriptionOffers > 0,
+    showSubscriptions:
+      stand.showSubscriptionsOnStand && stand._count.subscriptionOffers > 0,
     showCart: showShop,
   };
 }

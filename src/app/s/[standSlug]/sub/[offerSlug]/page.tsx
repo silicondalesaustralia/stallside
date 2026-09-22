@@ -20,6 +20,7 @@ import {
 } from "@/generated/prisma/client";
 import StandStoreHeader from "../../StandStoreHeader";
 import SubscriptionEnrollForm from "./SubscriptionEnrollForm";
+import MembershipTermsCards from "./MembershipTermsCards";
 
 export async function generateMetadata({
   params,
@@ -155,9 +156,7 @@ export default async function PublicSubscriptionOfferPage({
           ) : null}
         </div>
         {offer.termsText ? (
-          <div className="rounded-xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm whitespace-pre-wrap text-[var(--muted)]">
-            {offer.termsText}
-          </div>
+          <MembershipTermsCards text={offer.termsText} />
         ) : null}
         {sp.cancelled ? (
           <p className="rounded-lg border border-[var(--line)] px-3 py-2 text-sm">
