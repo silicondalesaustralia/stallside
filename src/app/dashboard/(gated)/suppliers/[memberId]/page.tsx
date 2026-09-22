@@ -9,6 +9,8 @@ import ProductTermsForm from "./ProductTermsForm";
 import LinkedProductTermsForm from "./LinkedProductTermsForm";
 import LinkProductForm from "./LinkProductForm";
 import ApproveLotButton from "./ApproveLotButton";
+import DeleteSupplierProductButton from "./DeleteSupplierProductButton";
+import DeleteSupplierButton from "./DeleteSupplierButton";
 import PayoutForm from "./PayoutForm";
 
 export default async function SupplierMemberPage({
@@ -125,13 +127,22 @@ export default async function SupplierMemberPage({
                 autoApprove={product.autoApprove}
               />
             ) : (
-              <ProductTermsForm
-                memberId={member.id}
-                productId={product.id}
-                priceCents={product.priceCents}
-                owedCents={product.supplierUnitCents}
-                archived={product.isArchived}
-              />
+              <>
+                <ProductTermsForm
+                  memberId={member.id}
+                  productId={product.id}
+                  priceCents={product.priceCents}
+                  owedCents={product.supplierUnitCents}
+                  archived={product.isArchived}
+                />
+                <div className="mt-2">
+                  <DeleteSupplierProductButton
+                    memberId={member.id}
+                    productId={product.id}
+                    productName={product.name}
+                  />
+                </div>
+              </>
             )}
           </li>
         ))}
@@ -139,14 +150,17 @@ export default async function SupplierMemberPage({
 
       <PayoutForm memberId={member.id} />
 
-      {member.status !== "REVOKED" ? (
-        <form action={revokeSupplier}>
-          <input type="hidden" name="memberId" value={member.id} />
-          <button type="submit" className="text-sm text-red-700 underline">
-            Revoke access
-          </button>
-        </form>
-      ) : null}
+      <div className="flex flex-col gap-2">
+        {member.status !== "REVOKED" ? (
+          <form action={revokeSupplier}>
+            <input type="hidden" name="memberId" value={member.id} />
+            <button type="submit" className="text-sm text-red-700 underline">
+              Revoke access
+            </button>
+          </form>
+        ) : null}
+        <DeleteSupplierButton memberId={member.id} memberName={member.name} />
+      </div>
     </div>
   );
 }

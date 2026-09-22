@@ -25,7 +25,7 @@ export const supplierArticles: KnowledgeArticle[] = [
       "When you pay them by cash or transfer, enter the amount and tap Mark paid. Vendl does not send the money. Card takings still land in your account.",
       "They can still add a separate product if it should not share stock with yours. Publish that from their page with a retail price first.",
       "If a product is synced from Square, only you can change its stock.",
-      "Revoke access when they should stop updating stock. Linked products and their contribution history stay.",
+      "Revoke access when they should stop updating stock. Delete supplier removes them entirely: separate products go to Archived, links are cleared, and their remaining shared stock is taken off the stall. You can also delete a separate supplier product from their page, and they can delete their own separate products from Supply.",
     ],
   },
 ];

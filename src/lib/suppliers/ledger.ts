@@ -31,7 +31,7 @@ export type SupplierLedger = {
 export async function loadSupplierLedger(memberId: string): Promise<SupplierLedger> {
   const [owned, access, added, lines, paid, lots] = await Promise.all([
     prisma.product.findMany({
-      where: { memberId },
+      where: { memberId, isArchived: false },
       orderBy: { name: "asc" },
       select: {
         id: true,

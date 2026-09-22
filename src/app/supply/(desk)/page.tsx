@@ -2,6 +2,7 @@ import { requireSupplier } from "@/lib/suppliers/access";
 import { prisma } from "@/lib/prisma";
 import SupplyProductForm from "./SupplyProductForm";
 import SupplyStockForm from "./SupplyStockForm";
+import SupplyDeleteProductButton from "./SupplyDeleteProductButton";
 
 export default async function SupplyPage({
   searchParams,
@@ -22,7 +23,11 @@ export default async function SupplyPage({
       orderBy: { product: { name: "asc" } },
     }),
     prisma.product.findMany({
-      where: { memberId: membership.id, standId: membership.standId },
+      where: {
+        memberId: membership.id,
+        standId: membership.standId,
+        isArchived: false,
+      },
       orderBy: { name: "asc" },
       select: {
         id: true,
@@ -101,6 +106,11 @@ export default async function SupplyPage({
             <SupplyStockForm
               productId={product.id}
               standId={membership.standId}
+            />
+            <SupplyDeleteProductButton
+              standId={membership.standId}
+              productId={product.id}
+              productName={product.name}
             />
           </li>
         ))}
