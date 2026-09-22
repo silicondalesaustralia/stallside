@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getSaasStats } from "@/lib/admin-saas-stats";
 import { getSaasSeries } from "@/lib/admin-saas-series";
 import { getLtvWindow } from "@/lib/admin-ltv-window";
+import { getVendorSalesTotals } from "@/lib/admin-vendor-sales";
 import { RANGE_PRESETS, resolveDateWindow } from "@/lib/date-range";
 import { isStripeBillingConfigured } from "@/lib/stripe";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
@@ -27,14 +28,17 @@ export default async function AdminOverviewPage({
   });
 
   const compare = window.key !== "all";
-  const [saas, series, ltv, ltvPrev] = await Promise.all([
-    getSaasStats(),
-    getSaasSeries(window.start, window.end),
-    getLtvWindow(window.start, window.end),
-    compare
-      ? getLtvWindow(window.prevStart, window.prevEnd)
-      : Promise.resolve(null),
-  ]);
+  const [saas, series, ltv, ltvPrev, vendorSales, vendorSalesAllTime] =
+    await Promise.all([
+      getSaasStats(),
+      getSaasSeries(window.start, window.end),
+      getLtvWindow(window.start, window.end),
+      compare
+        ? getLtvWindow(window.prevStart, window.prevEnd)
+        : Promise.resolve(null),
+      getVendorSalesTotals({ start: window.start, end: window.end }),
+      getVendorSalesTotals(),
+    ]);
 
   const billingReady = isStripeBillingConfigured();
 
@@ -47,7 +51,8 @@ export default async function AdminOverviewPage({
             SaaS overview
           </h1>
           <p className="mt-1 text-[var(--muted)]">
-            LTV is transaction fees plus subscription payments, in AUD — not stall sales.
+            LTV is transaction fees plus subscription payments, in AUD — not
+            stall sales. Vendor sales are shown separately.
           </p>
           <Suspense
             fallback={
@@ -99,6 +104,8 @@ export default async function AdminOverviewPage({
         series={series}
         ltv={ltv}
         ltvPrev={ltvPrev}
+        vendorSales={vendorSales}
+        vendorSalesAllTime={vendorSalesAllTime}
       />
 
       <Suspense
