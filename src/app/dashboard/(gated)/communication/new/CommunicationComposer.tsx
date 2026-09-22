@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { createAndSendCommunication } from "../actions";
 import CommunicationAudienceFields from "./CommunicationAudienceFields";
+import CommunicationRichTextEditor from "./CommunicationRichTextEditor";
 
 type CustomerOpt = { id: string; name: string | null; email: string | null };
 type ProductOpt = { id: string; name: string };
@@ -77,16 +78,7 @@ export default function CommunicationComposer({
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium">Message</span>
-        <textarea
-          name="body"
-          required
-          rows={8}
-          maxLength={8000}
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
+      <CommunicationRichTextEditor />
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-sm">
           <span className="font-medium">Button label (optional)</span>
@@ -105,6 +97,9 @@ export default function CommunicationComposer({
           />
         </label>
       </div>
+      <p className="-mt-2 text-xs text-[var(--muted)]">
+        Leave both button fields blank to omit the button from the email.
+      </p>
 
       {message ? <p className="text-sm text-[var(--warn)]">{message}</p> : null}
       <button

@@ -8,6 +8,10 @@ import {
   resolveCampaignAudience,
   queueCampaignSend,
 } from "@/lib/grow/campaigns";
+import {
+  campaignBodyHasText,
+  sanitizeCampaignHtml,
+} from "@/lib/grow/campaign-html";
 
 export async function createAndSendCommunication(formData: FormData) {
   const { owner } = await requireOwnerWrite();
@@ -21,16 +25,25 @@ export async function createAndSendCommunication(formData: FormData) {
     .filter(Boolean);
   const subject = String(formData.get("subject") ?? "").trim().slice(0, 200);
   const heading = String(formData.get("heading") ?? "").trim().slice(0, 200) || null;
-  const body = String(formData.get("body") ?? "").trim().slice(0, 8000);
-  const ctaLabel = String(formData.get("ctaLabel") ?? "").trim().slice(0, 80) || null;
-  const ctaUrl = String(formData.get("ctaUrl") ?? "").trim().slice(0, 500) || null;
+  const bodyRaw = String(formData.get("body") ?? "").trim().slice(0, 8000);
+  const body = sanitizeCampaignHtml(bodyRaw);
+  const ctaLabelRaw = String(formData.get("ctaLabel") ?? "").trim().slice(0, 80);
+  const ctaUrlRaw = String(formData.get("ctaUrl") ?? "").trim().slice(0, 500);
+  const ctaLabel = ctaLabelRaw && ctaUrlRaw ? ctaLabelRaw : null;
+  const ctaUrl = ctaLabelRaw && ctaUrlRaw ? ctaUrlRaw : null;
   const name =
     String(formData.get("name") ?? "").trim().slice(0, 120) ||
     subject.slice(0, 80) ||
     "Message";
 
-  if (!subject || !body) {
+  if (!subject || !campaignBodyHasText(body)) {
     return { error: "Subject and message are required." };
+  }
+  if (ctaLabelRaw && !ctaUrlRaw) {
+    return { error: "Add a button URL, or clear the button label." };
+  }
+  if (ctaUrlRaw && !ctaLabelRaw) {
+    return { error: "Add a button label, or clear the button URL." };
   }
   if (!["all_marketing", "product", "customer", "list"].includes(audienceType)) {
     return { error: "Choose who to email." };

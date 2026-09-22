@@ -9,6 +9,10 @@ import {
   CAMPAIGN_SEND_BATCH,
   newClickToken,
 } from "@/lib/grow/campaigns";
+import {
+  campaignBodyToEmailHtml,
+  escapeHtml,
+} from "@/lib/grow/campaign-html";
 
 export async function processCampaignSendBatch(limit = CAMPAIGN_SEND_BATCH) {
   const campaign = await prisma.campaign.findFirst({
@@ -36,6 +40,8 @@ export async function processCampaignSendBatch(limit = CAMPAIGN_SEND_BATCH) {
   const base = appBaseUrl();
   let sent = 0;
   let failed = 0;
+  const showCta = Boolean(campaign.ctaLabel?.trim() && campaign.ctaUrl?.trim());
+  const bodyHtml = campaignBodyToEmailHtml(campaign.body);
 
   for (const row of pending) {
     if (await isMarketingSuppressed(campaign.ownerId, row.email)) {
@@ -46,19 +52,24 @@ export async function processCampaignSendBatch(limit = CAMPAIGN_SEND_BATCH) {
       continue;
     }
 
-    const click = await prisma.campaignClick.create({
-      data: {
-        campaignId: campaign.id,
-        token: newClickToken(),
-        email: row.email,
-      },
-    });
-
-    const trackUrl = `${base}/c/${click.token}`;
-    const ctaHref = campaign.ctaUrl
-      ? `${trackUrl}?to=${encodeURIComponent(campaign.ctaUrl)}`
-      : trackUrl;
     const unsub = `${base}/unsubscribe/marketing?t=${signUnsubLink(campaign.ownerId, row.email)}`;
+    const headingHtml = campaign.heading
+      ? `<h1 style="font-size:22px">${escapeHtml(campaign.heading)}</h1>`
+      : "";
+
+    let ctaHtml = "";
+    if (showCta && campaign.ctaLabel && campaign.ctaUrl) {
+      const click = await prisma.campaignClick.create({
+        data: {
+          campaignId: campaign.id,
+          token: newClickToken(),
+          email: row.email,
+        },
+      });
+      const trackUrl = `${base}/c/${click.token}`;
+      const ctaHref = `${trackUrl}?to=${encodeURIComponent(campaign.ctaUrl)}`;
+      ctaHtml = `<p style="margin:24px 0"><a href="${ctaHref}" style="background:#2e7d3f;color:#fff;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:600">${escapeHtml(campaign.ctaLabel)}</a></p>`;
+    }
 
     try {
       await sendOwnerEmail(
@@ -66,17 +77,13 @@ export async function processCampaignSendBatch(limit = CAMPAIGN_SEND_BATCH) {
         campaign.subject,
         `
         <div style="font-family:system-ui,sans-serif;line-height:1.5;color:#182C1B;max-width:560px">
-          <p style="font-size:12px;color:#666">${campaign.owner.businessName}</p>
-          ${campaign.heading ? `<h1 style="font-size:22px">${campaign.heading}</h1>` : ""}
-          <div>${campaign.body.replace(/\n/g, "<br/>")}</div>
-          ${
-            campaign.ctaLabel
-              ? `<p style="margin:24px 0"><a href="${ctaHref}" style="background:#2e7d3f;color:#fff;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:600">${campaign.ctaLabel}</a></p>`
-              : `<p><a href="${ctaHref}">View offer</a></p>`
-          }
+          <p style="font-size:12px;color:#666">${escapeHtml(campaign.owner.businessName)}</p>
+          ${headingHtml}
+          <div>${bodyHtml}</div>
+          ${ctaHtml}
           <hr style="border:none;border-top:1px solid #ddd;margin:28px 0"/>
           <p style="font-size:12px;color:#666">
-            You're receiving this because you shopped with ${campaign.owner.businessName} or opted in.
+            You're receiving this because you shopped with ${escapeHtml(campaign.owner.businessName)} or opted in.
             <a href="${unsub}">Unsubscribe</a>
           </p>
         </div>
