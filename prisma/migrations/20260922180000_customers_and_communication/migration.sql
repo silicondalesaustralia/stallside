@@ -1,11 +1,18 @@
--- CreateEnum
-CREATE TYPE "CampaignStatus" AS ENUM ('DRAFT', 'SENDING', 'SENT', 'FAILED', 'CANCELLED');
+-- Idempotent: prod may already have Grow enums/tables from earlier experiments.
 
--- CreateEnum
-CREATE TYPE "CampaignRecipientStatus" AS ENUM ('PENDING', 'SENT', 'FAILED', 'SKIPPED');
+DO $$ BEGIN
+  CREATE TYPE "CampaignStatus" AS ENUM ('DRAFT', 'SENDING', 'SENT', 'FAILED', 'CANCELLED');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
--- CreateTable
-CREATE TABLE "Customer" (
+DO $$ BEGIN
+  CREATE TYPE "CampaignRecipientStatus" AS ENUM ('PENDING', 'SENT', 'FAILED', 'SKIPPED');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+CREATE TABLE IF NOT EXISTS "Customer" (
     "id" TEXT NOT NULL,
     "ownerId" TEXT NOT NULL,
     "email" TEXT,
@@ -20,8 +27,7 @@ CREATE TABLE "Customer" (
     CONSTRAINT "Customer_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "MarketingSuppression" (
+CREATE TABLE IF NOT EXISTS "MarketingSuppression" (
     "id" TEXT NOT NULL,
     "ownerId" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -31,8 +37,7 @@ CREATE TABLE "MarketingSuppression" (
     CONSTRAINT "MarketingSuppression_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "Campaign" (
+CREATE TABLE IF NOT EXISTS "Campaign" (
     "id" TEXT NOT NULL,
     "ownerId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -59,8 +64,24 @@ CREATE TABLE "Campaign" (
     CONSTRAINT "Campaign_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "CampaignRecipient" (
+-- Older Campaign shapes may omit columns we need.
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "audienceType" TEXT NOT NULL DEFAULT 'all_marketing';
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "audienceRefId" TEXT;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "templateKey" TEXT;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "previewText" TEXT;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "heading" TEXT;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "imageUrl" TEXT;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "ctaLabel" TEXT;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "ctaUrl" TEXT;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "sentAt" TIMESTAMP(3);
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "recipientCount" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "sentCount" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "failedCount" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "clickCount" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "attributedOrders" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "Campaign" ADD COLUMN IF NOT EXISTS "attributedRevenueCents" INTEGER NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS "CampaignRecipient" (
     "id" TEXT NOT NULL,
     "campaignId" TEXT NOT NULL,
     "customerId" TEXT,
@@ -73,8 +94,7 @@ CREATE TABLE "CampaignRecipient" (
     CONSTRAINT "CampaignRecipient_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "CampaignClick" (
+CREATE TABLE IF NOT EXISTS "CampaignClick" (
     "id" TEXT NOT NULL,
     "campaignId" TEXT NOT NULL,
     "token" TEXT NOT NULL,
@@ -84,36 +104,62 @@ CREATE TABLE "CampaignClick" (
     CONSTRAINT "CampaignClick_pkey" PRIMARY KEY ("id")
 );
 
--- AlterTable
 ALTER TABLE "Order" ADD COLUMN IF NOT EXISTS "customerId" TEXT;
 ALTER TABLE "Order" ADD COLUMN IF NOT EXISTS "campaignId" TEXT;
 ALTER TABLE "ShopperSubscription" ADD COLUMN IF NOT EXISTS "customerId" TEXT;
 ALTER TABLE "RestockSubscriber" ADD COLUMN IF NOT EXISTS "customerId" TEXT;
 
--- CreateIndex
-CREATE UNIQUE INDEX "Customer_ownerId_email_key" ON "Customer"("ownerId", "email");
-CREATE INDEX "Customer_ownerId_createdAt_idx" ON "Customer"("ownerId", "createdAt");
-CREATE UNIQUE INDEX "MarketingSuppression_ownerId_email_key" ON "MarketingSuppression"("ownerId", "email");
-CREATE INDEX "MarketingSuppression_ownerId_idx" ON "MarketingSuppression"("ownerId");
-CREATE INDEX "Campaign_ownerId_status_idx" ON "Campaign"("ownerId", "status");
-CREATE UNIQUE INDEX "CampaignRecipient_campaignId_email_key" ON "CampaignRecipient"("campaignId", "email");
-CREATE INDEX "CampaignRecipient_campaignId_status_idx" ON "CampaignRecipient"("campaignId", "status");
-CREATE INDEX "CampaignRecipient_customerId_idx" ON "CampaignRecipient"("customerId");
-CREATE UNIQUE INDEX "CampaignClick_token_key" ON "CampaignClick"("token");
-CREATE INDEX "CampaignClick_campaignId_clickedAt_idx" ON "CampaignClick"("campaignId", "clickedAt");
-CREATE INDEX "Order_customerId_idx" ON "Order"("customerId");
-CREATE INDEX "Order_campaignId_idx" ON "Order"("campaignId");
-CREATE INDEX "ShopperSubscription_customerId_idx" ON "ShopperSubscription"("customerId");
-CREATE INDEX "RestockSubscriber_customerId_idx" ON "RestockSubscriber"("customerId");
+CREATE UNIQUE INDEX IF NOT EXISTS "Customer_ownerId_email_key" ON "Customer"("ownerId", "email");
+CREATE INDEX IF NOT EXISTS "Customer_ownerId_createdAt_idx" ON "Customer"("ownerId", "createdAt");
+CREATE UNIQUE INDEX IF NOT EXISTS "MarketingSuppression_ownerId_email_key" ON "MarketingSuppression"("ownerId", "email");
+CREATE INDEX IF NOT EXISTS "MarketingSuppression_ownerId_idx" ON "MarketingSuppression"("ownerId");
+CREATE INDEX IF NOT EXISTS "Campaign_ownerId_status_idx" ON "Campaign"("ownerId", "status");
+CREATE UNIQUE INDEX IF NOT EXISTS "CampaignRecipient_campaignId_email_key" ON "CampaignRecipient"("campaignId", "email");
+CREATE INDEX IF NOT EXISTS "CampaignRecipient_campaignId_status_idx" ON "CampaignRecipient"("campaignId", "status");
+CREATE INDEX IF NOT EXISTS "CampaignRecipient_customerId_idx" ON "CampaignRecipient"("customerId");
+CREATE UNIQUE INDEX IF NOT EXISTS "CampaignClick_token_key" ON "CampaignClick"("token");
+CREATE INDEX IF NOT EXISTS "CampaignClick_campaignId_clickedAt_idx" ON "CampaignClick"("campaignId", "clickedAt");
+CREATE INDEX IF NOT EXISTS "Order_customerId_idx" ON "Order"("customerId");
+CREATE INDEX IF NOT EXISTS "Order_campaignId_idx" ON "Order"("campaignId");
+CREATE INDEX IF NOT EXISTS "ShopperSubscription_customerId_idx" ON "ShopperSubscription"("customerId");
+CREATE INDEX IF NOT EXISTS "RestockSubscriber_customerId_idx" ON "RestockSubscriber"("customerId");
 
--- AddForeignKey
-ALTER TABLE "Customer" ADD CONSTRAINT "Customer_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Owner"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "MarketingSuppression" ADD CONSTRAINT "MarketingSuppression_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Owner"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "Campaign" ADD CONSTRAINT "Campaign_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Owner"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "CampaignRecipient" ADD CONSTRAINT "CampaignRecipient_campaignId_fkey" FOREIGN KEY ("campaignId") REFERENCES "Campaign"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "CampaignRecipient" ADD CONSTRAINT "CampaignRecipient_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-ALTER TABLE "CampaignClick" ADD CONSTRAINT "CampaignClick_campaignId_fkey" FOREIGN KEY ("campaignId") REFERENCES "Campaign"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "Order" ADD CONSTRAINT "Order_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-ALTER TABLE "Order" ADD CONSTRAINT "Order_campaignId_fkey" FOREIGN KEY ("campaignId") REFERENCES "Campaign"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-ALTER TABLE "ShopperSubscription" ADD CONSTRAINT "ShopperSubscription_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-ALTER TABLE "RestockSubscriber" ADD CONSTRAINT "RestockSubscriber_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "Customer" ADD CONSTRAINT "Customer_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Owner"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "MarketingSuppression" ADD CONSTRAINT "MarketingSuppression_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Owner"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "Campaign" ADD CONSTRAINT "Campaign_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Owner"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "CampaignRecipient" ADD CONSTRAINT "CampaignRecipient_campaignId_fkey" FOREIGN KEY ("campaignId") REFERENCES "Campaign"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "CampaignRecipient" ADD CONSTRAINT "CampaignRecipient_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "CampaignClick" ADD CONSTRAINT "CampaignClick_campaignId_fkey" FOREIGN KEY ("campaignId") REFERENCES "Campaign"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "Order" ADD CONSTRAINT "Order_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "Order" ADD CONSTRAINT "Order_campaignId_fkey" FOREIGN KEY ("campaignId") REFERENCES "Campaign"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "ShopperSubscription" ADD CONSTRAINT "ShopperSubscription_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "RestockSubscriber" ADD CONSTRAINT "RestockSubscriber_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;

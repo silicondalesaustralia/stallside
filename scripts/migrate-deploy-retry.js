@@ -2,6 +2,7 @@ const { execSync } = require("child_process");
 
 const attempts = 3;
 const delayMs = 5000;
+const FAILED_CUSTOMERS_MIGRATION = "20260922180000_customers_and_communication";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -10,6 +11,26 @@ function sleep(ms) {
 function looksPooled(url) {
   if (!url) return false;
   return /[-.]pooler\.|pgbouncer=true|pooling=true/i.test(url);
+}
+
+function runMigrate(env) {
+  execSync("npx prisma migrate deploy", { stdio: "inherit", env });
+}
+
+function clearFailedCustomersMigration(env) {
+  console.warn(
+    `Clearing failed migration ${FAILED_CUSTOMERS_MIGRATION} (if present) so idempotent SQL can re-apply…`,
+  );
+  try {
+    execSync(
+      `npx prisma migrate resolve --rolled-back ${FAILED_CUSTOMERS_MIGRATION}`,
+      { stdio: "inherit", env },
+    );
+    return true;
+  } catch {
+    // No failed row for this migration — ignore.
+    return false;
+  }
 }
 
 async function main() {
@@ -30,12 +51,26 @@ async function main() {
     PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: "1",
   };
 
+  let triedClear = false;
+
   for (let i = 1; i <= attempts; i += 1) {
     try {
       console.log(`prisma migrate deploy (attempt ${i}/${attempts})`);
-      execSync("npx prisma migrate deploy", { stdio: "inherit", env });
+      runMigrate(env);
       return;
     } catch (error) {
+      if (!triedClear) {
+        triedClear = true;
+        clearFailedCustomersMigration(env);
+        try {
+          console.log("prisma migrate deploy (after clearing failed migration)");
+          runMigrate(env);
+          return;
+        } catch {
+          // continue normal retries
+        }
+      }
+
       if (i === attempts) {
         console.error("prisma migrate deploy failed after retries");
         process.exit(typeof error.status === "number" ? error.status : 1);
