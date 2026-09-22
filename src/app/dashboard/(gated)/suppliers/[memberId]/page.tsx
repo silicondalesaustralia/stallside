@@ -123,6 +123,7 @@ export default async function SupplierMemberPage({
               <LinkedProductTermsForm
                 memberId={member.id}
                 productId={product.id}
+                memberName={member.name}
                 owedCents={product.supplierUnitCents ?? 0}
                 autoApprove={product.autoApprove}
               />

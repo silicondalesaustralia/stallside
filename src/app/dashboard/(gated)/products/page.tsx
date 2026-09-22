@@ -14,6 +14,7 @@ import ProductListRow from "./ProductListRow";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
+import { loadProductStockSplits } from "@/lib/suppliers/stock-split";
 
 export default async function ProductsPage({
   searchParams,
@@ -81,6 +82,8 @@ export default async function ProductsPage({
       ? loadRestockPanels(owner.id, selected.id)
       : Promise.resolve([]),
   ]);
+
+  const stockSplits = await loadProductStockSplits(products);
 
   function listHref(nextView?: "archived", nextTab: ProductTabId = tab) {
     const params = new URLSearchParams();
@@ -199,15 +202,20 @@ export default async function ProductsPage({
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {products.map((product) => (
-            <ProductListRow
-              key={product.id}
-              product={{
-                ...product,
-                supplierName: product.member?.name ?? null,
-              }}
-            />
-          ))}
+          {products.map((product) => {
+            const split = stockSplits.get(product.id);
+            return (
+              <ProductListRow
+                key={product.id}
+                product={{
+                  ...product,
+                  supplierName: product.member?.name ?? null,
+                  ownerUnits: split?.ownerUnits ?? null,
+                  supplierUnits: split?.supplierUnits ?? null,
+                }}
+              />
+            );
+          })}
         </ul>
       )}
     </main>

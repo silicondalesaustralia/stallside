@@ -14,6 +14,8 @@ type ProductRow = {
   stockQuantity: number;
   sku: string | null;
   supplierName?: string | null;
+  ownerUnits?: number | null;
+  supplierUnits?: number | null;
 };
 
 export default function ProductListRow({
@@ -21,6 +23,11 @@ export default function ProductListRow({
 }: {
   product: ProductRow;
 }) {
+  const showSplit =
+    product.supplierUnits != null &&
+    product.ownerUnits != null &&
+    product.supplierUnits > 0;
+
   return (
     <li>
       <DashListCard>
@@ -47,6 +54,9 @@ export default function ProductListRow({
                 ? ` · profit ${formatMoney(product.priceCents - product.costCents, product.currency)}`
                 : null}{" "}
               · {product.stockQuantity} in stock
+              {showSplit
+                ? ` · ${product.ownerUnits} yours · ${product.supplierUnits} supplier`
+                : null}
             </p>
           </div>
           <div className="flex flex-col items-stretch gap-2 sm:items-end">

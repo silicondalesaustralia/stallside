@@ -17,10 +17,10 @@ export const supplierArticles: KnowledgeArticle[] = [
     steps: [
       "Open More → Suppliers on the stand you have selected.",
       "Enter their name and email, then send the invite. They sign in with that email and land on Supply. They only see stock they can update — not your orders, customers, takings, or settings.",
-      "Open their name. Under “Let them add stock to one of your products”, pick an existing product (for example your eggs), set what you owe them per unit, and choose “Add to stock straight away” if their adds should go live without you tapping Approve. Tap Link product. Shoppers still see your one listing.",
+      "Open their name. Under “Let them add stock to one of your products”, pick an existing product (for example your eggs), set what you owe them per unit, and choose “Add to stock straight away” if their adds should go live without you tapping Approve. Tap Link product. Shoppers still see your one listing. You can also add their stock yourself on that linked product with Add stock.",
       "On Supply they see “You have approval to add these products”. They add or remove their units into that shared stock. You get an in-app alert, email, and phone push: who, which product, how many, and when.",
       "If “Add to stock straight away” is off, new adds sit under Waiting for your approval until you tap Approve into stock. Until then those units are not on the stall.",
-      "When shoppers buy, the oldest contributions sell first. Units from their adds count toward what you owe them. Your own stock sold from the same product does not.",
+      "On Products, shared items show a stock split when supplier units are on hand (for example 8 yours · 4 supplier). When shoppers buy, the oldest contributions sell first. Units from their adds count toward what you owe them. Your own stock sold from the same product does not.",
       "Their page shows units they added, units sold from their contributions, their units still on hand, amount owed, and what you have marked paid. Refunded orders are left out.",
       "When you pay them by cash or transfer, enter the amount and tap Mark paid. Vendl does not send the money. Card takings still land in your account.",
       "Optional: they can add a separate product under “Add a separate product instead” when it should not share stock with yours. You set the retail price and publish from their page. Those appear under Products → Supplier. Hide on stand takes a separate product off the stall and website without deleting it.",

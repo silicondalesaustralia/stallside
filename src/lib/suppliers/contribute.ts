@@ -15,6 +15,7 @@ export async function createContributionLot(
     supplierUnitCents: number;
     quantity: number;
     status: "PENDING" | "ACTIVE";
+    reason?: string;
   },
 ) {
   const product = await tx.product.findUniqueOrThrow({
@@ -50,7 +51,7 @@ export async function createContributionLot(
       changeQuantity: input.quantity,
       previousQuantity: product.stockQuantity,
       newQuantity: next,
-      reason: `${input.memberName} added stock`,
+      reason: input.reason ?? `${input.memberName} added stock`,
       source: InventorySource.OWNER_MANUAL,
     },
   });
