@@ -1,11 +1,6 @@
 import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
-import {
-  isMarketingSuppressed,
-  signUnsubLink,
-} from "@/lib/grow/consent";
-import { sendOwnerEmail } from "@/lib/notify-email";
-import { appBaseUrl } from "@/lib/app-url";
+import { isMarketingSuppressed } from "@/lib/grow/consent";
 
 export const CAMPAIGN_SEND_BATCH = 40;
 export const CAMPAIGN_MAX_RECIPIENTS = 500;
@@ -28,10 +23,15 @@ export async function resolveCampaignAudience(input: {
     });
     if (c?.email) out.push({ customerId: c.id, email: c.email });
   } else if (input.audienceType === "product" && input.audienceRefId) {
+    const productIds = input.audienceRefId
+      .split(",")
+      .map((id) => id.trim())
+      .filter(Boolean);
+    if (productIds.length === 0) return [];
     const orders = await prisma.order.findMany({
       where: {
         ownerId: input.ownerId,
-        items: { some: { productId: input.audienceRefId } },
+        items: { some: { productId: { in: productIds } } },
         OR: [
           { customer: { email: { not: null } } },
           { receiptEmail: { not: null } },

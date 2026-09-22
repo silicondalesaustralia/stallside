@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { createAndSendCommunication } from "../actions";
+import CommunicationProductPicker from "./CommunicationProductPicker";
 
 type CustomerOpt = { id: string; name: string | null; email: string | null };
 type ProductOpt = { id: string; name: string };
@@ -18,6 +19,7 @@ export default function CommunicationComposer({
   const [audienceType, setAudienceType] = useState(
     initialCustomerId ? "customer" : "all_marketing",
   );
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -37,7 +39,7 @@ export default function CommunicationComposer({
         {(
           [
             ["all_marketing", "Everyone opted into marketing"],
-            ["product", "Bought a product"],
+            ["product", "Bought these products"],
             ["customer", "One customer"],
           ] as const
         ).map(([value, label]) => (
@@ -55,21 +57,15 @@ export default function CommunicationComposer({
       </fieldset>
 
       {audienceType === "product" ? (
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="font-medium">Product</span>
-          <select
-            name="productId"
-            required
-            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-          >
-            <option value="">Select product…</option>
-            {products.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <CommunicationProductPicker
+          products={products}
+          selected={selectedProducts}
+          onToggle={(id) =>
+            setSelectedProducts((prev) =>
+              prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+            )
+          }
+        />
       ) : null}
 
       {audienceType === "customer" ? (

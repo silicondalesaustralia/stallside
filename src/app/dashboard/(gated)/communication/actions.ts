@@ -14,7 +14,10 @@ export async function createAndSendCommunication(formData: FormData) {
 
   const audienceType = String(formData.get("audienceType") ?? "all_marketing").trim();
   const customerId = String(formData.get("customerId") ?? "").trim() || null;
-  const productId = String(formData.get("productId") ?? "").trim() || null;
+  const productIds = formData
+    .getAll("productId")
+    .map((v) => String(v).trim())
+    .filter(Boolean);
   const subject = String(formData.get("subject") ?? "").trim().slice(0, 200);
   const heading = String(formData.get("heading") ?? "").trim().slice(0, 200) || null;
   const body = String(formData.get("body") ?? "").trim().slice(0, 8000);
@@ -43,13 +46,13 @@ export async function createAndSendCommunication(formData: FormData) {
     audienceRefId = c.id;
   }
   if (audienceType === "product") {
-    if (!productId) return { error: "Choose a product." };
-    const p = await prisma.product.findFirst({
-      where: { id: productId, ownerId: owner.id },
+    if (productIds.length === 0) return { error: "Choose at least one product." };
+    const owned = await prisma.product.findMany({
+      where: { ownerId: owner.id, id: { in: productIds } },
       select: { id: true },
     });
-    if (!p) return { error: "Product not found." };
-    audienceRefId = p.id;
+    if (owned.length === 0) return { error: "Product not found." };
+    audienceRefId = owned.map((p) => p.id).join(",");
   }
 
   const preview = await resolveCampaignAudience({
@@ -100,11 +103,14 @@ export async function previewCommunicationAudience(formData: FormData) {
   const { owner } = await requireOwnerWrite();
   const audienceType = String(formData.get("audienceType") ?? "all_marketing").trim();
   const customerId = String(formData.get("customerId") ?? "").trim() || null;
-  const productId = String(formData.get("productId") ?? "").trim() || null;
+  const productIds = formData
+    .getAll("productId")
+    .map((v) => String(v).trim())
+    .filter(Boolean);
 
   let audienceRefId: string | null = null;
   if (audienceType === "customer") audienceRefId = customerId;
-  if (audienceType === "product") audienceRefId = productId;
+  if (audienceType === "product") audienceRefId = productIds.join(",") || null;
 
   const audience = await resolveCampaignAudience({
     ownerId: owner.id,
