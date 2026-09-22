@@ -1,6 +1,10 @@
 import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { isMarketingSuppressed } from "@/lib/grow/consent";
+import {
+  parseSegmentRules,
+  resolveSegmentAudience,
+} from "@/lib/crm/segments";
 
 export const CAMPAIGN_SEND_BATCH = 40;
 export const CAMPAIGN_MAX_RECIPIENTS = 500;
@@ -22,6 +26,23 @@ export async function resolveCampaignAudience(input: {
       select: { id: true, email: true },
     });
     if (c?.email) out.push({ customerId: c.id, email: c.email });
+  } else if (input.audienceType === "list" && input.audienceRefId) {
+    const list = await prisma.customerSegment.findFirst({
+      where: {
+        id: input.audienceRefId,
+        ownerId: input.ownerId,
+        isActive: true,
+      },
+      select: { rules: true },
+    });
+    if (list) {
+      const members = await resolveSegmentAudience(
+        input.ownerId,
+        parseSegmentRules(list.rules),
+        CAMPAIGN_MAX_RECIPIENTS,
+      );
+      out.push(...members);
+    }
   } else if (input.audienceType === "product" && input.audienceRefId) {
     const productIds = input.audienceRefId
       .split(",")

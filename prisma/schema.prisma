@@ -297,6 +297,7 @@ model Owner {
   shopperSubscriptions      ShopperSubscription[]
   orders                    Order[]
   customers                 Customer[]
+  customerSegments          CustomerSegment[]
   campaigns                 Campaign[]
   marketingSuppressions     MarketingSuppression[]
   inventoryAdjustments      InventoryAdjustment[]
@@ -981,6 +982,25 @@ model Customer {
 
   @@unique([ownerId, email])
   @@index([ownerId, createdAt])
+}
+
+
+/** Saved customer list — rule-based and/or static (CSV) members. */
+model CustomerSegment {
+  id          String   @id @default(cuid())
+  ownerId     String
+  owner       Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  /** preset | rule | csv */
+  presetKey   String?
+  /** SegmentRules JSON: productIds, preOrderOnly, staticCustomerIds, etc. */
+  rules       Json     @default("{}")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([ownerId, isActive])
 }
 
 enum CampaignStatus {

@@ -63,12 +63,20 @@ export default async function CustomersPage({
             anonymous.
           </p>
         </div>
-        <Link
-          href="/dashboard/communication/new"
-          className="rounded-full bg-[var(--leaf)] px-4 py-2 text-sm font-semibold text-white"
-        >
-          Send email
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/dashboard/customers/lists"
+            className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold"
+          >
+            Lists
+          </Link>
+          <Link
+            href="/dashboard/communication/new"
+            className="rounded-full bg-[var(--leaf)] px-4 py-2 text-sm font-semibold text-white"
+          >
+            Send email
+          </Link>
+        </div>
       </div>
 
       <CustomersSearchForm initialQuery={query} />

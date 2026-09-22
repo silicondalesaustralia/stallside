@@ -2,22 +2,27 @@
 
 import { useState, useTransition } from "react";
 import { createAndSendCommunication } from "../actions";
-import CommunicationProductPicker from "./CommunicationProductPicker";
+import CommunicationAudienceFields from "./CommunicationAudienceFields";
 
 type CustomerOpt = { id: string; name: string | null; email: string | null };
 type ProductOpt = { id: string; name: string };
+type ListOpt = { id: string; name: string };
 
 export default function CommunicationComposer({
   customers,
   products,
+  lists,
   initialCustomerId,
+  initialListId,
 }: {
   customers: CustomerOpt[];
   products: ProductOpt[];
+  lists: ListOpt[];
   initialCustomerId: string | null;
+  initialListId: string | null;
 }) {
   const [audienceType, setAudienceType] = useState(
-    initialCustomerId ? "customer" : "all_marketing",
+    initialListId ? "list" : initialCustomerId ? "customer" : "all_marketing",
   );
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [message, setMessage] = useState<string | null>(null);
@@ -34,58 +39,21 @@ export default function CommunicationComposer({
       }}
       className="flex flex-col gap-4 rounded-xl border border-[var(--line)] bg-[var(--panel)] p-5"
     >
-      <fieldset className="flex flex-col gap-2">
-        <legend className="text-sm font-semibold">Who</legend>
-        {(
-          [
-            ["all_marketing", "Everyone opted into marketing"],
-            ["product", "Bought these products"],
-            ["customer", "One customer"],
-          ] as const
-        ).map(([value, label]) => (
-          <label key={value} className="flex items-center gap-2 text-sm">
-            <input
-              type="radio"
-              name="audienceType"
-              value={value}
-              checked={audienceType === value}
-              onChange={() => setAudienceType(value)}
-            />
-            {label}
-          </label>
-        ))}
-      </fieldset>
-
-      {audienceType === "product" ? (
-        <CommunicationProductPicker
-          products={products}
-          selected={selectedProducts}
-          onToggle={(id) =>
-            setSelectedProducts((prev) =>
-              prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-            )
-          }
-        />
-      ) : null}
-
-      {audienceType === "customer" ? (
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="font-medium">Customer</span>
-          <select
-            name="customerId"
-            required
-            defaultValue={initialCustomerId ?? ""}
-            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-          >
-            <option value="">Select customer…</option>
-            {customers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name || c.email} {c.email ? `(${c.email})` : ""}
-              </option>
-            ))}
-          </select>
-        </label>
-      ) : null}
+      <CommunicationAudienceFields
+        audienceType={audienceType}
+        setAudienceType={setAudienceType}
+        customers={customers}
+        products={products}
+        lists={lists}
+        selectedProducts={selectedProducts}
+        onToggleProduct={(id) =>
+          setSelectedProducts((prev) =>
+            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+          )
+        }
+        initialCustomerId={initialCustomerId}
+        initialListId={initialListId}
+      />
 
       <label className="flex flex-col gap-1 text-sm">
         <span className="font-medium">Subject</span>

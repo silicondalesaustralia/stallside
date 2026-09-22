@@ -6,12 +6,12 @@ import CommunicationComposer from "./CommunicationComposer";
 export default async function NewCommunicationPage({
   searchParams,
 }: {
-  searchParams: Promise<{ customerId?: string }>;
+  searchParams: Promise<{ customerId?: string; listId?: string }>;
 }) {
   const { owner } = await requireOwner();
-  const { customerId } = await searchParams;
+  const { customerId, listId } = await searchParams;
 
-  const [customers, products] = await Promise.all([
+  const [customers, products, lists] = await Promise.all([
     prisma.customer.findMany({
       where: { ownerId: owner.id, email: { not: null } },
       orderBy: { updatedAt: "desc" },
@@ -22,6 +22,11 @@ export default async function NewCommunicationPage({
       where: { ownerId: owner.id, isArchived: false, isHidden: false },
       orderBy: { name: "asc" },
       take: 300,
+      select: { id: true, name: true },
+    }),
+    prisma.customerSegment.findMany({
+      where: { ownerId: owner.id, isActive: true },
+      orderBy: { name: "asc" },
       select: { id: true, name: true },
     }),
   ]);
@@ -38,14 +43,16 @@ export default async function NewCommunicationPage({
           New message
         </h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          Broadcasts use marketing opt-ins. Product and single-customer sends
-          skip suppressed addresses.
+          Broadcasts use marketing opt-ins. Lists, product buyers, and
+          single-customer sends skip suppressed addresses.
         </p>
       </div>
       <CommunicationComposer
         customers={customers}
         products={products}
+        lists={lists}
         initialCustomerId={customerId ?? null}
+        initialListId={listId ?? null}
       />
     </main>
   );
