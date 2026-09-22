@@ -3,18 +3,15 @@
 import { useState, useTransition } from "react";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { updateLinkedOwed, unlinkSupplierProduct } from "./link-actions";
-import OwnerSupplierStockForm from "./OwnerSupplierStockForm";
 
 export default function LinkedProductTermsForm({
   memberId,
   productId,
-  memberName,
   owedCents,
   autoApprove,
 }: {
   memberId: string;
   productId: string;
-  memberName: string;
   owedCents: number;
   autoApprove: boolean;
 }) {
@@ -79,11 +76,6 @@ export default function LinkedProductTermsForm({
           Stop linking
         </button>
       </form>
-      <OwnerSupplierStockForm
-        memberId={memberId}
-        productId={productId}
-        memberName={memberName}
-      />
       {message ? <p className="text-sm text-[var(--muted)]">{message}</p> : null}
     </div>
   );

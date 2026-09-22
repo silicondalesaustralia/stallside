@@ -9,6 +9,7 @@ import ProductTermsForm from "./ProductTermsForm";
 import LinkedProductTermsForm from "./LinkedProductTermsForm";
 import LinkProductForm from "./LinkProductForm";
 import ApproveLotButton from "./ApproveLotButton";
+import OwnerSupplierStockForm from "./OwnerSupplierStockForm";
 import DeleteSupplierProductButton from "./DeleteSupplierProductButton";
 import DeleteSupplierButton from "./DeleteSupplierButton";
 import PayoutForm from "./PayoutForm";
@@ -120,13 +121,19 @@ export default async function SupplierMemberPage({
               {!product.linked && product.isArchived ? " · Not on the stall yet" : ""}
             </p>
             {product.linked ? (
-              <LinkedProductTermsForm
-                memberId={member.id}
-                productId={product.id}
-                memberName={member.name}
-                owedCents={product.supplierUnitCents ?? 0}
-                autoApprove={product.autoApprove}
-              />
+              <>
+                <OwnerSupplierStockForm
+                  memberId={member.id}
+                  productId={product.id}
+                  memberName={member.name}
+                />
+                <LinkedProductTermsForm
+                  memberId={member.id}
+                  productId={product.id}
+                  owedCents={product.supplierUnitCents ?? 0}
+                  autoApprove={product.autoApprove}
+                />
+              </>
             ) : (
               <>
                 <ProductTermsForm

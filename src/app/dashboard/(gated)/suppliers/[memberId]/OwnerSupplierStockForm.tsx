@@ -26,29 +26,41 @@ export default function OwnerSupplierStockForm({
         setMessage(result.error);
         return;
       }
-      setMessage(`Added to ${memberName}'s stock.`);
+      setMessage(`Added to ${memberName}'s stock on the stall.`);
       router.refresh();
     });
   }
 
   return (
-    <form action={onSubmit} className="mt-3 flex flex-wrap items-end gap-2 border-t border-[var(--line)] pt-3">
+    <form
+      action={onSubmit}
+      className="mt-3 flex flex-col gap-2 rounded-lg bg-[var(--wash)] p-3"
+    >
+      <p className="text-sm font-semibold text-[var(--field)]">
+        Add {memberName}&apos;s inventory
+      </p>
+      <p className="text-sm text-[var(--muted)]">
+        Counts as their contribution on this shared product (same as if they
+        added it on Supply).
+      </p>
       <input type="hidden" name="memberId" value={memberId} />
       <input type="hidden" name="productId" value={productId} />
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium">Add {memberName}&apos;s stock</span>
-        <input
-          name="amount"
-          type="number"
-          min={1}
-          required
-          className="w-24 rounded-lg border border-[var(--line)] px-3 py-2"
-        />
-      </label>
-      <button type="submit" disabled={pending} className={dashCtaClass}>
-        {pending ? "Adding…" : "Add stock"}
-      </button>
-      {message ? <p className="w-full text-sm text-[var(--muted)]">{message}</p> : null}
+      <div className="flex flex-wrap items-end gap-2">
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="font-medium">Quantity</span>
+          <input
+            name="amount"
+            type="number"
+            min={1}
+            required
+            className="w-24 rounded-lg border border-[var(--line)] bg-white px-3 py-2"
+          />
+        </label>
+        <button type="submit" disabled={pending} className={dashCtaClass}>
+          {pending ? "Adding…" : "Add stock"}
+        </button>
+      </div>
+      {message ? <p className="text-sm text-[var(--muted)]">{message}</p> : null}
     </form>
   );
 }
