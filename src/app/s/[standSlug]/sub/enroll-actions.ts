@@ -1,6 +1,11 @@
 "use server";
 
-import { HandoverMode, ShopperSubStatus } from "@/generated/prisma/client";
+import {
+  HandoverMode,
+  MembershipBillingPlan,
+  ShopperSubStatus,
+  SubscriptionOfferKind,
+} from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { appBaseUrl, isStripeConfigured } from "@/lib/stripe";
 import {
@@ -8,12 +13,22 @@ import {
   shopperSubApplicationFeePercent,
 } from "@/lib/shopper-subscription-fee";
 import { createShopperSubCheckoutSession } from "@/lib/shopper-subscription-stripe";
-import { subscriptionOfferPath } from "@/lib/subscription-offer";
+import {
+  createMembershipTermCheckoutSession,
+  createMembershipUpfrontCheckoutSession,
+} from "@/lib/membership-subscription-stripe";
+import {
+  membershipOfferReady,
+  membershipTermEndsAt,
+  parseMembershipBillingPlan,
+  subscriptionOfferPath,
+} from "@/lib/subscription-offer";
 import { standOffersCard } from "@/lib/stand-payment-brands";
 
 export async function startShopperSubscriptionCheckout(input: {
   standSlug: string;
   offerSlug: string;
+  billingPlan?: string;
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
@@ -50,10 +65,8 @@ export async function startShopperSubscriptionCheckout(input: {
         items: true,
       },
     });
-    if (!offer || offer.items.length === 0) {
-      return { error: "This subscription is not available." };
-    }
-    if (!offer.stripePriceId) {
+    if (!offer) return { error: "This subscription is not available." };
+    if (!membershipOfferReady(offer)) {
       return { error: "This subscription is not ready for signup yet." };
     }
 
@@ -75,6 +88,52 @@ export async function startShopperSubscriptionCheckout(input: {
       }
     }
 
+    const isMembership = offer.kind === SubscriptionOfferKind.MEMBERSHIP;
+    if (!isMembership && offer.items.length === 0) {
+      return { error: "This subscription is not available." };
+    }
+
+    let billingPlan: MembershipBillingPlan | null = null;
+    let priceId: string | null = offer.stripePriceId;
+    let priceCents = offer.priceCents;
+    let cancelAtUnix: number | null = null;
+    let termEndsAt: Date | null = null;
+    let collectionsRemaining: number | null = null;
+
+    if (isMembership) {
+      const plan = parseMembershipBillingPlan(input.billingPlan);
+      if (!plan) return { error: "Choose a payment plan." };
+      billingPlan = plan as MembershipBillingPlan;
+      const termWeeks = offer.termWeeks ?? 26;
+      termEndsAt = membershipTermEndsAt(new Date(), termWeeks);
+      collectionsRemaining = termWeeks;
+      cancelAtUnix = Math.floor(termEndsAt.getTime() / 1000);
+
+      if (plan === "WEEKLY") {
+        if (!offer.stripeWeeklyPriceId || offer.weeklyPriceCents == null) {
+          return { error: "Weekly plan is not available." };
+        }
+        priceId = offer.stripeWeeklyPriceId;
+        priceCents = offer.weeklyPriceCents;
+      } else if (plan === "MONTHLY") {
+        if (!offer.stripeMonthlyPriceId || offer.monthlyPriceCents == null) {
+          return { error: "Monthly plan is not available." };
+        }
+        priceId = offer.stripeMonthlyPriceId;
+        priceCents = offer.monthlyPriceCents;
+      } else {
+        if (!offer.stripeUpfrontPriceId || offer.upfrontPriceCents == null) {
+          return { error: "Pay-in-full is not available." };
+        }
+        priceId = offer.stripeUpfrontPriceId;
+        priceCents = offer.upfrontPriceCents;
+      }
+    }
+
+    if (!priceId) {
+      return { error: "This subscription is not ready for signup yet." };
+    }
+
     const manageToken = newManageToken();
     const shopperSub = await prisma.shopperSubscription.create({
       data: {
@@ -82,6 +141,10 @@ export async function startShopperSubscriptionCheckout(input: {
         standId: stand.id,
         ownerId: owner.id,
         status: ShopperSubStatus.INCOMPLETE,
+        billingPlan,
+        termEndsAt,
+        collectionsRemaining,
+        paidThroughAt: billingPlan === "UPFRONT" ? termEndsAt : null,
         customerName,
         customerEmail,
         customerPhone,
@@ -100,23 +163,48 @@ export async function startShopperSubscriptionCheckout(input: {
     const base = appBaseUrl();
     const path = subscriptionOfferPath(stand.slug, offer.slug);
     const feePercent = shopperSubApplicationFeePercent(owner);
-
-    const session = await createShopperSubCheckoutSession({
+    const metadata = {
+      purpose: "shopper_subscription",
+      shopperSubscriptionId: shopperSub.id,
+      offerId: offer.id,
+      standId: stand.id,
+      ownerId: owner.id,
       stripeAccountId: owner.stripeAccountId,
-      priceId: offer.stripePriceId,
-      customerEmail,
-      successUrl: `${base}/checkout/success?sub=${shopperSub.id}&session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${base}${path}?cancelled=1`,
-      applicationFeePercent: feePercent,
-      metadata: {
-        purpose: "shopper_subscription",
-        shopperSubscriptionId: shopperSub.id,
-        offerId: offer.id,
-        standId: stand.id,
-        ownerId: owner.id,
-        stripeAccountId: owner.stripeAccountId,
-      },
-    });
+      ...(billingPlan ? { billingPlan } : {}),
+    };
+
+    const session =
+      isMembership && billingPlan === "UPFRONT"
+        ? await createMembershipUpfrontCheckoutSession({
+            stripeAccountId: owner.stripeAccountId,
+            priceId,
+            priceCents,
+            customerEmail,
+            successUrl: `${base}/checkout/success?sub=${shopperSub.id}&session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: `${base}${path}?cancelled=1`,
+            applicationFeePercent: feePercent,
+            metadata,
+          })
+        : isMembership && cancelAtUnix != null
+          ? await createMembershipTermCheckoutSession({
+              stripeAccountId: owner.stripeAccountId,
+              priceId,
+              customerEmail,
+              successUrl: `${base}/checkout/success?sub=${shopperSub.id}&session_id={CHECKOUT_SESSION_ID}`,
+              cancelUrl: `${base}${path}?cancelled=1`,
+              applicationFeePercent: feePercent,
+              metadata,
+              cancelAtUnix,
+            })
+          : await createShopperSubCheckoutSession({
+              stripeAccountId: owner.stripeAccountId,
+              priceId,
+              customerEmail,
+              successUrl: `${base}/checkout/success?sub=${shopperSub.id}&session_id={CHECKOUT_SESSION_ID}`,
+              cancelUrl: `${base}${path}?cancelled=1`,
+              applicationFeePercent: feePercent,
+              metadata,
+            });
 
     if (!session.url) {
       return { error: "Could not start checkout." };

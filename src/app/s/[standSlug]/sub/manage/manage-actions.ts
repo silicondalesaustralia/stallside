@@ -51,7 +51,21 @@ export async function skipNextShopperCycle(formData: FormData) {
 export async function pauseShopperSubscription(formData: FormData) {
   const token = String(formData.get("token") ?? "");
   const sub = await loadManagedSub(token);
-  if (!sub?.stripeSubscriptionId || !sub.owner.stripeAccountId) {
+  if (!sub) return { error: "Subscription not found." };
+
+  // Upfront memberships have no recurring Stripe sub — pause collections in DB only.
+  if (!sub.stripeSubscriptionId) {
+    await prisma.shopperSubscription.update({
+      where: { id: sub.id },
+      data: {
+        status: ShopperSubStatus.PAUSED,
+        pausedAt: new Date(),
+      },
+    });
+    refreshManage(sub.stand.slug, token);
+    return { ok: true as const, message: "Membership paused." };
+  }
+  if (!sub.owner.stripeAccountId) {
     return { error: "This subscription is not linked to Stripe yet." };
   }
   try {
@@ -77,7 +91,20 @@ export async function pauseShopperSubscription(formData: FormData) {
 export async function resumeShopperSubscription(formData: FormData) {
   const token = String(formData.get("token") ?? "");
   const sub = await loadManagedSub(token);
-  if (!sub?.stripeSubscriptionId || !sub.owner.stripeAccountId) {
+  if (!sub) return { error: "Subscription not found." };
+
+  if (!sub.stripeSubscriptionId) {
+    await prisma.shopperSubscription.update({
+      where: { id: sub.id },
+      data: {
+        status: ShopperSubStatus.ACTIVE,
+        pausedAt: null,
+      },
+    });
+    refreshManage(sub.stand.slug, token);
+    return { ok: true as const, message: "Membership resumed." };
+  }
+  if (!sub.owner.stripeAccountId) {
     return { error: "This subscription is not linked to Stripe yet." };
   }
   try {

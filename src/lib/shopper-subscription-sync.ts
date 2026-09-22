@@ -74,13 +74,18 @@ export async function syncShopperSubscriptionFromStripe(
         status === ShopperSubStatus.PAUSED
           ? (row.pausedAt ?? new Date())
           : null,
-      nextCollectionAt: ends
-        ? nextCollectionAt({
-            from: ends,
-            weekday: row.offer.collectionWeekday,
-            interval: row.offer.interval,
-          })
-        : row.nextCollectionAt,
+      // Membership collections are cron-driven; do not overwrite from billing.
+      ...(row.offer.kind === "MEMBERSHIP"
+        ? {}
+        : {
+            nextCollectionAt: ends
+              ? nextCollectionAt({
+                  from: ends,
+                  weekday: row.offer.collectionWeekday,
+                  interval: row.offer.interval,
+                })
+              : row.nextCollectionAt,
+          }),
     },
   });
 }

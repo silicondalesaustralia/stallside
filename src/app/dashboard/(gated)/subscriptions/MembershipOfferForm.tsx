@@ -4,48 +4,52 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { createSubscriptionOffer } from "./actions-create";
 import { updateSubscriptionOffer } from "./actions-update";
-import type { ShopperInterval } from "@/lib/subscription-offer";
 import SubscriptionCoverImageField from "./SubscriptionCoverImageField";
+import { PlanPriceRow, centsToDollars } from "./MembershipPlanFields";
 
-type ProductOpt = { id: string; name: string; priceCents: number };
-
-type OfferValues = {
+export type MembershipOfferValues = {
   id?: string;
   title: string;
   slug: string;
   description: string | null;
   imageUrl: string | null;
   isActive: boolean;
-  interval: ShopperInterval;
   handoverMode: "COLLECT" | "DELIVER";
   collectionWeekday: number | null;
   collectionNote: string | null;
-  productIds: string[];
-  quantities: Record<string, number>;
+  termWeeks: number;
+  weeklyPriceCents: number | null;
+  monthlyPriceCents: number | null;
+  upfrontPriceCents: number | null;
+  upfrontBenefitsText: string | null;
+  termsText: string | null;
 };
 
-export default function SubscriptionOfferForm({
-  products,
+export default function MembershipOfferForm({
   stripeConnected,
   currency,
   values,
 }: {
-  products: ProductOpt[];
   stripeConnected: boolean;
   currency: string;
-  values?: OfferValues;
+  values?: MembershipOfferValues;
 }) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const editing = Boolean(values?.id);
-  const selected = new Set(values?.productIds ?? []);
+  const [weeklyOn, setWeeklyOn] = useState(values?.weeklyPriceCents != null);
+  const [monthlyOn, setMonthlyOn] = useState(values?.monthlyPriceCents != null);
+  const [upfrontOn, setUpfrontOn] = useState(values?.upfrontPriceCents != null);
 
   function onSubmit(formData: FormData) {
     setMessage(null);
     startTransition(async () => {
       try {
-        formData.set("kind", "BOX");
+        formData.set("kind", "MEMBERSHIP");
+        if (!weeklyOn) formData.delete("enableWeekly");
+        if (!monthlyOn) formData.delete("enableMonthly");
+        if (!upfrontOn) formData.delete("enableUpfront");
         const result = editing
           ? await updateSubscriptionOffer(values!.id!, formData)
           : await createSubscriptionOffer(formData);
@@ -58,7 +62,7 @@ export default function SubscriptionOfferForm({
           router.refresh();
         }
       } catch (error) {
-        console.error("Subscription offer save failed", error);
+        console.error("Membership offer save failed", error);
         setMessage("Could not save. Try again.");
       }
     });
@@ -68,10 +72,10 @@ export default function SubscriptionOfferForm({
     <form action={onSubmit} className="grid w-full gap-4 lg:grid-cols-2">
       {!stripeConnected ? (
         <p className="rounded-lg border border-[var(--warn)]/40 bg-[var(--warn)]/10 px-3 py-2 text-sm lg:col-span-2">
-          Connect Stripe under Settings to publish card subscriptions.
+          Connect Stripe under Settings to publish card memberships.
         </p>
       ) : null}
-      <input type="hidden" name="kind" value="BOX" />
+      <input type="hidden" name="kind" value="MEMBERSHIP" />
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Title</span>
         <input
@@ -79,7 +83,7 @@ export default function SubscriptionOfferForm({
           required
           maxLength={120}
           defaultValue={values?.title ?? ""}
-          placeholder="Weekly veg box"
+          placeholder="Ruby's Little Share"
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
@@ -88,16 +92,16 @@ export default function SubscriptionOfferForm({
         <input
           name="slug"
           defaultValue={values?.slug ?? ""}
-          placeholder="auto from title"
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 font-receipt"
         />
       </label>
       <label className="flex flex-col gap-2 text-sm lg:col-span-2">
         <span className="font-medium">Description (optional)</span>
-        <input
+        <textarea
           name="description"
           defaultValue={values?.description ?? ""}
-          maxLength={500}
+          maxLength={2000}
+          rows={3}
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
@@ -112,16 +116,16 @@ export default function SubscriptionOfferForm({
         Offer is live
       </label>
       <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Billing interval</span>
-        <select
-          name="interval"
-          defaultValue={values?.interval ?? "WEEKLY"}
+        <span className="font-medium">Term (weeks)</span>
+        <input
+          name="termWeeks"
+          type="number"
+          min={1}
+          max={104}
+          required
+          defaultValue={values?.termWeeks ?? 26}
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        >
-          <option value="WEEKLY">Weekly</option>
-          <option value="FORTNIGHTLY">Fortnightly</option>
-          <option value="MONTHLY">Monthly</option>
-        </select>
+        />
       </label>
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Handover</span>
@@ -135,7 +139,7 @@ export default function SubscriptionOfferForm({
         </select>
       </label>
       <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Collection weekday (optional)</span>
+        <span className="font-medium">Collection weekday</span>
         <select
           name="collectionWeekday"
           defaultValue={
@@ -145,7 +149,7 @@ export default function SubscriptionOfferForm({
           }
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         >
-          <option value="">Same as billing day</option>
+          <option value="">After signup</option>
           <option value="1">Monday</option>
           <option value="2">Tuesday</option>
           <option value="3">Wednesday</option>
@@ -156,53 +160,66 @@ export default function SubscriptionOfferForm({
         </select>
       </label>
       <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Collection / delivery note</span>
+        <span className="font-medium">Collection note</span>
         <input
           name="collectionNote"
           defaultValue={values?.collectionNote ?? ""}
           maxLength={200}
-          placeholder="Pick up at the gate fridge"
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      <fieldset className="flex flex-col gap-2 rounded-lg border border-[var(--line)] p-4 lg:col-span-2">
+      <fieldset className="flex flex-col gap-3 rounded-lg border border-[var(--line)] p-4 lg:col-span-2">
         <legend className="px-1 text-sm font-medium">
-          Products in the box ({currency})
+          Payment plans ({currency})
         </legend>
-        {products.length === 0 ? (
-          <p className="text-sm text-[var(--warn)]">
-            Add products first, then build a subscription.
-          </p>
-        ) : (
-          <ul className="flex flex-col gap-3">
-            {products.map((p) => (
-              <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    name="productIds"
-                    value={p.id}
-                    defaultChecked={selected.has(p.id)}
-                    className="size-4"
-                  />
-                  {p.name}
-                </label>
-                <label className="flex items-center gap-1 text-[var(--muted)]">
-                  Qty
-                  <input
-                    type="number"
-                    name={`qty_${p.id}`}
-                    min={1}
-                    max={99}
-                    defaultValue={values?.quantities[p.id] ?? 1}
-                    className="w-16 rounded border border-[var(--line)] px-2 py-1"
-                  />
-                </label>
-              </li>
-            ))}
-          </ul>
-        )}
+        <p className="text-sm text-[var(--muted)]">
+          Collection is always weekly. Enable at least one plan.
+        </p>
+        <PlanPriceRow
+          enabled={weeklyOn}
+          onToggle={setWeeklyOn}
+          enableName="enableWeekly"
+          priceName="weeklyPrice"
+          label="Weekly"
+          defaultDollars={centsToDollars(values?.weeklyPriceCents ?? null)}
+        />
+        <PlanPriceRow
+          enabled={monthlyOn}
+          onToggle={setMonthlyOn}
+          enableName="enableMonthly"
+          priceName="monthlyPrice"
+          label="Monthly"
+          defaultDollars={centsToDollars(values?.monthlyPriceCents ?? null)}
+        />
+        <PlanPriceRow
+          enabled={upfrontOn}
+          onToggle={setUpfrontOn}
+          enableName="enableUpfront"
+          priceName="upfrontPrice"
+          label="Pay in full"
+          defaultDollars={centsToDollars(values?.upfrontPriceCents ?? null)}
+        />
       </fieldset>
+      <label className="flex flex-col gap-2 text-sm lg:col-span-2">
+        <span className="font-medium">Pay-in-full benefits</span>
+        <textarea
+          name="upfrontBenefitsText"
+          defaultValue={values?.upfrontBenefitsText ?? ""}
+          maxLength={2000}
+          rows={3}
+          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+        />
+      </label>
+      <label className="flex flex-col gap-2 text-sm lg:col-span-2">
+        <span className="font-medium">Terms / FAQ (optional)</span>
+        <textarea
+          name="termsText"
+          defaultValue={values?.termsText ?? ""}
+          maxLength={5000}
+          rows={4}
+          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+        />
+      </label>
       <div className="flex flex-wrap items-center gap-3 lg:col-span-2">
         {message ? (
           <p className="text-sm text-[var(--warn)]">{message}</p>
@@ -210,7 +227,7 @@ export default function SubscriptionOfferForm({
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60"
+          className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
         >
           {pending ? "Saving…" : editing ? "Save offer" : "Create offer"}
         </button>

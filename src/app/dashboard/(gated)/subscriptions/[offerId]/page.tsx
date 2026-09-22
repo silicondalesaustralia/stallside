@@ -4,12 +4,16 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import {
   intervalLabel,
+  membershipOfferReady,
+  offerDisplayPriceCents,
   subscriptionOfferPath,
 } from "@/lib/subscription-offer";
 import { formatMoney } from "@/lib/money";
 import { SITE_URL } from "@/lib/legal";
 import { productCatalogWhere } from "@/lib/product-visibility";
+import { SubscriptionOfferKind } from "@/generated/prisma/client";
 import SubscriptionOfferForm from "../SubscriptionOfferForm";
+import MembershipOfferForm from "../MembershipOfferForm";
 import SubscriptionSubscribersList from "../SubscriptionSubscribersList";
 
 export default async function EditSubscriptionOfferPage({
@@ -33,15 +37,13 @@ export default async function EditSubscriptionOfferPage({
   });
   if (!offer) notFound();
 
-  // Heal Checkout that paid but webhook never activated the row.
   if (owner.stripeAccountId) {
     const { healIncompleteShopperSubscription } = await import(
       "@/lib/shopper-subscription-activate"
     );
-    const incomplete = offer.subscriptions.filter(
+    for (const sub of offer.subscriptions.filter(
       (s) => s.status === "INCOMPLETE",
-    );
-    for (const sub of incomplete) {
+    )) {
       try {
         await healIncompleteShopperSubscription({
           shopperSubscriptionId: sub.id,
@@ -83,6 +85,8 @@ export default async function EditSubscriptionOfferPage({
     quantities[item.productId] = item.quantity;
   }
   const path = subscriptionOfferPath(offer.stand.slug, offer.slug);
+  const ready = membershipOfferReady(offer);
+  const isMembership = offer.kind === SubscriptionOfferKind.MEMBERSHIP;
 
   return (
     <main className="flex flex-col gap-10">
@@ -93,13 +97,16 @@ export default async function EditSubscriptionOfferPage({
           </Link>
           {" · "}
           {offer.stand.name}
+          {isMembership ? " · Membership" : " · Box"}
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">
           {offer.title}
         </h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          {intervalLabel(offer.interval)} ·{" "}
-          {formatMoney(offer.priceCents, offer.currency)} ·{" "}
+          {isMembership
+            ? `${offer.termWeeks ?? "?"} weeks`
+            : intervalLabel(offer.interval)}{" "}
+          · {formatMoney(offerDisplayPriceCents(offer), offer.currency)} ·{" "}
           <a href={path} className="underline" target="_blank" rel="noreferrer">
             {SITE_URL}
             {path}
@@ -107,32 +114,56 @@ export default async function EditSubscriptionOfferPage({
         </p>
       </div>
 
-      {!offer.stripePriceId ? (
+      {!ready ? (
         <p className="rounded-lg border border-[var(--warn)]/40 bg-[var(--warn)]/10 px-3 py-2 text-sm">
-          Stripe price not synced yet — public signup is blocked. Click{" "}
-          <strong>Save offer</strong> to create the Connect price (needs live
-          Stripe + Connect charges enabled).
+          Stripe price not synced yet — public signup is blocked. Save again
+          after Connect charges are enabled.
         </p>
       ) : null}
 
-      <SubscriptionOfferForm
-        products={products}
-        stripeConnected={stripeConnected}
-        currency={offer.stand.currency}
-        values={{
-          id: offer.id,
-          title: offer.title,
-          slug: offer.slug,
-          description: offer.description,
-          isActive: offer.isActive,
-          interval: offer.interval,
-          handoverMode: offer.handoverMode,
-          collectionWeekday: offer.collectionWeekday,
-          collectionNote: offer.collectionNote,
-          productIds: offer.items.map((i) => i.productId),
-          quantities,
-        }}
-      />
+      {isMembership ? (
+        <MembershipOfferForm
+          stripeConnected={stripeConnected}
+          currency={offer.stand.currency}
+          values={{
+            id: offer.id,
+            title: offer.title,
+            slug: offer.slug,
+            description: offer.description,
+            imageUrl: offer.imageUrl,
+            isActive: offer.isActive,
+            handoverMode: offer.handoverMode,
+            collectionWeekday: offer.collectionWeekday,
+            collectionNote: offer.collectionNote,
+            termWeeks: offer.termWeeks ?? 26,
+            weeklyPriceCents: offer.weeklyPriceCents,
+            monthlyPriceCents: offer.monthlyPriceCents,
+            upfrontPriceCents: offer.upfrontPriceCents,
+            upfrontBenefitsText: offer.upfrontBenefitsText,
+            termsText: offer.termsText,
+          }}
+        />
+      ) : (
+        <SubscriptionOfferForm
+          products={products}
+          stripeConnected={stripeConnected}
+          currency={offer.stand.currency}
+          values={{
+            id: offer.id,
+            title: offer.title,
+            slug: offer.slug,
+            description: offer.description,
+            imageUrl: offer.imageUrl,
+            isActive: offer.isActive,
+            interval: offer.interval,
+            handoverMode: offer.handoverMode,
+            collectionWeekday: offer.collectionWeekday,
+            collectionNote: offer.collectionNote,
+            productIds: offer.items.map((i) => i.productId),
+            quantities,
+          }}
+        />
+      )}
 
       <section className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold">Subscribers</h2>

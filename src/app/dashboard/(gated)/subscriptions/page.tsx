@@ -6,10 +6,13 @@ import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import {
   intervalLabel,
+  membershipOfferReady,
+  offerDisplayPriceCents,
   subscriptionOfferPath,
 } from "@/lib/subscription-offer";
 import { formatMoney } from "@/lib/money";
 import { SITE_URL } from "@/lib/legal";
+import { SubscriptionOfferKind } from "@/generated/prisma/client";
 
 export default async function SubscriptionsListPage() {
   const { owner } = await requireOwner();
@@ -40,7 +43,7 @@ export default async function SubscriptionsListPage() {
             Subscriptions
           </h1>
           <p className="mt-1 text-[var(--muted)]">
-            {selected.name} — recurring boxes from your catalog. Card via
+            {selected.name} — recurring boxes and fixed-term memberships via
             Stripe Connect.
           </p>
         </div>
@@ -58,6 +61,9 @@ export default async function SubscriptionsListPage() {
         <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
           {offers.map((offer) => {
             const path = subscriptionOfferPath(selected.slug, offer.slug);
+            const isMembership =
+              offer.kind === SubscriptionOfferKind.MEMBERSHIP;
+            const ready = membershipOfferReady(offer);
             return (
               <li
                 key={offer.id}
@@ -66,20 +72,34 @@ export default async function SubscriptionsListPage() {
                 <div>
                   <p className="font-medium">
                     {offer.title}
+                    {isMembership ? (
+                      <span className="ml-2 text-[var(--muted)]">
+                        (membership)
+                      </span>
+                    ) : null}
                     {!offer.isActive ? (
                       <span className="ml-2 text-[var(--muted)]">(off)</span>
                     ) : null}
-                    {!offer.stripePriceId ? (
+                    {!ready ? (
                       <span className="ml-2 text-[var(--warn)]">
                         (needs Stripe sync)
                       </span>
                     ) : null}
                   </p>
                   <p className="mt-1 text-[var(--muted)]">
-                    {intervalLabel(offer.interval)} ·{" "}
-                    {formatMoney(offer.priceCents, offer.currency)} ·{" "}
-                    {offer._count.items} products ·{" "}
-                    {offer._count.subscriptions} subscribers
+                    {isMembership
+                      ? `${offer.termWeeks ?? "?"} weeks`
+                      : intervalLabel(offer.interval)}{" "}
+                    ·{" "}
+                    {formatMoney(
+                      offerDisplayPriceCents(offer),
+                      offer.currency,
+                    )}{" "}
+                    ·{" "}
+                    {isMembership
+                      ? "membership"
+                      : `${offer._count.items} products`}{" "}
+                    · {offer._count.subscriptions} subscribers
                   </p>
                   <p className="mt-1 break-all text-xs text-[var(--muted)]">
                     {SITE_URL}

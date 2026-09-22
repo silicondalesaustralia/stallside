@@ -5,10 +5,17 @@ import { startShopperSubscriptionCheckout } from "../enroll-actions";
 import { formatMoney } from "@/lib/money";
 import {
   intervalLabel,
+  membershipPlanLabel,
+  type MembershipPlan,
   type ShopperInterval,
 } from "@/lib/subscription-offer";
 
 type Line = { name: string; quantity: number; lineTotalCents: number };
+
+type PlanOption = {
+  plan: MembershipPlan;
+  priceCents: number;
+};
 
 export default function SubscriptionEnrollForm({
   standSlug,
@@ -19,6 +26,9 @@ export default function SubscriptionEnrollForm({
   currency,
   handoverDeliver,
   lines,
+  membership,
+  plans,
+  upfrontBenefitsText,
 }: {
   standSlug: string;
   offerSlug: string;
@@ -28,9 +38,15 @@ export default function SubscriptionEnrollForm({
   currency: string;
   handoverDeliver: boolean;
   lines: Line[];
+  membership: boolean;
+  plans: PlanOption[];
+  upfrontBenefitsText: string | null;
 }) {
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [billingPlan, setBillingPlan] = useState<MembershipPlan | "">(
+    plans[0]?.plan ?? "",
+  );
 
   function onSubmit(formData: FormData) {
     setMessage(null);
@@ -38,6 +54,7 @@ export default function SubscriptionEnrollForm({
       const result = await startShopperSubscriptionCheckout({
         standSlug,
         offerSlug,
+        billingPlan: membership ? billingPlan || undefined : undefined,
         customerName: String(formData.get("customerName") ?? ""),
         customerEmail: String(formData.get("customerEmail") ?? ""),
         customerPhone: String(formData.get("customerPhone") ?? ""),
@@ -58,25 +75,67 @@ export default function SubscriptionEnrollForm({
     });
   }
 
+  const selectedPrice =
+    plans.find((p) => p.plan === billingPlan)?.priceCents ?? priceCents;
+
   return (
     <form action={onSubmit} className="flex flex-col gap-4">
       <div className="rounded-xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
         <p className="font-semibold">{title}</p>
-        <p className="mt-1 text-[var(--muted)]">
-          {intervalLabel(interval)} · {formatMoney(priceCents, currency)}
-        </p>
-        <ul className="mt-3 flex flex-col gap-1">
-          {lines.map((l) => (
-            <li key={l.name} className="flex justify-between gap-2">
-              <span>
-                {l.name}
-                {l.quantity > 1 ? ` × ${l.quantity}` : ""}
-              </span>
-              <span>{formatMoney(l.lineTotalCents, currency)}</span>
-            </li>
-          ))}
-        </ul>
+        {!membership ? (
+          <p className="mt-1 text-[var(--muted)]">
+            {intervalLabel(interval)} · {formatMoney(priceCents, currency)}
+          </p>
+        ) : null}
+        {lines.length > 0 && !membership ? (
+          <ul className="mt-3 flex flex-col gap-1">
+            {lines.map((l) => (
+              <li key={l.name} className="flex justify-between gap-2">
+                <span>
+                  {l.name}
+                  {l.quantity > 1 ? ` × ${l.quantity}` : ""}
+                </span>
+                <span>{formatMoney(l.lineTotalCents, currency)}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
+      {membership && plans.length > 0 ? (
+        <fieldset className="flex flex-col gap-2">
+          <legend className="text-sm font-medium">How would you like to pay?</legend>
+          {plans.map((p) => (
+            <label
+              key={p.plan}
+              className="flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--line)] px-3 py-2 text-sm"
+            >
+              <input
+                type="radio"
+                name="billingPlan"
+                value={p.plan}
+                checked={billingPlan === p.plan}
+                onChange={() => setBillingPlan(p.plan)}
+                className="mt-1"
+              />
+              <span>
+                <span className="font-medium">
+                  {membershipPlanLabel(p.plan)} ·{" "}
+                  {formatMoney(p.priceCents, currency)}
+                </span>
+                {p.plan === "UPFRONT" && upfrontBenefitsText ? (
+                  <span className="mt-1 block whitespace-pre-wrap text-[var(--muted)]">
+                    {upfrontBenefitsText}
+                  </span>
+                ) : null}
+              </span>
+            </label>
+          ))}
+          <p className="text-xs text-[var(--muted)]">
+            Collection is weekly. Selected total:{" "}
+            {formatMoney(selectedPrice, currency)}
+          </p>
+        </fieldset>
+      ) : null}
       <label className="flex flex-col gap-1 text-sm">
         <span className="font-medium">Name</span>
         <input
@@ -143,14 +202,13 @@ export default function SubscriptionEnrollForm({
       ) : null}
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || (membership && !billingPlan)}
         className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
       >
-        {pending ? "Starting…" : "Subscribe with card"}
+        {pending ? "Starting…" : "Continue to payment"}
       </button>
       <p className="text-xs text-[var(--muted)]">
-        You can update your card, skip a cycle, or cancel from the manage link
-        emailed after signup.
+        You can manage your membership from the link emailed after signup.
       </p>
     </form>
   );

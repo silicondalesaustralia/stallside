@@ -73,6 +73,22 @@ export async function fulfillShopperSubscriptionInvoice(
     });
   }
 
+  // Membership collections are created by cron, not invoices.
+  if (sub.offer.kind === "MEMBERSHIP") {
+    const periodEnd =
+      invoice.lines?.data?.[0]?.period?.end != null
+        ? new Date(invoice.lines.data[0].period.end * 1000)
+        : null;
+    await prisma.shopperSubscription.update({
+      where: { id: sub.id },
+      data: {
+        status: ShopperSubStatus.ACTIVE,
+        paidThroughAt: periodEnd ?? undefined,
+      },
+    });
+    return;
+  }
+
   if (sub.skipNextCycle) {
     await prisma.shopperSubscription.update({
       where: { id: sub.id },

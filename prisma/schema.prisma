@@ -112,6 +112,19 @@ enum ShopperSubStatus {
   CANCELLED
 }
 
+/** Box = product basket; Membership = typed prices + payment-plan choice. */
+enum SubscriptionOfferKind {
+  BOX
+  MEMBERSHIP
+}
+
+/** How a membership shopper pays (collection stays weekly). */
+enum MembershipBillingPlan {
+  WEEKLY
+  MONTHLY
+  UPFRONT
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -512,6 +525,8 @@ model Product {
   optionGroups       ProductOptionGroup[]
   preOrderPageItems  PreOrderPageProduct[]
   subscriptionOfferItems SubscriptionOfferProduct[]
+  /** Hidden product used as OrderItem target for membership collection orders. */
+  membershipFulfilmentOffers SubscriptionOffer[] @relation("MembershipFulfilmentProduct")
   /** Supplier who owns this product. Null means the stand owner. */
   memberId           String?
   member             StandMember?         @relation(fields: [memberId], references: [id], onDelete: SetNull)
@@ -538,22 +553,38 @@ model SubscriptionOffer {
   stand              Stand                      @relation(fields: [standId], references: [id], onDelete: Cascade)
   ownerId            String
   owner              Owner                      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  kind               SubscriptionOfferKind      @default(BOX)
   title              String
   slug               String
   description        String?
+  /** Cover image for public offer page / OG. */
+  imageUrl           String?
   isActive           Boolean                    @default(true)
   interval           ShopperSubInterval         @default(WEEKLY)
   handoverMode       HandoverMode               @default(COLLECT)
   /** 0=Sun … 6=Sat; next collection weekday for COLLECT. */
   collectionWeekday  Int?
   collectionNote     String?
-  /** Snapshot total of line prices (qty × product.priceCents). */
+  /** Snapshot total of line prices (qty × product.priceCents), or display fallback for membership. */
   priceCents         Int
   currency           String                     @default("AUD")
+  /** Membership: fixed term length in weekly collections. */
+  termWeeks          Int?
+  weeklyPriceCents   Int?
+  monthlyPriceCents  Int?
+  upfrontPriceCents  Int?
+  upfrontBenefitsText String?
+  termsText          String?
   /** Stripe Product on the connected account. */
   stripeProductId    String?
-  /** Stripe Price on the connected account (recurring). */
+  /** Stripe Price on the connected account (recurring) — BOX offers. */
   stripePriceId      String?
+  stripeWeeklyPriceId  String?
+  stripeMonthlyPriceId String?
+  stripeUpfrontPriceId String?
+  /** Hidden catalog product for membership collection OrderItems. */
+  fulfillmentProductId String?
+  fulfillmentProduct   Product?                 @relation("MembershipFulfilmentProduct", fields: [fulfillmentProductId], references: [id], onDelete: SetNull)
   items              SubscriptionOfferProduct[]
   subscriptions      ShopperSubscription[]
   createdAt          DateTime                   @default(now())
@@ -561,6 +592,7 @@ model SubscriptionOffer {
 
   @@unique([standId, slug])
   @@index([standId, isActive])
+  @@index([fulfillmentProductId])
 }
 
 model SubscriptionOfferProduct {
@@ -586,6 +618,11 @@ model ShopperSubscription {
   ownerId                String
   owner                  Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   status                 ShopperSubStatus  @default(INCOMPLETE)
+  /** Set for membership enrollments; null for legacy BOX. */
+  billingPlan            MembershipBillingPlan?
+  termEndsAt             DateTime?
+  collectionsRemaining   Int?
+  paidThroughAt          DateTime?
   customerName           String
   customerEmail          String
   customerPhone          String?
@@ -610,7 +647,10 @@ model ShopperSubscription {
   @@index([standId, status])
   @@index([ownerId, createdAt])
   @@index([offerId])
+  @@index([status, nextCollectionAt])
 }
+
+
 
 /** Multi-product pre-order sheet: one link, shared collection day. */
 model PreOrderPage {

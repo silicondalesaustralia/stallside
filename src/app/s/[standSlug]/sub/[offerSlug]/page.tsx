@@ -6,12 +6,18 @@ import { standAccentStyle } from "@/lib/stand-brand";
 import { SITE_URL } from "@/lib/legal";
 import {
   intervalLabel,
+  membershipOfferReady,
+  membershipPlanLabel,
   subscriptionOfferPath,
   weekdayLabel,
+  type MembershipPlan,
 } from "@/lib/subscription-offer";
 import { formatMoney } from "@/lib/money";
 import { standOffersCard } from "@/lib/stand-payment-brands";
-import { HandoverMode } from "@/generated/prisma/client";
+import {
+  HandoverMode,
+  SubscriptionOfferKind,
+} from "@/generated/prisma/client";
 import StandStoreHeader from "../../StandStoreHeader";
 import SubscriptionEnrollForm from "./SubscriptionEnrollForm";
 
@@ -42,6 +48,9 @@ export async function generateMetadata({
     alternates: {
       canonical: `${SITE_URL}${subscriptionOfferPath(offer.stand.slug, offer.slug)}`,
     },
+    openGraph: offer.imageUrl
+      ? { images: [{ url: offer.imageUrl }] }
+      : undefined,
   };
 }
 
@@ -76,13 +85,28 @@ export default async function PublicSubscriptionOfferPage({
   const { stand } = offer;
   const branded = publicStandBranding(stand, stand.owner);
   const cardEnabled = standOffersCard(stand, stand.owner);
-  const cardOk = cardEnabled && Boolean(offer.stripePriceId);
+  const ready = membershipOfferReady(offer);
+  const cardOk = cardEnabled && ready;
   const day = weekdayLabel(offer.collectionWeekday);
+  const isMembership = offer.kind === SubscriptionOfferKind.MEMBERSHIP;
   const unavailableReason = !cardEnabled
     ? "This stand cannot take card payments yet."
-    : !offer.stripePriceId
+    : !ready
       ? "This offer is not ready for signup yet. The owner needs to save it again after Stripe is connected."
       : "Card subscriptions are not available for this offer right now.";
+
+  const plans: { plan: MembershipPlan; priceCents: number }[] = [];
+  if (isMembership) {
+    if (offer.weeklyPriceCents != null && offer.stripeWeeklyPriceId) {
+      plans.push({ plan: "WEEKLY", priceCents: offer.weeklyPriceCents });
+    }
+    if (offer.monthlyPriceCents != null && offer.stripeMonthlyPriceId) {
+      plans.push({ plan: "MONTHLY", priceCents: offer.monthlyPriceCents });
+    }
+    if (offer.upfrontPriceCents != null && offer.stripeUpfrontPriceId) {
+      plans.push({ plan: "UPFRONT", priceCents: offer.upfrontPriceCents });
+    }
+  }
 
   return (
     <div
@@ -95,18 +119,46 @@ export default async function PublicSubscriptionOfferPage({
         logoUrl={branded.logoUrl}
       />
       <main className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-8">
+        {offer.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={offer.imageUrl}
+            alt=""
+            className="aspect-[16/9] w-full rounded-xl object-cover"
+          />
+        ) : null}
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{offer.title}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {offer.title}
+          </h1>
           {offer.description ? (
-            <p className="mt-2 text-[var(--muted)]">{offer.description}</p>
+            <p className="mt-2 whitespace-pre-wrap text-[var(--muted)]">
+              {offer.description}
+            </p>
           ) : null}
           <p className="mt-2 text-sm text-[var(--muted)]">
-            {intervalLabel(offer.interval)} ·{" "}
-            {formatMoney(offer.priceCents, offer.currency)}
+            {isMembership
+              ? `${offer.termWeeks ?? "?"} week membership`
+              : intervalLabel(offer.interval)}
             {day ? ` · ${day} collection` : ""}
             {offer.collectionNote ? ` · ${offer.collectionNote}` : ""}
           </p>
+          {isMembership && plans.length > 0 ? (
+            <p className="mt-1 text-sm text-[var(--muted)]">
+              From{" "}
+              {formatMoney(
+                Math.min(...plans.map((p) => p.priceCents)),
+                offer.currency,
+              )}{" "}
+              · {plans.map((p) => membershipPlanLabel(p.plan)).join(", ")}
+            </p>
+          ) : null}
         </div>
+        {offer.termsText ? (
+          <div className="rounded-xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm whitespace-pre-wrap text-[var(--muted)]">
+            {offer.termsText}
+          </div>
+        ) : null}
         {sp.cancelled ? (
           <p className="rounded-lg border border-[var(--line)] px-3 py-2 text-sm">
             Checkout cancelled. You can try again when ready.
@@ -121,11 +173,18 @@ export default async function PublicSubscriptionOfferPage({
             priceCents={offer.priceCents}
             currency={offer.currency}
             handoverDeliver={offer.handoverMode === HandoverMode.DELIVER}
-            lines={offer.items.map((i) => ({
-              name: i.product.name,
-              quantity: i.quantity,
-              lineTotalCents: i.product.priceCents * i.quantity,
-            }))}
+            membership={isMembership}
+            plans={plans}
+            upfrontBenefitsText={offer.upfrontBenefitsText}
+            lines={
+              isMembership
+                ? []
+                : offer.items.map((i) => ({
+                    name: i.product.name,
+                    quantity: i.quantity,
+                    lineTotalCents: i.product.priceCents * i.quantity,
+                  }))
+            }
           />
         ) : (
           <p className="text-sm text-[var(--warn)]">{unavailableReason}</p>
