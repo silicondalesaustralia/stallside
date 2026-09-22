@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import CommunicationComposer from "./CommunicationComposer";
 import { ensureStandingLists } from "@/lib/crm/standing-lists";
+import { resolveCampaignAudience } from "@/lib/grow/campaigns";
 
 export default async function NewCommunicationPage({
   searchParams,
@@ -33,6 +34,16 @@ export default async function NewCommunicationPage({
     }),
   ]);
 
+  const initialListMembers = listId
+    ? (
+        await resolveCampaignAudience({
+          ownerId: owner.id,
+          audienceType: "list",
+          audienceRefId: listId,
+        })
+      ).map((m) => ({ email: m.email }))
+    : [];
+
   return (
     <main className="flex max-w-2xl flex-col gap-6">
       <div>
@@ -45,8 +56,7 @@ export default async function NewCommunicationPage({
           New message
         </h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          Broadcasts use marketing opt-ins. Lists, product buyers, and
-          single-customer sends skip suppressed addresses.
+          For lists, review emails and include or exclude before sending.
         </p>
       </div>
       <CommunicationComposer
@@ -55,6 +65,7 @@ export default async function NewCommunicationPage({
         lists={lists}
         initialCustomerId={customerId ?? null}
         initialListId={listId ?? null}
+        initialListMembers={initialListMembers}
       />
     </main>
   );

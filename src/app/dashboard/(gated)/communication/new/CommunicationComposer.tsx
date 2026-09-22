@@ -14,16 +14,19 @@ export default function CommunicationComposer({
   lists,
   initialCustomerId,
   initialListId,
+  initialListMembers,
 }: {
   customers: CustomerOpt[];
   products: ProductOpt[];
   lists: ListOpt[];
   initialCustomerId: string | null;
   initialListId: string | null;
+  initialListMembers: { email: string }[];
 }) {
   const [audienceType, setAudienceType] = useState(
     initialListId ? "list" : initialCustomerId ? "customer" : "all_marketing",
   );
+  const [listId, setListId] = useState(initialListId ?? "");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -52,7 +55,9 @@ export default function CommunicationComposer({
           )
         }
         initialCustomerId={initialCustomerId}
-        initialListId={initialListId}
+        listId={listId}
+        onListIdChange={setListId}
+        initialMembers={initialListMembers}
       />
 
       <label className="flex flex-col gap-1 text-sm">

@@ -65,10 +65,22 @@ export async function createAndSendCommunication(formData: FormData) {
     audienceRefId = owned.map((p) => p.id).join(",");
   }
 
+  const emailAllowlist =
+    audienceType === "list"
+      ? formData
+          .getAll("recipientEmail")
+          .map((v) => String(v).trim().toLowerCase())
+          .filter((e) => e.includes("@"))
+      : null;
+  if (audienceType === "list" && (!emailAllowlist || emailAllowlist.length === 0)) {
+    return { error: "Select at least one email on the list." };
+  }
+
   const preview = await resolveCampaignAudience({
     ownerId: owner.id,
     audienceType,
     audienceRefId,
+    emailAllowlist,
   });
   if (preview.length === 0) {
     return {
@@ -94,7 +106,7 @@ export async function createAndSendCommunication(formData: FormData) {
     },
   });
 
-  await queueCampaignSend(campaign.id, owner.id);
+  await queueCampaignSend(campaign.id, owner.id, { emailAllowlist });
 
   // Start sending immediately; cron continues any remaining batch.
   const { processCampaignSendBatch } = await import(

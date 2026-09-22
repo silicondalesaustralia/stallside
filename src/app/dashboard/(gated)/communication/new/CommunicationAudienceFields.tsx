@@ -1,10 +1,14 @@
 "use client";
 
+import { useEffect, useState, useTransition } from "react";
 import CommunicationProductPicker from "./CommunicationProductPicker";
+import CommunicationListMemberPicker from "./CommunicationListMemberPicker";
+import { loadListMembers } from "../list-members";
 
 type CustomerOpt = { id: string; name: string | null; email: string | null };
 type ProductOpt = { id: string; name: string };
 type ListOpt = { id: string; name: string };
+type Member = { email: string };
 
 export default function CommunicationAudienceFields({
   audienceType,
@@ -15,7 +19,9 @@ export default function CommunicationAudienceFields({
   selectedProducts,
   onToggleProduct,
   initialCustomerId,
-  initialListId,
+  listId,
+  onListIdChange,
+  initialMembers,
 }: {
   audienceType: string;
   setAudienceType: (v: string) => void;
@@ -25,8 +31,35 @@ export default function CommunicationAudienceFields({
   selectedProducts: string[];
   onToggleProduct: (id: string) => void;
   initialCustomerId: string | null;
-  initialListId: string | null;
+  listId: string;
+  onListIdChange: (id: string) => void;
+  initialMembers: Member[];
 }) {
+  const [members, setMembers] = useState<Member[]>(initialMembers);
+  const [selectedEmails, setSelectedEmails] = useState<string[]>(() =>
+    initialMembers.map((m) => m.email),
+  );
+  const [loading, startLoad] = useTransition();
+
+  useEffect(() => {
+    if (audienceType !== "list" || !listId) {
+      setMembers([]);
+      setSelectedEmails([]);
+      return;
+    }
+    let cancelled = false;
+    startLoad(async () => {
+      const result = await loadListMembers(listId);
+      if (cancelled) return;
+      const next = result.members ?? [];
+      setMembers(next);
+      setSelectedEmails(next.map((m) => m.email));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [audienceType, listId]);
+
   return (
     <>
       <fieldset className="flex flex-col gap-2">
@@ -53,27 +86,33 @@ export default function CommunicationAudienceFields({
       </fieldset>
 
       {audienceType === "list" ? (
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="font-medium">List</span>
-          <select
-            name="listId"
-            required
-            defaultValue={initialListId ?? ""}
-            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-          >
-            <option value="">Select list…</option>
-            {lists.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.name}
-              </option>
-            ))}
-          </select>
-          {lists.length === 0 ? (
-            <span className="text-xs text-[var(--muted)]">
-              No lists yet — create one under Customers → Lists.
-            </span>
+        <>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">List</span>
+            <select
+              name="listId"
+              required
+              value={listId}
+              onChange={(e) => onListIdChange(e.target.value)}
+              className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+            >
+              <option value="">Select list…</option>
+              {lists.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          {listId ? (
+            <CommunicationListMemberPicker
+              members={members}
+              selected={selectedEmails}
+              onChange={setSelectedEmails}
+              loading={loading}
+            />
           ) : null}
-        </label>
+        </>
       ) : null}
 
       {audienceType === "product" ? (

@@ -17,6 +17,8 @@ export async function resolveCampaignAudience(input: {
   ownerId: string;
   audienceType: string;
   audienceRefId?: string | null;
+  /** When set, only these emails (already on the audience) are kept. */
+  emailAllowlist?: string[] | null;
 }): Promise<{ customerId: string | null; email: string }[]> {
   const out: { customerId: string | null; email: string }[] = [];
 
@@ -90,17 +92,29 @@ export async function resolveCampaignAudience(input: {
     }
   }
 
+  const allow =
+    input.emailAllowlist && input.emailAllowlist.length > 0
+      ? new Set(
+          input.emailAllowlist.map((e) => e.trim().toLowerCase()).filter(Boolean),
+        )
+      : null;
+
   const dedup = new Map<string, { customerId: string | null; email: string }>();
   for (const row of out) {
     const email = row.email.trim().toLowerCase();
     if (!email || dedup.has(email)) continue;
+    if (allow && !allow.has(email)) continue;
     if (await isMarketingSuppressed(input.ownerId, email)) continue;
     dedup.set(email, { customerId: row.customerId, email });
   }
   return [...dedup.values()].slice(0, CAMPAIGN_MAX_RECIPIENTS);
 }
 
-export async function queueCampaignSend(campaignId: string, ownerId: string) {
+export async function queueCampaignSend(
+  campaignId: string,
+  ownerId: string,
+  opts?: { emailAllowlist?: string[] | null },
+) {
   const campaign = await prisma.campaign.findFirst({
     where: { id: campaignId, ownerId },
   });
@@ -113,6 +127,7 @@ export async function queueCampaignSend(campaignId: string, ownerId: string) {
     ownerId,
     audienceType: campaign.audienceType,
     audienceRefId: campaign.audienceRefId,
+    emailAllowlist: opts?.emailAllowlist,
   });
 
   await prisma.$transaction(async (tx) => {
