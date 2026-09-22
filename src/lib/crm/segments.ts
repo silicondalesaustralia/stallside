@@ -1,4 +1,4 @@
-import { PaymentStatus, Prisma } from "@/generated/prisma/client";
+import { PaymentStatus, Prisma, SubStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   parseSegmentRules,
@@ -33,6 +33,25 @@ export async function resolveSegmentAudience(
     if (!email || byEmail.has(email)) return;
     byEmail.set(email, { customerId, email });
   };
+
+  if (rules.hasRestockInterest) {
+    const subs = await prisma.restockSubscriber.findMany({
+      where: {
+        status: SubStatus.ACTIVE,
+        stand: { ownerId },
+      },
+      select: {
+        email: true,
+        customerId: true,
+        customer: { select: { id: true, email: true } },
+      },
+      take: limit * 2,
+    });
+    for (const s of subs) {
+      add(s.customer?.id ?? s.customerId, s.customer?.email ?? s.email);
+      if (byEmail.size >= limit) break;
+    }
+  }
 
   if (rules.staticCustomerIds?.length) {
     const statics = await prisma.customer.findMany({

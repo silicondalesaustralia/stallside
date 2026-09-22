@@ -6,6 +6,7 @@ import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ensureCustomer } from "@/lib/catalogue/customers";
 import { parseCustomerCsv } from "@/lib/crm/parse-customer-csv";
+import { isStandingListPreset } from "@/lib/crm/segment-rules";
 import { rulesToJson, type SegmentRules } from "@/lib/crm/segments";
 
 export async function createListFromRules(formData: FormData) {
@@ -110,9 +111,12 @@ export async function archiveList(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const existing = await prisma.customerSegment.findFirst({
     where: { id, ownerId: owner.id },
-    select: { id: true },
+    select: { id: true, presetKey: true },
   });
   if (!existing) redirect("/dashboard/customers/lists");
+  if (isStandingListPreset(existing.presetKey)) {
+    redirect("/dashboard/communication");
+  }
 
   await prisma.customerSegment.update({
     where: { id },

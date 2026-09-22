@@ -6,13 +6,18 @@ import {
   describeSegmentRules,
   parseSegmentRules,
 } from "@/lib/crm/segments";
+import { STANDING_LIST_PRESET_KEYS } from "@/lib/crm/segment-rules";
 import { archiveList } from "./actions";
 
 export default async function CustomerListsPage() {
   const { owner } = await requireOwner();
 
   const lists = await prisma.customerSegment.findMany({
-    where: { ownerId: owner.id, isActive: true },
+    where: {
+      ownerId: owner.id,
+      isActive: true,
+      NOT: { presetKey: { in: [...STANDING_LIST_PRESET_KEYS] } },
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -42,7 +47,8 @@ export default async function CustomerListsPage() {
           </h1>
           <p className="mt-1 text-[var(--muted)]">
             Group customers by purchases, pre-orders, or a CSV upload — then
-            email them from Communication.
+            email them from Communication. Restock opt-ins live under
+            Communication.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

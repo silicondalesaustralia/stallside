@@ -9,6 +9,8 @@ export const segmentRulesSchema = z
     purchasedWithinDays: z.number().int().positive().max(3650).optional(),
     /** Customers with at least one pre-order. */
     preOrderOnly: z.boolean().optional(),
+    /** Active restock-alert opt-ins (grows as shoppers subscribe). */
+    hasRestockInterest: z.boolean().optional(),
     /** Explicit members from CSV / manual pick. */
     staticCustomerIds: z.array(z.string().min(1)).max(5000).optional(),
     /** Require marketing consent when resolving. */
@@ -37,7 +39,19 @@ export function describeSegmentRules(rules: SegmentRules): string {
     parts.push(`bought ${rules.productIds.length} selected product(s)${window}`);
   }
   if (rules.preOrderOnly) parts.push("pre-order customers");
+  if (rules.hasRestockInterest) parts.push("restock alert opt-ins");
   if (rules.marketingConsentOnly) parts.push("marketing consent");
   if (rules.requireEmail) parts.push("has email");
   return parts.length ? parts.join(" · ") : "No filters yet";
+}
+
+/** System lists managed in Communication (hidden from Customers → Lists). */
+export const STANDING_LIST_PRESET_KEYS = ["restock"] as const;
+export type StandingListPresetKey = (typeof STANDING_LIST_PRESET_KEYS)[number];
+
+export function isStandingListPreset(key: string | null | undefined): boolean {
+  return (
+    !!key &&
+    (STANDING_LIST_PRESET_KEYS as readonly string[]).includes(key)
+  );
 }

@@ -2,6 +2,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import CommunicationComposer from "./CommunicationComposer";
+import { ensureStandingLists } from "@/lib/crm/standing-lists";
 
 export default async function NewCommunicationPage({
   searchParams,
@@ -10,6 +11,7 @@ export default async function NewCommunicationPage({
 }) {
   const { owner } = await requireOwner();
   const { customerId, listId } = await searchParams;
+  await ensureStandingLists(owner.id);
 
   const [customers, products, lists] = await Promise.all([
     prisma.customer.findMany({

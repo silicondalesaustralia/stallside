@@ -2,10 +2,6 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { productDashboardWhere } from "@/lib/product-visibility";
-import RestockNotifyPanel from "./RestockNotifyPanel";
-import { loadRestockPanels } from "./load-restock-panels";
-import { ownerHasProAccess } from "@/lib/owner-trial";
-import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 import ProductsTabs, {
   isProductTabId,
   type ProductTabId,
@@ -21,7 +17,7 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<{ view?: string; tab?: string }>;
 }) {
-  const { user, owner } = await requireOwner();
+  const { owner } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
   const { view, tab: tabParam } = await searchParams;
   const showArchived = view === "archived";
@@ -40,18 +36,7 @@ export default async function ProductsPage({
     );
   }
 
-  const showRestock =
-    !showArchived &&
-    tab === "standard" &&
-    isRestockAlertsEnabled() &&
-    ownerHasProAccess(owner, {
-      email: user.email,
-      role: user.role,
-      lifetimeAccess: owner.lifetimeAccess,
-    });
-
-  const [products, restockPanels] = await Promise.all([
-    prisma.product.findMany({
+  const products = await prisma.product.findMany({
       where: {
         ownerId: owner.id,
         standId: selected.id,
@@ -77,11 +62,7 @@ export default async function ProductsPage({
         member: { select: { name: true } },
       },
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-    }),
-    showRestock
-      ? loadRestockPanels(owner.id, selected.id)
-      : Promise.resolve([]),
-  ]);
+    });
 
   const stockSplits = await loadProductStockSplits(products);
 
@@ -184,14 +165,6 @@ export default async function ProductsPage({
           </Link>
           .
         </p>
-      ) : null}
-
-      {restockPanels.length > 0 ? (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {restockPanels.map((panel) => (
-            <RestockNotifyPanel key={panel.standId} {...panel} />
-          ))}
-        </div>
       ) : null}
 
       {products.length === 0 ? (
