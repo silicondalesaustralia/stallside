@@ -6,6 +6,16 @@ import { createSubscriptionOffer } from "./actions-create";
 import { updateSubscriptionOffer } from "./actions-update";
 import SubscriptionCoverImageField from "./SubscriptionCoverImageField";
 import { PlanPriceRow, centsToDollars } from "./MembershipPlanFields";
+import MembershipFieldHint from "./MembershipFieldHint";
+
+const DESCRIPTION_TIP =
+  "Short intro under the title on the public page. Keep it to one or two sentences about the share — do not put prices or retail comparisons here (those come from the payment plans).";
+
+const BENEFITS_TIP =
+  "Shown only for pay-in-full. Put one benefit per line, starting with • or -. Add a final line without a bullet for the footnote (e.g. “Discounts apply to other products only…”).";
+
+const TERMS_TIP =
+  "Becomes the FAQ accordion on the public page. Separate each Q&A with a blank line. First line = question/heading; lines below = answer. Add as many blocks as you need.";
 
 export type MembershipOfferValues = {
   id?: string;
@@ -96,12 +106,18 @@ export default function MembershipOfferForm({
         />
       </label>
       <label className="flex flex-col gap-2 text-sm lg:col-span-2">
-        <span className="font-medium">Description (optional)</span>
+        <span className="flex items-center gap-1.5 font-medium">
+          Intro copy
+          <MembershipFieldHint tip={DESCRIPTION_TIP} />
+        </span>
         <textarea
           name="description"
           defaultValue={values?.description ?? ""}
           maxLength={2000}
           rows={3}
+          placeholder={
+            "A little connection to the herd.\nA litre of goat's milk reserved for you each week."
+          }
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
@@ -201,22 +217,34 @@ export default function MembershipOfferForm({
         />
       </fieldset>
       <label className="flex flex-col gap-2 text-sm lg:col-span-2">
-        <span className="font-medium">Pay-in-full benefits</span>
+        <span className="flex items-center gap-1.5 font-medium">
+          Pay-in-full benefits
+          <MembershipFieldHint tip={BENEFITS_TIP} />
+        </span>
         <textarea
           name="upfrontBenefitsText"
           defaultValue={values?.upfrontBenefitsText ?? ""}
           maxLength={2000}
-          rows={3}
+          rows={5}
+          placeholder={
+            "• One complimentary soap (valued at $12)\n• 10% off eligible products during the membership\n• First access to surplus milk\n\nDiscounts apply to other eligible products only — they do not further reduce the membership price."
+          }
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
       <label className="flex flex-col gap-2 text-sm lg:col-span-2">
-        <span className="font-medium">Terms / FAQ (optional)</span>
+        <span className="flex items-center gap-1.5 font-medium">
+          FAQ / details
+          <MembershipFieldHint tip={TERMS_TIP} />
+        </span>
         <textarea
           name="termsText"
           defaultValue={values?.termsText ?? ""}
           maxLength={5000}
-          rows={4}
+          rows={8}
+          placeholder={
+            "Collection & planned absences\nCollect during the nominated window, or arrange for someone else…\n\nSeasonal supply & animal welfare\nAnimal welfare comes first. If a share cannot be supplied…"
+          }
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
