@@ -7,12 +7,10 @@ import { SITE_URL } from "@/lib/legal";
 import {
   intervalLabel,
   membershipOfferReady,
-  membershipPlanLabel,
   subscriptionOfferPath,
   weekdayLabel,
   type MembershipPlan,
 } from "@/lib/subscription-offer";
-import { formatMoney } from "@/lib/money";
 import { standOffersCard } from "@/lib/stand-payment-brands";
 import {
   HandoverMode,
@@ -20,7 +18,10 @@ import {
 } from "@/generated/prisma/client";
 import StandStoreHeader from "../../StandStoreHeader";
 import SubscriptionEnrollForm from "./SubscriptionEnrollForm";
-import MembershipTermsCards from "./MembershipTermsCards";
+import MembershipContentShell from "./MembershipContentShell";
+import MembershipEnrollForm from "./MembershipEnrollForm";
+import MembershipOfferStory from "./MembershipOfferStory";
+import MembershipTermsAccordion from "./MembershipTermsAccordion";
 
 export async function generateMetadata({
   params,
@@ -119,7 +120,7 @@ export default async function PublicSubscriptionOfferPage({
         standSlug={stand.slug}
         logoUrl={branded.logoUrl}
       />
-      <main className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-8">
+      <main className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-8 sm:px-6">
         {offer.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -128,65 +129,86 @@ export default async function PublicSubscriptionOfferPage({
             className="aspect-[16/9] w-full rounded-xl object-cover"
           />
         ) : null}
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {offer.title}
-          </h1>
-          {offer.description ? (
-            <p className="mt-2 whitespace-pre-wrap text-[var(--muted)]">
-              {offer.description}
-            </p>
-          ) : null}
-          <p className="mt-2 text-sm text-[var(--muted)]">
-            {isMembership
-              ? `${offer.termWeeks ?? "?"} week membership`
-              : intervalLabel(offer.interval)}
-            {day ? ` · ${day} collection` : ""}
-            {offer.collectionNote ? ` · ${offer.collectionNote}` : ""}
-          </p>
-          {isMembership && plans.length > 0 ? (
-            <p className="mt-1 text-sm text-[var(--muted)]">
-              From{" "}
-              {formatMoney(
-                Math.min(...plans.map((p) => p.priceCents)),
-                offer.currency,
-              )}{" "}
-              · {plans.map((p) => membershipPlanLabel(p.plan)).join(", ")}
-            </p>
-          ) : null}
-        </div>
-        {offer.termsText ? (
-          <MembershipTermsCards text={offer.termsText} />
-        ) : null}
-        {sp.cancelled ? (
-          <p className="rounded-lg border border-[var(--line)] px-3 py-2 text-sm">
-            Checkout cancelled. You can try again when ready.
-          </p>
-        ) : null}
-        {cardOk ? (
-          <SubscriptionEnrollForm
-            standSlug={stand.slug}
-            offerSlug={offer.slug}
-            title={offer.title}
-            interval={offer.interval}
-            priceCents={offer.priceCents}
-            currency={offer.currency}
-            handoverDeliver={offer.handoverMode === HandoverMode.DELIVER}
-            membership={isMembership}
-            plans={plans}
-            upfrontBenefitsText={offer.upfrontBenefitsText}
-            lines={
-              isMembership
-                ? []
-                : offer.items.map((i) => ({
-                    name: i.product.name,
-                    quantity: i.quantity,
-                    lineTotalCents: i.product.priceCents * i.quantity,
-                  }))
-            }
-          />
+
+        {isMembership ? (
+          <MembershipContentShell>
+            <MembershipOfferStory
+              standName={branded.name}
+              title={offer.title}
+              description={offer.description}
+              currency={offer.currency}
+              termWeeks={offer.termWeeks}
+              weeklyPriceCents={offer.weeklyPriceCents}
+              monthlyPriceCents={offer.monthlyPriceCents}
+              upfrontPriceCents={offer.upfrontPriceCents}
+              collectionWeekdayLabel={day}
+              collectionNote={offer.collectionNote}
+              handoverCollect={offer.handoverMode === HandoverMode.COLLECT}
+              plans={plans.map((p) => p.plan)}
+            />
+            {sp.cancelled ? (
+              <p className="rounded-lg border border-[var(--m-card-border)] bg-[var(--m-card)] px-3 py-2 text-sm">
+                Checkout cancelled. You can try again when ready.
+              </p>
+            ) : null}
+            {cardOk ? (
+              <MembershipEnrollForm
+                standSlug={stand.slug}
+                offerSlug={offer.slug}
+                currency={offer.currency}
+                plans={plans}
+                termWeeks={offer.termWeeks}
+                upfrontBenefitsText={offer.upfrontBenefitsText}
+                handoverDeliver={offer.handoverMode === HandoverMode.DELIVER}
+              />
+            ) : (
+              <p className="text-sm text-[var(--warn)]">{unavailableReason}</p>
+            )}
+            {offer.termsText ? (
+              <MembershipTermsAccordion text={offer.termsText} />
+            ) : null}
+          </MembershipContentShell>
         ) : (
-          <p className="text-sm text-[var(--warn)]">{unavailableReason}</p>
+          <>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight">
+                {offer.title}
+              </h1>
+              {offer.description ? (
+                <p className="mt-2 whitespace-pre-wrap text-[var(--muted)]">
+                  {offer.description}
+                </p>
+              ) : null}
+              <p className="mt-2 text-sm text-[var(--muted)]">
+                {intervalLabel(offer.interval)}
+                {day ? ` · ${day} collection` : ""}
+                {offer.collectionNote ? ` · ${offer.collectionNote}` : ""}
+              </p>
+            </div>
+            {sp.cancelled ? (
+              <p className="rounded-lg border border-[var(--line)] px-3 py-2 text-sm">
+                Checkout cancelled. You can try again when ready.
+              </p>
+            ) : null}
+            {cardOk ? (
+              <SubscriptionEnrollForm
+                standSlug={stand.slug}
+                offerSlug={offer.slug}
+                title={offer.title}
+                interval={offer.interval}
+                priceCents={offer.priceCents}
+                currency={offer.currency}
+                handoverDeliver={offer.handoverMode === HandoverMode.DELIVER}
+                lines={offer.items.map((i) => ({
+                  name: i.product.name,
+                  quantity: i.quantity,
+                  lineTotalCents: i.product.priceCents * i.quantity,
+                }))}
+              />
+            ) : (
+              <p className="text-sm text-[var(--warn)]">{unavailableReason}</p>
+            )}
+          </>
         )}
       </main>
     </div>
