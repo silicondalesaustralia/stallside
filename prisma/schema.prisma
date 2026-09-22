@@ -519,6 +519,8 @@ model Product {
   supplierUnitCents  Int?
   orderItems         OrderItem[]
   inventoryAdjustments InventoryAdjustment[]
+  stockLots          StockLot[]
+  supplierAccess     SupplierProductAccess[]
   lowStockAlerts     LowStockAlert[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
@@ -821,6 +823,8 @@ model StandMember {
   adjustments InventoryAdjustment[]
   orderItems  OrderItem[]
   payouts     SupplierPayout[]
+  productAccess SupplierProductAccess[]
+  stockLots   StockLot[]
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
@@ -828,6 +832,45 @@ model StandMember {
   @@index([ownerId])
   @@index([userId, status])
   @@index([email])
+}
+
+enum StockLotStatus {
+  PENDING
+  ACTIVE
+}
+
+/** Owner pre-approves a stand product a supplier may add stock into. */
+model SupplierProductAccess {
+  id                String      @id @default(cuid())
+  memberId          String
+  member            StandMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  productId         String
+  product           Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  /** Amount the owner owes this supplier per unit sold from their lots. */
+  supplierUnitCents Int
+  /** When true, their stock goes live immediately. When false, owner must approve. */
+  autoApprove       Boolean     @default(true)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@unique([memberId, productId])
+  @@index([productId])
+}
+
+/** FIFO contribution lot on a shared product. memberId null = owner stock. */
+model StockLot {
+  id                String         @id @default(cuid())
+  productId         String
+  product           Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  memberId          String?
+  member            StandMember?   @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  supplierUnitCents Int?
+  quantityRemaining Int
+  status            StockLotStatus @default(ACTIVE)
+  createdAt         DateTime       @default(now())
+
+  @@index([productId, status, createdAt])
+  @@index([memberId])
 }
 
 /** Manual record that the owner paid a supplier outside Vendl. */

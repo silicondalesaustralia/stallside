@@ -18,6 +18,10 @@ import { productLiveWhere } from "@/lib/product-visibility";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
 import {
+  applyLotSharesToOrderItem,
+  consumeStockLots,
+} from "@/lib/suppliers/lots";
+import {
   CUSTOMER_CHOICE_MAX_CENTS,
   CUSTOMER_CHOICE_MIN_CENTS,
   CUSTOMER_CHOICE_PRODUCT_NAME,
@@ -539,34 +543,52 @@ export async function decrementStockForOrder(
     reason: string;
   },
 ) {
-  await Promise.all(
-    input.items.map(async (item) => {
-      const updated = await tx.product.updateMany({
-        where: { id: item.productId, stockQuantity: { gte: item.quantity } },
-        data: { stockQuantity: { decrement: item.quantity } },
-      });
-      if (updated.count !== 1) {
-        throw new Error("STOCK");
-      }
-    }),
-  );
+  for (const item of input.items) {
+    const updated = await tx.product.updateMany({
+      where: { id: item.productId, stockQuantity: { gte: item.quantity } },
+      data: { stockQuantity: { decrement: item.quantity } },
+    });
+    if (updated.count !== 1) {
+      throw new Error("STOCK");
+    }
+  }
 
-  await Promise.all(
-    input.items.map(async (item) => {
-      const product = input.byId.get(item.productId)!;
-      await tx.inventoryAdjustment.create({
-        data: {
-          productId: product.id,
-          ownerId: input.ownerId,
-          standId: input.standId,
-          changeQuantity: -item.quantity,
-          previousQuantity: product.stockQuantity,
-          newQuantity: product.stockQuantity - item.quantity,
-          reason: input.reason,
-          source: input.source,
-          orderId: input.orderId,
-        },
-      });
-    }),
-  );
+  for (const item of input.items) {
+    const product = input.byId.get(item.productId)!;
+    await tx.inventoryAdjustment.create({
+      data: {
+        productId: product.id,
+        ownerId: input.ownerId,
+        standId: input.standId,
+        changeQuantity: -item.quantity,
+        previousQuantity: product.stockQuantity,
+        newQuantity: product.stockQuantity - item.quantity,
+        reason: input.reason,
+        source: input.source,
+        orderId: input.orderId,
+      },
+    });
+  }
+
+  const orderItems = await tx.orderItem.findMany({
+    where: { orderId: input.orderId },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, productId: true, quantity: true },
+  });
+  for (const orderItem of orderItems) {
+    const activeLots = await tx.stockLot.count({
+      where: {
+        productId: orderItem.productId,
+        status: "ACTIVE",
+        quantityRemaining: { gt: 0 },
+      },
+    });
+    if (activeLots === 0) continue;
+    const shares = await consumeStockLots(
+      tx,
+      orderItem.productId,
+      orderItem.quantity,
+    );
+    await applyLotSharesToOrderItem(tx, orderItem.id, shares);
+  }
 }

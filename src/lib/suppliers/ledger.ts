@@ -14,6 +14,9 @@ export type SupplierProductRow = {
   unitsAdded: number;
   unitsSold: number;
   owedCents: number;
+  linked: boolean;
+  autoApprove: boolean;
+  pendingUnits: number;
 };
 
 export type SupplierLedger = {
@@ -26,7 +29,7 @@ export type SupplierLedger = {
 };
 
 export async function loadSupplierLedger(memberId: string): Promise<SupplierLedger> {
-  const [products, added, lines, paid] = await Promise.all([
+  const [owned, access, added, lines, paid, lots] = await Promise.all([
     prisma.product.findMany({
       where: { memberId },
       orderBy: { name: "asc" },
@@ -40,25 +43,39 @@ export async function loadSupplierLedger(memberId: string): Promise<SupplierLedg
         currency: true,
       },
     }),
+    prisma.supplierProductAccess.findMany({
+      where: { memberId },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            stockQuantity: true,
+            isArchived: true,
+            priceCents: true,
+            currency: true,
+          },
+        },
+      },
+      orderBy: { product: { name: "asc" } },
+    }),
     prisma.inventoryAdjustment.groupBy({
       by: ["productId"],
       where: { memberId, changeQuantity: { gt: 0 } },
       _sum: { changeQuantity: true },
     }),
     prisma.orderItem.findMany({
-      where: {
-        memberId,
-        order: { paymentStatus: { in: PAID } },
-      },
-      select: {
-        productId: true,
-        quantity: true,
-        supplierUnitCents: true,
-      },
+      where: { memberId, order: { paymentStatus: { in: PAID } } },
+      select: { productId: true, quantity: true, supplierUnitCents: true },
     }),
     prisma.supplierPayout.aggregate({
       where: { memberId },
       _sum: { amountCents: true },
+    }),
+    prisma.stockLot.groupBy({
+      by: ["productId", "status"],
+      where: { memberId },
+      _sum: { quantityRemaining: true },
     }),
   ]);
 
@@ -74,16 +91,52 @@ export async function loadSupplierLedger(memberId: string): Promise<SupplierLedg
     }
     soldByProduct.set(line.productId, current);
   }
+  const onHandByProduct = new Map<string, number>();
+  const pendingByProduct = new Map<string, number>();
+  for (const row of lots) {
+    const qty = row._sum.quantityRemaining ?? 0;
+    if (row.status === "ACTIVE") {
+      onHandByProduct.set(row.productId, qty);
+    } else if (row.status === "PENDING") {
+      pendingByProduct.set(row.productId, qty);
+    }
+  }
 
-  const rows: SupplierProductRow[] = products.map((product) => {
-    const sold = soldByProduct.get(product.id);
-    return {
-      ...product,
-      unitsAdded: addedByProduct.get(product.id) ?? 0,
-      unitsSold: sold?.qty ?? 0,
-      owedCents: sold?.owed ?? 0,
-    };
-  });
+  const linkedIds = new Set(access.map((row) => row.productId));
+  const rows: SupplierProductRow[] = [
+    ...access.map((row) => {
+      const sold = soldByProduct.get(row.productId);
+      return {
+        id: row.product.id,
+        name: row.product.name,
+        stockQuantity: onHandByProduct.get(row.productId) ?? 0,
+        isArchived: row.product.isArchived,
+        priceCents: row.product.priceCents,
+        supplierUnitCents: row.supplierUnitCents,
+        currency: row.product.currency,
+        unitsAdded: addedByProduct.get(row.productId) ?? 0,
+        unitsSold: sold?.qty ?? 0,
+        owedCents: sold?.owed ?? 0,
+        linked: true,
+        autoApprove: row.autoApprove,
+        pendingUnits: pendingByProduct.get(row.productId) ?? 0,
+      };
+    }),
+    ...owned
+      .filter((product) => !linkedIds.has(product.id))
+      .map((product) => {
+        const sold = soldByProduct.get(product.id);
+        return {
+          ...product,
+          unitsAdded: addedByProduct.get(product.id) ?? 0,
+          unitsSold: sold?.qty ?? 0,
+          owedCents: sold?.owed ?? 0,
+          linked: false,
+          autoApprove: true,
+          pendingUnits: 0,
+        };
+      }),
+  ];
 
   return {
     products: rows,

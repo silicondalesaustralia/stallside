@@ -6,6 +6,9 @@ import { formatMoney } from "@/lib/money";
 import { loadSupplierLedger } from "@/lib/suppliers/ledger";
 import { revokeSupplier } from "./member-actions";
 import ProductTermsForm from "./ProductTermsForm";
+import LinkedProductTermsForm from "./LinkedProductTermsForm";
+import LinkProductForm from "./LinkProductForm";
+import ApproveLotButton from "./ApproveLotButton";
 import PayoutForm from "./PayoutForm";
 
 export default async function SupplierMemberPage({
@@ -17,11 +20,29 @@ export default async function SupplierMemberPage({
   const { owner } = await requireOwner();
   const member = await prisma.standMember.findFirst({
     where: { id: memberId, ownerId: owner.id },
-    include: { stand: { select: { name: true, currency: true } } },
+    include: { stand: { select: { id: true, name: true, currency: true } } },
   });
   if (!member) notFound();
 
-  const ledger = await loadSupplierLedger(member.id);
+  const [ledger, linkable, pendingLots] = await Promise.all([
+    loadSupplierLedger(member.id),
+    prisma.product.findMany({
+      where: {
+        ownerId: owner.id,
+        standId: member.standId,
+        memberId: null,
+        isArchived: false,
+      },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true },
+    }),
+    prisma.stockLot.findMany({
+      where: { memberId: member.id, status: "PENDING", quantityRemaining: { gt: 0 } },
+      include: { product: { select: { name: true } } },
+      orderBy: { createdAt: "asc" },
+    }),
+  ]);
+  const linkedIds = new Set(ledger.products.filter((p) => p.linked).map((p) => p.id));
   const currency = member.stand.currency;
   const balance = ledger.owedCents - ledger.paidCents;
 
@@ -49,7 +70,7 @@ export default async function SupplierMemberPage({
           <dd className="text-lg font-semibold">{ledger.unitsSold}</dd>
         </div>
         <div className="dash-card p-3">
-          <dt className="text-[var(--muted)]">On hand</dt>
+          <dt className="text-[var(--muted)]">Their stock on hand</dt>
           <dd className="text-lg font-semibold">{ledger.onHand}</dd>
         </div>
         <div className="dash-card p-3">
@@ -66,22 +87,52 @@ export default async function SupplierMemberPage({
         </div>
       </dl>
 
+      {pendingLots.length > 0 ? (
+        <div className="dash-card flex flex-col gap-3 p-4">
+          <h2 className="font-semibold text-[var(--field)]">Waiting for your approval</h2>
+          {pendingLots.map((lot) => (
+            <ApproveLotButton
+              key={lot.id}
+              memberId={member.id}
+              lotId={lot.id}
+              label={`${lot.quantityRemaining} × ${lot.product.name}`}
+            />
+          ))}
+        </div>
+      ) : null}
+
+      <LinkProductForm
+        memberId={member.id}
+        products={linkable.filter((p) => !linkedIds.has(p.id))}
+      />
+
       <ul className="flex flex-col gap-3">
         {ledger.products.map((product) => (
           <li key={product.id} className="dash-card p-4">
             <p className="font-semibold text-[var(--field)]">{product.name}</p>
             <p className="text-sm text-[var(--muted)]">
-              Added {product.unitsAdded} · Sold {product.unitsSold} · On hand{" "}
+              {product.linked ? "Shared with your catalogue · " : ""}
+              Added {product.unitsAdded} · Sold {product.unitsSold} · Their units{" "}
               {product.stockQuantity}
-              {product.isArchived ? " · Not on the stall yet" : ""}
+              {product.pendingUnits > 0 ? ` · ${product.pendingUnits} pending` : ""}
+              {!product.linked && product.isArchived ? " · Not on the stall yet" : ""}
             </p>
-            <ProductTermsForm
-              memberId={member.id}
-              productId={product.id}
-              priceCents={product.priceCents}
-              owedCents={product.supplierUnitCents}
-              archived={product.isArchived}
-            />
+            {product.linked ? (
+              <LinkedProductTermsForm
+                memberId={member.id}
+                productId={product.id}
+                owedCents={product.supplierUnitCents ?? 0}
+                autoApprove={product.autoApprove}
+              />
+            ) : (
+              <ProductTermsForm
+                memberId={member.id}
+                productId={product.id}
+                priceCents={product.priceCents}
+                owedCents={product.supplierUnitCents}
+                archived={product.isArchived}
+              />
+            )}
           </li>
         ))}
       </ul>
