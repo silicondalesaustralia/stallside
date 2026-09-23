@@ -43,7 +43,13 @@ export default function PreOrderCategoryView({
         heading={intro.heading}
         intro={intro.intro}
       />
-      <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <ul
+        className={
+          pages.length === 1
+            ? "mx-auto grid w-full max-w-[470px] grid-cols-1 gap-5"
+            : "grid grid-cols-1 gap-5 sm:grid-cols-2"
+        }
+      >
         {pages.map((page) => {
           const copy = preorderCategoryCardCopy({
             standSlug,

@@ -44,7 +44,13 @@ export default function MembershipCategoryView({
         heading={intro.heading}
         intro={intro.intro}
       />
-      <ul className="membership-grid grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <ul
+        className={
+          ordered.length === 1
+            ? "membership-grid mx-auto grid w-full max-w-[470px] grid-cols-1 gap-5"
+            : "membership-grid grid grid-cols-1 gap-5 sm:grid-cols-2"
+        }
+      >
         {ordered.map((offer) => {
           const copy = membershipCategoryCardCopy({
             standSlug,
