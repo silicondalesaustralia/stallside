@@ -39,15 +39,6 @@ export async function setSubscriptionOfferActive(
     data: { isActive },
   });
 
-  try {
-    const { syncSubscriptionOfferFulfilmentOption } = await import(
-      "@/lib/fulfilment/sync-subscription-offer"
-    );
-    await syncSubscriptionOfferFulfilmentOption(offer.id);
-  } catch (error) {
-    console.error("Fulfilment sync after offer active toggle failed", error);
-  }
-
   revalidateOfferPaths(offer.standId, offer.stand.slug, offer.id);
   revalidatePath(`/s/${offer.stand.slug}/sub/${offer.slug}`);
   return { ok: true as const };
