@@ -14,6 +14,14 @@ export function standCartPath(standSlug: string) {
   return `/s/${standSlug}/cart`;
 }
 
+export function standMenusPath(standSlug: string) {
+  return `/s/${standSlug}/menu`;
+}
+
+export function standMenuDetailPath(standSlug: string, menuSlug: string) {
+  return `/s/${standSlug}/menu/${menuSlug}`;
+}
+
 export function standPreOrdersPath(standSlug: string) {
   return `/s/${standSlug}/pre`;
 }
@@ -26,32 +34,71 @@ export function standPreOrderPagePath(standSlug: string, pageSlug: string) {
   return `/s/${standSlug}/pre/${pageSlug}`;
 }
 
+function pageMeta(input: {
+  title: string;
+  description: string;
+  canonical: string;
+  standSlug: string;
+  siteName?: string;
+  image?: string | null;
+}): Metadata {
+  const demo = isDemoStandSlug(input.standSlug);
+  const image = input.image || null;
+  return {
+    title: input.title,
+    description: input.description,
+    alternates: { canonical: input.canonical },
+    robots: demo ? { index: false, follow: false } : { index: true, follow: true },
+    openGraph: {
+      title: input.title,
+      description: input.description,
+      url: input.canonical,
+      type: "website",
+      ...(input.siteName ? { siteName: input.siteName } : {}),
+      ...(image ? { images: [{ url: image }] } : {}),
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title: input.title,
+      description: input.description,
+      ...(image ? { images: [image] } : {}),
+    },
+  };
+}
+
 export function catalogMetadata(input: {
   standName: string;
   standSlug: string;
   locationLabel?: string | null;
   logoUrl?: string | null;
+  ogImageUrl?: string | null;
 }): Metadata {
-  const title = `${input.standName} · Vendl`;
-  const description = input.locationLabel
-    ? `Shop ${input.standName} at ${input.locationLabel}. Browse and pay at the stall.`
-    : `Shop ${input.standName}. Browse and pay at the stall.`;
-  const canonical = `${SITE_URL}${standCatalogPath(input.standSlug)}`;
-  const demo = isDemoStandSlug(input.standSlug);
+  return pageMeta({
+    title: `${input.standName} · Vendl`,
+    description: input.locationLabel
+      ? `Shop ${input.standName} at ${input.locationLabel}. Browse and pay at the stall.`
+      : `Shop ${input.standName}. Browse and pay at the stall.`,
+    canonical: `${SITE_URL}${standCatalogPath(input.standSlug)}`,
+    standSlug: input.standSlug,
+    siteName: input.standName,
+    image: input.ogImageUrl || input.logoUrl,
+  });
+}
 
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    robots: demo ? { index: false, follow: false } : { index: true, follow: true },
-    openGraph: {
-      title,
-      description,
-      url: canonical,
-      type: "website",
-      ...(input.logoUrl ? { images: [{ url: input.logoUrl }] } : {}),
-    },
-  };
+export function subscriptionsIndexMetadata(input: {
+  standName: string;
+  standSlug: string;
+  logoUrl?: string | null;
+  ogImageUrl?: string | null;
+}): Metadata {
+  return pageMeta({
+    title: `Memberships · ${input.standName}`,
+    description: `Memberships and subscriptions from ${input.standName}.`,
+    canonical: `${SITE_URL}${standSubscriptionsPath(input.standSlug)}`,
+    standSlug: input.standSlug,
+    siteName: input.standName,
+    image: input.ogImageUrl || input.logoUrl,
+  });
 }
 
 export function preOrderPageMetadata(input: {
@@ -63,34 +110,18 @@ export function preOrderPageMetadata(input: {
   imageUrl?: string | null;
   collectionLabel?: string | null;
 }): Metadata {
-  const title = `${input.pageTitle} · ${input.standName}`;
-  const description =
-    input.description?.trim() ||
-    (input.collectionLabel
-      ? `Pre-order for ${input.collectionLabel} from ${input.standName}.`
-      : `Pre-order from ${input.standName}.`);
-  const canonical = `${SITE_URL}${standPreOrderPagePath(input.standSlug, input.pageSlug)}`;
-  const demo = isDemoStandSlug(input.standSlug);
-
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    robots: demo ? { index: false, follow: false } : { index: true, follow: true },
-    openGraph: {
-      title,
-      description,
-      url: canonical,
-      type: "website",
-      ...(input.imageUrl ? { images: [{ url: input.imageUrl }] } : {}),
-    },
-    twitter: {
-      card: input.imageUrl ? "summary_large_image" : "summary",
-      title,
-      description,
-      ...(input.imageUrl ? { images: [input.imageUrl] } : {}),
-    },
-  };
+  return pageMeta({
+    title: `${input.pageTitle} · ${input.standName}`,
+    description:
+      input.description?.trim() ||
+      (input.collectionLabel
+        ? `Pre-order for ${input.collectionLabel} from ${input.standName}.`
+        : `Pre-order from ${input.standName}.`),
+    canonical: `${SITE_URL}${standPreOrderPagePath(input.standSlug, input.pageSlug)}`,
+    standSlug: input.standSlug,
+    siteName: input.standName,
+    image: input.imageUrl,
+  });
 }
 
 export function productMetadata(input: {
@@ -105,30 +136,19 @@ export function productMetadata(input: {
   isPreOrder?: boolean;
   collectionNote?: string | null;
 }): Metadata {
-  const title =
-    input.seoTitle?.trim() ||
-    `${input.productName} · ${input.standName}`;
-  const description =
-    input.seoDescription?.trim() ||
-    input.description?.trim() ||
-    input.collectionNote?.trim() ||
-    (input.isPreOrder
-      ? `Pre-order ${input.productName} from ${input.standName}.`
-      : `Buy ${input.productName} from ${input.standName}.`);
-  const canonical = `${SITE_URL}${standProductPath(input.standSlug, input.productSlug)}`;
-  const demo = isDemoStandSlug(input.standSlug);
-
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    robots: demo ? { index: false, follow: false } : { index: true, follow: true },
-    openGraph: {
-      title,
-      description,
-      url: canonical,
-      type: "website",
-      ...(input.imageUrl ? { images: [{ url: input.imageUrl }] } : {}),
-    },
-  };
+  return pageMeta({
+    title:
+      input.seoTitle?.trim() || `${input.productName} · ${input.standName}`,
+    description:
+      input.seoDescription?.trim() ||
+      input.description?.trim() ||
+      input.collectionNote?.trim() ||
+      (input.isPreOrder
+        ? `Pre-order ${input.productName} from ${input.standName}.`
+        : `Buy ${input.productName} from ${input.standName}.`),
+    canonical: `${SITE_URL}${standProductPath(input.standSlug, input.productSlug)}`,
+    standSlug: input.standSlug,
+    siteName: input.standName,
+    image: input.imageUrl,
+  });
 }

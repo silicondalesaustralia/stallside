@@ -11,13 +11,36 @@ import {
   offerDisplayPriceCents,
   subscriptionOfferPath,
 } from "@/lib/subscription-offer";
+import { subscriptionsIndexMetadata } from "@/lib/stand-seo";
 import StandStoreHeader from "../StandStoreHeader";
 import ChannelInterestForm from "../ChannelInterestForm";
 import { SubscriptionOfferKind } from "@/generated/prisma/client";
 
-export const metadata: Metadata = {
-  title: "Subscriptions",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ standSlug: string }>;
+}): Promise<Metadata> {
+  const { standSlug } = await params;
+  const slug = decodeURIComponent(standSlug).trim().toLowerCase();
+  const stand = await prisma.stand.findUnique({
+    where: { slug },
+    select: {
+      name: true,
+      slug: true,
+      logoUrl: true,
+      ogImageUrl: true,
+      isActive: true,
+    },
+  });
+  if (!stand || !stand.isActive) return { title: "Memberships" };
+  return subscriptionsIndexMetadata({
+    standName: stand.name,
+    standSlug: stand.slug,
+    logoUrl: stand.logoUrl,
+    ogImageUrl: stand.ogImageUrl,
+  });
+}
 
 export default async function PublicSubscriptionsIndexPage({
   params,

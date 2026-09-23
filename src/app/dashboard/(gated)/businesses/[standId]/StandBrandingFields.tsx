@@ -9,6 +9,7 @@ import {
 
 export type StandBrandingValues = {
   logoUrl: string | null;
+  ogImageUrl: string | null;
   accentColor: string | null;
   secondaryColor: string | null;
   instagramUrl: string | null;
@@ -21,6 +22,7 @@ export type StandBrandingValues = {
 /** Branding inputs only - parent form owns submit. */
 export default function StandBrandingFields({
   logoUrl,
+  ogImageUrl,
   accentColor,
   secondaryColor,
   instagramUrl,
@@ -32,7 +34,8 @@ export default function StandBrandingFields({
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-[var(--muted)]">
-        Logo, colours, and social links on your public stall and QR poster.
+        Logo, colours, link-preview image, and social links on your public stall
+        and QR poster.
       </p>
       {logoUrl ? (
         <div className="flex items-center gap-3">
@@ -54,6 +57,35 @@ export default function StandBrandingFields({
           name="logo"
           accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
           label="Choose logo"
+          maxBytes={LOGO_IMAGE_MAX_BYTES}
+          hint={PRODUCT_IMAGE_HINT}
+        />
+      </label>
+      {ogImageUrl ? (
+        <div className="flex flex-col gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={ogImageUrl}
+            alt=""
+            className="aspect-[1.91/1] w-full max-w-md rounded-lg object-cover"
+          />
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="clearOgImage" className="size-4" />
+            Remove share image
+          </label>
+        </div>
+      ) : null}
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="font-medium">Share / link preview image</span>
+        <p className="text-[var(--muted)]">
+          Shown when someone shares your stall or memberships link in WhatsApp,
+          Messages, or Facebook. Use a wide photo (about 1200×630). Falls back
+          to your logo if empty.
+        </p>
+        <FilePickButton
+          name="ogImage"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+          label="Choose share image"
           maxBytes={LOGO_IMAGE_MAX_BYTES}
           hint={PRODUCT_IMAGE_HINT}
         />

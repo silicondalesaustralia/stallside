@@ -542,6 +542,8 @@ model Stand {
   posterShowHowItWorks Boolean            @default(false)
   /** Owner logo for public stall + QR poster (Pro). */
   logoUrl            String?
+  /** Landscape image for link previews (WhatsApp, Facebook, iMessage). Falls back to logo. */
+  ogImageUrl         String?
   /** Hex accent e.g. #2e7d3f - overrides --leaf on public stall + QR. */
   accentColor        String?
   /** Hex secondary for prices / stock labels - overrides --ok. */

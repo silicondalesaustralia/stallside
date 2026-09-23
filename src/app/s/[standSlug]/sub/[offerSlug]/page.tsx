@@ -42,22 +42,38 @@ export async function generateMetadata({
       isActive: true,
       stand: { slug: standKey, isActive: true },
     },
-    include: { stand: { select: { name: true, slug: true } } },
+    include: {
+      stand: {
+        select: { name: true, slug: true, logoUrl: true, ogImageUrl: true },
+      },
+    },
   });
   if (!offer) return { title: "Subscription" };
   const title = `${offer.title} · ${offer.stand.name}`;
   const description =
     offer.description?.trim() ||
     `${intervalLabel(offer.interval)} subscription from ${offer.stand.name}.`;
+  const image =
+    offer.imageUrl || offer.stand.ogImageUrl || offer.stand.logoUrl || null;
+  const canonical = `${SITE_URL}${subscriptionOfferPath(offer.stand.slug, offer.slug)}`;
   return {
     title,
     description,
-    alternates: {
-      canonical: `${SITE_URL}${subscriptionOfferPath(offer.stand.slug, offer.slug)}`,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: "website",
+      siteName: offer.stand.name,
+      ...(image ? { images: [{ url: image }] } : {}),
     },
-    openGraph: offer.imageUrl
-      ? { images: [{ url: offer.imageUrl }] }
-      : undefined,
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
   };
 }
 
