@@ -11,10 +11,10 @@ import {
   offerDisplayPriceCents,
   subscriptionOfferPath,
 } from "@/lib/subscription-offer";
-import { subscriptionsIndexMetadata } from "@/lib/stand-seo";
 import StandStoreHeader from "../StandStoreHeader";
 import ChannelInterestForm from "../ChannelInterestForm";
 import { SubscriptionOfferKind } from "@/generated/prisma/client";
+import { subscriptionsIndexMetadata } from "@/lib/stand-seo";
 
 export async function generateMetadata({
   params,

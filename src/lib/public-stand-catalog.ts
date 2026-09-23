@@ -1,6 +1,5 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { listProductsForStandCatalog } from "@/lib/catalogue/channels";
 import {
   businessPageProductWhere,
   productLiveWhere,
@@ -8,6 +7,13 @@ import {
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
 
 export { standCatalogTag } from "@/lib/stand-catalog-tag";
+
+const productInclude = {
+  optionGroups: {
+    orderBy: { sortOrder: "asc" as const },
+    include: { choices: { orderBy: { sortOrder: "asc" as const } } },
+  },
+};
 
 const ownerInclude = {
   owner: { include: { user: { select: { email: true, role: true } } } },
@@ -31,18 +37,17 @@ async function fetchStandWithProducts(
   slug: string,
   mode: "catalog" | "cart",
 ) {
-  const stand = await prisma.stand.findUnique({
+  return prisma.stand.findUnique({
     where: { slug },
-    include: ownerInclude,
+    include: {
+      products: {
+        where: mode === "catalog" ? businessPageProductWhere : productLiveWhere,
+        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+        include: productInclude,
+      },
+      ...ownerInclude,
+    },
   });
-  if (!stand) return null;
-
-  const products = await listProductsForStandCatalog(
-    stand.id,
-    mode === "catalog" ? businessPageProductWhere : productLiveWhere,
-  );
-
-  return { ...stand, products };
 }
 
 /** Cached public stand + products for catalog or cart (30s). */
@@ -52,7 +57,7 @@ export function loadPublicStandCatalog(
 ) {
   const cached = unstable_cache(
     async () => fetchStandWithProducts(slug, mode),
-    ["public-stand", slug, mode, "v2-channels"],
+    ["public-stand", slug, mode],
     { revalidate: 30, tags: [standCatalogTag(slug)] },
   );
   return cached().then((stand) => (stand ? reviveDates(stand) : null));

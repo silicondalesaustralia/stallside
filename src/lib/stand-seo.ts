@@ -14,14 +14,6 @@ export function standCartPath(standSlug: string) {
   return `/s/${standSlug}/cart`;
 }
 
-export function standMenusPath(standSlug: string) {
-  return `/s/${standSlug}/menu`;
-}
-
-export function standMenuDetailPath(standSlug: string, menuSlug: string) {
-  return `/s/${standSlug}/menu/${menuSlug}`;
-}
-
 export function standPreOrdersPath(standSlug: string) {
   return `/s/${standSlug}/pre`;
 }
@@ -54,7 +46,7 @@ function pageMeta(input: {
 }): Metadata {
   const demo = isDemoStandSlug(input.standSlug);
   const image = input.image || null;
-  const noIndex = input.noIndex || demo;
+  const noIndex = Boolean(input.noIndex || demo);
   return {
     title: input.title,
     description: input.description,

@@ -146,6 +146,20 @@ export async function startShopperSubscriptionCheckout(input: {
     }
 
     const manageToken = newManageToken();
+    let customerId: string | null = null;
+    try {
+      const { ensureCustomer } = await import("@/lib/catalogue/customers");
+      const customer = await ensureCustomer({
+        ownerId: owner.id,
+        email: customerEmail,
+        name: customerName,
+        phone: customerPhone,
+        source: "subscription",
+      });
+      customerId = customer?.id ?? null;
+    } catch (error) {
+      console.error("Ensure customer for subscription failed", error);
+    }
     const shopperSub = await prisma.shopperSubscription.create({
       data: {
         offerId: offer.id,
@@ -159,6 +173,7 @@ export async function startShopperSubscriptionCheckout(input: {
         customerName,
         customerEmail,
         customerPhone,
+        customerId,
         deliveryAddressLine1:
           (input.deliveryAddressLine1 ?? "").trim().slice(0, 200) || null,
         deliverySuburb:
@@ -170,25 +185,6 @@ export async function startShopperSubscriptionCheckout(input: {
         manageToken,
       },
     });
-
-    try {
-      const { ensureCustomer } = await import("@/lib/catalogue/customers");
-      const customer = await ensureCustomer({
-        ownerId: owner.id,
-        email: customerEmail,
-        name: customerName,
-        phone: customerPhone,
-        source: "subscription",
-      });
-      if (customer) {
-        await prisma.shopperSubscription.update({
-          where: { id: shopperSub.id },
-          data: { customerId: customer.id },
-        });
-      }
-    } catch (err) {
-      console.error("Customer link failed", err);
-    }
 
     const base = appBaseUrl();
     const path = subscriptionOfferPath(stand.slug, offer.slug);

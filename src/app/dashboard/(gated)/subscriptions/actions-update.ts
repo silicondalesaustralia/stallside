@@ -225,14 +225,6 @@ async function updateBox(
 
   revalidatePath("/dashboard/subscriptions");
   revalidatePath(`/dashboard/subscriptions/${existing.id}`);
-  try {
-    const { syncSubscriptionOfferFulfilmentOption } = await import(
-      "@/lib/fulfilment/sync-subscription-offer"
-    );
-    await syncSubscriptionOfferFulfilmentOption(existing.id);
-  } catch (err) {
-    console.error("Subscription fulfilment sync failed", err);
-  }
   return { ok: true as const };
 }
 
@@ -428,13 +420,5 @@ async function updateMembership(
 
   revalidatePath("/dashboard/subscriptions");
   revalidatePath(`/dashboard/subscriptions/${existing.id}`);
-  try {
-    const { syncSubscriptionOfferFulfilmentOption } = await import(
-      "@/lib/fulfilment/sync-subscription-offer"
-    );
-    await syncSubscriptionOfferFulfilmentOption(existing.id);
-  } catch (err) {
-    console.error("Subscription fulfilment sync failed", err);
-  }
   return { ok: true as const };
 }

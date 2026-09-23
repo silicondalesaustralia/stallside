@@ -81,17 +81,6 @@ function handoverFromForm(formData: FormData) {
   };
 }
 
-async function syncOfferFulfilment(offerId: string) {
-  try {
-    const { syncSubscriptionOfferFulfilmentOption } = await import(
-      "@/lib/fulfilment/sync-subscription-offer"
-    );
-    await syncSubscriptionOfferFulfilmentOption(offerId);
-  } catch (err) {
-    console.error("Subscription fulfilment sync failed", err);
-  }
-}
-
 export async function createSubscriptionOffer(formData: FormData) {
   const { owner } = await requireOwnerWrite();
   const { selected } = await resolveSelectedBusiness(owner.id);
@@ -204,7 +193,6 @@ async function createBoxOffer(
     });
   }
 
-  await syncOfferFulfilment(offer.id);
 
   try {
     if (
@@ -373,7 +361,6 @@ async function createMembershipOffer(
     });
   }
 
-  await syncOfferFulfilment(offer.id);
 
   try {
     if (

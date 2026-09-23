@@ -2,10 +2,6 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import {
-  listProductsForStandCatalog,
-  resolveProductForStand,
-} from "@/lib/catalogue/channels";
 import { isReservedProductSlug } from "@/lib/slug";
 import { formatMoney, mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
@@ -25,15 +21,17 @@ export async function generateMetadata({
   const productKey = decodeURIComponent(productSlug).trim().toLowerCase();
   if (isReservedProductSlug(productKey)) return { title: "Product" };
 
-  const stand = await prisma.stand.findUnique({ where: { slug: standKey } });
-  if (!stand || !stand.isActive) return { title: "Product" };
-
-  const product = await resolveProductForStand({
-    standId: stand.id,
-    slug: productKey,
-    visibility: productLiveWhere,
+  const stand = await prisma.stand.findUnique({
+    where: { slug: standKey },
+    include: {
+      products: {
+        where: { slug: productKey, ...productLiveWhere },
+        take: 1,
+      },
+    },
   });
-  if (!product) return { title: "Product" };
+  const product = stand?.products[0];
+  if (!stand || !stand.isActive || !product) return { title: "Product" };
 
   return productMetadata({
     standName: stand.name,
@@ -65,22 +63,25 @@ export default async function PublicProductPage({
     where: { slug: standKey },
     include: {
       owner: { include: { user: { select: { email: true, role: true } } } },
+      products: {
+        where: productLiveWhere,
+        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+        include: {
+          optionGroups: {
+            orderBy: { sortOrder: "asc" },
+            include: { choices: { orderBy: { sortOrder: "asc" } } },
+          },
+        },
+      },
     },
   });
   if (!stand || !stand.isActive) notFound();
 
-  const [productRow, liveProducts] = await Promise.all([
-    resolveProductForStand({
-      standId: stand.id,
-      slug: productKey,
-      visibility: productLiveWhere,
-    }),
-    listProductsForStandCatalog(stand.id, productLiveWhere),
-  ]);
+  const productRow = stand.products.find((p) => p.slug === productKey);
   if (!productRow) notFound();
 
   const branded = publicStandBranding(stand, stand.owner);
-  const catalogProducts = liveProducts
+  const catalogProducts = stand.products
     .filter((p) => !p.isHidden)
     .map((p) =>
       mapPublicProduct(p, {
