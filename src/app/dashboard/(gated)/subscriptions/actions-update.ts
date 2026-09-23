@@ -14,6 +14,7 @@ import { syncOfferStripePrice } from "@/lib/shopper-subscription-stripe";
 import { syncMembershipStripePrices } from "@/lib/membership-subscription-stripe";
 import { upsertMembershipFulfilmentProduct } from "@/lib/membership-fulfilment-product";
 import { parseShopperSubInterval } from "@/lib/subscription-offer";
+import { parseMaxMembers } from "@/lib/subscription-capacity";
 import {
   parseOptionalDollarsToCents,
   resolveOfferImageUrl,
@@ -224,6 +225,14 @@ async function updateBox(
 
   revalidatePath("/dashboard/subscriptions");
   revalidatePath(`/dashboard/subscriptions/${existing.id}`);
+  try {
+    const { syncSubscriptionOfferFulfilmentOption } = await import(
+      "@/lib/fulfilment/sync-subscription-offer"
+    );
+    await syncSubscriptionOfferFulfilmentOption(existing.id);
+  } catch (err) {
+    console.error("Subscription fulfilment sync failed", err);
+  }
   return { ok: true as const };
 }
 
@@ -264,6 +273,12 @@ async function updateMembership(
   const { handoverMode, collectionWeekday, collectionNote } =
     handoverFromForm(formData);
   const isActive = formData.get("isActive") === "on";
+
+  const maxMembersRaw = parseMaxMembers(formData.get("maxMembers"));
+  if (maxMembersRaw && typeof maxMembersRaw === "object" && "error" in maxMembersRaw) {
+    return { error: maxMembersRaw.error };
+  }
+  const maxMembers = typeof maxMembersRaw === "number" ? maxMembersRaw : null;
 
   const weekly = parseOptionalDollarsToCents(
     formData.get("weeklyPrice"),
@@ -344,6 +359,7 @@ async function updateMembership(
         collectionNote,
         priceCents: displayCents,
         termWeeks,
+        maxMembers,
         weeklyPriceCents,
         monthlyPriceCents,
         upfrontPriceCents,
@@ -412,5 +428,13 @@ async function updateMembership(
 
   revalidatePath("/dashboard/subscriptions");
   revalidatePath(`/dashboard/subscriptions/${existing.id}`);
+  try {
+    const { syncSubscriptionOfferFulfilmentOption } = await import(
+      "@/lib/fulfilment/sync-subscription-offer"
+    );
+    await syncSubscriptionOfferFulfilmentOption(existing.id);
+  } catch (err) {
+    console.error("Subscription fulfilment sync failed", err);
+  }
   return { ok: true as const };
 }

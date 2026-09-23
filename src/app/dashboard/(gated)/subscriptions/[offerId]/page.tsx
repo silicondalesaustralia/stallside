@@ -145,6 +145,7 @@ export default async function EditSubscriptionOfferPage({
             collectionWeekday: offer.collectionWeekday,
             collectionNote: offer.collectionNote,
             termWeeks: offer.termWeeks ?? 26,
+            maxMembers: offer.maxMembers,
             weeklyPriceCents: offer.weeklyPriceCents,
             monthlyPriceCents: offer.monthlyPriceCents,
             upfrontPriceCents: offer.upfrontPriceCents,

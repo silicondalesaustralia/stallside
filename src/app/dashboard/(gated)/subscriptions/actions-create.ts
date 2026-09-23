@@ -16,6 +16,7 @@ import { syncOfferStripePrice } from "@/lib/shopper-subscription-stripe";
 import { syncMembershipStripePrices } from "@/lib/membership-subscription-stripe";
 import { upsertMembershipFulfilmentProduct } from "@/lib/membership-fulfilment-product";
 import { parseShopperSubInterval } from "@/lib/subscription-offer";
+import { parseMaxMembers } from "@/lib/subscription-capacity";
 import {
   parseOptionalDollarsToCents,
   resolveOfferImageUrl,
@@ -78,6 +79,17 @@ function handoverFromForm(formData: FormData) {
         : null,
     collectionNote,
   };
+}
+
+async function syncOfferFulfilment(offerId: string) {
+  try {
+    const { syncSubscriptionOfferFulfilmentOption } = await import(
+      "@/lib/fulfilment/sync-subscription-offer"
+    );
+    await syncSubscriptionOfferFulfilmentOption(offerId);
+  } catch (err) {
+    console.error("Subscription fulfilment sync failed", err);
+  }
 }
 
 export async function createSubscriptionOffer(formData: FormData) {
@@ -192,6 +204,7 @@ async function createBoxOffer(
     });
   }
 
+  await syncOfferFulfilment(offer.id);
 
   try {
     if (
@@ -250,6 +263,12 @@ async function createMembershipOffer(
   const { handoverMode, collectionWeekday, collectionNote } =
     handoverFromForm(formData);
   const isActive = formData.get("isActive") === "on";
+
+  const maxMembersRaw = parseMaxMembers(formData.get("maxMembers"));
+  if (maxMembersRaw && typeof maxMembersRaw === "object" && "error" in maxMembersRaw) {
+    return { error: maxMembersRaw.error };
+  }
+  const maxMembers = typeof maxMembersRaw === "number" ? maxMembersRaw : null;
 
   const weekly = parseOptionalDollarsToCents(
     formData.get("weeklyPrice"),
@@ -327,6 +346,7 @@ async function createMembershipOffer(
       priceCents: displayCents,
       currency: stand.currency,
       termWeeks,
+      maxMembers,
       weeklyPriceCents,
       monthlyPriceCents,
       upfrontPriceCents,
@@ -353,6 +373,7 @@ async function createMembershipOffer(
     });
   }
 
+  await syncOfferFulfilment(offer.id);
 
   try {
     if (

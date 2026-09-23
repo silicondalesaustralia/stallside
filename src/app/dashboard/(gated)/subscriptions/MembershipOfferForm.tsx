@@ -28,6 +28,7 @@ export type MembershipOfferValues = {
   collectionWeekday: number | null;
   collectionNote: string | null;
   termWeeks: number;
+  maxMembers: number | null;
   weeklyPriceCents: number | null;
   monthlyPriceCents: number | null;
   upfrontPriceCents: number | null;
@@ -148,6 +149,22 @@ export default function MembershipOfferForm({
           defaultValue={values?.termWeeks ?? 26}
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
+      </label>
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="font-medium">Max members (optional)</span>
+        <input
+          name="maxMembers"
+          type="number"
+          min={1}
+          max={9999}
+          defaultValue={values?.maxMembers ?? ""}
+          placeholder="e.g. 25 — blank = unlimited"
+          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+        />
+        <span className="text-[var(--muted)]">
+          When this many members are signed up, new signups are blocked even if
+          the offer stays live.
+        </span>
       </label>
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Handover</span>

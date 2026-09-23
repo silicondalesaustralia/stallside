@@ -14,6 +14,10 @@ import {
 import { formatMoney } from "@/lib/money";
 import { SITE_URL } from "@/lib/legal";
 import { SubscriptionOfferKind } from "@/generated/prisma/client";
+import {
+  countHoldingMembers,
+  isOfferAtCapacity,
+} from "@/lib/subscription-capacity";
 import StandSubscriptionsNavToggle from "./StandSubscriptionsNavToggle";
 import SubscriptionLifecycleActions from "./SubscriptionLifecycleActions";
 
@@ -42,6 +46,13 @@ export default async function SubscriptionsListPage() {
       _count: { select: { items: true, subscriptions: true } },
     },
   });
+
+  const holdingByOffer = new Map<string, number>();
+  await Promise.all(
+    offers.map(async (offer) => {
+      holdingByOffer.set(offer.id, await countHoldingMembers(offer.id));
+    }),
+  );
 
   return (
     <main className="flex flex-col gap-8">
@@ -80,6 +91,8 @@ export default async function SubscriptionsListPage() {
             const isMembership =
               offer.kind === SubscriptionOfferKind.MEMBERSHIP;
             const ready = membershipOfferReady(offer);
+            const holding = holdingByOffer.get(offer.id) ?? 0;
+            const full = isOfferAtCapacity(offer.maxMembers, holding);
             return (
               <li
                 key={offer.id}
@@ -95,6 +108,9 @@ export default async function SubscriptionsListPage() {
                     ) : null}
                     {!offer.isActive ? (
                       <span className="ml-2 text-[var(--muted)]">(off)</span>
+                    ) : null}
+                    {full ? (
+                      <span className="ml-2 text-[var(--warn)]">(full)</span>
                     ) : null}
                     {!ready ? (
                       <span className="ml-2 text-[var(--warn)]">
@@ -115,7 +131,10 @@ export default async function SubscriptionsListPage() {
                     {isMembership
                       ? "membership"
                       : `${offer._count.items} products`}{" "}
-                    · {offer._count.subscriptions} subscribers
+                    ·{" "}
+                    {offer.maxMembers != null
+                      ? `${holding} / ${offer.maxMembers} members`
+                      : `${holding} members`}
                   </p>
                   <p className="mt-1 break-all text-xs text-[var(--muted)]">
                     {SITE_URL}
