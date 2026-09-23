@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import { parseAccentColor } from "@/lib/stand-brand";
 
-const FALLBACK_ACCENT = "#344A2C";
+const FALLBACK_ACCENT = "#2e7d3f";
 
 function hexLuminance(hex: string): number {
   const n = hex.replace("#", "");
@@ -47,6 +47,19 @@ export function membershipCategoryBrandStyle(
     "--mc-label": accent,
     "--mc-action": accent,
     "--mc-action-text": onAccentText(accent),
+  } as CSSProperties;
+}
+
+/** Pre-order listing: theme surfaces + stand primary for CTAs. */
+export function preorderCategoryBrandStyle(
+  accentColor?: string | null,
+): CSSProperties {
+  const accent = resolveAccent(accentColor);
+  return {
+    "--pc-label": accent,
+    "--pc-action": accent,
+    "--pc-action-text": onAccentText(accent),
+    "--pc-tint": mixWhite(accent, 0.88),
   } as CSSProperties;
 }
 

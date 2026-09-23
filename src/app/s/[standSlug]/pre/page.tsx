@@ -1,17 +1,15 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { formatCollectionLabel } from "@/lib/pre-order";
-import { preOrderPagePath } from "@/lib/preorder-page";
 import {
   standPreOrdersPath,
   standSectionMetadata,
 } from "@/lib/stand-seo";
 import StandStoreHeader from "../StandStoreHeader";
 import ChannelInterestForm from "../ChannelInterestForm";
+import PreOrderCategoryView from "./PreOrderCategoryView";
 
 export async function generateMetadata({
   params,
@@ -66,56 +64,66 @@ export default async function PublicPreOrdersIndexPage({
       slug: true,
       title: true,
       collectionAt: true,
+      orderByAt: true,
       description: true,
+      imageUrl: true,
+      handoverMode: true,
+      items: {
+        orderBy: { sortOrder: "asc" },
+        take: 1,
+        select: {
+          product: { select: { imageUrl: true } },
+        },
+      },
     },
   });
 
   const branded = publicStandBranding(stand, stand.owner);
+  const cards = pages.map((page) => ({
+    slug: page.slug,
+    title: page.title,
+    description: page.description,
+    imageUrl: page.imageUrl,
+    collectionAt: page.collectionAt,
+    orderByAt: page.orderByAt,
+    handoverMode: page.handoverMode,
+    fallbackImageUrl: page.items[0]?.product.imageUrl ?? null,
+  }));
 
   return (
-    <main
-      className="mx-auto min-h-full w-full max-w-lg px-4 pb-10 pt-8"
+    <div
+      className="min-h-dvh w-full"
       style={standAccentStyle(branded.accentColor, branded.secondaryColor)}
     >
-      <StandStoreHeader
-        standName={stand.name}
-        standSlug={stand.slug}
-        logoUrl={branded.logoUrl}
-        locationLabel={stand.locationLabel}
-      />
-      <h2 className="mt-8 text-2xl font-semibold tracking-tight">Pre-orders</h2>
-      {pages.length === 0 ? (
-        <div className="mt-4 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
-          <p className="font-medium">No pre-orders available</p>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
-            Pre-orders let you pay by card for a collection or delivery day.
-            The stall packs your order; you pick it up (or they deliver) on
-            that day. Nothing is listed here right now.
-          </p>
-          <ChannelInterestForm standSlug={stand.slug} kind="PREORDER" />
+      <div className="mx-auto w-full max-w-lg px-4 pb-2 pt-8">
+        <StandStoreHeader
+          standName={stand.name}
+          standSlug={stand.slug}
+          logoUrl={branded.logoUrl}
+          locationLabel={stand.locationLabel}
+        />
+      </div>
+      {cards.length === 0 ? (
+        <div className="mx-auto mt-4 w-full max-w-lg px-4 pb-10">
+          <div className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
+            <p className="font-medium">No pre-orders available</p>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+              Pre-orders let you pay by card for a collection or delivery day.
+              The stall packs your order; you pick it up (or they deliver) on
+              that day. Nothing is listed here right now.
+            </p>
+            <ChannelInterestForm standSlug={stand.slug} kind="PREORDER" />
+          </div>
         </div>
       ) : (
-        <ul className="mt-4 flex flex-col gap-3">
-          {pages.map((page) => (
-            <li key={page.slug}>
-              <Link
-                href={preOrderPagePath(stand.slug, page.slug)}
-                className="block rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4"
-              >
-                <p className="font-medium">{page.title}</p>
-                <p className="mt-1 text-sm text-[var(--muted)]">
-                  Collect {formatCollectionLabel(page.collectionAt, stand.timezone)}
-                </p>
-                {page.description ? (
-                  <p className="mt-2 text-sm text-[var(--muted)]">
-                    {page.description}
-                  </p>
-                ) : null}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <PreOrderCategoryView
+          standSlug={stand.slug}
+          standName={stand.name}
+          timezone={stand.timezone}
+          accentColor={branded.accentColor}
+          pages={cards}
+        />
       )}
-    </main>
+    </div>
   );
 }
