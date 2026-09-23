@@ -15,6 +15,7 @@ import { SubscriptionOfferKind } from "@/generated/prisma/client";
 import SubscriptionOfferForm from "../SubscriptionOfferForm";
 import MembershipOfferForm from "../MembershipOfferForm";
 import SubscriptionSubscribersList from "../SubscriptionSubscribersList";
+import SubscriptionLifecycleActions from "../SubscriptionLifecycleActions";
 
 export default async function EditSubscriptionOfferPage({
   params,
@@ -107,11 +108,19 @@ export default async function EditSubscriptionOfferPage({
             ? `${offer.termWeeks ?? "?"} weeks`
             : intervalLabel(offer.interval)}{" "}
           · {formatMoney(offerDisplayPriceCents(offer), offer.currency)} ·{" "}
+          {!offer.isActive ? "Off · " : null}
           <a href={path} className="underline" target="_blank" rel="noreferrer">
             {SITE_URL}
             {path}
           </a>
         </p>
+        <div className="mt-4">
+          <SubscriptionLifecycleActions
+            offerId={offer.id}
+            offerTitle={offer.title}
+            isActive={offer.isActive}
+          />
+        </div>
       </div>
 
       {!ready ? (

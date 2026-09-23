@@ -15,6 +15,7 @@ import { formatMoney } from "@/lib/money";
 import { SITE_URL } from "@/lib/legal";
 import { SubscriptionOfferKind } from "@/generated/prisma/client";
 import StandSubscriptionsNavToggle from "./StandSubscriptionsNavToggle";
+import SubscriptionLifecycleActions from "./SubscriptionLifecycleActions";
 
 export default async function SubscriptionsListPage() {
   const { owner } = await requireOwner();
@@ -121,20 +122,27 @@ export default async function SubscriptionsListPage() {
                     {path}
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href={`/dashboard/subscriptions/${offer.id}`}
-                    className="text-[var(--leaf-dark)] underline"
-                  >
-                    Edit
-                  </Link>
-                  <Link
-                    href={path}
-                    target="_blank"
-                    className="text-[var(--leaf-dark)] underline"
-                  >
-                    Open
-                  </Link>
+                <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-wrap justify-end gap-3">
+                    <Link
+                      href={`/dashboard/subscriptions/${offer.id}`}
+                      className="text-[var(--leaf-dark)] underline"
+                    >
+                      Edit
+                    </Link>
+                    <Link
+                      href={path}
+                      target="_blank"
+                      className="text-[var(--leaf-dark)] underline"
+                    >
+                      Open
+                    </Link>
+                  </div>
+                  <SubscriptionLifecycleActions
+                    offerId={offer.id}
+                    offerTitle={offer.title}
+                    isActive={offer.isActive}
+                  />
                 </div>
               </li>
             );

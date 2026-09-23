@@ -102,14 +102,20 @@ export default function SubscriptionOfferForm({
         />
       </label>
       <SubscriptionCoverImageField imageUrl={values?.imageUrl ?? null} />
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          name="isActive"
-          defaultChecked={values?.isActive ?? true}
-          className="size-4"
-        />
-        Offer is live
+      <label className="flex flex-col gap-1 text-sm lg:col-span-2">
+        <span className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="isActive"
+            defaultChecked={values?.isActive ?? true}
+            className="size-4"
+          />
+          <span className="font-medium">Offer is live (public signup)</span>
+        </span>
+        <span className="pl-6 text-[var(--muted)]">
+          Uncheck or use Turn off to hide this offer from the stand. Delete is
+          under the title.
+        </span>
       </label>
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Billing interval</span>
