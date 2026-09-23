@@ -6,17 +6,6 @@ import { formatTierSaving, lineTotalWithTiers } from "@/lib/price-tiers";
 import { standProductPath } from "@/lib/stand-seo";
 import QtyStepper from "../../QtyStepper";
 
-function liveLeftLabel(label: string, left: number): string {
-  if (left <= 0) {
-    return label
-      .replace(/^(Only )?\d+ left/, "Sold out")
-      .replace(/^\d+ left/, "Sold out");
-  }
-  return label
-    .replace(/^\d+ left/, `${left} left`)
-    .replace(/^Only \d+ left/, `Only ${left} left`);
-}
-
 export default function PreOrderPageProductRow({
   standSlug,
   currency,
@@ -24,6 +13,7 @@ export default function PreOrderPageProductRow({
   qty,
   remaining,
   onQty,
+  showIdentity,
 }: {
   standSlug: string;
   currency: string;
@@ -31,94 +21,106 @@ export default function PreOrderPageProductRow({
   qty: number;
   remaining: number;
   onQty: (n: number) => void;
+  showIdentity: boolean;
 }) {
-  const effectiveQty = qty > 0 ? qty : 1;
-  const priced = lineTotalWithTiers(
-    product.priceCents,
-    effectiveQty,
-    product.priceTiers,
-  );
+  const priced =
+    qty > 0
+      ? lineTotalWithTiers(product.priceCents, qty, product.priceTiers)
+      : null;
   const saveCents =
-    priced.usedTier && qty > 0
-      ? formatTierSaving(
-          product.priceCents,
-          qty,
-          priced.lineTotalCents,
-        )
+    priced?.usedTier && qty > 0
+      ? formatTierSaving(product.priceCents, qty, priced.lineTotalCents)
       : 0;
-  const leftNow = Math.max(0, remaining - qty);
-  const stockLabel = liveLeftLabel(product.label, leftNow);
+  const available = Math.max(0, remaining);
 
   return (
-    <li className="flex flex-col gap-3 py-4">
-      <div className="flex items-start gap-3">
-        {product.imageUrl ? (
-          <Image
-            src={product.imageUrl}
-            alt=""
-            width={80}
-            height={80}
-            className="size-20 shrink-0 rounded-lg object-cover"
-          />
-        ) : (
-          <div
-            className="flex size-20 shrink-0 items-center justify-center rounded-lg bg-[var(--wash)] px-1 text-center"
-            aria-hidden
-          >
-            <span className="font-[family-name:var(--font-display)] text-xs font-bold leading-tight text-[var(--field)]">
-              {product.name}
-            </span>
-          </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <p className="font-medium">
-            {qty > 0 ? `${qty} × ` : null}
-            {product.name}
-          </p>
-          <p className="mt-1 font-receipt text-lg text-[var(--stand-secondary,var(--ok))]">
-            {formatMoney(priced.lineTotalCents, currency)}
-            {qty > 1 ? (
-              <span className="ml-2 text-sm text-[var(--muted)]">
-                for {qty}
-              </span>
-            ) : null}
-          </p>
-          {saveCents > 0 ? (
-            <p className="mt-0.5 text-sm font-medium text-[var(--ok)]">
-              Save {formatMoney(saveCents, currency)} vs each
-            </p>
+    <li className="flex flex-col gap-4 border-b border-[var(--line)] py-4 last:border-b-0">
+      {showIdentity ? (
+        <div className="flex items-start gap-3">
+          {product.imageUrl ? (
+            <Image
+              src={product.imageUrl}
+              alt=""
+              width={64}
+              height={64}
+              className="size-16 shrink-0 rounded-lg object-cover"
+            />
           ) : null}
-          {product.priceTiers.length > 0 ? (
-            <p className="mt-1 font-receipt text-sm text-[var(--muted)]">
-              {product.priceTiers
-                .map(
-                  (t) =>
-                    `${t.qty} for ${formatMoney(t.totalCents, currency)}`,
-                )
-                .join(" · ")}
-            </p>
-          ) : null}
-          <p className="mt-1 text-sm text-[var(--muted)]">{stockLabel}</p>
+          <p className="min-w-0 font-medium leading-snug">{product.name}</p>
         </div>
-      </div>
-      <div className="flex justify-end">
-        {product.hasOptions ? (
-          <Link
-            href={standProductPath(standSlug, product.slug)}
-            className="rounded-[var(--radius-pill)] border border-[var(--leaf)] px-4 py-2 text-sm font-semibold text-[var(--leaf-dark)]"
-          >
-            Choose options
-          </Link>
-        ) : product.soldOut || remaining <= 0 ? (
-          <p className="text-sm text-[var(--gone)]">Sold out</p>
-        ) : (
-          <QtyStepper
-            value={qty}
-            max={Math.max(0, remaining)}
-            onChange={onQty}
-          />
-        )}
-      </div>
+      ) : null}
+
+      <p className="flex flex-wrap items-baseline gap-x-2">
+        <span className="text-[28px] font-semibold leading-none tracking-tight">
+          {formatMoney(product.priceCents, currency)}
+        </span>
+        <span className="text-sm text-[var(--muted)]">each</span>
+      </p>
+
+      {product.priceTiers.length > 0 ? (
+        <details className="group rounded-lg border border-[var(--line)] bg-[var(--wash)] px-3 py-2">
+          <summary className="cursor-pointer list-none text-sm font-medium marker:content-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pd-focus)] [&::-webkit-details-marker]:hidden">
+            <span className="flex items-center justify-between gap-2">
+              Quantity savings available
+              <span className="text-[var(--muted)] transition group-open:rotate-45" aria-hidden>
+                +
+              </span>
+            </span>
+          </summary>
+          <ul className="mt-2 space-y-1 text-sm text-[var(--muted)]">
+            {product.priceTiers.map((t) => (
+              <li key={t.qty} className="flex justify-between gap-3">
+                <span>
+                  {t.qty} {t.qty === 1 ? "item" : "items"}
+                </span>
+                <span className="font-medium text-[var(--field)]">
+                  {formatMoney(t.totalCents, currency)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
+
+      {product.hasOptions ? (
+        <Link
+          href={standProductPath(standSlug, product.slug)}
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--pd-action)] px-4 py-2.5 text-sm font-semibold text-[var(--pd-action)]"
+        >
+          Choose options
+        </Link>
+      ) : product.soldOut || remaining <= 0 ? (
+        <p className="text-sm text-[var(--gone)]">Sold out</p>
+      ) : (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--muted)]">
+              Quantity
+            </p>
+            <div className="mt-1.5">
+              <QtyStepper
+                value={qty}
+                max={available}
+                onChange={onQty}
+              />
+            </div>
+          </div>
+          <p className="text-sm text-[var(--muted)]">
+            {available} available for this collection
+          </p>
+        </div>
+      )}
+
+      {qty > 0 && priced ? (
+        <p className="text-sm text-[var(--muted)]">
+          {qty} · {formatMoney(priced.lineTotalCents, currency)}
+          {saveCents > 0 ? (
+            <span className="ml-2 font-medium text-[var(--ok)]">
+              Save {formatMoney(saveCents, currency)}
+            </span>
+          ) : null}
+        </p>
+      ) : null}
     </li>
   );
 }

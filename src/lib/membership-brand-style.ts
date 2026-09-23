@@ -50,6 +50,20 @@ export function membershipCategoryBrandStyle(
   } as CSSProperties;
 }
 
+/** Pre-order detail: theme surfaces + stand primary for CTAs. */
+export function preorderDetailBrandStyle(
+  accentColor?: string | null,
+): CSSProperties {
+  const accent = resolveAccent(accentColor);
+  return {
+    "--pd-label": accent,
+    "--pd-action": accent,
+    "--pd-action-text": onAccentText(accent),
+    "--pd-tint": mixWhite(accent, 0.88),
+    "--pd-focus": accent,
+  } as CSSProperties;
+}
+
 /** Pre-order listing: theme surfaces + stand primary for CTAs. */
 export function preorderCategoryBrandStyle(
   accentColor?: string | null,

@@ -4,12 +4,12 @@ import { prisma } from "@/lib/prisma";
 import { mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { preOrderPageMetadata, standCatalogPath } from "@/lib/stand-seo";
+import { standPreOrdersPath } from "@/lib/stand-seo";
 import { productLiveWhere } from "@/lib/product-visibility";
-import { formatCollectionLabel } from "@/lib/pre-order";
 import StandStoreHeader from "../../StandStoreHeader";
 import StandGoToCartBar from "../../StandGoToCartBar";
-import PreOrderPageOrder from "./PreOrderPageOrder";
+import PreOrderPageContent from "./PreOrderPageContent";
+import { preOrderDetailMetadata } from "./pre-order-detail-metadata";
 
 export async function generateMetadata({
   params,
@@ -17,41 +17,7 @@ export async function generateMetadata({
   params: Promise<{ standSlug: string; pageSlug: string }>;
 }): Promise<Metadata> {
   const { standSlug, pageSlug } = await params;
-  const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
-  const pageKey = decodeURIComponent(pageSlug).trim().toLowerCase();
-  const page = await prisma.preOrderPage.findFirst({
-    where: {
-      slug: pageKey,
-      isActive: true,
-      stand: { slug: standKey, isActive: true },
-    },
-    include: {
-      stand: {
-        select: {
-          name: true,
-          slug: true,
-          timezone: true,
-          logoUrl: true,
-          ogImageUrl: true,
-        },
-      },
-    },
-  });
-  if (!page) return { title: "Pre-order" };
-  return preOrderPageMetadata({
-    standName: page.stand.name,
-    standSlug: page.stand.slug,
-    pageTitle: page.title,
-    pageSlug: page.slug,
-    description: page.description,
-    imageUrl: page.imageUrl,
-    collectionLabel: formatCollectionLabel(
-      page.collectionAt,
-      page.stand.timezone,
-    ),
-    logoUrl: page.stand.logoUrl,
-    ogImageUrl: page.stand.ogImageUrl,
-  });
+  return preOrderDetailMetadata(standSlug, pageSlug);
 }
 
 export default async function PublicPreOrderPage({
@@ -109,8 +75,6 @@ export default async function PublicPreOrderPage({
   const pageProducts = page.items
     .map((i) => byId.get(i.productId))
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
-  const catalogProducts = [...byId.values()];
-
   if (pageProducts.length === 0) notFound();
 
   return (
@@ -123,8 +87,8 @@ export default async function PublicPreOrderPage({
         standSlug={stand.slug}
         logoUrl={branded.logoUrl}
         locationLabel={stand.locationLabel}
-        backHref={standCatalogPath(stand.slug)}
-        backLabel="← All products"
+        backHref={standPreOrdersPath(stand.slug)}
+        backLabel="← All pre-orders"
       />
       {page.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -134,26 +98,26 @@ export default async function PublicPreOrderPage({
           className="mt-6 aspect-[1.91/1] w-full rounded-[var(--radius)] object-cover"
         />
       ) : null}
-      <h1
-        className={`${page.imageUrl ? "mt-4" : "mt-6"} text-center font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight`}
-      >
-        {page.title}
-      </h1>
-      <p className="mt-2 text-center text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">
-        Pre-order · {formatCollectionLabel(page.collectionAt, stand.timezone)}
-      </p>
-      {page.description ? (
-        <p className="mt-3 text-lg leading-snug text-[var(--muted)]">
-          {page.description}
-        </p>
-      ) : null}
-
-      <PreOrderPageOrder
-        standSlug={stand.slug}
-        currency={stand.currency}
-        products={pageProducts}
-        catalogProducts={catalogProducts}
-      />
+      <div className="mt-6">
+        <PreOrderPageContent
+          standSlug={stand.slug}
+          standName={stand.name}
+          timezone={stand.timezone}
+          currency={stand.currency}
+          accentColor={branded.accentColor}
+          page={{
+            slug: page.slug,
+            title: page.title,
+            description: page.description,
+            collectionAt: page.collectionAt,
+            orderByAt: page.orderByAt,
+            collectionNote: page.collectionNote,
+            handoverMode: page.handoverMode,
+          }}
+          pageProducts={pageProducts}
+          catalogProducts={[...byId.values()]}
+        />
+      </div>
       <StandGoToCartBar standSlug={stand.slug} />
     </main>
   );
