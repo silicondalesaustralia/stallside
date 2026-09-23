@@ -1,20 +1,13 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { formatMoney } from "@/lib/money";
-import {
-  intervalLabel,
-  membershipOfferReady,
-  offerDisplayPriceCents,
-  subscriptionOfferPath,
-} from "@/lib/subscription-offer";
+import { membershipOfferReady } from "@/lib/subscription-offer";
+import { subscriptionsIndexMetadata } from "@/lib/stand-seo";
 import StandStoreHeader from "../StandStoreHeader";
 import ChannelInterestForm from "../ChannelInterestForm";
-import { SubscriptionOfferKind } from "@/generated/prisma/client";
-import { subscriptionsIndexMetadata } from "@/lib/stand-seo";
+import MembershipCategoryView from "./MembershipCategoryView";
 
 export async function generateMetadata({
   params,
@@ -63,10 +56,7 @@ export default async function PublicSubscriptionsIndexPage({
       title: true,
       description: true,
       imageUrl: true,
-      interval: true,
-      priceCents: true,
       currency: true,
-      kind: true,
       termWeeks: true,
       weeklyPriceCents: true,
       monthlyPriceCents: true,
@@ -75,73 +65,44 @@ export default async function PublicSubscriptionsIndexPage({
       stripeWeeklyPriceId: true,
       stripeMonthlyPriceId: true,
       stripeUpfrontPriceId: true,
+      kind: true,
+      interval: true,
+      priceCents: true,
     },
   });
   const liveOffers = offers.filter((o) => membershipOfferReady(o));
-
   const branded = publicStandBranding(stand, stand.owner);
 
   return (
-    <main
-      className="mx-auto min-h-full w-full max-w-lg px-4 pb-10 pt-8"
+    <div
+      className="min-h-dvh w-full"
       style={standAccentStyle(branded.accentColor, branded.secondaryColor)}
     >
-      <StandStoreHeader
-        standName={stand.name}
-        standSlug={stand.slug}
-        logoUrl={branded.logoUrl}
-      />
-      <h2 className="mt-8 text-2xl font-semibold tracking-tight">
-        Subscriptions
-      </h2>
+      <div className="mx-auto w-full max-w-lg px-4 pb-2 pt-8">
+        <StandStoreHeader
+          standName={stand.name}
+          standSlug={stand.slug}
+          logoUrl={branded.logoUrl}
+        />
+      </div>
       {liveOffers.length === 0 ? (
-        <div className="mt-4 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
-          <p className="font-medium">No subscriptions available</p>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
-            A subscription is a repeating box or fixed-term membership billed by
-            card. Nothing is listed here right now.
-          </p>
-          <ChannelInterestForm standSlug={stand.slug} kind="SUBSCRIPTION" />
+        <div className="mx-auto mt-4 w-full max-w-lg px-4 pb-10">
+          <div className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
+            <p className="font-medium">No memberships available</p>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+              A membership is a fixed-term share billed by card. Nothing is
+              listed here right now.
+            </p>
+            <ChannelInterestForm standSlug={stand.slug} kind="SUBSCRIPTION" />
+          </div>
         </div>
       ) : (
-        <ul className="mt-4 flex flex-col gap-3">
-          {liveOffers.map((offer) => (
-            <li key={offer.slug}>
-              <Link
-                href={subscriptionOfferPath(stand.slug, offer.slug)}
-                className="block overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--panel)]"
-              >
-                {offer.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={offer.imageUrl}
-                    alt=""
-                    className="aspect-[16/9] w-full object-cover"
-                  />
-                ) : null}
-                <div className="p-4">
-                  <p className="font-medium">{offer.title}</p>
-                  <p className="mt-1 text-sm text-[var(--muted)]">
-                    {offer.kind === SubscriptionOfferKind.MEMBERSHIP
-                      ? `${offer.termWeeks ?? "?"} week membership`
-                      : intervalLabel(offer.interval)}{" "}
-                    ·{" "}
-                    {formatMoney(
-                      offerDisplayPriceCents(offer),
-                      offer.currency,
-                    )}
-                  </p>
-                  {offer.description ? (
-                    <p className="mt-2 line-clamp-3 text-sm text-[var(--muted)]">
-                      {offer.description}
-                    </p>
-                  ) : null}
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <MembershipCategoryView
+          standSlug={stand.slug}
+          standName={stand.name}
+          offers={liveOffers}
+        />
       )}
-    </main>
+    </div>
   );
 }
