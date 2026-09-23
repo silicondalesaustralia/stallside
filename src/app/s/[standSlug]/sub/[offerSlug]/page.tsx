@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { standSectionMetadata } from "@/lib/stand-seo";
 import {
   intervalLabel,
   membershipOfferReady,
@@ -11,7 +10,13 @@ import {
   weekdayLabel,
   type MembershipPlan,
 } from "@/lib/subscription-offer";
+import { standSectionMetadata } from "@/lib/stand-seo";
 import { standOffersCard } from "@/lib/stand-payment-brands";
+import {
+  countHoldingMembers,
+  isOfferAtCapacity,
+  spotsLeft,
+} from "@/lib/subscription-capacity";
 import {
   HandoverMode,
   SubscriptionOfferKind,
@@ -90,14 +95,19 @@ export default async function PublicSubscriptionOfferPage({
   const branded = publicStandBranding(stand, stand.owner);
   const cardEnabled = standOffersCard(stand, stand.owner);
   const ready = membershipOfferReady(offer);
-  const cardOk = cardEnabled && ready;
+  const holding = await countHoldingMembers(offer.id);
+  const atCapacity = isOfferAtCapacity(offer.maxMembers, holding);
+  const remaining = spotsLeft(offer.maxMembers, holding);
+  const cardOk = cardEnabled && ready && !atCapacity;
   const day = weekdayLabel(offer.collectionWeekday);
   const isMembership = offer.kind === SubscriptionOfferKind.MEMBERSHIP;
-  const unavailableReason = !cardEnabled
-    ? "This stand cannot take card payments yet."
-    : !ready
-      ? "This offer is not ready for signup yet. The owner needs to save it again after Stripe is connected."
-      : "Card subscriptions are not available for this offer right now.";
+  const unavailableReason = atCapacity
+    ? "This membership is full. No more spots are available right now."
+    : !cardEnabled
+      ? "This stand cannot take card payments yet."
+      : !ready
+        ? "This offer is not ready for signup yet. The owner needs to save it again after Stripe is connected."
+        : "Card subscriptions are not available for this offer right now.";
 
   const plans: { plan: MembershipPlan; priceCents: number }[] = [];
   if (isMembership) {
@@ -133,7 +143,7 @@ export default async function PublicSubscriptionOfferPage({
         ) : null}
 
         {isMembership ? (
-          <MembershipContentShell>
+          <MembershipContentShell accentColor={branded.accentColor}>
             <MembershipOfferStory
               standName={branded.name}
               title={offer.title}
@@ -151,6 +161,13 @@ export default async function PublicSubscriptionOfferPage({
             {sp.cancelled ? (
               <p className="rounded-lg border border-[var(--m-card-border)] bg-[var(--m-card)] px-3 py-2 text-sm">
                 Checkout cancelled. You can try again when ready.
+              </p>
+            ) : null}
+            {remaining != null && remaining > 0 && remaining <= 5 ? (
+              <p className="text-sm text-[var(--muted)]">
+                {remaining === 1
+                  ? "1 spot left"
+                  : `${remaining} spots left`}
               </p>
             ) : null}
             {cardOk ? (

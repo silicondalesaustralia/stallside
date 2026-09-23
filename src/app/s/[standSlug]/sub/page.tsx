@@ -100,6 +100,7 @@ export default async function PublicSubscriptionsIndexPage({
         <MembershipCategoryView
           standSlug={stand.slug}
           standName={stand.name}
+          accentColor={branded.accentColor}
           offers={liveOffers}
         />
       )}

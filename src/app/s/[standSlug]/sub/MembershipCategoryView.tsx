@@ -26,17 +26,19 @@ type Offer = {
 export default function MembershipCategoryView({
   standSlug,
   standName,
+  accentColor,
   offers,
 }: {
   standSlug: string;
   standName: string;
+  accentColor?: string | null;
   offers: Offer[];
 }) {
   const intro = membershipCategoryIntro(standSlug, standName);
   const ordered = sortMembershipCategoryOffers(standSlug, offers);
 
   return (
-    <MembershipCategoryShell>
+    <MembershipCategoryShell accentColor={accentColor}>
       <MembershipCategoryIntro
         eyebrow={intro.eyebrow}
         heading={intro.heading}
