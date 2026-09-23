@@ -2,16 +2,16 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { MenuKind } from "@/generated/prisma/client";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { formatCollectionLabel } from "@/lib/pre-order";
-import { preOrderPagePath } from "@/lib/preorder-page";
 import {
-  standPreOrdersPath,
+  standCatalogPath,
+  standMenuDetailPath,
+  standMenusPath,
   standSectionMetadata,
 } from "@/lib/stand-seo";
 import StandStoreHeader from "../StandStoreHeader";
-import ChannelInterestForm from "../ChannelInterestForm";
 
 export async function generateMetadata({
   params,
@@ -30,19 +30,19 @@ export async function generateMetadata({
       isActive: true,
     },
   });
-  if (!stand || !stand.isActive) return { title: "Pre-orders" };
+  if (!stand || !stand.isActive) return { title: "Menus" };
   return standSectionMetadata({
     standName: stand.name,
     standSlug: stand.slug,
-    sectionTitle: "Pre-orders",
-    description: `Pre-orders from ${stand.name}.`,
-    path: standPreOrdersPath(stand.slug),
+    sectionTitle: "Menus",
+    description: `Menus from ${stand.name}.`,
+    path: standMenusPath(stand.slug),
     logoUrl: stand.logoUrl,
     ogImageUrl: stand.ogImageUrl,
   });
 }
 
-export default async function PublicPreOrdersIndexPage({
+export default async function PublicStandMenusIndexPage({
   params,
 }: {
   params: Promise<{ standSlug: string }>;
@@ -55,22 +55,29 @@ export default async function PublicPreOrdersIndexPage({
   });
   if (!stand || !stand.isActive) notFound();
 
-  const pages = await prisma.preOrderPage.findMany({
+  const menus = await prisma.menu.findMany({
     where: {
       standId: stand.id,
       isActive: true,
-      orderByAt: { gte: new Date() },
+      showOnStand: true,
     },
-    orderBy: { collectionAt: "asc" },
+    orderBy: [{ kind: "asc" }, { title: "asc" }],
     select: {
       slug: true,
       title: true,
-      collectionAt: true,
       description: true,
+      kind: true,
+      collectionAt: true,
+      orderByAt: true,
     },
   });
 
   const branded = publicStandBranding(stand, stand.owner);
+  const openMenus = menus.filter(
+    (m) =>
+      m.kind === MenuKind.ALWAYS_AVAILABLE ||
+      (m.orderByAt && m.orderByAt.getTime() > Date.now()),
+  );
 
   return (
     <main
@@ -82,33 +89,26 @@ export default async function PublicPreOrdersIndexPage({
         standSlug={stand.slug}
         logoUrl={branded.logoUrl}
         locationLabel={stand.locationLabel}
+        backHref={standCatalogPath(stand.slug)}
+        backLabel="← All products"
       />
-      <h2 className="mt-8 text-2xl font-semibold tracking-tight">Pre-orders</h2>
-      {pages.length === 0 ? (
-        <div className="mt-4 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
-          <p className="font-medium">No pre-orders available</p>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
-            Pre-orders let you pay by card for a collection or delivery day.
-            The stall packs your order; you pick it up (or they deliver) on
-            that day. Nothing is listed here right now.
-          </p>
-          <ChannelInterestForm standSlug={stand.slug} kind="PREORDER" />
-        </div>
+      <h2 className="mt-8 text-2xl font-semibold tracking-tight">Menus</h2>
+      {openMenus.length === 0 ? (
+        <p className="mt-4 text-sm text-[var(--muted)]">
+          No menus available right now.
+        </p>
       ) : (
         <ul className="mt-4 flex flex-col gap-3">
-          {pages.map((page) => (
-            <li key={page.slug}>
+          {openMenus.map((menu) => (
+            <li key={menu.slug}>
               <Link
-                href={preOrderPagePath(stand.slug, page.slug)}
+                href={standMenuDetailPath(stand.slug, menu.slug)}
                 className="block rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4"
               >
-                <p className="font-medium">{page.title}</p>
-                <p className="mt-1 text-sm text-[var(--muted)]">
-                  Collect {formatCollectionLabel(page.collectionAt, stand.timezone)}
-                </p>
-                {page.description ? (
+                <p className="font-medium">{menu.title}</p>
+                {menu.description ? (
                   <p className="mt-2 text-sm text-[var(--muted)]">
-                    {page.description}
+                    {menu.description}
                   </p>
                 ) : null}
               </Link>

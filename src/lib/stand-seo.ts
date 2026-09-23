@@ -34,6 +34,15 @@ export function standPreOrderPagePath(standSlug: string, pageSlug: string) {
   return `/s/${standSlug}/pre/${pageSlug}`;
 }
 
+/** Business share image wins; then page image; then logo. */
+export function resolveStandShareImage(input: {
+  ogImageUrl?: string | null;
+  logoUrl?: string | null;
+  pageImageUrl?: string | null;
+}): string | null {
+  return input.ogImageUrl || input.pageImageUrl || input.logoUrl || null;
+}
+
 function pageMeta(input: {
   title: string;
   description: string;
@@ -41,14 +50,18 @@ function pageMeta(input: {
   standSlug: string;
   siteName?: string;
   image?: string | null;
+  noIndex?: boolean;
 }): Metadata {
   const demo = isDemoStandSlug(input.standSlug);
   const image = input.image || null;
+  const noIndex = input.noIndex || demo;
   return {
     title: input.title,
     description: input.description,
     alternates: { canonical: input.canonical },
-    robots: demo ? { index: false, follow: false } : { index: true, follow: true },
+    robots: noIndex
+      ? { index: false, follow: false }
+      : { index: true, follow: true },
     openGraph: {
       title: input.title,
       description: input.description,
@@ -66,6 +79,28 @@ function pageMeta(input: {
   };
 }
 
+export function standSectionMetadata(input: {
+  standName: string;
+  standSlug: string;
+  sectionTitle: string;
+  description: string;
+  path: string;
+  logoUrl?: string | null;
+  ogImageUrl?: string | null;
+  pageImageUrl?: string | null;
+  noIndex?: boolean;
+}): Metadata {
+  return pageMeta({
+    title: `${input.sectionTitle} · ${input.standName}`,
+    description: input.description,
+    canonical: `${SITE_URL}${input.path}`,
+    standSlug: input.standSlug,
+    siteName: input.standName,
+    image: resolveStandShareImage(input),
+    noIndex: input.noIndex,
+  });
+}
+
 export function catalogMetadata(input: {
   standName: string;
   standSlug: string;
@@ -81,7 +116,7 @@ export function catalogMetadata(input: {
     canonical: `${SITE_URL}${standCatalogPath(input.standSlug)}`,
     standSlug: input.standSlug,
     siteName: input.standName,
-    image: input.ogImageUrl || input.logoUrl,
+    image: resolveStandShareImage(input),
   });
 }
 
@@ -91,13 +126,14 @@ export function subscriptionsIndexMetadata(input: {
   logoUrl?: string | null;
   ogImageUrl?: string | null;
 }): Metadata {
-  return pageMeta({
-    title: `Memberships · ${input.standName}`,
-    description: `Memberships and subscriptions from ${input.standName}.`,
-    canonical: `${SITE_URL}${standSubscriptionsPath(input.standSlug)}`,
+  return standSectionMetadata({
+    standName: input.standName,
     standSlug: input.standSlug,
-    siteName: input.standName,
-    image: input.ogImageUrl || input.logoUrl,
+    sectionTitle: "Memberships",
+    description: `Memberships and subscriptions from ${input.standName}.`,
+    path: standSubscriptionsPath(input.standSlug),
+    logoUrl: input.logoUrl,
+    ogImageUrl: input.ogImageUrl,
   });
 }
 
@@ -109,18 +145,22 @@ export function preOrderPageMetadata(input: {
   description?: string | null;
   imageUrl?: string | null;
   collectionLabel?: string | null;
+  logoUrl?: string | null;
+  ogImageUrl?: string | null;
 }): Metadata {
-  return pageMeta({
-    title: `${input.pageTitle} · ${input.standName}`,
+  return standSectionMetadata({
+    standName: input.standName,
+    standSlug: input.standSlug,
+    sectionTitle: input.pageTitle,
     description:
       input.description?.trim() ||
       (input.collectionLabel
         ? `Pre-order for ${input.collectionLabel} from ${input.standName}.`
         : `Pre-order from ${input.standName}.`),
-    canonical: `${SITE_URL}${standPreOrderPagePath(input.standSlug, input.pageSlug)}`,
-    standSlug: input.standSlug,
-    siteName: input.standName,
-    image: input.imageUrl,
+    path: standPreOrderPagePath(input.standSlug, input.pageSlug),
+    logoUrl: input.logoUrl,
+    ogImageUrl: input.ogImageUrl,
+    pageImageUrl: input.imageUrl,
   });
 }
 
@@ -135,6 +175,8 @@ export function productMetadata(input: {
   imageUrl?: string | null;
   isPreOrder?: boolean;
   collectionNote?: string | null;
+  logoUrl?: string | null;
+  ogImageUrl?: string | null;
 }): Metadata {
   return pageMeta({
     title:
@@ -149,6 +191,10 @@ export function productMetadata(input: {
     canonical: `${SITE_URL}${standProductPath(input.standSlug, input.productSlug)}`,
     standSlug: input.standSlug,
     siteName: input.standName,
-    image: input.imageUrl,
+    image: resolveStandShareImage({
+      ogImageUrl: input.ogImageUrl,
+      logoUrl: input.logoUrl,
+      pageImageUrl: input.imageUrl,
+    }),
   });
 }

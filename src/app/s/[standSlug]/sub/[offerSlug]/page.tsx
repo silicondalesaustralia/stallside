@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { SITE_URL } from "@/lib/legal";
 import {
   intervalLabel,
   membershipOfferReady,
@@ -11,6 +10,7 @@ import {
   weekdayLabel,
   type MembershipPlan,
 } from "@/lib/subscription-offer";
+import { standSectionMetadata } from "@/lib/stand-seo";
 import { standOffersCard } from "@/lib/stand-payment-brands";
 import {
   countHoldingMembers,
@@ -49,32 +49,18 @@ export async function generateMetadata({
     },
   });
   if (!offer) return { title: "Subscription" };
-  const title = `${offer.title} · ${offer.stand.name}`;
-  const description =
-    offer.description?.trim() ||
-    `${intervalLabel(offer.interval)} subscription from ${offer.stand.name}.`;
-  const image =
-    offer.imageUrl || offer.stand.ogImageUrl || offer.stand.logoUrl || null;
-  const canonical = `${SITE_URL}${subscriptionOfferPath(offer.stand.slug, offer.slug)}`;
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    openGraph: {
-      title,
-      description,
-      url: canonical,
-      type: "website",
-      siteName: offer.stand.name,
-      ...(image ? { images: [{ url: image }] } : {}),
-    },
-    twitter: {
-      card: image ? "summary_large_image" : "summary",
-      title,
-      description,
-      ...(image ? { images: [image] } : {}),
-    },
-  };
+  return standSectionMetadata({
+    standName: offer.stand.name,
+    standSlug: offer.stand.slug,
+    sectionTitle: offer.title,
+    description:
+      offer.description?.trim() ||
+      `${intervalLabel(offer.interval)} subscription from ${offer.stand.name}.`,
+    path: subscriptionOfferPath(offer.stand.slug, offer.slug),
+    logoUrl: offer.stand.logoUrl,
+    ogImageUrl: offer.stand.ogImageUrl,
+    pageImageUrl: offer.imageUrl,
+  });
 }
 
 export default async function PublicSubscriptionOfferPage({
