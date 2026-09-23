@@ -8,11 +8,13 @@ import CommunicationRichTextEditor from "./CommunicationRichTextEditor";
 type CustomerOpt = { id: string; name: string | null; email: string | null };
 type ProductOpt = { id: string; name: string };
 type ListOpt = { id: string; name: string };
+type PageOpt = { id: string; title: string };
 
 export default function CommunicationComposer({
   customers,
   products,
   lists,
+  preOrderPages,
   initialCustomerId,
   initialListId,
   initialListMembers,
@@ -20,6 +22,7 @@ export default function CommunicationComposer({
   customers: CustomerOpt[];
   products: ProductOpt[];
   lists: ListOpt[];
+  preOrderPages: PageOpt[];
   initialCustomerId: string | null;
   initialListId: string | null;
   initialListMembers: { email: string }[];
@@ -49,6 +52,7 @@ export default function CommunicationComposer({
         customers={customers}
         products={products}
         lists={lists}
+        preOrderPages={preOrderPages}
         selectedProducts={selectedProducts}
         onToggleProduct={(id) =>
           setSelectedProducts((prev) =>

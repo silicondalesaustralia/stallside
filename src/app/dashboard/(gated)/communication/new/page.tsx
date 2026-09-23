@@ -14,7 +14,7 @@ export default async function NewCommunicationPage({
   const { customerId, listId } = await searchParams;
   await ensureStandingLists(owner.id);
 
-  const [customers, products, lists] = await Promise.all([
+  const [customers, products, lists, preOrderPages] = await Promise.all([
     prisma.customer.findMany({
       where: { ownerId: owner.id, email: { not: null } },
       orderBy: { updatedAt: "desc" },
@@ -31,6 +31,12 @@ export default async function NewCommunicationPage({
       where: { ownerId: owner.id, isActive: true },
       orderBy: { name: "asc" },
       select: { id: true, name: true },
+    }),
+    prisma.preOrderPage.findMany({
+      where: { ownerId: owner.id },
+      orderBy: [{ isActive: "desc" }, { collectionAt: "desc" }],
+      take: 100,
+      select: { id: true, title: true },
     }),
   ]);
 
@@ -63,6 +69,7 @@ export default async function NewCommunicationPage({
         customers={customers}
         products={products}
         lists={lists}
+        preOrderPages={preOrderPages}
         initialCustomerId={customerId ?? null}
         initialListId={listId ?? null}
         initialListMembers={initialListMembers}

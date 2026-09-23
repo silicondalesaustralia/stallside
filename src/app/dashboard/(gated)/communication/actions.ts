@@ -19,6 +19,8 @@ export async function createAndSendCommunication(formData: FormData) {
   const audienceType = String(formData.get("audienceType") ?? "all_marketing").trim();
   const customerId = String(formData.get("customerId") ?? "").trim() || null;
   const listId = String(formData.get("listId") ?? "").trim() || null;
+  const preOrderPageId =
+    String(formData.get("preOrderPageId") ?? "").trim() || null;
   const productIds = formData
     .getAll("productId")
     .map((v) => String(v).trim())
@@ -45,7 +47,7 @@ export async function createAndSendCommunication(formData: FormData) {
   if (ctaUrlRaw && !ctaLabelRaw) {
     return { error: "Add a button label, or clear the button URL." };
   }
-  if (!["all_marketing", "product", "customer", "list"].includes(audienceType)) {
+  if (!["all_marketing", "product", "customer", "list", "preorder_page"].includes(audienceType)) {
     return { error: "Choose who to email." };
   }
 
@@ -67,6 +69,15 @@ export async function createAndSendCommunication(formData: FormData) {
     });
     if (!list) return { error: "List not found." };
     audienceRefId = list.id;
+  }
+  if (audienceType === "preorder_page") {
+    if (!preOrderPageId) return { error: "Choose a pre-order page." };
+    const page = await prisma.preOrderPage.findFirst({
+      where: { id: preOrderPageId, ownerId: owner.id },
+      select: { id: true },
+    });
+    if (!page) return { error: "Pre-order page not found." };
+    audienceRefId = page.id;
   }
   if (audienceType === "product") {
     if (productIds.length === 0) return { error: "Choose at least one product." };
@@ -139,6 +150,8 @@ export async function previewCommunicationAudience(formData: FormData) {
   const audienceType = String(formData.get("audienceType") ?? "all_marketing").trim();
   const customerId = String(formData.get("customerId") ?? "").trim() || null;
   const listId = String(formData.get("listId") ?? "").trim() || null;
+  const preOrderPageId =
+    String(formData.get("preOrderPageId") ?? "").trim() || null;
   const productIds = formData
     .getAll("productId")
     .map((v) => String(v).trim())
@@ -147,6 +160,7 @@ export async function previewCommunicationAudience(formData: FormData) {
   let audienceRefId: string | null = null;
   if (audienceType === "customer") audienceRefId = customerId;
   if (audienceType === "list") audienceRefId = listId;
+  if (audienceType === "preorder_page") audienceRefId = preOrderPageId;
   if (audienceType === "product") audienceRefId = productIds.join(",") || null;
 
   const audience = await resolveCampaignAudience({

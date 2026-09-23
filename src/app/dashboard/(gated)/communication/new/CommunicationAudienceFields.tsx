@@ -1,14 +1,21 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
 import CommunicationProductPicker from "./CommunicationProductPicker";
-import CommunicationListMemberPicker from "./CommunicationListMemberPicker";
-import { loadListMembers } from "../list-members";
+import CommunicationListAudience from "./CommunicationListAudience";
 
 type CustomerOpt = { id: string; name: string | null; email: string | null };
 type ProductOpt = { id: string; name: string };
 type ListOpt = { id: string; name: string };
+type PageOpt = { id: string; title: string };
 type Member = { email: string };
+
+const WHO_OPTIONS = [
+  ["all_marketing", "Everyone opted into marketing"],
+  ["list", "Saved list"],
+  ["preorder_page", "Bought via a pre-order page"],
+  ["product", "Bought these products"],
+  ["customer", "One customer"],
+] as const;
 
 export default function CommunicationAudienceFields({
   audienceType,
@@ -16,6 +23,7 @@ export default function CommunicationAudienceFields({
   customers,
   products,
   lists,
+  preOrderPages,
   selectedProducts,
   onToggleProduct,
   initialCustomerId,
@@ -28,6 +36,7 @@ export default function CommunicationAudienceFields({
   customers: CustomerOpt[];
   products: ProductOpt[];
   lists: ListOpt[];
+  preOrderPages: PageOpt[];
   selectedProducts: string[];
   onToggleProduct: (id: string) => void;
   initialCustomerId: string | null;
@@ -35,43 +44,11 @@ export default function CommunicationAudienceFields({
   onListIdChange: (id: string) => void;
   initialMembers: Member[];
 }) {
-  const [members, setMembers] = useState<Member[]>(initialMembers);
-  const [selectedEmails, setSelectedEmails] = useState<string[]>(() =>
-    initialMembers.map((m) => m.email),
-  );
-  const [loading, startLoad] = useTransition();
-
-  useEffect(() => {
-    if (audienceType !== "list" || !listId) {
-      setMembers([]);
-      setSelectedEmails([]);
-      return;
-    }
-    let cancelled = false;
-    startLoad(async () => {
-      const result = await loadListMembers(listId);
-      if (cancelled) return;
-      const next = result.members ?? [];
-      setMembers(next);
-      setSelectedEmails(next.map((m) => m.email));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [audienceType, listId]);
-
   return (
     <>
       <fieldset className="flex flex-col gap-2">
         <legend className="text-sm font-semibold">Who</legend>
-        {(
-          [
-            ["all_marketing", "Everyone opted into marketing"],
-            ["list", "Saved list"],
-            ["product", "Bought these products"],
-            ["customer", "One customer"],
-          ] as const
-        ).map(([value, label]) => (
+        {WHO_OPTIONS.map(([value, label]) => (
           <label key={value} className="flex items-center gap-2 text-sm">
             <input
               type="radio"
@@ -86,33 +63,36 @@ export default function CommunicationAudienceFields({
       </fieldset>
 
       {audienceType === "list" ? (
-        <>
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium">List</span>
-            <select
-              name="listId"
-              required
-              value={listId}
-              onChange={(e) => onListIdChange(e.target.value)}
-              className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-            >
-              <option value="">Select list…</option>
-              {lists.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          {listId ? (
-            <CommunicationListMemberPicker
-              members={members}
-              selected={selectedEmails}
-              onChange={setSelectedEmails}
-              loading={loading}
-            />
+        <CommunicationListAudience
+          lists={lists}
+          listId={listId}
+          onListIdChange={onListIdChange}
+          initialMembers={initialMembers}
+        />
+      ) : null}
+
+      {audienceType === "preorder_page" ? (
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="font-medium">Pre-order page</span>
+          <select
+            name="preOrderPageId"
+            required
+            defaultValue=""
+            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+          >
+            <option value="">Select page…</option>
+            {preOrderPages.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.title}
+              </option>
+            ))}
+          </select>
+          {preOrderPages.length === 0 ? (
+            <span className="text-xs text-[var(--muted)]">
+              No pre-order pages yet.
+            </span>
           ) : null}
-        </>
+        </label>
       ) : null}
 
       {audienceType === "product" ? (
