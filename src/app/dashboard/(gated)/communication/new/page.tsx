@@ -4,6 +4,7 @@ import Link from "next/link";
 import CommunicationComposer from "./CommunicationComposer";
 import { ensureStandingLists } from "@/lib/crm/standing-lists";
 import { resolveCampaignAudience } from "@/lib/grow/campaigns";
+import { listEmailableCustomers } from "@/lib/crm/list-emailable-customers";
 
 export default async function NewCommunicationPage({
   searchParams,
@@ -15,12 +16,7 @@ export default async function NewCommunicationPage({
   await ensureStandingLists(owner.id);
 
   const [customers, products, lists, preOrderPages] = await Promise.all([
-    prisma.customer.findMany({
-      where: { ownerId: owner.id, email: { not: null } },
-      orderBy: { updatedAt: "desc" },
-      take: 300,
-      select: { id: true, name: true, email: true },
-    }),
+    listEmailableCustomers(owner.id),
     prisma.product.findMany({
       where: { ownerId: owner.id, isArchived: false, isHidden: false },
       orderBy: { name: "asc" },

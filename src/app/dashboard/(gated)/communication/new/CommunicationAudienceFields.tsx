@@ -2,6 +2,7 @@
 
 import CommunicationProductPicker from "./CommunicationProductPicker";
 import CommunicationListAudience from "./CommunicationListAudience";
+import CommunicationCustomerPicker from "./CommunicationCustomerPicker";
 
 type CustomerOpt = { id: string; name: string | null; email: string | null };
 type ProductOpt = { id: string; name: string };
@@ -104,22 +105,10 @@ export default function CommunicationAudienceFields({
       ) : null}
 
       {audienceType === "customer" ? (
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="font-medium">Customer</span>
-          <select
-            name="customerId"
-            required
-            defaultValue={initialCustomerId ?? ""}
-            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-          >
-            <option value="">Select customer…</option>
-            {customers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name || c.email} {c.email ? `(${c.email})` : ""}
-              </option>
-            ))}
-          </select>
-        </label>
+        <CommunicationCustomerPicker
+          customers={customers}
+          initialCustomerId={initialCustomerId}
+        />
       ) : null}
     </>
   );
