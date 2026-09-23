@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
 import { PaymentStatus } from "@/generated/prisma/client";
 import CustomersSearchForm from "./CustomersSearchForm";
+import { syncOwnerCustomerLinks } from "@/lib/crm/sync-customer-links";
 
 const PAID: PaymentStatus[] = [
   PaymentStatus.PAID,
@@ -19,6 +20,8 @@ export default async function CustomersPage({
   const { owner } = await requireOwner();
   const { q } = await searchParams;
   const query = (q ?? "").trim();
+
+  await syncOwnerCustomerLinks(owner.id);
 
   const customers = await prisma.customer.findMany({
     where: {

@@ -51,6 +51,14 @@ export async function listEmailableCustomers(
         source: "order",
       });
       if (!customer?.email) continue;
+      await prisma.order.updateMany({
+        where: {
+          ownerId,
+          customerId: null,
+          receiptEmail: { equals: email, mode: "insensitive" },
+        },
+        data: { customerId: customer.id },
+      });
       byEmail.set(email, {
         id: customer.id,
         name: customer.name,
