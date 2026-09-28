@@ -59,11 +59,11 @@ export default async function StandStoreHeader({
             {locationLabel.trim()}
           </p>
         ) : null}
-        <div className="mt-3 hidden sm:block">
+        <div className="mt-4 hidden sm:block">
           <StandStoreLinks
             standSlug={standSlug}
             nav={nav}
-            className="flex justify-center gap-4 text-sm font-medium"
+            className="inline-flex items-center gap-1 rounded-full border border-[var(--line)] bg-[var(--panel)] p-1 shadow-sm"
           />
         </div>
       </div>

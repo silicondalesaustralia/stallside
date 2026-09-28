@@ -1,10 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { standCategoryPath } from "@/lib/stand-seo";
 import type { StandStoreNav } from "@/lib/stand-store-nav";
+import { activeCategorySlug, activeStoreSection } from "@/lib/stand-store-active";
 import { buildStandStoreLinks } from "./StandStoreLinks";
+
+const itemClass = "block rounded-lg px-3 py-2.5 text-sm text-[var(--ink-on-dark)] hover:bg-white/10";
 
 export default function StandStoreMenu({
   standSlug,
@@ -13,7 +17,11 @@ export default function StandStoreMenu({
   standSlug: string;
   nav: StandStoreNav;
 }) {
+  const pathname = usePathname() ?? "";
+  const section = activeStoreSection(pathname, standSlug);
+  const activeCategory = activeCategorySlug(pathname, standSlug);
   const [open, setOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(activeCategory != null);
   const links = buildStandStoreLinks(standSlug, nav);
 
   useEffect(() => {
@@ -51,30 +59,56 @@ export default function StandStoreMenu({
             onClick={() => setOpen(false)}
           />
           <div className="absolute left-3 top-3 w-[min(16rem,calc(100vw-1.5rem))] rounded-2xl bg-[var(--field)] p-4 shadow-2xl [color-scheme:dark]">
-            <nav className="flex flex-col gap-1">
-              {links.map((link) => (
-                <Fragment key={link.key}>
-                  <Link
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="rounded-lg px-2 py-2.5 text-sm text-[var(--ink-on-dark)]"
-                  >
-                    {link.label}
-                  </Link>
-                  {link.key === "shop"
-                    ? nav.categories.map((c) => (
-                        <Link
-                          key={c.slug}
-                          href={standCategoryPath(standSlug, c.slug)}
-                          onClick={() => setOpen(false)}
-                          className="rounded-lg py-2 pl-5 pr-2 text-sm text-[var(--ink-on-dark)]/80"
+            <nav aria-label="Shop sections" className="flex flex-col gap-0.5">
+              {links.map((link) => {
+                const hasCategories = link.key === "shop" && nav.categories.length > 0;
+                return (
+                  <Fragment key={link.key}>
+                    <div className="flex items-center">
+                      <Link
+                        href={link.href}
+                        onClick={() => setOpen(false)}
+                        aria-current={section === link.key && !activeCategory ? "page" : undefined}
+                        className={`${itemClass} flex-1 font-semibold ${
+                          section === link.key && !activeCategory ? "bg-white/10" : ""
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                      {hasCategories ? (
+                        <button
+                          type="button"
+                          aria-expanded={shopOpen}
+                          aria-label={shopOpen ? "Hide categories" : "Show categories"}
+                          onClick={() => setShopOpen((v) => !v)}
+                          className="flex size-10 items-center justify-center rounded-lg text-[var(--ink-on-dark)] hover:bg-white/10"
                         >
-                          {c.title}
-                        </Link>
-                      ))
-                    : null}
-                </Fragment>
-              ))}
+                          <svg aria-hidden viewBox="0 0 12 12" className={`size-3 transition-transform ${shopOpen ? "rotate-180" : ""}`}>
+                            <path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
+                      ) : null}
+                    </div>
+                    {hasCategories && shopOpen ? (
+                      <div className="mb-1 ml-3 flex flex-col border-l border-white/15 pl-2">
+                        {nav.categories.map((c) => (
+                          <Link
+                            key={c.slug}
+                            href={standCategoryPath(standSlug, c.slug)}
+                            onClick={() => setOpen(false)}
+                            aria-current={c.slug === activeCategory ? "page" : undefined}
+                            className={`${itemClass} truncate ${
+                              c.slug === activeCategory ? "bg-white/10 font-semibold" : "text-[var(--ink-on-dark)]/80"
+                            }`}
+                          >
+                            {c.title}
+                          </Link>
+                        ))}
+                      </div>
+                    ) : null}
+                  </Fragment>
+                );
+              })}
             </nav>
           </div>
         </div>

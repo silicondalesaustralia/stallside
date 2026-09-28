@@ -1,14 +1,29 @@
+"use client";
+
 import Link from "next/link";
-import { Fragment } from "react";
-import StandCategoryNav from "./StandCategoryNav";
+import { usePathname } from "next/navigation";
+import StandShopDropdown from "./StandShopDropdown";
 import {
   standCatalogPath,
   standPreOrdersPath,
   standSubscriptionsPath,
 } from "@/lib/stand-seo";
 import type { StandStoreNav } from "@/lib/stand-store-nav";
+import {
+  activeCategorySlug,
+  activeStoreSection,
+  type StandStoreLinkKey,
+} from "@/lib/stand-store-active";
 
-export type StandStoreLinkKey = "shop" | "pre" | "sub";
+export type { StandStoreLinkKey } from "@/lib/stand-store-active";
+
+function tabClass(active: boolean) {
+  return `whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--leaf)] ${
+    active
+      ? "bg-[var(--leaf)] text-white"
+      : "text-[var(--field)] hover:bg-[var(--wash)]"
+  }`;
+}
 
 export function buildStandStoreLinks(
   standSlug: string,
@@ -39,40 +54,44 @@ export function buildStandStoreLinks(
   return links;
 }
 
+/** Desktop header tabs; Shop becomes a dropdown when categories exist. */
 export default function StandStoreLinks({
   standSlug,
   nav,
-  onNavigate,
   className,
 }: {
   standSlug: string;
   nav: StandStoreNav;
-  onNavigate?: () => void;
   className?: string;
 }) {
+  const pathname = usePathname() ?? "";
   const links = buildStandStoreLinks(standSlug, nav);
   if (links.length === 0) return null;
+  const section = activeStoreSection(pathname, standSlug);
 
   return (
-    <nav className={className}>
-      {links.map((link) => (
-        <Fragment key={link.key}>
+    <nav aria-label="Shop sections" className={className}>
+      {links.map((link) =>
+        link.key === "shop" && nav.categories.length > 0 ? (
+          <StandShopDropdown
+            key={link.key}
+            standSlug={standSlug}
+            categories={nav.categories}
+            active={section === "shop"}
+            activeCategory={activeCategorySlug(pathname, standSlug)}
+            tabClass={tabClass(section === "shop")}
+          />
+        ) : (
           <Link
+            key={link.key}
             href={link.href}
-            onClick={onNavigate}
-            className="text-[var(--leaf-dark)] underline"
+            aria-current={section === link.key ? "page" : undefined}
+            className={tabClass(section === link.key)}
           >
             {link.label}
           </Link>
-          {link.key === "shop" ? (
-            <StandCategoryNav
-              standSlug={standSlug}
-              categories={nav.categories}
-              onNavigate={onNavigate}
-            />
-          ) : null}
-        </Fragment>
-      ))}
+        ),
+      )}
     </nav>
   );
 }

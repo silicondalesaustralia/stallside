@@ -16,6 +16,7 @@ import { catalogMetadata, standCatalogPath } from "@/lib/stand-seo";
 import { loadStandShopCategories } from "@/lib/categories/public-categories";
 import StandCatalogGrid from "./StandCatalogGrid";
 import StandCategoryTiles from "./StandCategoryTiles";
+import StandCategoryChips from "./StandCategoryChips";
 import StandGoToCartBar from "./StandGoToCartBar";
 import StandSocialLinks from "./StandSocialLinks";
 import StandStoreHeader from "./StandStoreHeader";
@@ -63,8 +64,8 @@ export default async function PublicStandPage({
     }),
   );
 
-  const categories =
-    stand.shopLayout === "CATEGORIES" ? await loadStandShopCategories(stand.slug) : [];
+  const allCategories = await loadStandShopCategories(stand.slug);
+  const categories = stand.shopLayout === "CATEGORIES" ? allCategories : [];
   const categorised = new Set(categories.flatMap((c) => c.productIds));
   const otherProducts =
     categories.length > 0 ? products.filter((p) => !categorised.has(p.id)) : products;
@@ -117,7 +118,9 @@ export default async function PublicStandPage({
           ) : null}
           {categories.length > 0 ? (
             <StandCategoryTiles standSlug={stand.slug} categories={categories} />
-          ) : null}
+          ) : (
+            <StandCategoryChips standSlug={stand.slug} categories={allCategories} activeSlug={null} />
+          )}
           {categories.length > 0 && otherProducts.length > 0 ? (
             <h2 className="mt-8 font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
               Other products

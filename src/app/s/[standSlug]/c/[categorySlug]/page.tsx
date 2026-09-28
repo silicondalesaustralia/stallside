@@ -12,6 +12,7 @@ import { catalogMetadata, standCatalogPath } from "@/lib/stand-seo";
 import StandCatalogGrid from "../../StandCatalogGrid";
 import StandGoToCartBar from "../../StandGoToCartBar";
 import StandStoreHeader from "../../StandStoreHeader";
+import StandCategoryChips from "../../StandCategoryChips";
 
 type Params = Promise<{ standSlug: string; categorySlug: string }>;
 
@@ -78,9 +79,8 @@ export default async function StandCategoryPage({ params }: { params: Params }) 
         standSlug={stand.slug}
         logoUrl={branded.logoUrl}
         locationLabel={stand.locationLabel}
-        backHref={standCatalogPath(stand.slug)}
-        backLabel="← All products"
       />
+      <StandCategoryChips standSlug={stand.slug} categories={categories} activeSlug={category.slug} />
       <h2 className="mt-6 text-center font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
         {category.title}
       </h2>
