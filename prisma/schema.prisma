@@ -565,6 +565,8 @@ model Stand {
   verticalSlug       String?
   /** Where printed QR codes should land. Prefer website when a storefront exists. */
   qrLinkMode         StandQrLinkMode      @default(WEBSITE_HOME)
+  /** Public shop page: every product, or category tiles. */
+  shopLayout         StandShopLayout      @default(ALL_PRODUCTS)
   qrCategoryId       String?
   qrCategory         Category?            @relation("StandQrCategory", fields: [qrCategoryId], references: [id], onDelete: SetNull)
   products           Product[]
@@ -592,6 +594,11 @@ model Stand {
 
   @@index([ownerId])
   @@index([qrCategoryId])
+}
+
+enum StandShopLayout {
+  ALL_PRODUCTS
+  CATEGORIES
 }
 
 enum StandQrLinkMode {

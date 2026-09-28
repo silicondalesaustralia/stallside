@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Fragment } from "react";
+import StandCategoryNav from "./StandCategoryNav";
 import {
   standCatalogPath,
   standPreOrdersPath,
@@ -54,14 +56,22 @@ export default function StandStoreLinks({
   return (
     <nav className={className}>
       {links.map((link) => (
-        <Link
-          key={link.key}
-          href={link.href}
-          onClick={onNavigate}
-          className="text-[var(--leaf-dark)] underline"
-        >
-          {link.label}
-        </Link>
+        <Fragment key={link.key}>
+          <Link
+            href={link.href}
+            onClick={onNavigate}
+            className="text-[var(--leaf-dark)] underline"
+          >
+            {link.label}
+          </Link>
+          {link.key === "shop" ? (
+            <StandCategoryNav
+              standSlug={standSlug}
+              categories={nav.categories}
+              onNavigate={onNavigate}
+            />
+          ) : null}
+        </Fragment>
       ))}
     </nav>
   );

@@ -8,6 +8,7 @@ import ProductEditForm from "./ProductEditForm";
 import ProductLifecycleActions from "../ProductLifecycleActions";
 import ProductOptionsEditor from "./ProductOptionsEditor";
 import ProductStockCard from "./ProductStockCard";
+import ProductCategoriesCard from "./ProductCategoriesCard";
 import { parsePriceTiers } from "@/lib/price-tiers";
 
 /** Auth-gated; never serve a cached anonymous RSC payload for Edit links. */
@@ -36,9 +37,17 @@ export default async function EditProductPage({
         orderBy: { sortOrder: "asc" },
         include: { choices: { orderBy: { sortOrder: "asc" } } },
       },
+      categoryLinks: { select: { categoryId: true } },
     },
   });
   if (!product) notFound();
+
+  const categories = await prisma.category.findMany({
+    where: { ownerId: owner.id, isActive: true },
+    orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
+    select: { id: true, title: true },
+  });
+  const productCategoryIds = new Set(product.categoryLinks.map((l) => l.categoryId));
 
   const siblingProducts = await prisma.product.findMany({
     where: {
@@ -117,6 +126,13 @@ export default async function EditProductPage({
         productId={product.id}
         stockQuantity={product.stockQuantity}
         supplyStatus={product.supplyStatus}
+      />
+      <ProductCategoriesCard
+        productId={product.id}
+        categories={categories.map((c) => ({
+          ...c,
+          checked: productCategoryIds.has(c.id),
+        }))}
       />
       <ProductOptionsEditor
         productId={product.id}

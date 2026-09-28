@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { standCategoryPath } from "@/lib/stand-seo";
 import type { StandStoreNav } from "@/lib/stand-store-nav";
 import { buildStandStoreLinks } from "./StandStoreLinks";
 
@@ -52,14 +53,27 @@ export default function StandStoreMenu({
           <div className="absolute left-3 top-3 w-[min(16rem,calc(100vw-1.5rem))] rounded-2xl bg-[var(--field)] p-4 shadow-2xl [color-scheme:dark]">
             <nav className="flex flex-col gap-1">
               {links.map((link) => (
-                <Link
-                  key={link.key}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-lg px-2 py-2.5 text-sm text-[var(--ink-on-dark)]"
-                >
-                  {link.label}
-                </Link>
+                <Fragment key={link.key}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg px-2 py-2.5 text-sm text-[var(--ink-on-dark)]"
+                  >
+                    {link.label}
+                  </Link>
+                  {link.key === "shop"
+                    ? nav.categories.map((c) => (
+                        <Link
+                          key={c.slug}
+                          href={standCategoryPath(standSlug, c.slug)}
+                          onClick={() => setOpen(false)}
+                          className="rounded-lg py-2 pl-5 pr-2 text-sm text-[var(--ink-on-dark)]/80"
+                        >
+                          {c.title}
+                        </Link>
+                      ))
+                    : null}
+                </Fragment>
               ))}
             </nav>
           </div>

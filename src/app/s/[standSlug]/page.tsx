@@ -13,7 +13,9 @@ import { standAccentStyle } from "@/lib/stand-brand";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import { standSocialFromStand } from "@/lib/stand-social";
 import { catalogMetadata, standCatalogPath } from "@/lib/stand-seo";
+import { loadStandShopCategories } from "@/lib/categories/public-categories";
 import StandCatalogGrid from "./StandCatalogGrid";
+import StandCategoryTiles from "./StandCategoryTiles";
 import StandGoToCartBar from "./StandGoToCartBar";
 import StandSocialLinks from "./StandSocialLinks";
 import StandStoreHeader from "./StandStoreHeader";
@@ -61,6 +63,12 @@ export default async function PublicStandPage({
     }),
   );
 
+  const categories =
+    stand.shopLayout === "CATEGORIES" ? await loadStandShopCategories(stand.slug) : [];
+  const categorised = new Set(categories.flatMap((c) => c.productIds));
+  const otherProducts =
+    categories.length > 0 ? products.filter((p) => !categorised.has(p.id)) : products;
+
   const branded = publicStandBranding(stand, stand.owner);
   const paymentBrands = standPaymentBrands(stand, {
     ...stand.owner,
@@ -107,11 +115,21 @@ export default async function PublicStandPage({
               <PaymentIconRow brands={paymentBrands} className="w-full justify-center gap-2" />
             </div>
           ) : null}
-          <StandCatalogGrid
-            standSlug={stand.slug}
-            currency={stand.currency}
-            products={products}
-          />
+          {categories.length > 0 ? (
+            <StandCategoryTiles standSlug={stand.slug} categories={categories} />
+          ) : null}
+          {categories.length > 0 && otherProducts.length > 0 ? (
+            <h2 className="mt-8 font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
+              Other products
+            </h2>
+          ) : null}
+          {otherProducts.length > 0 ? (
+            <StandCatalogGrid
+              standSlug={stand.slug}
+              currency={stand.currency}
+              products={otherProducts}
+            />
+          ) : null}
         </>
       )}
       {hasSocial ? (

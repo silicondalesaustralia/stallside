@@ -15,7 +15,7 @@ export default function ProductsTabs({
   active,
   view,
 }: {
-  active: ProductTabId | "inventory";
+  active: ProductTabId | "inventory" | "categories";
   view?: string;
 }) {
   const archived = view === "archived";
@@ -45,6 +45,9 @@ export default function ProductsTabs({
       })}
       <Link href="/dashboard/inventory" className={tabClass(active === "inventory")}>
         Inventory
+      </Link>
+      <Link href="/dashboard/categories" className={tabClass(active === "categories")}>
+        Categories
       </Link>
     </nav>
   );

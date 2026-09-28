@@ -10,6 +10,10 @@ export function standProductPath(standSlug: string, productSlug: string) {
   return `/s/${standSlug}/${productSlug}`;
 }
 
+export function standCategoryPath(standSlug: string, categorySlug: string) {
+  return `/s/${standSlug}/c/${categorySlug}`;
+}
+
 export function standCartPath(standSlug: string) {
   return `/s/${standSlug}/cart`;
 }

@@ -8,6 +8,7 @@ import ProductsTabs, {
 } from "./ProductsTabs";
 import ProductListRow from "./ProductListRow";
 import ProductsSearchForm from "./ProductsSearchForm";
+import ProductShopOrder from "./ProductShopOrder";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
@@ -16,16 +17,17 @@ import { loadProductStockSplits } from "@/lib/suppliers/stock-split";
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; tab?: string; q?: string }>;
+  searchParams: Promise<{ view?: string; tab?: string; q?: string; arrange?: string }>;
 }) {
   const { owner } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
-  const { view, tab: tabParam, q: qParam } = await searchParams;
+  const { view, tab: tabParam, q: qParam, arrange: arrangeParam } = await searchParams;
   const q = (qParam ?? "").trim();
   const showArchived = view === "archived";
   const tab: ProductTabId = isProductTabId(tabParam) ? tabParam : "standard";
   const isPreOrder = tab === "preorder";
   const isSupplier = tab === "supplier";
+  const arrange = arrangeParam === "1" && tab === "standard" && !showArchived;
 
   if (!selected) {
     return (
@@ -152,6 +154,14 @@ export default async function ProductsPage({
         >
           Supplier
         </Link>
+        {tab === "standard" && !showArchived && !arrange ? (
+          <Link
+            href="/dashboard/products?arrange=1"
+            className="ml-auto text-sm font-semibold text-[var(--leaf-dark)] underline"
+          >
+            Arrange shop order
+          </Link>
+        ) : null}
       </div>
 
       {isSupplier && !showArchived ? (
@@ -182,7 +192,9 @@ export default async function ProductsPage({
         </p>
       ) : null}
 
-      {products.length === 0 ? (
+      {arrange ? (
+        <ProductShopOrder ownerId={owner.id} standId={selected.id} />
+      ) : products.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">
           {showArchived
             ? `No archived ${isSupplier ? "supplier" : isPreOrder ? "pre-order" : "standard"} products.`
