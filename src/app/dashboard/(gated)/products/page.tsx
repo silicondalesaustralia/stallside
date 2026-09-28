@@ -7,6 +7,7 @@ import ProductsTabs, {
   type ProductTabId,
 } from "./ProductsTabs";
 import ProductListRow from "./ProductListRow";
+import ProductsSearchForm from "./ProductsSearchForm";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
@@ -15,11 +16,12 @@ import { loadProductStockSplits } from "@/lib/suppliers/stock-split";
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; tab?: string }>;
+  searchParams: Promise<{ view?: string; tab?: string; q?: string }>;
 }) {
   const { owner } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
-  const { view, tab: tabParam } = await searchParams;
+  const { view, tab: tabParam, q: qParam } = await searchParams;
+  const q = (qParam ?? "").trim();
   const showArchived = view === "archived";
   const tab: ProductTabId = isProductTabId(tabParam) ? tabParam : "standard";
   const isPreOrder = tab === "preorder";
@@ -48,6 +50,15 @@ export default async function ProductsPage({
               isHidden: false,
             }),
         ...(showArchived ? { isArchived: true } : productDashboardWhere),
+        ...(q
+          ? {
+              OR: [
+                { name: { contains: q, mode: "insensitive" } },
+                { sku: { contains: q, mode: "insensitive" } },
+                { upc: { contains: q, mode: "insensitive" } },
+              ],
+            }
+          : {}),
       },
       select: {
         id: true,
@@ -58,6 +69,7 @@ export default async function ProductsPage({
         currency: true,
         costCents: true,
         stockQuantity: true,
+        supplyStatus: true,
         sku: true,
         member: { select: { name: true } },
       },
@@ -86,6 +98,7 @@ export default async function ProductsPage({
             {isSupplier ? "supplier" : isPreOrder ? "pre-order" : ""} product
             {products.length === 1 ? "" : "s"}
             {showArchived ? " archived" : " in progress"} · {selected.name}
+            {q ? ` · “${q}”` : ""}
           </p>
         </div>
         <DashPrimaryCta
@@ -104,6 +117,8 @@ export default async function ProductsPage({
               : "+ Add product"}
         </DashPrimaryCta>
       </div>
+
+      <ProductsSearchForm q={q} tab={tab} view={view} />
 
       <div className="flex flex-wrap items-center gap-2">
         <ProductsTabs active={tab} view={view} />

@@ -2,6 +2,8 @@ import Link from "next/link";
 import DashListCard from "@/components/DashListCard";
 import { formatMoney } from "@/lib/money";
 import ProductLifecycleActions from "./ProductLifecycleActions";
+import StockStatusBadges from "@/components/inventory/StockStatusBadges";
+import type { ProductSupplyStatus } from "@/generated/prisma/client";
 
 type ProductRow = {
   id: string;
@@ -12,6 +14,7 @@ type ProductRow = {
   currency: string;
   costCents: number | null;
   stockQuantity: number;
+  supplyStatus?: ProductSupplyStatus | null;
   sku: string | null;
   supplierName?: string | null;
   ownerUnits?: number | null;
@@ -43,6 +46,9 @@ export default function ProductListRow({
                 <span className="rounded-full bg-[var(--leaf)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--leaf-dark)]">
                   Supplier
                 </span>
+              ) : null}
+              {product.supplyStatus ? (
+                <StockStatusBadges supplyStatus={product.supplyStatus} />
               ) : null}
             </div>
             <p className="mt-1 font-[family-name:var(--font-display)] text-lg font-bold leading-tight">

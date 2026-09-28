@@ -116,6 +116,7 @@ export default async function EditProductPage({
       <ProductStockCard
         productId={product.id}
         stockQuantity={product.stockQuantity}
+        supplyStatus={product.supplyStatus}
       />
       <ProductOptionsEditor
         productId={product.id}

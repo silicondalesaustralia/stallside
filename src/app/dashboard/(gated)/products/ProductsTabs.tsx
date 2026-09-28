@@ -15,10 +15,16 @@ export default function ProductsTabs({
   active,
   view,
 }: {
-  active: ProductTabId;
+  active: ProductTabId | "inventory";
   view?: string;
 }) {
   const archived = view === "archived";
+  const tabClass = (selected: boolean) =>
+    `rounded-full px-3.5 py-1.5 text-sm font-semibold ${
+      selected
+        ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
+        : "bg-white text-[var(--ink)] outline outline-[var(--line)] hover:bg-[var(--wash)]"
+    }`;
   return (
     <nav className="flex flex-wrap gap-2" aria-label="Product type">
       {PRODUCT_TABS.map((tab) => {
@@ -31,16 +37,15 @@ export default function ProductsTabs({
           <Link
             key={tab.id}
             href={qs ? `/dashboard/products?${qs}` : "/dashboard/products"}
-            className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
-              selected
-                ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
-                : "bg-white text-[var(--ink)] outline outline-[var(--line)] hover:bg-[var(--wash)]"
-            }`}
+            className={tabClass(selected)}
           >
             {tab.label}
           </Link>
         );
       })}
+      <Link href="/dashboard/inventory" className={tabClass(active === "inventory")}>
+        Inventory
+      </Link>
     </nav>
   );
 }

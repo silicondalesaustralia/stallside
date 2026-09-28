@@ -61,6 +61,13 @@ enum InventorySource {
   SYSTEM
 }
 
+enum ProductSupplyStatus {
+  IN_PRODUCTION
+  ON_ORDER
+  SEASONAL
+  DISCONTINUED
+}
+
 /** Provider-neutral external commerce systems (Phase 10/11). */
 enum CommerceProvider {
   SQUARE
@@ -1066,6 +1073,8 @@ model Product {
   currency           String               @default("AUD")
   stockQuantity      Int                  @default(0)
   lowStockThreshold  Int                  @default(5)
+  /** Owner-set supply status shown on the inventory report (null = none). */
+  supplyStatus       ProductSupplyStatus?
   /** Legacy soft-off; kept in sync with isArchived for older queries. */
   isActive           Boolean              @default(true)
   /** Hidden from stand catalog; direct link + checkout still work. */

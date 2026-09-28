@@ -1,12 +1,16 @@
 import DashFormSection from "@/components/DashFormSection";
 import InventoryAdjustForm from "./InventoryAdjustForm";
+import SupplyStatusSelect from "./SupplyStatusSelect";
+import type { ProductSupplyStatus } from "@/generated/prisma/client";
 
 export default function ProductStockCard({
   stockQuantity,
   productId,
+  supplyStatus,
 }: {
   stockQuantity: number;
   productId: string;
+  supplyStatus: ProductSupplyStatus | null;
 }) {
   return (
     <DashFormSection
@@ -20,6 +24,7 @@ export default function ProductStockCard({
         </span>
       </p>
       <InventoryAdjustForm productId={productId} />
+      <SupplyStatusSelect productId={productId} value={supplyStatus} />
     </DashFormSection>
   );
 }
