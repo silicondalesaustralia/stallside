@@ -6,6 +6,7 @@ import type { SaasSeriesPoint } from "@/lib/saas-series";
 import DashboardStat from "@/components/DashboardStat";
 import SaasSeriesChart from "@/components/SaasSeriesChart";
 import SalesSeriesChart from "@/components/SalesSeriesChart";
+import AdminVendorSalesCard from "./AdminVendorSalesCard";
 
 type SaasStats = Awaited<ReturnType<typeof getSaasStats>>;
 
@@ -43,38 +44,15 @@ export default function AdminSaasPanels({
           : " · subscription invoices could not be loaded"}
       </p>
 
-      <section className="dash-card p-5">
-        <h2 className="text-lg font-semibold">
-          Vendor sales · {windowLabel}
-        </h2>
-        <p className="mt-1 text-sm text-[var(--muted)]">
-          Gross sales across all stalls (AUD) — separate from platform
-          commission.
-        </p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
-              Amount
-            </p>
-            <p className="mt-2 font-receipt text-2xl font-semibold tabular-nums tracking-tight">
-              {formatMoney(vendorSales.salesAudCents, saas.currency)}
-            </p>
-          </div>
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
-              Orders
-            </p>
-            <p className="mt-2 font-receipt text-2xl font-semibold tabular-nums tracking-tight">
-              {vendorSales.orderCount.toLocaleString()}
-            </p>
-          </div>
-        </div>
-        <p className="mt-3 text-sm text-[var(--muted)]">
-          All-time{" "}
-          {formatMoney(vendorSalesAllTime.salesAudCents, saas.currency)} ·{" "}
-          {vendorSalesAllTime.orderCount.toLocaleString()} orders
-        </p>
-      </section>
+      <AdminVendorSalesCard
+        windowLabel={windowLabel}
+        currency={saas.currency}
+        sales={vendorSales}
+        salesAllTime={vendorSalesAllTime}
+        feeCents={ltv.feeAudCents}
+        feeAllTimeCents={saas.feesAllTimeCents}
+        feesFromStripe={ltv.feesFromStripe}
+      />
 
       <SaasSeriesChart points={series} title={`${windowLabel} · SaaS activity`} />
 
