@@ -8,7 +8,7 @@ export function inventoryQuery(params: InventoryParams): string {
   const search = new URLSearchParams();
   if (params.status) search.set("status", params.status);
   if (params.q) search.set("q", params.q);
-  if (params.mode === "count") search.set("mode", "count");
+  if (params.mode === "count" || params.mode === "import") search.set("mode", params.mode);
   const qs = search.toString();
   return qs ? `?${qs}` : "";
 }

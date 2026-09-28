@@ -3,9 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { InventorySource } from "@/generated/prisma/client";
-import { notifyLowStockForProducts } from "@/lib/notify";
 import { isSupplyStatus } from "@/lib/inventory/inventory-status";
+import { applyStockCounts } from "@/lib/inventory/apply-stock-counts";
 
 type ActionResult = { ok: true; changed?: number } | { error: string };
 
@@ -26,45 +25,11 @@ export async function applyStockCount(formData: FormData): Promise<ActionResult>
     }
     if (counts.size === 0) return { error: "Enter at least one count." };
 
-    const products = await prisma.product.findMany({
-      where: { ownerId: owner.id, id: { in: [...counts.keys()] } },
-      select: { id: true, standId: true, stockQuantity: true, lowStockThreshold: true },
-    });
-    const changed = products.filter((p) => counts.get(p.id) !== p.stockQuantity);
-
-    await prisma.$transaction(
-      changed.flatMap((p) => {
-        const next = counts.get(p.id) ?? p.stockQuantity;
-        return [
-          prisma.product.update({ where: { id: p.id }, data: { stockQuantity: next } }),
-          prisma.inventoryAdjustment.create({
-            data: {
-              productId: p.id,
-              ownerId: owner.id,
-              standId: p.standId,
-              changeQuantity: next - p.stockQuantity,
-              previousQuantity: p.stockQuantity,
-              newQuantity: next,
-              reason: "Stock count",
-              source: InventorySource.RECONCILIATION,
-            },
-          }),
-        ];
-      }),
-    );
-
-    const low = changed.filter((p) => (counts.get(p.id) ?? 0) <= p.lowStockThreshold);
-    for (const p of low) {
-      try {
-        await notifyLowStockForProducts([p.id], owner.id, p.standId);
-      } catch (error) {
-        console.error("Low-stock notify after stock count failed", error);
-      }
-    }
+    const changed = await applyStockCounts({ ownerId: owner.id, counts, reason: "Stock count" });
 
     revalidatePath("/dashboard/inventory");
     revalidatePath("/dashboard/products");
-    return { ok: true, changed: changed.length };
+    return { ok: true, changed };
   } catch (error) {
     console.error("applyStockCount failed", error);
     return { error: error instanceof Error ? error.message : "Could not save count." };

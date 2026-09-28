@@ -11,6 +11,7 @@ import ProductsTabs from "../products/ProductsTabs";
 import InventorySummaryTiles from "./InventorySummaryTiles";
 import InventoryReportTable from "./InventoryReportTable";
 import InventoryCountForm from "./InventoryCountForm";
+import InventoryImportPanel from "./InventoryImportPanel";
 import { inventoryHref, inventoryQuery, pillClass } from "./inventory-href";
 
 export default async function InventoryPage({
@@ -26,6 +27,7 @@ export default async function InventoryPage({
     ? params.status
     : undefined;
   const isCount = params.mode === "count";
+  const isImport = params.mode === "import";
   const base = { status, q: q || undefined };
 
   const heading = (
@@ -51,7 +53,7 @@ export default async function InventoryPage({
         <div>
           {heading}
           <p className="mt-1 text-[var(--muted)]">
-            {isCount ? "Stock count" : "Stock report"} · {selected.name}
+            {isCount ? "Stock count" : isImport ? "Import stock" : "Stock report"} · {selected.name}
             {q ? ` · “${q}”` : ""}
           </p>
         </div>
@@ -62,10 +64,15 @@ export default async function InventoryPage({
           <a href={`/dashboard/inventory/export${inventoryQuery(base)}`} download className={pillClass(false)}>
             Export CSV
           </a>
+          <Link href={inventoryHref({ ...base, mode: isImport ? undefined : "import" })} className={pillClass(isImport)}>
+            {isImport ? "Close import" : "Import CSV"}
+          </Link>
         </div>
       </div>
 
       <ProductsTabs active="inventory" />
+
+      {isImport ? <InventoryImportPanel /> : null}
 
       <form method="get" role="search" className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--line)] bg-white p-2">
         {status ? <input type="hidden" name="status" value={status} /> : null}

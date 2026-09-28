@@ -38,6 +38,7 @@ const HEADERS = [
   "Stock value (cost)",
   "Stock value (retail)",
   "Currency",
+  "Product ID",
 ];
 
 export function inventoryRowsToCsv(rows: InventoryRow[]): string {
@@ -63,10 +64,22 @@ export function inventoryRowsToCsv(rows: InventoryRow[]): string {
       money(r.costCents == null ? null : r.costCents * onHand),
       money(r.priceCents * onHand),
       r.currency,
+      r.id,
     ]
       .map(cell)
       .join(",");
   });
   // BOM so Excel opens UTF-8 correctly.
   return "\uFEFF" + [HEADERS.join(","), ...lines].join("\r\n");
+}
+
+/** Import template: one row per product with a blank "On hand" column to fill in. */
+export function inventoryTemplateCsv(
+  products: { id: string; name: string; sku: string | null; stockQuantity: number }[],
+): string {
+  const headers = ["Product", "SKU", "Current stock", "On hand", "Product ID"];
+  const lines = products.map((p) =>
+    [p.name, p.sku, p.stockQuantity, "", p.id].map(cell).join(","),
+  );
+  return "\uFEFF" + [headers.join(","), ...lines].join("\r\n");
 }

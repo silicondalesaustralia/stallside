@@ -21,7 +21,7 @@ export const productsInventoryArticles: KnowledgeArticle[] = [
       "Sold 7d and Sold 30d count units from paid orders. Per day is the 30-day average. Days cover is how long your current stock lasts at that rate; it turns red at 7 days or less.",
       "Last sold helps you spot slow or dead stock. Last counted shows when you last did a stock count for that product.",
       "Tap a status pill to filter, or search by name, SKU, or barcode.",
-      "Tap Export CSV to download the current view. It opens in Excel, Numbers, or Google Sheets and includes unit price, unit cost, and stock value columns.",
+      "Tap Export CSV to download the current view. It opens in Excel, Numbers, or Google Sheets and includes unit price, unit cost, and stock value columns. You can edit the On hand column and bring it back in with Import CSV.",
     ],
   },
   {
@@ -40,6 +40,7 @@ export const productsInventoryArticles: KnowledgeArticle[] = [
       "Use the status pills or search to count one group at a time, for example just Low stock.",
       "Tap Apply count. Vendl sets each counted product to your number and records the change in its stock history as a stock count.",
       "Last counted on the report updates, so you can see what hasn't been checked in a while. Products that end up at or below their low-stock threshold trigger your usual low-stock alert.",
+      "Prefer a spreadsheet? Tap Import CSV, then Download template. It lists all your products with a blank On hand column. Fill in what you counted (leave rows blank to skip them), save it as CSV, and upload it with Choose CSV file. An edited Export CSV works too. Vendl shows every change and any rows it couldn't match before anything is saved. Your own file also works if it has an On hand column plus a Product ID, SKU, or Product name column.",
       "For a single quick fix, open the product and use Stock → Set exact instead.",
     ],
   },

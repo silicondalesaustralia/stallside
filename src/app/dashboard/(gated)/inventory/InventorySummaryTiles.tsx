@@ -3,11 +3,13 @@ import type { InventoryRow } from "@/lib/inventory/load-inventory-report";
 
 function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-xl border border-[var(--line)] bg-white px-4 py-3">
+    <div className="min-w-0 rounded-xl border border-[var(--line)] bg-white px-4 py-3">
       <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
         {label}
       </p>
-      <p className="mt-1 font-receipt text-2xl font-semibold tabular-nums">{value}</p>
+      <p className="mt-1 font-receipt text-xl font-semibold leading-tight tabular-nums [overflow-wrap:anywhere] sm:text-2xl">
+        {value}
+      </p>
       {hint ? <p className="mt-0.5 text-xs text-[var(--muted)]">{hint}</p> : null}
     </div>
   );
@@ -31,7 +33,7 @@ export default function InventorySummaryTiles({ rows }: { rows: InventoryRow[] }
   const runningOut = rows.filter((r) => r.daysCover != null && r.daysCover <= 7).length;
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 2xl:grid-cols-6">
       <Tile label="Products" value={String(rows.length)} />
       <Tile label="Low stock" value={String(low)} />
       <Tile label="Out of stock" value={String(out)} />
