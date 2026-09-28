@@ -4,11 +4,17 @@ import { ordersAlertsBillingArticles } from "./orders-alerts-billing";
 import { storefrontArticles } from "./storefront";
 import { sellingMoreArticles } from "./selling-more";
 import { supplierArticles } from "./suppliers";
+import { productsInventoryArticles } from "./products-inventory";
 
 export type { KnowledgeArticle, KnowledgeCategory, KnowledgeCta } from "./types";
 
 export const knowledgeCategories: KnowledgeCategory[] = [
   { id: "getting-started", title: "Getting started", articles: gettingStartedArticles },
+  {
+    id: "products-inventory",
+    title: "Products & inventory",
+    articles: productsInventoryArticles,
+  },
   {
     id: "storefront",
     title: "Pre-orders & collections",
