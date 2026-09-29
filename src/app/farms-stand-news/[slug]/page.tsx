@@ -4,6 +4,7 @@ import JsonLd from "@/components/JsonLd";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import NewsArticleView from "@/components/NewsArticleView";
 import { SITE_URL } from "@/lib/legal";
+import { DEFAULT_OG_IMAGE } from "@/lib/og-image";
 import {
   getArticle,
   getArticleSlugs,
@@ -41,24 +42,22 @@ export async function generateMetadata({
       publishedTime: article.publishedAt,
       modifiedTime: article.updatedAt ?? article.publishedAt,
       authors: [article.author.name],
-      ...(article.image
-        ? {
-            images: [
-              {
-                url: article.image.src,
-                width: article.image.width,
-                height: article.image.height,
-                alt: article.image.alt,
-              },
-            ],
-          }
-        : {}),
+      images: [
+        article.image
+          ? {
+              url: article.image.src,
+              width: article.image.width,
+              height: article.image.height,
+              alt: article.image.alt,
+            }
+          : DEFAULT_OG_IMAGE,
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: article.seoTitle,
       description: article.seoDescription,
-      ...(article.image ? { images: [article.image.src] } : {}),
+      images: [article.image ? article.image.src : DEFAULT_OG_IMAGE.url],
     },
   };
 }

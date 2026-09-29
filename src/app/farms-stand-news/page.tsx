@@ -4,6 +4,7 @@ import JsonLd from "@/components/JsonLd";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import { APP_NAME } from "@/lib/constants";
 import { getAllArticles, newsArticlePath } from "@/lib/farms-stand-news";
+import { DEFAULT_OG_IMAGE } from "@/lib/og-image";
 import { marketingPageGraphSchema } from "@/lib/schema";
 
 const title = "Farm Stand News";
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
     description,
     url: "/farms-stand-news",
     type: "website",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

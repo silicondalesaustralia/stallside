@@ -15,6 +15,7 @@ import {
   jurisdictionPathFor,
 } from "@/lib/jurisdictions/paths";
 import { jurisdictionPageSchema } from "@/lib/jurisdictions/schema";
+import { DEFAULT_OG_IMAGE } from "@/lib/og-image";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -45,6 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${title} · ${APP_NAME}`,
       description,
       url: path,
+      images: [DEFAULT_OG_IMAGE],
     },
   };
 }
