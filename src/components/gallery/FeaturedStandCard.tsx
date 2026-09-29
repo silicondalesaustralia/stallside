@@ -10,7 +10,9 @@ export default function FeaturedStandCard({
   reverse?: boolean;
 }) {
   return (
-    <article className="grid items-center gap-8 overflow-hidden rounded-[var(--radius-card)] border border-[var(--line)] bg-[var(--panel)] p-4 sm:p-6 lg:grid-cols-2 lg:gap-12 lg:p-8">
+    <article
+      id={stand.id}
+      className="grid scroll-mt-24 items-center gap-8 overflow-hidden rounded-[var(--radius-card)] border border-[var(--line)] bg-[var(--panel)] p-4 sm:p-6 lg:grid-cols-2 lg:gap-12 lg:p-8">
       <FeaturedStandPhotos
         images={stand.images}
         className={`mx-auto w-full max-w-md lg:max-w-none ${reverse ? "lg:order-2" : ""}`}

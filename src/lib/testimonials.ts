@@ -3,9 +3,21 @@ export type Testimonial = {
   quote: string[];
   name: string;
   location: string;
+  link?: { href: string; label: string };
 };
 
 export const testimonials: Testimonial[] = [
+  {
+    id: "fletchers-donnybrook",
+    quote: [
+      "We've been using Vendl.app to manage our sales and get our farm stand up and running, and we couldn't be happier with the experience. We officially opened yesterday, and the whole setup process has felt straightforward.",
+      "We've already made some great upgrades in a short time, and the team has made it feel like a real partnership. It feels like we're on this journey together, and that support means a lot as our little farm business grows.",
+      "We'd happily recommend Vendl.app to other small businesses and farm stands!",
+    ],
+    name: "The Fletchers · Fletcherbrook Small Farm",
+    location: "Donnybrook, Western Australia",
+    link: { href: "#fletcherbrook", label: "See their stand" },
+  },
   {
     id: "marnie-melbourne",
     quote: [
