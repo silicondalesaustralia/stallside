@@ -2,6 +2,7 @@ import { CURRENCIES } from "@/lib/constants";
 import { DEFAULT_TIMEZONE, STAND_TIMEZONES } from "@/lib/stand-timezone";
 import { createStand } from "../actions";
 import FormField from "@/components/FormField";
+import CreateStandSubmitButton from "./CreateStandSubmitButton";
 
 export default function NewStandPage() {
   return (
@@ -63,12 +64,7 @@ export default function NewStandPage() {
           <input type="checkbox" name="showExactStock" className="size-4" />
           Show exact stock counts on public checkout
         </label>
-        <button
-          type="submit"
-          className="mt-2 rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
-        >
-          Create Business
-        </button>
+        <CreateStandSubmitButton />
       </form>
     </main>
   );
