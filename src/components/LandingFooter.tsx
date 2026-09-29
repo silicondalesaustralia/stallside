@@ -20,8 +20,7 @@ const PRODUCT = [
 
 const COMPANY = [
   { href: "/about", label: "About" },
-  { href: "/gallery", label: "Gallery" },
-  { href: "/testimonials", label: "Testimonials" },
+  { href: "/gallery", label: "Stands & stories" },
   { href: "/farms-stand-news", label: "News" },
   { href: "/contact", label: "Contact" },
   { href: "/contact?subject=feature-request", label: "Feature request" },
