@@ -9,6 +9,7 @@ import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesAnalyticsPanel from "@/components/SalesAnalyticsPanel";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveDateWindow } from "@/lib/date-range";
+import { resolveStandTimezone } from "@/lib/stand-timezone";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { loadDashboardHomeData } from "./load-dashboard-home";
@@ -27,7 +28,10 @@ export default async function DashboardPage({
     role: user.role,
   });
   const params = await searchParams;
-  const window = resolveDateWindow(params);
+  const timeZone = selected
+    ? resolveStandTimezone(selected.timezone)
+    : undefined;
+  const window = resolveDateWindow(params, timeZone);
   const monthStart = new Date();
   monthStart.setUTCDate(1);
   monthStart.setUTCHours(0, 0, 0, 0);
@@ -45,6 +49,7 @@ export default async function DashboardPage({
     ownerId: owner.id,
     standId: selected.id,
     window,
+    timeZone: resolveStandTimezone(selected.timezone),
     monthStart,
     loadUpgradeSignals: !cardTier,
   });

@@ -1,6 +1,7 @@
 import DashListCard from "@/components/DashListCard";
 import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
 import { formatMoney } from "@/lib/money";
+import { formatDateInTz } from "@/lib/stand-timezone";
 import { COUNTED_STATUSES, isCountedPaymentStatus } from "@/lib/order-metrics";
 import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
 import OrderCustomerBadge from "./OrderCustomerBadge";
@@ -52,7 +53,13 @@ function channelBadge(order: OrderRow): {
   };
 }
 
-export default function OrderListRow({ order }: { order: OrderRow }) {
+export default function OrderListRow({
+  order,
+  timeZone,
+}: {
+  order: OrderRow;
+  timeZone: string;
+}) {
   const badge = channelBadge(order);
 
   return (
@@ -62,7 +69,15 @@ export default function OrderListRow({ order }: { order: OrderRow }) {
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
-                {order.stand.name} · {order.createdAt.toLocaleString()}
+                {order.stand.name} ·{" "}
+                {formatDateInTz(order.createdAt, timeZone, {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                  timeZoneName: "short",
+                })}
               </p>
               <span
                 className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${badge.className}`}

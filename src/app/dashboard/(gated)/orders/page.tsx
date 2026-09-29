@@ -13,6 +13,7 @@ import Link from "next/link";
 import OrderListRow from "./OrderListRow";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
+import { resolveStandTimezone } from "@/lib/stand-timezone";
 
 export default async function OrdersPage({
   searchParams,
@@ -22,7 +23,6 @@ export default async function OrdersPage({
   const { owner, user } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
   const params = await searchParams;
-  const window = resolveDateWindow(params);
   const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
@@ -39,6 +39,8 @@ export default async function OrdersPage({
     );
   }
 
+  const timeZone = resolveStandTimezone(selected.timezone);
+  const window = resolveDateWindow(params, timeZone);
   const standScope = { ownerId: owner.id, standId: selected.id };
   const metricSelect = {
     totalCents: true,
@@ -106,11 +108,13 @@ export default async function OrdersPage({
     currentOrders,
     window.start,
     window.end,
+    timeZone,
   );
   const previousPoints = buildChannelSalesSeries(
     previousOrders,
     window.prevStart,
     window.prevEnd,
+    timeZone,
   ).all;
 
   return (
@@ -156,7 +160,7 @@ export default async function OrdersPage({
       ) : (
         <ul className="flex flex-col gap-3">
           {listedOrders.map((order) => (
-            <OrderListRow key={order.id} order={order} />
+            <OrderListRow key={order.id} order={order} timeZone={timeZone} />
           ))}
         </ul>
       )}

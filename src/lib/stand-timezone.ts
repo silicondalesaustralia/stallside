@@ -42,7 +42,7 @@ type ZonedParts = {
   second: number;
 };
 
-function zonedParts(date: Date, timeZone: string): ZonedParts {
+export function zonedParts(date: Date, timeZone: string): ZonedParts {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone,
     year: "numeric",
