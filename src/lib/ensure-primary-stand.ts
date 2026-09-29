@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { uniqueStandSlug } from "@/lib/slug";
 import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
 import { ensureStandImmediateOption } from "@/lib/fulfilment/defaults";
+import { createStandOnce } from "@/lib/create-stand-once";
 
 /** Ensure the owner has at least one stand (food businesses need Product.standId). */
 export async function ensurePrimaryStand(owner: {
@@ -32,27 +33,22 @@ export async function ensurePrimaryStand(owner: {
   const currency =
     (owner.billingCurrency ?? "AUD").trim().toUpperCase() || "AUD";
 
-  return prisma.stand
-    .create({
-      data: {
-        ownerId: owner.id,
-        name: owner.businessName,
-        slug,
-        locationLabel: owner.suburb,
-        description: owner.shortDescription,
-        currency,
-        timezone: owner.defaultTimezone || DEFAULT_TIMEZONE,
-        accentColor: owner.brandAccentColor,
-        secondaryColor: owner.brandSecondaryColor,
-        logoUrl: owner.brandLogoUrl,
-        acceptCash: true,
-        acceptLocalTransfer: true,
-        acceptCard: true,
-        qrLinkMode: "WEBSITE_HOME",
-      },
-    })
-    .then(async (stand) => {
-      await ensureStandImmediateOption(stand);
-      return stand;
-    });
+  const stand = await createStandOnce({
+    ownerId: owner.id,
+    name: owner.businessName,
+    slug,
+    locationLabel: owner.suburb,
+    description: owner.shortDescription,
+    currency,
+    timezone: owner.defaultTimezone || DEFAULT_TIMEZONE,
+    accentColor: owner.brandAccentColor,
+    secondaryColor: owner.brandSecondaryColor,
+    logoUrl: owner.brandLogoUrl,
+    acceptCash: true,
+    acceptLocalTransfer: true,
+    acceptCard: true,
+    qrLinkMode: "WEBSITE_HOME",
+  });
+  await ensureStandImmediateOption(stand);
+  return stand;
 }
