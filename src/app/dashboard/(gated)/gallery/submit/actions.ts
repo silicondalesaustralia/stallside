@@ -68,7 +68,7 @@ export async function submitGalleryStand(
     },
   });
 
-  revalidatePath("/gallery");
+  revalidatePath("/testimonials-and-gallery");
   revalidatePath("/admin/gallery");
   redirect("/dashboard/gallery/submit?submitted=1");
 }
