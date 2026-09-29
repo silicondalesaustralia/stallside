@@ -25,7 +25,7 @@ export const VERTICALS: Record<string, VerticalConfig> = {
     faq: [
       {
         q: "Do I need a website?",
-        a: "No. Share a link or print a QR - buyers order and pay online.",
+        a: "No. Your Vendl shop is included - with categories and your own product order. Share a link or print a QR and buyers order and pay online.",
       },
       {
         q: "When do I get paid?",

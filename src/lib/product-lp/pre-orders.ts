@@ -3,15 +3,15 @@ import type { ProductLpContent } from "./types";
 const PRE_SIGNUP = "/signup?utm_content=product-pre-orders";
 
 export const PRE_ORDERS_HUB: ProductLpContent = {
-  metaTitle: "Pre-orders - no website needed",
+  metaTitle: "Pre-orders - shop included, no website needed",
   metaDescription:
-    "Take pre-orders in a minute. Deposits, order windows, make lists. No online store required.",
+    "Take pre-orders in a minute. Deposits, order windows, make lists. Your shop is included - no website needed.",
   canonical: "/pre-orders",
   eyebrow: "Vendl Pre-orders",
   headline: "You Will Make More Money With Vendl Pre-Orders",
   support:
     "Know what to make before you make it. Get paid before you hand it over. Share a link - Facebook, Instagram, WhatsApp - or print a QR for collection day.",
-  chips: ["No website", "Make list included", "Deposits when you need them"],
+  chips: ["Shop included", "Make list included", "Deposits when you need them"],
   ctaLabel: "Get Free Account",
   signupHref: PRE_SIGNUP,
   secondaryLabel: "See how it works ↓",
@@ -115,7 +115,7 @@ export const PRE_ORDERS_HUB: ProductLpContent = {
   objections: [
     {
       q: "Do I need a website?",
-      a: "No. Share a link or print a QR - buyers order and pay online.",
+      a: "No. Your Vendl shop is included - with categories and your own product order. Share a link or print a QR and buyers order and pay online.",
     },
     {
       q: "When do I get paid?",
@@ -151,11 +151,13 @@ export const PRE_ORDERS_HUB: ProductLpContent = {
     "Hide products from the business page",
     "Buyer confirmation emails",
     "Printable order labels",
+    "Your own shop with categories",
+    "Customer lists and email campaigns",
   ],
   pricingFullHref: "/#pricing",
   closingHeadline: "Orders in. Guesswork out.",
   closingSupport: "Share a link today. Open a make list on your next production day.",
-  closingNote: "A$0 monthly on Free · No website required",
+  closingNote: "A$0 monthly on Free · Shop included, no website needed",
   doorwaySectionHeading: "For your trade",
   doorwayLinks: [
     {
@@ -210,7 +212,7 @@ function preDoorway(
 
 export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
   bakers: preDoorway({
-    metaTitle: "Pre-order system for bakers - no website needed",
+    metaTitle: "Pre-order system for bakers - shop included, no website needed",
     metaDescription:
       "Take orders for bread and any baked good in a minute. Know what to bake before you bake it. Make list and packing list included.",
     canonical: "/pre-orders/bakers",
@@ -288,7 +290,7 @@ export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
     objections: [
       {
         q: "Do I need a website?",
-        a: "No. Share a link or print a QR - buyers order and pay online.",
+        a: "No. Your Vendl shop is included - with categories and your own product order. Share a link or print a QR and buyers order and pay online.",
       },
       {
         q: "When do I get paid?",
@@ -309,7 +311,7 @@ export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
     ],
     closingHeadline: "Bake what sold - not what you hoped.",
     closingSupport: "Start free. Share your first window this week.",
-    closingNote: "A$0 monthly on Free · No website",
+    closingNote: "A$0 monthly on Free · Shop included, no website needed",
     heroVisual: "bakers",
     heroFeaturePoints: [
       {
@@ -328,7 +330,7 @@ export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
   }),
 
   "farm-stalls": preDoorway({
-    metaTitle: "Farm pre-orders for collection - no website needed",
+    metaTitle: "Farm pre-orders for collection - shop included, no website needed",
     metaDescription:
       "Take farm orders ahead of market day or a restock. Buyers pay before they collect. Make list included.",
     canonical: "/pre-orders/farm-stalls",
@@ -399,7 +401,7 @@ export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
     proofRecentTitle: "Window closed Thu 8pm",
     proofRecentSub: "Collect Sat 9-11am",
     objectionsHeading: "Farm pre-order questions",
-    objectionsSupport: "For growers and farm sellers who need paid reservations - not a full online store.",
+    objectionsSupport: "For growers and farm sellers who need paid reservations - with a simple shop included, no website to build.",
     objections: [
       {
         q: "Do buyers need an account?",
@@ -415,12 +417,12 @@ export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
       },
       {
         q: "Do I need a website?",
-        a: "No. One link is enough.",
+        a: "No. Your Vendl shop is included - one link is enough.",
       },
     ],
     closingHeadline: "Pack what sold.",
     closingSupport: "Open a window for next market day in minutes.",
-    closingNote: "A$0 monthly on Free · No website",
+    closingNote: "A$0 monthly on Free · Shop included, no website needed",
     heroVisual: "farmStalls",
     heroUpsellLabel: "Eggs cart add-on",
     heroUpsellDetail:
@@ -428,7 +430,7 @@ export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
   }),
 
   firewood: preDoorway({
-    metaTitle: "Firewood pre-orders with deposits - no website needed",
+    metaTitle: "Firewood pre-orders with deposits - shop included, no website needed",
     metaDescription:
       "Take firewood orders with a deposit, charge the balance before delivery, and open a make list by suburb.",
     canonical: "/pre-orders/firewood",
@@ -517,12 +519,12 @@ export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
       },
       {
         q: "Do I need a website?",
-        a: "No. Share a link or print a QR.",
+        a: "No. Your Vendl shop is included - share a link or print a QR.",
       },
     ],
     closingHeadline: "Deposits in. Route planned.",
     closingSupport: "Open your first order window before the cold snap.",
-    closingNote: "A$0 monthly on Free · No website",
+    closingNote: "A$0 monthly on Free · Shop included, no website needed",
     heroVisual: "firewood",
     heroUpsellLabel: "Kindling cart add-on",
     heroUpsellDetail:

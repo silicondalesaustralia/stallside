@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import BusinessToolsSection from "@/components/BusinessToolsSection";
 import LpClosingCta from "@/components/lp/LpClosingCta";
 import LpCtaParamScript from "@/components/lp/LpCtaParamScript";
 import LpFooter from "@/components/lp/LpFooter";
@@ -34,6 +35,7 @@ export default function MissedSalesLpPage() {
       <LpHowItWorks />
       <MarketingDashboardSection />
       <LpProductProof />
+      <BusinessToolsSection heading="Everything else you get" />
       <LpObjections />
       <LpTestimonial />
       <LpPricing />

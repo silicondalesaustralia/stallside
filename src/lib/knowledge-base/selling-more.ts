@@ -64,12 +64,12 @@ export const sellingMoreArticles: KnowledgeArticle[] = [
     videoUrl: null,
     omitVideo: true,
     related: ["email-customers", "alerts-push", "first-stand"],
-    ctas: [{ label: "Products", href: "/dashboard/products" }],
+    ctas: [{ label: "Communication", href: "/dashboard/communication" }],
     steps: [
-      "After checkout, customers can opt in to restock alerts for your stand. You never see the subscriber list - Vendl keeps emails private.",
-      "When you have restocked, open Products. If people are waiting, a restock panel appears with the subscriber count.",
-      "Send the restock notice from that panel. Buyers get an email that you have stock again, with a link back to your stall.",
-      "There is a cooldown between sends so you do not spam the same list. Sale and low-stock alerts to you stay under Settings → Alerts.",
+      "After checkout, customers can opt in to restock alerts for your stand. They join a Restock alerts list that grows automatically - you only see how many people are on it, and Vendl sends the emails for you.",
+      "When you have restocked, open Communication. Under Standing lists, find Restock alerts and tap Broadcast.",
+      "Write a short subject and message (for example, “Fresh sourdough is back this Saturday”), add a button linking to your shop, and send. Works on Free and Pro.",
+      "Every email includes an unsubscribe link, and Communication shows how many were sent and clicked. Sale and low-stock alerts to you stay under Settings → Alerts.",
     ],
   },
   {

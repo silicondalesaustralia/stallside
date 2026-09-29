@@ -19,6 +19,7 @@ const DEFAULT_BENEFITS = [
   "Low-stock warnings",
   "Orders and sales history",
   "Pre-orders for collection days",
+  "Inventory report and stock counts",
   "Restock notifications for regular customers",
 ] as const;
 

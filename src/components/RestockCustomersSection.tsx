@@ -13,10 +13,11 @@ export default function RestockCustomersSection() {
       </p>
       <p>
         After they pay they can tap once to get an email when that stand
-        restocks - nothing else. You restock, hit{" "}
-        <strong className="font-semibold text-[var(--ink)]">Notify customers</strong>
-        , and they hear you&apos;re back. You never see their addresses;
-        Vendl sends on your behalf.
+        restocks - nothing else. You restock, open{" "}
+        <strong className="font-semibold text-[var(--ink)]">Communication</strong>
+        , tap <strong className="font-semibold text-[var(--ink)]">Broadcast</strong>{" "}
+        on your Restock alerts list, and they hear you&apos;re back. You never
+        see their addresses; Vendl sends on your behalf.
       </p>
     </LandingFeatureCallout>
   );

@@ -6,7 +6,7 @@ const bakers = PRE_ORDER_DOORWAYS.bakers;
 /** UK ads LP: bakers page with GBP demo prices (AUD × 0.52, rounded). */
 export const BAKERS_UK_LP: ProductLpContent = {
   ...bakers,
-  metaTitle: "Pre-order system for UK bakers - no website needed",
+  metaTitle: "Pre-order system for UK bakers - shop included, no website needed",
   metaDescription:
     "Take orders for bread and any baked good in a minute. Know what to bake before you bake it. Make list and packing list included.",
   canonical: "/lp/pre-orders/bakers-uk",
@@ -28,5 +28,5 @@ export const BAKERS_UK_LP: ProductLpContent = {
   testimonialExtra: "",
   testimonialPlace: "United Kingdom",
   pricingHeadline: "£0 per month, with every Vendl feature.",
-  closingNote: "£0 monthly on Free · No website",
+  closingNote: "£0 monthly on Free · Shop included, no website needed",
 };

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import BusinessToolsSection from "@/components/BusinessToolsSection";
 import CardDemandProof from "@/components/CardDemandProof";
 import CartTypeSection from "@/components/CartTypeSection";
 import FeatureColumns from "@/components/FeatureColumns";
@@ -37,6 +38,7 @@ export default function HomePage() {
       <HowItWorksFlow />
       <CartTypeSection />
       <MarketingDashboardSection />
+      <BusinessToolsSection />
       <UseCaseGrid />
       <LandingPaymentMethods />
       <LandingRegionsSection />

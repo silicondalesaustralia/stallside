@@ -31,7 +31,7 @@ const RESTOCK_CUSTOMER: FlowBox[] = [
 
 const RESTOCK_OWNER: FlowBox[] = [
   { title: "Restock", subtitle: "Fill the stand", tone: "owner" },
-  { title: "Notify customers", subtitle: "One button", tone: "owner" },
+  { title: "Broadcast", subtitle: "Restock alerts list", tone: "owner" },
 ];
 
 const RESTOCK_RESULT: FlowBox[] = [

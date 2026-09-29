@@ -5,7 +5,7 @@ const STALL_SIGNUP = "/signup?utm_content=product-stall";
 export const STALL_HUB: ProductLpContent = {
   metaTitle: "Unattended stall checkout",
   metaDescription:
-    "Leave goods out. Buyers scan a QR, pay cash, PayID or card, and take. Instant sale alerts. No website needed.",
+    "Leave goods out. Buyers scan a QR, pay cash, PayID or card, and take. Instant sale alerts. Your shop is included - no website needed.",
   canonical: "/stall",
   eyebrow: "Vendl Stall",
   headline: "You Will Make More Sales At Your Farm Stand With Vendl",
@@ -84,6 +84,8 @@ export const STALL_HUB: ProductLpContent = {
     "Live stock counts",
     "Low-stock warnings",
     "Orders and sales history",
+    "Inventory report with days of cover and stock value",
+    "Stock counts and spreadsheet stock import",
     "Restock notifications for regular customers",
   ],
   proofNote: "Every feature is included on Free. Pro only changes the Vendl card fee.",
@@ -212,7 +214,7 @@ export const STALL_DOORWAYS: Record<string, ProductLpContent> = {
       "QR checkout for the farm gate. Eggs, honey, veg - leave them out. Buyers scan, pay, and take.",
     canonical: "/stall/farm-gate",
     eyebrow: "Farm gate",
-    headline: "QR checkout for the farm gate. No website needed.",
+    headline: "QR checkout for the farm gate. Shop included, no website needed.",
     support:
       "Eggs, honey, veg - leave them out. Buyers scan, pay, and take. You get the alert on your phone.",
     chips: ["Cash & PayID", "Card when ready", "Stock that updates"],

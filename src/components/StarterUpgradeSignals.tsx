@@ -42,13 +42,14 @@ export default function StarterUpgradeSignals({
           <p className="mt-2 text-sm text-[var(--muted)]">
             {restockSubscriberCount}{" "}
             {restockSubscriberCount === 1 ? "regular is" : "regulars are"}{" "}
-            waiting to hear when you restock. Upgrade to notify them.
+            waiting to hear when you restock. Email them from Communication
+            when you have stock again.
           </p>
           <Link
-            href="/dashboard/settings/billing"
+            href="/dashboard/communication"
             className="mt-3 inline-flex text-sm font-semibold text-[var(--leaf-dark)] underline"
           >
-            Upgrade to Pro to notify
+            Notify restock list
           </Link>
         </div>
       ) : null}

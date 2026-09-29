@@ -1,4 +1,4 @@
-import Link from "next/link";
+import BusinessToolsSection from "@/components/BusinessToolsSection";
 import LpClosingCta from "@/components/lp/LpClosingCta";
 import LpCtaParamScript from "@/components/lp/LpCtaParamScript";
 import LpHero from "@/components/lp/LpHero";
@@ -13,6 +13,7 @@ import LpTestimonial from "@/components/lp/LpTestimonial";
 import LpTrustStrip from "@/components/lp/LpTrustStrip";
 import MarketingDashboardSection from "@/components/MarketingDashboardSection";
 import MarketingPageShell from "@/components/MarketingPageShell";
+import ProductLpDoorways from "@/components/product-lp/ProductLpDoorways";
 import ProductLpHeroVisual from "@/components/product-lp/ProductLpHeroVisual";
 import type { ProductLpContent } from "@/lib/product-lp/types";
 
@@ -95,29 +96,12 @@ export default function ProductLpPage({
         recentTitle={content.proofRecentTitle}
         recentSub={content.proofRecentSub}
       />
-      {content.doorwayLinks && content.doorwayLinks.length > 0 ? (
-        <section className="px-5 pb-12 sm:px-6 sm:pb-16">
-          <div className="mx-auto max-w-6xl">
-            <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--field)] sm:text-3xl">
-              {content.doorwaySectionHeading ?? "Built for"}
-            </h2>
-            <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {content.doorwayLinks.map((d) => (
-                <li key={d.href}>
-                  <Link
-                    href={d.href}
-                    className="flex h-full flex-col gap-2 rounded-[var(--radius)] border border-[var(--line)] bg-white p-5 shadow-sm transition hover:border-[var(--leaf)]"
-                  >
-                    <span className="font-semibold text-[var(--field)]">
-                      {d.label}
-                    </span>
-                    <span className="text-sm text-[var(--muted)]">{d.blurb}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+      <BusinessToolsSection heading="Everything else you get" />
+      {content.doorwayLinks ? (
+        <ProductLpDoorways
+          heading={content.doorwaySectionHeading}
+          links={content.doorwayLinks}
+        />
       ) : null}
       <LpObjections
         heading={content.objectionsHeading}

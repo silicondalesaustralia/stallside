@@ -21,13 +21,20 @@ export const REGIONAL_PAYMENTS_SUMMARY = SHARED_PAYMENT_FEATURES[2];
 
 const AFTER = [
   "Sale alerts, low-stock and out-of-stock alerts, email and push notifications",
-  "Orders and inventory dashboard",
+  "Orders, inventory report, stock counts, and spreadsheet stock import / export",
+  "Product status (in production, on order, seasonal, discontinued) and product search",
   "Card-demand counter",
   "Customer restock notifications",
   "Pre-orders with order-by deadlines and collection days",
   "Shopper subscriptions - weekly, fortnightly, or monthly recurring boxes",
+  "Memberships with member caps and pay-in-full plans",
   "Cart upsells, pre-order add-ons, and first-order discounts",
   "Collections - Ready and Collected, buyer messaging",
+  "Your own online shop with categories, shop layout, and custom product order",
+  "Customer list, smart lists, and branded email campaigns",
+  "Supplier logins with shared stock and a record of what you owe",
+  "Notifications inbox, sales by channel, and multiple businesses",
+  "QR poster editor with live preview",
   "Stall branding - logo, colours, social and website links",
 ] as const;
 

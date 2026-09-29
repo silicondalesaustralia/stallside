@@ -10,10 +10,10 @@ export const APP_HERO_SUPPORT =
   "Live in a minute. Cash and card from the start - plus every payment method in your region.";
 /** Browser tab + search title for the homepage */
 export const APP_SEO_TITLE =
-  "Vendl · Make more money from your stall. No website needed.";
+  "Vendl · Make more money from your stall. Shop included, no website needed.";
 /** Meta description (~155 chars) */
 export const APP_SEO_DESCRIPTION =
-  "QR checkout for unattended stalls, pre-orders, and subscriptions. Upsells, stock alerts, cash and card - sell more without a website.";
+  "QR checkout for unattended stalls, pre-orders, and subscriptions. Stock tools, cash and card - plus your own online shop, no website needed.";
 
 
 /** @deprecated legacy Cash tier list price - prefer cashPlanCents(currency) */
