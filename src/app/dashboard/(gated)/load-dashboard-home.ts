@@ -18,10 +18,11 @@ export async function loadDashboardHomeData(args: {
   ownerId: string;
   standId: string;
   window: DateWindow;
+  timeZone: string;
   monthStart: Date;
   loadUpgradeSignals: boolean;
 }) {
-  const { ownerId, standId, window, monthStart, loadUpgradeSignals } = args;
+  const { ownerId, standId, window, timeZone, monthStart, loadUpgradeSignals } = args;
   const standScope = { ownerId, standId };
   const productScope = { ...standScope, ...productDashboardWhere };
   const metricSelect = {
@@ -121,11 +122,13 @@ export async function loadDashboardHomeData(args: {
     currentOrders,
     window.start,
     window.end,
+    timeZone,
   );
   const previousPoints = buildChannelSalesSeries(
     previousOrders,
     window.prevStart,
     window.prevEnd,
+    timeZone,
   ).all;
 
   return {

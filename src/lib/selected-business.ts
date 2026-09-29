@@ -14,6 +14,7 @@ export type BusinessOption = {
   id: string;
   name: string;
   slug: string;
+  timezone: string;
 };
 
 export async function readSelectedBusinessCookie(): Promise<string | null> {
@@ -43,7 +44,7 @@ export const resolveSelectedBusiness = cache(async (
   const businesses = await prisma.stand.findMany({
     where: { ownerId },
     orderBy: { name: "asc" },
-    select: { id: true, name: true, slug: true },
+    select: { id: true, name: true, slug: true, timezone: true },
   });
   if (businesses.length === 0) {
     return { businesses, selected: null };
