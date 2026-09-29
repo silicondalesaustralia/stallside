@@ -8,6 +8,7 @@ import {
   formatOwnerLtv,
   platformFeesByOwner,
 } from "@/lib/owner-ltv";
+import { salesByOwner } from "@/lib/admin-sales";
 import AdminDeleteOwnerButton from "./AdminDeleteOwnerButton";
 import AdminOwnerTools from "./AdminOwnerTools";
 import OwnerPaymentLedger from "./OwnerPaymentLedger";
@@ -19,7 +20,7 @@ export default async function AdminOwnerDetailPage({
 }) {
   await requireAdmin();
   const { ownerId } = await params;
-  const [owner, fx, feesByOwner] = await Promise.all([
+  const [owner, fx, feesByOwner, salesMap] = await Promise.all([
     prisma.owner.findUnique({
       where: { id: ownerId },
       include: {
@@ -29,6 +30,7 @@ export default async function AdminOwnerDetailPage({
     }),
     audRatesFromMarket(),
     platformFeesByOwner([ownerId]),
+    salesByOwner([ownerId]),
   ]);
   if (!owner) notFound();
 
@@ -63,6 +65,10 @@ export default async function AdminOwnerDetailPage({
         {owner.lifetimeAccess ? (
           <p className="font-semibold text-[var(--leaf)]">Free for Life</p>
         ) : null}
+        <p>
+          Stall sales (all methods):{" "}
+          {formatFeeBuckets(salesMap.get(owner.id) ?? [], fx)}
+        </p>
         <p>LTV: {formatOwnerLtv(ltvInput)}</p>
         <p>
           Fees {formatFeeBuckets(fees, fx)} · Subscriptions{" "}

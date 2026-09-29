@@ -11,8 +11,9 @@ import { RANGE_PRESETS, resolveDateWindow } from "@/lib/date-range";
 import { isStripeBillingConfigured } from "@/lib/stripe";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import DateRangeFilter from "@/components/DateRangeFilter";
-import { medianSignupToFirstLiveMs } from "@/lib/signup-timing";
+import AdminMedianLiveLine from "./AdminMedianLiveLine";
 import AdminSaasPanels from "./AdminSaasPanels";
+import AdminSalesSection from "./AdminSalesSection";
 
 export default async function AdminOverviewPage({
   searchParams,
@@ -108,6 +109,15 @@ export default async function AdminOverviewPage({
         vendorSalesAllTime={vendorSalesAllTime}
       />
 
+      <AdminSalesSection
+        windowLabel={window.label}
+        start={window.start}
+        end={window.end}
+        prevStart={window.prevStart}
+        prevEnd={window.prevEnd}
+        compare={compare}
+      />
+
       <Suspense
         fallback={
           <section className="dash-card p-5">
@@ -119,24 +129,6 @@ export default async function AdminOverviewPage({
         <AdminRecentOwnersSection />
       </Suspense>
     </main>
-  );
-}
-
-async function AdminMedianLiveLine() {
-  const medianLiveMs = await medianSignupToFirstLiveMs();
-  const medianLiveLabel =
-    medianLiveMs == null
-      ? "n/a"
-      : medianLiveMs < 60_000
-        ? `${Math.round(medianLiveMs / 1000)}s`
-        : `${(medianLiveMs / 60_000).toFixed(1)}m`;
-  return (
-    <p className="mt-1 text-sm text-[var(--muted)]">
-      Median signup → first live product: <strong>{medianLiveLabel}</strong>
-      {medianLiveMs != null && medianLiveMs > 60_000
-        ? " (over 60s — fix setup before new verticals)"
-        : ""}
-    </p>
   );
 }
 
