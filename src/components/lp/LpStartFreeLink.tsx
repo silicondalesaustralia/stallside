@@ -23,6 +23,7 @@ export default function LpStartFreeLink({
   return (
     <a
       href={href}
+      suppressHydrationWarning
       data-lp-cta
       data-placement={placement}
       className={className ?? DEFAULT_CLASS}
