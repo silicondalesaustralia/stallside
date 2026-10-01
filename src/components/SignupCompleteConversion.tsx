@@ -19,14 +19,6 @@ declare global {
     fbq?: (...args: unknown[]) => void;
     gtag?: (...args: unknown[]) => void;
     rdt?: (...args: unknown[]) => void;
-    sdAttribution?: {
-      identify?: (input: { email?: string; emailHash?: string }) => void;
-      getIdentity?: () => {
-        visitorId?: string;
-        sessionId?: string;
-        clickIds?: Record<string, string>;
-      };
-    };
   }
 }
 
@@ -70,7 +62,7 @@ function onceSet(key: string) {
 
 /**
  * Fires Meta + GA + Reddit + Perform on the thank-you page.
- * Perform only locks after a successful convert HTTP response.
+ * Perform locks once the StitchStack script has accepted the lead.
  */
 export default function SignupCompleteConversion({
   userId,
