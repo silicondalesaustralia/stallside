@@ -2,11 +2,13 @@
 
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
+import PoweredByRail from "@/components/PoweredByRail";
 import DemoCardHint from "@/components/DemoCardHint";
 import { stripeCheckoutBrandsForCurrency } from "@/lib/payment-brand-assets";
 import { formatMoney } from "@/lib/public-product";
 import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
+import SquareWebPayButton from "./SquareWebPayButton";
 import PreOrderContactFields from "./PreOrderContactFields";
 
 type CartItem = {
@@ -19,6 +21,7 @@ type CartItem = {
 type CheckoutPayStepProps = {
   cashEnabled: boolean;
   cardEnabled: boolean;
+  squareEnabled?: boolean;
   paypalEnabled: boolean;
   paypalClientId: string | null;
   paypalMerchantId: string | null;
@@ -32,6 +35,8 @@ type CheckoutPayStepProps = {
   /** Pass-on Vendl fee (0 when absorb or Pro). */
   cardFeeCents?: number;
   cardTotalCents?: number;
+  /** Square charge total (no Stripe fixed fee). */
+  squareTotalCents?: number;
   localTransferLabel: string | null;
   pending: boolean;
   showDemoCardHint?: boolean;
@@ -57,6 +62,7 @@ type CheckoutPayStepProps = {
   onCash: () => void;
   onLocalTransfer: () => void;
   onCard: () => void;
+  onSquareSuccess?: (orderNumber: string) => void;
   onPayPalError: (message: string) => void;
   onBack: () => void;
   backLabel?: string;
@@ -65,6 +71,7 @@ type CheckoutPayStepProps = {
 export default function CheckoutPayStep({
   cashEnabled,
   cardEnabled,
+  squareEnabled = false,
   paypalEnabled,
   paypalClientId,
   paypalMerchantId,
@@ -76,6 +83,7 @@ export default function CheckoutPayStep({
   subtotalCents = 0,
   cardFeeCents = 0,
   cardTotalCents = 0,
+  squareTotalCents,
   localTransferLabel,
   pending,
   showDemoCardHint = false,
@@ -99,6 +107,7 @@ export default function CheckoutPayStep({
   onCash,
   onLocalTransfer,
   onCard,
+  onSquareSuccess,
   onPayPalError,
   onBack,
   backLabel = "Back to cart",
@@ -172,6 +181,26 @@ export default function CheckoutPayStep({
           <span>{localTransferLabel}</span>
         </button>
       ) : null}
+      {squareEnabled ? (
+        <SquareWebPayButton
+          standSlug={standSlug}
+          items={customerChoiceAmountCents != null ? undefined : items}
+          customerChoiceAmountCents={customerChoiceAmountCents}
+          customerName={customerName}
+          customerEmail={customerEmail}
+          customerPhone={customerPhone}
+          amountCents={
+            squareTotalCents ||
+            cardTotalCents ||
+            subtotalCents + cardFeeCents ||
+            subtotalCents
+          }
+          currency={currency}
+          disabled={pending}
+          onError={onPayPalError}
+          onSuccess={(orderNumber) => onSquareSuccess?.(orderNumber)}
+        />
+      ) : null}
       {cardEnabled ? (
         <>
           {cardFeeCents > 0 ? (
@@ -219,6 +248,7 @@ export default function CheckoutPayStep({
                 />
               </span>
             ) : null}
+            <PoweredByRail rail="stripe" />
           </button>
           {showDemoCardHint ? <DemoCardHint /> : null}
         </>
@@ -236,12 +266,12 @@ export default function CheckoutPayStep({
           onError={onPayPalError}
         />
       ) : null}
-      {!showCash && !showLt && !cardEnabled && !showPayPal ? (
+      {!showCash && !showLt && !cardEnabled && !squareEnabled && !showPayPal ? (
         <p className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-lg text-[var(--muted)]">
           No payment methods are available at this stand right now.
         </p>
       ) : null}
-      {!cardEnabled && !preOrderOnly ? (
+      {!cardEnabled && !squareEnabled && !preOrderOnly ? (
         <CardInterestButton
           standSlug={standSlug}
           subtotalCents={subtotalCents}

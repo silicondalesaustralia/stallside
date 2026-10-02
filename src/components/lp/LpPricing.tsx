@@ -2,7 +2,7 @@ import LpStartFreeLink from "@/components/lp/LpStartFreeLink";
 import { sharedPlanFeatures } from "@/lib/shared-plan-features";
 
 const FEE_BODY = [
-  "Cash and local bank payments have no Vendl fee - PayID in Australia, Pay by Bank in the UK & Europe, and other local options where available. Card, Tap & Go and pay-later sales on Free include a 2.5% Vendl fee, plus standard Stripe processing fees.",
+  "Cash and local bank payments have no Vendl fee - PayID in Australia, Pay by Bank in the UK & Europe, and other local options where available. Card, Tap & Go and pay-later sales on Free include a 2.5% + 30c Vendl fee via Stripe (2.5% via Square or PayPal), plus standard processing fees.",
   "You can absorb the Vendl fee or pass it on to customers. Upgrade to Pro later to remove it.",
 ] as const;
 

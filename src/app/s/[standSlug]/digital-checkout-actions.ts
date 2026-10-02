@@ -20,10 +20,8 @@ import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
 import { checkoutCancelledUrl } from "@/lib/order-access-token";
 import { stripeLineItemsFromCart } from "@/lib/stripe-cart-lines";
-import {
-  computeVendlCheckoutFees,
-  ownerPassesFeeToCustomer,
-} from "@/lib/stallside-fee";
+import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
+import { proVolumeForFees } from "@/lib/pro-volume-fee";
 import { standCheckoutPaymentMethodTypes } from "@/lib/stripe-checkout-methods";
 import { getDefaultPaymentMethodConfiguration } from "@/lib/stripe-payment-method-config";
 import {
@@ -146,9 +144,16 @@ export async function startCardCheckout(input: {
       demoStripe?.stripeAccountId ?? owner.stripeAccountId!;
 
     const chargeGoodsCents = depositMode ? depositCents : totalCents;
-    const { applicationFeeCents: applicationFee, chargeTotalCents: chargeTotal } =
-      computeVendlCheckoutFees(chargeGoodsCents, owner);
-    const passOn = applicationFee > 0 && ownerPassesFeeToCustomer(owner);
+    const {
+      applicationFeeCents: applicationFee,
+      chargeTotalCents: chargeTotal,
+      passedOn: passOn,
+    } =
+      computeVendlCheckoutFees(chargeGoodsCents, owner, {
+        rail: "stripe",
+        currency: stand.currency,
+        monthStripeVolumeCents: await proVolumeForFees(stand.ownerId, owner),
+      });
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
 

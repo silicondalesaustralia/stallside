@@ -25,6 +25,9 @@ export function orderPaymentLabel(
   if (method === PaymentMethod.PAYPAL) {
     return "paypal · verified";
   }
+  if (method === PaymentMethod.SQUARE) {
+    return "square · verified";
+  }
   return "unknown";
 }
 

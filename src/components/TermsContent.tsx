@@ -49,8 +49,13 @@ export default function TermsContent() {
         </h2>
         <p className="text-[var(--muted)]">
           On the Free plan, card, Tap &amp; Go (including Apple Pay and Google Pay),
-          and pay-later payments carry a Vendl fee of 2.5% on all
-          transactions, in addition to the payment processor&apos;s own fees. Cash and
+          and pay-later payments carry a Vendl fee of 2.5% plus a fixed fee per
+          transaction (A$0.30 / US$0.30 / £0.20 / €0.25) when processed by Stripe, or
+          2.5% when processed by Square or PayPal, in addition to the payment
+          processor&apos;s own fees. On the Pro plan, Stripe sales above A$4,000 in a
+          calendar month carry a 0.5% Vendl fee. Accounts created before 2 October
+          2026 keep their original fee terms until they subscribe to Pro or first
+          connect Square, at which point these terms apply. Cash and
           PayID payments carry no Vendl fee. This fee is removed on the Pro plan
           and for Free for Life accounts, so there is no absorb / pass-on choice when
           no Vendl fee applies.

@@ -23,7 +23,7 @@ export function cardPaymentBrands(currency: BillingCurrency): PaymentBrand[] {
 
 /** Free plan fee note (card / Tap & Go only). */
 export const FREE_PLAN_FEE_BLURB =
-  "A 2.5% Vendl fee applies to card, wallets and pay-later payments. Standard Stripe processing fees apply separately. Cash and local bank payments remain free.";
+  "A 2.5% + 30c Vendl fee applies to Stripe card, wallets and pay-later payments (2.5% on Square and PayPal). Standard processing fees apply separately. Cash and local bank payments remain free.";
 
 /** Absorb vs pass-on - Free only (Pro has no Vendl fee). */
 export const FREE_PLAN_PASS_FEE_FEATURE =
@@ -31,7 +31,7 @@ export const FREE_PLAN_PASS_FEE_FEATURE =
 
 /** Free ($0/mo) blurb. */
 export function cashPlanBlurb(_currency?: BillingCurrency): string {
-  return "Every Vendl feature, with no monthly fee. A 2.5% Vendl fee applies to card, Tap & Go and pay-later; cash and local bank payments stay free. Absorb or pass on that fee.";
+  return "Every Vendl feature, with no monthly fee. A 2.5% + 30c Vendl fee applies to Stripe card, Tap & Go and pay-later (2.5% on Square and PayPal); cash and local bank payments stay free. Absorb or pass on that fee.";
 }
 
 export function cashPlanExtraBlurb(_currency?: BillingCurrency): string | null {
@@ -40,13 +40,13 @@ export function cashPlanExtraBlurb(_currency?: BillingCurrency): string | null {
 
 /** @deprecated Prefer FREE_PLAN_FEE_BLURB / STARTER_PLAN_BLURB. */
 export const FREE_TRIAL_BLURB =
-  "Free is $0/mo with every feature. Vendl fee 2.5% on card, Tap & Go, and pay-later. Upgrade to Pro anytime to remove that fee.";
+  "Free is $0/mo with every feature. Vendl fee 2.5% + 30c on Stripe card, Tap & Go, and pay-later (2.5% on Square and PayPal). Upgrade to Pro anytime to remove that fee.";
 
 export const STARTER_PLAN_BLURB =
   "Every Vendl feature, with no monthly fee.";
 
 export const CARD_PLAN_BLURB =
-  "Remove the Vendl transaction fee and pay one predictable monthly price.";
+  "Remove the Vendl transaction fee and pay one predictable monthly price. Includes A$4,000 of Stripe sales a month; 0.5% above that (never on Square).";
 
 export const CARD_PLAN_RESTOCK_BLURB =
   "Notify customers by email when you restock - they opt in after checkout; you never see their addresses.";
@@ -63,7 +63,7 @@ const FREE_FEE_FEATURES = [
   "Local bank methods by region: PayID & PayTo (Australia), Pay by Bank (UK & Europe), Cash App (US)",
   "Tap & Go - card, Apple Pay and Google Pay",
   "Pay-later payments where supported",
-  "2.5% Vendl fee on successful card, Tap & Go and pay-later payments",
+  "2.5% + 30c Vendl fee on successful Stripe card, Tap & Go and pay-later payments (2.5% on Square and PayPal)",
   "Standard Stripe processing fees apply separately",
   FREE_PLAN_PASS_FEE_FEATURE,
 ] as const;

@@ -99,6 +99,12 @@ enum OnlinePaymentProvider {
   SQUARE
 }
 
+/** LEGACY = grandfathered fees; V2026 = current pricing. One-way move. */
+enum PricingModel {
+  LEGACY
+  V2026
+}
+
 enum SubscriptionStatus {
   TRIALING
   ACTIVE
@@ -340,6 +346,11 @@ model Owner {
   subscriptionPlan          String?            @default("free")
   /** Free Pro forever (invite or admin grant). */
   lifetimeAccess            Boolean            @default(false)
+  lifetimeEndedAt           DateTime?
+  pricingModel              PricingModel       @default(V2026)
+  pricingModelChangedAt     DateTime?
+  /** pro_subscribed | square_connected */
+  pricingModelReason        String?
   monthlyFeeCents           Int                @default(0)
   /** Free plan: pass Vendl card fee to customer (default absorb). */
   passFeeToCustomer         Boolean            @default(false)

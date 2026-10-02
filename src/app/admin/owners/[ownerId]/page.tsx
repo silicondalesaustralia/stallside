@@ -66,6 +66,20 @@ export default async function AdminOwnerDetailPage({
           <p className="font-semibold text-[var(--leaf)]">Free for Life</p>
         ) : null}
         <p>
+          Pricing: {owner.pricingModel === "LEGACY" ? "Legacy (grandfathered)" : "2026"}
+          {owner.pricingModelReason
+            ? ` · moved via ${owner.pricingModelReason.replace("_", " ")}`
+            : ""}
+          {owner.pricingModelChangedAt
+            ? ` on ${owner.pricingModelChangedAt.toLocaleDateString()}`
+            : ""}
+        </p>
+        {owner.lifetimeEndedAt ? (
+          <p className="text-red-700">
+            Lifetime ended {owner.lifetimeEndedAt.toLocaleDateString()}
+          </p>
+        ) : null}
+        <p>
           Stall sales (all methods):{" "}
           {formatFeeBuckets(salesMap.get(owner.id) ?? [], fx)}
         </p>

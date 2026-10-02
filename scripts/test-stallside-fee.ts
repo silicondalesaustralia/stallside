@@ -11,6 +11,8 @@ import {
   shouldChargeVendlFee,
 } from "../src/lib/stallside-fee";
 
+const STRIPE_AUD = { rail: "stripe", currency: "AUD" } as const;
+
 describe("stallsideFeeCents (2.5% only)", () => {
   it("A$5 absorb fee is 13¢", () => {
     assert.equal(stallsideFeeCents(500), 13);
@@ -67,33 +69,33 @@ describe("computeVendlCheckoutFees", () => {
   };
 
   it("Free absorb: charge subtotal, fee 13¢ on A$5", () => {
-    const r = computeVendlCheckoutFees(500, free);
+    const r = computeVendlCheckoutFees(500, free, STRIPE_AUD);
     assert.equal(r.chargeTotalCents, 500);
     assert.equal(r.applicationFeeCents, 13);
   });
 
   it("Free pass-on: charge 513, fee 13 on A$5", () => {
-    const r = computeVendlCheckoutFees(500, freePassOn);
+    const r = computeVendlCheckoutFees(500, freePassOn, STRIPE_AUD);
     assert.equal(r.chargeTotalCents, 513);
     assert.equal(r.applicationFeeCents, 13);
   });
 
   it("Pro: no Vendl fee", () => {
     assert.equal(shouldChargeVendlFee(pro), false);
-    const r = computeVendlCheckoutFees(500, pro);
+    const r = computeVendlCheckoutFees(500, pro, STRIPE_AUD);
     assert.equal(r.applicationFeeCents, 0);
     assert.equal(r.chargeTotalCents, 500);
   });
 
   it("lifetime: no Vendl fee", () => {
-    const r = computeVendlCheckoutFees(500, lifetime);
+    const r = computeVendlCheckoutFees(500, lifetime, STRIPE_AUD);
     assert.equal(r.applicationFeeCents, 0);
     assert.equal(r.chargeTotalCents, 500);
   });
 
   it("platform-admin on Free for testing: no Vendl fee", () => {
     assert.equal(shouldChargeVendlFee(adminTestingFree), false);
-    const r = computeVendlCheckoutFees(500, adminTestingFree);
+    const r = computeVendlCheckoutFees(500, adminTestingFree, STRIPE_AUD);
     assert.equal(r.applicationFeeCents, 0);
     assert.equal(r.chargeTotalCents, 500);
   });

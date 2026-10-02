@@ -45,6 +45,7 @@ export default function CustomerChoiceCheckout({
   localTransfer,
   passFeeToCustomer,
   stallsideFeeApplies,
+  stripeFixedFeeCents = 0,
   showDemoCardHint,
 }: {
   standSlug: string;
@@ -58,6 +59,7 @@ export default function CustomerChoiceCheckout({
   localTransfer: LocalTransferInfo | null;
   passFeeToCustomer: boolean;
   stallsideFeeApplies: boolean;
+  stripeFixedFeeCents?: number;
   showDemoCardHint?: boolean;
 }) {
   const [epoch, setEpoch] = useState(0);
@@ -83,7 +85,7 @@ export default function CustomerChoiceCheckout({
   const totalCents = entries.reduce((sum, n) => sum + n, 0);
   const cardFeeCents =
     stallsideFeeApplies && passFeeToCustomer && totalCents > 0
-      ? stallsidePassOnFeeCents(totalCents)
+      ? stallsidePassOnFeeCents(totalCents, stripeFixedFeeCents)
       : 0;
   const amountLabel = formatMoney(totalCents, currency);
 

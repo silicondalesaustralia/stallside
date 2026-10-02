@@ -7,6 +7,8 @@ import { STRIPE_CHECKOUT_METHODS_PHRASE } from "@/lib/stripe-connect-copy";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
+import { isSquareIntegrationEnabled } from "@/lib/square/config";
+import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 import BusinessNameForm from "./BusinessNameForm";
 import DeleteAccountButton from "./DeleteAccountButton";
 
@@ -18,6 +20,9 @@ export default async function SettingsPage() {
     lifetimeAccess: owner.lifetimeAccess,
   });
   const billingRegion = billingRegionDisplay(owner.billingCurrency);
+  const showSquare =
+    isSquareIntegrationEnabled() &&
+    squareEligibleBillingCurrency(owner.billingCurrency);
 
   return (
     <main className="flex w-full max-w-3xl flex-col gap-8">
@@ -124,6 +129,26 @@ export default async function SettingsPage() {
               : "Connect Stripe"}
         </Link>
       </section>
+
+      {showSquare ? (
+        <section id="square" className="space-y-3 text-sm scroll-mt-8">
+          <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+            <PaymentBrandIcon brand="square" className="size-6" />
+            Square
+          </h2>
+          <p className="text-[var(--muted)]">
+            Take online card payments through your Square account instead of
+            Stripe.
+          </p>
+          <Link
+            href="/dashboard/settings/square"
+            className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
+          >
+            <PaymentBrandIcon brand="square" className="size-5" />
+            Square settings
+          </Link>
+        </section>
+      ) : null}
     </main>
   );
 }

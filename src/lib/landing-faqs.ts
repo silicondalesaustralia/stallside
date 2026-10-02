@@ -42,22 +42,22 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "What's the difference between Free and Pro?",
     answer:
-      "Free and Pro include every Vendl feature. Free is $0/mo with a 2.5% Vendl platform fee on card, Tap & Go and pay-later (cash and PayID stay free). Absorb that fee or pass it on at checkout. Pro is a flat monthly fee with no Vendl platform fee. Standard Stripe processing fees apply on both plans.",
+      "Free and Pro include every Vendl feature. Free is $0/mo with a 2.5% + 30c Vendl platform fee on Stripe card, Tap & Go and pay-later (2.5% on Square and PayPal; cash and PayID stay free). Absorb that fee or pass it on at checkout. Pro is a flat monthly fee with no Vendl platform fee on your first A$4,000 of Stripe sales each month (0.5% above that; never on Square). Standard Stripe processing fees apply on both plans.",
   },
   {
     question: "Does Vendl charge transaction fees?",
     answer:
-      "On Free, Vendl charges a 2.5% platform fee on successful card, Tap & Go and pay-later payments. Cash and PayID do not have a Vendl fee. Standard Stripe processing fees apply separately. Vendl Pro removes the Vendl platform fee.",
+      "On Free, Vendl charges a 2.5% + 30c platform fee on successful Stripe card, Tap & Go and pay-later payments (2.5% via Square or PayPal). Cash and PayID do not have a Vendl fee. Standard Stripe processing fees apply separately. Vendl Pro removes the Vendl platform fee.",
   },
   {
     question: "Are Stripe fees included in the Vendl fee?",
     answer:
-      "No. Stripe charges its own payment-processing fees separately. Vendl's 2.5% Free-plan fee is an additional platform fee. Pro removes the Vendl fee, but Stripe processing fees still apply.",
+      "No. Stripe charges its own payment-processing fees separately. Vendl's Free-plan fee (2.5% + 30c on Stripe, 2.5% on Square and PayPal) is an additional platform fee. Pro removes the Vendl fee, but Stripe processing fees still apply.",
   },
   {
     question: "What payment methods can customers use?",
     answer:
-      "Cash and PayID (no Vendl fee), plus card, Tap & Go, Apple Pay, Google Pay, and PayTo (Australia). On larger orders, customers can also use Buy Now, Pay Later with Zip or Klarna. On Free, Vendl fee is 2.5% on card, Tap & Go, pay-later and PayTo; removed on Pro. Cash and PayID are always free of Vendl fees.",
+      "Cash and PayID (no Vendl fee), plus card, Tap & Go, Apple Pay, Google Pay, and PayTo (Australia). On larger orders, customers can also use Buy Now, Pay Later with Zip or Klarna. On Free, Vendl fee is 2.5% + 30c on Stripe card, Tap & Go, pay-later and PayTo; removed on Pro. Cash and PayID are always free of Vendl fees.",
   },
   {
     question: "What countries can I use Vendl in?",
@@ -67,7 +67,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "Is there a fee on card payments?",
     answer:
-      "On Free, Vendl charges 2.5% on card, Tap & Go (Apple Pay / Google Pay), and pay-later. Cash and PayID have no Vendl fee. You can absorb the Vendl fee or pass it on to customers (shown as a card fee line at checkout) in Settings → Card / Tap & Go. On Pro there is no Vendl cut. Stripe's own processing fees still apply either way (pay-later providers usually charge more than cards).",
+      "On Free, Vendl charges 2.5% + 30c on Stripe card, Tap & Go (Apple Pay / Google Pay), and pay-later (2.5% via Square or PayPal). Cash and PayID have no Vendl fee. You can absorb the Vendl fee or pass it on to customers (shown as a card fee line at checkout) in Settings → Card / Tap & Go. On Pro there is no Vendl cut. Stripe's own processing fees still apply either way (pay-later providers usually charge more than cards).",
   },
   {
     question: "Are cash and PayID free?",
@@ -96,7 +96,7 @@ export const LANDING_FAQS: FaqItem[] = [
   },
   {
     question: "How much does it cost?",
-    answer: `Free is $0/mo with all features; Vendl fee is 2.5% on card, Tap & Go, and pay-later (cash and PayID stay free) - absorb it or pass it on in Settings → Card / Tap & Go. Vendl Pro is ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site and removes the Vendl platform fee. Standard Stripe processing fees apply on both plans. Pick billing currency at signup or in billing settings.`,
+    answer: `Free is $0/mo with all features; Vendl fee is 2.5% + 30c on Stripe card, Tap & Go, and pay-later, or 2.5% via Square and PayPal (cash and PayID stay free) - absorb it or pass it on in Settings → Card / Tap & Go. Vendl Pro is ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site and removes the Vendl platform fee (0.5% only on Stripe sales above A$4,000 a month). Standard Stripe processing fees apply on both plans. Pick billing currency at signup or in billing settings.`,
   },
   {
     question: "Who is Vendl for?",

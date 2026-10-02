@@ -5,6 +5,7 @@ export type PaymentBrand =
   | "google"
   | "paypal"
   | "stripe"
+  | "square"
   | "payid"
   | "payto"
   | "cashapp"
@@ -29,6 +30,13 @@ export const STRIPE_CHECKOUT_BRANDS: PaymentBrand[] = [
   "link",
   "zip",
   "klarna",
+];
+
+/** Customer-facing card methods for Square Web Payments. */
+export const SQUARE_CHECKOUT_BRANDS: PaymentBrand[] = [
+  "card",
+  "apple",
+  "google",
 ];
 
 /** AUD checkout extras shown beside Stripe methods (PayTo is Australia-only). */
@@ -69,6 +77,8 @@ export function paymentBrandSrc(brand: PaymentBrand): string | null {
       return "/brand/link.png";
     case "stripe":
       return "/brand/stripe.png";
+    case "square":
+      return "/brand/square.svg";
     case "zip":
       return "/brand/zip.svg";
     case "klarna":
@@ -100,6 +110,8 @@ export function paymentBrandLabel(brand: PaymentBrand): string {
       return "PayPal";
     case "stripe":
       return "Stripe";
+    case "square":
+      return "Square";
     case "zip":
       return "Zip";
     case "klarna":

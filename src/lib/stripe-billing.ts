@@ -2,6 +2,7 @@ import type Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { cardPlanCents } from "@/lib/saas-pricing";
 import { saasPlanFromSubscription } from "@/lib/stripe";
+import { moveToV2026 } from "@/lib/pricing-model";
 import {
   adminKindForSubscriptionSync,
   notifyAdminAfterSubscriptionSync,
@@ -77,6 +78,15 @@ export async function syncOwnerFromSubscription(
     cancelAtPeriodEnd: storedCancelAtPeriodEnd,
   });
   const now = new Date();
+  const continuingPro =
+    owner.stripeSubscriptionId === subscription.id &&
+    owner.subscriptionPlan === "pro";
+  if (live && isPro && !continuingPro) {
+    // Runs before the owner update so a failed move is retried by the webhook.
+    await moveToV2026(owner.id, "pro_subscribed", {
+      endLifetime: subscription.metadata.confirmLifetimeEnd === "1",
+    });
+  }
 
   await prisma.owner.update({
     where: { id: owner.id },

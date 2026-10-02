@@ -26,6 +26,18 @@ export const MONTHLY_FEE_CENTS = CASH_PLAN_CENTS;
 export const PLATFORM_FEE_BPS = 0;
 /** Vendl fee on Free plan Stripe card / Tap & Go (2.5%) */
 export const STALLSIDE_FEE_BPS = 250;
+/** V2026 Free: fixed Vendl fee per Stripe transaction, by order currency. */
+export const STRIPE_FIXED_FEE_CENTS: Record<string, number> = {
+  AUD: 30,
+  USD: 30,
+  GBP: 20,
+  EUR: 25,
+  CAD: 30,
+  NZD: 30,
+};
+/** V2026 Pro: monthly Stripe sales included before the overage fee. */
+export const PRO_STRIPE_ALLOWANCE_CENTS = 400_000;
+export const PRO_OVERAGE_BPS = 50;
 export const LOW_STOCK_ALERT_COOLDOWN_HOURS = 6;
 /** Owner emails with free forever app access (ignore subscription status). */
 export const COMPLIMENTARY_ACCESS_EMAILS = ["jono@silicondales.com"] as const;

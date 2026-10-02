@@ -19,7 +19,7 @@ import {
   checkoutCancelledUrl,
   orderAccessToken,
 } from "@/lib/order-access-token";
-import { computeVendlApplicationFee } from "@/lib/stallside-fee";
+import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
 
 export async function startPayPalCheckout(input: {
   standSlug: string;
@@ -74,7 +74,11 @@ export async function startPayPalCheckout(input: {
     }
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
-    const trackedFee = computeVendlApplicationFee(totalCents, owner);
+    const { applicationFeeCents: trackedFee } = computeVendlCheckoutFees(
+      totalCents,
+      owner,
+      { rail: "paypal", currency: stand.currency },
+    );
 
     const order = await prisma.order.create({
       data: {

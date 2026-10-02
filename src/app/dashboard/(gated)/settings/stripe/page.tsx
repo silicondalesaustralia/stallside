@@ -5,6 +5,7 @@ import { isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { billingRegionDisplay } from "@/lib/saas-pricing";
 import { shouldChargeVendlFee } from "@/lib/stallside-fee";
+import { isV2026Owner } from "@/lib/fee-v2026";
 import { listConnectPaymentMethodToggles } from "@/lib/stripe-payment-method-config";
 import { ensureRegionalConnectCapabilities } from "@/lib/stripe-connect-capabilities";
 import { stripeConnectCountry } from "@/lib/stripe-connect-country";
@@ -122,11 +123,15 @@ export default async function StripeSettingsPage({
       />
 
       {feeApplies ? (
-        <PassFeeToggle passFeeToCustomer={owner.passFeeToCustomer} />
+        <PassFeeToggle
+          passFeeToCustomer={owner.passFeeToCustomer}
+          v2026={isV2026Owner(owner)}
+        />
       ) : (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          Vendl Pro: no Vendl transaction fee on card sales. Standard
-          Stripe processing fees still apply.
+          {isV2026Owner(owner)
+            ? "Vendl Pro: no Vendl fee on your first A$4,000 of Stripe card sales each month, then 0.5%. Payouts are weekly. Standard Stripe processing fees still apply."
+            : "Vendl Pro: no Vendl transaction fee on card sales. Standard Stripe processing fees still apply."}
         </p>
       )}
 

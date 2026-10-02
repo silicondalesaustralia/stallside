@@ -1,12 +1,17 @@
 import { Role, SubscriptionStatus } from "@/generated/prisma/client";
 import { COMPLIMENTARY_ACCESS_EMAILS } from "@/lib/constants";
+import { stallsideFeeCents, stallsidePassOnChargeCents } from "@/lib/money";
 import {
-  stallsideFeeCents,
-  stallsidePassOnChargeCents,
-  stallsidePassOnFeeCents,
-} from "@/lib/money";
+  isV2026Owner,
+  proOverageFeeCents,
+  stripeFixedFeeCents,
+  type FeeRail,
+} from "@/lib/fee-v2026";
+
+export type { FeeRail } from "@/lib/fee-v2026";
 
 type FeeOwner = {
+  pricingModel?: string | null;
   subscriptionPlan?: string | null;
   lifetimeAccess?: boolean | null;
   subscriptionStatus?: SubscriptionStatus | string | null;
@@ -29,7 +34,7 @@ function hasFutureDate(value: Date | null | undefined): boolean {
   return value != null && value.getTime() > Date.now();
 }
 
-function isComplimentaryFeeWaiver(
+export function isComplimentaryFeeWaiver(
   owner: FeeOwner,
   access?: FeeAccess,
 ): boolean {
@@ -70,37 +75,60 @@ export function ownerPassesFeeToCustomer(owner: FeeOwner): boolean {
   return Boolean(owner.passFeeToCustomer);
 }
 
-/** Absorb mode: fee on item subtotal. Pass-on: use computeVendlCheckoutFees. */
-export function computeVendlApplicationFee(
-  itemTotalCents: number,
+/** Fixed per-transaction Vendl fee: V2026 Free plan on Stripe only. */
+export function vendlFixedFeeCents(
   owner: FeeOwner,
+  rail: FeeRail,
+  currency: string,
   access?: FeeAccess,
 ): number {
+  if (rail !== "stripe" || !isV2026Owner(owner)) return 0;
   if (!shouldChargeVendlFee(owner, access)) return 0;
-  if (ownerPassesFeeToCustomer(owner)) {
-    return stallsidePassOnFeeCents(itemTotalCents);
-  }
-  return stallsideFeeCents(itemTotalCents);
+  return stripeFixedFeeCents(currency);
 }
+
+export type CheckoutFeeOpts = {
+  rail: FeeRail;
+  currency: string;
+  access?: FeeAccess;
+  /** Month-to-date Stripe sales; enables the V2026 Pro overage fee. */
+  monthStripeVolumeCents?: number;
+};
 
 /** Shared checkout fee math for server + cart preview. */
 export function computeVendlCheckoutFees(
   subtotalCents: number,
   owner: FeeOwner,
-  access?: FeeAccess,
-): { applicationFeeCents: number; chargeTotalCents: number } {
-  if (!shouldChargeVendlFee(owner, access) || subtotalCents <= 0) {
-    return { applicationFeeCents: 0, chargeTotalCents: Math.max(0, subtotalCents) };
+  opts: CheckoutFeeOpts,
+): { applicationFeeCents: number; chargeTotalCents: number; passedOn: boolean } {
+  const base = Math.max(0, subtotalCents);
+  if (subtotalCents <= 0) {
+    return { applicationFeeCents: 0, chargeTotalCents: base, passedOn: false };
   }
+
+  if (!shouldChargeVendlFee(owner, opts.access)) {
+    const overage =
+      opts.rail === "stripe" &&
+      isV2026Owner(owner) &&
+      !isComplimentaryFeeWaiver(owner, opts.access) &&
+      opts.monthStripeVolumeCents != null
+        ? proOverageFeeCents(base, opts.monthStripeVolumeCents)
+        : 0;
+    return { applicationFeeCents: overage, chargeTotalCents: base, passedOn: false };
+  }
+
+  const fixed = vendlFixedFeeCents(owner, opts.rail, opts.currency, opts.access);
   if (ownerPassesFeeToCustomer(owner)) {
-    const chargeTotalCents = stallsidePassOnChargeCents(subtotalCents);
+    const chargeTotalCents = stallsidePassOnChargeCents(base, fixed);
     return {
-      applicationFeeCents: chargeTotalCents - subtotalCents,
+      applicationFeeCents: chargeTotalCents - base,
       chargeTotalCents,
+      passedOn: chargeTotalCents > base,
     };
   }
   return {
-    applicationFeeCents: stallsideFeeCents(subtotalCents),
-    chargeTotalCents: subtotalCents,
+    applicationFeeCents: Math.min(base, stallsideFeeCents(base) + fixed),
+    chargeTotalCents: base,
+    passedOn: false,
   };
 }

@@ -3,7 +3,9 @@ import type { Metadata } from "next";
 import { loadPublicStandCatalog } from "@/lib/public-stand-catalog";
 import { prisma } from "@/lib/prisma";
 import { localTransferForCurrency } from "@/lib/local-transfer";
-import { standOffersCard, standOffersPayPal } from "@/lib/stand-payment-brands";
+import { standOffersCard, standOffersPayPal, standOffersSquare } from "@/lib/stand-payment-brands";
+import { getSquareConnection } from "@/lib/square/connection";
+import { isSquarePaymentsEnabled } from "@/lib/square/config";
 import { demoProductForStandSlug, isDemoStandSlug } from "@/lib/demo";
 import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 import { mapPublicProduct } from "@/lib/public-product";
@@ -17,6 +19,7 @@ import {
 import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
+  vendlFixedFeeCents,
 } from "@/lib/stallside-fee";
 import StandCartCheckout from "../StandCartCheckout";
 import StandStoreHeader from "../StandStoreHeader";
@@ -190,6 +193,19 @@ export default async function StandCartPage({
     })
     .filter((o): o is NonNullable<typeof o> => Boolean(o));
 
+  const squareConn = isSquarePaymentsEnabled()
+    ? await getSquareConnection(stand.ownerId)
+    : null;
+  const ownerForPay = {
+    ...stand.owner,
+    user: stand.owner.user,
+    squarePaymentsReady: Boolean(
+      squareConn?.status === "ACTIVE" &&
+        squareConn.paymentsEnabled &&
+        squareConn.primaryLocationId,
+    ),
+  };
+
   return (
     <main
       className="mx-auto min-h-full w-full max-w-lg px-4 pb-8 pt-8"
@@ -210,14 +226,9 @@ export default async function StandCartPage({
         currency={stand.currency}
         products={products}
         cashEnabled={stand.acceptCash}
-        cardEnabled={standOffersCard(stand, {
-          ...stand.owner,
-          user: stand.owner.user,
-        })}
-        paypalEnabled={standOffersPayPal(stand, {
-          ...stand.owner,
-          user: stand.owner.user,
-        })}
+        cardEnabled={standOffersCard(stand, ownerForPay)}
+        squareEnabled={standOffersSquare(stand, ownerForPay)}
+        paypalEnabled={standOffersPayPal(stand, ownerForPay)}
         paypalClientId={process.env.PAYPAL_CLIENT_ID ?? null}
         paypalMerchantId={stand.owner.paypalMerchantId}
         paypalSandbox={
@@ -228,6 +239,7 @@ export default async function StandCartPage({
         restockStandId={restockStandId}
         passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner)}
         stallsideFeeApplies={shouldChargeVendlFee(stand.owner)}
+        stripeFixedFeeCents={vendlFixedFeeCents(stand.owner, "stripe", stand.currency)}
         upsell={upsell}
         preOrderUpsell={preOrderUpsell}
         pagePreOrderUpsells={pagePreOrderUpsells}
