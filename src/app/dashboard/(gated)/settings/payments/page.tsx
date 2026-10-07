@@ -12,7 +12,9 @@ import { getSquareConnection } from "@/lib/square/connection";
 import { isSquareConnectEnabled } from "@/lib/square/config";
 import { shouldChargeVendlFee } from "@/lib/stallside-fee";
 import { prisma } from "@/lib/prisma";
+import { isV2026Owner } from "@/lib/fee-v2026";
 import CheckoutProviderSection from "./CheckoutProviderSection";
+import PaymentProviderGuide from "./PaymentProviderGuide";
 
 export default async function PaymentsSettingsPage() {
   const { owner } = await requireOwner();
@@ -38,9 +40,9 @@ export default async function PaymentsSettingsPage() {
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Payments</h1>
         <p className="mt-2 text-[var(--muted)]">
-          Connect how shoppers pay online. Australian accounts can use Stripe or
-          Square for cards (pick one as the live provider). Other regions use
-          Stripe.
+          Connect how shoppers pay online. Australian accounts can connect
+          Stripe and Square, then pick one for product checkout. Other regions
+          use Stripe.
         </p>
         <Link
           href="/dashboard/checkout"
@@ -49,6 +51,8 @@ export default async function PaymentsSettingsPage() {
           Choose checkout methods
         </Link>
       </div>
+
+      {showSquare ? <PaymentProviderGuide v2026={isV2026Owner(owner)} /> : null}
 
       <section id="stripe" className="space-y-3 text-sm scroll-mt-8">
         <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
@@ -104,10 +108,10 @@ export default async function PaymentsSettingsPage() {
                   : "Not connected"}
           </p>
           <p className="text-[var(--muted)]">
-            Connect Square for website payments and POS inventory sync. Choose
-            Stripe or Square as your online card provider — not both at once.
-            Free still collects 2.5% on Vendl-originated Square checkout; POS
-            sales never take a Vendl fee.
+            Connect Square for website payments and POS inventory sync. You can
+            keep Stripe connected too for subscriptions and memberships. Free
+            still collects 2.5% on Vendl-originated Square checkout; POS sales
+            never take a Vendl fee.
           </p>
           <Link
             href="/dashboard/settings/square"
