@@ -298,7 +298,7 @@ export const STALL_DOORWAYS: Record<string, ProductLpContent> = {
     eyebrow: "Honesty parking",
     headline: "Take honesty-box parking payments by QR.",
     support:
-      "Cash or PayID at the post. Card when you connect Stripe. Know who paid without standing there all day.",
+      "Cash or PayID at the post. Card when you connect your Stripe or Square account (Square currently Australia only). Know who paid without standing there all day.",
     chips: ["No attendant", "PayID ready", "Clear payment log"],
     problemEyebrow: "The honesty tin",
     problemHeadline: "They parked. They meant to pay. The tin was empty of change.",
@@ -336,7 +336,7 @@ export const STALL_DOORWAYS: Record<string, ProductLpContent> = {
     proofBenefits: [
       "Payment log by day",
       "Cash confirm + PayID",
-      "Card when Stripe is connected",
+      "Card via Stripe or Square (Square: Australia only)",
       "No attendant required",
     ],
     proofPanelTitle: "Example dashboard",
@@ -530,7 +530,7 @@ export const STALL_DOORWAYS: Record<string, ProductLpContent> = {
       },
       {
         q: "Who gets the money?",
-        a: "Straight to the organiser’s Stripe or cash - Vendl doesn’t hold funds.",
+        a: "Straight to the organiser’s Stripe or Square account, or cash - Vendl doesn’t hold funds.",
       },
       {
         q: "Is this only for Australia?",

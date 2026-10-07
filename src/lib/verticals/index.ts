@@ -29,7 +29,7 @@ export const VERTICALS: Record<string, VerticalConfig> = {
       },
       {
         q: "When do I get paid?",
-        a: "Card payment is taken when they order. Money goes to your Stripe account.",
+        a: "Card payment is taken when they order. Money goes to your Stripe or Square account.",
       },
       {
         q: "How do I know what to bake?",

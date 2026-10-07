@@ -10,7 +10,8 @@ export default function PreOrdersSection() {
         Baking a batch, harvesting in the morning, or running a limited drop?
         Customers pre-order and pay by card to reserve - with an order-by
         deadline and a collection day - so you know how much to make before
-        anyone arrives. Money goes to your Stripe account when they check out.
+        anyone arrives. Money goes to your Stripe or Square account when they
+        check out (Square currently Australia only).
       </p>
       <p>
         Track who&apos;s coming in{" "}
