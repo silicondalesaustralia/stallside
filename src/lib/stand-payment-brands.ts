@@ -13,7 +13,10 @@ import {
 } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
-import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
+import {
+  SQUARE_CURRENCY,
+  squareEligibleBillingCurrency,
+} from "@/lib/commerce/payment-rail";
 
 type StandPaymentFlags = {
   slug?: string;
@@ -133,10 +136,13 @@ export function standOffersStripeRecurring(
 
 /** Square Web Payments when seller prefers Square and connection is healthy. */
 export function standOffersSquare(
-  stand: Pick<StandPaymentFlags, "acceptSquare">,
+  stand: Pick<StandPaymentFlags, "acceptSquare"> & { currency?: string },
   owner: OwnerPaymentReady,
 ): boolean {
   if (!isSquarePaymentsEnabled()) return false;
+  if (stand.currency && stand.currency.trim().toUpperCase() !== SQUARE_CURRENCY) {
+    return false;
+  }
   if (!squareEligibleBillingCurrency(owner.billingCurrency)) return false;
   if (!(stand.acceptSquare ?? false)) return false;
   if (owner.onlinePaymentProvider !== OnlinePaymentProvider.SQUARE) return false;

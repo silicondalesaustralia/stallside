@@ -10,6 +10,9 @@ import {
 
 export type OnlineRail = "stripe" | "square" | "none";
 
+/** Square catalogue prices must match the merchant's currency; Vendl's Square is AU-only. */
+export const SQUARE_CURRENCY = "AUD";
+
 /** Square online payments are Australia (AUD) only for now. */
 export function squareEligibleBillingCurrency(
   billingCurrency: string | null | undefined,

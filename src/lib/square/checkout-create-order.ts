@@ -19,7 +19,10 @@ import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
 import { isSquarePaymentsEnabled, squareApplicationId } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
 import { saleOriginIncursVendlFee } from "@/lib/commerce/sale-origin";
-import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
+import {
+  SQUARE_CURRENCY,
+  squareEligibleBillingCurrency,
+} from "@/lib/commerce/payment-rail";
 
 export type SquareCheckoutCartInput = {
   standSlug: string;
@@ -62,8 +65,11 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
   if (!stand.acceptSquare) {
     return { error: "This stand is not accepting card payments." };
   }
-  if (!squareEligibleBillingCurrency(stand.owner.billingCurrency)) {
-    return { error: "Square checkout is only available for Australian sellers." };
+  if (
+    !squareEligibleBillingCurrency(stand.owner.billingCurrency) ||
+    stand.currency.trim().toUpperCase() !== SQUARE_CURRENCY
+  ) {
+    return { error: "Square checkout is only available for Australian (AUD) stands." };
   }
 
   const conn = await getSquareConnection(stand.ownerId);

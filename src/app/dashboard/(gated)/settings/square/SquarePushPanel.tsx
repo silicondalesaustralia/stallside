@@ -18,10 +18,12 @@ export default function SquarePushPanel({
   candidates,
   currency,
   stockWillSync,
+  otherCurrencyCount,
 }: {
   candidates: PushCandidate[];
   currency: string;
   stockWillSync: boolean;
+  otherCurrencyCount: number;
 }) {
   const [pending, start] = useTransition();
   const [selected, setSelected] = useState<Set<string>>(
@@ -30,10 +32,16 @@ export default function SquarePushPanel({
   const { status, report, fail } = useActionStatus();
   const showStand = new Set(candidates.map((c) => c.standName)).size > 1;
 
+  const currencyNote =
+    otherCurrencyCount > 0
+      ? `${otherCurrencyCount} product${otherCurrencyCount === 1 ? " is" : "s are"} priced in another currency and can't be added - Square only accepts AUD prices.`
+      : null;
+
   if (candidates.length === 0) {
     return (
       <p className="text-[var(--muted)]">
-        Every active Vendl product is already linked to Square.
+        Every active AUD product is already linked to Square.
+        {currencyNote ? ` ${currencyNote}` : ""}
       </p>
     );
   }
@@ -56,6 +64,7 @@ export default function SquarePushPanel({
         {stockWillSync
           ? " Square stock at your primary location is set to Vendl's count."
           : " Turn on POS inventory sync to also copy stock counts."}
+        {currencyNote ? ` ${currencyNote}` : ""}
       </p>
       <button
         type="button"
