@@ -3,7 +3,7 @@ import { sharedPlanFeatures } from "@/lib/shared-plan-features";
 
 const FEE_BODY = [
   "Cash and local bank payments have no Vendl fee - PayID in Australia, Pay by Bank in the UK & Europe, and other local options where available. Card, Tap & Go and pay-later sales on Free include a 2.5% + 30c Vendl fee via Stripe (2.5% via Square or PayPal), plus standard processing fees.",
-  "You can absorb the Vendl fee or pass it on to customers. Upgrade to Pro later to remove it.",
+  "Outside Australia you can absorb the Vendl fee or pass it on to customers. Upgrade to Pro later to remove it.",
 ] as const;
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
   included?: string[];
   ctaLabel?: string;
   signupHref?: string;
-  fullPricingHref?: string;
+  fullPricingHref?: string | null;
 };
 
 /** Drop AU-only payment bullets from vertical extras - covered by the shared list. */
@@ -80,12 +80,14 @@ export default function LpPricing({
           <p className="text-sm text-[var(--ink-on-dark)]/70">
             No card details required · No monthly commitment
           </p>
-          <a
-            href={fullPricingHref}
-            className="mt-1 text-sm font-semibold text-[var(--ink-on-dark)] underline underline-offset-2 opacity-80 hover:opacity-100"
-          >
-            Compare Free and Pro fees
-          </a>
+          {fullPricingHref ? (
+            <a
+              href={fullPricingHref}
+              className="mt-1 text-sm font-semibold text-[var(--ink-on-dark)] underline underline-offset-2 opacity-80 hover:opacity-100"
+            >
+              Compare Free and Pro fees
+            </a>
+          ) : null}
         </div>
       </div>
     </section>

@@ -97,7 +97,8 @@ export type ProductLpContent = {
   pricingHeadline: string;
   pricingBody: string[];
   pricingIncluded: string[];
-  pricingFullHref: string;
+  /** null hides the "Compare Free and Pro fees" link. */
+  pricingFullHref: string | null;
 
   closingHeadline: string;
   closingSupport: string;

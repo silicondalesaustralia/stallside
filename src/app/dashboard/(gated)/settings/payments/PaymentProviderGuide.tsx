@@ -6,8 +6,8 @@ export default function PaymentProviderGuide({ v2026 }: { v2026: boolean }) {
       </h2>
       <ul className="list-disc space-y-2 pl-5">
         <li>
-          <strong>You can connect both.</strong> Pick one of them for everyday
-          product and pre-order checkout. Subscriptions and memberships always
+          <strong>You can connect both.</strong>{" "}
+          Pick one of them for everyday product and pre-order checkout. Subscriptions and memberships always
           run on Stripe.
         </li>
         <li>
@@ -30,8 +30,8 @@ export default function PaymentProviderGuide({ v2026 }: { v2026: boolean }) {
           . Stripe and Square still charge their own processing fees.
         </li>
         <li>
-          <strong>Already have a Stripe or Square account?</strong> Connecting
-          takes a minute: sign in and approve Vendl. If you don&apos;t have one,
+          <strong>Already have a Stripe or Square account?</strong>{" "}
+          Connecting takes a minute: sign in and approve Vendl. If you don&apos;t have one,
           you&apos;ll go through their sign-up and identity checks first, which
           can take a little longer.
         </li>
