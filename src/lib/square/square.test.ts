@@ -44,6 +44,35 @@ describe("square catalog matching", () => {
     assert.equal(suggestions[0]?.confidence, "exact_sku");
     assert.equal(suggestions[0]?.productId, "p1");
   });
+
+  it("matches item name alone only when the item has a single variation", () => {
+    const products = [{ id: "p1", name: "Sourdough", sku: null, upc: null }];
+    const single = suggestCatalogMatches(products, [
+      {
+        id: "i1",
+        item_data: {
+          name: "Sourdough",
+          variations: [{ id: "v1", item_variation_data: { name: "Regular" } }],
+        },
+      },
+    ]);
+    assert.equal(single.length, 1);
+    assert.equal(single[0]?.confidence, "exact_name");
+
+    const multi = suggestCatalogMatches(products, [
+      {
+        id: "i2",
+        item_data: {
+          name: "Sourdough",
+          variations: [
+            { id: "v2", item_variation_data: { name: "Small" } },
+            { id: "v3", item_variation_data: { name: "Large" } },
+          ],
+        },
+      },
+    ]);
+    assert.equal(multi.length, 0);
+  });
 });
 
 describe("square token crypto", () => {

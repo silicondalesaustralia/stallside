@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { getSquareConnection, getValidSquareAccessToken } from "@/lib/square/connection";
 import { createSquareItems } from "@/lib/square/catalog-upsert";
+import { linkExistingSquareItems } from "@/lib/square/catalog-autolink";
 import { setSquarePhysicalCounts } from "@/lib/square/inventory-api";
 import { SQUARE_CURRENCY } from "@/lib/commerce/payment-rail";
 
@@ -41,7 +42,7 @@ export async function listUnlinkedProducts(ownerId: string, connectionId: string
 }
 
 export type PushResult =
-  | { ok: true; created: number; stockSet: number; failed: number }
+  | { ok: true; created: number; linked: number; stockSet: number; failed: number }
   | { error: string };
 
 export async function pushProductsToSquare(input: {
@@ -56,8 +57,19 @@ export async function pushProductsToSquare(input: {
 
   const unlinked = await listUnlinkedProducts(input.ownerId, conn.id);
   const wanted = new Set(input.productIds);
-  const ids = unlinked.filter((p) => wanted.has(p.id)).map((p) => p.id);
-  if (ids.length === 0) return { error: "Those products are already in Square." };
+  const chosen = unlinked.filter((p) => wanted.has(p.id)).map((p) => p.id);
+  if (chosen.length === 0) return { error: "Those products are already in Square." };
+
+  const linkedIds = await linkExistingSquareItems({
+    connectionId: conn.id,
+    accessToken: token,
+    ownerId: input.ownerId,
+    productIds: chosen,
+  });
+  const ids = chosen.filter((id) => !linkedIds.has(id));
+  if (ids.length === 0) {
+    return { ok: true, created: 0, linked: linkedIds.size, stockSet: 0, failed: 0 };
+  }
 
   const products = await prisma.product.findMany({
     where: { id: { in: ids }, ownerId: input.ownerId },
@@ -123,5 +135,11 @@ export async function pushProductsToSquare(input: {
     }
   }
 
-  return { ok: true, created, stockSet, failed: products.length - created };
+  return {
+    ok: true,
+    created,
+    linked: linkedIds.size,
+    stockSet,
+    failed: products.length - created,
+  };
 }

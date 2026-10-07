@@ -46,7 +46,10 @@ export function suggestCatalogMatches(
 ): MatchSuggestion[] {
   const suggestions: MatchSuggestion[] = [];
   for (const item of items) {
-    for (const variation of item.item_data?.variations ?? []) {
+    const variations = item.item_data?.variations ?? [];
+    const singleVariation = variations.length === 1;
+    const itemName = (item.item_data?.name ?? "").trim().toLowerCase();
+    for (const variation of variations) {
       const vid = variation.id;
       const pid = item.id;
       if (!vid || !pid) continue;
@@ -75,7 +78,8 @@ export function suggestCatalogMatches(
           });
           break;
         }
-        if (product.name.trim().toLowerCase() === vName) {
+        const pName = product.name.trim().toLowerCase();
+        if (pName === vName || (singleVariation && pName === itemName)) {
           suggestions.push({
             productId: product.id,
             providerProductId: pid,
