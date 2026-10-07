@@ -21,6 +21,7 @@ import SquareLocationForm from "./SquareLocationForm";
 import SquareProviderForm from "./SquareProviderForm";
 import SquareMappingPanel from "./SquareMappingPanel";
 import SquarePushSection from "./SquarePushSection";
+import SquareImportPanel from "./SquareImportPanel";
 
 export default async function SquareSettingsPage({
   searchParams,
@@ -239,6 +240,23 @@ export default async function SquareSettingsPage({
               fuzzy names alone.
             </p>
             <SquareMappingPanel catalogEnabled={conn.catalogSyncEnabled} />
+          </section>
+
+          <section className="space-y-3 text-sm">
+            <h2 className="text-lg font-semibold">Import products from Square</h2>
+            {conn.catalogSyncEnabled ? (
+              <SquareImportPanel
+                stands={stands}
+                currency={owner.billingCurrency ?? "AUD"}
+                defaultStandId={
+                  conn.locations.find((l) => l.isPrimary)?.standId ?? null
+                }
+              />
+            ) : (
+              <p className="text-[var(--muted)]">
+                Turn on product / catalogue sync to import Square items.
+              </p>
+            )}
           </section>
 
           <section className="space-y-3 text-sm">
