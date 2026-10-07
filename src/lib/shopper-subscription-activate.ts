@@ -40,7 +40,7 @@ async function sendWelcome(shopperSubId: string) {
   const { sendShopperSubscriptionWelcome } = await import(
     "@/lib/notify-shopper-subscription"
   );
-  void sendShopperSubscriptionWelcome({
+  await sendShopperSubscriptionWelcome({
     to: row.customerEmail,
     customerName: row.customerName,
     offerTitle: row.offer.title,

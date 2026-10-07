@@ -116,8 +116,8 @@ export async function sendCollectionGroupCustomerEmails(input: {
   }));
   const skipped = orders.length - withEmail.length;
 
-  after(() => {
-    void mapPool(payload, 5, async (row) => {
+  after(() =>
+    mapPool(payload, 5, async (row) => {
       try {
         await sendOwnerEmail(
           row.email,
@@ -133,8 +133,8 @@ export async function sendCollectionGroupCustomerEmails(input: {
       }
     }).catch((error) => {
       console.error("Bulk collection emails failed", error);
-    });
-  });
+    }),
+  );
 
   const parts = [`Emails queued to ${payload.length}`];
   if (skipped) parts.push(`${skipped} had no email`);

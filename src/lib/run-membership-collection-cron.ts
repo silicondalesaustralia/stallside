@@ -196,14 +196,16 @@ async function createMembershipCollectionOrder(
     { maxWait: 10_000, timeout: 30_000 },
   );
 
-  after(() => {
-    void notifySale(order.id).catch((error) => {
-      console.error("Sale notify failed", error);
-    });
-    void notifyOrderCustomer(order.id).catch((error) => {
-      console.error("Customer order email failed", error);
-    });
-  });
+  after(() =>
+    Promise.allSettled([
+      notifySale(order.id).catch((error) => {
+        console.error("Sale notify failed", error);
+      }),
+      notifyOrderCustomer(order.id).catch((error) => {
+        console.error("Customer order email failed", error);
+      }),
+    ]),
+  );
 
   return true;
 }

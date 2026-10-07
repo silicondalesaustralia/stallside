@@ -9,6 +9,7 @@ import {
 import { notifySale } from "@/lib/notify";
 import { notifyOrderCustomer } from "@/lib/notify-order-customer";
 import { decrementStockForOrder } from "@/lib/checkout";
+import { syncSaleToSquare } from "@/lib/square/sync-stock";
 
 export async function fulfillPaidCardOrder(
   orderId: string,
@@ -152,14 +153,19 @@ async function fulfillPaidOnlineOrder(
     throw error;
   }
 
-  after(() => {
-    void notifySale(orderId).catch((error) => {
+  // Return the work to after() so the serverless function stays alive until it settles.
+  after(() =>
+    Promise.allSettled([
+    notifySale(orderId).catch((error) => {
       console.error("Sale notify failed", error);
-    });
-    void notifyOrderCustomer(orderId).catch((error) => {
+    }),
+    notifyOrderCustomer(orderId).catch((error) => {
       console.error("Customer order email failed", error);
-    });
-    void (async () => {
+    }),
+    skipStock
+      ? Promise.resolve()
+      : syncSaleToSquare({ ownerId: order.stand.ownerId, orderId, items }),
+    (async () => {
       try {
         const fresh = await prisma.order.findUnique({
           where: { id: orderId },
@@ -185,8 +191,9 @@ async function fulfillPaidOnlineOrder(
       } catch (error) {
         console.error("Link order to customer failed", error);
       }
-    })();
-  });
+    })(),
+    ]),
+  );
 
   return { orderNumber: order.orderNumber, alreadyPaid: false as const };
 }

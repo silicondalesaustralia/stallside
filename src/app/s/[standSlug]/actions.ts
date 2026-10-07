@@ -167,18 +167,20 @@ async function confirmDeclaredCheckout(
       { maxWait: 10_000, timeout: 30_000 },
     );
 
-    after(() => {
-      void notifySale(order.id).catch((error) => {
-        console.error("Sale notify failed", error);
-      });
-      if (!skipStock) {
-        void syncSaleToSquare({
-          ownerId: stand.ownerId,
-          orderId: order.id,
-          items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
-        });
-      }
-    });
+    after(() =>
+      Promise.allSettled([
+        notifySale(order.id).catch((error) => {
+          console.error("Sale notify failed", error);
+        }),
+        skipStock
+          ? Promise.resolve()
+          : syncSaleToSquare({
+              ownerId: stand.ownerId,
+              orderId: order.id,
+              items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+            }),
+      ]),
+    );
 
     return { orderNumber: order.orderNumber };
   } catch (error) {
