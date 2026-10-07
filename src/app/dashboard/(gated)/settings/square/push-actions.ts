@@ -15,12 +15,20 @@ export async function pushProductsToSquareAction(
     if ("error" in result) return result;
 
     revalidatePath("/dashboard/settings/square");
-    const parts = [
-      `Added ${result.created} product${result.created === 1 ? "" : "s"} to Square`,
-    ];
+    const plural = (n: number) => (n === 1 ? "" : "s");
+    const parts: string[] = [];
+    if (result.created > 0 || result.linked === 0) {
+      parts.push(`Added ${result.created} product${plural(result.created)} to Square`);
+    }
+    if (result.linked > 0) {
+      parts.push(
+        `linked ${result.linked} product${plural(result.linked)} already in Square (stock left as Square has it)`,
+      );
+    }
     if (result.stockSet > 0) parts.push(`set stock on ${result.stockSet}`);
     if (result.failed > 0) parts.push(`${result.failed} could not be added`);
-    return { ok: true, message: `${parts.join(", ")}.` };
+    const message = parts.join(", ");
+    return { ok: true, message: `${message[0].toUpperCase()}${message.slice(1)}.` };
   } catch (error) {
     console.error("Push products to Square failed", error);
     if (error instanceof SquareApiError && error.status === 409) {
