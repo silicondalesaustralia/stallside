@@ -1,4 +1,5 @@
 import { countUnlinkedOtherCurrency, listUnlinkedProducts } from "@/lib/square/catalog-push";
+import { pruneDeletedSquareLinks } from "@/lib/square/catalog-prune";
 import SquarePushPanel from "./SquarePushPanel";
 
 export default async function SquarePushSection({
@@ -20,6 +21,11 @@ export default async function SquarePushSection({
         Turn on product / catalogue sync to add Vendl products to Square.
       </p>
     );
+  }
+  try {
+    await pruneDeletedSquareLinks(connectionId);
+  } catch (error) {
+    console.error("Could not check Square for deleted items", error);
   }
   const [products, otherCurrencyCount] = await Promise.all([
     listUnlinkedProducts(ownerId, connectionId),
