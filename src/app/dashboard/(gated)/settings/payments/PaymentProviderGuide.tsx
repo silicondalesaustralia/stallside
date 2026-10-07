@@ -23,7 +23,7 @@ export default function PaymentProviderGuide({ v2026 }: { v2026: boolean }) {
           fee.
         </li>
         <li>
-          <strong>Vendl Pro removes the Vendl fee</strong> on Square and PayPal
+          <strong>Vendl Pro removes the Vendl fee</strong> on Square
           {v2026
             ? ", and on your first A$4,000 of Stripe sales each month (0.5% after that)"
             : " and Stripe"}
