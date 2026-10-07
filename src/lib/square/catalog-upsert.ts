@@ -1,4 +1,26 @@
-import { squareFetch } from "@/lib/square/client";
+import { SquareApiError, squareFetch } from "@/lib/square/client";
+
+const LOCK_RETRY_DELAYS_MS = [1000, 2000, 4000, 8000];
+
+function isCatalogLocked(err: unknown): boolean {
+  return (
+    err instanceof SquareApiError &&
+    (err.status === 409 || /locked/i.test(err.message))
+  );
+}
+
+/** Square locks a merchant's catalogue while an earlier write is still applying. */
+async function withCatalogLockRetry<T>(run: () => Promise<T>): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await run();
+    } catch (err) {
+      const delay = LOCK_RETRY_DELAYS_MS[attempt];
+      if (delay === undefined || !isCatalogLocked(err)) throw err;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+}
 
 export type SquarePushProduct = {
   id: string;
@@ -65,16 +87,18 @@ export async function createSquareItems(input: {
   products: SquarePushProduct[];
 }): Promise<SquareCreatedItem[]> {
   if (input.products.length === 0) return [];
-  const res = await squareFetch<{
-    id_mappings?: Array<{ client_object_id?: string; object_id?: string }>;
-  }>("/v2/catalog/batch-upsert", {
-    accessToken: input.accessToken,
-    method: "POST",
-    body: {
-      idempotency_key: input.idempotencyKey,
-      batches: input.products.map((p) => ({ objects: [itemObject(p)] })),
-    },
-  });
+  const res = await withCatalogLockRetry(() =>
+    squareFetch<{
+      id_mappings?: Array<{ client_object_id?: string; object_id?: string }>;
+    }>("/v2/catalog/batch-upsert", {
+      accessToken: input.accessToken,
+      method: "POST",
+      body: {
+        idempotency_key: input.idempotencyKey,
+        batches: input.products.map((p) => ({ objects: [itemObject(p)] })),
+      },
+    }),
+  );
 
   const ids = new Map(
     (res.id_mappings ?? [])
