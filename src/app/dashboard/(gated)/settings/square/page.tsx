@@ -10,7 +10,6 @@ import {
   squareEnvironment,
 } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
-import { shouldChargeVendlFee } from "@/lib/stallside-fee";
 import { pricingMoveNotice } from "@/lib/pricing-move-gate";
 import {
   SQUARE_CURRENCY,
@@ -20,7 +19,6 @@ import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import SquareConnectForm from "./SquareConnectForm";
 import SquareCapabilityForm from "./SquareCapabilityForm";
 import SquareLocationForm from "./SquareLocationForm";
-import SquareProviderForm from "./SquareProviderForm";
 import SquareMappingPanel from "./SquareMappingPanel";
 import SquarePushSection from "./SquarePushSection";
 import SquareImportPanel from "./SquareImportPanel";
@@ -57,12 +55,6 @@ export default async function SquareSettingsPage({
         where: { connectionId: conn.id, confirmedAt: { not: null } },
       })
     : 0;
-  const activeOfferCount = conn
-    ? await prisma.subscriptionOffer.count({
-        where: { ownerId: owner.id, isActive: true },
-      })
-    : 0;
-  const feeApplies = shouldChargeVendlFee(owner);
   const active = conn?.status === "ACTIVE";
 
   return (
@@ -79,8 +71,8 @@ export default async function SquareSettingsPage({
         </h1>
         <p className="mt-2 text-[var(--muted)]">
           Connect your existing Square account to accept Square payments on your
-          Vendl website and keep product stock in sync with Square POS. Online
-          card checkout uses Stripe or Square — pick one below.
+          Vendl website and keep product stock in sync with Square POS. Choose
+          Stripe or Square for product checkout in Payments.
         </p>
       </div>
 
@@ -206,33 +198,19 @@ export default async function SquareSettingsPage({
             />
           </section>
 
-          <section className="space-y-3 text-sm">
-            <h2 className="text-lg font-semibold">Product checkout provider</h2>
-            <p className="text-[var(--muted)]">
-              Choose Stripe or Square for one-off card checkout on products and
-              pre-orders. Memberships and subscriptions always use Stripe, so
-              keep Stripe connected if you sell them. Free plan still collects a
-              2.5% Vendl fee on Vendl-originated Square checkout
-              {feeApplies ? " (your account)" : " (waived on Pro)"}. Square POS
-              sales never incur a Vendl fee.
-            </p>
-            {activeOfferCount > 0 && !owner.stripeChargesEnabled ? (
-              <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-900">
-                You have {activeOfferCount} active membership
-                {activeOfferCount === 1 ? "" : "s"} or subscription
-                {activeOfferCount === 1 ? "" : "s"}. Customers can&apos;t sign up
-                until Stripe is connected.{" "}
-                <Link href="/dashboard/settings/stripe" className="underline">
-                  Connect Stripe
-                </Link>
-              </p>
-            ) : null}
-            <SquareProviderForm
-              current={owner.onlinePaymentProvider}
-              squarePaymentsReady={conn.paymentsEnabled}
-              stripeReady={owner.stripeChargesEnabled}
-            />
-          </section>
+          <p className="text-sm text-[var(--muted)]">
+            Product checkout currently uses{" "}
+            <strong className="text-[var(--ink)]">
+              {owner.onlinePaymentProvider === "SQUARE" ? "Square" : "Stripe"}
+            </strong>
+            .{" "}
+            <Link
+              href="/dashboard/settings/payments#checkout-provider"
+              className="underline"
+            >
+              Change in Payments
+            </Link>
+          </p>
 
           <section className="space-y-3 text-sm">
             <h2 className="text-lg font-semibold">Products</h2>

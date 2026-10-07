@@ -57,7 +57,7 @@ export default function SquareProviderForm({
           disabled={!squarePaymentsReady}
         />
         Square
-        {!squarePaymentsReady ? " (enable Square payments above)" : ""}
+        {!squarePaymentsReady ? " (turn on Square payments in Square settings)" : ""}
       </label>
       <button
         type="submit"

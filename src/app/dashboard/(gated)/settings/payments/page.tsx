@@ -10,6 +10,9 @@ import {
 } from "@/lib/commerce/payment-rail";
 import { getSquareConnection } from "@/lib/square/connection";
 import { isSquareConnectEnabled } from "@/lib/square/config";
+import { shouldChargeVendlFee } from "@/lib/stallside-fee";
+import { prisma } from "@/lib/prisma";
+import CheckoutProviderSection from "./CheckoutProviderSection";
 
 export default async function PaymentsSettingsPage() {
   const { owner } = await requireOwner();
@@ -19,6 +22,11 @@ export default async function PaymentsSettingsPage() {
   const squareConn =
     showSquare && squareEnvReady ? await getSquareConnection(owner.id) : null;
   const squareActive = squareConn?.status === "ACTIVE";
+  const activeOfferCount = squareActive
+    ? await prisma.subscriptionOffer.count({
+        where: { ownerId: owner.id, isActive: true },
+      })
+    : 0;
 
   return (
     <main className="flex w-full max-w-3xl flex-col gap-8">
@@ -113,6 +121,16 @@ export default async function PaymentsSettingsPage() {
                 : "Connect Square"}
           </Link>
         </section>
+      ) : null}
+
+      {squareActive && squareConn ? (
+        <CheckoutProviderSection
+          current={owner.onlinePaymentProvider}
+          squarePaymentsReady={squareConn.paymentsEnabled}
+          stripeReady={owner.stripeChargesEnabled}
+          feeApplies={shouldChargeVendlFee(owner)}
+          activeOfferCount={activeOfferCount}
+        />
       ) : null}
 
       <section id="paypal" className="space-y-3 text-sm scroll-mt-8">
