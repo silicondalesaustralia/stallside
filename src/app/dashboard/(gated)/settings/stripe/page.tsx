@@ -65,8 +65,14 @@ export default async function StripeSettingsPage({
       );
     } catch (error) {
       console.error("Failed to load Stripe payment methods", error);
-      paymentMethodsError =
-        "Could not load payment methods from Stripe. Try Refresh status.";
+      const accountInvalid =
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        error.code === "account_invalid";
+      paymentMethodsError = accountInvalid
+        ? "Vendl can no longer reach this Stripe account (access was revoked or it was connected in a different Stripe mode). Disconnect Stripe below and connect again."
+        : "Could not load payment methods from Stripe. Try Refresh status.";
     }
   }
 
