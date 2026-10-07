@@ -167,14 +167,16 @@ async function fulfillPaidOnlineOrder(
     }
   }
 
-  after(() => {
-    void notifySale(orderId).catch((error) => {
+  // Return the work to after() so the serverless function stays alive until it settles.
+  after(() =>
+    Promise.allSettled([
+    notifySale(orderId).catch((error) => {
       console.error("Sale notify failed", error);
-    });
-    void notifyOrderCustomer(orderId).catch((error) => {
+    }),
+    notifyOrderCustomer(orderId).catch((error) => {
       console.error("Customer order email failed", error);
-    });
-    void (async () => {
+    }),
+    (async () => {
       try {
         const fresh = await prisma.order.findUnique({
           where: { id: orderId },
@@ -214,8 +216,9 @@ async function fulfillPaidOnlineOrder(
       } catch (err) {
         console.error("Growth/Square inventory post-pay hooks failed", err);
       }
-    })();
-  });
+    })(),
+    ]),
+  );
 
   return { orderNumber: order.orderNumber, alreadyPaid: false as const };
 }

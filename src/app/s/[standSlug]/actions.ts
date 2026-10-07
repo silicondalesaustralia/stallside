@@ -230,18 +230,19 @@ async function confirmDeclaredCheckout(
       console.error("Order fulfilment snapshot failed", err);
     }
 
-    after(() => {
-      void notifySale(order.id).catch((error) => {
+    after(() =>
+      Promise.allSettled([
+      notifySale(order.id).catch((error) => {
         console.error("Sale notify failed", error);
-      });
-      if (!skipStock) {
-        void syncSaleToSquare({
-          ownerId: stand.ownerId,
-          orderId: order.id,
-          items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
-        });
-      }
-      void (async () => {
+      }),
+      skipStock
+        ? Promise.resolve()
+        : syncSaleToSquare({
+            ownerId: stand.ownerId,
+            orderId: order.id,
+            items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+          }),
+      (async () => {
         try {
           const fresh = await prisma.order.findUnique({
             where: { id: order.id },
@@ -289,8 +290,9 @@ async function confirmDeclaredCheckout(
         } catch (err) {
           console.error("Growth cash hooks failed", err);
         }
-      })();
-    });
+      })(),
+      ]),
+    );
 
     return { orderNumber: order.orderNumber };
   } catch (error) {

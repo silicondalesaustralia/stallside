@@ -88,8 +88,8 @@ export async function notifyRestockSubscribers(
     },
   });
 
-  after(() => {
-    void sendRestockNotifications({
+  after(() =>
+    sendRestockNotifications({
       standId: stand.id,
       standName: stand.name,
       standSlug: stand.slug,
@@ -98,8 +98,8 @@ export async function notifyRestockSubscribers(
       recordNotification: false,
     }).catch((error) => {
       console.error("Restock notify failed", error);
-    });
-  });
+    }),
+  );
 
   revalidatePath("/dashboard/products");
   return { ok: true, recipientCount: queued };
