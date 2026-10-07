@@ -164,7 +164,7 @@ async function fulfillPaidOnlineOrder(
     }),
     skipStock
       ? Promise.resolve()
-      : syncSaleToSquare({ ownerId: order.stand.ownerId, orderId, items }),
+      : syncSaleToSquare({ ownerId: order.ownerId, orderId, items }),
     (async () => {
       try {
         const fresh = await prisma.order.findUnique({
