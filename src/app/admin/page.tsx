@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import AdminRecentOwners from "@/components/AdminRecentOwners";
 import { requireAdmin } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import { getSaasStats } from "@/lib/admin-saas-stats";
 import { getSaasSeries } from "@/lib/admin-saas-series";
 import { getLtvWindow } from "@/lib/admin-ltv-window";
@@ -13,6 +11,7 @@ import DateRangeFilter from "@/components/DateRangeFilter";
 import AdminMedianLiveLine from "./AdminMedianLiveLine";
 import AdminSaasPanels from "./AdminSaasPanels";
 import AdminSalesSection from "./AdminSalesSection";
+import AdminRecentOwnersSection from "./AdminRecentOwnersSection";
 
 export default async function AdminOverviewPage({
   searchParams,
@@ -72,6 +71,12 @@ export default async function AdminOverviewPage({
             Billing
           </Link>
           <Link
+            href="/admin/payments"
+            className="rounded-full border border-[var(--line)] bg-white px-4 py-2.5 font-semibold"
+          >
+            Payments
+          </Link>
+          <Link
             href="/admin/owners"
             className="rounded-full border border-[var(--line)] bg-white px-4 py-2.5 font-semibold"
           >
@@ -123,22 +128,5 @@ export default async function AdminOverviewPage({
         <AdminRecentOwnersSection />
       </Suspense>
     </main>
-  );
-}
-
-async function AdminRecentOwnersSection() {
-  const recent = await prisma.owner.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 8,
-    include: {
-      user: true,
-      stands: { select: { name: true }, take: 3 },
-    },
-  });
-  return (
-    <section className="dash-card p-5">
-      <h2 className="text-lg font-semibold">Recent owners</h2>
-      <AdminRecentOwners owners={recent} />
-    </section>
   );
 }
