@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireOwnerWrite } from "@/lib/session";
 import { pushProductsToSquare } from "@/lib/square/catalog-push";
+import { SquareApiError } from "@/lib/square/client";
 
 export async function pushProductsToSquareAction(
   productIds: string[],
@@ -22,6 +23,12 @@ export async function pushProductsToSquareAction(
     return { ok: true, message: `${parts.join(", ")}.` };
   } catch (error) {
     console.error("Push products to Square failed", error);
+    if (error instanceof SquareApiError && error.status === 409) {
+      return {
+        error:
+          "Square is still processing an earlier change. Wait a minute and push again — products already added won't be duplicated.",
+      };
+    }
     return {
       error:
         error instanceof Error
