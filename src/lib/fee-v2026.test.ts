@@ -32,16 +32,31 @@ describe("V2026 Free", () => {
   });
 
   it("Stripe pass-on grosses up the fixed fee", () => {
-    const r = computeVendlCheckoutFees(500, v2FreePassOn, stripe);
+    const r = computeVendlCheckoutFees(500, v2FreePassOn, { rail: "stripe", currency: "USD" });
     assert.equal(r.chargeTotalCents, 544);
     assert.equal(r.applicationFeeCents, 44);
     assert.equal(r.passedOn, true);
   });
 
+  it("AUD never passes the fee on (surcharge ban)", () => {
+    const r = computeVendlCheckoutFees(500, v2FreePassOn, stripe);
+    assert.deepEqual(r, { applicationFeeCents: 43, chargeTotalCents: 500, passedOn: false });
+    const usdStandAudOwner = computeVendlCheckoutFees(
+      500,
+      { ...v2FreePassOn, billingCurrency: "AUD" },
+      { rail: "stripe", currency: "USD" },
+    );
+    assert.equal(usdStandAudOwner.passedOn, false);
+  });
+
   it("Square and PayPal: 2.5% only", () => {
     assert.equal(computeVendlCheckoutFees(500, v2Free, square).applicationFeeCents, 13);
     assert.equal(computeVendlCheckoutFees(500, v2Free, paypal).applicationFeeCents, 13);
-    assert.equal(computeVendlCheckoutFees(500, v2FreePassOn, square).chargeTotalCents, 513);
+    assert.equal(
+      computeVendlCheckoutFees(500, v2FreePassOn, { rail: "square", currency: "USD" })
+        .chargeTotalCents,
+      513,
+    );
   });
 
   it("fixed fee follows currency", () => {

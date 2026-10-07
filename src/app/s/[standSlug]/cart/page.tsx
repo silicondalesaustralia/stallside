@@ -237,7 +237,7 @@ export default async function StandCartPage({
         localTransfer={localTransfer}
         demoProduct={demoProduct}
         restockStandId={restockStandId}
-        passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner)}
+        passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner, stand.currency)}
         stallsideFeeApplies={shouldChargeVendlFee(stand.owner)}
         stripeFixedFeeCents={vendlFixedFeeCents(stand.owner, "stripe", stand.currency)}
         upsell={upsell}

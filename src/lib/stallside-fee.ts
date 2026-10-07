@@ -19,6 +19,7 @@ type FeeOwner = {
   currentPeriodEndsAt?: Date | null;
   cancelAtPeriodEnd?: boolean;
   passFeeToCustomer?: boolean | null;
+  billingCurrency?: string | null;
   /** Used to recognise platform-admin / complimentary accounts. */
   contactEmail?: string | null;
 };
@@ -71,8 +72,23 @@ export function shouldChargeVendlFee(
   return true;
 }
 
-export function ownerPassesFeeToCustomer(owner: FeeOwner): boolean {
-  return Boolean(owner.passFeeToCustomer);
+function isAud(currency: string | null | undefined): boolean {
+  return (currency ?? "").trim().toUpperCase() === "AUD";
+}
+
+/** Card surcharges are banned in Australia, so AUD accounts and checkouts always absorb the fee. */
+export function feePassOnAllowed(
+  owner: FeeOwner,
+  currency?: string | null,
+): boolean {
+  return !isAud(owner.billingCurrency) && !isAud(currency);
+}
+
+export function ownerPassesFeeToCustomer(
+  owner: FeeOwner,
+  currency?: string | null,
+): boolean {
+  return Boolean(owner.passFeeToCustomer) && feePassOnAllowed(owner, currency);
 }
 
 /** Fixed per-transaction Vendl fee: V2026 Free plan on Stripe only. */
@@ -118,7 +134,7 @@ export function computeVendlCheckoutFees(
   }
 
   const fixed = vendlFixedFeeCents(owner, opts.rail, opts.currency, opts.access);
-  if (ownerPassesFeeToCustomer(owner)) {
+  if (ownerPassesFeeToCustomer(owner, opts.currency)) {
     const chargeTotalCents = stallsidePassOnChargeCents(base, fixed);
     return {
       applicationFeeCents: chargeTotalCents - base,

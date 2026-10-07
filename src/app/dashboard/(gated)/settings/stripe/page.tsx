@@ -4,7 +4,11 @@ import { requireOwner } from "@/lib/session";
 import { isStripeConfigured } from "@/lib/stripe";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { billingRegionDisplay } from "@/lib/saas-pricing";
-import { shouldChargeVendlFee } from "@/lib/stallside-fee";
+import {
+  feePassOnAllowed,
+  ownerPassesFeeToCustomer,
+  shouldChargeVendlFee,
+} from "@/lib/stallside-fee";
 import { isV2026Owner } from "@/lib/fee-v2026";
 import { listConnectPaymentMethodToggles } from "@/lib/stripe-payment-method-config";
 import { ensureRegionalConnectCapabilities } from "@/lib/stripe-connect-capabilities";
@@ -130,7 +134,8 @@ export default async function StripeSettingsPage({
 
       {feeApplies ? (
         <PassFeeToggle
-          passFeeToCustomer={owner.passFeeToCustomer}
+          passFeeToCustomer={ownerPassesFeeToCustomer(owner)}
+          allowPassOn={feePassOnAllowed(owner)}
           v2026={isV2026Owner(owner)}
         />
       ) : (

@@ -27,11 +27,11 @@ export const FREE_PLAN_FEE_BLURB =
 
 /** Absorb vs pass-on - Free only (Pro has no Vendl fee). */
 export const FREE_PLAN_PASS_FEE_FEATURE =
-  "Absorb the Vendl fee or pass it on to customers at checkout from Settings → Card / Tap & Go";
+  "Absorb the Vendl fee or pass it on to customers at checkout from Settings → Card / Tap & Go (outside Australia, where card surcharges aren't allowed)";
 
 /** Free ($0/mo) blurb. */
 export function cashPlanBlurb(_currency?: BillingCurrency): string {
-  return "Every Vendl feature, with no monthly fee. A 2.5% + 30c Vendl fee applies to Stripe card, Tap & Go and pay-later (2.5% on Square and PayPal); cash and local bank payments stay free. Absorb or pass on that fee.";
+  return "Every Vendl feature, with no monthly fee. A 2.5% + 30c Vendl fee applies to Stripe card, Tap & Go and pay-later (2.5% on Square and PayPal); cash and local bank payments stay free. Outside Australia you can absorb or pass on that fee.";
 }
 
 export function cashPlanExtraBlurb(_currency?: BillingCurrency): string | null {
