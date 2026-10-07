@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getSquareConnection, getValidSquareAccessToken } from "@/lib/square/connection";
 import { createSquareItems } from "@/lib/square/catalog-upsert";
 import { linkExistingSquareItems } from "@/lib/square/catalog-autolink";
+import { pruneDeletedSquareLinks } from "@/lib/square/catalog-prune";
 import { setSquarePhysicalCounts } from "@/lib/square/inventory-api";
 import { SQUARE_CURRENCY } from "@/lib/commerce/payment-rail";
 
@@ -55,6 +56,7 @@ export async function pushProductsToSquare(input: {
   const token = await getValidSquareAccessToken(conn.id);
   if (!token) return { error: "Reconnect Square, then try again." };
 
+  await pruneDeletedSquareLinks(conn.id);
   const unlinked = await listUnlinkedProducts(input.ownerId, conn.id);
   const wanted = new Set(input.productIds);
   const chosen = unlinked.filter((p) => wanted.has(p.id)).map((p) => p.id);
