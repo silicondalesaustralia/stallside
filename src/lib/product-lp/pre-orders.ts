@@ -211,7 +211,8 @@ function preDoorway(
 }
 
 export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
-  bakers: preDoorway({
+  bakers: {
+    ...preDoorway({
     metaTitle: "Pre-order system for bakers - shop included, no website needed",
     metaDescription:
       "Take orders for bread and any baked good in a minute. Know what to bake before you bake it. Make list and packing list included.",
@@ -327,7 +328,9 @@ export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
           "Weekly or fortnightly bread boxes - predictable revenue without chasing DMs.",
       },
     ],
-  }),
+    }),
+    pricingFullHref: null,
+  },
 
   "farm-stalls": preDoorway({
     metaTitle: "Farm pre-orders for collection - shop included, no website needed",
