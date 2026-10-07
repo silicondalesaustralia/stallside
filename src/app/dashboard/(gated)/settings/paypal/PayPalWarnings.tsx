@@ -25,7 +25,8 @@ export default function PayPalWarnings({
           PayPal&apos;s merchant fee comes out of your proceeds (owner-direct).
           On Free, Vendl also takes a 2.5% platform fee on marketplace PayPal
           sales (same as card) - waived on Pro. Pass-on uses the same setting as
-          Stripe (Settings → Stripe → pass fee to customer).
+          Stripe (Settings → Stripe → pass fee to customer; not available in
+          Australia).
           {feeHint ? (
             <>
               {" "}

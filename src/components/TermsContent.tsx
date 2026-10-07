@@ -64,7 +64,8 @@ export default function TermsContent() {
           On Free, stall owners may choose in Settings → Card / Tap &amp; Go to pass
           this Vendl fee on to their customers at checkout (shown as a clear card
           fee line), or to absorb it themselves so the customer pays the listed price.
-          Owners who choose to pass the fee to customers are solely responsible for
+          Passing the fee on is not available to Australian accounts or on AUD
+          checkouts, where card surcharges are not permitted. Owners who choose to pass the fee to customers are solely responsible for
           ensuring that any such surcharge complies with the card-surcharging laws
           applicable in their location. Vendl is not responsible for an owner&apos;s
           compliance with local surcharging regulations.

@@ -1,24 +1,22 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { updatePassFeeToCustomer } from "./pass-fee-actions";
 
 type PassFeeToggleProps = {
   passFeeToCustomer: boolean;
   v2026?: boolean;
+  allowPassOn?: boolean;
 };
 
 export default function PassFeeToggle({
   passFeeToCustomer,
   v2026 = false,
+  allowPassOn = true,
 }: PassFeeToggleProps) {
   const [pending, startTransition] = useTransition();
   const [passOn, setPassOn] = useState(passFeeToCustomer);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setPassOn(passFeeToCustomer);
-  }, [passFeeToCustomer]);
 
   function choose(next: boolean) {
     const prev = passOn;
@@ -44,6 +42,8 @@ export default function PassFeeToggle({
         Vendl fee (Free plan): 2.5%{v2026 ? " + 30c" : ""} on card, Tap &amp;
         Go, and pay-later. Standard Stripe processing fees apply separately.
       </p>
+      {allowPassOn ? (
+      <>
       <label className="flex items-start gap-3">
         <input
           type="radio"
@@ -77,6 +77,13 @@ export default function PassFeeToggle({
         </span>
       </label>
       {error ? <p className="text-sm text-red-700">{error}</p> : null}
+      </>
+      ) : (
+        <p className="text-[var(--muted)]">
+          Card surcharges aren&apos;t allowed in Australia, so customers pay the
+          listed price and the fee comes out of your payout.
+        </p>
+      )}
       <p className="text-[var(--muted)]">
         Cash and PayID are always free. Upgrade to Pro to remove this fee
         entirely.

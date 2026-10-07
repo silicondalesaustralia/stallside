@@ -119,7 +119,7 @@ export default async function CustomerChoicePayPage({
         }
         paypalMarketplace={isPayPalMarketplaceMode()}
         localTransfer={localTransfer}
-        passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner)}
+        passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner, stand.currency)}
         stallsideFeeApplies={shouldChargeVendlFee(stand.owner)}
         stripeFixedFeeCents={vendlFixedFeeCents(stand.owner, "stripe", stand.currency)}
         showDemoCardHint={isDemo}

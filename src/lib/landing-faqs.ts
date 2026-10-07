@@ -42,7 +42,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "Is there a fee on card payments?",
     answer:
-      "On Free, Vendl charges 2.5% + 30c on Stripe card, Tap & Go (Apple Pay / Google Pay), and pay-later (2.5% via Square or PayPal). Cash and PayID have no Vendl fee. You can absorb the Vendl fee or pass it on to customers (shown as a card fee line at checkout) in Settings → Card / Tap & Go. On Pro there is no Vendl cut. Stripe's own processing fees still apply either way (pay-later providers usually charge more than cards).",
+      "On Free, Vendl charges 2.5% + 30c on Stripe card, Tap & Go (Apple Pay / Google Pay), and pay-later (2.5% via Square or PayPal). Cash and PayID have no Vendl fee. Outside Australia you can absorb the Vendl fee or pass it on to customers (shown as a card fee line at checkout) in Settings → Card / Tap & Go. Card surcharges aren't allowed in Australia, so Australian sellers absorb it. On Pro there is no Vendl cut. Stripe's own processing fees still apply either way (pay-later providers usually charge more than cards).",
   },
   {
     question: "Are cash and PayID free?",

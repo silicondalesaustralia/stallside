@@ -84,7 +84,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     ],
     steps: [
       "Stripe Connect is how customers pay you at the stand by card, Apple Pay, or Google Pay. Available on Free and Pro.",
-      "On Free, Vendl takes 2.5% + 30c on Stripe card, Tap & Go, and pay-later (you can absorb or pass on in Settings → Stripe). Pro has no Vendl card fee on the first A$4,000 of Stripe sales each month, then 0.5%. Standard Stripe processing fees apply on both plans.",
+      "On Free, Vendl takes 2.5% + 30c on Stripe card, Tap & Go, and pay-later (outside Australia you can absorb or pass it on in Settings → Stripe; card surcharges aren't allowed in Australia, so Australian sellers absorb it). Pro has no Vendl card fee on the first A$4,000 of Stripe sales each month, then 0.5%. Standard Stripe processing fees apply on both plans.",
       "Open Settings → Stripe (Card / Tap & Go) and tap Connect Stripe. Complete Stripe’s onboarding with your business and bank details.",
       "When charges are enabled, turn Card / Tap & Go on for each business under My Businesses → manage.",
       "Scan your Vendl QR on another phone and run a small test card sale. Payments go to your Stripe account.",
