@@ -13,7 +13,8 @@ const OWNER_FREE = [
 const OWNER_PRO = [
   CARD_PLAN_HARDWARE_BLURB,
   "Same features as Free - no Vendl card fee",
-  "Paid straight to your Stripe account: no cash box to empty, count, or bank",
+  "Paid straight to your Stripe or Square account (Square currently Australia only): no cash box to empty, count, or bank",
+  "Connect your existing Stripe or Square account, or create one in minutes",
 ] as const;
 
 const CUSTOMER_LIVE = [

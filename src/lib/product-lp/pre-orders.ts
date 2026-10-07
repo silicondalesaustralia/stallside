@@ -29,7 +29,7 @@ export const PRE_ORDERS_HUB: ProductLpContent = {
     "Hide from business page",
   ],
   stripFootnote:
-    "Buyers pay by card. Money goes to your Stripe account. No Shopify store required.",
+    "Buyers pay by card. Money goes to your Stripe or Square account (Square currently Australia only). No Shopify store required.",
   upsellHeading: "Grow each pre-order without another tool",
   upsellItems: [
     "Page-level cart add-ons",
@@ -119,7 +119,7 @@ export const PRE_ORDERS_HUB: ProductLpContent = {
     },
     {
       q: "When do I get paid?",
-      a: "Card is taken when they order (or as a deposit). Money goes to your Stripe account.",
+      a: "Card is taken when they order (or as a deposit). Money goes to your Stripe or Square account.",
     },
     {
       q: "Can I cap how many I take?",
@@ -294,7 +294,7 @@ export const PRE_ORDER_DOORWAYS: Record<string, ProductLpContent> = {
       },
       {
         q: "When do I get paid?",
-        a: "Card payment is taken when they order. Money goes to your Stripe account.",
+        a: "Card payment is taken when they order. Money goes to your Stripe or Square account.",
       },
       {
         q: "How do I know what to bake?",

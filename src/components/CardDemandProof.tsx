@@ -19,8 +19,8 @@ export default function CardDemandProof() {
         <p className="mt-4 max-w-2xl pl-3 text-base leading-relaxed text-[var(--muted)] sm:text-lg">
           When Tap &amp; Go isn&apos;t connected yet, shoppers can tap &ldquo;I&apos;d
           have paid by card.&rdquo; You get a running total on your dashboard -
-          free on every plan. Connect Stripe to take those sales; go Pro to keep
-          100%.
+          free on every plan. Connect your Stripe or Square account (Square
+          currently Australia only) to take those sales; go Pro to keep 100%.
         </p>
 
         <div className="mt-8 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--wash)] px-5 py-6 pl-3 sm:px-8">
@@ -34,7 +34,7 @@ export default function CardDemandProof() {
             about $180
           </p>
           <p className="mt-3 max-w-lg text-sm text-[var(--muted)]">
-            Connect Stripe and the next one can actually pay. Pro removes the
+            Connect Stripe or Square and the next one can actually pay. Pro removes the
             Vendl card fee.
           </p>
         </div>

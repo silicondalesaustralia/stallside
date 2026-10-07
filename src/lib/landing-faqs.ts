@@ -92,7 +92,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "How do pre-orders work?",
     answer:
-      "Mark a product as a pre-order with an order-by deadline and collection day. Customers scan your QR, choose what they want, and pay by card to reserve - money goes to your Stripe account at checkout. They get a confirmation email; you see their name and email on the order. In Collections you track who's coming by day and mark Ready, then Collected. You can show exact slots left on the stall, and message buyers from Vendl if plans change. Take-now and pre-order items need separate checkouts.",
+      "Mark a product as a pre-order with an order-by deadline and collection day. Customers scan your QR, choose what they want, and pay by card to reserve - money goes to your Stripe or Square account at checkout (Square currently Australia only). They get a confirmation email; you see their name and email on the order. In Collections you track who's coming by day and mark Ready, then Collected. You can show exact slots left on the stall, and message buyers from Vendl if plans change. Take-now and pre-order items need separate checkouts.",
   },
   {
     question: "How much does it cost?",
@@ -116,6 +116,6 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "What about cash going missing?",
     answer:
-      "It happens: a tin by the road is easy to empty. Cash sales are still logged the moment a customer confirms, so your records stay right even if the box doesn't. With Tap & Go, that money lands straight in your Stripe account, with nothing left at the stand to take.",
+      "It happens: a tin by the road is easy to empty. Cash sales are still logged the moment a customer confirms, so your records stay right even if the box doesn't. With Tap & Go, that money lands straight in your Stripe or Square account, with nothing left at the stand to take.",
   },
 ];
