@@ -104,3 +104,77 @@ export function parseShopperSubInterval(
   if (v === "WEEKLY" || v === "FORTNIGHTLY" || v === "MONTHLY") return v;
   return null;
 }
+
+export type MembershipPlan = "WEEKLY" | "MONTHLY" | "UPFRONT";
+
+export function parseMembershipBillingPlan(
+  raw: unknown,
+): MembershipPlan | null {
+  const v = String(raw ?? "").trim().toUpperCase();
+  if (v === "WEEKLY" || v === "MONTHLY" || v === "UPFRONT") return v;
+  return null;
+}
+
+export function membershipPlanLabel(plan: MembershipPlan | string): string {
+  switch (plan) {
+    case "WEEKLY":
+      return "Weekly";
+    case "MONTHLY":
+      return "Monthly";
+    case "UPFRONT":
+      return "Pay in full";
+    default:
+      return "Membership";
+  }
+}
+
+/** Display price for list cards when offer may be membership or box. */
+export function offerDisplayPriceCents(offer: {
+  kind?: string;
+  priceCents: number;
+  weeklyPriceCents?: number | null;
+  monthlyPriceCents?: number | null;
+  upfrontPriceCents?: number | null;
+}): number {
+  if (offer.kind !== "MEMBERSHIP") return offer.priceCents;
+  const candidates = [
+    offer.weeklyPriceCents,
+    offer.monthlyPriceCents,
+    offer.upfrontPriceCents,
+  ].filter((n): n is number => n != null && n > 0);
+  if (candidates.length === 0) return offer.priceCents;
+  return Math.min(...candidates);
+}
+
+export function membershipTermEndsAt(from: Date, termWeeks: number): Date {
+  const end = new Date(from);
+  end.setDate(end.getDate() + termWeeks * 7);
+  return end;
+}
+
+export function membershipOfferReady(offer: {
+  kind: string;
+  stripePriceId: string | null;
+  stripeWeeklyPriceId?: string | null;
+  stripeMonthlyPriceId?: string | null;
+  stripeUpfrontPriceId?: string | null;
+  weeklyPriceCents?: number | null;
+  monthlyPriceCents?: number | null;
+  upfrontPriceCents?: number | null;
+}): boolean {
+  if (offer.kind !== "MEMBERSHIP") return Boolean(offer.stripePriceId);
+  if (offer.weeklyPriceCents != null && offer.weeklyPriceCents > 0) {
+    if (!offer.stripeWeeklyPriceId) return false;
+  }
+  if (offer.monthlyPriceCents != null && offer.monthlyPriceCents > 0) {
+    if (!offer.stripeMonthlyPriceId) return false;
+  }
+  if (offer.upfrontPriceCents != null && offer.upfrontPriceCents > 0) {
+    if (!offer.stripeUpfrontPriceId) return false;
+  }
+  return Boolean(
+    offer.stripeWeeklyPriceId ||
+      offer.stripeMonthlyPriceId ||
+      offer.stripeUpfrontPriceId,
+  );
+}

@@ -36,6 +36,8 @@ type CheckoutPayStepProps = {
   /** Pass-on Vendl fee (0 when absorb or Pro). */
   cardFeeCents?: number;
   cardTotalCents?: number;
+  /** Square charge total (no Stripe fixed fee). */
+  squareTotalCents?: number;
   localTransferLabel: string | null;
   pending: boolean;
   showDemoCardHint?: boolean;
@@ -85,6 +87,7 @@ export default function CheckoutPayStep({
   subtotalCents = 0,
   cardFeeCents = 0,
   cardTotalCents = 0,
+  squareTotalCents,
   localTransferLabel,
   pending,
   showDemoCardHint = false,
@@ -206,7 +209,10 @@ export default function CheckoutPayStep({
           customerPhone={customerPhone}
           couponCode={couponCode || null}
           amountCents={
-            cardTotalCents || subtotalCents + cardFeeCents || subtotalCents
+            squareTotalCents ||
+            cardTotalCents ||
+            subtotalCents + cardFeeCents ||
+            subtotalCents
           }
           currency={currency}
           disabled={pending}

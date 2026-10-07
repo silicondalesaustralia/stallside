@@ -145,6 +145,7 @@ export default function MenuOrder({
               qty={qtys[product.id] ?? 0}
               remaining={remaining}
               onQty={(n) => setQty(product.id, n)}
+              showIdentity={products.length > 1}
             />
           );
         })}

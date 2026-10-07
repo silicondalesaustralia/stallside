@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireOwner } from "@/lib/session";
 import { isSquareConnectEnabled } from "@/lib/square/config";
 import { completeSquareOAuth } from "@/lib/square/connection";
+import { SQUARE_LIFETIME_CONFIRM_COOKIE } from "@/lib/square/pricing-confirm";
 import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 
 export async function GET(req: Request) {
@@ -28,7 +29,9 @@ export async function GET(req: Request) {
 
   const jar = await cookies();
   const expected = jar.get("square_oauth_state")?.value;
+  const endLifetime = jar.get(SQUARE_LIFETIME_CONFIRM_COOKIE)?.value === "1";
   jar.delete("square_oauth_state");
+  jar.delete(SQUARE_LIFETIME_CONFIRM_COOKIE);
 
   if (!code || !state || !expected || state !== expected) {
     return NextResponse.redirect(
@@ -43,7 +46,7 @@ export async function GET(req: Request) {
         new URL("/dashboard/settings/square?error=region", url.origin),
       );
     }
-    await completeSquareOAuth({ ownerId: owner.id, code });
+    await completeSquareOAuth({ ownerId: owner.id, code, endLifetime });
     return NextResponse.redirect(
       new URL("/dashboard/settings/square?connected=1", url.origin),
     );

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { productCatalogWhere } from "@/lib/product-visibility";
-import SubscriptionOfferForm from "../SubscriptionOfferForm";
+import NewSubscriptionChooser from "./NewSubscriptionChooser";
 
 export default async function NewSubscriptionOfferPage() {
   const { owner } = await requireOwner();
@@ -41,10 +41,10 @@ export default async function NewSubscriptionOfferPage() {
           New subscription
         </h1>
         <p className="mt-1 text-[var(--muted)]">
-          {selected.name} — customers pay by card on a recurring schedule.
+          {selected.name} — box or fixed-term membership.
         </p>
       </div>
-      <SubscriptionOfferForm
+      <NewSubscriptionChooser
         products={products}
         stripeConnected={stripeConnected}
         currency={stand?.currency ?? "AUD"}

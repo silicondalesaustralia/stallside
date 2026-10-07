@@ -1,23 +1,52 @@
 import Link from "next/link";
-import AdminLoginAsButton from "@/components/AdminLoginAsButton";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { audRatesFromMarket, formatBillingWithAud } from "@/lib/fx-to-aud";
+import { audRatesFromMarket } from "@/lib/fx-to-aud";
+import { platformFeesByOwner } from "@/lib/owner-ltv";
+import AdminOwnersTable from "./AdminOwnersTable";
 
 const PAGE_SIZE = 50;
+
+function ownerWhere(q: string) {
+  if (!q) return {};
+  return {
+    OR: [
+      { businessName: { contains: q, mode: "insensitive" as const } },
+      { contactEmail: { contains: q, mode: "insensitive" as const } },
+      { id: { contains: q, mode: "insensitive" as const } },
+      { user: { email: { contains: q, mode: "insensitive" as const } } },
+      {
+        stands: {
+          some: { name: { contains: q, mode: "insensitive" as const } },
+        },
+      },
+    ],
+  };
+}
+
+function ownersHref(page: number, q: string) {
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (page > 1) params.set("page", String(page));
+  const query = params.toString();
+  return query ? `/admin/owners?${query}` : "/admin/owners";
+}
 
 export default async function AdminOwnersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; q?: string }>;
 }) {
   await requireAdmin();
   const params = await searchParams;
+  const q = (params.q ?? "").trim();
   const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
   const skip = (page - 1) * PAGE_SIZE;
+  const where = ownerWhere(q);
 
   const [owners, total, fx] = await Promise.all([
     prisma.owner.findMany({
+      where,
       orderBy: { createdAt: "desc" },
       skip,
       take: PAGE_SIZE,
@@ -26,85 +55,51 @@ export default async function AdminOwnersPage({
         stands: { select: { id: true, name: true }, take: 4 },
       },
     }),
-    prisma.owner.count(),
+    prisma.owner.count({ where }),
     audRatesFromMarket(),
   ]);
+  const feesByOwner = await platformFeesByOwner(owners.map((owner) => owner.id));
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <main className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Subscribers</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Subscribers ({total.toLocaleString()})
+        </h1>
         <p className="mt-1 text-[var(--muted)]">
-          Business, stalls, plan, LTV (billing currency + AUD), and status.
+          LTV is transaction fees plus subscription payments.
         </p>
       </div>
 
+      <form action="/admin/owners" className="flex max-w-md gap-2">
+        <input
+          type="search"
+          name="q"
+          defaultValue={q}
+          placeholder="Business, stall, or email"
+          aria-label="Search subscribers"
+          className="w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm"
+        />
+        <button
+          type="submit"
+          className="rounded-lg border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold"
+        >
+          Search
+        </button>
+      </form>
+
       {owners.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">No owners yet.</p>
+        <p className="text-sm text-[var(--muted)]">
+          {q ? "No subscribers match that search." : "No owners yet."}
+        </p>
       ) : (
-        <div className="dash-card overflow-x-auto p-4">
-          <table className="w-full min-w-[720px] border-collapse text-left text-sm">
-            <thead>
-              <tr className="border-b border-[var(--line)] text-xs uppercase tracking-wide text-[var(--muted)]">
-                <th className="py-2 pr-3 font-medium">Business / stalls</th>
-                <th className="py-2 pr-3 font-medium">Owner ID</th>
-                <th className="py-2 pr-3 font-medium">Email</th>
-                <th className="py-2 pr-3 font-medium">Plan</th>
-                <th className="py-2 pr-3 font-medium">LTV</th>
-                <th className="py-2 pr-3 font-medium">Status</th>
-                <th className="py-2 font-medium">Support</th>
-              </tr>
-            </thead>
-            <tbody>
-              {owners.map((owner) => (
-                <tr
-                  key={owner.id}
-                  className="border-b border-[var(--line)] align-top"
-                >
-                  <td className="py-3 pr-3">
-                    <Link
-                      href={`/admin/owners/${owner.id}`}
-                      className="font-medium underline"
-                    >
-                      {owner.businessName}
-                    </Link>
-                    <p className="mt-0.5 text-[var(--muted)]">
-                      {owner.stands.length === 0
-                        ? "No stalls"
-                        : owner.stands.map((s) => s.name).join(", ")}
-                    </p>
-                  </td>
-                  <td className="py-3 pr-3">
-                    <code className="text-xs">{owner.id}</code>
-                  </td>
-                  <td className="py-3 pr-3">{owner.user.email}</td>
-                  <td className="py-3 pr-3 capitalize">
-                    {owner.subscriptionPlan ?? "-"}
-                  </td>
-                  <td className="py-3 pr-3">
-                    {formatBillingWithAud(
-                      owner.lifetimePaidCents,
-                      owner.billingCurrency,
-                      fx,
-                    )}
-                  </td>
-                  <td className="py-3 pr-3 capitalize">
-                    {owner.subscriptionStatus.toLowerCase()}
-                  </td>
-                  <td className="py-3">
-                    <AdminLoginAsButton ownerId={owner.id} compact />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <AdminOwnersTable owners={owners} feesByOwner={feesByOwner} rates={fx} />
       )}
       {pageCount > 1 ? (
         <nav className="flex items-center gap-3 text-sm">
           {page > 1 ? (
-            <Link href={`/admin/owners?page=${page - 1}`} className="underline">
+            <Link href={ownersHref(page - 1, q)} className="underline">
               Previous
             </Link>
           ) : (
@@ -114,7 +109,7 @@ export default async function AdminOwnersPage({
             Page {page} of {pageCount}
           </span>
           {page < pageCount ? (
-            <Link href={`/admin/owners?page=${page + 1}`} className="underline">
+            <Link href={ownersHref(page + 1, q)} className="underline">
               Next
             </Link>
           ) : (

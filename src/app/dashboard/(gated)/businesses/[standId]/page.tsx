@@ -97,6 +97,7 @@ export default async function StandDetailPage({
           standId={stand.id}
           branding={{
             logoUrl: stand.logoUrl,
+            ogImageUrl: stand.ogImageUrl,
             accentColor: stand.accentColor,
             secondaryColor: stand.secondaryColor,
             instagramUrl: stand.instagramUrl,

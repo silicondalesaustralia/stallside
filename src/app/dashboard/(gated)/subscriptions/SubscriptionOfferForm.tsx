@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { createSubscriptionOffer } from "./actions-create";
 import { updateSubscriptionOffer } from "./actions-update";
 import type { ShopperInterval } from "@/lib/subscription-offer";
+import SubscriptionCoverImageField from "./SubscriptionCoverImageField";
 
 type ProductOpt = { id: string; name: string; priceCents: number };
 
@@ -13,6 +14,7 @@ type OfferValues = {
   title: string;
   slug: string;
   description: string | null;
+  imageUrl: string | null;
   isActive: boolean;
   interval: ShopperInterval;
   handoverMode: "COLLECT" | "DELIVER";
@@ -43,6 +45,7 @@ export default function SubscriptionOfferForm({
     setMessage(null);
     startTransition(async () => {
       try {
+        formData.set("kind", "BOX");
         const result = editing
           ? await updateSubscriptionOffer(values!.id!, formData)
           : await createSubscriptionOffer(formData);
@@ -68,6 +71,7 @@ export default function SubscriptionOfferForm({
           Connect Stripe under Settings to publish card subscriptions.
         </p>
       ) : null}
+      <input type="hidden" name="kind" value="BOX" />
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Title</span>
         <input
@@ -88,7 +92,7 @@ export default function SubscriptionOfferForm({
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 font-receipt"
         />
       </label>
-      <label className="flex flex-col gap-2 text-sm">
+      <label className="flex flex-col gap-2 text-sm lg:col-span-2">
         <span className="font-medium">Description (optional)</span>
         <input
           name="description"
@@ -97,14 +101,21 @@ export default function SubscriptionOfferForm({
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          name="isActive"
-          defaultChecked={values?.isActive ?? true}
-          className="size-4"
-        />
-        Offer is live
+      <SubscriptionCoverImageField imageUrl={values?.imageUrl ?? null} />
+      <label className="flex flex-col gap-1 text-sm lg:col-span-2">
+        <span className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="isActive"
+            defaultChecked={values?.isActive ?? true}
+            className="size-4"
+          />
+          <span className="font-medium">Offer is live (public signup)</span>
+        </span>
+        <span className="pl-6 text-[var(--muted)]">
+          Uncheck or use Turn off to hide this offer from the stand. Delete is
+          under the title.
+        </span>
       </label>
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Billing interval</span>
@@ -199,16 +210,16 @@ export default function SubscriptionOfferForm({
         )}
       </fieldset>
       <div className="flex flex-wrap items-center gap-3 lg:col-span-2">
-      {message ? (
-        <p className="text-sm text-[var(--warn)]">{message}</p>
-      ) : null}
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60"
-      >
-        {pending ? "Saving…" : editing ? "Save offer" : "Create offer"}
-      </button>
+        {message ? (
+          <p className="text-sm text-[var(--warn)]">{message}</p>
+        ) : null}
+        <button
+          type="submit"
+          disabled={pending}
+          className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60"
+        >
+          {pending ? "Saving…" : editing ? "Save offer" : "Create offer"}
+        </button>
       </div>
     </form>
   );

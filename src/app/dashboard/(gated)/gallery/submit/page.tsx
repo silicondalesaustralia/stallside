@@ -25,7 +25,7 @@ export default async function GallerySubmitPage({
           public stand gallery.
         </p>
         <p className="mt-6">
-          <Link href="/gallery" className="font-semibold text-[var(--leaf-dark)] underline">
+          <Link href="/testimonials-and-gallery" className="font-semibold text-[var(--leaf-dark)] underline">
             View gallery
           </Link>
         </p>

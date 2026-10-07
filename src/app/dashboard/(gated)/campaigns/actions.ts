@@ -2,9 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { queueCampaignSend } from "@/lib/grow/campaigns";
+import { drainCampaignSends } from "@/lib/grow/drain-campaign-sends";
 import { sendOwnerEmail } from "@/lib/notify-email";
 
 function campaignFields(formData: FormData) {
@@ -72,6 +74,13 @@ export async function queueCampaign(formData: FormData) {
   const { owner } = await requireOwnerWrite();
   const id = String(formData.get("id") ?? "");
   await queueCampaignSend(id, owner.id);
+  after(async () => {
+    try {
+      await drainCampaignSends();
+    } catch (error) {
+      console.error("Campaign send after queue failed", error);
+    }
+  });
   revalidatePath(`/dashboard/campaigns/${id}`);
   revalidatePath("/dashboard/campaigns");
   redirect(`/dashboard/campaigns/${id}?queued=1`);

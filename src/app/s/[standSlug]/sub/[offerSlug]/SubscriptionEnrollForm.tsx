@@ -10,6 +10,7 @@ import {
 
 type Line = { name: string; quantity: number; lineTotalCents: number };
 
+/** Box (non-membership) subscription enroll form. */
 export default function SubscriptionEnrollForm({
   standSlug,
   offerSlug,
@@ -52,9 +53,7 @@ export default function SubscriptionEnrollForm({
         setMessage(result.error);
         return;
       }
-      if (result.url) {
-        window.location.href = result.url;
-      }
+      if (result.url) window.location.href = result.url;
     });
   }
 
@@ -65,17 +64,19 @@ export default function SubscriptionEnrollForm({
         <p className="mt-1 text-[var(--muted)]">
           {intervalLabel(interval)} · {formatMoney(priceCents, currency)}
         </p>
-        <ul className="mt-3 flex flex-col gap-1">
-          {lines.map((l) => (
-            <li key={l.name} className="flex justify-between gap-2">
-              <span>
-                {l.name}
-                {l.quantity > 1 ? ` × ${l.quantity}` : ""}
-              </span>
-              <span>{formatMoney(l.lineTotalCents, currency)}</span>
-            </li>
-          ))}
-        </ul>
+        {lines.length > 0 ? (
+          <ul className="mt-3 flex flex-col gap-1">
+            {lines.map((l) => (
+              <li key={l.name} className="flex justify-between gap-2">
+                <span>
+                  {l.name}
+                  {l.quantity > 1 ? ` × ${l.quantity}` : ""}
+                </span>
+                <span>{formatMoney(l.lineTotalCents, currency)}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
       <label className="flex flex-col gap-1 text-sm">
         <span className="font-medium">Name</span>
@@ -146,11 +147,10 @@ export default function SubscriptionEnrollForm({
         disabled={pending}
         className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
       >
-        {pending ? "Starting…" : "Subscribe with card"}
+        {pending ? "Starting…" : "Continue to payment"}
       </button>
       <p className="text-xs text-[var(--muted)]">
-        You can update your card, skip a cycle, or cancel from the manage link
-        emailed after signup.
+        You can manage your subscription from the link emailed after signup.
       </p>
     </form>
   );

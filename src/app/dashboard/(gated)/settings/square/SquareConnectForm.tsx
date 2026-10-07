@@ -1,14 +1,18 @@
 "use client";
 
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
+import PricingMoveConfirm from "@/components/PricingMoveConfirm";
+import type { PricingMoveNotice } from "@/lib/pricing-move-gate";
 import { startSquareConnect, disconnectSquareAction } from "./actions";
 
 export default function SquareConnectForm({
   connected,
   sandbox = false,
+  pricingNotice = "none",
 }: {
   connected: boolean;
   sandbox?: boolean;
+  pricingNotice?: PricingMoveNotice;
 }) {
   return (
     <div className="space-y-3">
@@ -21,7 +25,8 @@ export default function SquareConnectForm({
         </p>
       ) : null}
       <div className="flex flex-wrap gap-3">
-        <form action={startSquareConnect}>
+        <form action={startSquareConnect} className="space-y-3">
+          <PricingMoveConfirm notice={pricingNotice} actionLabel="Connecting Square" />
           <button
             type="submit"
             className="inline-flex items-center gap-2 rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"

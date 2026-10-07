@@ -39,6 +39,7 @@ const standSchema = z.object({
   currency: z.enum(CURRENCIES),
   timezone: z.enum(timezoneValues),
   showExactStock: z.coerce.boolean().optional(),
+  showSubscriptionsOnStand: z.coerce.boolean().optional(),
   isActive: z.coerce.boolean().optional(),
 });
 
@@ -160,6 +161,8 @@ export async function updateStand(standId: string, formData: FormData) {
       String(formData.get("timezone") ?? existing.timezone ?? DEFAULT_TIMEZONE),
     ),
     showExactStock: formData.get("showExactStock") === "on",
+    showSubscriptionsOnStand:
+      formData.get("showSubscriptionsOnStand") === "on",
     isActive: formData.get("isActive") === "on",
   });
   if (!parsed.success) {
@@ -201,6 +204,8 @@ export async function updateStand(standId: string, formData: FormData) {
           }
         : {}),
       showExactStock: parsed.data.showExactStock ?? false,
+      showSubscriptionsOnStand:
+        parsed.data.showSubscriptionsOnStand ?? false,
       isActive: parsed.data.isActive ?? true,
     },
   });

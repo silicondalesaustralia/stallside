@@ -7,6 +7,7 @@ import { depositOutstandingCapCents } from "@/lib/deposit-liability";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
+import { proVolumeForFees } from "@/lib/pro-volume-fee";
 export { balanceAuthUrl } from "@/lib/order-access-token";
 
 export function splitDepositBalance(
@@ -70,6 +71,7 @@ type OwnerFee = {
   subscriptionPlan: string | null;
   passFeeToCustomer: boolean;
   lifetimeAccess: boolean;
+  pricingModel: string;
 };
 
 /** Charge remaining balance off-session on the connected account. */
@@ -108,10 +110,12 @@ export async function chargeOrderBalance(orderId: string): Promise<
   }
 
   const stripe = getStripe();
-  const { applicationFeeCents } = computeVendlCheckoutFees(
-    balanceCents,
-    order.owner as OwnerFee,
-  );
+  const owner: OwnerFee = order.owner;
+  const { applicationFeeCents } = computeVendlCheckoutFees(balanceCents, owner, {
+    rail: "stripe",
+    currency: order.currency,
+    monthStripeVolumeCents: await proVolumeForFees(order.ownerId, owner),
+  });
 
   try {
     const pi = await stripe.paymentIntents.create(

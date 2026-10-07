@@ -16,6 +16,7 @@ export const gettingStartedArticles: KnowledgeArticle[] = [
       "pre-orders",
       "subscriptions",
       "stand-branding",
+      "suppliers",
     ],
     ctas: [
       { label: "New Business", href: "/dashboard/businesses/new" },

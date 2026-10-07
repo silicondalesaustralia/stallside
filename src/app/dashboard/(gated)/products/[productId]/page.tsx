@@ -210,6 +210,7 @@ export default async function EditProductPage({
       <ProductStockCard
         productId={product.id}
         stockQuantity={product.stockQuantity}
+        supplyStatus={product.supplyStatus}
       />
       <ProductProductionSection
         ownerId={owner.id}

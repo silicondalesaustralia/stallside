@@ -62,7 +62,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     ctas: [{ label: "Billing", href: "/dashboard/settings/billing" }],
     steps: [
       "Vendl’s subscription is optional Pro. It is separate from customer card payments at the stand.",
-      "Free is $0/mo with all features. Vendl fee is 2.5% on card, Tap & Go, and pay-later; cash and PayID stay free. Absorb the fee or pass it on in Settings → Card / Tap & Go. Standard Stripe processing fees apply separately.",
+      "Free is $0/mo with all features. Vendl fee is 2.5% + 30c on Stripe card, Tap & Go, and pay-later (2.5% on Square and PayPal); cash and PayID stay free. Accounts created before 2 Oct 2026 keep 2.5% until they upgrade to Pro or first connect Square. Absorb the fee or pass it on in Settings → Card / Tap & Go. Standard Stripe processing fees apply separately.",
       "New owners start on Free from day one. Upgrade anytime from Settings → Billing to remove the Vendl card fee.",
       "Vendl Pro is billed monthly via Stripe. Manage payment method or cancel in the Stripe Customer Portal.",
       "If you cancel Pro, you keep Pro until the paid period ends, then return to Free (card fee applies again). Data is retained.",
@@ -84,7 +84,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     ],
     steps: [
       "Stripe Connect is how customers pay you at the stand by card, Apple Pay, or Google Pay. Available on Free and Pro.",
-      "On Free, Vendl takes 2.5% on card, Tap & Go, and pay-later (you can absorb or pass on in Settings → Stripe). Pro has no Vendl card fee. Standard Stripe processing fees apply on both plans.",
+      "On Free, Vendl takes 2.5% + 30c on Stripe card, Tap & Go, and pay-later (you can absorb or pass on in Settings → Stripe). Pro has no Vendl card fee on the first A$4,000 of Stripe sales each month, then 0.5%. Standard Stripe processing fees apply on both plans.",
       "Open Settings → Stripe (Card / Tap & Go) and tap Connect Stripe. Complete Stripe’s onboarding with your business and bank details.",
       "When charges are enabled, turn Card / Tap & Go on for each business under My Businesses → manage.",
       "Scan your Vendl QR on another phone and run a small test card sale. Payments go to your Stripe account.",

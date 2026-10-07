@@ -2,6 +2,8 @@ import Link from "next/link";
 import DashListCard from "@/components/DashListCard";
 import { formatMoney } from "@/lib/money";
 import ProductLifecycleActions from "./ProductLifecycleActions";
+import StockStatusBadges from "@/components/inventory/StockStatusBadges";
+import type { ProductSupplyStatus } from "@/generated/prisma/client";
 
 type ProductRow = {
   id: string;
@@ -12,8 +14,12 @@ type ProductRow = {
   currency: string;
   costCents: number | null;
   stockQuantity: number;
+  supplyStatus?: ProductSupplyStatus | null;
   sku: string | null;
   locationName?: string | null;
+  supplierName?: string | null;
+  ownerUnits?: number | null;
+  supplierUnits?: number | null;
 };
 
 export default function ProductListRow({
@@ -21,17 +27,32 @@ export default function ProductListRow({
 }: {
   product: ProductRow;
 }) {
+  const showSplit =
+    product.supplierUnits != null &&
+    product.ownerUnits != null &&
+    product.supplierUnits > 0;
+
   return (
     <li>
       <DashListCard>
         <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-4">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
-              {product.sku ? `SKU ${product.sku}` : "Product"}
-              {product.locationName ? ` · ${product.locationName}` : null}
-              {product.isArchived ? " · Archived" : null}
-              {product.isHidden && !product.isArchived ? " · Hidden" : null}
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
+                {product.sku ? `SKU ${product.sku}` : "Product"}
+                {product.locationName ? ` · ${product.locationName}` : null}
+                {product.isArchived ? " · Archived" : null}
+                {product.isHidden && !product.isArchived ? " · Hidden" : null}
+              </p>
+              {product.supplierName != null ? (
+                <span className="rounded-full bg-[var(--leaf)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--leaf-dark)]">
+                  Supplier
+                </span>
+              ) : null}
+              {product.supplyStatus ? (
+                <StockStatusBadges supplyStatus={product.supplyStatus} />
+              ) : null}
+            </div>
             <p className="mt-1 font-[family-name:var(--font-display)] text-lg font-bold leading-tight">
               {product.name}
             </p>
@@ -41,6 +62,9 @@ export default function ProductListRow({
                 ? ` · profit ${formatMoney(product.priceCents - product.costCents, product.currency)}`
                 : null}{" "}
               · {product.stockQuantity} in stock
+              {showSplit
+                ? ` · ${product.ownerUnits} yours · ${product.supplierUnits} supplier`
+                : null}
             </p>
           </div>
           <div className="flex flex-col items-stretch gap-2 sm:items-end">

@@ -12,6 +12,7 @@ import {
   revokeSquareToken,
 } from "@/lib/square/oauth";
 import { SQUARE_OAUTH_SCOPES } from "@/lib/square/scopes";
+import { moveToV2026 } from "@/lib/pricing-model";
 
 export async function getSquareConnection(ownerId: string) {
   return prisma.externalCommerceConnection.findUnique({
@@ -91,6 +92,8 @@ export async function getValidSquareAccessToken(
 export async function completeSquareOAuth(input: {
   ownerId: string;
   code: string;
+  /** Seller confirmed losing Lifetime when first connecting Square. */
+  endLifetime?: boolean;
 }) {
   const tokens = await exchangeSquareAuthCode(input.code);
   if (!tokens.access_token || !tokens.merchant_id) {
@@ -162,6 +165,13 @@ export async function completeSquareOAuth(input: {
         providerLocationName: loc.name ?? null,
         isPrimary: loc.id === primary?.id,
       },
+    });
+  }
+
+  // Sellers who connected Square before V2026 stay grandfathered on reconnect.
+  if (!existing) {
+    await moveToV2026(input.ownerId, "square_connected", {
+      endLifetime: input.endLifetime,
     });
   }
 

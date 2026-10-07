@@ -82,6 +82,7 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
   const { applicationFeeCents, chargeTotalCents } = computeVendlCheckoutFees(
     totalCents,
     stand.owner,
+    { rail: "square", currency: stand.currency },
   );
   const saleOrigin = SaleOrigin.VENDL_WEB;
   const platformFeeCents = saleOriginIncursVendlFee(saleOrigin)

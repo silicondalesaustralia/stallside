@@ -9,6 +9,7 @@ import {
 } from "@/generated/prisma/client";
 import { decrementStockForOrder } from "@/lib/checkout";
 import { normalizeReceiptEmail } from "@/lib/first-order-discount";
+import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
 
 type Tx = Prisma.TransactionClient;
 
@@ -38,6 +39,13 @@ export type CreateCashSaleInput = {
 /** Single-line cash order + stock adjust (once). No double-decrement. */
 export async function createCashSaleOrder(tx: Tx, input: CreateCashSaleInput) {
   const qty = input.line.quantity;
+  const supplierProduct = await tx.product.findUnique({
+    where: { id: input.line.productId },
+    select: { memberId: true, supplierUnitCents: true },
+  });
+  const snapshot = supplierLineSnapshot(
+    supplierProduct ?? { memberId: null, supplierUnitCents: null },
+  );
   if (!Number.isFinite(qty) || qty < 1) throw new Error("Invalid quantity");
   if (input.line.stockQuantity < qty) throw new Error("STOCK");
 
@@ -80,6 +88,8 @@ export async function createCashSaleOrder(tx: Tx, input: CreateCashSaleInput) {
             quantity: qty,
             unitPriceCents,
             lineTotalCents,
+            memberId: snapshot.memberId,
+            supplierUnitCents: snapshot.supplierUnitCents,
           },
         ],
       },

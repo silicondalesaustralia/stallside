@@ -19,6 +19,9 @@ import { openBillingPortal } from "./actions";
 import BillingNotices from "./BillingNotices";
 import BillingPlanForms from "./BillingPlanForms";
 import BillingStatusCard from "./BillingStatusCard";
+import BillingPricingNotes from "./BillingPricingNotes";
+import { isV2026Owner } from "@/lib/fee-v2026";
+import { pricingMoveNotice } from "@/lib/pricing-move-gate";
 
 export default async function BillingSettingsPage({
   searchParams,
@@ -28,6 +31,7 @@ export default async function BillingSettingsPage({
     cancelled?: string;
     locked?: string;
     plan?: string;
+    error?: string;
   }>;
 }) {
   const { owner, user } = await requireOwner();
@@ -73,12 +77,11 @@ export default async function BillingSettingsPage({
       </p>
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Vendl billing</h1>
-        <p className="mt-2 text-[var(--muted)]">
-          Free is $0/mo with all features. Card, Tap &amp; Go and pay-later carry
-          a 2.5% Vendl fee (plus standard Stripe processing fees). Pro removes
-          the Vendl fee. This is what you pay Vendl - not stand customer
-          payments.
-        </p>
+        <BillingPricingNotes
+          v2026={isV2026Owner(owner)}
+          isPaidPro={isPaidPro}
+          confirmError={params.error === "confirm_required"}
+        />
       </div>
 
       <BillingNotices
@@ -117,6 +120,7 @@ export default async function BillingSettingsPage({
           proPrices={listConfiguredProPlanPrices()}
           showPro
           proConfigured={proConfigured}
+          pricingNotice={pricingMoveNotice(owner)}
         />
       ) : null}
 

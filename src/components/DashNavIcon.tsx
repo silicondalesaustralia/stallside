@@ -53,7 +53,21 @@ const ICONS: Record<string, React.ReactNode> = {
     <Icon d="M4 6h7v7H4zM13 6h7v7h-7M4 15h7v5H4zM13 15h7v5h-7" />
   ),
   "/dashboard/customers": (
-    <Icon d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zM4 20c1.5-3 4-5 8-5s6.5 2 8 5" />
+    <Icon
+      d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+      extra={
+        <>
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+        </>
+      }
+    />
+  ),
+  "/dashboard/communication": (
+    <Icon d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  ),
+  "/dashboard/suppliers": (
+    <Icon d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.27 7 12 12l8.73-5M12 22V12" />
   ),
   "/dashboard/website": (
     <Icon d="M4 6h16v12H4zM4 9h16M8 13h8" />

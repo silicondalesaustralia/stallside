@@ -1,10 +1,11 @@
 import { parseAccentColor } from "@/lib/stand-brand";
-import { uploadStandLogo } from "@/lib/stand-logo-upload";
+import { uploadStandLogo, uploadStandOgImage } from "@/lib/stand-logo-upload";
 import { parseSocialUrl, STAND_SOCIALS } from "@/lib/stand-social";
 
 type StandBrandRow = {
   id: string;
   logoUrl: string | null;
+  ogImageUrl: string | null;
   accentColor: string | null;
   secondaryColor: string | null;
 };
@@ -18,6 +19,7 @@ export async function brandingDataFromForm(
       ok: true;
       data: {
         logoUrl: string | null;
+        ogImageUrl: string | null;
         accentColor: string | null;
         secondaryColor: string | null;
         instagramUrl: string | null;
@@ -67,6 +69,24 @@ export async function brandingDataFromForm(
     }
   }
 
+  let ogImageUrl: string | null = stand.ogImageUrl;
+  if (formData.get("clearOgImage") === "on") {
+    ogImageUrl = null;
+  } else {
+    const file = formData.get("ogImage");
+    if (file instanceof File && file.size > 0) {
+      try {
+        ogImageUrl = await uploadStandOgImage(stand.id, file);
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Could not upload share image.";
+        return { ok: false, error: message };
+      }
+    }
+  }
+
   const socialData: Record<string, string | null> = {};
   for (const social of STAND_SOCIALS) {
     const parsed = parseSocialUrl(String(formData.get(social.field) ?? ""));
@@ -80,6 +100,7 @@ export async function brandingDataFromForm(
     ok: true,
     data: {
       logoUrl,
+      ogImageUrl,
       accentColor,
       secondaryColor,
       instagramUrl: socialData.instagramUrl ?? null,

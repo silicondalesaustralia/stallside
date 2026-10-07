@@ -67,6 +67,7 @@ export function secondaryNavForMode(modeInput?: string | null): DashNavItem[] {
 
   return [
     { href: "/dashboard/notifications", label: "Notifications" },
+    { href: "/dashboard/suppliers", label: "Suppliers" },
     { href: "/dashboard/production", label: "Production" },
     { href: "/dashboard/collections", label: "Collections" },
     { href: "/dashboard/pre-order-pages", label: "Pre-orders" },
@@ -114,6 +115,7 @@ export const ORDERS_HUB_NAV: HubNavItem[] = [
 /** Products catalogue hub. */
 export const PRODUCTS_HUB_NAV: HubNavItem[] = [
   { href: "/dashboard/products", label: "Products", matchPrefix: "/dashboard/products" },
+  { href: "/dashboard/inventory", label: "Inventory", matchPrefix: "/dashboard/inventory" },
   { href: "/dashboard/categories", label: "Categories", matchPrefix: "/dashboard/categories" },
   { href: "/dashboard/recipes", label: "Recipes", matchPrefix: "/dashboard/recipes" },
   {
@@ -234,6 +236,7 @@ export function hubNavForPath(pathname: string): HubNavItem[] | null {
   }
   if (
     pathname.startsWith("/dashboard/products") ||
+    pathname.startsWith("/dashboard/inventory") ||
     pathname.startsWith("/dashboard/categories") ||
     pathname.startsWith("/dashboard/recipes") ||
     pathname.startsWith("/dashboard/ingredients")

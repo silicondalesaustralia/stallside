@@ -42,7 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/stall/campsites",
     "/stall/community-fridges",
     "/about",
-    "/gallery",
+    "/testimonials-and-gallery",
     "/contact",
     "/privacy",
     "/terms",

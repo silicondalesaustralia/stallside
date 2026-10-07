@@ -104,6 +104,7 @@ export default function StandCartCheckout({
   restockStandId,
   passFeeToCustomer = false,
   stallsideFeeApplies = false,
+  stripeFixedFeeCents = 0,
   upsell = null,
   preOrderUpsell = null,
   pagePreOrderUpsells = [],
@@ -127,6 +128,7 @@ export default function StandCartCheckout({
   restockStandId?: string | null;
   passFeeToCustomer?: boolean;
   stallsideFeeApplies?: boolean;
+  stripeFixedFeeCents?: number;
   /** Stand-level default; product-level upsells on PublicProductCard win when set. */
   upsell?: CartUpsellConfig | null;
   preOrderUpsell?: CartUpsellConfig | null;
@@ -269,11 +271,13 @@ export default function StandCartCheckout({
     shopDelivery ||
     (preOrderOnly && lines.every((l) => l.product.handoverMode === "DELIVER"));
   const total = subtotal + (shopDelivery ? shopDeliveryFeeCents : 0);
-  const cardFeeCents =
-    stallsideFeeApplies && passFeeToCustomer && total > 0
-      ? stallsidePassOnFeeCents(total)
-      : 0;
+  const passOnApplies = stallsideFeeApplies && passFeeToCustomer && total > 0;
+  const cardFeeCents = passOnApplies
+    ? stallsidePassOnFeeCents(total, stripeFixedFeeCents)
+    : 0;
   const cardTotalCents = total + cardFeeCents;
+  const squareTotalCents =
+    total + (passOnApplies ? stallsidePassOnFeeCents(total) : 0);
   const payload = lines.map((l) => ({
     productId: l.product.id,
     quantity: l.quantity,
@@ -557,6 +561,7 @@ export default function StandCartCheckout({
           subtotalCents={total}
           cardFeeCents={cardFeeCents}
           cardTotalCents={cardTotalCents}
+          squareTotalCents={squareTotalCents}
           localTransferLabel={localTransfer?.buttonLabel ?? null}
           pending={pending}
           showDemoCardHint={Boolean(demoProduct)}

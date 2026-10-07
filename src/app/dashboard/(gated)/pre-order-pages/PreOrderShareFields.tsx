@@ -104,6 +104,10 @@ export default function PreOrderShareFields({
           </label>
           <div className="flex flex-col gap-2">
             <span className="text-sm font-medium">Share photo (optional)</span>
+            <p className="text-xs text-[var(--muted)]">
+              Wide image works best in Facebook, WhatsApp, and Messages —
+              about 1200×630. Square logos get cropped.
+            </p>
             {previewImage ? (
               <label className="flex items-center gap-2 text-sm">
                 <input

@@ -14,6 +14,7 @@ import { decrementStockForOrder } from "@/lib/checkout";
 import { notifySale } from "@/lib/notify";
 import { notifyOrderCustomer } from "@/lib/notify-order-customer";
 import { nextCollectionAt } from "@/lib/subscription-offer";
+import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
 import {
   paymentIntentIdFromInvoice,
   subscriptionIdFromInvoice,
@@ -72,6 +73,22 @@ export async function fulfillShopperSubscriptionInvoice(
     });
   }
 
+  // Membership collections are created by cron, not invoices.
+  if (sub.offer.kind === "MEMBERSHIP") {
+    const periodEnd =
+      invoice.lines?.data?.[0]?.period?.end != null
+        ? new Date(invoice.lines.data[0].period.end * 1000)
+        : null;
+    await prisma.shopperSubscription.update({
+      where: { id: sub.id },
+      data: {
+        status: ShopperSubStatus.ACTIVE,
+        paidThroughAt: periodEnd ?? undefined,
+      },
+    });
+    return;
+  }
+
   if (sub.skipNextCycle) {
     await prisma.shopperSubscription.update({
       where: { id: sub.id },
@@ -106,6 +123,7 @@ export async function fulfillShopperSubscriptionInvoice(
     quantity: i.quantity,
     unitPriceCents: i.product.priceCents,
     lineTotalCents: i.product.priceCents * i.quantity,
+    ...supplierLineSnapshot(i.product),
   }));
   const subtotalCents = lineCreates.reduce((s, l) => s + l.lineTotalCents, 0);
   const fee = 0;

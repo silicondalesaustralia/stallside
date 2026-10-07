@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { Suspense } from "react";
 import { Bricolage_Grotesque, DM_Sans, Spline_Sans_Mono } from "next/font/google";
 import { APP_DOMAIN, APP_NAME, APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
+import { DEFAULT_OG_IMAGE } from "@/lib/og-image";
 import AdClickCapture from "@/components/AdClickCapture";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import MetaPixel from "@/components/MetaPixel";
@@ -45,13 +46,13 @@ export const metadata: Metadata = {
     siteName: APP_NAME,
     title: APP_SEO_TITLE,
     description: APP_SEO_DESCRIPTION,
-    images: [{ url: "/brand/logo-lockup.png" }],
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: APP_SEO_TITLE,
     description: APP_SEO_DESCRIPTION,
-    images: ["/brand/logo-lockup.png"],
+    images: [DEFAULT_OG_IMAGE.url],
   },
   manifest: "/manifest.webmanifest",
   appleWebApp: {

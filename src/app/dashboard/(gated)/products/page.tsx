@@ -17,6 +17,7 @@ import DashPrimaryCta from "@/components/DashPrimaryCta";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { productOnStandWhere } from "@/lib/catalogue/product-on-stand";
 import { productsListHref } from "./products-list-href";
+import { loadProductStockSplits } from "@/lib/suppliers/stock-split";
 import type { Prisma } from "@/generated/prisma/client";
 
 export default async function ProductsPage({
@@ -43,6 +44,7 @@ export default async function ProductsPage({
   const showArchived = view === "archived";
   const tab: ProductTabId = isProductTabId(tabParam) ? tabParam : "standard";
   const isPreOrder = tab === "preorder";
+  const isSupplier = tab === "supplier";
   const showAll = scope === "all" || (!selected && businesses.length > 0);
 
   if (!selected && businesses.length === 0) {
@@ -96,8 +98,13 @@ export default async function ProductsPage({
       where: {
         ownerId: owner.id,
         ...(showAll || !selected ? {} : productOnStandWhere(selected.id)),
-        preOrderEligible: isPreOrder,
-        isHidden: false,
+        ...(isSupplier
+          ? { memberId: { not: null } }
+          : {
+              memberId: null,
+              preOrderEligible: isPreOrder,
+              isHidden: false,
+            }),
         ...(showArchived ? { isArchived: true } : productDashboardWhere),
         ...(categoryRow
           ? { categoryLinks: { some: { categoryId: categoryRow.id } } }
@@ -113,7 +120,9 @@ export default async function ProductsPage({
         currency: true,
         costCents: true,
         stockQuantity: true,
+        supplyStatus: true,
         sku: true,
+        member: { select: { name: true } },
         stand: { select: { name: true } },
       },
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
@@ -122,6 +131,8 @@ export default async function ProductsPage({
       ? loadRestockPanels(owner.id, selected.id)
       : Promise.resolve([]),
   ]);
+
+  const stockSplits = await loadProductStockSplits(products);
 
   const href = (opts: {
     nextView?: "archived" | "active";
@@ -149,7 +160,8 @@ export default async function ProductsPage({
             Products
           </h1>
           <p className="mt-1 text-[var(--muted)]">
-            {products.length} {isPreOrder ? "pre-order" : ""} product
+            {products.length}{" "}
+            {isSupplier ? "supplier" : isPreOrder ? "pre-order" : ""} product
             {products.length === 1 ? "" : "s"}
             {showArchived ? " archived" : ""} · {scopeLabel}
             {categoryLabel}
@@ -158,14 +170,20 @@ export default async function ProductsPage({
         </div>
         <DashPrimaryCta
           href={
-            isPreOrder
+            isSupplier
+              ? "/dashboard/suppliers"
+              : isPreOrder
               ? "/dashboard/pre-order-pages/new"
               : selected
                 ? `/dashboard/products/new?standId=${selected.id}`
                 : "/dashboard/products/new"
           }
         >
-          {isPreOrder ? "+ New pre-order page" : "+ Add product"}
+          {isSupplier
+            ? "Suppliers"
+            : isPreOrder
+              ? "+ New pre-order page"
+              : "+ Add product"}
         </DashPrimaryCta>
       </div>
 
@@ -229,6 +247,22 @@ export default async function ProductsPage({
         >
           Archived
         </Link>
+        <Link
+          href={productsListHref({
+            tab: "supplier",
+            showArchived,
+            showAll,
+            categorySlug,
+            q,
+          })}
+          className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
+            isSupplier
+              ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
+              : "bg-white text-[var(--ink)] outline outline-[var(--line)]"
+          }`}
+        >
+          Supplier
+        </Link>
       </div>
 
       {categories.length > 0 && !isPreOrder ? (
@@ -259,6 +293,21 @@ export default async function ProductsPage({
         </div>
       ) : null}
 
+      {isSupplier && !showArchived ? (
+        <p className="text-sm text-[var(--muted)]">
+          These are products a supplier added. Hide on stand takes them off the
+          stall and your website. They stay in this list so you can show them
+          again. Set the price and publish from{" "}
+          <Link
+            href="/dashboard/suppliers"
+            className="font-medium text-[var(--leaf-dark)] underline"
+          >
+            Suppliers
+          </Link>{" "}
+          before they can be sold. Unpublished ones are under Archived.
+        </p>
+      ) : null}
+
       {isPreOrder && !showArchived ? (
         <p className="text-sm text-[var(--muted)]">
           Group several products on one shareable{" "}
@@ -285,20 +334,26 @@ export default async function ProductsPage({
           {q
             ? `No products match “${q}”.`
             : showArchived
-              ? `No archived ${isPreOrder ? "pre-order" : "standard"} products.`
-              : `No ${isPreOrder ? "pre-order" : "standard"} products yet.`}
+              ? `No archived ${isSupplier ? "supplier" : isPreOrder ? "pre-order" : "standard"} products.`
+              : `No ${isSupplier ? "supplier" : isPreOrder ? "pre-order" : "standard"} products yet.`}
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {products.map((product) => (
-            <ProductListRow
-              key={product.id}
-              product={{
-                ...product,
-                locationName: showAll ? product.stand.name : null,
-              }}
-            />
-          ))}
+          {products.map((product) => {
+            const split = stockSplits.get(product.id);
+            return (
+              <ProductListRow
+                key={product.id}
+                product={{
+                  ...product,
+                  locationName: showAll ? product.stand.name : null,
+                  supplierName: product.member?.name ?? null,
+                  ownerUnits: split?.ownerUnits ?? null,
+                  supplierUnits: split?.supplierUnits ?? null,
+                }}
+              />
+            );
+          })}
         </ul>
       )}
     </main>

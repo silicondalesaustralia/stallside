@@ -1,20 +1,39 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { formatMoney } from "@/lib/money";
-import {
-  intervalLabel,
-  subscriptionOfferPath,
-} from "@/lib/subscription-offer";
+import { membershipOfferReady } from "@/lib/subscription-offer";
+import { subscriptionsIndexMetadata } from "@/lib/stand-seo";
 import StandStoreHeader from "../StandStoreHeader";
 import ChannelInterestForm from "../ChannelInterestForm";
+import MembershipCategoryView from "./MembershipCategoryView";
 
-export const metadata: Metadata = {
-  title: "Subscriptions",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ standSlug: string }>;
+}): Promise<Metadata> {
+  const { standSlug } = await params;
+  const slug = decodeURIComponent(standSlug).trim().toLowerCase();
+  const stand = await prisma.stand.findUnique({
+    where: { slug },
+    select: {
+      name: true,
+      slug: true,
+      logoUrl: true,
+      ogImageUrl: true,
+      isActive: true,
+    },
+  });
+  if (!stand || !stand.isActive) return { title: "Memberships" };
+  return subscriptionsIndexMetadata({
+    standName: stand.name,
+    standSlug: stand.slug,
+    logoUrl: stand.logoUrl,
+    ogImageUrl: stand.ogImageUrl,
+  });
+}
 
 export default async function PublicSubscriptionsIndexPage({
   params,
@@ -30,66 +49,61 @@ export default async function PublicSubscriptionsIndexPage({
   if (!stand || !stand.isActive) notFound();
 
   const offers = await prisma.subscriptionOffer.findMany({
-    where: { standId: stand.id, isActive: true, stripePriceId: { not: null } },
+    where: { standId: stand.id, isActive: true },
     orderBy: { title: "asc" },
     select: {
       slug: true,
       title: true,
       description: true,
+      imageUrl: true,
+      currency: true,
+      termWeeks: true,
+      weeklyPriceCents: true,
+      monthlyPriceCents: true,
+      upfrontPriceCents: true,
+      stripePriceId: true,
+      stripeWeeklyPriceId: true,
+      stripeMonthlyPriceId: true,
+      stripeUpfrontPriceId: true,
+      kind: true,
       interval: true,
       priceCents: true,
-      currency: true,
     },
   });
-
+  const liveOffers = offers.filter((o) => membershipOfferReady(o));
   const branded = publicStandBranding(stand, stand.owner);
 
   return (
-    <main
-      className="mx-auto min-h-full w-full max-w-lg px-4 pb-10 pt-8"
+    <div
+      className="min-h-dvh w-full"
       style={standAccentStyle(branded.accentColor, branded.secondaryColor)}
     >
-      <StandStoreHeader
-        standName={stand.name}
-        standSlug={stand.slug}
-        logoUrl={branded.logoUrl}
-      />
-      <h2 className="mt-8 text-2xl font-semibold tracking-tight">
-        Subscriptions
-      </h2>
-      {offers.length === 0 ? (
-        <div className="mt-4 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
-          <p className="font-medium">No subscriptions available</p>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
-            A subscription is a repeating box billed weekly, fortnightly, or
-            monthly by card. You can skip a cycle, pause, or cancel from a
-            manage link in your email. Nothing is listed here right now.
-          </p>
-          <ChannelInterestForm standSlug={stand.slug} kind="SUBSCRIPTION" />
+      <div className="mx-auto w-full max-w-lg px-4 pb-2 pt-8">
+        <StandStoreHeader
+          standName={stand.name}
+          standSlug={stand.slug}
+          logoUrl={branded.logoUrl}
+        />
+      </div>
+      {liveOffers.length === 0 ? (
+        <div className="mx-auto mt-4 w-full max-w-lg px-4 pb-10">
+          <div className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
+            <p className="font-medium">No memberships available</p>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+              A membership is a fixed-term share billed by card. Nothing is
+              listed here right now.
+            </p>
+            <ChannelInterestForm standSlug={stand.slug} kind="SUBSCRIPTION" />
+          </div>
         </div>
       ) : (
-        <ul className="mt-4 flex flex-col gap-3">
-          {offers.map((offer) => (
-            <li key={offer.slug}>
-              <Link
-                href={subscriptionOfferPath(stand.slug, offer.slug)}
-                className="block rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4"
-              >
-                <p className="font-medium">{offer.title}</p>
-                <p className="mt-1 text-sm text-[var(--muted)]">
-                  {intervalLabel(offer.interval)} ·{" "}
-                  {formatMoney(offer.priceCents, offer.currency)}
-                </p>
-                {offer.description ? (
-                  <p className="mt-2 text-sm text-[var(--muted)]">
-                    {offer.description}
-                  </p>
-                ) : null}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <MembershipCategoryView
+          standSlug={stand.slug}
+          standName={stand.name}
+          accentColor={branded.accentColor}
+          offers={liveOffers}
+        />
       )}
-    </main>
+    </div>
   );
 }

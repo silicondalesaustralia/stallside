@@ -38,7 +38,7 @@ export function buildStandStoreLinks(
   if (nav.showSubscriptions) {
     links.push({
       key: "sub",
-      label: "Subscriptions",
+      label: "Memberships",
       href: standSubscriptionsPath(standSlug),
     });
   }

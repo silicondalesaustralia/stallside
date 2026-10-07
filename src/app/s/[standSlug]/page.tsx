@@ -37,6 +37,7 @@ export async function generateMetadata({
     standSlug: stand.slug,
     locationLabel: stand.locationLabel,
     logoUrl: stand.logoUrl,
+    ogImageUrl: stand.ogImageUrl,
   });
 }
 

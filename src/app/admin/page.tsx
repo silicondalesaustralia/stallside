@@ -3,16 +3,16 @@ import { Suspense } from "react";
 import AdminRecentOwners from "@/components/AdminRecentOwners";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { formatMoney } from "@/lib/money";
 import { getSaasStats } from "@/lib/admin-saas-stats";
 import { getSaasSeries } from "@/lib/admin-saas-series";
-import { resolveDateWindow } from "@/lib/date-range";
+import { getLtvWindow } from "@/lib/admin-ltv-window";
+import { RANGE_PRESETS, resolveDateWindow } from "@/lib/date-range";
 import { isStripeBillingConfigured } from "@/lib/stripe";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
-import DashboardStat from "@/components/DashboardStat";
 import DateRangeFilter from "@/components/DateRangeFilter";
-import SaasSeriesChart from "@/components/SaasSeriesChart";
-import { medianSignupToFirstLiveMs } from "@/lib/signup-timing";
+import AdminMedianLiveLine from "./AdminMedianLiveLine";
+import AdminSaasPanels from "./AdminSaasPanels";
+import AdminSalesSection from "./AdminSalesSection";
 
 export default async function AdminOverviewPage({
   searchParams,
@@ -27,9 +27,14 @@ export default async function AdminOverviewPage({
     to: params.to,
   });
 
-  const [saas, series] = await Promise.all([
+  const compare = window.key !== "all";
+  const [saas, series, ltv, ltvPrev] = await Promise.all([
     getSaasStats(),
     getSaasSeries(window.start, window.end),
+    getLtvWindow(window.start, window.end),
+    compare
+      ? getLtvWindow(window.prevStart, window.prevEnd)
+      : Promise.resolve(null),
   ]);
 
   const billingReady = isStripeBillingConfigured();
@@ -43,7 +48,8 @@ export default async function AdminOverviewPage({
             SaaS overview
           </h1>
           <p className="mt-1 text-[var(--muted)]">
-            Subscriptions and Vendl revenue in AUD — not stall checkout sales.
+            Stall sales count every order, whatever the payment method or fee.
+            LTV is Vendl&apos;s fees plus subscription payments, in AUD.
           </p>
           <Suspense
             fallback={
@@ -86,47 +92,25 @@ export default async function AdminOverviewPage({
         activeKey={window.key}
         from={window.fromParam}
         to={window.toParam}
+        presets={RANGE_PRESETS}
       />
 
-      <SaasSeriesChart points={series} title={`${window.label} · SaaS activity`} />
+      <AdminSalesSection
+        windowLabel={window.label}
+        start={window.start}
+        end={window.end}
+        prevStart={window.prevStart}
+        prevEnd={window.prevEnd}
+        compare={compare}
+      />
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <DashboardStat
-          label="MRR (AUD)"
-          value={formatMoney(saas.mrrCents, saas.currency)}
-        />
-        <DashboardStat
-          label="LTV collected (AUD)"
-          value={formatMoney(saas.totalLtvCents, saas.currency)}
-        />
-        <DashboardStat
-          label="Paying subs"
-          value={String(saas.liveSubscribers)}
-        />
-        <DashboardStat label="Owners" value={String(saas.owners)} />
-      </section>
-
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <DashboardStat label="Active" value={String(saas.active)} />
-        <DashboardStat label="Stripe trialing" value={String(saas.trialing)} />
-        <DashboardStat label="Past due" value={String(saas.pastDue)} />
-        <DashboardStat label="Cancelled" value={String(saas.cancelled)} />
-      </section>
-
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <DashboardStat
-          label="Demo completions"
-          value={String(saas.demoCompletions)}
-        />
-        <DashboardStat
-          label="Demo last 7 days"
-          value={String(saas.demoCompletions7d)}
-        />
-        <DashboardStat
-          label="Demo stands"
-          value={String(saas.demoStandCount)}
-        />
-      </section>
+      <AdminSaasPanels
+        windowLabel={window.label}
+        saas={saas}
+        series={series}
+        ltv={ltv}
+        ltvPrev={ltvPrev}
+      />
 
       <Suspense
         fallback={
@@ -139,24 +123,6 @@ export default async function AdminOverviewPage({
         <AdminRecentOwnersSection />
       </Suspense>
     </main>
-  );
-}
-
-async function AdminMedianLiveLine() {
-  const medianLiveMs = await medianSignupToFirstLiveMs();
-  const medianLiveLabel =
-    medianLiveMs == null
-      ? "n/a"
-      : medianLiveMs < 60_000
-        ? `${Math.round(medianLiveMs / 1000)}s`
-        : `${(medianLiveMs / 60_000).toFixed(1)}m`;
-  return (
-    <p className="mt-1 text-sm text-[var(--muted)]">
-      Median signup → first live product: <strong>{medianLiveLabel}</strong>
-      {medianLiveMs != null && medianLiveMs > 60_000
-        ? " (over 60s — fix setup before new verticals)"
-        : ""}
-    </p>
   );
 }
 

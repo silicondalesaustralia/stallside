@@ -12,7 +12,11 @@ import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 import { mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { standCatalogPath } from "@/lib/stand-seo";
+import {
+  standCartPath,
+  standCatalogPath,
+  standSectionMetadata,
+} from "@/lib/stand-seo";
 import { readShopOriginFromCookies, readShopReturnModeFromCookies } from "@/lib/storefront/shop-origin";
 import { readShopFulfilmentOptionFromCookies } from "@/lib/fulfilment/shop-option";
 import { FulfilmentOptionKind } from "@/generated/prisma/client";
@@ -20,15 +24,43 @@ import { storefrontReturnShopUrl } from "@/lib/tenancy/public-url";
 import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
+  vendlFixedFeeCents,
 } from "@/lib/stallside-fee";
 import StandCartCheckout from "../StandCartCheckout";
 import StandStoreHeader from "../StandStoreHeader";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 
-export const metadata: Metadata = {
-  title: "Cart",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ standSlug: string }>;
+}): Promise<Metadata> {
+  const { standSlug } = await params;
+  const slug = decodeURIComponent(standSlug).trim().toLowerCase();
+  const stand = await prisma.stand.findUnique({
+    where: { slug },
+    select: {
+      name: true,
+      slug: true,
+      logoUrl: true,
+      ogImageUrl: true,
+      isActive: true,
+    },
+  });
+  if (!stand || !stand.isActive) {
+    return { title: "Cart", robots: { index: false, follow: false } };
+  }
+  return standSectionMetadata({
+    standName: stand.name,
+    standSlug: stand.slug,
+    sectionTitle: "Cart",
+    description: `Cart for ${stand.name}.`,
+    path: standCartPath(stand.slug),
+    logoUrl: stand.logoUrl,
+    ogImageUrl: stand.ogImageUrl,
+    noIndex: true,
+  });
+}
 
 export default async function StandCartPage({
   params,
@@ -259,6 +291,7 @@ export default async function StandCartPage({
         restockStandId={restockStandId}
         passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner)}
         stallsideFeeApplies={shouldChargeVendlFee(stand.owner)}
+        stripeFixedFeeCents={vendlFixedFeeCents(stand.owner, "stripe", stand.currency)}
         upsell={upsell}
         preOrderUpsell={preOrderUpsell}
         pagePreOrderUpsells={pagePreOrderUpsells}

@@ -21,10 +21,12 @@ export default function SubscriptionManageControls({
   token,
   status,
   skipNextCycle,
+  showBillingPortal = true,
 }: {
   token: string;
   status: string;
   skipNextCycle: boolean;
+  showBillingPortal?: boolean;
 }) {
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -110,15 +112,17 @@ export default function SubscriptionManageControls({
           {busy === "resume" ? "Resuming…" : "Resume subscription"}
         </button>
       ) : null}
-      <button
-        type="button"
-        disabled={wait}
-        onClick={() => run("portal", openShopperBillingPortal)}
-        className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--ink)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-      >
-        {busy === "portal" ? <Spinner /> : null}
-        {busy === "portal" ? "Opening…" : "Update card / cancel"}
-      </button>
+      {showBillingPortal ? (
+        <button
+          type="button"
+          disabled={wait}
+          onClick={() => run("portal", openShopperBillingPortal)}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--ink)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+        >
+          {busy === "portal" ? <Spinner /> : null}
+          {busy === "portal" ? "Opening…" : "Update card / cancel"}
+        </button>
+      ) : null}
       {message ? (
         <p
           className={`text-sm ${

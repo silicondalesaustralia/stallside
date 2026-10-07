@@ -32,7 +32,12 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/testimonials",
-        destination: "/gallery",
+        destination: "/testimonials-and-gallery",
+        permanent: true,
+      },
+      {
+        source: "/gallery",
+        destination: "/testimonials-and-gallery",
         permanent: true,
       },
       {

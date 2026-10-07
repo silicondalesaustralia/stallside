@@ -17,7 +17,7 @@ export async function setGalleryStatus(formData: FormData) {
     data: { status },
   });
   revalidatePath("/admin/gallery");
-  revalidatePath("/gallery");
+  revalidatePath("/testimonials-and-gallery");
 }
 
 export async function deleteGalleryStand(formData: FormData) {
@@ -26,7 +26,7 @@ export async function deleteGalleryStand(formData: FormData) {
   if (!id) return;
   await prisma.galleryStand.delete({ where: { id } });
   revalidatePath("/admin/gallery");
-  revalidatePath("/gallery");
+  revalidatePath("/testimonials-and-gallery");
 }
 
 export async function addGalleryStand(formData: FormData) {
@@ -62,5 +62,5 @@ export async function addGalleryStand(formData: FormData) {
     },
   });
   revalidatePath("/admin/gallery");
-  revalidatePath("/gallery");
+  revalidatePath("/testimonials-and-gallery");
 }

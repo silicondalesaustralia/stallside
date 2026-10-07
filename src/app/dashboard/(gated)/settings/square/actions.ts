@@ -15,6 +15,11 @@ import {
   getSquareConnection,
   getValidSquareAccessToken,
 } from "@/lib/square/connection";
+import {
+  hasSquareConnectionHistory,
+  SQUARE_LIFETIME_CONFIRM_COOKIE,
+} from "@/lib/square/pricing-confirm";
+import { pricingMoveConfirmed, pricingMoveNotice } from "@/lib/pricing-move-gate";
 import { listSquareCatalogItems, suggestCatalogMatches } from "@/lib/square/catalog";
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
 import {
@@ -22,7 +27,7 @@ import {
   squareEligibleBillingCurrency,
 } from "@/lib/commerce/payment-rail";
 
-export async function startSquareConnect(): Promise<void> {
+export async function startSquareConnect(formData: FormData): Promise<void> {
   if (!isSquareConnectEnabled()) {
     throw new Error("Square is not enabled.");
   }
@@ -30,15 +35,25 @@ export async function startSquareConnect(): Promise<void> {
   if (!squareEligibleBillingCurrency(owner.billingCurrency)) {
     throw new Error("Square is only available for Australian (AUD) accounts.");
   }
+  const notice = (await hasSquareConnectionHistory(owner.id))
+    ? "none"
+    : pricingMoveNotice(owner);
+  if (!pricingMoveConfirmed(notice, formData)) {
+    redirect("/dashboard/settings/square?error=confirm_required");
+  }
   const state = createOAuthState();
   const jar = await cookies();
-  jar.set("square_oauth_state", state, {
+  const cookieOpts = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "lax" as const,
     path: "/",
     maxAge: 600,
-  });
+  };
+  jar.set("square_oauth_state", state, cookieOpts);
+  if (notice === "lifetime") {
+    jar.set(SQUARE_LIFETIME_CONFIRM_COOKIE, "1", cookieOpts);
+  }
   const url = buildSquareAuthorizeUrl(state);
   if (!url) throw new Error("Square app credentials missing.");
   redirect(url);

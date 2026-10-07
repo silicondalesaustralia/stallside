@@ -61,6 +61,13 @@ enum InventorySource {
   SYSTEM
 }
 
+enum ProductSupplyStatus {
+  IN_PRODUCTION
+  ON_ORDER
+  SEASONAL
+  DISCONTINUED
+}
+
 /** Provider-neutral external commerce systems (Phase 10/11). */
 enum CommerceProvider {
   SQUARE
@@ -90,6 +97,12 @@ enum SaleOrigin {
 enum OnlinePaymentProvider {
   STRIPE
   SQUARE
+}
+
+/** LEGACY = grandfathered fees; V2026 = current pricing. One-way move. */
+enum PricingModel {
+  LEGACY
+  V2026
 }
 
 enum SubscriptionStatus {
@@ -195,6 +208,19 @@ enum ShopperSubStatus {
   CANCELLED
 }
 
+/** Box = product basket; Membership = typed prices + payment-plan choice. */
+enum SubscriptionOfferKind {
+  BOX
+  MEMBERSHIP
+}
+
+/** How a membership shopper pays (collection stays weekly). */
+enum MembershipBillingPlan {
+  WEEKLY
+  MONTHLY
+  UPFRONT
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -205,6 +231,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   owner         Owner?
+  standMemberships StandMember[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -319,6 +346,11 @@ model Owner {
   subscriptionPlan          String?            @default("free")
   /** Free Pro forever (invite or admin grant). */
   lifetimeAccess            Boolean            @default(false)
+  lifetimeEndedAt           DateTime?
+  pricingModel              PricingModel       @default(V2026)
+  pricingModelChangedAt     DateTime?
+  /** pro_subscribed | square_connected */
+  pricingModelReason        String?
   monthlyFeeCents           Int                @default(0)
   /** Free plan: pass Vendl card fee to customer (default absorb). */
   passFeeToCustomer         Boolean            @default(false)
@@ -372,6 +404,7 @@ model Owner {
   shopperSubscriptions      ShopperSubscription[]
   orders                    Order[]
   inventoryAdjustments      InventoryAdjustment[]
+  standMembers              StandMember[]
   lowStockAlerts            LowStockAlert[]
   pushDevices               PushDevice[]
   galleryStands             GalleryStand[]
@@ -494,6 +527,8 @@ model Stand {
   showExactStock     Boolean              @default(false)
   /** Show “Only N left” when stock ≤ lowStockThreshold (public). */
   showPublicScarcity Boolean              @default(true)
+  /** Show Subscriptions / Memberships in the public stand header nav. */
+  showSubscriptionsOnStand Boolean        @default(false)
   isActive           Boolean              @default(true)
   /** PRODUCT = catalog cart (default); CUSTOMER_CHOICE = open dollar amount. */
   cartMode           CartMode             @default(PRODUCT)
@@ -525,6 +560,8 @@ model Stand {
   posterShowHowItWorks Boolean            @default(false)
   /** Owner logo for public stall + QR poster (Pro). */
   logoUrl            String?
+  /** Landscape image for link previews (WhatsApp, Facebook, iMessage). Falls back to logo. */
+  ogImageUrl         String?
   /** Hex accent e.g. #2e7d3f - overrides --leaf on public stall + QR. */
   accentColor        String?
   /** Hex secondary for prices / stock labels - overrides --ok. */
@@ -550,6 +587,7 @@ model Stand {
   shopperSubscriptions ShopperSubscription[]
   orders             Order[]
   inventoryAdjustments InventoryAdjustment[]
+  standMembers       StandMember[]
   lowStockAlerts     LowStockAlert[]
   restockSubscribers RestockSubscriber[]
   restockNotifications RestockNotification[]
@@ -1046,6 +1084,8 @@ model Product {
   currency           String               @default("AUD")
   stockQuantity      Int                  @default(0)
   lowStockThreshold  Int                  @default(5)
+  /** Owner-set supply status shown on the inventory report (null = none). */
+  supplyStatus       ProductSupplyStatus?
   /** Legacy soft-off; kept in sync with isArchived for older queries. */
   isActive           Boolean              @default(true)
   /** Hidden from stand catalog; direct link + checkout still work. */
@@ -1087,13 +1127,22 @@ model Product {
   preOrderPageItems  PreOrderPageProduct[]
   menuItems          MenuProduct[]
   subscriptionOfferItems SubscriptionOfferProduct[]
+  /** Hidden product used as OrderItem target for membership collection orders. */
+  membershipFulfilmentOffers SubscriptionOffer[] @relation("MembershipFulfilmentProduct")
   fulfilmentOptions      ProductFulfilmentOption[]
   /** Optional link to a production recipe (Phase 6). */
   productRecipe      ProductRecipe?
   /** Optional packaging/materials cost per sellable unit (cents). */
   packagingCostCents Int?
+  /** Supplier who owns this product. Null means the stand owner. */
+  memberId           String?
+  member             StandMember?         @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  /** Amount the owner owes the supplier per unit sold. Not the retail price. */
+  supplierUnitCents  Int?
   orderItems         OrderItem[]
   inventoryAdjustments InventoryAdjustment[]
+  stockLots          StockLot[]
+  supplierAccess     SupplierProductAccess[]
   lowStockAlerts     LowStockAlert[]
   eventProducts      SellerEventProduct[]
   externalProductMappings ExternalProductMapping[]
@@ -1104,6 +1153,7 @@ model Product {
   @@unique([standId, slug])
   @@index([standId, isActive])
   @@index([ownerId])
+  @@index([memberId])
 }
 
 /** Recurring box / membership basket built from catalog products. */
@@ -1113,22 +1163,40 @@ model SubscriptionOffer {
   stand              Stand                      @relation(fields: [standId], references: [id], onDelete: Cascade)
   ownerId            String
   owner              Owner                      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  kind               SubscriptionOfferKind      @default(BOX)
   title              String
   slug               String
   description        String?
+  /** Cover image for public offer page / OG. */
+  imageUrl           String?
   isActive           Boolean                    @default(true)
+  /** Max active members allowed; null = unlimited. Blocks new signup when full. */
+  maxMembers         Int?
   interval           ShopperSubInterval         @default(WEEKLY)
   handoverMode       HandoverMode               @default(COLLECT)
   /** 0=Sun … 6=Sat; next collection weekday for COLLECT. */
   collectionWeekday  Int?
   collectionNote     String?
-  /** Snapshot total of line prices (qty × product.priceCents). */
+  /** Snapshot total of line prices (qty × product.priceCents), or display fallback for membership. */
   priceCents         Int
   currency           String                     @default("AUD")
+  /** Membership: fixed term length in weekly collections. */
+  termWeeks          Int?
+  weeklyPriceCents   Int?
+  monthlyPriceCents  Int?
+  upfrontPriceCents  Int?
+  upfrontBenefitsText String?
+  termsText          String?
   /** Stripe Product on the connected account. */
   stripeProductId    String?
-  /** Stripe Price on the connected account (recurring). */
+  /** Stripe Price on the connected account (recurring) — BOX offers. */
   stripePriceId      String?
+  stripeWeeklyPriceId  String?
+  stripeMonthlyPriceId String?
+  stripeUpfrontPriceId String?
+  /** Hidden catalog product for membership collection OrderItems. */
+  fulfillmentProductId String?
+  fulfillmentProduct   Product?                 @relation("MembershipFulfilmentProduct", fields: [fulfillmentProductId], references: [id], onDelete: SetNull)
   items              SubscriptionOfferProduct[]
   subscriptions      ShopperSubscription[]
   fulfilmentOption   FulfilmentOption?
@@ -1137,6 +1205,7 @@ model SubscriptionOffer {
 
   @@unique([standId, slug])
   @@index([standId, isActive])
+  @@index([fulfillmentProductId])
 }
 
 model SubscriptionOfferProduct {
@@ -1162,6 +1231,11 @@ model ShopperSubscription {
   ownerId                String
   owner                  Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   status                 ShopperSubStatus  @default(INCOMPLETE)
+  /** Set for membership enrollments; null for legacy BOX. */
+  billingPlan            MembershipBillingPlan?
+  termEndsAt             DateTime?
+  collectionsRemaining   Int?
+  paidThroughAt          DateTime?
   customerName           String
   customerEmail          String
   customerPhone          String?
@@ -1189,6 +1263,7 @@ model ShopperSubscription {
   @@index([ownerId, createdAt])
   @@index([offerId])
   @@index([customerId])
+  @@index([status, nextCollectionAt])
 }
 
 /** Multi-product pre-order sheet: one link, shared collection day. */
@@ -1421,9 +1496,15 @@ model OrderItem {
   lineTotalCents      Int
   /** Phase 8 packing checkoff — set when line is packed (qty unchanged). */
   packedAt            DateTime?
+  /** Supplier attributed at sale time. */
+  memberId            String?
+  member              StandMember? @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  /** Owed to the supplier per unit, copied at sale time. */
+  supplierUnitCents   Int?
   createdAt           DateTime  @default(now())
 
   @@index([orderId])
+  @@index([memberId])
 }
 
 model InventoryAdjustment {
@@ -1445,10 +1526,100 @@ model InventoryAdjustment {
   externalEventId  String?         @unique
   /** Provider-side reference for echo-loop detection (e.g. Square adjustment id). */
   externalReference String?
+  /** Set when a supplier changed stock. Contribution history. */
+  memberId         String?
+  member           StandMember?    @relation(fields: [memberId], references: [id], onDelete: SetNull)
   createdAt        DateTime        @default(now())
 
   @@index([productId, createdAt])
   @@index([externalReference])
+  @@index([memberId, createdAt])
+}
+
+enum StandMemberStatus {
+  INVITED
+  ACTIVE
+  REVOKED
+}
+
+/** Neighbour or other producer with limited access to one stand. */
+model StandMember {
+  id          String            @id @default(cuid())
+  standId     String
+  stand       Stand             @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId     String
+  owner       Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  email       String
+  name        String
+  userId      String?
+  user        User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status      StandMemberStatus @default(INVITED)
+  inviteToken String            @unique
+  products    Product[]
+  adjustments InventoryAdjustment[]
+  orderItems  OrderItem[]
+  payouts     SupplierPayout[]
+  productAccess SupplierProductAccess[]
+  stockLots   StockLot[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([standId, email])
+  @@index([ownerId])
+  @@index([userId, status])
+  @@index([email])
+}
+
+enum StockLotStatus {
+  PENDING
+  ACTIVE
+}
+
+/** Owner pre-approves a stand product a supplier may add stock into. */
+model SupplierProductAccess {
+  id                String      @id @default(cuid())
+  memberId          String
+  member            StandMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  productId         String
+  product           Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  /** Amount the owner owes this supplier per unit sold from their lots. */
+  supplierUnitCents Int
+  /** When true, their stock goes live immediately. When false, owner must approve. */
+  autoApprove       Boolean     @default(true)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@unique([memberId, productId])
+  @@index([productId])
+}
+
+/** FIFO contribution lot on a shared product. memberId null = owner stock. */
+model StockLot {
+  id                String         @id @default(cuid())
+  productId         String
+  product           Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  memberId          String?
+  member            StandMember?   @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  supplierUnitCents Int?
+  quantityRemaining Int
+  status            StockLotStatus @default(ACTIVE)
+  createdAt         DateTime       @default(now())
+
+  @@index([productId, status, createdAt])
+  @@index([memberId])
+}
+
+/** Manual record that the owner paid a supplier outside Vendl. */
+model SupplierPayout {
+  id          String      @id @default(cuid())
+  memberId    String
+  member      StandMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  amountCents Int
+  note        String?
+  paidAt      DateTime    @default(now())
+  createdAt   DateTime    @default(now())
+
+  @@index([memberId, paidAt])
 }
 
 model LowStockAlert {
@@ -1526,6 +1697,7 @@ enum NotificationType {
   SUBSCRIPTION_PAUSED
   SUBSCRIPTION_CANCELLED
   PAYMENT_FAILED
+  SUPPLIER_STOCK
   OTHER
 }
 

@@ -18,6 +18,7 @@ type StandFields = {
   currency: string;
   timezone: string;
   showExactStock: boolean;
+  showSubscriptionsOnStand: boolean;
   isActive: boolean;
 };
 
@@ -134,6 +135,15 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
           className="size-4"
         />
         Show exact stock publicly
+      </label>
+      <label className="flex items-center gap-2 text-sm sm:col-span-2">
+        <input
+          type="checkbox"
+          name="showSubscriptionsOnStand"
+          defaultChecked={stand.showSubscriptionsOnStand}
+          className="size-4"
+        />
+        Show Memberships link on the stand page (with Shop / Pre-orders)
       </label>
       <label className="flex items-center gap-2 text-sm">
         <input

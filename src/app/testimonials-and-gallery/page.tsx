@@ -12,16 +12,16 @@ import { GalleryStatus } from "@/generated/prisma/client";
 import { marketingPageGraphSchema } from "@/lib/schema";
 import { testimonials } from "@/lib/testimonials";
 
-const title = "Stands & stories";
+const title = "Testimonials & gallery";
 const description = `Real roadside stands running ${APP_NAME}, and what their owners say about setting up and selling.`;
 
 export const metadata: Metadata = {
   title,
   description,
-  alternates: { canonical: "/gallery" },
+  alternates: { canonical: "/testimonials-and-gallery" },
 };
 
-export default async function GalleryPage() {
+export default async function TestimonialsAndGalleryPage() {
   const photos = await prisma.galleryStand.findMany({
     where: { status: GalleryStatus.APPROVED },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
@@ -32,7 +32,7 @@ export default async function GalleryPage() {
     <MarketingPageShell>
       <JsonLd
         data={marketingPageGraphSchema({
-          path: "/gallery",
+          path: "/testimonials-and-gallery",
           name: `${title} · ${APP_NAME}`,
           description,
           type: "WebPage",

@@ -19,13 +19,12 @@ export async function resolveStandStoreNav(
       id: true,
       isActive: true,
       cartMode: true,
+      showSubscriptionsOnStand: true,
       _count: {
         select: {
           preOrderPages: { where: { isActive: true } },
           menus: { where: { isActive: true, showOnStand: true } },
-          subscriptionOffers: {
-            where: { isActive: true, stripePriceId: { not: null } },
-          },
+          subscriptionOffers: { where: { isActive: true } },
         },
       },
     },
@@ -46,7 +45,8 @@ export async function resolveStandStoreNav(
     showShop,
     showMenus: stand._count.menus > 0,
     showPreOrders: stand._count.preOrderPages > 0,
-    showSubscriptions: stand._count.subscriptionOffers > 0,
+    showSubscriptions:
+      stand.showSubscriptionsOnStand && stand._count.subscriptionOffers > 0,
     showCart: showShop,
   };
 }

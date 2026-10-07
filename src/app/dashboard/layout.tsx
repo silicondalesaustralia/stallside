@@ -11,6 +11,7 @@ import { requireOwner } from "@/lib/session";
 import { paidAccessDaysRemaining } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { prisma } from "@/lib/prisma";
+import SupplyForOthersLink from "@/components/SupplyForOthersLink";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -80,6 +81,7 @@ export default async function DashboardLayout({
           {paidDays != null ? (
             <TrialDaysBadge daysLeft={paidDays} mode="paid" />
           ) : null}
+          <SupplyForOthersLink userId={user.id} />
           {children}
         </AppShell>
       </div>

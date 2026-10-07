@@ -1,5 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { InventorySource, type Prisma } from "@/generated/prisma/client";
+import {
+  HandoverMode,
+  InventorySource,
+  PaymentStatus,
+  PaymentTiming,
+  type Prisma,
+} from "@/generated/prisma/client";
 import {
   computeFirstOrderDiscount,
   normalizeReceiptEmail,
@@ -17,16 +23,16 @@ import { parsePriceTiers, lineTotalWithTiers } from "@/lib/price-tiers";
 import { productLiveWhere } from "@/lib/product-visibility";
 import { productIdsOnStandWhere } from "@/lib/catalogue/product-on-stand";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
+import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
+import {
+  applyLotSharesToOrderItem,
+  consumeStockLots,
+} from "@/lib/suppliers/lots";
 import {
   CUSTOMER_CHOICE_MAX_CENTS,
   CUSTOMER_CHOICE_MIN_CENTS,
   CUSTOMER_CHOICE_PRODUCT_NAME,
 } from "@/lib/customer-choice-constants";
-import {
-  HandoverMode,
-  PaymentStatus,
-  PaymentTiming,
-} from "@/generated/prisma/client";
 
 export type CartItemInput = {
   productId: string;
@@ -56,6 +62,8 @@ export type CartLineData = {
   lineTotalCents: number;
   usedTier: boolean;
   usedUpsell: boolean;
+  memberId: string | null;
+  supplierUnitCents: number | null;
 };
 
 /** True if this email already has a completed order at the stand. */
@@ -87,6 +95,8 @@ export function orderItemCreates(lineData: CartLineData[]) {
       quantity,
       unitPriceCents,
       lineTotalCents,
+      memberId,
+      supplierUnitCents,
     }) => ({
       productId,
       productNameSnapshot,
@@ -94,6 +104,8 @@ export function orderItemCreates(lineData: CartLineData[]) {
       quantity,
       unitPriceCents,
       lineTotalCents,
+      memberId,
+      supplierUnitCents,
     }),
   );
 }
@@ -151,6 +163,7 @@ export async function loadCustomerChoiceCheckout(
       lineTotalCents: amountCents,
       usedTier: false,
       usedUpsell: false,
+      ...supplierLineSnapshot(product),
     },
   ];
 
@@ -454,6 +467,7 @@ export async function loadStandCart(
         lineTotalCents: unit * item.quantity,
         usedTier: false,
         usedUpsell: true,
+        ...supplierLineSnapshot(product),
       };
     }
 
@@ -473,6 +487,7 @@ export async function loadStandCart(
       lineTotalCents: priced.lineTotalCents,
       usedTier: priced.usedTier,
       usedUpsell: false,
+      ...supplierLineSnapshot(product),
     };
   });
 
@@ -559,34 +574,52 @@ export async function decrementStockForOrder(
     reason: string;
   },
 ) {
-  await Promise.all(
-    input.items.map(async (item) => {
-      const updated = await tx.product.updateMany({
-        where: { id: item.productId, stockQuantity: { gte: item.quantity } },
-        data: { stockQuantity: { decrement: item.quantity } },
-      });
-      if (updated.count !== 1) {
-        throw new Error("STOCK");
-      }
-    }),
-  );
+  for (const item of input.items) {
+    const updated = await tx.product.updateMany({
+      where: { id: item.productId, stockQuantity: { gte: item.quantity } },
+      data: { stockQuantity: { decrement: item.quantity } },
+    });
+    if (updated.count !== 1) {
+      throw new Error("STOCK");
+    }
+  }
 
-  await Promise.all(
-    input.items.map(async (item) => {
-      const product = input.byId.get(item.productId)!;
-      await tx.inventoryAdjustment.create({
-        data: {
-          productId: product.id,
-          ownerId: input.ownerId,
-          standId: input.standId,
-          changeQuantity: -item.quantity,
-          previousQuantity: product.stockQuantity,
-          newQuantity: product.stockQuantity - item.quantity,
-          reason: input.reason,
-          source: input.source,
-          orderId: input.orderId,
-        },
-      });
-    }),
-  );
+  for (const item of input.items) {
+    const product = input.byId.get(item.productId)!;
+    await tx.inventoryAdjustment.create({
+      data: {
+        productId: product.id,
+        ownerId: input.ownerId,
+        standId: input.standId,
+        changeQuantity: -item.quantity,
+        previousQuantity: product.stockQuantity,
+        newQuantity: product.stockQuantity - item.quantity,
+        reason: input.reason,
+        source: input.source,
+        orderId: input.orderId,
+      },
+    });
+  }
+
+  const orderItems = await tx.orderItem.findMany({
+    where: { orderId: input.orderId },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, productId: true, quantity: true },
+  });
+  for (const orderItem of orderItems) {
+    const activeLots = await tx.stockLot.count({
+      where: {
+        productId: orderItem.productId,
+        status: "ACTIVE",
+        quantityRemaining: { gt: 0 },
+      },
+    });
+    if (activeLots === 0) continue;
+    const shares = await consumeStockLots(
+      tx,
+      orderItem.productId,
+      orderItem.quantity,
+    );
+    await applyLotSharesToOrderItem(tx, orderItem.id, shares);
+  }
 }

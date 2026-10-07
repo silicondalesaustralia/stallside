@@ -11,6 +11,7 @@ import {
   parseBillingCurrencyParam,
 } from "@/lib/stripe";
 import { cardPlanCents } from "@/lib/saas-pricing";
+import { pricingMoveConfirmed, pricingMoveNotice } from "@/lib/pricing-move-gate";
 
 async function ensureStripeCustomer(ownerId: string, email: string | null) {
   const owner = await prisma.owner.findUniqueOrThrow({ where: { id: ownerId } });
@@ -40,6 +41,13 @@ export async function startProPlanCheckout(formData: FormData) {
       "Stripe Pro Billing is not configured (need STRIPE_PRICE_ID_PRO_* or CARD_*).",
     );
   }
+
+  const notice = pricingMoveNotice(owner);
+  if (!pricingMoveConfirmed(notice, formData)) {
+    redirect("/dashboard/settings/billing?error=confirm_required");
+  }
+  const confirmMeta: Record<string, string> =
+    notice === "lifetime" ? { confirmLifetimeEnd: "1" } : {};
 
   const currency = parseBillingCurrencyParam(formData.get("currency"), "pro");
   const priceId = getProPlanPriceId(currency);
@@ -73,6 +81,7 @@ export async function startProPlanCheckout(formData: FormData) {
         purpose: "saas_subscription",
         saasPlan: "pro",
         billingCurrency: currency,
+        ...confirmMeta,
       },
     },
   });

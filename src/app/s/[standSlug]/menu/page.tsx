@@ -5,12 +5,42 @@ import { prisma } from "@/lib/prisma";
 import { MenuKind } from "@/generated/prisma/client";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { standCatalogPath, standMenuDetailPath } from "@/lib/stand-seo";
+import {
+  standCatalogPath,
+  standMenuDetailPath,
+  standMenusPath,
+  standSectionMetadata,
+} from "@/lib/stand-seo";
 import StandStoreHeader from "../StandStoreHeader";
 
-export const metadata: Metadata = {
-  title: "Menus",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ standSlug: string }>;
+}): Promise<Metadata> {
+  const { standSlug } = await params;
+  const slug = decodeURIComponent(standSlug).trim().toLowerCase();
+  const stand = await prisma.stand.findUnique({
+    where: { slug },
+    select: {
+      name: true,
+      slug: true,
+      logoUrl: true,
+      ogImageUrl: true,
+      isActive: true,
+    },
+  });
+  if (!stand || !stand.isActive) return { title: "Menus" };
+  return standSectionMetadata({
+    standName: stand.name,
+    standSlug: stand.slug,
+    sectionTitle: "Menus",
+    description: `Menus from ${stand.name}.`,
+    path: standMenusPath(stand.slug),
+    logoUrl: stand.logoUrl,
+    ogImageUrl: stand.ogImageUrl,
+  });
+}
 
 export default async function PublicStandMenusIndexPage({
   params,

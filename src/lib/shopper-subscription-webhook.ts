@@ -15,7 +15,9 @@ export async function handleShopperCheckoutCompleted(
   session: Stripe.Checkout.Session,
   connectedAccountId: string | undefined,
 ) {
-  if (session.mode !== "subscription") return false;
+  if (session.mode !== "subscription" && session.mode !== "payment") {
+    return false;
+  }
   if (!isShopperPurpose(session.metadata)) return false;
 
   const stripeAccountId =

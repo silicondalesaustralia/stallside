@@ -26,6 +26,7 @@ export async function updateStandBranding(standId: string, formData: FormData) {
     revalidatePath(`/dashboard/businesses/${stand.id}`);
     revalidatePath(`/dashboard/businesses/${stand.id}/qr`);
     revalidatePath(`/s/${stand.slug}`);
+    revalidatePath(`/s/${stand.slug}/sub`);
     revalidateTag(standCatalogTag(stand.slug), "max");
     return { ok: true as const };
   } catch (error) {

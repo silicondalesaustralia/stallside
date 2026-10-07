@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import AdminLoginAsButton from "@/components/AdminLoginAsButton";
 import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { audRatesFromMarket, formatBillingWithAud } from "@/lib/fx-to-aud";
 import {
-  applyCouponToOwner,
-  cancelOwnerSubscription,
-  refundLatestSubscriptionInvoice,
-  syncOwnerLtvFromStripe,
-} from "./actions";
+  formatFeeBuckets,
+  formatOwnerLtv,
+  platformFeesByOwner,
+} from "@/lib/owner-ltv";
+import { salesByOwner } from "@/lib/admin-sales";
 import AdminDeleteOwnerButton from "./AdminDeleteOwnerButton";
+import AdminOwnerTools from "./AdminOwnerTools";
+import OwnerPaymentLedger from "./OwnerPaymentLedger";
 
 export default async function AdminOwnerDetailPage({
   params,
@@ -19,7 +20,7 @@ export default async function AdminOwnerDetailPage({
 }) {
   await requireAdmin();
   const { ownerId } = await params;
-  const [owner, fx] = await Promise.all([
+  const [owner, fx, feesByOwner, salesMap] = await Promise.all([
     prisma.owner.findUnique({
       where: { id: ownerId },
       include: {
@@ -28,12 +29,18 @@ export default async function AdminOwnerDetailPage({
       },
     }),
     audRatesFromMarket(),
+    platformFeesByOwner([ownerId]),
+    salesByOwner([ownerId]),
   ]);
   if (!owner) notFound();
 
-  const refundAction = refundLatestSubscriptionInvoice.bind(null, owner.id);
-  const cancelAction = cancelOwnerSubscription.bind(null, owner.id);
-  const syncLtvAction = syncOwnerLtvFromStripe.bind(null, owner.id);
+  const fees = feesByOwner.get(owner.id) ?? [];
+  const ltvInput = {
+    subscriptionCents: owner.lifetimePaidCents,
+    billingCurrency: owner.billingCurrency,
+    fees,
+    rates: fx,
+  };
 
   return (
     <main className="flex flex-col gap-8">
@@ -59,13 +66,34 @@ export default async function AdminOwnerDetailPage({
           <p className="font-semibold text-[var(--leaf)]">Free for Life</p>
         ) : null}
         <p>
-          LTV:{" "}
+          Pricing: {owner.pricingModel === "LEGACY" ? "Legacy (grandfathered)" : "2026"}
+          {owner.pricingModelReason
+            ? ` · moved via ${owner.pricingModelReason.replace("_", " ")}`
+            : ""}
+          {owner.pricingModelChangedAt
+            ? ` on ${owner.pricingModelChangedAt.toLocaleDateString()}`
+            : ""}
+        </p>
+        {owner.lifetimeEndedAt ? (
+          <p className="text-red-700">
+            Lifetime ended {owner.lifetimeEndedAt.toLocaleDateString()}
+          </p>
+        ) : null}
+        <p>
+          Stall sales (all methods):{" "}
+          {formatFeeBuckets(salesMap.get(owner.id) ?? [], fx)}
+        </p>
+        <p>LTV: {formatOwnerLtv(ltvInput)}</p>
+        <p>
+          Fees {formatFeeBuckets(fees, fx)} · Subscriptions{" "}
           {formatBillingWithAud(
             owner.lifetimePaidCents,
             owner.billingCurrency,
             fx,
-          )}{" "}
-          · Fee{" "}
+          )}
+        </p>
+        <p>
+          Plan price:{" "}
           {formatBillingWithAud(
             owner.monthlyFeeCents,
             owner.billingCurrency,
@@ -97,64 +125,12 @@ export default async function AdminOwnerDetailPage({
         </p>
       </section>
 
-      <section className="dash-card space-y-3 p-5">
-        <h2 className="text-lg font-semibold">Apply signup coupon</h2>
-        <p className="text-sm text-[var(--muted)]">
-          Applies an active Stripe promotion code to their current subscription.
-        </p>
-        <form action={applyCouponToOwner} className="flex flex-wrap gap-2">
-          <input type="hidden" name="ownerId" value={owner.id} />
-          <input
-            name="code"
-            placeholder="PILOT2026"
-            required
-            className="rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm uppercase"
-          />
-          <button
-            type="submit"
-            className="rounded-lg bg-[var(--leaf)] px-4 py-2 text-sm font-semibold text-white"
-          >
-            Apply code
-          </button>
-        </form>
-      </section>
-
-      <section className="dash-card space-y-3 p-5">
-        <h2 className="text-lg font-semibold">Support</h2>
-        <p className="text-sm text-[var(--muted)]">
-          Open their owner dashboard to check settings and troubleshoot. An amber
-          banner lets you return to admin.
-        </p>
-        <AdminLoginAsButton ownerId={owner.id} />
-      </section>
-
-      <section className="flex flex-wrap gap-3">
-        <form action={syncLtvAction}>
-          <button
-            type="submit"
-            className="rounded-lg border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold"
-          >
-            Sync LTV from Stripe
-          </button>
-        </form>
-        <form action={refundAction}>
-          <button
-            type="submit"
-            className="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-800"
-          >
-            Refund latest invoice
-          </button>
-        </form>
-        <form action={cancelAction}>
-          <button
-            type="submit"
-            className="rounded-lg border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold"
-          >
-            Cancel at period end
-          </button>
-        </form>
-      </section>
-
+      <OwnerPaymentLedger
+        ownerId={owner.id}
+        stripeCustomerId={owner.stripeCustomerId}
+        stripeAccountId={owner.stripeAccountId}
+      />
+      <AdminOwnerTools ownerId={owner.id} />
       <AdminDeleteOwnerButton
         ownerId={owner.id}
         businessName={owner.businessName}

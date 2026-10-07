@@ -69,10 +69,11 @@ export function loadPublicStandMeta(slug: string) {
           slug: true,
           locationLabel: true,
           logoUrl: true,
+          ogImageUrl: true,
           isActive: true,
         },
       }),
-    ["public-stand-meta", slug],
+    ["public-stand-meta", slug, "v2-og"],
     { revalidate: 60, tags: [standCatalogTag(slug)] },
   )();
 }

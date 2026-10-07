@@ -11,7 +11,7 @@ import {
   menuScheduleLabel,
   standMenusPath,
 } from "@/lib/menu";
-import { standMenuDetailPath } from "@/lib/stand-seo";
+import { standMenuDetailPath, standSectionMetadata } from "@/lib/stand-seo";
 import StandStoreHeader from "../../StandStoreHeader";
 import StandGoToCartBar from "../../StandGoToCartBar";
 import MenuOrder from "@/components/menu/MenuOrder";
@@ -22,19 +22,40 @@ export async function generateMetadata({
   params: Promise<{ standSlug: string; menuSlug: string }>;
 }): Promise<Metadata> {
   const { standSlug, menuSlug } = await params;
+  const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
+  const menuKey = decodeURIComponent(menuSlug).trim().toLowerCase();
   const menu = await prisma.menu.findFirst({
     where: {
-      slug: decodeURIComponent(menuSlug).trim().toLowerCase(),
+      slug: menuKey,
       isActive: true,
       showOnStand: true,
+      stand: { slug: standKey, isActive: true },
+    },
+    select: {
+      title: true,
+      slug: true,
+      description: true,
       stand: {
-        slug: decodeURIComponent(standSlug).trim().toLowerCase(),
-        isActive: true,
+        select: {
+          name: true,
+          slug: true,
+          logoUrl: true,
+          ogImageUrl: true,
+        },
       },
     },
-    select: { title: true },
   });
-  return { title: menu?.title ?? "Menu" };
+  if (!menu) return { title: "Menu" };
+  return standSectionMetadata({
+    standName: menu.stand.name,
+    standSlug: menu.stand.slug,
+    sectionTitle: menu.title,
+    description:
+      menu.description?.trim() || `Menu from ${menu.stand.name}.`,
+    path: standMenuDetailPath(menu.stand.slug, menu.slug),
+    logoUrl: menu.stand.logoUrl,
+    ogImageUrl: menu.stand.ogImageUrl,
+  });
 }
 
 export default async function PublicStandMenuPage({

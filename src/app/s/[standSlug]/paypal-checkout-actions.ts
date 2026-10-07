@@ -20,10 +20,7 @@ import {
   checkoutCancelledUrl,
   orderAccessToken,
 } from "@/lib/order-access-token";
-import {
-  computeVendlCheckoutFees,
-  ownerPassesFeeToCustomer,
-} from "@/lib/stallside-fee";
+import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
 
 export async function startPayPalCheckout(input: {
   standSlug: string;
@@ -77,12 +74,14 @@ export async function startPayPalCheckout(input: {
       };
     }
 
-    const { applicationFeeCents, chargeTotalCents } = computeVendlCheckoutFees(
-      totalCents,
-      owner,
-    );
-    const passOn =
-      applicationFeeCents > 0 && ownerPassesFeeToCustomer(owner);
+    const {
+      applicationFeeCents,
+      chargeTotalCents,
+      passedOn: passOn,
+    } = computeVendlCheckoutFees(totalCents, owner, {
+      rail: "paypal",
+      currency: stand.currency,
+    });
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
 

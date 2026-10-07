@@ -9,6 +9,8 @@ import {
   isBillingCurrency,
   type BillingCurrency,
 } from "@/lib/saas-pricing";
+import PricingMoveConfirm from "@/components/PricingMoveConfirm";
+import type { PricingMoveNotice } from "@/lib/pricing-move-gate";
 import { startProPlanCheckout } from "./actions";
 
 type PriceRow = { currency: BillingCurrency };
@@ -18,11 +20,13 @@ export default function BillingPlanForms({
   proPrices,
   showPro,
   proConfigured,
+  pricingNotice = "none",
 }: {
   billingCurrency: BillingCurrency;
   proPrices: PriceRow[];
   showPro: boolean;
   proConfigured: boolean;
+  pricingNotice?: PricingMoveNotice;
   /** @deprecated ignored - Cash is free forever */
   cashPrices?: PriceRow[];
   cardPrices?: PriceRow[];
@@ -57,6 +61,7 @@ export default function BillingPlanForms({
           <span className="text-sm font-normal text-[var(--muted)]"> /mo</span>
         </p>
         <PlanFeatureBlock plan="pro" currency={currency} />
+        <PricingMoveConfirm notice={pricingNotice} actionLabel="Upgrading to Pro" />
         <div className="flex flex-wrap items-end gap-3 pt-1">
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-medium text-[var(--ink)]">Currency</span>

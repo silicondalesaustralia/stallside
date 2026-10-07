@@ -56,9 +56,10 @@ export default function PricingTiers() {
         Start free with every Vendl feature - stall checkout (Product or
         Customer Choice cart), pre-orders, subscriptions, upsells, and more.
         Cash and local bank payments stay free. On card, wallets and pay-later
-        transactions, Free charges a 2.5% Vendl fee in addition to standard
-        Stripe processing fees. Pass the Vendl fee on to customers or absorb
-        it yourself. Upgrade to Pro to remove the Vendl fee.
+        transactions, Free charges a 2.5% + 30c Vendl fee on Stripe (2.5% on
+        Square and PayPal) in addition to standard processing fees. Pass the Vendl fee on to customers or absorb
+        it yourself. Upgrade to Pro to remove the Vendl fee (0.5% applies only to Stripe
+        sales above A$4,000 a month).
       </p>
 
       <p className="mb-2 text-sm font-semibold text-[var(--field)]">

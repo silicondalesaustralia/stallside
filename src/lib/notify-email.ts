@@ -43,6 +43,15 @@ async function logEmailSend(input: {
   }
 }
 
+export type EmailAttachment = {
+  /** Base64-encoded file contents (Resend JSON API). */
+  content: string;
+  filename: string;
+  /** When set, reference in HTML as cid:<contentId>. */
+  contentId?: string;
+  contentType?: string;
+};
+
 export async function sendOwnerEmail(
   to: string | string[],
   subject: string,
@@ -51,6 +60,7 @@ export async function sendOwnerEmail(
     replyTo?: string;
     headers?: Record<string, string>;
     kind?: string;
+    attachments?: EmailAttachment[];
   },
 ) {
   const requested = (Array.isArray(to) ? to : [to])
@@ -90,6 +100,12 @@ export async function sendOwnerEmail(
     html: string;
     reply_to?: string;
     headers?: Record<string, string>;
+    attachments?: Array<{
+      content: string;
+      filename: string;
+      content_id?: string;
+      content_type?: string;
+    }>;
   } = {
     from,
     to: recipients,
@@ -101,6 +117,16 @@ export async function sendOwnerEmail(
   }
   if (options?.headers && Object.keys(options.headers).length > 0) {
     body.headers = options.headers;
+  }
+  if (options?.attachments?.length) {
+    body.attachments = options.attachments.map((attachment) => ({
+      content: attachment.content,
+      filename: attachment.filename,
+      ...(attachment.contentId ? { content_id: attachment.contentId } : {}),
+      ...(attachment.contentType
+        ? { content_type: attachment.contentType }
+        : {}),
+    }));
   }
 
   const res = await fetch("https://api.resend.com/emails", {

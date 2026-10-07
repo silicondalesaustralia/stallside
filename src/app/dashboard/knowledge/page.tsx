@@ -11,7 +11,7 @@ export default async function KnowledgeIndexPage() {
       <div className="max-w-3xl">
         <h1 className="text-3xl font-semibold tracking-tight">Owner guides</h1>
         <p className="mt-2 text-[var(--muted)]">
-          Short how-tos for stands, pre-order pages, collections, upsells, alerts, and
+          Short how-tos for stands, suppliers, pre-order pages, collections, upsells, alerts, and
           billing. Videos appear as we film them - the steps work now.
         </p>
       </div>

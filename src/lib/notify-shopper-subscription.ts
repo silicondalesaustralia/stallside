@@ -1,7 +1,10 @@
 import { APP_NAME } from "@/lib/constants";
 import { sendOwnerEmail } from "@/lib/notify-email";
 import { escapeHtml } from "@/lib/lifecycle-emails/html";
-import { subscriptionManageUrl } from "@/lib/subscription-offer";
+import {
+  membershipPlanLabel,
+  subscriptionManageUrl,
+} from "@/lib/subscription-offer";
 
 export async function sendShopperSubscriptionWelcome(params: {
   to: string;
@@ -10,15 +13,32 @@ export async function sendShopperSubscriptionWelcome(params: {
   standName: string;
   standSlug: string;
   manageToken: string;
+  billingPlan?: string | null;
+  termEndsAt?: Date | null;
+  collectionsRemaining?: number | null;
+  isMembership?: boolean;
 }) {
   const manageUrl = subscriptionManageUrl(
     params.standSlug,
     params.manageToken,
   );
   const subject = `${params.offerTitle} · manage your ${APP_NAME} subscription`;
+  const planLine =
+    params.isMembership && params.billingPlan
+      ? `<p>Payment plan: <strong>${escapeHtml(membershipPlanLabel(params.billingPlan))}</strong>${
+          params.collectionsRemaining != null
+            ? ` · ${params.collectionsRemaining} weekly collections`
+            : ""
+        }${
+          params.termEndsAt
+            ? ` · ends ${escapeHtml(params.termEndsAt.toLocaleDateString())}`
+            : ""
+        }</p>`
+      : "";
   const html = `
     <p>Hi ${escapeHtml(params.customerName)},</p>
     <p>You are subscribed to <strong>${escapeHtml(params.offerTitle)}</strong> from ${escapeHtml(params.standName)}.</p>
+    ${planLine}
     <p><a href="${escapeHtml(manageUrl)}">Manage subscription</a> to update card, skip a cycle, pause, or cancel.</p>
     <p>Keep this email so you can return anytime.</p>
   `;

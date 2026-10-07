@@ -46,6 +46,8 @@ export async function generateMetadata({
     imageUrl: product.imageUrl,
     isPreOrder: product.isPreOrder,
     collectionNote: product.collectionNote,
+    logoUrl: stand.logoUrl,
+    ogImageUrl: stand.ogImageUrl,
   });
 }
 

@@ -1,5 +1,5 @@
 /**
- * Feature announcement (Customer Choice, QR editor, product photos).
+ * Feature announcement broadcast.
  *
  * Preview (default):
  *   npx tsx scripts/send-feature-announce.ts
@@ -12,13 +12,55 @@
  */
 import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
+import { demoStandSlugs } from "../src/lib/demo";
+import { COUNTED_STATUSES } from "../src/lib/order-metrics";
 import {
   FEATURE_ANNOUNCE_SUBJECT,
   sendFeatureAnnounce,
 } from "../src/lib/lifecycle-emails/feature-announce";
 
+// Always use production links in this mail, even when run from a local .env.
+process.env.NEXT_PUBLIC_APP_URL = "https://vendl.app";
+
 const PREVIEW_DEFAULT = "jono@silicondales.com";
 
+/** Extra addresses included once with --all (not required to be owners). */
+const EXTRA_BROADCAST_RECIPIENTS: Array<{ to: string; name: string }> = [
+  { to: "jonathan@csmgdigital.com", name: "Jonathan" },
+];
+
+/** Always skipped on broadcast (in addition to owners with sales). */
+const HARD_EXCEPT_EMAILS = new Set([
+  "ljwaters.80@gmail.com",
+]);
+/** Owners with >=1 counted sale (demo stands ignored). */
+async function emailsWithSales(): Promise<Set<string>> {
+  const demoSlugs = [...demoStandSlugs()];
+  const sellers = await prisma.order.groupBy({
+    by: ["ownerId"],
+    where: {
+      paymentStatus: { in: COUNTED_STATUSES },
+      ...(demoSlugs.length
+        ? { stand: { slug: { notIn: demoSlugs } } }
+        : {}),
+    },
+  });
+  if (!sellers.length) return new Set();
+
+  const owners = await prisma.owner.findMany({
+    where: { id: { in: sellers.map((s) => s.ownerId) }, deletedAt: null },
+    include: { user: { select: { email: true } } },
+  });
+
+  const emails = new Set<string>();
+  for (const owner of owners) {
+    const to = (owner.user?.email || owner.contactEmail || "")
+      .trim()
+      .toLowerCase();
+    if (to.includes("@")) emails.add(to);
+  }
+  return emails;
+}
 function recipientFromOwner(owner: {
   contactEmail: string;
   businessName: string;
@@ -32,6 +74,29 @@ function recipientFromOwner(owner: {
   };
 }
 
+async function sendOne(
+  r: { to: string; name: string },
+  seen: Set<string>,
+  except: Set<string>,
+  counters: { ok: number; skip: number; fail: number },
+) {
+  if (seen.has(r.to) || except.has(r.to)) {
+    if (except.has(r.to)) console.log(`SKIP ${r.to}`);
+    counters.skip += 1;
+    return;
+  }
+  seen.add(r.to);
+  try {
+    await sendFeatureAnnounce(r);
+    counters.ok += 1;
+    console.log(`OK  ${r.to}`);
+    await new Promise((res) => setTimeout(res, 400));
+  } catch (error) {
+    counters.fail += 1;
+    console.error(`FAIL ${r.to}`, error);
+  }
+}
+
 async function sendPreview(to: string) {
   console.log(`Preview → ${to}`);
   console.log(`Subject: ${FEATURE_ANNOUNCE_SUBJECT}\n`);
@@ -40,41 +105,44 @@ async function sendPreview(to: string) {
 }
 
 async function sendAll(except: Set<string>, lifetime: boolean) {
+  const sellers = await emailsWithSales();
+  for (const email of sellers) except.add(email);
+  for (const email of HARD_EXCEPT_EMAILS) except.add(email);
+
   const owners = await prisma.owner.findMany({
     where: { lifetimeAccess: lifetime, deletedAt: null },
     include: { user: { select: { email: true, name: true } } },
   });
 
   const seen = new Set<string>();
-  let ok = 0;
-  let skip = 0;
-  let fail = 0;
+  const counters = { ok: 0, skip: 0, fail: 0 };
   const audience = lifetime ? "lifetime" : "non-lifetime";
 
   console.log(
-    `Broadcast to ${owners.length} ${audience} owners (deduped by email, except ${except.size})…\n`,
+    `Broadcast to ${owners.length} ${audience} owners (deduped by email; except ${except.size} incl. ${sellers.size} with sales)…\n`,
   );
 
   for (const owner of owners) {
     const r = recipientFromOwner(owner);
-    if (!r || seen.has(r.to) || except.has(r.to)) {
-      if (r && except.has(r.to)) console.log(`SKIP ${r.to}`);
-      skip += 1;
+    if (!r) {
+      counters.skip += 1;
       continue;
     }
-    seen.add(r.to);
-    try {
-      await sendFeatureAnnounce(r);
-      ok += 1;
-      console.log(`OK  ${r.to}`);
-      await new Promise((res) => setTimeout(res, 400));
-    } catch (error) {
-      fail += 1;
-      console.error(`FAIL ${r.to}`, error);
+    await sendOne(r, seen, except, counters);
+  }
+
+  // Extras ride with the main (--all) pass so they are not double-sent with --lifetime.
+  if (!lifetime) {
+    for (const extra of EXTRA_BROADCAST_RECIPIENTS) {
+      const r = { to: extra.to.trim().toLowerCase(), name: extra.name };
+      console.log(`EXTRA ${r.to}`);
+      await sendOne(r, seen, except, counters);
     }
   }
 
-  console.log(`\nDone. sent=${ok} skipped=${skip} failed=${fail}`);
+  console.log(
+    `\nDone. sent=${counters.ok} skipped=${counters.skip} failed=${counters.fail}`,
+  );
 }
 
 function parseExcept(args: string[]): Set<string> {

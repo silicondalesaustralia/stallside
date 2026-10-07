@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { processCampaignSendBatch } from "@/lib/grow/campaigns";
+import { drainCampaignSends } from "@/lib/grow/drain-campaign-sends";
 
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
@@ -12,12 +12,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "CRON_SECRET missing" }, { status: 500 });
   }
 
-  let total = 0;
-  for (let i = 0; i < 10; i += 1) {
-    const result = await processCampaignSendBatch();
-    total += result.processed;
-    if (!result.processed || result.finished) break;
+  try {
+    const total = await drainCampaignSends();
+    return NextResponse.json({ ok: true, processed: total });
+  } catch (error) {
+    console.error("Campaign cron failed", error);
+    return NextResponse.json({ error: "Campaign send failed" }, { status: 500 });
   }
-
-  return NextResponse.json({ ok: true, processed: total });
 }

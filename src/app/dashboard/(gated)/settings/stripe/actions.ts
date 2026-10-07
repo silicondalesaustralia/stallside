@@ -15,6 +15,8 @@ import {
   dropMismatchedConnectAccount,
 } from "@/lib/stripe-connect-account";
 import { connectCapabilitiesForCountry } from "@/lib/stripe-connect-capabilities";
+import { isV2026Owner } from "@/lib/fee-v2026";
+import { WEEKLY_PAYOUT_SCHEDULE } from "@/lib/pricing-model";
 
 export async function startStripeConnect() {
   const { owner, user } = await requireOwnerWrite();
@@ -48,6 +50,9 @@ export async function startStripeConnect() {
         product_description: "Small business sales - checkout, pre-orders, subscriptions",
       },
       metadata: { ownerId: owner.id },
+      ...(isV2026Owner(owner)
+        ? { settings: { payouts: { schedule: WEEKLY_PAYOUT_SCHEDULE } } }
+        : {}),
     });
     accountId = account.id;
     await prisma.owner.update({

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AdminLoginAsButton from "@/components/AdminLoginAsButton";
-import { audRatesFromMarket, formatBillingWithAud } from "@/lib/fx-to-aud";
+import { audRatesFromMarket } from "@/lib/fx-to-aud";
+import { formatOwnerLtv, platformFeesByOwner } from "@/lib/owner-ltv";
 
 type RecentOwner = {
   id: string;
@@ -22,7 +23,10 @@ export default async function AdminRecentOwners({
     return <p className="mt-2 text-sm text-[var(--muted)]">None yet.</p>;
   }
 
-  const fx = await audRatesFromMarket();
+  const [fx, feesByOwner] = await Promise.all([
+    audRatesFromMarket(),
+    platformFeesByOwner(owners.map((owner) => owner.id)),
+  ]);
 
   return (
     <ul className="mt-3 divide-y divide-[var(--line)] text-sm">
@@ -49,11 +53,12 @@ export default async function AdminRecentOwners({
             <p className="text-[var(--muted)]">
               {owner.subscriptionPlan ?? "-"} ·{" "}
               {owner.subscriptionStatus.toLowerCase()} · LTV{" "}
-              {formatBillingWithAud(
-                owner.lifetimePaidCents,
-                owner.billingCurrency,
-                fx,
-              )}
+              {formatOwnerLtv({
+                subscriptionCents: owner.lifetimePaidCents,
+                billingCurrency: owner.billingCurrency,
+                fees: feesByOwner.get(owner.id) ?? [],
+                rates: fx,
+              })}
             </p>
             <AdminLoginAsButton ownerId={owner.id} compact />
           </div>

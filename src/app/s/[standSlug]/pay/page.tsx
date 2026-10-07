@@ -6,19 +6,50 @@ import { standOffersCard, standOffersPayPal } from "@/lib/stand-payment-brands";
 import { isDemoStandSlug } from "@/lib/demo";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { standCatalogPath } from "@/lib/stand-seo";
+import {
+  standCatalogPath,
+  standSectionMetadata,
+} from "@/lib/stand-seo";
 import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
+  vendlFixedFeeCents,
 } from "@/lib/stallside-fee";
 import { isPayPalMarketplaceMode } from "@/lib/paypal";
 import StandStoreHeader from "../StandStoreHeader";
 import CustomerChoiceCheckout from "../CustomerChoiceCheckout";
 
-export const metadata: Metadata = {
-  title: "Pay",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ standSlug: string }>;
+}): Promise<Metadata> {
+  const { standSlug } = await params;
+  const slug = decodeURIComponent(standSlug).trim().toLowerCase();
+  const stand = await prisma.stand.findUnique({
+    where: { slug },
+    select: {
+      name: true,
+      slug: true,
+      logoUrl: true,
+      ogImageUrl: true,
+      isActive: true,
+    },
+  });
+  if (!stand || !stand.isActive) {
+    return { title: "Pay", robots: { index: false, follow: false } };
+  }
+  return standSectionMetadata({
+    standName: stand.name,
+    standSlug: stand.slug,
+    sectionTitle: "Pay",
+    description: `Pay ${stand.name}.`,
+    path: `${standCatalogPath(stand.slug)}/pay`,
+    logoUrl: stand.logoUrl,
+    ogImageUrl: stand.ogImageUrl,
+    noIndex: true,
+  });
+}
 
 export default async function CustomerChoicePayPage({
   params,
@@ -90,6 +121,7 @@ export default async function CustomerChoicePayPage({
         localTransfer={localTransfer}
         passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner)}
         stallsideFeeApplies={shouldChargeVendlFee(stand.owner)}
+        stripeFixedFeeCents={vendlFixedFeeCents(stand.owner, "stripe", stand.currency)}
         showDemoCardHint={isDemo}
       />
     </main>
