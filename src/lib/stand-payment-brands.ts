@@ -118,6 +118,19 @@ export function standOffersCard(
   return Boolean(owner.stripeAccountId && owner.stripeChargesEnabled);
 }
 
+/**
+ * Stripe for memberships / subscriptions. Recurring billing is Stripe-only, so
+ * this ignores the Square-vs-Stripe preference that governs one-off checkout.
+ */
+export function standOffersStripeRecurring(
+  stand: Pick<StandPaymentFlags, "slug" | "acceptCard">,
+  owner: OwnerPaymentReady,
+): boolean {
+  if (!stand.acceptCard) return false;
+  if (stand.slug && isDemoCardReady(stand.slug, owner)) return true;
+  return Boolean(owner.stripeAccountId && owner.stripeChargesEnabled);
+}
+
 /** Square Web Payments when seller prefers Square and connection is healthy. */
 export function standOffersSquare(
   stand: Pick<StandPaymentFlags, "acceptSquare">,

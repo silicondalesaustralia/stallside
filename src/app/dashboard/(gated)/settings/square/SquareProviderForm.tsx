@@ -2,6 +2,8 @@
 
 import { useTransition } from "react";
 import { setOnlinePaymentProvider } from "./actions";
+import { useActionStatus } from "./use-action-status";
+import ActionStatusText from "./ActionStatusText";
 
 export default function SquareProviderForm({
   current,
@@ -13,6 +15,7 @@ export default function SquareProviderForm({
   stripeReady: boolean;
 }) {
   const [pending, start] = useTransition();
+  const { status, report, fail } = useActionStatus();
 
   return (
     <form
@@ -22,7 +25,16 @@ export default function SquareProviderForm({
         const fd = new FormData(e.currentTarget);
         const provider = String(fd.get("provider")) as "STRIPE" | "SQUARE";
         start(async () => {
-          await setOnlinePaymentProvider(provider);
+          try {
+            report(
+              await setOnlinePaymentProvider(provider),
+              provider === "SQUARE"
+                ? "Product checkout now uses Square."
+                : "Product checkout now uses Stripe.",
+            );
+          } catch (error) {
+            fail(error);
+          }
         });
       }}
     >
@@ -54,6 +66,7 @@ export default function SquareProviderForm({
       >
         {pending ? "Saving…" : "Save provider"}
       </button>
+      <ActionStatusText status={status} />
     </form>
   );
 }

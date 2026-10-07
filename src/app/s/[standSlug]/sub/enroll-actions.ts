@@ -27,7 +27,7 @@ import {
   countHoldingMembers,
   isOfferAtCapacity,
 } from "@/lib/subscription-capacity";
-import { standOffersCard } from "@/lib/stand-payment-brands";
+import { standOffersStripeRecurring } from "@/lib/stand-payment-brands";
 
 export async function startShopperSubscriptionCheckout(input: {
   standSlug: string;
@@ -83,7 +83,7 @@ export async function startShopperSubscriptionCheckout(input: {
 
     const { stand } = offer;
     const { owner } = stand;
-    if (!standOffersCard(stand, owner)) {
+    if (!standOffersStripeRecurring(stand, owner)) {
       return { error: "This stand cannot take card subscriptions yet." };
     }
     if (!owner.stripeAccountId || !owner.stripeChargesEnabled) {
