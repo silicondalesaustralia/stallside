@@ -19,6 +19,7 @@ import { normalizeReceiptEmail } from "@/lib/first-order-discount";
 import { notifySale } from "@/lib/notify";
 import { notifyTapAndGoInterest } from "@/lib/notify-tap-and-go";
 import { localTransferForCurrency } from "@/lib/local-transfer";
+import { syncSaleToSquare } from "@/lib/square/sync-stock";
 
 type CheckoutExtras = {
   receiptEmail?: string | null;
@@ -170,6 +171,13 @@ async function confirmDeclaredCheckout(
       void notifySale(order.id).catch((error) => {
         console.error("Sale notify failed", error);
       });
+      if (!skipStock) {
+        void syncSaleToSquare({
+          ownerId: stand.ownerId,
+          orderId: order.id,
+          items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+        });
+      }
     });
 
     return { orderNumber: order.orderNumber };

@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { dollarsToCents } from "@/lib/money";
 import { InventorySource } from "@/generated/prisma/client";
 import { notifyLowStockForProducts } from "@/lib/notify";
+import { syncManualStockToSquare } from "@/lib/square/sync-stock";
 import { uploadProductImage } from "@/lib/product-image-upload";
 import {
   isReservedProductSlug,
@@ -207,6 +208,7 @@ export async function adjustInventory(formData: FormData) {
       },
     }),
   ]);
+  if (next !== previous) await syncManualStockToSquare(owner.id, [product.id]);
 
   if (next <= product.lowStockThreshold) {
     try {

@@ -5,6 +5,7 @@ import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { isSupplyStatus } from "@/lib/inventory/inventory-status";
 import { applyStockCounts } from "@/lib/inventory/apply-stock-counts";
+import { syncManualStockToSquare } from "@/lib/square/sync-stock";
 
 type ActionResult = { ok: true; changed?: number } | { error: string };
 
@@ -26,6 +27,7 @@ export async function applyStockCount(formData: FormData): Promise<ActionResult>
     if (counts.size === 0) return { error: "Enter at least one count." };
 
     const changed = await applyStockCounts({ ownerId: owner.id, counts, reason: "Stock count" });
+    if (changed > 0) await syncManualStockToSquare(owner.id, [...counts.keys()]);
 
     revalidatePath("/dashboard/inventory");
     revalidatePath("/dashboard/products");

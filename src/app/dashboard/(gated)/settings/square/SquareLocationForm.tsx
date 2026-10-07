@@ -5,6 +5,8 @@ import {
   mapSquareLocationToStand,
   setPrimarySquareLocation,
 } from "./actions";
+import { useActionStatus } from "./use-action-status";
+import ActionStatusText from "./ActionStatusText";
 
 export default function SquareLocationForm({
   locations,
@@ -21,6 +23,7 @@ export default function SquareLocationForm({
   primaryLocationId: string | null;
 }) {
   const [pending, start] = useTransition();
+  const { status, report, fail } = useActionStatus();
 
   return (
     <div className="space-y-4">
@@ -30,8 +33,13 @@ export default function SquareLocationForm({
           e.preventDefault();
           const fd = new FormData(e.currentTarget);
           const id = String(fd.get("primary") ?? "");
+          const name = locations.find((l) => l.id === id)?.name ?? "Location";
           start(async () => {
-            await setPrimarySquareLocation(id);
+            try {
+              report(await setPrimarySquareLocation(id), `${name} saved as primary location.`);
+            } catch (error) {
+              fail(error);
+            }
           });
         }}
       >
@@ -71,11 +79,22 @@ export default function SquareLocationForm({
                 e.preventDefault();
                 const fd = new FormData(e.currentTarget);
                 const standId = String(fd.get("standId") ?? "");
+                const standName = stands.find((s) => s.id === standId)?.name;
                 start(async () => {
-                  await mapSquareLocationToStand({
-                    providerLocationId: l.id,
-                    standId: standId || null,
-                  });
+                  try {
+                    const res = await mapSquareLocationToStand({
+                      providerLocationId: l.id,
+                      standId: standId || null,
+                    });
+                    report(
+                      res,
+                      standName
+                        ? `${l.name} mapped to ${standName}.`
+                        : `${l.name} unmapped.`,
+                    );
+                  } catch (error) {
+                    fail(error);
+                  }
                 });
               }}
             >
@@ -105,6 +124,7 @@ export default function SquareLocationForm({
           </li>
         ))}
       </ul>
+      <ActionStatusText status={status} />
     </div>
   );
 }

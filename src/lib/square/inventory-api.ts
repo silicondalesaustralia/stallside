@@ -39,6 +39,37 @@ export async function batchChangeSquareInventory(input: {
   });
 }
 
+/** Set absolute on-hand counts (max 100 changes per Square request). */
+export async function setSquarePhysicalCounts(input: {
+  accessToken: string;
+  idempotencyKey: string;
+  counts: Array<{ catalogObjectId: string; locationId: string; quantity: number }>;
+}) {
+  const occurredAt = new Date().toISOString();
+  for (let i = 0; i < input.counts.length; i += 100) {
+    const chunk = input.counts.slice(i, i + 100);
+    const key = `${input.idempotencyKey}:${i}`;
+    await squareFetch("/v2/inventory/batch-change", {
+      accessToken: input.accessToken,
+      method: "POST",
+      body: {
+        idempotency_key: key,
+        changes: chunk.map((c) => ({
+          type: "PHYSICAL_COUNT",
+          physical_count: {
+            catalog_object_id: c.catalogObjectId,
+            location_id: c.locationId,
+            quantity: String(Math.max(0, Math.floor(c.quantity))),
+            state: "IN_STOCK",
+            occurred_at: occurredAt,
+          },
+        })),
+      },
+      idempotencyKey: key,
+    });
+  }
+}
+
 export async function retrieveSquareInventoryCounts(input: {
   accessToken: string;
   catalogObjectIds: string[];

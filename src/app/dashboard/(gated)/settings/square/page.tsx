@@ -20,6 +20,7 @@ import SquareCapabilityForm from "./SquareCapabilityForm";
 import SquareLocationForm from "./SquareLocationForm";
 import SquareProviderForm from "./SquareProviderForm";
 import SquareMappingPanel from "./SquareMappingPanel";
+import SquarePushSection from "./SquarePushSection";
 
 export default async function SquareSettingsPage({
   searchParams,
@@ -221,6 +222,17 @@ export default async function SquareSettingsPage({
               fuzzy names alone.
             </p>
             <SquareMappingPanel catalogEnabled={conn.catalogSyncEnabled} />
+          </section>
+
+          <section className="space-y-3 text-sm">
+            <h2 className="text-lg font-semibold">Add Vendl products to Square</h2>
+            <SquarePushSection
+              ownerId={owner.id}
+              connectionId={conn.id}
+              catalogEnabled={conn.catalogSyncEnabled}
+              stockWillSync={conn.inventorySyncEnabled && Boolean(conn.primaryLocationId)}
+              currency={owner.billingCurrency ?? "AUD"}
+            />
           </section>
 
           <section className="space-y-2 text-sm">
