@@ -11,7 +11,7 @@ import {
   type MembershipPlan,
 } from "@/lib/subscription-offer";
 import { standSectionMetadata } from "@/lib/stand-seo";
-import { standOffersCard } from "@/lib/stand-payment-brands";
+import { standOffersStripeRecurring } from "@/lib/stand-payment-brands";
 import {
   countHoldingMembers,
   isOfferAtCapacity,
@@ -93,7 +93,7 @@ export default async function PublicSubscriptionOfferPage({
 
   const { stand } = offer;
   const branded = publicStandBranding(stand, stand.owner);
-  const cardEnabled = standOffersCard(stand, stand.owner);
+  const cardEnabled = standOffersStripeRecurring(stand, stand.owner);
   const ready = membershipOfferReady(offer);
   const holding = await countHoldingMembers(offer.id);
   const atCapacity = isOfferAtCapacity(offer.maxMembers, holding);

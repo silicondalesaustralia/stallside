@@ -54,6 +54,11 @@ export default async function SquareSettingsPage({
         where: { connectionId: conn.id, confirmedAt: { not: null } },
       })
     : 0;
+  const activeOfferCount = conn
+    ? await prisma.subscriptionOffer.count({
+        where: { ownerId: owner.id, isActive: true },
+      })
+    : 0;
   const feeApplies = shouldChargeVendlFee(owner);
   const active = conn?.status === "ACTIVE";
 
@@ -199,14 +204,26 @@ export default async function SquareSettingsPage({
           </section>
 
           <section className="space-y-3 text-sm">
-            <h2 className="text-lg font-semibold">Online payment provider</h2>
+            <h2 className="text-lg font-semibold">Product checkout provider</h2>
             <p className="text-[var(--muted)]">
-              Choose Stripe or Square for online card checkout — not both at
-              once. Free plan still collects a 2.5% Vendl fee on Vendl-originated
-              Square checkout
+              Choose Stripe or Square for one-off card checkout on products and
+              pre-orders. Memberships and subscriptions always use Stripe, so
+              keep Stripe connected if you sell them. Free plan still collects a
+              2.5% Vendl fee on Vendl-originated Square checkout
               {feeApplies ? " (your account)" : " (waived on Pro)"}. Square POS
               sales never incur a Vendl fee.
             </p>
+            {activeOfferCount > 0 && !owner.stripeChargesEnabled ? (
+              <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-900">
+                You have {activeOfferCount} active membership
+                {activeOfferCount === 1 ? "" : "s"} or subscription
+                {activeOfferCount === 1 ? "" : "s"}. Customers can&apos;t sign up
+                until Stripe is connected.{" "}
+                <Link href="/dashboard/settings/stripe" className="underline">
+                  Connect Stripe
+                </Link>
+              </p>
+            ) : null}
             <SquareProviderForm
               current={owner.onlinePaymentProvider}
               squarePaymentsReady={conn.paymentsEnabled}
