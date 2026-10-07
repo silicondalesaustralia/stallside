@@ -47,7 +47,7 @@ export const gettingStartedArticles: KnowledgeArticle[] = [
     steps: [
       "Customer Choice is a stall (take-now) cart mode. It is not for pre-order pages or subscriptions.",
       "Open My Businesses → your business → QR & print. Under Cart mode, choose Customer Choice cart, then Save.",
-      "Your stall QR now opens a calculator page: shoppers type each price they picked up (e.g. $10, then $5), see a running total, and pay with the same methods you enabled (cash, local transfer, card, PayPal).",
+      "Your stall QR now opens a calculator page: shoppers type each price they picked up (e.g. $10, then $5), see a running total, and pay with the same methods you enabled (cash, local transfer, card via Stripe or Square).",
       "There is no product list and no inventory change. Orders still appear in Orders as a “Customer choice” line for the amount paid.",
       "Switch back to Product cart anytime on the same QR page if you want a catalogue and stock tracking again. Reprint the QR after changing mode so the code matches.",
       "Use Product cart when you sell named items with stock. Use Customer Choice when goods already have price tags and you only need a payment total.",

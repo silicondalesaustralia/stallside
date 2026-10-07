@@ -62,7 +62,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     ctas: [{ label: "Billing", href: "/dashboard/settings/billing" }],
     steps: [
       "Vendl’s subscription is optional Pro. It is separate from customer card payments at the stand.",
-      "Free is $0/mo with all features. Vendl fee is 2.5% + 30c on Stripe card, Tap & Go, and pay-later (2.5% on Square and PayPal); cash and PayID stay free. Accounts created before 2 Oct 2026 keep 2.5% until they upgrade to Pro or first connect Square. Absorb the fee or pass it on in Settings → Card / Tap & Go. Standard Stripe processing fees apply separately.",
+      "Free is $0/mo with all features. Vendl fee is 2.5% + 30c on Stripe card, Tap & Go, and pay-later (2.5% on Square); cash and PayID stay free. Accounts created before 2 Oct 2026 keep 2.5% until they upgrade to Pro or first connect Square. Australian sellers absorb the fee (card surcharges aren't allowed); elsewhere you can pass it on in Settings → Card / Tap & Go. Standard Stripe processing fees apply separately.",
       "New owners start on Free from day one. Upgrade anytime from Settings → Billing to remove the Vendl card fee.",
       "Vendl Pro is billed monthly via Stripe. Manage payment method or cancel in the Stripe Customer Portal.",
       "If you cancel Pro, you keep Pro until the paid period ends, then return to Free (card fee applies again). Data is retained.",
@@ -73,13 +73,13 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
     slug: "customer-payments",
     title: "Accept card at the stand",
     summary:
-      "Connect Stripe so customers pay by card, Apple Pay, or Google Pay - separate from your Vendl subscription. PayPal coming soon.",
+      "Connect Stripe for card / Tap & Go - separate from your Vendl subscription. In Australia you can also use Square.",
     videoUrl: "https://youtu.be/keo53YG_Nks",
     comingSoon: false,
-    related: ["billing", "first-stand", "pre-orders", "pre-order-pages", "subscriptions"],
+    related: ["payments-overview", "connect-square", "billing", "pre-orders", "subscriptions"],
     ctas: [
       { label: "Connect Stripe", href: "/dashboard/settings/stripe" },
-      { label: "Billing", href: "/dashboard/settings/billing" },
+      { label: "Payments", href: "/dashboard/payments" },
     ],
     steps: [
       "Stripe Connect is how customers pay you at the stand by card, Apple Pay, or Google Pay. Available on Free and Pro.",
@@ -87,7 +87,8 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
       "Open Settings → Stripe (Card / Tap & Go) and tap Connect Stripe. Complete Stripe’s onboarding with your business and bank details.",
       "When charges are enabled, turn Card / Tap & Go on for each business under My Businesses → manage.",
       "Scan your Vendl QR on another phone and run a small test card sale. Payments go to your Stripe account.",
-      "PayPal at checkout is coming soon. Cash and PayID (Australia only) work without Stripe and have no Vendl fee.",
+      "Prefer Square for product checkout? See Connect Square and take Square payments. Subscriptions, memberships and pre-orders still need Stripe.",
+      "Cash and PayID (Australia only) work without Stripe and have no Vendl fee.",
     ],
   },
 ];

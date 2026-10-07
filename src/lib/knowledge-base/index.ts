@@ -5,6 +5,8 @@ import { storefrontArticles } from "./storefront";
 import { sellingMoreArticles } from "./selling-more";
 import { supplierArticles } from "./suppliers";
 import { productsInventoryArticles } from "./products-inventory";
+import { paymentArticles } from "./payments";
+import { squareArticles } from "./square";
 
 export type { KnowledgeArticle, KnowledgeCategory, KnowledgeCta } from "./types";
 
@@ -38,11 +40,18 @@ export const knowledgeCategories: KnowledgeCategory[] = [
     ),
   },
   {
+    id: "payments",
+    title: "Payments",
+    articles: [
+      ...paymentArticles,
+      ...ordersAlertsBillingArticles.filter((a) => a.slug === "customer-payments"),
+      ...squareArticles,
+    ],
+  },
+  {
     id: "billing",
     title: "Billing",
-    articles: ordersAlertsBillingArticles.filter(
-      (a) => a.slug === "billing" || a.slug === "customer-payments",
-    ),
+    articles: ordersAlertsBillingArticles.filter((a) => a.slug === "billing"),
   },
 ];
 
