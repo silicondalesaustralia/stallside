@@ -4,6 +4,7 @@ import { uniqueProductSlug } from "@/lib/slug";
 import { markFirstProductLive } from "@/lib/signup-timing";
 import { listImportCandidates, type ImportCandidate } from "@/lib/square/catalog-import";
 import { copySquareImage } from "@/lib/square/copy-square-image";
+import { SQUARE_CURRENCY } from "@/lib/commerce/payment-rail";
 
 export type ImportResult =
   | { ok: true; imported: number; images: number; standSlug: string }
@@ -106,6 +107,9 @@ export async function importSquareVariations(input: {
     select: { id: true, slug: true, currency: true },
   });
   if (!stand) return { error: "Pick one of your businesses to import into." };
+  if (stand.currency.trim().toUpperCase() !== SQUARE_CURRENCY) {
+    return { error: "Square prices are in AUD - import into a business that sells in AUD." };
+  }
 
   const listed = await listImportCandidates(input.ownerId);
   if ("error" in listed) return listed;

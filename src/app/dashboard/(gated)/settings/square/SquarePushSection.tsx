@@ -1,4 +1,4 @@
-import { listUnlinkedProducts } from "@/lib/square/catalog-push";
+import { countUnlinkedOtherCurrency, listUnlinkedProducts } from "@/lib/square/catalog-push";
 import SquarePushPanel from "./SquarePushPanel";
 
 export default async function SquarePushSection({
@@ -21,11 +21,15 @@ export default async function SquarePushSection({
       </p>
     );
   }
-  const products = await listUnlinkedProducts(ownerId, connectionId);
+  const [products, otherCurrencyCount] = await Promise.all([
+    listUnlinkedProducts(ownerId, connectionId),
+    countUnlinkedOtherCurrency(ownerId, connectionId),
+  ]);
   return (
     <SquarePushPanel
       currency={currency}
       stockWillSync={stockWillSync}
+      otherCurrencyCount={otherCurrencyCount}
       candidates={products.map((p) => ({
         id: p.id,
         name: p.name,

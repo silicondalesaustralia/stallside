@@ -13,7 +13,10 @@ import {
 import { getSquareConnection } from "@/lib/square/connection";
 import { shouldChargeVendlFee } from "@/lib/stallside-fee";
 import { pricingMoveNotice } from "@/lib/pricing-move-gate";
-import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
+import {
+  SQUARE_CURRENCY,
+  squareEligibleBillingCurrency,
+} from "@/lib/commerce/payment-rail";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import SquareConnectForm from "./SquareConnectForm";
 import SquareCapabilityForm from "./SquareCapabilityForm";
@@ -47,9 +50,12 @@ export default async function SquareSettingsPage({
   const conn = enabled ? await getSquareConnection(owner.id) : null;
   const stands = await prisma.stand.findMany({
     where: { ownerId: owner.id, isActive: true },
-    select: { id: true, name: true },
+    select: { id: true, name: true, currency: true },
     orderBy: { name: "asc" },
   });
+  const audStands = stands.filter(
+    (s) => s.currency.trim().toUpperCase() === SQUARE_CURRENCY,
+  );
   const mappingCount = conn
     ? await prisma.externalVariantMapping.count({
         where: { connectionId: conn.id, confirmedAt: { not: null } },
@@ -246,10 +252,12 @@ export default async function SquareSettingsPage({
             <h2 className="text-lg font-semibold">Import products from Square</h2>
             {conn.catalogSyncEnabled ? (
               <SquareImportPanel
-                stands={stands}
-                currency={owner.billingCurrency ?? "AUD"}
+                stands={audStands}
+                currency={SQUARE_CURRENCY}
                 defaultStandId={
-                  conn.locations.find((l) => l.isPrimary)?.standId ?? null
+                  audStands.find(
+                    (s) => s.id === conn.locations.find((l) => l.isPrimary)?.standId,
+                  )?.id ?? null
                 }
               />
             ) : (
