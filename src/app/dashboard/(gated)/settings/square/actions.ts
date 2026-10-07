@@ -119,6 +119,7 @@ export async function setOnlinePaymentProvider(
     },
   });
   revalidatePath("/dashboard/settings/square");
+  revalidatePath("/dashboard/businesses/[standId]", "page");
   revalidatePath("/dashboard/settings");
   return { ok: true as const };
 }

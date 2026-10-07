@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { updateStandPayments } from "../stand-payment-actions";
 import StandPaymentToggles from "./StandPaymentToggles";
+import StandSquareToggle from "./StandSquareToggle";
 
 export type StandPaymentOptionsProps = {
   standId: string;
@@ -19,6 +20,7 @@ export type StandPaymentOptionsProps = {
   paypalReady: boolean;
   paypalConnectAvailable: boolean;
   cardTier: boolean;
+  square: { accept: boolean; ready: boolean; isProvider: boolean } | null;
 };
 
 export default function StandPaymentOptions({
@@ -34,6 +36,7 @@ export default function StandPaymentOptions({
   paypalReady,
   paypalConnectAvailable,
   cardTier,
+  square,
 }: StandPaymentOptionsProps) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
@@ -49,6 +52,7 @@ export default function StandPaymentOptions({
     acceptLocalTransfer,
     acceptCard,
     acceptPayPal,
+    square?.accept,
     localTransferAlias,
   ].join(":");
 
@@ -90,6 +94,13 @@ export default function StandPaymentOptions({
           paypalConnectAvailable={paypalConnectAvailable}
           cardTier={cardTier}
         />
+        {square ? (
+          <StandSquareToggle
+            acceptSquare={square.accept}
+            squareReady={square.ready}
+            squareIsProvider={square.isProvider}
+          />
+        ) : null}
         {message ? <p className="text-sm text-[var(--muted)]">{message}</p> : null}
         <button
           type="submit"

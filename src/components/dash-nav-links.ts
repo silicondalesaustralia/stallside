@@ -9,6 +9,7 @@ export const primaryLinks = [
 export const secondaryLinks = [
   { href: "/dashboard/pre-order-pages", label: "Pre-order pages" },
   { href: "/dashboard/subscriptions", label: "Subscriptions" },
+  { href: "/dashboard/payments", label: "Payments" },
   { href: "/dashboard/communication", label: "Communication" },
   { href: "/dashboard/notifications", label: "Notifications" },
   { href: "/dashboard/suppliers", label: "Suppliers" },

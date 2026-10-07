@@ -18,6 +18,9 @@ import StandBrandingForm from "./StandBrandingForm";
 import StandDeleteButton from "./StandDeleteButton";
 import StandEditForm from "./StandEditForm";
 import StandUpsellsForm from "./StandUpsellsForm";
+import PaymentsOverview from "./PaymentsOverview";
+import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
+import { ownerSquareReady } from "@/lib/square/owner-ready";
 import SyncSelectedBusiness from "@/components/SyncSelectedBusiness";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 
@@ -116,6 +119,16 @@ export default async function StandDetailPage({
           stripeConnected={owner.stripeChargesEnabled}
           stripeStarted={Boolean(owner.stripeAccountId)}
           productCount={stand.products.length}
+          square={
+            squareEligibleBillingCurrency(owner.billingCurrency)
+              ? {
+                  accept: stand.acceptSquare,
+                  ready: await ownerSquareReady(owner),
+                  isProvider: owner.onlinePaymentProvider === "SQUARE",
+                }
+              : null
+          }
+          overview={<PaymentsOverview owner={owner} />}
         />
       ) : null}
       {tab === "branding" ? (

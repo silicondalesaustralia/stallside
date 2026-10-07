@@ -10,7 +10,7 @@ export const paymentArticles: KnowledgeArticle[] = [
     omitVideo: true,
     related: ["customer-payments", "connect-square", "square-sync", "billing"],
     ctas: [
-      { label: "Payments settings", href: "/dashboard/settings/payments" },
+      { label: "Payments", href: "/dashboard/payments" },
       { label: "Billing", href: "/dashboard/settings/billing" },
     ],
     steps: [
@@ -18,7 +18,7 @@ export const paymentArticles: KnowledgeArticle[] = [
       "Cash and PayID (Australia) need nothing connected and never have a Vendl fee.",
       "Stripe takes card, Tap & Go (Apple Pay / Google Pay) and pay-later. It is required for subscriptions, memberships, pre-order pages and deposits.",
       "Square (currently Australia only) takes card and wallet payments on your QR stall and website cart, and can sync products and stock both ways with Square POS. Good for market and in-person sellers who already use a Square reader.",
-      "You can connect both. Under Settings → Payments → Product checkout provider, choose Stripe or Square for everyday product checkout. Subscriptions, memberships and pre-orders keep using Stripe either way.",
+      "You can connect both. On the Payments page (sidebar), under Product checkout provider, choose Stripe or Square for everyday product checkout. Subscriptions, memberships and pre-orders keep using Stripe either way.",
       "Vendl fee on Free: 2.5% + 30c on Stripe, 2.5% on Square. Accounts created before 2 Oct 2026 pay 2.5% on Stripe until they upgrade or connect Square. Stripe and Square also charge their own processing fees.",
       "Vendl Pro removes the Vendl fee on Square. On Stripe there is no Vendl fee on your first A$4,000 of sales each month, then 0.5%.",
       "Sales you take on your own Square reader or Square POS never have a Vendl fee.",

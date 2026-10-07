@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import TapAndGoSetupCard from "@/components/TapAndGoSetupCard";
 import { CASH_AND_LOCAL_PAYMENTS_LABEL } from "@/lib/stripe-connect-copy";
 import StandPaymentOptions from "./StandPaymentOptions";
@@ -18,7 +19,11 @@ export default function BusinessPaymentsTab({
   stripeConnected,
   stripeStarted,
   productCount,
+  square,
+  overview,
 }: {
+  square: { accept: boolean; ready: boolean; isProvider: boolean } | null;
+  overview: ReactNode;
   standId: string;
   currency: string;
   localTransferAlias: string | null;
@@ -37,9 +42,10 @@ export default function BusinessPaymentsTab({
 }) {
   return (
     <div className="flex w-full flex-col gap-3">
+      {overview}
       <p className="text-sm text-[var(--muted)]">
         Choose how customers can pay at checkout. {CASH_AND_LOCAL_PAYMENTS_LABEL}{" "}
-        work without Stripe. Card, pre-orders, and subscriptions need Stripe.
+        work without Stripe or Square. Pre-orders and subscriptions need Stripe.
       </p>
       {productCount > 0 ? (
         <TapAndGoSetupCard
@@ -62,6 +68,7 @@ export default function BusinessPaymentsTab({
         paypalReady={paypalReady}
         paypalConnectAvailable={paypalConnectAvailable}
         cardTier={cardTier}
+        square={square}
       />
     </div>
   );
