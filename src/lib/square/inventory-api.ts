@@ -88,6 +88,7 @@ export async function retrieveSquareInventoryCounts(input: {
     body: {
       catalog_object_ids: input.catalogObjectIds,
       location_ids: input.locationIds,
+      states: ["IN_STOCK"],
     },
   });
 }
