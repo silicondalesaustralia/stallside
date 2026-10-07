@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { InventorySource } from "@/generated/prisma/client";
 import { notifyLowStockForProducts } from "@/lib/notify";
 import { isSupplyStatus } from "@/lib/inventory/inventory-status";
+import { syncManualStockToSquare } from "@/lib/square/sync-stock";
 
 type ActionResult = { ok: true; changed?: number } | { error: string };
 
@@ -52,6 +53,7 @@ export async function applyStockCount(formData: FormData): Promise<ActionResult>
         ];
       }),
     );
+    await syncManualStockToSquare(owner.id, changed.map((p) => p.id));
 
     const low = changed.filter((p) => (counts.get(p.id) ?? 0) <= p.lowStockThreshold);
     for (const p of low) {

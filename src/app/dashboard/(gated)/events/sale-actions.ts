@@ -10,6 +10,7 @@ import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { createCashSaleOrder } from "@/lib/ops/cash-sale";
 import { linkOrderToCustomer } from "@/lib/catalogue/customers";
+import { syncSaleToSquare } from "@/lib/square/sync-stock";
 
 export async function quickSaleAtEvent(formData: FormData) {
   const { owner } = await requireOwnerWrite();
@@ -72,6 +73,11 @@ export async function quickSaleAtEvent(formData: FormData) {
     });
 
     return created;
+  });
+  await syncSaleToSquare({
+    ownerId: owner.id,
+    orderId: order.id,
+    items: [{ productId: product.id, quantity: qty }],
   });
 
   await linkOrderToCustomer({

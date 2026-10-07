@@ -2,6 +2,8 @@
 
 import { useTransition } from "react";
 import { updateSquareCapabilities } from "./actions";
+import { useActionStatus } from "./use-action-status";
+import ActionStatusText from "./ActionStatusText";
 
 export default function SquareCapabilityForm({
   paymentsEnabled,
@@ -13,6 +15,7 @@ export default function SquareCapabilityForm({
   catalogSyncEnabled: boolean;
 }) {
   const [pending, start] = useTransition();
+  const { status, report, fail } = useActionStatus();
 
   return (
     <form
@@ -21,11 +24,16 @@ export default function SquareCapabilityForm({
         e.preventDefault();
         const fd = new FormData(e.currentTarget);
         start(async () => {
-          await updateSquareCapabilities({
-            paymentsEnabled: fd.get("payments") === "on",
-            inventorySyncEnabled: fd.get("inventory") === "on",
-            catalogSyncEnabled: fd.get("catalog") === "on",
-          });
+          try {
+            const res = await updateSquareCapabilities({
+              paymentsEnabled: fd.get("payments") === "on",
+              inventorySyncEnabled: fd.get("inventory") === "on",
+              catalogSyncEnabled: fd.get("catalog") === "on",
+            });
+            report(res, "Square settings saved.");
+          } catch (error) {
+            fail(error);
+          }
         });
       }}
     >
@@ -60,6 +68,7 @@ export default function SquareCapabilityForm({
       >
         {pending ? "Saving…" : "Save"}
       </button>
+      <ActionStatusText status={status} />
     </form>
   );
 }
