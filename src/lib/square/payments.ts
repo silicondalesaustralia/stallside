@@ -15,6 +15,10 @@ export type CreateSquarePaymentInput = {
   referenceId?: string;
   note?: string;
   buyerEmail?: string;
+  /** Required when `sourceId` is a saved card id. */
+  customerId?: string;
+  /** False for scheduled renewals charged without the shopper present. */
+  customerInitiated?: boolean;
 };
 
 export async function createSquarePayment(input: CreateSquarePaymentInput) {
@@ -44,6 +48,15 @@ export async function createSquarePayment(input: CreateSquarePaymentInput) {
 
   if (input.buyerEmail) {
     body.buyer_email_address = input.buyerEmail;
+  }
+  if (input.customerId) {
+    body.customer_id = input.customerId;
+  }
+  if (input.customerInitiated !== undefined) {
+    body.customer_details = {
+      customer_initiated: input.customerInitiated,
+      seller_keyed_in: false,
+    };
   }
 
   return squareFetch<{

@@ -74,6 +74,13 @@ export function isSquareAppFeesEnabled(): boolean {
   );
 }
 
+/** Vendl-billed subscriptions and memberships charged to saved Square cards. */
+export function isSquareSubscriptionsEnabled(): boolean {
+  return (
+    isSquarePaymentsEnabled() && process.env.SQUARE_SUBSCRIPTIONS_ENABLED === "1"
+  );
+}
+
 export function isSquareCatalogEnabled(): boolean {
   return isSquareConnectEnabled() && process.env.SQUARE_CATALOG_ENABLED === "1";
 }

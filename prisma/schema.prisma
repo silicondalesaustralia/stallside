@@ -1254,6 +1254,23 @@ model ShopperSubscription {
   deliveryNotes          String?
   stripeCustomerId       String?
   stripeSubscriptionId   String?
+  /** Who bills this subscription. SQUARE = Vendl charges a saved Square card on schedule. */
+  paymentProvider        OnlinePaymentProvider @default(STRIPE)
+  squareCustomerId       String?
+  squareCardId           String?
+  /** e.g. "Visa •••• 4242", shown on the manage page. */
+  squareCardLabel        String?
+  /** Price charged each period, fixed at signup (Square billing). */
+  recurringPriceCents    Int?
+  /** Start of the next period to charge; stays put while a failed charge is retried. */
+  nextBillingAt          DateTime?
+  billingRetryAt         DateTime?
+  /** Failed attempts for the current period. */
+  billingFailures        Int               @default(0)
+  /** Short claim so overlapping billing runs never charge the same period twice. */
+  billingLockedUntil     DateTime?
+  lastPaymentAt          DateTime?
+  charges                ShopperSubscriptionCharge[]
   /** Opaque token for manage / portal / skip / pause links. */
   manageToken            String            @unique
   skipNextCycle          Boolean           @default(false)
@@ -1271,6 +1288,27 @@ model ShopperSubscription {
   @@index([offerId])
   @@index([customerId])
   @@index([status, nextCollectionAt])
+  @@index([paymentProvider, status, nextBillingAt])
+}
+
+/** One Square charge attempt for a Vendl-billed subscription period. */
+model ShopperSubscriptionCharge {
+  id                    String              @id @default(cuid())
+  shopperSubscriptionId String
+  shopperSubscription   ShopperSubscription @relation(fields: [shopperSubscriptionId], references: [id], onDelete: Cascade)
+  ownerId               String
+  periodStart           DateTime
+  amountCents           Int
+  appFeeCents           Int                 @default(0)
+  currency              String
+  /** PAID | FAILED */
+  status                String
+  squarePaymentId       String?             @unique
+  failureReason         String?
+  createdAt             DateTime            @default(now())
+
+  @@index([shopperSubscriptionId, createdAt])
+  @@index([ownerId, createdAt])
 }
 
 /** Multi-product pre-order sheet: one link, shared collection day. */
@@ -2320,6 +2358,8 @@ model ExternalCommerceConnection {
   paymentsEnabled      Boolean                  @default(false)
   inventorySyncEnabled Boolean                  @default(false)
   catalogSyncEnabled   Boolean                  @default(false)
+  /** Bill new subscriptions / memberships to saved Square cards (needs CUSTOMERS_* scopes). */
+  subscriptionsEnabled Boolean                  @default(false)
   lastSyncAt           DateTime?
   lastError            String?
   disconnectedAt       DateTime?
