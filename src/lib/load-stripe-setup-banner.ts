@@ -21,6 +21,8 @@ export type PaymentSetupBanner = {
   /** Second CTA for AU (Square). */
   secondaryCtaLabel?: string;
   secondaryCtaHref?: string;
+  /** Knowledge base article on choosing a card provider. */
+  helpHref?: string;
 };
 
 /** @deprecated Use PaymentSetupBanner */
@@ -105,12 +107,13 @@ export async function loadStripeSetupBanner(input: {
     return {
       mode: "never-started",
       title: "Connect Stripe or Square to take card payments",
-      body: "Optional for cash and local bank transfer. Required for pre-orders and subscription boxes. Pick one online card provider.",
+      body: "Optional if you only take cash or bank transfer. Pick the one that suits how you sell. You can connect both.",
       steps: [
-        "Open Payments and connect Stripe or Square",
-        "Choose your live online card provider",
-        "Share your shop or QR link",
+        "Stripe: cards, Apple Pay / Google Pay, pre-orders and deposits",
+        "Square: cards plus stock sync with your Square reader at markets",
+        "Then choose your live online card provider under Payments",
       ],
+      helpHref: "/dashboard/knowledge/payments-overview",
       ctaLabel: "Connect Stripe",
       ctaHref: STRIPE_SETTINGS_HREF,
       secondaryCtaLabel: "Connect Square",

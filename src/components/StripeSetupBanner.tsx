@@ -146,6 +146,14 @@ export default function StripeSetupBannerClient({
               <li key={step}>{step}</li>
             ))}
           </ul>
+          {banner.helpHref ? (
+            <Link
+              href={banner.helpHref}
+              className="mt-3 inline-block text-sm font-semibold text-[var(--leaf-dark)] underline"
+            >
+              Which is right for my business?
+            </Link>
+          ) : null}
         </div>
         <div className="flex shrink-0 flex-col gap-2">
           <Link
