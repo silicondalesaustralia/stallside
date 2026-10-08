@@ -95,7 +95,7 @@ export function TradiesPostComposer() {
               <SocialJobPicker
                 value={jobId}
                 onChange={(id) => setJobId(id)}
-                helperText="Linking a job helps the AI write about the right work and suburb."
+                helperText="Pick a product, pre-order page or subscription and the AI will write about it and can use its photos."
               />
             </div>
             <ComposerMediaPicker
