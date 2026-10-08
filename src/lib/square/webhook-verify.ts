@@ -10,13 +10,20 @@ export function verifySquareWebhookSignature(input: {
   signatureHeader: string | null;
   notificationUrl: string;
 }): boolean {
-  const key = squareWebhookSignatureKey();
-  if (!key || !input.signatureHeader) return false;
+  const header = input.signatureHeader;
+  if (!header) return false;
   const payload = input.notificationUrl + input.body;
+  return (["AU", "US"] as const).some((region) => {
+    const key = squareWebhookSignatureKey(region);
+    return key ? signatureMatches(key, payload, header) : false;
+  });
+}
+
+function signatureMatches(key: string, payload: string, header: string): boolean {
   const hmac = createHmac("sha256", key).update(payload).digest("base64");
   try {
     const a = Buffer.from(hmac);
-    const b = Buffer.from(input.signatureHeader);
+    const b = Buffer.from(header);
     return a.length === b.length && timingSafeEqual(a, b);
   } catch {
     return false;

@@ -16,7 +16,7 @@ type OverviewOwner = Parameters<typeof shouldChargeVendlFee>[0] & {
   onlinePaymentProvider: string;
 };
 
-/** Account-wide payment choices (Stripe vs Square) shown above per-business toggles. Australia only. */
+/** Account-wide payment choices (Stripe vs Square) shown above per-business toggles. Square regions only. */
 export default async function PaymentsOverview({ owner }: { owner: OverviewOwner }) {
   if (!squareEligibleBillingCurrency(owner.billingCurrency)) return null;
 

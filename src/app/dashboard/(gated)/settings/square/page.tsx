@@ -14,9 +14,11 @@ import {
 import { getSquareConnection } from "@/lib/square/connection";
 import { pricingMoveNotice } from "@/lib/pricing-move-gate";
 import {
-  SQUARE_CURRENCY,
-  squareEligibleBillingCurrency,
+  squareConnectionMatchesBilling,
+  squareRegionForBilling,
 } from "@/lib/commerce/payment-rail";
+import { squareRegionCurrency } from "@/lib/square/region";
+import SquareRegionNotice from "./SquareRegionNotice";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import SquareConnectForm from "./SquareConnectForm";
 import SquareCapabilityForm from "./SquareCapabilityForm";
@@ -39,12 +41,11 @@ export default async function SquareSettingsPage({
   const { owner } = await requireOwner();
   const params = await searchParams;
 
-  if (
-    !isSquareIntegrationEnabled() ||
-    !squareEligibleBillingCurrency(owner.billingCurrency)
-  ) {
+  const region = squareRegionForBilling(owner.billingCurrency);
+  if (!isSquareIntegrationEnabled() || !region) {
     redirect("/dashboard/settings");
   }
+  const squareCurrency = squareRegionCurrency(region);
 
   const enabled = isSquareConnectEnabled();
   const diagnostics = enabled ? null : squareConnectDiagnostics();
@@ -54,15 +55,18 @@ export default async function SquareSettingsPage({
     select: { id: true, name: true, currency: true },
     orderBy: { name: "asc" },
   });
-  const audStands = stands.filter(
-    (s) => s.currency.trim().toUpperCase() === SQUARE_CURRENCY,
+  const squareStands = stands.filter(
+    (s) => s.currency.trim().toUpperCase() === squareCurrency,
   );
   const mappingCount = conn
     ? await prisma.externalVariantMapping.count({
         where: { connectionId: conn.id, confirmedAt: { not: null } },
       })
     : 0;
-  const active = conn?.status === "ACTIVE";
+  const regionMismatch = Boolean(
+    conn && conn.status === "ACTIVE" && !squareConnectionMatchesBilling(conn, owner.billingCurrency),
+  );
+  const active = conn?.status === "ACTIVE" && !regionMismatch;
 
   return (
     <main className="flex w-full max-w-3xl flex-col gap-8">
@@ -135,7 +139,12 @@ export default async function SquareSettingsPage({
           were retained for history.
         </p>
       ) : null}
-      {params.error ? (
+      <SquareRegionNotice
+        region={region}
+        error={params.error}
+        mismatch={regionMismatch}
+      />
+      {params.error && !params.error.startsWith("region") ? (
         <p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
           {params.error === "confirm_required"
             ? "Please tick the pricing confirmation before connecting Square."
@@ -241,10 +250,10 @@ export default async function SquareSettingsPage({
             <h2 className="text-lg font-semibold">Import products from Square</h2>
             {conn.catalogSyncEnabled ? (
               <SquareImportPanel
-                stands={audStands}
-                currency={SQUARE_CURRENCY}
+                stands={squareStands}
+                currency={squareCurrency}
                 defaultStandId={
-                  audStands.find(
+                  squareStands.find(
                     (s) => s.id === conn.locations.find((l) => l.isPrimary)?.standId,
                   )?.id ?? null
                 }
@@ -263,7 +272,7 @@ export default async function SquareSettingsPage({
               connectionId={conn.id}
               catalogEnabled={conn.catalogSyncEnabled}
               stockWillSync={conn.inventorySyncEnabled && Boolean(conn.primaryLocationId)}
-              currency={owner.billingCurrency ?? "AUD"}
+              currency={squareCurrency}
             />
           </section>
 

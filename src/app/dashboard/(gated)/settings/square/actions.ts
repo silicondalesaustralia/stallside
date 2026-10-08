@@ -25,16 +25,19 @@ import { buildReviewSuggestions } from "@/lib/square/match-suggestions";
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
 import {
   assertOnlineProviderAllowed,
-  squareEligibleBillingCurrency,
+  SQUARE_REGION_UNAVAILABLE,
+  squareRegionForBilling,
 } from "@/lib/commerce/payment-rail";
+import { SQUARE_OAUTH_REGION_COOKIE } from "@/lib/square/oauth-cookies";
 
 export async function startSquareConnect(formData: FormData): Promise<void> {
   if (!isSquareConnectEnabled()) {
     throw new Error("Square is not enabled.");
   }
   const { owner } = await requireOwner();
-  if (!squareEligibleBillingCurrency(owner.billingCurrency)) {
-    throw new Error("Square is only available for Australian (AUD) accounts.");
+  const region = squareRegionForBilling(owner.billingCurrency);
+  if (!region) {
+    throw new Error(SQUARE_REGION_UNAVAILABLE);
   }
   const notice = (await hasSquareConnectionHistory(owner.id))
     ? "none"
@@ -52,10 +55,11 @@ export async function startSquareConnect(formData: FormData): Promise<void> {
     maxAge: 600,
   };
   jar.set("square_oauth_state", state, cookieOpts);
+  jar.set(SQUARE_OAUTH_REGION_COOKIE, region, cookieOpts);
   if (notice === "lifetime") {
     jar.set(SQUARE_LIFETIME_CONFIRM_COOKIE, "1", cookieOpts);
   }
-  const url = buildSquareAuthorizeUrl(state);
+  const url = buildSquareAuthorizeUrl(state, region);
   if (!url) throw new Error("Square app credentials missing.");
   redirect(url);
 }
@@ -99,9 +103,7 @@ export async function setOnlinePaymentProvider(
   } catch (error) {
     return {
       error:
-        error instanceof Error
-          ? error.message
-          : "Square is only available for Australian accounts.",
+        error instanceof Error ? error.message : SQUARE_REGION_UNAVAILABLE,
     };
   }
   if (provider === "SQUARE") {

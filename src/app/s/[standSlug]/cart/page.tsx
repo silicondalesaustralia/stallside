@@ -6,6 +6,7 @@ import { localTransferForCurrency } from "@/lib/local-transfer";
 import { standOffersCard, standOffersPayPal, standOffersSquare } from "@/lib/stand-payment-brands";
 import { getSquareConnection } from "@/lib/square/connection";
 import { isSquarePaymentsEnabled } from "@/lib/square/config";
+import { squareConnectionMatchesBilling } from "@/lib/commerce/payment-rail";
 import { demoProductForStandSlug, isDemoStandSlug } from "@/lib/demo";
 import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 import { mapPublicProduct } from "@/lib/public-product";
@@ -202,7 +203,8 @@ export default async function StandCartPage({
     squarePaymentsReady: Boolean(
       squareConn?.status === "ACTIVE" &&
         squareConn.paymentsEnabled &&
-        squareConn.primaryLocationId,
+        squareConn.primaryLocationId &&
+        squareConnectionMatchesBilling(squareConn, stand.owner.billingCurrency),
     ),
   };
 

@@ -42,7 +42,10 @@ export default async function ShopperSubscriptionManagePage({
       : null;
   const square =
     sub.paymentProvider === OnlinePaymentProvider.SQUARE
-      ? { applicationId: squareApplicationId(), locationId: squareRail?.locationId ?? null }
+      ? {
+          applicationId: squareRail ? squareApplicationId(squareRail.region) : null,
+          locationId: squareRail?.locationId ?? null,
+        }
       : null;
 
   return (

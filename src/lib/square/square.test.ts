@@ -3,7 +3,11 @@ import { describe, it } from "node:test";
 import { suggestCatalogMatches } from "@/lib/square/catalog";
 import { verifySquareWebhookSignature } from "@/lib/square/webhook-verify";
 import { encryptSecret, decryptSecret } from "@/lib/square/crypto";
-import { resolveOnlinePaymentRail } from "@/lib/commerce/payment-rail";
+import {
+  resolveOnlinePaymentRail,
+  squareConnectionMatchesBilling,
+  squareCurrencyForBilling,
+} from "@/lib/commerce/payment-rail";
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
 
 describe("square catalog matching", () => {
@@ -114,11 +118,13 @@ describe("online payment rail", () => {
     );
   });
 
-  it("never uses Square for USD accounts", () => {
+  it("uses Stripe for USD accounts until the US Square app is configured", () => {
     process.env.SQUARE_INTEGRATION_ENABLED = "1";
     process.env.SQUARE_PAYMENTS_ENABLED = "1";
     process.env.SQUARE_APPLICATION_ID = "sandbox-sq0id";
     process.env.SQUARE_APPLICATION_SECRET = "secret";
+    delete process.env.SQUARE_US_APPLICATION_ID;
+    delete process.env.SQUARE_US_APPLICATION_SECRET;
     assert.equal(
       resolveOnlinePaymentRail({
         preferred: OnlinePaymentProvider.SQUARE,
@@ -129,5 +135,34 @@ describe("online payment rail", () => {
       }),
       "stripe",
     );
+  });
+
+  it("uses Square for USD accounts once the US Square app is configured", () => {
+    process.env.SQUARE_US_APPLICATION_ID = "sandbox-sq0id-us";
+    process.env.SQUARE_US_APPLICATION_SECRET = "secret-us";
+    assert.equal(squareCurrencyForBilling("USD"), "USD");
+    assert.equal(
+      resolveOnlinePaymentRail({
+        preferred: OnlinePaymentProvider.SQUARE,
+        stripeReady: true,
+        squareReady: true,
+        standAcceptSquare: true,
+        billingCurrency: "USD",
+      }),
+      "square",
+    );
+    delete process.env.SQUARE_US_APPLICATION_ID;
+    delete process.env.SQUARE_US_APPLICATION_SECRET;
+  });
+
+  it("rejects a connection made through another country's app", () => {
+    process.env.SQUARE_US_APPLICATION_ID = "sandbox-sq0id-us";
+    process.env.SQUARE_US_APPLICATION_SECRET = "secret-us";
+    assert.equal(squareConnectionMatchesBilling({ providerCountry: null }, "AUD"), true);
+    assert.equal(squareConnectionMatchesBilling({ providerCountry: null }, "USD"), false);
+    assert.equal(squareConnectionMatchesBilling({ providerCountry: "US" }, "USD"), true);
+    assert.equal(squareConnectionMatchesBilling({ providerCountry: "US" }, "GBP"), false);
+    delete process.env.SQUARE_US_APPLICATION_ID;
+    delete process.env.SQUARE_US_APPLICATION_SECRET;
   });
 });

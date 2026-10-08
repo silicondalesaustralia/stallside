@@ -47,7 +47,7 @@ export async function startSquareShopperSubscription(input: {
   customer: { name: string; email: string; phone: string | null; id: string | null };
   delivery: { line1: string | null; suburb: string | null; postcode: string | null; notes: string | null };
 }): Promise<{ square: SquareSubscriptionSession } | { error: string }> {
-  const applicationId = squareApplicationId();
+  const applicationId = squareApplicationId(input.rail.region);
   if (!applicationId) return { error: "Card payments are not configured yet." };
 
   const { offer } = input;

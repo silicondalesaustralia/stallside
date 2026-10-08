@@ -4,7 +4,7 @@ import { uniqueProductSlug } from "@/lib/slug";
 import { markFirstProductLive } from "@/lib/signup-timing";
 import { listImportCandidates, type ImportCandidate } from "@/lib/square/catalog-import";
 import { copySquareImage } from "@/lib/square/copy-square-image";
-import { SQUARE_CURRENCY } from "@/lib/commerce/payment-rail";
+import { squareConnectionCurrency } from "@/lib/square/catalog-push";
 
 export type ImportResult =
   | { ok: true; imported: number; images: number; standSlug: string }
@@ -107,8 +107,16 @@ export async function importSquareVariations(input: {
     select: { id: true, slug: true, currency: true },
   });
   if (!stand) return { error: "Pick one of your businesses to import into." };
-  if (stand.currency.trim().toUpperCase() !== SQUARE_CURRENCY) {
-    return { error: "Square prices are in AUD - import into a business that sells in AUD." };
+  const conn = await prisma.externalCommerceConnection.findFirst({
+    where: { ownerId: input.ownerId, provider: "SQUARE" },
+    select: { id: true, providerCountry: true },
+  });
+  if (!conn) return { error: "Connect Square first." };
+  const currency = squareConnectionCurrency(conn);
+  if (stand.currency.trim().toUpperCase() !== currency) {
+    return {
+      error: `Square prices are in ${currency} - import into a business that sells in ${currency}.`,
+    };
   }
 
   const listed = await listImportCandidates(input.ownerId);
@@ -116,11 +124,6 @@ export async function importSquareVariations(input: {
   const wanted = new Set(input.variationIds);
   const rows = listed.candidates.filter((c) => wanted.has(c.variationId));
   if (rows.length === 0) return { error: "Those Square items are already in Vendl." };
-
-  const conn = await prisma.externalCommerceConnection.findFirstOrThrow({
-    where: { ownerId: input.ownerId, provider: "SQUARE" },
-    select: { id: true },
-  });
 
   let imported = 0;
   let images = 0;

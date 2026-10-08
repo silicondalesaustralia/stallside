@@ -1,11 +1,19 @@
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
-import { SQUARE_CURRENCY, squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
+import {
+  squareConnectionMatchesBilling,
+  squareCurrencyForBilling,
+} from "@/lib/commerce/payment-rail";
 import { isSquareSubscriptionsEnabled } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
+import { connectionSquareRegion, type SquareRegion } from "@/lib/square/region";
 import { hasSquareSubscriptionScopes } from "@/lib/square/scopes";
 import type { MembershipPlan } from "@/lib/subscription-offer";
 
-export type SquareSubscriptionRail = { connectionId: string; locationId: string };
+export type SquareSubscriptionRail = {
+  connectionId: string;
+  locationId: string;
+  region: SquareRegion;
+};
 
 /** Square bills new signups when the seller picked Square checkout and turned on Square subscriptions. */
 export async function squareSubscriptionRail(input: {
@@ -15,8 +23,9 @@ export async function squareSubscriptionRail(input: {
 }): Promise<SquareSubscriptionRail | null> {
   if (!isSquareSubscriptionsEnabled()) return null;
   if (input.owner.onlinePaymentProvider !== OnlinePaymentProvider.SQUARE) return null;
-  if (!squareEligibleBillingCurrency(input.owner.billingCurrency)) return null;
-  if (input.offerCurrency.trim().toUpperCase() !== SQUARE_CURRENCY) return null;
+  const squareCurrency = squareCurrencyForBilling(input.owner.billingCurrency);
+  if (!squareCurrency) return null;
+  if (input.offerCurrency.trim().toUpperCase() !== squareCurrency) return null;
   if (!input.stand.acceptSquare) return null;
 
   const conn = await getSquareConnection(input.owner.id);
@@ -26,11 +35,16 @@ export async function squareSubscriptionRail(input: {
     !conn.paymentsEnabled ||
     !conn.subscriptionsEnabled ||
     !conn.primaryLocationId ||
-    !hasSquareSubscriptionScopes(conn.scopes)
+    !hasSquareSubscriptionScopes(conn.scopes) ||
+    !squareConnectionMatchesBilling(conn, input.owner.billingCurrency)
   ) {
     return null;
   }
-  return { connectionId: conn.id, locationId: conn.primaryLocationId };
+  return {
+    connectionId: conn.id,
+    locationId: conn.primaryLocationId,
+    region: connectionSquareRegion(conn),
+  };
 }
 
 /** Renewals keep billing existing subscribers even if the seller later stops new Square signups. */
@@ -45,7 +59,11 @@ export async function squareRenewalRail(ownerId: string): Promise<SquareSubscrip
   ) {
     return null;
   }
-  return { connectionId: conn.id, locationId: conn.primaryLocationId };
+  return {
+    connectionId: conn.id,
+    locationId: conn.primaryLocationId,
+    region: connectionSquareRegion(conn),
+  };
 }
 
 type SquareOfferPrices = {

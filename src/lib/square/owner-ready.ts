@@ -1,4 +1,7 @@
-import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
+import {
+  squareConnectionMatchesBilling,
+  squareEligibleBillingCurrency,
+} from "@/lib/commerce/payment-rail";
 import { isSquareConnectEnabled } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
 
@@ -13,6 +16,7 @@ export async function ownerSquareReady(owner: {
   return (
     conn?.status === "ACTIVE" &&
     Boolean(conn.paymentsEnabled) &&
-    Boolean(conn.primaryLocationId)
+    Boolean(conn.primaryLocationId) &&
+    squareConnectionMatchesBilling(conn, owner.billingCurrency)
   );
 }

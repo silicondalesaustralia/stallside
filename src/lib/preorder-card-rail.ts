@@ -1,5 +1,8 @@
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
-import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
+import {
+  squareConnectionMatchesBilling,
+  squareEligibleBillingCurrency,
+} from "@/lib/commerce/payment-rail";
 import { isSquareConnectEnabled } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
 import { hasSquareSubscriptionScopes } from "@/lib/square/scopes";
@@ -25,7 +28,12 @@ export async function loadPreOrderCardRail(
       isSquareConnectEnabled() && squareEligibleBillingCurrency(owner.billingCurrency)
         ? await getSquareConnection(owner.id)
         : null;
-    if (conn?.status !== "ACTIVE" || !conn.paymentsEnabled || !conn.primaryLocationId) {
+    if (
+      conn?.status !== "ACTIVE" ||
+      !conn.paymentsEnabled ||
+      !conn.primaryLocationId ||
+      !squareConnectionMatchesBilling(conn, owner.billingCurrency)
+    ) {
       return { cardReady: stripeReady, squareNeedsReconnectForDeposits: false };
     }
     return {

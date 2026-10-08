@@ -20,8 +20,9 @@ import { isSquarePaymentsEnabled, squareApplicationId } from "@/lib/square/confi
 import { getSquareConnection } from "@/lib/square/connection";
 import { saleOriginIncursVendlFee } from "@/lib/commerce/sale-origin";
 import {
-  SQUARE_CURRENCY,
-  squareEligibleBillingCurrency,
+  squareConnectionMatchesBilling,
+  squareCurrencyForBilling,
+  squareRegionForBilling,
 } from "@/lib/commerce/payment-rail";
 import { cleanShopperDetails, planSquarePreOrder } from "@/lib/square/checkout-preorder";
 export type SquareCheckoutCartInput = {
@@ -42,8 +43,6 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
   if (!isSquarePaymentsEnabled()) {
     return { error: "Square payments are not enabled." };
   }
-  const applicationId = squareApplicationId();
-  if (!applicationId) return { error: "Square is not configured." };
 
   const shopper = cleanShopperDetails(input);
   const amount = input.customerChoiceAmountCents;
@@ -61,15 +60,22 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
   if (!stand.acceptSquare) {
     return { error: "This shop is not accepting card payments." };
   }
-  if (
-    !squareEligibleBillingCurrency(stand.owner.billingCurrency) ||
-    stand.currency.trim().toUpperCase() !== SQUARE_CURRENCY
-  ) {
-    return { error: "Square checkout is only available for Australian (AUD) businesses." };
+  const region = squareRegionForBilling(stand.owner.billingCurrency);
+  const squareCurrency = squareCurrencyForBilling(stand.owner.billingCurrency);
+  if (!region || stand.currency.trim().toUpperCase() !== squareCurrency) {
+    return { error: "Square checkout isn't available for this business's currency." };
   }
+  const applicationId = squareApplicationId(region);
+  if (!applicationId) return { error: "Square is not configured." };
 
   const conn = await getSquareConnection(stand.ownerId);
-  if (!conn || conn.status !== "ACTIVE" || !conn.paymentsEnabled || !conn.primaryLocationId) {
+  if (
+    !conn ||
+    conn.status !== "ACTIVE" ||
+    !conn.paymentsEnabled ||
+    !conn.primaryLocationId ||
+    !squareConnectionMatchesBilling(conn, stand.owner.billingCurrency)
+  ) {
     return { error: "Seller Square connection is not ready." };
   }
   if (stand.owner.onlinePaymentProvider !== OnlinePaymentProvider.SQUARE) {

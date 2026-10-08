@@ -5,7 +5,7 @@ import { createSquareItems } from "@/lib/square/catalog-upsert";
 import { linkExistingSquareItems } from "@/lib/square/catalog-autolink";
 import { pruneDeletedSquareLinks } from "@/lib/square/catalog-prune";
 import { setSquarePhysicalCounts } from "@/lib/square/inventory-api";
-import { SQUARE_CURRENCY } from "@/lib/commerce/payment-rail";
+import { connectionSquareRegion, squareRegionCurrency } from "@/lib/square/region";
 
 const CHUNK = 25;
 
@@ -18,19 +18,32 @@ function unlinkedWhere(ownerId: string, connectionId: string) {
   };
 }
 
-const squareCurrency = { equals: SQUARE_CURRENCY, mode: "insensitive" as const };
+const currencyIs = (currency: string) => ({ equals: currency, mode: "insensitive" as const });
+
+/** Square currency for a connection (prices must match the seller's Square country). */
+export function squareConnectionCurrency(conn: { providerCountry: string | null }): string {
+  return squareRegionCurrency(connectionSquareRegion(conn));
+}
 
 /** Unlinked products Square can't hold because they're priced in another currency. */
-export async function countUnlinkedOtherCurrency(ownerId: string, connectionId: string) {
+export async function countUnlinkedOtherCurrency(
+  ownerId: string,
+  connectionId: string,
+  currency: string,
+) {
   return prisma.product.count({
-    where: { ...unlinkedWhere(ownerId, connectionId), NOT: { currency: squareCurrency } },
+    where: { ...unlinkedWhere(ownerId, connectionId), NOT: { currency: currencyIs(currency) } },
   });
 }
 
-/** AUD products not yet linked to a Square item (excludes hidden membership targets). */
-export async function listUnlinkedProducts(ownerId: string, connectionId: string) {
+/** Products in the Square currency not yet linked to a Square item (excludes hidden membership targets). */
+export async function listUnlinkedProducts(
+  ownerId: string,
+  connectionId: string,
+  currency: string,
+) {
   return prisma.product.findMany({
-    where: { ...unlinkedWhere(ownerId, connectionId), currency: squareCurrency },
+    where: { ...unlinkedWhere(ownerId, connectionId), currency: currencyIs(currency) },
     select: {
       id: true,
       name: true,
@@ -57,7 +70,11 @@ export async function pushProductsToSquare(input: {
   if (!token) return { error: "Reconnect Square, then try again." };
 
   await pruneDeletedSquareLinks(conn.id);
-  const unlinked = await listUnlinkedProducts(input.ownerId, conn.id);
+  const unlinked = await listUnlinkedProducts(
+    input.ownerId,
+    conn.id,
+    squareConnectionCurrency(conn),
+  );
   const wanted = new Set(input.productIds);
   const chosen = unlinked.filter((p) => wanted.has(p.id)).map((p) => p.id);
   if (chosen.length === 0) return { error: "Those products are already in Square." };

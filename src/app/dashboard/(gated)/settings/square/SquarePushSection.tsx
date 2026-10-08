@@ -28,8 +28,8 @@ export default async function SquarePushSection({
     console.error("Could not check Square for deleted items", error);
   }
   const [products, otherCurrencyCount] = await Promise.all([
-    listUnlinkedProducts(ownerId, connectionId),
-    countUnlinkedOtherCurrency(ownerId, connectionId),
+    listUnlinkedProducts(ownerId, connectionId, currency),
+    countUnlinkedOtherCurrency(ownerId, connectionId, currency),
   ]);
   return (
     <SquarePushPanel

@@ -7,15 +7,17 @@ import { APP_NAME } from "@/lib/constants";
 import { verifyOrderAccessToken } from "@/lib/order-access-token";
 import { squareApplicationId } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
+import { connectionSquareRegion } from "@/lib/square/region";
 import BalanceAuthButton from "./BalanceAuthButton";
 import SquareBalanceCard from "./SquareBalanceCard";
 
 async function squareBalanceConfig(order: { ownerId: string; squareLocationId: string | null }) {
-  const applicationId = squareApplicationId();
   try {
     const conn = await getSquareConnection(order.ownerId);
     const locationId = order.squareLocationId ?? conn?.primaryLocationId;
-    if (!applicationId || conn?.status !== "ACTIVE" || !locationId) return null;
+    if (!conn || conn.status !== "ACTIVE" || !locationId) return null;
+    const applicationId = squareApplicationId(connectionSquareRegion(conn));
+    if (!applicationId) return null;
     return { applicationId, locationId };
   } catch (error) {
     console.error("Square balance config failed", order.ownerId, error);

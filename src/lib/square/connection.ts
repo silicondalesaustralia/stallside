@@ -12,7 +12,15 @@ import {
   revokeSquareToken,
 } from "@/lib/square/oauth";
 import { SQUARE_OAUTH_SCOPES } from "@/lib/square/scopes";
+import { connectionSquareRegion, type SquareRegion } from "@/lib/square/region";
 import { moveToV2026 } from "@/lib/pricing-model";
+
+/** The Square account's country doesn't match the app (billing region) it connected through. */
+export class SquareRegionMismatchError extends Error {
+  constructor(readonly merchantCountry: string | null) {
+    super(`Square account country ${merchantCountry ?? "unknown"} does not match billing region`);
+  }
+}
 
 export async function getSquareConnection(ownerId: string) {
   return prisma.externalCommerceConnection.findUnique({
@@ -59,6 +67,7 @@ export async function getValidSquareAccessToken(
   try {
     const refreshed = await refreshSquareAccessToken(
       decryptSecret(conn.refreshTokenEnc),
+      connectionSquareRegion(conn),
     );
     if (!refreshed.access_token) return null;
     await prisma.externalCommerceConnection.update({
@@ -92,15 +101,21 @@ export async function getValidSquareAccessToken(
 export async function completeSquareOAuth(input: {
   ownerId: string;
   code: string;
+  region: SquareRegion;
   /** Seller confirmed losing Lifetime when first connecting Square. */
   endLifetime?: boolean;
 }) {
-  const tokens = await exchangeSquareAuthCode(input.code);
+  const tokens = await exchangeSquareAuthCode(input.code, input.region);
   if (!tokens.access_token || !tokens.merchant_id) {
     throw new Error("Square OAuth response missing token or merchant");
   }
 
   const merchant = await fetchSquareMerchant(tokens.access_token);
+  const merchantCountry = merchant.merchant?.[0]?.country?.toUpperCase() ?? null;
+  if (merchantCountry !== input.region) {
+    await revokeSquareToken(tokens.access_token, input.region);
+    throw new SquareRegionMismatchError(merchantCountry);
+  }
   const locations = await fetchSquareLocations(tokens.access_token);
   const businessName =
     merchant.merchant?.[0]?.business_name ?? null;
@@ -120,6 +135,7 @@ export async function completeSquareOAuth(input: {
 
   const data = {
     providerMerchantId: tokens.merchant_id,
+    providerCountry: input.region,
     status: ExternalConnectionStatus.ACTIVE,
     accessTokenEnc: encryptSecret(tokens.access_token),
     refreshTokenEnc: tokens.refresh_token
@@ -183,7 +199,10 @@ export async function disconnectSquare(ownerId: string) {
   if (!conn) return;
   if (conn.accessTokenEnc) {
     try {
-      await revokeSquareToken(decryptSecret(conn.accessTokenEnc));
+      await revokeSquareToken(
+        decryptSecret(conn.accessTokenEnc),
+        connectionSquareRegion(conn),
+      );
     } catch {
       // ignore
     }

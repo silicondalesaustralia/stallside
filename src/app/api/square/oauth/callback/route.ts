@@ -2,9 +2,13 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { requireOwner } from "@/lib/session";
 import { isSquareConnectEnabled } from "@/lib/square/config";
-import { completeSquareOAuth } from "@/lib/square/connection";
+import {
+  completeSquareOAuth,
+  SquareRegionMismatchError,
+} from "@/lib/square/connection";
 import { SQUARE_LIFETIME_CONFIRM_COOKIE } from "@/lib/square/pricing-confirm";
-import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
+import { SQUARE_OAUTH_REGION_COOKIE } from "@/lib/square/oauth-cookies";
+import { squareRegionForBilling } from "@/lib/commerce/payment-rail";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -30,8 +34,10 @@ export async function GET(req: Request) {
   const jar = await cookies();
   const expected = jar.get("square_oauth_state")?.value;
   const endLifetime = jar.get(SQUARE_LIFETIME_CONFIRM_COOKIE)?.value === "1";
+  const startedRegion = jar.get(SQUARE_OAUTH_REGION_COOKIE)?.value ?? "AU";
   jar.delete("square_oauth_state");
   jar.delete(SQUARE_LIFETIME_CONFIRM_COOKIE);
+  jar.delete(SQUARE_OAUTH_REGION_COOKIE);
 
   if (!code || !state || !expected || state !== expected) {
     return NextResponse.redirect(
@@ -41,16 +47,22 @@ export async function GET(req: Request) {
 
   try {
     const { owner } = await requireOwner();
-    if (!squareEligibleBillingCurrency(owner.billingCurrency)) {
+    const region = squareRegionForBilling(owner.billingCurrency);
+    if (!region || region !== startedRegion) {
       return NextResponse.redirect(
         new URL("/dashboard/settings/square?error=region", url.origin),
       );
     }
-    await completeSquareOAuth({ ownerId: owner.id, code, endLifetime });
+    await completeSquareOAuth({ ownerId: owner.id, code, region, endLifetime });
     return NextResponse.redirect(
       new URL("/dashboard/settings/square?connected=1", url.origin),
     );
   } catch (err) {
+    if (err instanceof SquareRegionMismatchError) {
+      return NextResponse.redirect(
+        new URL("/dashboard/settings/square?error=region_mismatch", url.origin),
+      );
+    }
     console.error("Square OAuth callback failed", err);
     return NextResponse.redirect(
       new URL("/dashboard/settings/square?error=oauth_failed", url.origin),

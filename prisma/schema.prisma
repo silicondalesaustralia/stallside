@@ -2350,6 +2350,8 @@ model ExternalCommerceConnection {
   owner                Owner                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   provider             CommerceProvider
   providerMerchantId   String
+  /** Square seller country ("AU" / "US"); also which Vendl Square app issued the tokens. Null = AU. */
+  providerCountry      String?
   status               ExternalConnectionStatus @default(PENDING)
   /** AES-GCM ciphertext (AUTH_SECRET); never send to browser. */
   accessTokenEnc       String?

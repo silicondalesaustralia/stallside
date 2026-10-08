@@ -5,11 +5,15 @@ import {
   squareApplicationSecret,
   squareOAuthRedirectUri,
 } from "@/lib/square/config";
+import type { SquareRegion } from "@/lib/square/region";
 import { squareOAuthScopeString } from "@/lib/square/scopes";
 import { squareFetch } from "@/lib/square/client";
 
-export function buildSquareAuthorizeUrl(state: string): string | null {
-  const clientId = squareApplicationId();
+export function buildSquareAuthorizeUrl(
+  state: string,
+  region: SquareRegion,
+): string | null {
+  const clientId = squareApplicationId(region);
   if (!clientId) return null;
   const params = new URLSearchParams({
     client_id: clientId,
@@ -33,79 +37,68 @@ type ObtainTokenResponse = {
   token_type?: string;
 };
 
-export async function exchangeSquareAuthCode(
+async function obtainToken(
+  region: SquareRegion,
+  grant: Record<string, string>,
+  failure: string,
+): Promise<ObtainTokenResponse> {
+  const clientId = squareApplicationId(region);
+  const clientSecret = squareApplicationSecret(region);
+  if (!clientId || !clientSecret) {
+    throw new Error(`Square OAuth is not configured for ${region}`);
+  }
+
+  const res = await fetch(`${squareApiBaseUrl()}/oauth2/token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Square-Version": "2025-01-23",
+    },
+    body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, ...grant }),
+  });
+
+  const json = (await res.json()) as ObtainTokenResponse & {
+    errors?: { detail?: string }[];
+  };
+  if (!res.ok) {
+    throw new Error(json.errors?.[0]?.detail ?? failure);
+  }
+  return json;
+}
+
+export function exchangeSquareAuthCode(
   code: string,
+  region: SquareRegion,
 ): Promise<ObtainTokenResponse> {
-  const clientId = squareApplicationId();
-  const clientSecret = squareApplicationSecret();
-  if (!clientId || !clientSecret) {
-    throw new Error("Square OAuth is not configured");
-  }
-
-  const res = await fetch(`${squareApiBaseUrl()}/oauth2/token`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Square-Version": "2025-01-23",
-    },
-    body: JSON.stringify({
-      client_id: clientId,
-      client_secret: clientSecret,
-      code,
-      grant_type: "authorization_code",
-      redirect_uri: squareOAuthRedirectUri(),
-    }),
-  });
-
-  const json = (await res.json()) as ObtainTokenResponse & {
-    errors?: { detail?: string }[];
-  };
-  if (!res.ok) {
-    throw new Error(json.errors?.[0]?.detail ?? "Square token exchange failed");
-  }
-  return json;
+  return obtainToken(
+    region,
+    { code, grant_type: "authorization_code", redirect_uri: squareOAuthRedirectUri() },
+    "Square token exchange failed",
+  );
 }
 
-export async function refreshSquareAccessToken(
+export function refreshSquareAccessToken(
   refreshToken: string,
+  region: SquareRegion,
 ): Promise<ObtainTokenResponse> {
-  const clientId = squareApplicationId();
-  const clientSecret = squareApplicationSecret();
-  if (!clientId || !clientSecret) {
-    throw new Error("Square OAuth is not configured");
-  }
-
-  const res = await fetch(`${squareApiBaseUrl()}/oauth2/token`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Square-Version": "2025-01-23",
-    },
-    body: JSON.stringify({
-      client_id: clientId,
-      client_secret: clientSecret,
-      refresh_token: refreshToken,
-      grant_type: "refresh_token",
-    }),
-  });
-
-  const json = (await res.json()) as ObtainTokenResponse & {
-    errors?: { detail?: string }[];
-  };
-  if (!res.ok) {
-    throw new Error(json.errors?.[0]?.detail ?? "Square token refresh failed");
-  }
-  return json;
+  return obtainToken(
+    region,
+    { refresh_token: refreshToken, grant_type: "refresh_token" },
+    "Square token refresh failed",
+  );
 }
 
-export async function revokeSquareToken(accessToken: string): Promise<void> {
-  const clientId = squareApplicationId();
+export async function revokeSquareToken(
+  accessToken: string,
+  region: SquareRegion,
+): Promise<void> {
+  const clientId = squareApplicationId(region);
   if (!clientId) return;
   try {
     await fetch(`${squareApiBaseUrl()}/oauth2/revoke`, {
       method: "POST",
       headers: {
-        Authorization: `Client ${squareApplicationSecret() ?? ""}`,
+        Authorization: `Client ${squareApplicationSecret(region) ?? ""}`,
         "Content-Type": "application/json",
         "Square-Version": "2025-01-23",
       },
@@ -121,7 +114,12 @@ export async function revokeSquareToken(accessToken: string): Promise<void> {
 
 export async function fetchSquareMerchant(accessToken: string) {
   return squareFetch<{
-    merchant?: Array<{ id?: string; business_name?: string; currency?: string }>;
+    merchant?: Array<{
+      id?: string;
+      business_name?: string;
+      country?: string;
+      currency?: string;
+    }>;
   }>("/v2/merchants/me", { accessToken });
 }
 

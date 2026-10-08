@@ -8,10 +8,7 @@ import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { isSquarePaymentsEnabled } from "@/lib/square/config";
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
-import {
-  SQUARE_CURRENCY,
-  squareEligibleBillingCurrency,
-} from "@/lib/commerce/payment-rail";
+import { squareCurrencyForBilling } from "@/lib/commerce/payment-rail";
 
 type StandPaymentFlags = {
   slug?: string;
@@ -115,10 +112,11 @@ export function standOffersSquare(
   owner: OwnerPaymentReady,
 ): boolean {
   if (!isSquarePaymentsEnabled()) return false;
-  if (stand.currency && stand.currency.trim().toUpperCase() !== SQUARE_CURRENCY) {
+  const squareCurrency = squareCurrencyForBilling(owner.billingCurrency);
+  if (!squareCurrency) return false;
+  if (stand.currency && stand.currency.trim().toUpperCase() !== squareCurrency) {
     return false;
   }
-  if (!squareEligibleBillingCurrency(owner.billingCurrency)) return false;
   if (!(stand.acceptSquare ?? false)) return false;
   if (owner.onlinePaymentProvider !== OnlinePaymentProvider.SQUARE) return false;
   return Boolean(owner.squarePaymentsReady);

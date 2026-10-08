@@ -34,13 +34,13 @@ export default function SquarePushPanel({
 
   const currencyNote =
     otherCurrencyCount > 0
-      ? `${otherCurrencyCount} product${otherCurrencyCount === 1 ? " is" : "s are"} priced in another currency and can't be added - Square only accepts AUD prices.`
+      ? `${otherCurrencyCount} product${otherCurrencyCount === 1 ? " is" : "s are"} priced in another currency and can't be added - your Square account only accepts ${currency} prices.`
       : null;
 
   if (candidates.length === 0) {
     return (
       <p className="text-[var(--muted)]">
-        Every active AUD product is already linked to Square.
+        Every active {currency} product is already linked to Square.
         {currencyNote ? ` ${currencyNote}` : ""}
       </p>
     );

@@ -1,5 +1,6 @@
 import { cleanEnvSecret } from "@/lib/env";
 import { appBaseUrl } from "@/lib/app-url";
+import type { SquareRegion } from "@/lib/square/region";
 
 export type SquareEnvironment = "sandbox" | "production";
 
@@ -14,16 +15,32 @@ export function squareApiBaseUrl(): string {
     : "https://connect.squareupsandbox.com";
 }
 
-export function squareApplicationId(): string | null {
-  return cleanEnvSecret(process.env.SQUARE_APPLICATION_ID);
+export function squareApplicationId(region: SquareRegion): string | null {
+  return cleanEnvSecret(
+    region === "US"
+      ? process.env.SQUARE_US_APPLICATION_ID
+      : process.env.SQUARE_APPLICATION_ID,
+  );
 }
 
-export function squareApplicationSecret(): string | null {
-  return cleanEnvSecret(process.env.SQUARE_APPLICATION_SECRET);
+export function squareApplicationSecret(region: SquareRegion): string | null {
+  return cleanEnvSecret(
+    region === "US"
+      ? process.env.SQUARE_US_APPLICATION_SECRET
+      : process.env.SQUARE_APPLICATION_SECRET,
+  );
 }
 
-export function squareWebhookSignatureKey(): string | null {
-  return cleanEnvSecret(process.env.SQUARE_WEBHOOK_SIGNATURE_KEY);
+export function squareWebhookSignatureKey(region: SquareRegion): string | null {
+  return cleanEnvSecret(
+    region === "US"
+      ? process.env.SQUARE_US_WEBHOOK_SIGNATURE_KEY
+      : process.env.SQUARE_WEBHOOK_SIGNATURE_KEY,
+  );
+}
+
+export function squareRegionHasApp(region: SquareRegion): boolean {
+  return Boolean(squareApplicationId(region) && squareApplicationSecret(region));
 }
 
 export function squareOAuthRedirectUri(): string {
@@ -40,7 +57,7 @@ export function isSquareConnectEnabled(): boolean {
   return (
     isSquareIntegrationEnabled() &&
     process.env.SQUARE_CONNECT_ENABLED !== "0" &&
-    Boolean(squareApplicationId() && squareApplicationSecret())
+    squareRegionHasApp("AU")
   );
 }
 
@@ -59,8 +76,8 @@ export function squareConnectDiagnostics(): {
       "unknown",
     integrationEnabled: isSquareIntegrationEnabled(),
     connectAllowed: process.env.SQUARE_CONNECT_ENABLED !== "0",
-    hasApplicationId: Boolean(squareApplicationId()),
-    hasApplicationSecret: Boolean(squareApplicationSecret()),
+    hasApplicationId: Boolean(squareApplicationId("AU")),
+    hasApplicationSecret: Boolean(squareApplicationSecret("AU")),
   };
 }
 

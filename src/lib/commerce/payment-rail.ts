@@ -2,7 +2,14 @@ import { OnlinePaymentProvider } from "@/generated/prisma/client";
 import {
   isSquarePaymentsEnabled,
   isSquareConnectEnabled,
+  squareRegionHasApp,
 } from "@/lib/square/config";
+import {
+  connectionSquareRegion,
+  squareRegionCurrency,
+  squareRegionForCurrency,
+  type SquareRegion,
+} from "@/lib/square/region";
 import {
   isBillingCurrency,
   type BillingCurrency,
@@ -10,18 +17,41 @@ import {
 
 export type OnlineRail = "stripe" | "square" | "none";
 
-/** Square catalogue prices must match the merchant's currency; Vendl's Square is AU-only. */
-export const SQUARE_CURRENCY = "AUD";
+export const SQUARE_REGION_UNAVAILABLE =
+  "Square isn't available for your billing region yet.";
 
-/** Square online payments are Australia (AUD) only for now. */
+/** Square region for a billing currency; US only once the US Square app is configured. */
+export function squareRegionForBilling(
+  billingCurrency: string | null | undefined,
+): SquareRegion | null {
+  const region = squareRegionForCurrency(billingCurrency);
+  if (region === "US" && !squareRegionHasApp("US")) return null;
+  return region;
+}
+
 export function squareEligibleBillingCurrency(
   billingCurrency: string | null | undefined,
 ): boolean {
-  const raw = (billingCurrency ?? "AUD").trim().toUpperCase();
-  return raw === "AUD";
+  return squareRegionForBilling(billingCurrency) !== null;
 }
 
-/** Show Square in Settings UI for AUD accounts (Connect still needs env flags). */
+/** Square prices must be in the seller's Square currency. */
+export function squareCurrencyForBilling(
+  billingCurrency: string | null | undefined,
+): string | null {
+  const region = squareRegionForBilling(billingCurrency);
+  return region ? squareRegionCurrency(region) : null;
+}
+
+/** Tokens only work with the app (country) that issued them. */
+export function squareConnectionMatchesBilling(
+  conn: { providerCountry: string | null },
+  billingCurrency: string | null | undefined,
+): boolean {
+  return squareRegionForBilling(billingCurrency) === connectionSquareRegion(conn);
+}
+
+/** Show Square in Settings UI for eligible regions (Connect still needs env flags). */
 export function squareSettingsVisible(
   billingCurrency?: string | null,
 ): boolean {
@@ -53,7 +83,7 @@ export function assertOnlineProviderAllowed(
   provider: OnlinePaymentProvider | string,
 ): void {
   if (!onlineProviderAllowed(billingCurrency, provider)) {
-    throw new Error("Square is only available for Australian (AUD) accounts.");
+    throw new Error(SQUARE_REGION_UNAVAILABLE);
   }
 }
 
