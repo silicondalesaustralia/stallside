@@ -30,6 +30,7 @@ export default async function DashboardLayout({
     selectedStandId: selected?.id ?? null,
     stripeAccountId: owner.stripeAccountId,
     stripeChargesEnabled: owner.stripeChargesEnabled,
+    billingCurrency: owner.billingCurrency,
   });
 
   return (

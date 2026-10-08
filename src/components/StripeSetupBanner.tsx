@@ -51,13 +51,26 @@ export default function StripeSetupBanner({ banner }: { banner: StripeSetupBanne
               <li key={step}>{step}</li>
             ))}
           </ul>
+          {banner.helpHref ? (
+            <Link
+              href={banner.helpHref}
+              className="mt-3 inline-block text-sm font-semibold text-[var(--leaf-dark)] underline"
+            >
+              Which is right for my business?
+            </Link>
+          ) : null}
         </div>
-        <Link
-          href="/dashboard/settings/stripe"
-          className="inline-flex shrink-0 rounded-full bg-[var(--marigold)] px-5 py-2.5 text-sm font-bold text-[var(--field)] shadow-[0_2px_12px_-4px_rgb(23_54_31_/_0.35)] transition hover:brightness-95"
-        >
-          {banner.ctaLabel}
-        </Link>
+        <div className="flex shrink-0 flex-wrap gap-2 sm:flex-col sm:items-stretch">
+          {banner.ctas.map((cta) => (
+            <Link
+              key={cta.href}
+              href={cta.href}
+              className="inline-flex justify-center rounded-full bg-[var(--marigold)] px-5 py-2.5 text-sm font-bold text-[var(--field)] shadow-[0_2px_12px_-4px_rgb(23_54_31_/_0.35)] transition hover:brightness-95"
+            >
+              {cta.label}
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
