@@ -134,7 +134,7 @@ export default function TradiesPostBrandPage() {
     <TradiesPostAppPage maxWidth="lg">
       <TradiesPostPageHeader
         title="Brand"
-        subtitle="This is how TradiesPost makes every post look and sound like you."
+        subtitle="This is how Vendl makes every post look and sound like you."
       />
       {!canEdit ? (
         <p className="mt-2 text-sm text-zinc-600">

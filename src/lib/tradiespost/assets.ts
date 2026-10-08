@@ -104,11 +104,11 @@ export const TP_CREATE_IT_COLUMNS = [
     iconWidth: TP_ASSETS.createIconSize,
     iconHeight: TP_ASSETS.createIconSize,
     title: 'Your photos & videos',
-    body: 'Use real jobs, before & afters, reviews, team moments and more.',
+    body: 'Use your products, pre-orders, reviews, behind-the-scenes and more.',
     image: TP_ASSETS.createPhotosVideos,
     width: TP_ASSETS.createPhotosVideosWidth,
     height: TP_ASSETS.createPhotosVideosHeight,
-    alt: 'Stack of branded posts created from tradie job photos',
+    alt: 'Stack of branded posts created from product photos',
   },
   {
     icon: TP_ASSETS.createIconIdea,
@@ -178,7 +178,7 @@ export const TP_HOW_IT_WORKS_STEPS = [
     image: TP_ASSETS.howBuddyLaptop,
     width: TP_ASSETS.howBuddyLaptopWidth,
     height: TP_ASSETS.howBuddyLaptopHeight,
-    alt: 'Buddy the TradiesPost mascot building your content on a laptop',
+    alt: 'Illustration of social content being built on a laptop',
   },
   {
     step: '3',

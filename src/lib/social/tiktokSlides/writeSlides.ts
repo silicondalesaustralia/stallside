@@ -9,7 +9,7 @@ export type SlideWritingContext = {
   job: { title: string | null; description: string | null; suburb: string | null } | null
 }
 
-const SYSTEM_PROMPT = `You write TikTok photo-carousel slides for Australian trade businesses.
+const SYSTEM_PROMPT = `You write TikTok photo-carousel slides for small Australian food and produce sellers (farm stalls, home bakers, market stallholders, local producers).
 Return ONLY a JSON object: {"slides":[{"heading":"...","body":"..."}],"caption":"..."}.
 Rules:
 - Slide 1 is a scroll-stopping hook (heading only, body may be a short teaser).
@@ -34,8 +34,8 @@ function userPrompt(ctx: SlideWritingContext): string {
     `Number of slides: ${ctx.slideCount}`,
   ]
   if (ctx.job) {
-    if (ctx.job.title) lines.push(`Related job: ${ctx.job.title}`)
-    if (ctx.job.description) lines.push(`Job details: ${ctx.job.description.slice(0, 400)}`)
+    if (ctx.job.title) lines.push(`Product or offer: ${ctx.job.title}`)
+    if (ctx.job.description) lines.push(`Details: ${ctx.job.description.slice(0, 400)}`)
     if (ctx.job.suburb) lines.push(`Suburb: ${ctx.job.suburb}`)
   }
   return lines.join('\n')

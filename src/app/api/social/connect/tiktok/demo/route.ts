@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     .from('businesses')
     .update({
       tiktok_open_id: `demo-open-id-${ctx.businessId}`,
-      tiktok_display_name: 'Demo Tradie',
+      tiktok_display_name: 'Demo Stall',
       tiktok_avatar_url: null,
       tiktok_access_token: 'demo-tiktok-access-token',
       tiktok_refresh_token: 'demo-tiktok-refresh-token',

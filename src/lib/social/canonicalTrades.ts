@@ -148,6 +148,7 @@ export function inferCanonicalTrade(input: {
   ai_agent_services?: string | null
   name?: string | null
 }): CanonicalTradeId | null {
+  if (!TRADE_INFERENCE_ENABLED) return null
   if (input.primary_trade_slug && isTradeSlug(input.primary_trade_slug)) {
     const mapped = TRADE_SLUG_TO_CANONICAL[input.primary_trade_slug]
     if (mapped && isCanonicalTradeId(mapped)) return mapped
@@ -161,6 +162,12 @@ export function inferCanonicalTrade(input: {
   }
   return null
 }
+
+/**
+ * Vendl sellers are food/produce businesses, not trades. Keyword matching on
+ * their product names ("cabinet", "turf", "painting") gives false trades.
+ */
+const TRADE_INFERENCE_ENABLED = false
 
 export function canonicalToStyleBucket(id: CanonicalTradeId): StyleTradeBucket {
   return CANONICAL_TO_STYLE_BUCKET[id]

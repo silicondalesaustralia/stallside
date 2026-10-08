@@ -128,7 +128,7 @@ export async function generateAiPhotoBackgroundBuffer(
   }
 
   if (input.avoidPeople) {
-    prompt = `${prompt} No people, no faces, no portraits, no one looking at the camera. Show tools, a work van, materials, or a job in progress in an Australian suburban setting.`
+    prompt = `${prompt} No people, no faces, no portraits, no one looking at the camera. Show the food, produce or goods themselves - on a stall table, in a country kitchen, at a farmers market, or in the garden or paddock they came from - in an Australian setting.`
   }
 
   const model = process.env.OPENAI_IMAGE_MODEL?.trim() || DEFAULT_OPENAI_IMAGE_MODEL

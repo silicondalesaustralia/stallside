@@ -50,7 +50,7 @@ export function getGmbConnectErrorInfo(code: GmbConnectErrorCode): GmbConnectErr
       return {
         title: 'Connection cancelled',
         message:
-          'You cancelled Google sign-in or did not grant StitchedUp permission to manage your Business Profile. Try again when ready.',
+          'You cancelled Google sign-in or did not grant Vendl permission to manage your Business Profile. Try again when ready.',
         guideSection: 'during-login',
       }
     case 'server_error':

@@ -312,7 +312,7 @@ export function GmbConnectProvider({
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
               <p className="font-semibold">Create and verify your profile first</p>
               <p className="mt-1 text-amber-800">
-                Google requires a Business Profile before StitchedUp can publish for you. Follow the guide below, then return and connect.
+                Google requires a Business Profile before Vendl can publish for you. Follow the guide below, then return and connect.
               </p>
               <button
                 type="button"
@@ -377,8 +377,8 @@ export function GmbConnectProvider({
             )}
             <p className="text-sm text-[#666]">
               {accountName
-                ? <>Select which location StitchedUp should post to for <strong>{accountName}</strong>.</>
-                : 'Select the location StitchedUp should post to.'}
+                ? <>Select which location Vendl should post to for <strong>{accountName}</strong>.</>
+                : 'Select the location Vendl should post to.'}
             </p>
             <ul className="space-y-2">
               {pendingLocations.map((loc) => (

@@ -440,7 +440,7 @@ export function BuildMyWeekPanel({
                     </p>
                     {!loading && !plan && (
                       <p className="mt-1 text-xs text-gray-500">
-                        Tell us what you want to promote and StitchedUp will plan your posts for the week.
+                        Tell us what you want to promote and Vendl will plan your posts for the week.
                       </p>
                     )}
                     {helperLine && (

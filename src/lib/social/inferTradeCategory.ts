@@ -68,6 +68,15 @@ export function formatTradeCategoryLabel(category: string): string {
     category.charAt(0).toUpperCase() + category.slice(1).replace(/_/g, ' ')
 }
 
+export const DEFAULT_BUSINESS_KIND = 'local food and produce'
+
+/** Prompt label for "a ___ business"; the generic bucket reads as a Vendl seller. */
+export function businessKindLabel(category: string | null | undefined): string {
+  const c = category?.trim()
+  if (!c || c === 'general') return DEFAULT_BUSINESS_KIND
+  return formatTradeCategoryLabel(c)
+}
+
 export interface SocialStyleTemplate {
   id:                 string
   name:               string

@@ -8,6 +8,7 @@ import {
   RECREATE_MESSAGE_ANGLE_LABELS,
   type RecreateMessageAngle,
 } from '@/lib/social/recreateMessageAngles'
+import { VENDL_SOCIAL_AUDIENCE } from '@/lib/socialHost/socialAudience'
 
 export type DesignedCaptionMeta = {
   userBrief: string | null
@@ -82,7 +83,7 @@ export function isPromotionalDesignedIntent(
   userBrief: string | null,
 ): boolean {
   if (chip && PROMOTIONAL_INTENTS.has(chip)) return true
-  return /\b(promote|promotion|offer|rebates?|special)\b/i.test(userBrief ?? '')
+  return /\b(promote|promotion|offer|special|sale|discount|pre-?orders?)\b/i.test(userBrief ?? '')
 }
 
 export function designedCaptionUiState(caption: string | null | undefined): DesignedCaptionUiState {
@@ -108,7 +109,7 @@ const ANGLE_STYLE: Record<RecreateMessageAngle, string> = {
   bold_direct: 'Concise, benefit-led, stronger CTA.',
   helpful_educational: 'Explain the value and why it matters. Useful and customer-friendly. Softer CTA.',
   trust_proof:
-    'Workmanship, professionalism, and confidence. Use only factual proof from the brief, job, or business data.',
+    'Quality, care and freshness. Use only factual proof from the brief, product, or business data.',
 }
 
 export function buildDesignedCaptionPrompt(params: {
@@ -126,10 +127,10 @@ export function buildDesignedCaptionPrompt(params: {
   const bizSuburb = business.suburb?.trim() || null
 
   const system = [
-    'You write ready-to-post social captions for Australian trade businesses.',
+    `You write ready-to-post social captions for ${VENDL_SOCIAL_AUDIENCE}`,
     'Return ONE caption only. Do not number options. Do not use markdown headings.',
-    'Write about the requested subject. Do not replace it with generic business or trade assumptions.',
-    'Do not invent reviews, ratings, awards, years in business, licences, rebate figures, prices, savings, or guarantees unless they appear in the original brief or trusted job/business data.',
+    'Write about the requested subject. Do not replace it with generic business assumptions.',
+    'Do not invent reviews, ratings, awards, years in business, certifications, discounts, prices, dates, or guarantees unless they appear in the original brief or trusted product/business data.',
     'Complement the image. Do not repeat a full headline stack word-for-word.',
     'Short natural paragraphs. Avoid generic AI filler such as "top-notch", "another great job", or "we\'re thrilled".',
     'One natural CTA. 3 to 6 relevant hashtags. No huge hashtag blocks.',
@@ -141,7 +142,7 @@ export function buildDesignedCaptionPrompt(params: {
   lines.push('1. Original user brief')
   lines.push('2. Messaging angle')
   lines.push('3. Intent')
-  lines.push('4. Job context')
+  lines.push('4. Product / offer context')
   lines.push('5. Trusted business context')
   lines.push('6. Generic fallback only if none of the above exist')
   lines.push('')
@@ -160,30 +161,30 @@ export function buildDesignedCaptionPrompt(params: {
   lines.push(intent ? `${intent.label} (${intent.id})` : '(none)')
   if (completed) {
     lines.push(
-      'This is a completed-project update. Sound like the work is done. Mention suburb only if provided below.',
+      'This is a fresh-batch / ready-now update. Sound like it is ready to order or collect. Mention suburb only if provided below.',
     )
   } else if (promotional) {
     lines.push(
-      'This is promotional. Expand on the service, customer benefit, and any offer/rebate that appears in the brief. Do not invent a rebate amount.',
+      'This is promotional. Expand on the product, customer benefit, and any offer that appears in the brief or product details. Do not invent a discount amount.',
     )
   }
   lines.push('')
-  lines.push('JOB CONTEXT:')
+  lines.push('PRODUCT / OFFER CONTEXT:')
   if (job && (job.title?.trim() || job.description?.trim() || jobSuburb)) {
-    if (job.title?.trim()) lines.push(`- Job type / title: ${job.title.trim()}`)
+    if (job.title?.trim()) lines.push(`- Product or offer: ${job.title.trim()}`)
     if (jobSuburb) {
       lines.push(`- Suburb: ${jobSuburb}${jobState ? `, ${jobState}` : ''}`)
     } else {
       lines.push('- Suburb: (unknown - do not invent a suburb)')
     }
-    if (job.description?.trim()) lines.push(`- Description: ${job.description.trim()}`)
+    if (job.description?.trim()) lines.push(`- Details (prices, dates, contents): ${job.description.trim()}`)
   } else {
     lines.push('(none)')
   }
   lines.push('')
   lines.push('BUSINESS CONTEXT:')
   lines.push(`- Business name: ${business.name}`)
-  if (business.services?.trim()) lines.push(`- Services: ${business.services.trim()}`)
+  if (business.services?.trim()) lines.push(`- Business type: ${business.services.trim()}`)
   if (bizSuburb) lines.push(`- Location: ${bizSuburb}`)
   if (business.brandVoice?.trim()) lines.push(`- Brand voice: ${business.brandVoice.trim()}`)
   if (business.cta?.trim()) lines.push(`- Default CTA: ${business.cta.trim()}`)
@@ -215,19 +216,19 @@ export function mockDesignedCaption(params: {
     params.designed.intentChip,
     params.designed.userBrief,
   )
-  const cta = params.business.cta?.trim() || `Get in touch with ${params.business.name}`
+  const cta = params.business.cta?.trim() || `Order from ${params.business.name}`
   const lead = completed
     ? suburb
-      ? `Another project completed in ${suburb}.`
-      : 'Another project completed.'
+      ? `Fresh and ready in ${suburb}.`
+      : 'Fresh and ready.'
     : subject
   const mid = completed
     ? brief
       ? brief
-      : 'The work was carried out to improve comfort and performance throughout the home.'
+      : 'Made with care, in small batches, by a local producer.'
     : promotional
-      ? 'A practical option for households that want a more efficient setup.'
-      : 'Here is what matters for customers looking at this service.'
-  const tags = '#HomeComfort #LocalTradie #TradeLife'
+      ? 'A good one to grab while it lasts.'
+      : 'Here is what makes it worth ordering.'
+  const tags = '#ShopLocal #SupportLocal #FreshLocal'
   return `${lead}\n\n${mid}\n\n${cta}\n\n${tags}`
 }

@@ -24,7 +24,7 @@ export function CreateVideoWorkspace({ onViewLibrary, onUploadComplete }: Props)
         </div>
         <h2 className="text-xl font-black text-black">Create a video post</h2>
         <p className="mt-2 text-sm leading-relaxed text-[#666]">
-          Upload a real job video and turn it into ready-to-use social content.
+          Upload a real video of your products or stall and turn it into ready-to-use social content.
         </p>
 
         <button

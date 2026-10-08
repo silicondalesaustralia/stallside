@@ -217,7 +217,7 @@ export type ContentMixRow = {
 }
 
 const CONTENT_MIX_DISPLAY: Partial<Record<WeekPlanPostType, string>> = {
-  recent_job: 'Completed jobs',
+  recent_job: 'Featured products',
   tips_advice: 'Tips',
   team_business: 'Reviews',
   promotions: 'Offers',

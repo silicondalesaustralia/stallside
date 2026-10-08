@@ -150,12 +150,12 @@ function normalizeThemeRead(
   }
   const fallbackSubject =
     format === 'scene'
-      ? 'trade work showcase'
+      ? 'fresh produce showcase'
       : format === 'quote_card'
         ? 'customer testimonial'
-        : 'trade tips and advice'
+        : 'produce tips and advice'
   return {
-    themeSummary: `Professional ${fallbackSubject} social post for a trade business`,
+    themeSummary: `Professional ${fallbackSubject} social post for a local food and produce seller`,
     tone: 'professional and trustworthy',
     subjectCategory: fallbackSubject,
   }
@@ -255,7 +255,7 @@ function mapVisionToPrefill(
 
 function buildSystemPrompt(): string {
   return [
-    'You classify social media post LAYOUTS for StitchedUp - software for Australian tradies.',
+    'You classify social media post LAYOUTS for Vendl - software for Australian farm stalls, home bakers and local food sellers.',
     'Analyze structure AND paraphrase the post theme in your own words.',
     'NEVER transcribe, quote, or reproduce any visible text from the image.',
     'themeRead fields must be original paraphrases - not copied captions or headlines.',
@@ -264,7 +264,7 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(): string {
-  return `Classify this social post image into ONE of StitchedUp's render formats (or "none" if no good match).
+  return `Classify this social post image into ONE of Vendl's render formats (or "none" if no good match).
 
 Our formats:
 1. scene - photo-led hero: large photo with headline/tagline/CTA overlay (text-over-image or bottom bar).
@@ -285,9 +285,9 @@ Fields to return:
 - layoutOrientation: short label e.g. "text-over-image", "split left/right", "stacked list", "centered quote"
 - isVideoThumbnailOnly: true ONLY when the image is clearly a video/reel thumbnail (play button, reel UI, duration badge, etc.) with no usable static post layout - NOT for normal photo posts
 - themeRead: {
-    themeSummary: one sentence paraphrasing what the post is about (e.g. "before/after renovation reveal celebrating completed exterior work"),
+    themeSummary: one sentence paraphrasing what the post is about (e.g. "first strawberries of the season arriving at the farm stall"),
     tone: short label for mood (e.g. "upbeat and celebratory", "educational and calm"),
-    subjectCategory: short subject label (e.g. "residential exterior renovation", "plumbing maintenance tips")
+    subjectCategory: short subject label (e.g. "seasonal fruit", "sourdough baking tips")
   }
 
 If the post is a carousel, meme, unrelated ad, or nothing like our templates, set format to "none".

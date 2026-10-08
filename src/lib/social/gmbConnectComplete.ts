@@ -35,7 +35,7 @@ export function getDemoGmbPendingSession(): {
 } {
   return {
     accountId:   'demo-gmb-account',
-    accountName: 'Demo Tradie Services',
+    accountName: 'Demo Farm Stall',
     locations:   [
       {
         locationResourceName: 'accounts/demo-gmb-account/locations/demo-loc-parramatta',

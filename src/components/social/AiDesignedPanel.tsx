@@ -534,7 +534,7 @@ export function AiDesignedPanel({
       <div className="space-y-2 p-4">
         {isTradiesPost ? (
           <p className="text-xs font-black uppercase tracking-wide text-zinc-500">
-            2 · Give TradiesPost the content
+            2 · Give Vendl the content
           </p>
         ) : null}
         <label htmlFor="ai-designed-brief" className="flex items-center gap-0.5 text-sm font-black text-[#111]">
@@ -611,7 +611,7 @@ export function AiDesignedPanel({
         jobId,
         photoId: photo.id,
         previewUrl: preview,
-        title: 'Job photo',
+        title: 'Product photo',
       },
     ])
   }
@@ -620,10 +620,10 @@ export function AiDesignedPanel({
     <div className={COMPOSE_STEP_CARD}>
       <div className="space-y-2 p-4">
         <label htmlFor="ai-designed-job" className="text-sm font-black text-[#111]">
-          Use a recent job
+          Use a product or offer
         </label>
           <p className="text-[11px] text-[#888]">
-            Optional — we still use the job type, suburb and description. Choose which photos to include
+            Optional — we still use the product name and details. Choose which photos to include
             below.
           </p>
           <select
@@ -645,17 +645,17 @@ export function AiDesignedPanel({
           {jobId && jobPhotosLoading && (
             <p className="flex items-center gap-2 text-[11px] text-[#888]">
               <Loader2 className="h-3 w-3 animate-spin" />
-              Loading job photos…
+              Loading photos…
             </p>
           )}
           {jobId && !jobPhotosLoading && jobPhotos.length === 0 && (
             <p className="text-[11px] text-[#888]" data-testid="ai-designed-job-photos-empty">
-              No photos on this job yet
+              No photos on this item yet
             </p>
           )}
           {jobPhotos.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-[#444]">Use photos from this job</p>
+              <p className="text-xs font-semibold text-[#444]">Use photos from this item</p>
               <p className="text-[11px] text-[#888]">Select one or more. Nothing is added automatically.</p>
               <div
                 className="grid grid-cols-3 gap-2 sm:grid-cols-4"
@@ -678,9 +678,9 @@ export function AiDesignedPanel({
                         }`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={src} alt="Job photo" className="h-full w-full object-cover" />
+                        <img src={src} alt="Product photo" className="h-full w-full object-cover" />
                       </button>
-                      <ImageExpandTrigger src={src} alt="Job photo" />
+                      <ImageExpandTrigger src={src} alt="Product photo" />
                     </div>
                   )
                 })}

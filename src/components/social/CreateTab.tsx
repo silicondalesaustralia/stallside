@@ -1738,7 +1738,7 @@ export function CreateTab({
             className={`${COMPOSE_STEP_CARD}`}
             data-testid="compose-step-3"
           >
-            <StepHeader n={tpStepJob} title="Pick a job" />
+            <StepHeader n={tpStepJob} title="Pick a product or offer" />
             <div className="p-4 space-y-3">
               <select
                 value={selectedJobId}
@@ -1746,7 +1746,7 @@ export function CreateTab({
                 disabled={jobsLoading}
                 className="w-full rounded-lg border border-[#E0DDD5] px-3 py-2.5 text-sm disabled:opacity-60"
               >
-                <option value="">No job - write my own</option>
+                <option value="">None - write my own</option>
                 {jobs.map((j) => (
                   <option key={j.id} value={j.id}>{formatJobLabel(j)}</option>
                 ))}
@@ -2130,7 +2130,7 @@ export function CreateTab({
               )}
 
               <p className="text-xs text-[#888]">
-                Posted outside StitchedUp? Save it to your history without connecting a platform.
+                Posted outside Vendl? Save it to your history without connecting a platform.
               </p>
               <button
                 type="button"
@@ -2358,7 +2358,7 @@ export function CreateTab({
             className={`${COMPOSE_STEP_CARD}`}
             data-testid="compose-step-3"
           >
-            <StepHeader n={3} title="Pick a job" />
+            <StepHeader n={3} title="Pick a product or offer" />
             <div className="p-4 space-y-3">
               <select
                 value={selectedJobId}
@@ -2366,7 +2366,7 @@ export function CreateTab({
                 disabled={jobsLoading}
                 className="w-full rounded-lg border border-[#E0DDD5] px-3 py-2.5 text-sm disabled:opacity-60"
               >
-                <option value="">No job - write my own</option>
+                <option value="">None - write my own</option>
                 {jobs.map((j) => (
                   <option key={j.id} value={j.id}>{formatJobLabel(j)}</option>
                 ))}
@@ -2712,7 +2712,7 @@ export function CreateTab({
               )}
 
               <p className="text-xs text-[#888]">
-                Posted outside StitchedUp? Save it to your history without connecting a platform.
+                Posted outside Vendl? Save it to your history without connecting a platform.
               </p>
               <button
                 type="button"

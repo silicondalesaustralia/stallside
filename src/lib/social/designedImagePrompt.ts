@@ -8,6 +8,7 @@ import {
   formatCanonicalTradeLabel,
   inferCanonicalTrade,
 } from '@/lib/social/canonicalTrades'
+import { DEFAULT_BUSINESS_KIND } from '@/lib/social/inferTradeCategory'
 import { structureCampaignFocus } from '@/lib/social/campaignFocusInstructions'
 import { RECREATE_NO_PLACEHOLDER_RULES, type RecreateBusinessContext } from '@/lib/social/recreateImagePrompt'
 import {
@@ -51,26 +52,26 @@ export const DESIGNED_TEXT_DENSITY_RULES = [
   'Do not write paragraphs, dense feature lists, unrelated service lists, or multiple competing messages.',
   'Put detailed explanation, rebate amounts, pricing, eligibility fine print, and contact details in the CAPTION, not on the artwork.',
   'For promotional or service posts, use this hierarchy only: Headline → supporting hook → CTA.',
-  'Example density for “Upgrade From Gas to Efficient Electric Comfort”:',
-  '  UPGRADE FROM GAS',
-  '  TO EFFICIENT ELECTRIC COMFORT',
-  '  Victorian energy incentives may apply',
-  '  Check Your Upgrade Eligibility',
+  'Example density for “Sourdough Pre-orders Open for Saturday”:',
+  '  FRESH SOURDOUGH',
+  '  PRE-ORDERS OPEN FOR SATURDAY',
+  '  Baked the morning you collect',
+  '  Order Online',
   '  + the selected brand logo (composited later)',
-  'Do not add unrelated services or invented contact details to that kind of post.',
+  'Do not add unrelated products or invented contact details to that kind of post.',
 ] as const
 
 export const DESIGNED_QUALITY_RULES = [
   'Create a complete, professional finished social-media advertisement - not a raw photo, not a stock-photo card, and not a template.',
   'Do NOT produce a dark gradient plus white text card, a generic CTA-pill social layout, or a templated black-scrim overlay look.',
-  'Use original composition, strong visual hierarchy, trade-specific realistic imagery, and a modern branded treatment.',
+  'Use original composition, strong visual hierarchy, realistic, appetising imagery of the actual products, and a modern branded treatment.',
   'Avoid placing the campaign headline or CTA in the extreme corners of the frame (a small brand mark may be composited later).',
   'Do not leave reserved empty boxes, cutouts, or placeholder panels for branding.',
 ] as const
 
 export const DESIGNED_SUBJECT_LOCK_RULES = [
   'All three versions must stay on the SAME subject, service, offer, and audience.',
-  'Diversity must come from composition, technician position, image crop, headline placement, visual balance, and typography treatment.',
+  'Diversity must come from composition, product placement, image crop, headline placement, visual balance, and typography treatment.',
   'Do NOT create diversity by adding extra copy, extra services, or extra messages.',
   'Do NOT drift to a different topic, service, suburb, or campaign.',
 ] as const
@@ -136,7 +137,7 @@ export function buildDesignedImagePrompt(params: {
     ai_agent_services: params.business.ai_agent_services,
     name: params.business.name,
   })
-  const tradeLabel = tradeId ? formatCanonicalTradeLabel(tradeId) : 'Trade'
+  const tradeLabel = tradeId ? formatCanonicalTradeLabel(tradeId) : DEFAULT_BUSINESS_KIND
   const businessName = params.business.name?.trim() || 'Your Business'
   const services = buildServicesSnippet(params.business, 160)
   const suburb = params.business.suburb?.trim()
@@ -200,9 +201,9 @@ export function buildDesignedImagePrompt(params: {
     'Business profile (identity and imagery context only - never paint phone, URL, email, address, prices, rebates, or licence numbers):',
   )
   lines.push(`- Business name: ${businessName}`)
-  lines.push(`- Trade / category: ${tradeLabel}`)
+  lines.push(`- Business type: ${tradeLabel}`)
   if (services) {
-    lines.push(`- Services (for subject/imagery only - do not list them on the graphic): ${services}`)
+    lines.push(`- What they sell (for subject/imagery only - do not list them on the graphic): ${services}`)
   }
   if (suburb) lines.push(`- Location (for scene/setting only): ${suburb}`)
   if (voice) lines.push(`- Brand voice: ${voice}`)
@@ -216,9 +217,9 @@ export function buildDesignedImagePrompt(params: {
   if (job && (job.title?.trim() || job.suburb?.trim() || job.description?.trim())) {
     lines.push('')
     lines.push(
-      'Optional recent job context (imagery/subject only - do not turn this into body copy or a service list):',
+      'Featured product / offer (imagery/subject only - do not turn this into body copy or a product list):',
     )
-    if (job.title?.trim()) lines.push(`- Job type / title: ${job.title.trim()}`)
+    if (job.title?.trim()) lines.push(`- Product or offer: ${job.title.trim()}`)
     const loc = [job.suburb?.trim(), job.state?.trim()].filter(Boolean).join(', ')
     if (loc) lines.push(`- Suburb: ${loc}`)
     if (job.description?.trim()) lines.push(`- Description: ${job.description.trim()}`)

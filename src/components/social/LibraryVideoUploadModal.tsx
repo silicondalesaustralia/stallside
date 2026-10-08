@@ -302,7 +302,7 @@ export function LibraryVideoUploadModal({
                   <span className="font-normal text-[#AAA]">(optional)</span>
                 </span>
                 <p className="mb-1.5 text-xs text-[#888]">
-                  Add a short description so StitchedUp knows what the post should focus on.
+                  Add a short description so Vendl knows what the post should focus on.
                 </p>
                 <textarea
                   value={aboutText}
@@ -310,7 +310,7 @@ export function LibraryVideoUploadModal({
                   rows={3}
                   maxLength={2000}
                   disabled={busy}
-                  placeholder="New heat pump installation completed in Brighton."
+                  placeholder="First strawberries of the season are in at the stall."
                   className="w-full resize-y rounded-xl border border-[#EDEAE2] px-3 py-2.5 text-sm text-[#444] disabled:opacity-60"
                 />
               </label>

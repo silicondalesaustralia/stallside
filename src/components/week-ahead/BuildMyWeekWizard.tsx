@@ -30,7 +30,7 @@ import {
 } from '@/lib/social/weekPlan/weekPlanWeekSelection'
 
 const CONTENT_MIX_LABELS: Record<WeekPlanContentMix, string> = {
-  recent_jobs: 'Recent jobs',
+  recent_jobs: 'Featured products',
   services: 'Services',
   tips_advice: 'Tips & advice',
   promotions: 'Promotions',
@@ -378,7 +378,7 @@ export function BuildMyWeekWizard({
               </p>
               {recentJobs.length > 0 && (
                 <div>
-                  <p className="text-xs font-bold text-[#666] mb-2">Recent jobs</p>
+                  <p className="text-xs font-bold text-[#666] mb-2">Products & offers</p>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
                     {recentJobs.map((job) => (
                       <label

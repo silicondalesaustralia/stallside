@@ -5,7 +5,6 @@ import { MetaConnectSection } from '@/components/settings/integrations/MetaConne
 import { GmbConnectProvider } from '@/components/settings/integrations/GmbConnectContext'
 import { TradiesPostGmbConnectionCard } from '@/components/tradiespost/connections/TradiesPostGmbConnectionCard'
 import { TradiesPostTikTokConnectionCard } from '@/components/tradiespost/connections/TradiesPostTikTokConnectionCard'
-import { TradiesPostJobSoftwareSection } from '@/components/tradiespost/connections/TradiesPostJobSoftwareSection'
 import { TradiesPostCalendarConnectionsSection } from '@/components/tradiespost/connections/TradiesPostCalendarConnectionsSection'
 import { TradiesPostAppPage, TradiesPostLoading } from '@/components/tradiespost/TradiesPostAppPage'
 import { TradiesPostPageHeader } from '@/components/tradiespost/ui'
@@ -109,8 +108,6 @@ export default function TradiesPostConnectionsPage() {
       </GmbConnectProvider>
 
       <TradiesPostCalendarConnectionsSection />
-
-      <TradiesPostJobSoftwareSection />
     </TradiesPostAppPage>
   )
 }

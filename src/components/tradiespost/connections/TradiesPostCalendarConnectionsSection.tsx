@@ -8,14 +8,14 @@ const CALENDAR_PROVIDERS = [
   {
     id: 'google-calendar',
     name: 'Google Calendar',
-    benefit: 'Sync jobs, appointments and schedules with Google Calendar.',
+    benefit: 'Sync collection days and market dates with Google Calendar.',
     icon: <Calendar className="h-6 w-6 text-[#4285F4]" aria-hidden />,
     testId: 'tp-connection-google-calendar',
   },
   {
     id: 'microsoft-outlook',
     name: 'Microsoft Outlook & 365',
-    benefit: 'Sync jobs, appointments and schedules with Outlook and Microsoft 365.',
+    benefit: 'Sync collection days and market dates with Outlook and Microsoft 365.',
     icon: <CalendarDays className="h-6 w-6 text-[#0078D4]" aria-hidden />,
     testId: 'tp-connection-microsoft-outlook',
   },

@@ -28,7 +28,7 @@ export function GenerateWeekConfirmModal({
       <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl">
         <h3 className="text-lg font-black text-black">Generate your week?</h3>
         <p className="mt-2 text-sm text-[#555]">
-          StitchedUp will create 3 AI Designed options for each planned post.
+          Vendl will create 3 AI Designed options for each planned post.
         </p>
         <ul className="mt-4 space-y-1 text-sm text-[#333]">
           <li>

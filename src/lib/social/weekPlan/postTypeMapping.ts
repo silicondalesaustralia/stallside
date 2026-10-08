@@ -9,7 +9,7 @@ import {
 
 /** Customer-facing labels for plan review cards. */
 export const WEEK_PLAN_POST_TYPE_LABELS: Record<WeekPlanPostType, string> = {
-  recent_job: 'Recent Job',
+  recent_job: 'Featured product',
   services: 'Service Promotion',
   tips_advice: 'Helpful Tip',
   promotions: 'Promotion',

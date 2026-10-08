@@ -715,7 +715,7 @@ export function WeekPlanProductionCard({
           <p className="text-[11px] font-bold uppercase tracking-wide text-[#888]">
             Edit design
           </p>
-          <p className="text-xs text-[#666]">Tell StitchedUp what you&apos;d like changed.</p>
+          <p className="text-xs text-[#666]">Tell Vendl what you&apos;d like changed.</p>
           <textarea
             value={quickChangeText}
             onChange={(e) => setQuickChangeText(e.target.value.slice(0, 800))}

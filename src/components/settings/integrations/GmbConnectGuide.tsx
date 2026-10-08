@@ -56,7 +56,7 @@ export function GmbConnectGuide({
           <li>You need a <strong>Google Business Profile</strong> listing (formerly Google My Business).</li>
           <li>The listing should be <strong>verified</strong> with Google.</li>
           <li>Sign in with the Google account that is an <strong>owner or manager</strong> on that listing.</li>
-          <li>If you have multiple locations (e.g. depots), you&apos;ll pick which one StitchedUp should post to.</li>
+          <li>If you have multiple locations (e.g. stalls or shops), you&apos;ll pick which one Vendl should post to.</li>
         </ol>
       </Section>
 
@@ -96,7 +96,7 @@ export function GmbConnectGuide({
       <Section id="during-login" title="D. During Google sign-in" highlight={initialSection === 'during-login'}>
         <ol className="list-decimal space-y-1.5 pl-4">
           <li>Use the Google account that manages your business - not a personal account with no GBP access.</li>
-          <li>Grant StitchedUp permission to <strong>manage your Business Profile</strong> when asked.</li>
+          <li>Grant Vendl permission to <strong>manage your Business Profile</strong> when asked.</li>
           <li>Google will email you confirming that a third-party app was granted access - that&apos;s expected.</li>
         </ol>
       </Section>

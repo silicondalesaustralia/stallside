@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requirePaidBusinessAccess } from '@/lib/billing/requirePaidBusinessAccess'
 import { generateSocialCaption, type BrandVoice, type SocialPlatform } from '@/lib/socialAI'
-import { inferCanonicalTrade, formatCanonicalTradeLabel } from '@/lib/social/canonicalTrades'
+import { DEFAULT_BUSINESS_TYPE } from '@/lib/socialHost/hostBusinessProfile'
 import {
   DEFAULT_POST_SUBTYPE_ID,
   getPostSubtypeDefinition,
@@ -191,11 +191,11 @@ export async function POST(req: NextRequest) {
     const resolvedJobId =
       (typeof jobId === 'string' && jobId.trim()) || renderJobId || ''
 
-    let job: { title?: string; description?: string; site_suburb?: string; site_state?: string } = {}
+    let job: { title?: string; description?: string; notes?: string; site_suburb?: string; site_state?: string } = {}
     if (resolvedJobId) {
       const { data: jobData, error: jobErr } = await db
         .from('jobs')
-        .select('title, description, site_suburb, site_state')
+        .select('title, description, notes, site_suburb, site_state')
         .eq('id', resolvedJobId)
         .eq('business_id', businessId)
         .single()
@@ -203,28 +203,20 @@ export async function POST(req: NextRequest) {
       if (jobData) job = jobData
     }
 
-    const inferredTrade = inferCanonicalTrade({
-      primary_trade_slug: business.primary_trade_slug,
-      ai_agent_services: business.ai_agent_services,
-      name: business.name,
-    })
-    const tradeType =
-      job.title?.split(' ')[0]?.trim() ||
-      (inferredTrade ? formatCanonicalTradeLabel(inferredTrade) : 'Trade')
     const jobTitleFallback =
       occasion.descriptionFallback?.trim() || occasion.label
 
     const captions = await generateSocialCaption({
       businessId,
       businessName: business.name || 'Our Business',
-      tradeType,
+      tradeType: business.business_type || DEFAULT_BUSINESS_TYPE,
       jobTitle: job.title?.trim() || jobTitleFallback,
-      jobDescription: (job as { description?: string }).description || '',
-      suburb: job.site_suburb || 'your area',
-      state: job.site_state || 'Australia',
+      jobDescription: [job.description, job.notes].filter(Boolean).join('\n'),
+      suburb: job.site_suburb || business.suburb || 'your area',
+      state: job.site_state || business.state || 'Australia',
       platform: (platform || 'instagram') as SocialPlatform,
       brandVoice: ((brandVoice || business.social_brand_voice) as BrandVoice) || 'professional',
-      cta: business.social_default_cta || 'Call us for a free quote',
+      cta: business.social_default_cta || 'Order online',
       phone: business.phone || '',
       defaultHashtags: business.social_hashtag_template || '',
       photoCount: 1,

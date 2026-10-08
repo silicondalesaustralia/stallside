@@ -23,7 +23,7 @@ export const SOCIAL_HELP = {
   },
   brief: {
     title: 'What should this post be about?',
-    body: 'Describe the post in your own words. Tell us the service, completed job, offer, customer problem or message you want to focus on. The more useful detail you give us, the better we can tailor the designs.',
+    body: 'Describe the post in your own words. Tell us the product, pre-order, box, offer or message you want to focus on. The more useful detail you give us, the better we can tailor the designs.',
     learnMore:
       'For example: “We replaced an old gas heater with a new ducted electric system in Brighton. Focus on better comfort and energy efficiency.”',
   },
@@ -49,7 +49,7 @@ export const SOCIAL_HELP = {
   },
   recreate: {
     title: 'Recreate',
-    body: 'Upload a social post or ad you like. StitchedUp analyses it and builds three layout-style previews you can Tune. Previews do not use a render, and we won’t simply swap the logo or copy the original.',
+    body: 'Upload a social post or ad you like. Vendl analyses it and builds three layout-style previews you can Tune. Previews do not use a render, and we won’t simply swap the logo or copy the original.',
   },
   closest: {
     title: 'Closest',
@@ -71,7 +71,7 @@ export const SOCIAL_HELP = {
     title: 'Logo',
     body: 'Choose which approved version of your logo to use on this post. Changing it here will not change your business’s Primary logo.',
     learnMore:
-      'Your Primary logo is the version StitchedUp uses by default. You can choose another logo for an individual post without changing it.',
+      'Your Primary logo is the version Vendl uses by default. You can choose another logo for an individual post without changing it.',
   },
   logoPlacement: {
     title: 'Logo position and size',
@@ -101,7 +101,7 @@ export const SOCIAL_HELP = {
   },
   publishTo: {
     title: 'Publish to',
-    body: 'Choose where you want StitchedUp to publish this post. You’ll need to connect each social account before it can be selected.',
+    body: 'Choose where you want Vendl to publish this post. You’ll need to connect each social account before it can be selected.',
     learnMore:
       'Facebook publishes to your connected Facebook Business Page. Instagram publishes to your connected Instagram Business account. Google Business publishes updates to your Google Business Profile.',
   },
@@ -115,7 +115,7 @@ export const SOCIAL_HELP = {
   },
   connectSocials: {
     title: 'Connect socials',
-    body: 'Connecting an account lets StitchedUp publish and schedule posts for you. You can still download your image and copy the caption if you prefer to post manually.',
+    body: 'Connecting an account lets Vendl publish and schedule posts for you. You can still download your image and copy the caption if you prefer to post manually.',
   },
   facebook: {
     title: 'Facebook',
@@ -135,7 +135,7 @@ export const SOCIAL_HELP = {
   },
   published: {
     title: 'Published',
-    body: 'Posts that have already been published through StitchedUp, plus posts you’ve marked as published manually.',
+    body: 'Posts that have already been published through Vendl, plus posts you’ve marked as published manually.',
   },
   postDefaults: {
     title: 'Post defaults',
@@ -150,12 +150,12 @@ export const SOCIAL_HELP = {
     body: 'The action you usually want customers to take, such as Get a Quote or Book Now.',
   },
   autoPrompt: {
-    title: 'Auto-prompt after job paid',
-    body: 'When you mark a job as paid, StitchedUp can ask if you want to create a social post about it.',
+    title: 'Auto-prompt after a sale',
+    body: 'When an order is paid, Vendl can ask if you want to create a social post about it.',
   },
   renderBalance: {
     title: 'Renders',
-    body: 'Renders are used when StitchedUp creates new AI images. AI Designed uses one render for up to three designs. Current Recreate previews do not use a render.',
+    body: 'Renders are used when Vendl creates new AI images. AI Designed uses one render for up to three designs. Current Recreate previews do not use a render.',
     learnMore: 'Captions, logo adjustments, downloads and publishing do not use renders.',
   },
 } as const satisfies Record<string, SocialHelpTopic>

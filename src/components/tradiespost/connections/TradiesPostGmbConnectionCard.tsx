@@ -135,7 +135,7 @@ export function TradiesPostGmbConnectionCard({
         title="Disconnect Google Business Profile?"
       >
         <p className="mb-6 text-sm text-zinc-600">
-          TradiesPost will stop posting to this listing. You can reconnect at any time.
+          Vendl will stop posting to this listing. You can reconnect at any time.
         </p>
         <div className="flex justify-end gap-2">
           <Button onClick={() => setShowDisconnectModal(false)} variant="outline">

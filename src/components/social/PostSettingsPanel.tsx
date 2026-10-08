@@ -191,10 +191,10 @@ export function PostSettingsPanel({
           <div className="flex items-center justify-between rounded-lg bg-white border border-[#E0DDD5] px-3 py-2.5">
             <div>
               <p className="flex items-center gap-0.5 text-sm font-medium text-[#444]">
-                Auto-prompt after job paid
+                Auto-prompt after a sale
                 <InfoGuide topic="autoPrompt" />
               </p>
-              <p className="text-xs text-[#888] mt-0.5">Show a prompt to create a social post when a job is marked paid</p>
+              <p className="text-xs text-[#888] mt-0.5">Show a prompt to create a social post when an order is paid</p>
             </div>
             <button
               type="button"

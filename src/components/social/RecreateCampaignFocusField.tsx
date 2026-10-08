@@ -8,7 +8,7 @@ import { CAMPAIGN_FOCUS_MAX_CHARS } from '@/lib/social/normalizeCampaignFocus'
 import { InfoGuide } from '@/components/ui/InfoGuide'
 
 const PLACEHOLDER =
-  "e.g. Focus this on Victorian Energy Upgrades. Remove the other plumbing services and don't use our business name as the headline. Keep the strong blue layout, but make the offer the main focus."
+  "e.g. Focus this on our Saturday sourdough pre-orders. Remove the other products and don't use our business name as the headline. Keep the warm layout, but make the pre-order the main focus."
 
 export function RecreateCampaignFocusField({
   value,
@@ -26,7 +26,7 @@ export function RecreateCampaignFocusField({
         <InfoGuide topic="recreateGuidance" />
       </label>
       <p className="text-[11px] leading-relaxed text-[#888]">
-        Tell StitchedUp what to keep, remove, emphasise or change from the inspiration. The more
+        Tell Vendl what to keep, remove, emphasise or change from the inspiration. The more
         specific you are, the better the versions will match what you want.
       </p>
       <p className="text-[11px] font-semibold text-[#666]">For example:</p>

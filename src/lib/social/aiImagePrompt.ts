@@ -1,4 +1,4 @@
-import { formatTradeCategoryLabel } from '@/lib/social/inferTradeCategory'
+import { businessKindLabel } from '@/lib/social/inferTradeCategory'
 import type { AiImageMode } from '@/lib/social/aiImageStyles'
 
 function truncateText(s: string, max: number): string {
@@ -33,9 +33,7 @@ export function buildAiImagePrompt(
   },
   mode: AiImageMode = 'photo',
 ): string {
-  const tradeLabel =
-    formatTradeCategoryLabel(params.tradeCategory) ||
-    params.tradeCategory.replace(/_/g, ' ')
+  const tradeLabel = businessKindLabel(params.tradeCategory)
 
   const services = params.servicesSnippet?.trim()
 
@@ -80,7 +78,7 @@ export function buildAiImagePrompt(
   }
 
   parts.push(
-    'The scene should visually reflect the specific services this business offers - show relevant equipment, settings, or work context, not generic trade imagery.',
+    'The scene should visually reflect the specific products this business sells - show the food, produce or goods themselves in a real local setting (stall, kitchen, market, farm), not generic stock imagery.',
   )
   const extra = params.extraDetail?.trim()
   if (extra) parts.push(`Additional creative detail: ${extra}`)
@@ -92,7 +90,7 @@ export function buildAiImagePrompt(
 }
 
 const BASELINE_SAFETY_INSTRUCTIONS = [
-  'Professional, high quality image suitable for a trades business social media post.',
+  'Professional, high quality image suitable for a local food and produce business social media post.',
   'No watermarks.',
   'No offensive, inappropriate, violent, or adult content.',
 ] as const
@@ -110,10 +108,7 @@ export function buildCustomAiImagePrompt(
   mode: AiImageMode = 'photo',
 ): string {
   const userText = params.customPrompt.trim()
-  const tradeLabel =
-    formatTradeCategoryLabel(params.tradeCategory ?? '') ||
-    params.tradeCategory?.replace(/_/g, ' ') ||
-    'trade'
+  const tradeLabel = businessKindLabel(params.tradeCategory)
   const services = params.servicesSnippet?.trim()
 
   if (mode === 'full_post') {

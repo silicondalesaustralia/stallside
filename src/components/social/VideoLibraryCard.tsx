@@ -444,7 +444,7 @@ export function VideoLibraryCard({
                     void handleGenerateCaption()
                   }}
                   disabled={captionLoading}
-                  title="Creates a social caption using your description, related job and business details."
+                  title="Creates a social caption using your description, related product and business details."
                   className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl bg-[#FFD700] px-3 py-2 text-xs font-bold text-black disabled:opacity-50"
                   data-testid={`library-video-generate-caption-${asset.id}`}
                 >
@@ -452,7 +452,7 @@ export function VideoLibraryCard({
                   Generate caption
                 </button>
                 <p className="mt-1.5 text-[11px] leading-relaxed text-[#999]">
-                  Creates a social caption using your description, related job and business
+                  Creates a social caption using your description, related product and business
                   details.
                 </p>
               </div>
@@ -678,7 +678,7 @@ export function VideoLibraryCard({
 
         {relatedJobLabel ? (
           <p className="text-[10px] text-[#AAA]">
-            <span className="font-semibold uppercase tracking-wide">Related job</span>
+            <span className="font-semibold uppercase tracking-wide">Related product</span>
             <span className="mt-0.5 block text-[11px] font-normal normal-case tracking-normal text-[#777]">
               {relatedJobLabel}
             </span>

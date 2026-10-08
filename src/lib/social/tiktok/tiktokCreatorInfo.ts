@@ -35,8 +35,8 @@ export async function queryTikTokCreatorInfo(accessToken: string): Promise<TikTo
 }
 
 export const DEMO_TIKTOK_CREATOR_INFO: TikTokCreatorInfo = {
-  creatorNickname: 'Demo Tradie',
-  creatorUsername: 'demo.tradie',
+  creatorNickname: 'Demo Stall',
+  creatorUsername: 'demo.stall',
   creatorAvatarUrl: null,
   privacyLevelOptions: ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY'],
   commentDisabled: false,

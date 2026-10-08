@@ -63,7 +63,7 @@ export function MetaConnectGuide({
         <ol className="list-decimal space-y-1.5 pl-4">
           <li>You need a <strong>Facebook Page</strong> for your business - not just a personal profile.</li>
           <li>For Instagram auto-post (current method): Instagram must be a <strong>Business or Creator</strong> account linked to that Page.</li>
-          <li>You&apos;ll log in with Facebook and grant StitchedUp permission to publish to your Page.</li>
+          <li>You&apos;ll log in with Facebook and grant Vendl permission to publish to your Page.</li>
         </ol>
       </Section>
 
@@ -98,8 +98,8 @@ export function MetaConnectGuide({
         <ol className="list-decimal space-y-1.5 pl-4">
           <li>Sign in with the Facebook account that <strong>manages your business Page</strong>.</li>
           <li>When asked, select <strong>Opt in to all current and future Pages</strong> (and Businesses if shown).</li>
-          <li>Enable all permissions StitchedUp requests, then Save / Continue.</li>
-          <li>Back in StitchedUp, <strong>choose the correct Page</strong> from the list - especially if you manage more than one.</li>
+          <li>Enable all permissions Vendl requests, then Save / Continue.</li>
+          <li>Back in Vendl, <strong>choose the correct Page</strong> from the list - especially if you manage more than one.</li>
         </ol>
       </Section>
 

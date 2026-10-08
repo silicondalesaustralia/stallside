@@ -22,7 +22,7 @@ const JOB_SOFTWARE_PROVIDERS = [
   {
     id: 'simpro',
     name: 'simPRO',
-    description: 'Bring job completion data and photos into TradiesPost.',
+    description: 'Bring job completion data and photos into Vendl.',
   },
   {
     id: 'aroflo',
@@ -36,7 +36,7 @@ export function TradiesPostJobSoftwareSection() {
     <section className="mt-12" data-testid="tp-job-software-section">
       <TradiesPostSectionTitle className="mb-1">Job software</TradiesPostSectionTitle>
       <p className="mb-5 text-sm text-zinc-600">
-        Bring completed work into TradiesPost automatically.
+        Bring completed work into Vendl automatically.
       </p>
 
       <div className="job-software-grid">

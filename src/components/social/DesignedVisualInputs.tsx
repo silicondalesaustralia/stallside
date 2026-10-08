@@ -25,7 +25,7 @@ export type DesignedSelectedVisual = DesignedVisualInput & {
 function sourceLabel(source: DesignedSelectedVisual['source']): string {
   if (source === 'upload') return 'Upload'
   if (source === 'library') return 'Library'
-  return 'Job'
+  return 'Product'
 }
 
 function toPayload(visuals: DesignedSelectedVisual[]): DesignedVisualInput[] {
@@ -202,7 +202,7 @@ export function DesignedVisualInputs({
             data-testid="ai-designed-job-visuals"
           >
             <ImagePlus className="h-3.5 w-3.5" />
-            Use recent job photos
+            Use product photos
           </button>
         </div>
 

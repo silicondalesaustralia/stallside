@@ -17,6 +17,7 @@ import {
   formatCanonicalTradeLabel,
   inferCanonicalTrade,
 } from '@/lib/social/canonicalTrades'
+import { DEFAULT_BUSINESS_KIND } from '@/lib/social/inferTradeCategory'
 import {
   DEFAULT_POST_SUBTYPE_ID,
   getPostSubtypeDefinition,
@@ -186,12 +187,12 @@ function jsonSchemaHint(preset: InfographicPreset, platform: ComposePlatform): s
   switch (preset) {
     case 'checklist':
       return `JSON shape: {"title": string, "items": string[${3}-${maxItems}], "footerCta"?: string|null, "visualTheme"?: ${INFOGRAPHIC_VISUAL_THEME_IDS.map((v) => `"${v}"`).join('|')}|null, "itemIcons"?: string[]|null}
-Rules: exactly ${3}-${maxItems} items; each item ≤ ${CHECKLIST_BULLET_MAX_CHARS} characters; Australian spelling; practical tips for this trade.
+Rules: exactly ${3}-${maxItems} items; each item ≤ ${CHECKLIST_BULLET_MAX_CHARS} characters; Australian spelling; practical tips about these products (storing, using, choosing, ordering).
 Optional visualTheme - pick one that matches the post occasion (e.g. seasonal_winter for winter posts, educational for tips).
-Optional itemIcons - same length as items; each key one of: ${INFOGRAPHIC_ICON_KEYS.join(', ')}. Pick icons that match each bullet (e.g. smoke_alarm, heater, plug).`
+Optional itemIcons - same length as items; each key one of: ${INFOGRAPHIC_ICON_KEYS.join(', ')}. Pick icons that match each bullet; omit itemIcons if none fit.`
     case 'did_you_know':
       return `JSON shape: {"headline": string, "fact": string, "stat"?: string|null, "visualTheme"?: ${INFOGRAPHIC_VISUAL_THEME_IDS.map((v) => `"${v}"`).join('|')}|null}
-Rules: one surprising but accurate trade/homeowner fact; optional short stat like "87%" or "2×"; no fake precision.
+Rules: one surprising but accurate food, produce or growing fact; optional short stat like "87%" or "2×"; no fake precision.
 Optional visualTheme when the occasion is seasonal or promotional.`
     case 'before_after_comparison':
       return `JSON shape: {"title": string, "beforeTitle": string, "beforePoints": string[2-4], "afterTitle": string, "afterPoints": string[2-4], "visualTheme"?: ${INFOGRAPHIC_VISUAL_THEME_IDS.map((v) => `"${v}"`).join('|')}|null}
@@ -199,18 +200,18 @@ Rules: TEXT comparison only (myth vs truth, old habit vs better practice) - NOT 
 Optional visualTheme when the occasion is seasonal or promotional.`
     case 'process_steps':
       return `JSON shape: {"title": string, "steps": [{"label": string, "detail": string}] with 3 items preferred (2-4 ok), "visualTheme"?: ${INFOGRAPHIC_VISUAL_THEME_IDS.map((v) => `"${v}"`).join('|')}|null}
-Rules: clear customer-facing journey for booking/engaging this trade.
+Rules: clear customer-facing journey for ordering, pre-ordering, subscribing or collecting.
 Optional visualTheme when the occasion is seasonal or promotional.`
   }
 }
 
 function buildSystemPrompt(): string {
   return [
-    'You write short, high-converting social infographic copy for Australian trade businesses.',
+    'You write short, high-converting social infographic copy for small Australian food and produce sellers.',
     'Return ONLY valid JSON matching the requested shape - no markdown fences, no commentary.',
-    'Tone: clear, trustworthy tradie - not agency fluff.',
+    'Tone: clear, warm, local stallholder - not agency fluff.',
     'Do not use: at your doorstep, save big, unlock, hassle-free, just a call away, trusted experts are here.',
-    'Never invent competitor names, licences, prices, or medical/safety claims you cannot justify.',
+    'Never invent competitor names, certifications, prices, or health/nutrition claims you cannot justify.',
     'Do not include hashtags or emoji unless they are part of a short title.',
   ].join(' ')
 }
@@ -222,16 +223,16 @@ function buildUserPrompt(req: InfographicContentRequest): string {
   })
   const tradeLabel = tradeId
     ? formatCanonicalTradeLabel(tradeId)
-    : 'Trade'
+    : DEFAULT_BUSINESS_KIND
   const services = buildServicesSnippet(req.business, 160)
   const businessName = req.business.name?.trim() || 'the business'
   const postSubtype = req.postSubtype ?? DEFAULT_POST_SUBTYPE_ID
   const occasion = getPostSubtypeDefinition(postSubtype)
 
   const jobBits: string[] = []
-  if (req.job?.title?.trim()) jobBits.push(`Job title: ${req.job.title.trim()}`)
+  if (req.job?.title?.trim()) jobBits.push(`Product or offer: ${req.job.title.trim()}`)
   if (req.job?.description?.trim()) {
-    jobBits.push(`Job notes: ${req.job.description.trim().slice(0, 200)}`)
+    jobBits.push(`Details: ${req.job.description.trim().slice(0, 200)}`)
   }
   if (req.job?.site_suburb?.trim()) {
     const loc = [req.job.site_suburb, req.job.site_state].filter(Boolean).join(', ')
@@ -288,9 +289,9 @@ function buildUserPrompt(req: InfographicContentRequest): string {
     `Post occasion (non-binding): ${postOccasionLabel(occasion.categoryId, postSubtype)}`,
     `Content angle: ${occasion.infographicHint}`,
     `Business: ${businessName}`,
-    `Trade: ${tradeLabel}${tradeId ? ` (${tradeId})` : ''}`,
-    services ? `Services: ${services}` : 'Services: (not provided - keep tips general to the trade)',
-    jobBits.length ? jobBits.join('\n') : 'Job context: none',
+    `Business type: ${tradeLabel}${tradeId ? ` (${tradeId})` : ''}`,
+    services ? `What they sell: ${services}` : 'What they sell: (not provided - keep tips general to local food and produce)',
+    jobBits.length ? jobBits.join('\n') : 'Product / offer context: none',
     hintLines.length ? ['', ...hintLines].join('\n') : '',
     variantLines.length ? variantLines.join('\n') : '',
     '',
@@ -372,7 +373,7 @@ export async function generateInfographicContent(
     ai_agent_services: req.business.ai_agent_services,
     name: req.business.name,
   })
-  const tradeLabel = tradeId ? formatCanonicalTradeLabel(tradeId) : 'Trade'
+  const tradeLabel = tradeId ? formatCanonicalTradeLabel(tradeId) : DEFAULT_BUSINESS_KIND
   const servicesSnippet = buildServicesSnippet(req.business, 160)
 
   const system = buildSystemPrompt()

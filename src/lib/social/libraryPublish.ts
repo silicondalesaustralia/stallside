@@ -390,7 +390,7 @@ export function scheduledTabEmptyCopy(_anyConnected: boolean) {
 
 export function publishedTabEmptyCopy(anyConnected: boolean) {
   return {
-    title: 'Nothing published through StitchedUp yet.',
+    title: 'Nothing published through Vendl yet.',
     connectHint: anyConnected
       ? null
       : 'Connect your social accounts to publish directly, or create content in Library and publish it manually.',

@@ -572,7 +572,7 @@ export function MetaConnectSection({
                 <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
                   <p className="font-semibold">Create your Page first</p>
                   <p className="mt-1 text-amber-800">
-                    Meta requires a business Page before StitchedUp can publish for you. Follow the guide below, then come back and connect.
+                    Meta requires a business Page before Vendl can publish for you. Follow the guide below, then come back and connect.
                   </p>
                   <button
                     type="button"
@@ -655,7 +655,7 @@ export function MetaConnectSection({
               </p>
             )}
             <p className="text-sm text-[#666]">
-              Select the Page StitchedUp should use{pickerPlatform === 'instagram' ? ' (must have Instagram linked)' : ''}.
+              Select the Page Vendl should use{pickerPlatform === 'instagram' ? ' (must have Instagram linked)' : ''}.
             </p>
             <ul className="space-y-2">
               {pendingPages.map((page) => (

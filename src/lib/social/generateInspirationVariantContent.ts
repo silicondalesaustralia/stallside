@@ -26,6 +26,7 @@ import {
   formatCanonicalTradeLabel,
   inferCanonicalTrade,
 } from '@/lib/social/canonicalTrades'
+import { DEFAULT_BUSINESS_KIND } from '@/lib/social/inferTradeCategory'
 import type { InspirationGenerationHints } from '@/lib/social/inspirationTypes'
 import { resolveDefaultTagline } from '@/lib/social/templateFields'
 
@@ -106,7 +107,7 @@ export async function generateInspirationSceneContent(
     ai_agent_services: req.business.ai_agent_services,
     name: req.business.name,
   })
-  const tradeLabel = tradeId ? formatCanonicalTradeLabel(tradeId) : 'Trade'
+  const tradeLabel = tradeId ? formatCanonicalTradeLabel(tradeId) : DEFAULT_BUSINESS_KIND
   const businessName = req.business.name?.trim() || 'Your Business'
   const services = buildServicesSnippet(req.business, 120)
   const count = req.variantCount ?? 3
@@ -114,19 +115,19 @@ export async function generateInspirationSceneContent(
 
   const suburb = req.business.suburb?.trim()
   const system = [
-    'You write short scene-style social post overlay copy for Australian trade businesses.',
+    'You write short scene-style social post overlay copy for small Australian food and produce sellers.',
     'Return ONLY valid JSON: { "headline": string, "tagline": string, "cta": string }.',
     'Never copy text from the inspiration reference - paraphrase the theme in fresh words.',
-    'Sound like a local tradie, not an ad agency.',
+    'Sound like a local stallholder, not an ad agency.',
     'Do not use: at your doorstep, save big, unlock, hassle-free, just a call away, trusted experts are here, solutions you can count on, book now and save.',
     'Put the business name in the headline or tagline when it fits naturally.',
   ].join(' ')
 
   const user = [
     `Business: ${businessName}`,
-    `Trade: ${tradeLabel}`,
+    `Business type: ${tradeLabel}`,
     suburb ? `Suburb: ${suburb}` : '',
-    services ? `Services: ${services}` : '',
+    services ? `What they sell: ${services}` : '',
     buildThemeBlock(req.hints),
     '',
     `Variant ${req.variantIndex + 1} of ${count}: ${variantAngle(req.variantIndex, count)}`,
@@ -158,7 +159,7 @@ export async function generateInspirationQuoteContent(
     ai_agent_services: req.business.ai_agent_services,
     name: req.business.name,
   })
-  const tradeLabel = tradeId ? formatCanonicalTradeLabel(tradeId) : 'Trade'
+  const tradeLabel = tradeId ? formatCanonicalTradeLabel(tradeId) : DEFAULT_BUSINESS_KIND
   const businessName = req.business.name?.trim() || 'Your Business'
   const count = req.variantCount ?? 3
 
@@ -171,7 +172,7 @@ export async function generateInspirationQuoteContent(
   })
 
   const system = [
-    'You write fictional but realistic customer review copy for Australian trade businesses.',
+    'You write fictional but realistic customer review copy for small Australian food and produce sellers.',
     'Return ONLY valid JSON matching the schema.',
     'Never copy text from the inspiration reference.',
     'Use plausible generic customer names (first name + initial), not real people.',
@@ -180,7 +181,7 @@ export async function generateInspirationQuoteContent(
 
   const user = [
     `Business: ${businessName}`,
-    `Trade: ${tradeLabel}`,
+    `Business type: ${tradeLabel}`,
     buildThemeBlock(req.hints),
     '',
     `Variant ${req.variantIndex + 1} of ${count}: ${variantAngle(req.variantIndex, count)}`,

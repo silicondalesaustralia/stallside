@@ -2,6 +2,7 @@ import { cache } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { getHostSession, type HostRole, type HostSession } from '@/lib/socialHost/hostSession'
 import { socialDb } from '@/lib/socialHost/socialDb'
+import { loadHostBusinessProfile } from '@/lib/socialHost/hostBusinessProfile'
 
 /** The signed-in host user mapped onto social DB rows. */
 export type SocialIdentity = {
@@ -26,17 +27,44 @@ function socialRole(role: HostRole): 'owner' | 'team_member' {
 }
 
 async function ensureBusiness(db: SupabaseClient, s: HostSession): Promise<string> {
-  const { data: existing, error } = await db
-    .from('businesses')
-    .select('id')
-    .eq('external_account_id', s.accountId)
-    .maybeSingle()
+  const [{ data: existing, error }, profile] = await Promise.all([
+    db
+      .from('businesses')
+      .select('id, name, business_type, suburb, state, phone, ai_agent_services')
+      .eq('external_account_id', s.accountId)
+      .maybeSingle(),
+    loadHostBusinessProfile(s.accountId),
+  ])
   if (error) throw new Error(`[socialHost] business lookup failed: ${error.message}`)
-  if (existing) return existing.id as string
+
+  const synced = {
+    name: s.accountName,
+    business_type: profile.businessType,
+    suburb: profile.suburb,
+    state: profile.state,
+  }
+  if (existing) {
+    const changed = (Object.keys(synced) as (keyof typeof synced)[]).some((k) => existing[k] !== synced[k])
+    const fillEmpty = {
+      ...(!existing.phone && profile.phone ? { phone: profile.phone } : {}),
+      ...(!existing.ai_agent_services ? { ai_agent_services: profile.servicesSummary } : {}),
+    }
+    if (changed || Object.keys(fillEmpty).length > 0) {
+      const { error: updateError } = await db.from('businesses').update({ ...synced, ...fillEmpty }).eq('id', existing.id)
+      if (updateError) console.error('[socialHost] business profile sync failed:', updateError.message)
+    }
+    return existing.id as string
+  }
 
   const { data: created, error: insertError } = await db
     .from('businesses')
-    .insert({ external_account_id: s.accountId, name: s.accountName, onboarding_completed_at: new Date().toISOString() })
+    .insert({
+      external_account_id: s.accountId,
+      ...synced,
+      phone: profile.phone,
+      ai_agent_services: profile.servicesSummary,
+      onboarding_completed_at: new Date().toISOString(),
+    })
     .select('id')
     .single()
   if (created) return created.id as string

@@ -10,6 +10,7 @@ import {
   getPostSubtypeDefinition,
   type PostSubtypeId,
 } from '@/lib/social/postTaxonomy'
+import { VENDL_SOCIAL_AUDIENCE } from '@/lib/socialHost/socialAudience'
 
 export type SocialPlatform = 'instagram' | 'facebook' | 'gmb' | 'linkedin'
 export type BrandVoice = 'professional' | 'casual' | 'punchy'
@@ -36,20 +37,20 @@ interface CaptionOptions {
 
 // ── Mock caption generator ────────────────────────────────────────────────────
 
-function buildHashtags(tradeType: string, suburb: string, state: string): string {
-  const trade = tradeType.replace(/\s+/g, '')
+function buildHashtags(businessType: string, suburb: string, state: string): string {
+  const kind = businessType.replace(/\s+/g, '')
   const sub = suburb.replace(/\s+/g, '')
   return [
-    `#${trade}${state}`,
     `#${sub}${state}`,
-    `#${trade}Australia`,
-    `#QualityTrades`,
-    `#Licensed${trade}`,
-    `#${sub}Trades`,
-    `#${state}Trades`,
-    `#AussieTradie`,
-    `#TradesAustralia`,
-    `#${trade}Life`,
+    `#${kind}${state}`,
+    `#ShopLocal`,
+    `#SupportLocal`,
+    `#${sub}Local`,
+    `#FreshLocal`,
+    `#FarmToTable`,
+    `#MadeLocally`,
+    `#${state}Producers`,
+    `#${kind}Life`,
   ].join(' ')
 }
 
@@ -66,7 +67,7 @@ function mockCaptions(opts: CaptionOptions): string[] {
     quoteText,
     customerName,
   } = opts
-  const t = tradeType || 'Trade'
+  const t = tradeType || 'Local producer'
   const s = suburb || 'your area'
   const hashtags = buildHashtags(t, s, state || 'Australia')
   const brief = getPostSubtypeDefinition(postSubtype).captionBrief
@@ -89,7 +90,7 @@ ${jobTitle} in ${s} - ${businessName} has you covered.
 
 📞 ${phone || 'Contact us'}
 
-#${s.replace(/\s+/g, '')}Trades`
+#${s.replace(/\s+/g, '')}Local #ShopLocal`
 
   const punchy = `${s}. ${jobTitle}. ✓
 
@@ -132,25 +133,26 @@ export async function generateSocialCaption(options: CaptionOptions): Promise<st
 
   const voiceMap: Record<BrandVoice, string> = {
     professional: 'Clear, trustworthy, expert tone. Confident but not arrogant.',
-    casual: 'Friendly, relatable, conversational. Like a mate talking about their work.',
+    casual: 'Friendly, relatable, conversational. Like the owner chatting to regulars at the stall.',
     punchy: 'Short, bold, direct statements. Every word earns its place.',
   }
 
   const platformReqs: Record<SocialPlatform, string> = {
     instagram: '150-220 chars + 15-20 relevant hashtags. Start with a hook. End with CTA. Then hashtags on a new line.',
     facebook: '100-200 chars, conversational, 3-5 hashtags only, include location.',
-    gmb: '100-150 chars, local SEO focused. Include suburb + state + trade type. No hashtags.',
-    linkedin: '150-250 chars, professional, focus on quality and expertise, 5-8 hashtags.',
+    gmb: '100-150 chars, local SEO focused. Include suburb + state + what you sell. No hashtags.',
+    linkedin: '150-250 chars, professional, focus on quality, provenance and care, 5-8 hashtags.',
   }
 
   const userPrompt = `${angleBrief}
 
 Occasion: ${occasion.label} (${postSubtype}).${testimonialBlock}
 
-Write 3 different ${platform} captions for ${businessName}, a ${tradeType} business based in ${suburb} ${state}.
+Write 3 different ${platform} captions for ${businessName}, a ${tradeType} based in ${suburb} ${state}.
 
-Job context: ${jobTitle}
-Details: ${jobDescription || 'Quality trade work'}
+What the post is about: ${jobTitle}
+Details: ${jobDescription || 'Fresh, locally made products'}
+Use real details from above (prices, order-by and collection dates, what's included) when given. Never invent prices or dates.
 Location: ${suburb}, ${state}
 Photos: ${photoCount}
 
@@ -169,7 +171,7 @@ Return EXACTLY 3 captions separated by ---VARIATION--- with no extra text.`
     messages: [
       {
         role: 'system',
-        content: 'You are a social media expert for Australian trade businesses. Write authentic, local captions that convert viewers into leads. Sound like a proud tradie, not a marketing agency.',
+        content: `You are a social media expert for ${VENDL_SOCIAL_AUDIENCE} Write warm, authentic, local captions that turn followers into orders. Sound like a proud small producer, not a marketing agency.`,
       },
       { role: 'user', content: userPrompt },
     ],

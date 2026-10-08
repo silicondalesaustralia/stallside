@@ -10,6 +10,7 @@ import {
   type ResolvedInfographicTheme,
 } from '@/lib/social/infographic/infographicVisualTheme'
 import { formatCanonicalTradeLabel } from '@/lib/social/canonicalTrades'
+import { DEFAULT_BUSINESS_KIND } from '@/lib/social/inferTradeCategory'
 
 const BASE_SAFETY = [
   'Abstract premium social-media background frame only.',
@@ -32,7 +33,7 @@ function themePromptFragment(theme: ResolvedInfographicTheme): string {
       ].join(' ')
     default:
       return [
-        'Default tradie brand palette:',
+        'Default brand palette:',
         `dark navy-charcoal gradient (${p.bgTop} to ${p.bgBottom}),`,
         'subtle warm brand-gold glow accents in outer frame edges only,',
         'minimal abstract geometric decoration in margins - central zone kept smooth and uncluttered.',
@@ -71,11 +72,11 @@ function presetLayoutFragment(preset: InfographicPreset): string {
 }
 
 function tradeAtmosphereFragment(tradeId: string | null | undefined): string {
-  const label = tradeId ? formatCanonicalTradeLabel(tradeId) : 'electrical'
+  const label = tradeId ? formatCanonicalTradeLabel(tradeId) : DEFAULT_BUSINESS_KIND
   return [
-    `Subtle ${label} trade atmosphere:`,
-    'abstract equipment or energy motifs in frame edges only -',
-    'no tools with readable labels, no switches with numbers, no gauges with digits.',
+    `Subtle ${label} atmosphere:`,
+    'abstract produce, leaf, grain or harvest motifs in frame edges only -',
+    'no packaging with readable labels, no price tags, no signs with words or digits.',
   ].join(' ')
 }
 
@@ -93,10 +94,10 @@ export function buildInfographicAiBackgroundPrompt(
   const theme = resolveInfographicTheme({ visualTheme: input.visualTheme })
 
   const parts = [
-    'Abstract premium infographic background frame for an Australian tradie social post.',
+    'Abstract premium infographic background frame for an Australian local food and produce seller social post.',
     presetLayoutFragment(input.preset),
     themePromptFragment(theme),
-    tradeAtmosphereFragment(input.tradeId ?? 'electrical'),
+    tradeAtmosphereFragment(input.tradeId),
     `Brand accent ${brand} as thin highlight lines or corner accents only - not large flat fills.`,
     ...BASE_SAFETY,
   ]

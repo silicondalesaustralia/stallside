@@ -223,11 +223,11 @@ export function PhotoFieldPicker({
         <>
           {selectedJobId && photosLoading && (
             <p className="mb-2 text-xs text-[#888] flex items-center gap-2">
-              <Loader2 className="h-3 w-3 animate-spin" /> Loading job photos…
+              <Loader2 className="h-3 w-3 animate-spin" /> Loading photos…
             </p>
           )}
           {selectedJobId && !photosLoading && jobPhotos.length === 0 && (
-            <p className="mb-2 text-xs text-[#888]">No photos for this job</p>
+            <p className="mb-2 text-xs text-[#888]">No photos for this item</p>
           )}
           {jobPhotos.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-2">
@@ -246,14 +246,14 @@ export function PhotoFieldPicker({
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={url} alt="" className="h-full w-full object-cover" />
-                    <ImageExpandTrigger src={url} alt="Job photo" />
+                    <ImageExpandTrigger src={url} alt="Product photo" />
                   </button>
                 )
               })}
             </div>
           )}
           {!selectedJobId ? (
-            <p className="mb-2 text-xs text-[#888]">Choose a job to see its photos, or switch photo source to Upload.</p>
+            <p className="mb-2 text-xs text-[#888]">Choose a product or offer to see its photos, or switch photo source to Upload.</p>
           ) : null}
         </>
       )}

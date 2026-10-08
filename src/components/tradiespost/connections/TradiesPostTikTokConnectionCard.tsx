@@ -83,7 +83,7 @@ export function TradiesPostTikTokConnectionCard({
 
       <Modal open={showDisconnectModal} onClose={() => setShowDisconnectModal(false)} title="Disconnect TikTok?">
         <p className="mb-6 text-sm text-zinc-600">
-          TradiesPost will stop posting to this TikTok account. Scheduled TikTok posts will fail until you reconnect.
+          Vendl will stop posting to this TikTok account. Scheduled TikTok posts will fail until you reconnect.
         </p>
         <div className="flex justify-end gap-2">
           <Button onClick={() => setShowDisconnectModal(false)} variant="outline">

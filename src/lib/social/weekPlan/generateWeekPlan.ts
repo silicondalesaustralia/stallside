@@ -2,6 +2,8 @@ import { callLLM } from '@/lib/aiAgent/llmProvider'
 import { consumeAiCredits } from '@/lib/billing/consumeAiCredits'
 import { createServiceClient } from '@/lib/supabase/server'
 import { formatCanonicalTradeLabel, inferCanonicalTrade } from '@/lib/social/canonicalTrades'
+import { DEFAULT_BUSINESS_KIND } from '@/lib/social/inferTradeCategory'
+import { VENDL_SOCIAL_AUDIENCE } from '@/lib/socialHost/socialAudience'
 import {
   contentMixToPostType,
   resolveTaxonomyForPostType,
@@ -82,7 +84,7 @@ function buildFallbackItems(input: GenerateWeekPlanInput): ValidatedPlanItem[] {
       ai_agent_services: business.aiAgentServices,
       name: business.name,
     }) ?? null
-  const tradeLabel = trade ? formatCanonicalTradeLabel(trade) : 'our services'
+  const tradeLabel = trade ? formatCanonicalTradeLabel(trade) : 'local produce'
   const area = business.suburb?.trim() || 'your area'
   const selectedJobs = recentJobs.filter((j) => wizard.selectedJobIds.includes(j.id))
   let jobIndex = 0
@@ -104,18 +106,18 @@ function buildFallbackItems(input: GenerateWeekPlanInput): ValidatedPlanItem[] {
           ? `${job.title} in ${job.suburb}`
           : job.title
       } else {
-        topic = `Recent ${tradeLabel} work in ${area}`
+        topic = `Fresh this week from ${business.name?.trim() || 'us'} in ${area}`
       }
     } else if (postType === 'tips_advice') {
-      topic = `Practical ${tradeLabel.toLowerCase()} tips for homeowners`
+      topic = `Tips for storing and enjoying ${tradeLabel.toLowerCase()}`
     } else if (postType === 'services') {
-      topic = `${tradeLabel} - book with ${business.name?.trim() || 'us'}`
+      topic = `What's available to order from ${business.name?.trim() || 'us'}`
     } else if (postType === 'promotions') {
       topic = wizard.priorityText?.trim()
         ? wizard.priorityText.trim().slice(0, 120)
-        : `Why choose us for ${tradeLabel.toLowerCase()} in ${area}`
+        : `Why locals buy ${tradeLabel.toLowerCase()} from us in ${area}`
     } else if (postType === 'seasonal') {
-      topic = `Seasonal ${tradeLabel.toLowerCase()} reminder for ${area}`
+      topic = `What's in season now in ${area}`
     } else {
       topic = `Meet the team at ${business.name?.trim() || 'our business'}`
     }
@@ -151,19 +153,20 @@ function buildPlannerPrompt(input: GenerateWeekPlanInput): { system: string; use
     .map((j) => `- id=${j.id} title="${j.title}" suburb="${j.suburb}"`)
     .join('\n')
 
-  const system = `You are a social media planner for Australian trade businesses.
+  const system = `You are a social media planner for ${VENDL_SOCIAL_AUDIENCE}
 Return ONLY a JSON array - no markdown, no commentary.
 Each object must have: targetDate (YYYY-MM-DD), postType, topic, and optionally jobId, subtypeId, intentChip, userBrief.
 
 Allowed postType values: recent_job, services, tips_advice, promotions, seasonal, team_business.
+Meanings: recent_job = feature one listed product / pre-order / subscription; services = what's available to order; tips_advice = storing, using or choosing the produce; promotions = specials, pre-orders, boxes; seasonal = what's in season; team_business = the people, farm or kitchen behind it.
 
 Rules:
 - Spread posts across the week; avoid stacking on one day.
 - Use targetDate values only from the provided week dates.
 - Each targetDate may appear once.
-- For recent_job, include jobId from the provided job list when relevant.
-- Do NOT invent customer names, testimonials, prices, discounts, guarantees, certifications, or rebates.
-- Do NOT claim specific job outcomes unless tied to a listed job.
+- For recent_job, include jobId from the provided product list when relevant.
+- Do NOT invent customer names, testimonials, prices, discounts, guarantees, certifications, or collection dates.
+- Do NOT name specific products unless they appear in the product list or the "What they sell" line.
 - Topics must be short (under 120 characters), specific, and varied.
 - Respect user priority text when provided but do not expand into unsupported claims.
 - Create exactly ${wizard.postCount} posts.`
@@ -176,10 +179,10 @@ Rules:
     }) ?? null
   const tradeLabel = trade ? formatCanonicalTradeLabel(trade) : null
 
-  const user = `Business: ${business.name ?? 'Trade business'}
-Primary trade: ${tradeLabel ?? 'General trade services'}
-Service area / suburb: ${business.suburb ?? 'Australia'}
-Services: ${business.aiAgentServices ?? 'General trade services'}
+  const user = `Business: ${business.name ?? 'Local producer'}
+Business type: ${tradeLabel ?? DEFAULT_BUSINESS_KIND}
+Location / suburb: ${business.suburb ?? 'Australia'}
+What they sell: ${business.aiAgentServices ?? DEFAULT_BUSINESS_KIND}
 Target week starts: ${weekStartMonday}
 
 Week dates:
@@ -189,7 +192,7 @@ Post count: ${wizard.postCount}
 Allowed post types for this plan: ${postTypesAllowed.join(', ')}
 User priority (optional): ${wizard.priorityText?.trim() || '(none)'}
 
-Eligible recent jobs (use id for recent_job posts):
+Products / offers to feature (use id for recent_job posts):
 ${jobLines || '(none)'}
 
 Return JSON array only.`
