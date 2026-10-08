@@ -18,6 +18,7 @@
     "test:website-ai": "npx tsx --test src/lib/website-ai/website-ai.test.ts src/lib/website-ai/plan-normalize.test.ts src/lib/website-ai/layout-recipes.test.ts src/lib/website/blueprints/blueprints.test.ts src/lib/website/brand-looks.test.ts src/lib/website/demo-kits/demo-kits.test.ts src/lib/website-ai/apply-blueprint-brand.test.ts src/lib/storefront/header-style.test.ts src/lib/website-ai/blueprint-hero-preset.test.ts",
     "test:website-ai-astra": "npx tsx --tsconfig tsconfig.json scripts/test-website-ai-astra.ts",
     "seed:green-valley-demo": "npx tsx scripts/seed-green-valley-demo.ts",
+    "test:square": "npx tsx --test src/lib/square/square.test.ts src/lib/commerce/sale-origin.test.ts src/lib/square-subscriptions/schedule.test.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
