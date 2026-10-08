@@ -8,7 +8,7 @@ export const paymentArticles: KnowledgeArticle[] = [
       "Cash, PayID, Stripe and Square: what each one is for, which to pick, and what it costs.",
     videoUrl: null,
     omitVideo: true,
-    related: ["customer-payments", "connect-square", "square-sync", "billing"],
+    related: ["customer-payments", "connect-square", "square-subscriptions", "square-sync", "billing"],
     ctas: [
       { label: "Payments settings", href: "/dashboard/settings/payments" },
       { label: "Billing", href: "/dashboard/settings/billing" },
@@ -16,8 +16,9 @@ export const paymentArticles: KnowledgeArticle[] = [
     steps: [
       "Money always goes straight to your own account: cash in your tin, PayID to your bank, card payments to your Stripe or Square account. Vendl never holds your funds.",
       "Cash and PayID (Australia) need nothing connected and never have a Vendl fee.",
-      "Stripe takes card, Tap & Go (Apple Pay / Google Pay) and pay-later. It is required for pre-order pages and deposits.",
-      "Square (currently Australia only) takes card and wallet payments on your QR stall and website cart, and can sync products and stock both ways with Square POS. Good for market and in-person sellers who already use a Square reader.",
+      "Stripe takes card, Tap & Go (Apple Pay / Google Pay) and pay-later on your QR stall and website cart, plus subscriptions, memberships, pre-order pages and deposits.",
+      "Square (currently Australia only) takes card and wallet payments on your QR stall and website cart, plus subscriptions and memberships. It can also sync products and stock both ways with Square POS.",
+      "Which to pick: both now cover everyday checkout, subscriptions and memberships. Choose Square if you already sell with a Square reader at markets and want stock to match. Choose Stripe if you sell pre-orders, take deposits, or sell outside Australia. You can connect both.",
       "You can connect both. Under Settings → Payments → Product checkout provider, choose Stripe or Square for everyday product checkout. Pre-orders keep using Stripe either way. Subscriptions and memberships can use Square once you turn them on in Square settings.",
       "Vendl fee on Free: 2.5% + 30c on Stripe, 2.5% on Square. Accounts created before 2 Oct 2026 pay 2.5% on Stripe until they upgrade or connect Square. Stripe and Square also charge their own processing fees.",
       "Vendl Pro removes the Vendl fee on Square. On Stripe there is no Vendl fee on your first A$4,000 of sales each month, then 0.5%.",
