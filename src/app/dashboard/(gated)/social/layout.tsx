@@ -1,6 +1,7 @@
 import '@/styles/tradiespost.css'
 import { ToastProvider } from '@/components/ui/Toast'
 import SocialSubnav from '@/components/social/SocialSubnav'
+import { TradiesPostSocialWorkspaceProvider } from '@/components/tradiespost/TradiesPostSocialWorkspaceProvider'
 
 export const dynamic = 'force-dynamic'
 
@@ -8,10 +9,12 @@ export const dynamic = 'force-dynamic'
 export default function SocialLayout({ children }: { children: React.ReactNode }) {
   return (
     <ToastProvider>
-      <SocialSubnav />
-      <div data-tp-theme className="min-h-full text-tradiespost-text">
-        {children}
-      </div>
+      <TradiesPostSocialWorkspaceProvider>
+        <SocialSubnav />
+        <div data-tp-theme className="min-h-full text-tradiespost-text">
+          {children}
+        </div>
+      </TradiesPostSocialWorkspaceProvider>
     </ToastProvider>
   )
 }
