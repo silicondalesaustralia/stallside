@@ -11,6 +11,7 @@ export const secondaryLinks = [
   { href: "/dashboard/subscriptions", label: "Subscriptions" },
   { href: "/dashboard/payments", label: "Payments" },
   { href: "/dashboard/communication", label: "Communication" },
+  { href: "/dashboard/social", label: "Social" },
   { href: "/dashboard/notifications", label: "Notifications" },
   { href: "/dashboard/suppliers", label: "Suppliers" },
   { href: "/dashboard/knowledge", label: "Guides" },

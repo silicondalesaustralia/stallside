@@ -34,6 +34,50 @@
   --font-mono: var(--font-mono);
 }
 
+/* Social kit (dashboard/social) tokens */
+@theme {
+  --color-brand-black: #0a0a0a;
+  --color-brand-yellow: #ffd100;
+  --color-brand-white: #ffffff;
+  --color-brand-gray-900: #1a1a1a;
+  --color-brand-gray-800: #2a2a2a;
+  --color-brand-gray-700: #3a3a3a;
+  --color-brand-gray-600: #4a4a4a;
+  --color-brand-gray-500: #6b6b6b;
+  --color-brand-gray-400: #9a9a9a;
+  --color-brand-gray-300: #c4c4c4;
+  --color-brand-gray-200: #e0e0e0;
+  --color-brand-gray-100: #f4f4f4;
+  --color-tradiespost-gold: #f5c518;
+  --color-tradiespost-gold-hover: #e6b800;
+  --color-tradiespost-gold-muted: #b8860b;
+  --color-tradiespost-gold-highlight: #fff9e6;
+  --color-tradiespost-black: #0b0b0b;
+  --color-tradiespost-charcoal: #121212;
+  --color-tradiespost-charcoal-raised: #1a1a1a;
+  --color-tradiespost-charcoal-border: #2a2a2a;
+  --color-tradiespost-steel: #52525b;
+  --color-tradiespost-steel-muted: #a1a1aa;
+  --color-tradiespost-surface: #f7f6f2;
+  --color-tradiespost-surface-raised: #ffffff;
+  --color-tradiespost-surface-muted: #f0efeb;
+  --color-tradiespost-border: #e8e6e1;
+  --color-tradiespost-border-muted: #edeae2;
+  --color-tradiespost-text: #18181b;
+  --color-tradiespost-text-muted: #71717a;
+  --color-tradiespost-danger: #dc2626;
+  --color-surface-page: #f7f5ef;
+  --color-surface-card: #ffffff;
+  --color-surface-nested: #fafaf7;
+  --color-warm-border: #edeae2;
+  --color-warm-divider: #f0ede5;
+  --color-warm-input: #e0ddd5;
+  --shadow-elevation-none: none;
+  --shadow-elevation-rest: 0 1px 2px 0 rgb(10 10 10 / 0.04), 0 1px 3px 0 rgb(10 10 10 / 0.06);
+  --shadow-elevation-raised: 0 2px 4px -1px rgb(10 10 10 / 0.06), 0 4px 8px -2px rgb(10 10 10 / 0.08);
+  --shadow-elevation-float: 0 8px 16px -4px rgb(10 10 10 / 0.08), 0 4px 8px -2px rgb(10 10 10 / 0.06);
+}
+
 body {
   background:
     radial-gradient(ellipse 80% 50% at 8% -8%, rgb(46 125 63 / 0.06) 0%, transparent 55%),

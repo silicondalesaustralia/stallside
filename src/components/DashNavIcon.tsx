@@ -54,6 +54,18 @@ const ICONS: Record<string, React.ReactNode> = {
       }
     />
   ),
+  "/dashboard/social": (
+    <Icon
+      d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"
+      extra={
+        <>
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+        </>
+      }
+    />
+  ),
   "/dashboard/communication": (
     <Icon
       d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
