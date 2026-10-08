@@ -19,6 +19,7 @@ import { openBillingPortal } from "./actions";
 import BillingNotices from "./BillingNotices";
 import BillingPlanForms from "./BillingPlanForms";
 import BillingStatusCard from "./BillingStatusCard";
+import BillingRegionForm from "./BillingRegionForm";
 import BillingPricingNotes from "./BillingPricingNotes";
 import { isV2026Owner } from "@/lib/fee-v2026";
 import { pricingMoveNotice } from "@/lib/pricing-move-gate";
@@ -32,6 +33,7 @@ export default async function BillingSettingsPage({
     locked?: string;
     plan?: string;
     error?: string;
+    region?: string;
   }>;
 }) {
   const { owner, user } = await requireOwner();
@@ -114,8 +116,16 @@ export default async function BillingSettingsPage({
         accessUntil={cancelling ? owner.currentPeriodEndsAt : null}
       />
 
+      <BillingRegionForm
+        billingCurrency={billingCurrency}
+        locked={Boolean(owner.stripeAccountId || owner.stripeSubscriptionId)}
+        error={params.error?.startsWith("region_") ? params.error : undefined}
+        saved={params.region === "1"}
+      />
+
       {showPlanForms ? (
         <BillingPlanForms
+          key={billingCurrency}
           billingCurrency={billingCurrency}
           proPrices={listConfiguredProPlanPrices()}
           showPro
