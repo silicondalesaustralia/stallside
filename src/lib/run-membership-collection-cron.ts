@@ -61,6 +61,8 @@ async function createMembershipCollectionOrder(
     deliveryPostcode: string | null;
     deliveryNotes: string | null;
     collectionsRemaining: number | null;
+    /** Square billing still owed; keeps the membership active after its last collection. */
+    nextBillingAt: Date | null;
     skipNextCycle: boolean;
     offer: {
       id: string;
@@ -185,7 +187,7 @@ async function createMembershipCollectionOrder(
           collectionsRemaining: nextRemaining,
           nextCollectionAt: nextRemaining > 0 ? nextAt : null,
           status:
-            nextRemaining > 0
+            nextRemaining > 0 || sub.nextBillingAt
               ? ShopperSubStatus.ACTIVE
               : ShopperSubStatus.CANCELLED,
         },

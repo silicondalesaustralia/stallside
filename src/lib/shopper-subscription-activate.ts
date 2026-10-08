@@ -28,7 +28,7 @@ function subscriptionIdFromSession(
     : session.subscription?.id ?? null;
 }
 
-async function sendWelcome(shopperSubId: string) {
+export async function sendWelcome(shopperSubId: string) {
   const row = await prisma.shopperSubscription.findUnique({
     where: { id: shopperSubId },
     include: {
@@ -56,7 +56,7 @@ async function sendWelcome(shopperSubId: string) {
   });
 }
 
-function membershipActivateFields(row: {
+export function membershipActivateFields(row: {
   billingPlan: MembershipBillingPlan | null;
   termEndsAt: Date | null;
   collectionsRemaining: number | null;

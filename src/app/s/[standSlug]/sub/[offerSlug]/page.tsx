@@ -13,6 +13,11 @@ import {
 import { standSectionMetadata } from "@/lib/stand-seo";
 import { standOffersStripeRecurring } from "@/lib/stand-payment-brands";
 import {
+  squareMembershipPlans,
+  squareOfferReady,
+  squareSubscriptionRail,
+} from "@/lib/square-subscriptions/rail";
+import {
   countHoldingMembers,
   isOfferAtCapacity,
   spotsLeft,
@@ -93,8 +98,13 @@ export default async function PublicSubscriptionOfferPage({
 
   const { stand } = offer;
   const branded = publicStandBranding(stand, stand.owner);
-  const cardEnabled = standOffersStripeRecurring(stand, stand.owner);
-  const ready = membershipOfferReady(offer);
+  const squareRail = await squareSubscriptionRail({
+    stand,
+    owner: stand.owner,
+    offerCurrency: offer.currency,
+  });
+  const cardEnabled = Boolean(squareRail) || standOffersStripeRecurring(stand, stand.owner);
+  const ready = squareRail ? squareOfferReady(offer) : membershipOfferReady(offer);
   const holding = await countHoldingMembers(offer.id);
   const atCapacity = isOfferAtCapacity(offer.maxMembers, holding);
   const remaining = spotsLeft(offer.maxMembers, holding);
@@ -110,7 +120,9 @@ export default async function PublicSubscriptionOfferPage({
         : "Card subscriptions are not available for this offer right now.";
 
   const plans: { plan: MembershipPlan; priceCents: number }[] = [];
-  if (isMembership) {
+  if (isMembership && squareRail) {
+    plans.push(...squareMembershipPlans(offer));
+  } else if (isMembership) {
     if (offer.weeklyPriceCents != null && offer.stripeWeeklyPriceId) {
       plans.push({ plan: "WEEKLY", priceCents: offer.weeklyPriceCents });
     }

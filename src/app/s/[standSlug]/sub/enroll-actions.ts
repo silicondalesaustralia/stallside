@@ -28,6 +28,24 @@ import {
   isOfferAtCapacity,
 } from "@/lib/subscription-capacity";
 import { standOffersStripeRecurring } from "@/lib/stand-payment-brands";
+import { squareOfferReady, squareSubscriptionRail } from "@/lib/square-subscriptions/rail";
+import { startSquareShopperSubscription } from "@/lib/square-subscriptions/enrol-start";
+
+async function subscriptionCustomerId(
+  ownerId: string,
+  name: string,
+  email: string,
+  phone: string | null,
+): Promise<string | null> {
+  try {
+    const { ensureCustomer } = await import("@/lib/catalogue/customers");
+    const customer = await ensureCustomer({ ownerId, email, name, phone, source: "subscription" });
+    return customer?.id ?? null;
+  } catch (error) {
+    console.error("Ensure customer for subscription failed", error);
+    return null;
+  }
+}
 
 export async function startShopperSubscriptionCheckout(input: {
   standSlug: string;
@@ -51,9 +69,6 @@ export async function startShopperSubscriptionCheckout(input: {
     if (!customerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
       return { error: "Enter a valid email." };
     }
-    if (!isStripeConfigured()) {
-      return { error: "Card payments are not configured yet." };
-    }
 
     const standKey = input.standSlug.trim().toLowerCase();
     const offerKey = input.offerSlug.trim().toLowerCase();
@@ -70,9 +85,6 @@ export async function startShopperSubscriptionCheckout(input: {
       },
     });
     if (!offer) return { error: "This subscription is not available." };
-    if (!membershipOfferReady(offer)) {
-      return { error: "This subscription is not ready for signup yet." };
-    }
 
     const holding = await countHoldingMembers(offer.id);
     if (isOfferAtCapacity(offer.maxMembers, holding)) {
@@ -83,11 +95,14 @@ export async function startShopperSubscriptionCheckout(input: {
 
     const { stand } = offer;
     const { owner } = stand;
-    if (!standOffersStripeRecurring(stand, owner)) {
-      return { error: "This stand cannot take card subscriptions yet." };
-    }
-    if (!owner.stripeAccountId || !owner.stripeChargesEnabled) {
-      return { error: "Stripe is not connected for this stand." };
+    const squareRail = await squareSubscriptionRail({
+      stand,
+      owner,
+      offerCurrency: offer.currency,
+    });
+    const offerReady = squareRail ? squareOfferReady(offer) : membershipOfferReady(offer);
+    if (!offerReady) {
+      return { error: "This subscription is not ready for signup yet." };
     }
 
     if (offer.handoverMode === HandoverMode.DELIVER) {
@@ -102,6 +117,36 @@ export async function startShopperSubscriptionCheckout(input: {
     const isMembership = offer.kind === SubscriptionOfferKind.MEMBERSHIP;
     if (!isMembership && offer.items.length === 0) {
       return { error: "This subscription is not available." };
+    }
+
+    if (squareRail) {
+      return startSquareShopperSubscription({
+        offer,
+        rail: squareRail,
+        billingPlan: input.billingPlan,
+        customer: {
+          name: customerName,
+          email: customerEmail,
+          phone: customerPhone,
+          id: await subscriptionCustomerId(owner.id, customerName, customerEmail, customerPhone),
+        },
+        delivery: {
+          line1: (input.deliveryAddressLine1 ?? "").trim().slice(0, 200) || null,
+          suburb: (input.deliverySuburb ?? "").trim().slice(0, 100) || null,
+          postcode: (input.deliveryPostcode ?? "").trim().slice(0, 20) || null,
+          notes: (input.deliveryNotes ?? "").trim().slice(0, 200) || null,
+        },
+      });
+    }
+
+    if (!isStripeConfigured()) {
+      return { error: "Card payments are not configured yet." };
+    }
+    if (!standOffersStripeRecurring(stand, owner)) {
+      return { error: "This stand cannot take card subscriptions yet." };
+    }
+    if (!owner.stripeAccountId || !owner.stripeChargesEnabled) {
+      return { error: "Stripe is not connected for this stand." };
     }
 
     let billingPlan: MembershipBillingPlan | null = null;
@@ -146,20 +191,12 @@ export async function startShopperSubscriptionCheckout(input: {
     }
 
     const manageToken = newManageToken();
-    let customerId: string | null = null;
-    try {
-      const { ensureCustomer } = await import("@/lib/catalogue/customers");
-      const customer = await ensureCustomer({
-        ownerId: owner.id,
-        email: customerEmail,
-        name: customerName,
-        phone: customerPhone,
-        source: "subscription",
-      });
-      customerId = customer?.id ?? null;
-    } catch (error) {
-      console.error("Ensure customer for subscription failed", error);
-    }
+    const customerId = await subscriptionCustomerId(
+      owner.id,
+      customerName,
+      customerEmail,
+      customerPhone,
+    );
     const shopperSub = await prisma.shopperSubscription.create({
       data: {
         offerId: offer.id,

@@ -8,7 +8,10 @@ import {
   membershipPlanLabel,
   offerDisplayPriceCents,
 } from "@/lib/subscription-offer";
-import { SubscriptionOfferKind } from "@/generated/prisma/client";
+import { OnlinePaymentProvider, SubscriptionOfferKind } from "@/generated/prisma/client";
+import { squareApplicationId } from "@/lib/square/config";
+import { squareRenewalRail } from "@/lib/square-subscriptions/rail";
+import SquareManageControls from "../SquareManageControls";
 import SubscriptionManageControls from "../SubscriptionManageControls";
 
 export default async function ShopperSubscriptionManagePage({
@@ -33,6 +36,14 @@ export default async function ShopperSubscriptionManagePage({
   if (!sub) notFound();
 
   const isMembership = sub.offer.kind === SubscriptionOfferKind.MEMBERSHIP;
+  const squareRail =
+    sub.paymentProvider === OnlinePaymentProvider.SQUARE
+      ? await squareRenewalRail(sub.ownerId)
+      : null;
+  const square =
+    sub.paymentProvider === OnlinePaymentProvider.SQUARE
+      ? { applicationId: squareApplicationId(), locationId: squareRail?.locationId ?? null }
+      : null;
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-lg flex-col gap-6 px-4 py-10">
@@ -87,12 +98,36 @@ export default async function ShopperSubscriptionManagePage({
             : ""}
         </p>
       </div>
-      <SubscriptionManageControls
-        token={sub.manageToken}
-        status={sub.status}
-        skipNextCycle={sub.skipNextCycle}
-        showBillingPortal={sub.billingPlan !== "UPFRONT"}
-      />
+      {square ? (
+        <>
+          {sub.nextBillingAt && sub.status !== "CANCELLED" ? (
+            <p className="text-sm text-[var(--muted)]">
+              {sub.cancelAtPeriodEnd
+                ? `Ends ${sub.nextBillingAt.toLocaleDateString()} with no further charges.`
+                : `Next payment ${sub.nextBillingAt.toLocaleDateString()}.`}
+            </p>
+          ) : null}
+          <SquareManageControls
+            token={sub.manageToken}
+            status={sub.status}
+            skipNextCycle={sub.skipNextCycle}
+            cancelAtPeriodEnd={sub.cancelAtPeriodEnd}
+            canCancel={sub.billingPlan !== "UPFRONT"}
+            cardLabel={sub.squareCardLabel}
+            applicationId={square.applicationId}
+            locationId={square.locationId}
+            customerName={sub.customerName}
+            customerEmail={sub.customerEmail}
+          />
+        </>
+      ) : (
+        <SubscriptionManageControls
+          token={sub.manageToken}
+          status={sub.status}
+          skipNextCycle={sub.skipNextCycle}
+          showBillingPortal={sub.billingPlan !== "UPFRONT"}
+        />
+      )}
     </main>
   );
 }
