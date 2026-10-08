@@ -87,7 +87,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
       "Open Settings → Stripe (Card / Tap & Go) and tap Connect Stripe. Complete Stripe’s onboarding with your business and bank details.",
       "When charges are enabled, turn Card / Tap & Go on for each business under My Businesses → manage.",
       "Scan your Vendl QR on another phone and run a small test card sale. Payments go to your Stripe account.",
-      "Prefer Square for product checkout? See Connect Square and take Square payments. Pre-orders still need Stripe; subscriptions and memberships can run on Square.",
+      "Prefer Square for product checkout? See Connect Square and take Square payments. Pre-orders, deposits, subscriptions and memberships can all run on Square.",
       "Cash and PayID (Australia only) work without Stripe and have no Vendl fee.",
     ],
   },

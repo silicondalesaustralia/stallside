@@ -1,4 +1,5 @@
 import { requireOwner } from "@/lib/session";
+import { loadPreOrderCardRail } from "@/lib/preorder-card-rail";
 import { prisma } from "@/lib/prisma";
 import NewProductForm from "./NewProductForm";
 import NoBusinessYet from "@/components/NoBusinessYet";
@@ -18,9 +19,7 @@ export default async function NewProductPage({
     orderBy: { name: "asc" },
     select: { id: true, name: true, currency: true },
   });
-  const stripeConnected = Boolean(
-    owner.stripeAccountId && owner.stripeChargesEnabled,
-  );
+  const stripeConnected = (await loadPreOrderCardRail(owner)).cardReady;
 
   if (stands.length === 0) {
     return (

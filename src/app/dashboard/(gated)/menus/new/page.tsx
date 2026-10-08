@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
+import { loadPreOrderCardRail } from "@/lib/preorder-card-rail";
 import { prisma } from "@/lib/prisma";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
@@ -52,9 +53,7 @@ export default async function NewMenuPage() {
       <h1 className="text-3xl font-semibold tracking-tight">New menu</h1>
       <MenuForm
         products={products}
-        stripeConnected={Boolean(
-          owner.stripeAccountId && owner.stripeChargesEnabled,
-        )}
+        stripeConnected={(await loadPreOrderCardRail(owner)).cardReady}
         currency={stand.currency}
         timeZone={stand.timezone}
       />

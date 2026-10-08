@@ -7,11 +7,11 @@ export default function PaymentProviderGuide({ v2026 }: { v2026: boolean }) {
       <ul className="list-disc space-y-2 pl-5">
         <li>
           <strong>You can connect both.</strong>{" "}
-          Pick one of them for everyday product and pre-order checkout. Subscriptions and memberships always
-          run on Stripe.
+          Pick one of them for everyday product, pre-order and deposit checkout. Subscriptions and
+          memberships can run on either.
         </li>
         <li>
-          <strong>Stripe</strong> is required for subscriptions and memberships.
+          <strong>Stripe</strong> works outside Australia and offers pay-later.
           It costs more per sale: the Free plan Vendl fee is 2.5%
           {v2026 ? " + 30c" : ""}, on top of Stripe&apos;s own processing fee.
         </li>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
+import { loadPreOrderCardRail } from "@/lib/preorder-card-rail";
 import { prisma } from "@/lib/prisma";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
@@ -44,9 +45,7 @@ export default async function NewPreOrderPagePage() {
     }),
   ]);
 
-  const stripeConnected = Boolean(
-    owner.stripeAccountId && owner.stripeChargesEnabled,
-  );
+  const stripeConnected = (await loadPreOrderCardRail(owner)).cardReady;
 
   return (
     <main className="flex flex-col gap-6">

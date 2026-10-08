@@ -114,12 +114,12 @@ export default function PreOrderFields({
       )}
       {!stripeConnected ? (
         <p className="text-sm text-[var(--muted)]">
-          Pre-orders need Stripe so customers can pay to reserve.{" "}
+          Pre-orders need card payments so customers can pay to reserve.{" "}
           <Link
-            href="/dashboard/settings/stripe"
+            href="/dashboard/settings/payments"
             className="font-medium text-[var(--leaf-dark)] underline"
           >
-            Connect Stripe
+            Connect Stripe or Square
           </Link>{" "}
           before enabling pre-orders.
         </p>

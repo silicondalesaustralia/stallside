@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
+import { loadPreOrderCardRail } from "@/lib/preorder-card-rail";
 import { prisma } from "@/lib/prisma";
 import { menuPublicUrl } from "@/lib/menu";
 import MenuForm from "../MenuForm";
@@ -93,9 +94,7 @@ export default async function EditMenuPage({
       </div>
       <MenuForm
         products={products}
-        stripeConnected={Boolean(
-          owner.stripeAccountId && owner.stripeChargesEnabled,
-        )}
+        stripeConnected={(await loadPreOrderCardRail(owner)).cardReady}
         currency={menu.stand.currency}
         timeZone={menu.stand.timezone}
         values={{

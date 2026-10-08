@@ -19,7 +19,7 @@ export const squareArticles: KnowledgeArticle[] = [
       "If your account was created before 2 Oct 2026, you'll be asked to confirm the move to current pricing before connecting.",
       "Under Location, pick the Square location to use and link it to your Vendl business. Stock syncs against this location.",
       "Under Use Square for, turn on what you want: Payments, Inventory sync, and Product / catalogue sync. Each shows a confirmation when saved.",
-      "Go to Settings → Payments → Product checkout provider and choose Square. Keep Stripe connected if you sell pre-orders or take deposits. Subscriptions and memberships can run on Square too (see Subscriptions and memberships on Square).",
+      "Go to Settings → Payments → Product checkout provider and choose Square. Pre-order pages and deposits then take payment through Square too. Subscriptions and memberships can run on Square too (see Subscriptions and memberships on Square).",
       "Open My Businesses → manage → payment options and tick Square for each business that should offer it.",
       "Scan your QR on another phone and run a small test sale. The payment lands in your Square account and you get the usual sale alert.",
       "To disconnect, use Disconnect on the Square page. Vendl keeps the last synced stock levels and your product links for history.",
@@ -67,7 +67,8 @@ export const squareArticles: KnowledgeArticle[] = [
       "If a payment fails, the shopper is emailed a link to update their card. Vendl retries after 1, 3 and 5 days, then cancels and lets you know.",
       "Shoppers can update their card, skip the next cycle (no charge, no order), pause, resume or cancel from their manage link. Cancelling stops at the end of the period they've paid for.",
       "The price is locked in when a shopper signs up. Changing an offer's price applies to new sign-ups only.",
-      "Existing Stripe subscribers stay on Stripe. Pre-order pages and deposits still use Stripe.",
+      "Existing Stripe subscribers stay on Stripe.",
+      "Pre-order deposits work the same way: the deposit is charged at checkout, the card is saved with Square, and the balance is charged on collection or delivery day. If that charge fails, the shopper is emailed a link to pay with another card.",
     ],
   },
 ];

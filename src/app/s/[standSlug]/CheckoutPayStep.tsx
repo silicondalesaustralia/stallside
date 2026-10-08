@@ -38,6 +38,8 @@ type CheckoutPayStepProps = {
   cardTotalCents?: number;
   /** Square charge total (no Stripe fixed fee). */
   squareTotalCents?: number;
+  /** Deposit carts on Square: charged now vs. charged before handover. */
+  squareDeposit?: { amountCents: number; balanceCents: number } | null;
   localTransferLabel: string | null;
   pending: boolean;
   showDemoCardHint?: boolean;
@@ -88,6 +90,7 @@ export default function CheckoutPayStep({
   cardFeeCents = 0,
   cardTotalCents = 0,
   squareTotalCents,
+  squareDeposit = null,
   localTransferLabel,
   pending,
   showDemoCardHint = false,
@@ -199,6 +202,12 @@ export default function CheckoutPayStep({
           <span>{localTransferLabel}</span>
         </button>
       ) : null}
+      {squareEnabled && squareDeposit ? (
+        <p className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--muted)]">
+          Deposit {formatMoney(squareDeposit.amountCents, currency)} now · Balance{" "}
+          {formatMoney(squareDeposit.balanceCents, currency)} charged to the same card before handover
+        </p>
+      ) : null}
       {squareEnabled ? (
         <SquareWebPayButton
           standSlug={standSlug}
@@ -207,8 +216,14 @@ export default function CheckoutPayStep({
           customerName={customerName}
           customerEmail={customerEmail}
           customerPhone={customerPhone}
+          deliveryAddressLine1={deliverOnly ? deliveryAddressLine1 : undefined}
+          deliverySuburb={deliverOnly ? deliverySuburb : undefined}
+          deliveryPostcode={deliverOnly ? deliveryPostcode : undefined}
+          deliveryNotes={deliverOnly ? deliveryNotes : undefined}
           couponCode={couponCode || null}
+          depositMode={Boolean(squareDeposit)}
           amountCents={
+            squareDeposit?.amountCents ||
             squareTotalCents ||
             cardTotalCents ||
             subtotalCents + cardFeeCents ||

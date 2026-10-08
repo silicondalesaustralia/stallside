@@ -18,9 +18,9 @@ export default function CheckoutProviderSection({
     <section id="checkout-provider" className="space-y-3 text-sm scroll-mt-8">
       <h2 className="text-lg font-semibold">Product checkout provider</h2>
       <p className="text-[var(--muted)]">
-        Choose Stripe or Square for one-off card checkout on products and
-        pre-orders. Memberships and subscriptions always use Stripe, so keep
-        Stripe connected if you sell them. Free plan still collects a 2.5% Vendl
+        Choose Stripe or Square for card checkout on products, pre-orders and
+        deposits. Memberships and subscriptions can run on Square once you turn
+        them on in Square settings. Free plan still collects a 2.5% Vendl
         fee on Vendl-originated Square checkout
         {feeApplies ? " (your account)" : " (waived on Pro)"}. Square POS sales
         never incur a Vendl fee.

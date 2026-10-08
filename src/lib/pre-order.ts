@@ -100,7 +100,7 @@ export function parsePreOrderFromForm(
   if (!stripeConnected) {
     return {
       ok: false,
-      error: "Connect Stripe before enabling pre-orders.",
+      error: "Connect Stripe or Square before enabling pre-orders.",
     };
   }
   const orderByAt = parseDateTimeLocal(

@@ -11,6 +11,7 @@ import {
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { parsePreOrderFromForm } from "@/lib/pre-order";
+import { loadPreOrderCardRail, SQUARE_DEPOSIT_RECONNECT_ERROR } from "@/lib/preorder-card-rail";
 import { slugify } from "@/lib/slug";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import {
@@ -149,13 +150,12 @@ export async function createMenu(formData: FormData) {
     const clash = await assertNoScheduleClash(productIds);
     if ("error" in clash) return clash;
     formData.set("isPreOrder", "true");
-    const pre = parsePreOrderFromForm(
-      formData,
-      true,
-      Boolean(owner.stripeAccountId && owner.stripeChargesEnabled),
-      stand.timezone,
-    );
+    const rail = await loadPreOrderCardRail(owner);
+    const pre = parsePreOrderFromForm(formData, true, rail.cardReady, stand.timezone);
     if (!pre.ok) return { error: pre.error };
+    if (pre.data.paymentTiming === "DEPOSIT_THEN_BALANCE" && rail.squareNeedsReconnectForDeposits) {
+      return { error: SQUARE_DEPOSIT_RECONNECT_ERROR };
+    }
     if (!pre.data.isPreOrder) {
       return { error: "Set order-by and collection times for a pre-order drop." };
     }
@@ -288,13 +288,12 @@ export async function updateMenu(menuId: string, formData: FormData) {
     const clash = await assertNoScheduleClash(productIds, existing.id);
     if ("error" in clash) return clash;
     formData.set("isPreOrder", "true");
-    const pre = parsePreOrderFromForm(
-      formData,
-      true,
-      Boolean(owner.stripeAccountId && owner.stripeChargesEnabled),
-      existing.stand.timezone,
-    );
+    const rail = await loadPreOrderCardRail(owner);
+    const pre = parsePreOrderFromForm(formData, true, rail.cardReady, existing.stand.timezone);
     if (!pre.ok) return { error: pre.error };
+    if (pre.data.paymentTiming === "DEPOSIT_THEN_BALANCE" && rail.squareNeedsReconnectForDeposits) {
+      return { error: SQUARE_DEPOSIT_RECONNECT_ERROR };
+    }
     if (!pre.data.isPreOrder) {
       return { error: "Set order-by and collection times for a pre-order drop." };
     }

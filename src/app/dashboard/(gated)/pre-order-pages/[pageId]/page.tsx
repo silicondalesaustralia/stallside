@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
+import { loadPreOrderCardRail } from "@/lib/preorder-card-rail";
 import { prisma } from "@/lib/prisma";
 import { preOrderPageUrl } from "@/lib/preorder-page";
 import PreOrderPageForm from "../PreOrderPageForm";
@@ -54,9 +55,7 @@ export default async function EditPreOrderPagePage({
     },
   });
 
-  const stripeConnected = Boolean(
-    owner.stripeAccountId && owner.stripeChargesEnabled,
-  );
+  const stripeConnected = (await loadPreOrderCardRail(owner)).cardReady;
   const publicUrl = preOrderPageUrl(page.stand.slug, page.slug);
   const remove = deletePreOrderPage.bind(null, page.id);
 
