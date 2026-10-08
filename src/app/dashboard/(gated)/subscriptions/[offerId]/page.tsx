@@ -12,6 +12,7 @@ import { formatMoney } from "@/lib/money";
 import { SITE_URL } from "@/lib/legal";
 import { productCatalogWhere } from "@/lib/product-visibility";
 import { SubscriptionOfferKind } from "@/generated/prisma/client";
+import { squareOfferReady, squareSubscriptionRail } from "@/lib/square-subscriptions/rail";
 import SubscriptionOfferForm from "../SubscriptionOfferForm";
 import MembershipOfferForm from "../MembershipOfferForm";
 import SubscriptionSubscribersList from "../SubscriptionSubscribersList";
@@ -78,15 +79,19 @@ export default async function EditSubscriptionOfferPage({
     select: { id: true, name: true, priceCents: true },
   });
 
-  const stripeConnected = Boolean(
-    owner.stripeAccountId && owner.stripeChargesEnabled,
-  );
+  const squareReady = await squareSubscriptionRail({
+    stand: { acceptSquare: true },
+    owner,
+    offerCurrency: offer.currency,
+  });
+  const stripeConnected =
+    Boolean(owner.stripeAccountId && owner.stripeChargesEnabled) || Boolean(squareReady);
   const quantities: Record<string, number> = {};
   for (const item of offer.items) {
     quantities[item.productId] = item.quantity;
   }
   const path = subscriptionOfferPath(offer.stand.slug, offer.slug);
-  const ready = membershipOfferReady(offer);
+  const ready = squareReady ? squareOfferReady(offer) : membershipOfferReady(offer);
   const isMembership = offer.kind === SubscriptionOfferKind.MEMBERSHIP;
 
   return (
