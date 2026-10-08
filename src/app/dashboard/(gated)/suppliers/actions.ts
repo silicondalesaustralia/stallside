@@ -19,7 +19,7 @@ export async function inviteSupplier(formData: FormData) {
   }
 
   const { selected } = await resolveSelectedBusiness(owner.id);
-  if (!selected) return { error: "Choose a stand first." };
+  if (!selected) return { error: "Choose a business first." };
 
   const token = randomBytes(24).toString("hex");
   try {
@@ -27,7 +27,7 @@ export async function inviteSupplier(formData: FormData) {
       where: { standId_email: { standId: selected.id, email } },
     });
     if (existing?.status === "ACTIVE") {
-      return { error: "They already have access to this stand." };
+      return { error: "They already have access to this business." };
     }
     if (existing) {
       await prisma.standMember.update({

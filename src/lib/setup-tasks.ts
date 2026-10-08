@@ -115,7 +115,7 @@ function copyForMode(mode: BusinessMode): Record<
     },
     CONFIGURE_FULFILMENT: {
       title: "How will you fulfil orders?",
-      description: "Pickup, delivery, pre-orders, stand — pick what you offer.",
+      description: "Pickup, delivery, pre-orders, QR checkout — pick what you offer.",
       required: false,
     },
     CONNECT_PAYMENTS: {
@@ -126,7 +126,7 @@ function copyForMode(mode: BusinessMode): Record<
     },
     BRANDING: {
       title: "Add your brand colours",
-      description: "Primary and accent on your public shop or stand.",
+      description: "Primary and accent on your public shop.",
       required: false,
     },
     CONFIGURE_ALERTS: {
@@ -188,7 +188,7 @@ function copyForMode(mode: BusinessMode): Record<
       required: true,
     },
     PREVIEW_STAND: {
-      title: "Preview your live stand",
+      title: "Preview your live shop",
       description: "Open the public checkout page on your phone.",
       required: false,
     },

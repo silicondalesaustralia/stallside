@@ -16,7 +16,7 @@ export async function notifyChannelInterest(params: {
     include: { owner: { include: { user: true } } },
   });
   if (!stand || !stand.isActive) {
-    return { error: "Stand not found." as const };
+    return { error: "Business not found." as const };
   }
 
   const pre = params.kind === "PREORDER";

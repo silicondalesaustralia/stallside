@@ -23,7 +23,7 @@ export default function TapAndGoInterestCta({ standSlug }: { standSlug: string }
   return (
     <div className="mt-6 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--wash)] p-5">
       <p className="text-lg font-medium text-[var(--ink)]">
-        Would you use Tap &amp; Go or PayPal if available at this stand and others?
+        Would you use Tap &amp; Go or PayPal if available at this shop and others?
       </p>
       {sent ? (
         <p className="mt-4 text-lg text-[var(--leaf)]">

@@ -37,7 +37,7 @@ export async function notifyRestockSubscribers(
       : "";
 
   if (!standId) {
-    return { ok: false, error: "Stand not found." };
+    return { ok: false, error: "Business not found." };
   }
 
   const stand = await prisma.stand.findFirst({
@@ -45,7 +45,7 @@ export async function notifyRestockSubscribers(
     select: { id: true, name: true, slug: true },
   });
   if (!stand) {
-    return { ok: false, error: "Stand not found." };
+    return { ok: false, error: "Business not found." };
   }
 
   if (RESTOCK_ALERT_COOLDOWN_HOURS > 0) {

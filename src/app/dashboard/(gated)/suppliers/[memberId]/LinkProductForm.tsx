@@ -19,7 +19,7 @@ export default function LinkProductForm({
   if (products.length === 0) {
     return (
       <p className="text-sm text-[var(--muted)]">
-        Add a product on this stand first, then link it here so they can top up
+        Add a product to this business first, then link it here so they can top up
         your stock.
       </p>
     );

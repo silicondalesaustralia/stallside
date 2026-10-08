@@ -71,7 +71,7 @@ export async function confirmLocalTransferCheckout(input: CheckoutPayload) {
     !alias ||
     loaded.stand.localTransferMethodId !== method.id
   ) {
-    return { error: "Local transfer is not available at this stand." };
+    return { error: "Local transfer is not available at this shop." };
   }
 
   return confirmDeclaredCheckout({
@@ -127,13 +127,13 @@ async function confirmDeclaredCheckout(
       return { error: "Pre-orders must be paid by card." };
     }
     if (input.paymentMethod === PaymentMethod.CASH && !stand.acceptCash) {
-      return { error: "Cash is not available at this stand." };
+      return { error: "Cash is not available at this shop." };
     }
     if (
       input.paymentMethod === PaymentMethod.LOCAL_TRANSFER &&
       !stand.acceptLocalTransfer
     ) {
-      return { error: "Local transfer is not available at this stand." };
+      return { error: "Local transfer is not available at this shop." };
     }
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
@@ -319,6 +319,6 @@ export async function requestTapAndGoInterest(standSlug: string) {
     return await notifyTapAndGoInterest(standSlug.trim().toLowerCase());
   } catch (error) {
     console.error("Tap & Go interest notify failed", error);
-    return { error: "Could not notify the stand owner. Please try again." };
+    return { error: "Could not notify the business owner. Please try again." };
   }
 }

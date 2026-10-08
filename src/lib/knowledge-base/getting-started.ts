@@ -3,9 +3,9 @@ import type { KnowledgeArticle } from "./types";
 export const gettingStartedArticles: KnowledgeArticle[] = [
   {
     slug: "first-stand",
-    title: "Your first stand in 10 minutes",
+    title: "Your first business in 10 minutes",
     summary:
-      "Create a stand, add a product, print a QR, and run a test cash checkout.",
+      "Create a business, add a product, print a QR, and run a test cash checkout.",
     videoUrl: "https://www.youtube.com/watch?v=qJeoTruQKMQ",
     related: [
       "sign-in-phone",

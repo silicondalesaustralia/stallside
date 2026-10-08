@@ -43,7 +43,7 @@ export async function requestLoginCode(formData: FormData) {
   // Capture fbclid even when first contact is /login, not /signup.
   if (!existing) {
     const adAttribution = attributionFromFormData(formData);
-    const name = email.split("@")[0] || "My stand";
+    const name = email.split("@")[0] || "My business";
     await prisma.signupIntent.upsert({
       where: { email },
       create: {

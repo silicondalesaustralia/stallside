@@ -49,7 +49,7 @@ export default async function BalanceAuthPage({
       </p>
       <BalanceAuthButton orderId={order.id} token={token!} />
       <Link href={`/s/${order.stand.slug}`} className="text-sm text-[var(--leaf-dark)] underline">
-        Back to stand
+        Back to shop
       </Link>
     </main>
   );

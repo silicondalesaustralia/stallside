@@ -49,7 +49,7 @@ function channelBadge(order: OrderRow): {
     };
   }
   return {
-    label: "Paid At Stand",
+    label: "Paid In Person",
     className: "bg-[var(--wash)] text-[var(--muted)] ring-1 ring-[var(--line)]",
   };
 }

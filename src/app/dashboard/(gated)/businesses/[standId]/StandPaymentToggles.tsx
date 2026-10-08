@@ -59,7 +59,7 @@ export default function StandPaymentToggles({
             Cash
           </span>
           <span className="mt-0.5 block text-[var(--muted)]">
-            Customer confirms they paid cash at the stand.
+            Customer confirms they paid cash in person.
           </span>
         </span>
       </label>

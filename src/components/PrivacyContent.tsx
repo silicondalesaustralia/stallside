@@ -27,7 +27,7 @@ export default function PrivacyContent() {
         </h2>
         <ul className="list-disc space-y-2 pl-5 text-[var(--muted)]">
           <li>Account email and session data for owner sign-in (magic link).</li>
-          <li>Business, stand, product, inventory, and order records you enter.</li>
+          <li>Business, product, inventory, and order records you enter.</li>
           <li>Payment-related identifiers when you connect Stripe or PayPal (handled by those providers).</li>
           <li>Device and usage data needed to run the service (e.g. push notification tokens on the owner app).</li>
           <li>Messages you send via our contact form (name, email, message).</li>
@@ -62,14 +62,14 @@ export default function PrivacyContent() {
           Restock alerts
         </h2>
         <p className="text-[var(--muted)]">
-          When you buy from a stand, you may opt in to an email when that stand restocks.
+          When you buy from a shop, you may opt in to an email when that shop restocks.
           Opt-in and restock notify emails are available on Free and Pro.
           {LEGAL_ENTITY} ({APP_NAME}) is the controller: we store your email and
-          consent record solely for that purpose. Stand owners see a subscriber count and can
+          consent record solely for that purpose. Business owners see a subscriber count and can
           ask us to send a restock notice - they never receive or export your address. Emails
           are delivered via Resend (processor). You can unsubscribe any time via the link in
           each email (no login). We retain active subscriptions until you unsubscribe or the
-          stand is removed; unsubscribed records may be kept briefly for audit.
+          shop is removed; unsubscribed records may be kept briefly for audit.
         </p>
       </section>
 
@@ -105,7 +105,7 @@ export default function PrivacyContent() {
           We retain account and transaction data while your account is active and for a reasonable
           period afterward for billing, disputes, and legal requirements. You can delete your
           account anytime in Settings → Delete account (this cancels any Vendl subscription and
-          removes your stands and related data). You may also request access to or correction of
+          removes your businesses and related data). You may also request access to or correction of
           personal information we hold about you by emailing {LEGAL_EMAIL}.
         </p>
       </section>

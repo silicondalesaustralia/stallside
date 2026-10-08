@@ -30,7 +30,7 @@ const CUSTOMER_LIVE = [
   "Subscribe to a weekly, fortnightly, or monthly box",
   "See when orders close, when to collect, and how many slots are left",
   "Get a confirmation email with your order details",
-  "Opt in to hear when the stand restocks",
+  "Opt in to hear when the shop restocks",
 ] as const;
 
 type Accent = "leaf" | "marigold" | "field";

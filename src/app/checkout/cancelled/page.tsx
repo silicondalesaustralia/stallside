@@ -51,7 +51,7 @@ export default async function CheckoutCancelledPage({
           href={`/s/${standSlug}`}
           className="mt-8 inline-flex w-full items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-4 text-lg font-semibold text-white hover:bg-[var(--leaf-dark)]"
         >
-          Return to stand
+          Return to shop
         </Link>
       ) : (
         <Link

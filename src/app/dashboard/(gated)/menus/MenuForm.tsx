@@ -181,7 +181,7 @@ export default function MenuForm({
             name="hideOnBusinessPage"
             defaultChecked={values?.hideOnBusinessPage ?? false}
           />
-          Hide products from stand catalog / QR grid
+          Hide products from shop catalog / QR grid
         </label>
         <label className="flex items-center gap-2">
           <input
@@ -189,7 +189,7 @@ export default function MenuForm({
             name="showOnStand"
             defaultChecked={values?.showOnStand ?? true}
           />
-          Show on stand menu pages
+          Show on shop menu pages
         </label>
         <label className="flex items-center gap-2">
           <input

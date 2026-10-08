@@ -12,7 +12,7 @@ export default function CartTypeSection() {
           style={{ borderTopLeftRadius: 8 }}
         />
         <p className="pl-3 text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">
-          For stands · All plans
+          For in-person sales · All plans
         </p>
         <h2 className="mt-2 max-w-2xl pl-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
           Cart type: Product or Customer Choice

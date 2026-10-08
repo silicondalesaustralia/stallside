@@ -288,7 +288,7 @@ export default function CheckoutPayStep({
       ) : null}
       {!showCash && !showLt && !cardEnabled && !squareEnabled && !showPayPal ? (
         <p className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-lg text-[var(--muted)]">
-          No payment methods are available at this stand right now.
+          No payment methods are available at this shop right now.
         </p>
       ) : null}
       {!cardEnabled && !squareEnabled && !preOrderOnly ? (

@@ -160,7 +160,7 @@ export async function mapSquareLocationToStand(input: {
     const stand = await prisma.stand.findFirst({
       where: { id: input.standId, ownerId: owner.id },
     });
-    if (!stand) return { error: "Stand not found." };
+    if (!stand) return { error: "Business not found." };
   }
   await prisma.externalLocationMapping.updateMany({
     where: {

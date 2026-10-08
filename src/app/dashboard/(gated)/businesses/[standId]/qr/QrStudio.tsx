@@ -275,9 +275,9 @@ export default function QrStudio({
               className="mt-1"
             />
             <span>
-              <span className="font-medium">Legacy stand page</span>
+              <span className="font-medium">Classic shop page</span>
               <span className="block text-[var(--muted)]">
-                Classic stand checkout URL. Customer Choice requires this.
+                Classic shop checkout URL. Customer Choice requires this.
               </span>
             </span>
           </label>
@@ -320,7 +320,7 @@ export default function QrStudio({
         </fieldset>
 
         <label className="flex flex-col gap-2 text-sm">
-          <span className="font-medium">Stand name</span>
+          <span className="font-medium">Business name</span>
           <input
             name="name"
             required
@@ -358,7 +358,7 @@ export default function QrStudio({
             name="qrSignMessage"
             height={120}
             defaultValue={stand.qrSignMessage ?? ""}
-            placeholder="Scan to browse and pay at this stand."
+            placeholder="Scan to browse and pay here."
             onChange={setQrSignMessage}
           />
         </div>

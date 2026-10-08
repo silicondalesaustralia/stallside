@@ -57,7 +57,7 @@ export default async function NewEventPage({
 
       <form action={createSellerEvent} className="dash-card flex flex-col gap-4 p-5">
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium">Business / stand</span>
+          <span className="font-medium">Business</span>
           <select
             name="standId"
             required

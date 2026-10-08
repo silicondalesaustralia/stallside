@@ -32,7 +32,7 @@ export async function saveProductChannels(
   const showOnline = formData.get("showOnline") === "on";
 
   if (enabledStandIds.length === 0) {
-    return { error: "Assign at least one stand or location." };
+    return { error: "Assign at least one business or location." };
   }
 
   await prisma.$transaction(async (tx) => {

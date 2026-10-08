@@ -30,7 +30,7 @@ export async function subscribeRestockAlert(
   const emailRaw = asTrimmedString(formData.get("email")).toLowerCase();
 
   if (!standId) {
-    return { ok: false, error: "Stand not found." };
+    return { ok: false, error: "Shop not found." };
   }
   if (
     !emailRaw ||
@@ -45,7 +45,7 @@ export async function subscribeRestockAlert(
     select: { id: true, isActive: true, ownerId: true },
   });
   if (!stand?.isActive) {
-    return { ok: false, error: "Stand not found." };
+    return { ok: false, error: "Shop not found." };
   }
 
   const unsubToken = randomBytes(24).toString("hex");

@@ -24,7 +24,7 @@ export async function recordCardInterest(input: {
     },
   });
   if (!stand?.isActive) {
-    return { error: "Stand not found." };
+    return { error: "Shop not found." };
   }
 
   // Only when card is not offerable (Starter / Connect incomplete).

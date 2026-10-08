@@ -20,7 +20,7 @@ export default async function AdminGalleryPage() {
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Gallery</h1>
         <p className="mt-1 text-[var(--muted)]">
-          Approve owner submissions or add stands manually.
+          Approve owner submissions or add businesses manually.
         </p>
       </div>
 

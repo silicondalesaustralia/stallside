@@ -63,7 +63,7 @@ export async function createStand(formData: FormData) {
     isActive: true,
   });
   if (!parsed.success) {
-    throw new Error("Check stand details and try again.");
+    throw new Error("Check business details and try again.");
   }
 
   const slug = await uniqueStandSlug(parsed.data.name, async (s) => {
@@ -94,7 +94,7 @@ export async function updateStand(standId: string, formData: FormData) {
   const existing = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
   });
-  if (!existing) return { error: "Stand not found." };
+  if (!existing) return { error: "Business not found." };
 
   const section = String(formData.get("section") ?? "details").trim();
 
@@ -295,7 +295,7 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
   const existing = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
   });
-  if (!existing) return { error: "Stand not found." };
+  if (!existing) return { error: "Business not found." };
 
   const printSchema = z.object({
     name: z.string().trim().min(2).max(80),

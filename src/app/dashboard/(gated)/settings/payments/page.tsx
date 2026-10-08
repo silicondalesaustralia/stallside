@@ -159,7 +159,7 @@ export default async function PaymentsSettingsPage() {
         </p>
         <p className="text-[var(--muted)]">
           {paypalConnectAvailable
-            ? "Connect PayPal so shoppers can pay with PayPal (and Venmo on USD stands). Funds go to your PayPal Business account. Free includes a 2.5% Vendl fee unless you upgrade to Pro."
+            ? "Connect PayPal so shoppers can pay with PayPal (and Venmo on USD businesses). Funds go to your PayPal Business account. Free includes a 2.5% Vendl fee unless you upgrade to Pro."
             : "PayPal Connect is coming soon. Card payments via Stripe are live today."}
         </p>
         <Link

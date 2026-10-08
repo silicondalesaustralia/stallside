@@ -151,7 +151,7 @@ export async function startCardCheckout(input: {
     }
 
     if (!stand.acceptCard) {
-      return { error: "Card is not enabled at this stand." };
+      return { error: "Card is not enabled at this shop." };
     }
 
     if (preOrderCart && !customerName) {
@@ -203,7 +203,7 @@ export async function startCardCheckout(input: {
       if (!owner.stripeAccountId || !owner.stripeChargesEnabled) {
         return {
           error:
-            "This stand cannot take card payments yet (Stripe not connected).",
+            "This shop cannot take card payments yet (Stripe not connected).",
         };
       }
     }

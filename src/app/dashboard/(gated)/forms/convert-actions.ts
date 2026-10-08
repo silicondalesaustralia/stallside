@@ -45,7 +45,7 @@ export async function convertRequestToOrder(formData: FormData) {
     where: { id: standId, ownerId: owner.id },
     select: { id: true, currency: true },
   });
-  if (!stand) throw new Error("Stand not found");
+  if (!stand) throw new Error("Business not found");
 
   const order = await prisma.$transaction(async (tx) => {
     const created = await createCashSaleOrder(tx, {

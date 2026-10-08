@@ -143,7 +143,7 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
           defaultChecked={stand.showSubscriptionsOnStand}
           className="size-4"
         />
-        Show Memberships link on the stand page (with Shop / Pre-orders)
+        Show Memberships link on the shop page (with Shop / Pre-orders)
       </label>
       <label className="flex items-center gap-2 text-sm">
         <input

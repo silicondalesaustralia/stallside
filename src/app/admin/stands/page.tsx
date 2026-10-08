@@ -31,11 +31,11 @@ export default async function AdminStandsPage({
   return (
     <main className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Stands</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Businesses</h1>
         <p className="mt-1 text-[var(--muted)]">All public checkout stands.</p>
       </div>
       {stands.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">No stands yet.</p>
+        <p className="text-sm text-[var(--muted)]">No businesses yet.</p>
       ) : (
         <ul className="dash-card divide-y divide-[var(--line)] px-5">
           {stands.map((stand) => (

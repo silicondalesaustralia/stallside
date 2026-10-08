@@ -37,7 +37,7 @@ export default function PayPalWarnings({
           )}
         </li>
         <li>
-          USD stands can also show <strong className="text-[var(--ink)]">Venmo</strong>{" "}
+          USD businesses can also show <strong className="text-[var(--ink)]">Venmo</strong>{" "}
           via PayPal (US shoppers). AU and other currencies get the PayPal wallet
           only.
         </li>

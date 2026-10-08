@@ -6,7 +6,7 @@ import { dashCtaClass } from "@/components/DashPrimaryCta";
 export default function AdminGalleryAddForm() {
   return (
     <section className="dash-card space-y-3 p-5">
-      <h2 className="text-lg font-semibold">Add stand</h2>
+      <h2 className="text-lg font-semibold">Add business</h2>
       <form
         action={addGalleryStand}
         className="grid gap-3 text-sm"
@@ -15,7 +15,7 @@ export default function AdminGalleryAddForm() {
         <input
           name="displayName"
           required
-          placeholder="Stand name"
+          placeholder="Business name"
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2"
         />
         <input

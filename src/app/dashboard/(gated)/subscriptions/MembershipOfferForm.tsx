@@ -134,7 +134,7 @@ export default function MembershipOfferForm({
           <span className="font-medium">Offer is live (public signup)</span>
         </span>
         <span className="pl-6 text-[var(--muted)]">
-          Uncheck or use Turn off to hide this membership from the stand. Delete
+          Uncheck or use Turn off to hide this membership from your shop. Delete
           is under the title.
         </span>
       </label>

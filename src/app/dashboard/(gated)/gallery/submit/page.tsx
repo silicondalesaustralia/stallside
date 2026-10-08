@@ -22,7 +22,7 @@ export default async function GallerySubmitPage({
         <h1 className="text-3xl font-semibold tracking-tight">Thanks</h1>
         <p className="mt-3 text-[var(--muted)]">
           We&apos;ve got your photo. We&apos;ll review it and may feature it in the
-          public stand gallery.
+          public gallery.
         </p>
         <p className="mt-6">
           <Link href="/testimonials-and-gallery" className="font-semibold text-[var(--leaf-dark)] underline">
@@ -35,7 +35,7 @@ export default async function GallerySubmitPage({
 
   return (
     <main className="mx-auto max-w-lg">
-      <h1 className="text-3xl font-semibold tracking-tight">Share your stand</h1>
+      <h1 className="text-3xl font-semibold tracking-tight">Share your business</h1>
       <p className="mt-2 text-[var(--muted)]">
         Upload a photo for the Vendl gallery. Town or region is enough - no
         street address needed. Submissions are reviewed before going live.

@@ -34,7 +34,7 @@ export type HubNavItem = {
 export function primaryNavForMode(modeInput?: string | null): DashNavItem[] {
   const mode = normalizeBusinessMode(modeInput);
   const farmLabel =
-    mode === "FOOD_BUSINESS" ? "Shop" : mode === "BOTH" ? "Locations" : "Farm Stand";
+    mode === "FOOD_BUSINESS" ? "Shop" : mode === "BOTH" ? "Locations" : "Shop";
 
   const items: DashNavItem[] = [
     { href: "/dashboard", label: "Home" },

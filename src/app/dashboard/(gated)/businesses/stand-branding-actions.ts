@@ -13,7 +13,7 @@ export async function updateStandBranding(standId: string, formData: FormData) {
     const stand = await prisma.stand.findFirst({
       where: { id: standId, ownerId: owner.id },
     });
-    if (!stand) return { error: "Stand not found." };
+    if (!stand) return { error: "Business not found." };
 
     const parsed = await brandingDataFromForm(stand, formData);
     if (!parsed.ok) return { error: parsed.error };

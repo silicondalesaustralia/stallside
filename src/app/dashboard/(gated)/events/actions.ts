@@ -19,7 +19,7 @@ export async function createSellerEvent(formData: FormData) {
     where: { id: standId, ownerId: owner.id },
     select: { id: true },
   });
-  if (!stand) throw new Error("Stand not found");
+  if (!stand) throw new Error("Business not found");
 
   const endsRaw = String(formData.get("endsAt") ?? "").trim();
   const endsAt = endsRaw ? new Date(endsRaw) : null;

@@ -68,7 +68,7 @@ export default function ProductLifecycleActions({
               className="font-semibold text-[var(--leaf-dark)] underline disabled:opacity-60"
               onClick={() => run(() => setProductHidden(productId, !isHidden))}
             >
-              {isHidden ? "Show on stand" : "Hide on stand"}
+              {isHidden ? "Show in shop" : "Hide in shop"}
             </button>
             <button
               type="button"
@@ -77,7 +77,7 @@ export default function ProductLifecycleActions({
               onClick={() => {
                 if (
                   !window.confirm(
-                    `Archive “${productName}”? It leaves the stand but you can restore it anytime.`,
+                    `Archive “${productName}”? It leaves your shop but you can restore it anytime.`,
                   )
                 ) {
                   return;

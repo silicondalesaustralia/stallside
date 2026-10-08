@@ -42,7 +42,7 @@ export default function StandSubscriptionsNavToggle({
         />
         <span>
           <span className="font-medium">
-            Show Memberships on the stand page
+            Show Memberships on the shop page
           </span>
           <span className="mt-1 block text-[var(--muted)]">
             Adds a Memberships link next to Shop / Pre-orders. Public list:{" "}

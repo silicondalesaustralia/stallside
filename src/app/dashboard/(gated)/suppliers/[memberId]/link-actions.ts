@@ -40,7 +40,7 @@ export async function linkSupplierProduct(formData: FormData) {
     },
     select: { id: true },
   });
-  if (!product) return { error: "Pick one of your products on this stand." };
+  if (!product) return { error: "Pick one of your products in this business." };
 
   try {
     await prisma.supplierProductAccess.upsert({

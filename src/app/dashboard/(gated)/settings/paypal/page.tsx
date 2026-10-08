@@ -374,7 +374,7 @@ export default async function PayPalSettingsPage({
         <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
           <p className="font-semibold">Show PayPal at checkout</p>
           <p className="text-[var(--muted)]">
-            Customers see PayPal when this is on. USD stands can also show
+            Customers see PayPal when this is on. USD businesses can also show
             Venmo. Then enable PayPal on each business under My Businesses.
           </p>
           <form action={setPayPalPaymentsEnabled}>

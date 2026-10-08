@@ -31,7 +31,7 @@ export async function notifyAdminSale(input: {
         <p style="font-size:18px;font-weight:600">${escapeHtml(input.title)}</p>
         <p><strong>Seller:</strong> ${escapeHtml(input.ownerName || "-")}
           (${escapeHtml(input.ownerEmail || "-")})</p>
-        <p><strong>Stand:</strong> ${escapeHtml(input.standName)}</p>
+        <p><strong>Business:</strong> ${escapeHtml(input.standName)}</p>
         <p>${escapeHtml(input.body)}</p>
         <p>Order ${escapeHtml(input.orderNumber)}</p>
         <p style="margin:24px 0">

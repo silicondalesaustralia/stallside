@@ -36,7 +36,7 @@ export default function NewProductSellWhereFields({
           className="mt-0.5 size-4"
         />
         <span>
-          <span className="font-medium">Farm stand</span>
+          <span className="font-medium">Shop &amp; QR</span>
           <span className="mt-1 block text-[var(--muted)]">
             QR / in-person catalog for this location.
           </span>

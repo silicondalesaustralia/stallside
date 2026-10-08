@@ -16,7 +16,7 @@ export async function updateStandPayments(standId: string, formData: FormData) {
   const existing = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
   });
-  if (!existing) return { error: "Stand not found." };
+  if (!existing) return { error: "Business not found." };
 
   const method = localTransferForCurrency(existing.currency);
   const cardReady = Boolean(

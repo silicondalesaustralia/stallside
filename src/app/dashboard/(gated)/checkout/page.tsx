@@ -22,8 +22,8 @@ export default async function CheckoutSettingsPage() {
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Checkout</h1>
           <p className="mt-2 text-[var(--muted)]">
-            Create a business first, then choose how customers pay on your QR
-            stand and website.
+            Create a business first, then choose how customers pay at your QR
+            code and website.
           </p>
         </div>
         <Link
@@ -95,7 +95,7 @@ export default async function CheckoutSettingsPage() {
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Checkout</h1>
         <p className="mt-2 text-[var(--muted)]">
-          Choose payment methods for QR stand checkout and your website shop —
+          Choose payment methods for QR checkout and your website shop —
           they share the same checkout. Connect providers under Payments first.
         </p>
       </div>
@@ -143,7 +143,7 @@ export default async function CheckoutSettingsPage() {
         squareReady={squareReady}
         cardTier={cardTier}
         heading="Payment methods"
-        description={`Shown at QR stand and website checkout. Currency: ${stand.currency}.`}
+        description={`Shown at QR and website checkout. Currency: ${stand.currency}.`}
       />
     </main>
   );

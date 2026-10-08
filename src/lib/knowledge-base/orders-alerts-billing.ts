@@ -71,7 +71,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
   },
   {
     slug: "customer-payments",
-    title: "Accept card at the stand",
+    title: "Accept card payments",
     summary:
       "Connect Stripe for card / Tap & Go - separate from your Vendl subscription. In Australia you can also use Square.",
     videoUrl: "https://youtu.be/keo53YG_Nks",
@@ -82,7 +82,7 @@ export const ordersAlertsBillingArticles: KnowledgeArticle[] = [
       { label: "Payments settings", href: "/dashboard/settings/payments" },
     ],
     steps: [
-      "Stripe Connect is how customers pay you at the stand by card, Apple Pay, or Google Pay. Available on Free and Pro.",
+      "Stripe Connect is how customers pay you by card, Apple Pay, or Google Pay. Available on Free and Pro.",
       "On Free, Vendl takes 2.5% + 30c on Stripe card, Tap & Go, and pay-later (outside Australia you can absorb or pass it on in Settings → Stripe; card surcharges aren't allowed in Australia, so Australian sellers absorb it). Pro has no Vendl card fee on the first A$4,000 of Stripe sales each month, then 0.5%. Standard Stripe processing fees apply on both plans.",
       "Open Settings → Stripe (Card / Tap & Go) and tap Connect Stripe. Complete Stripe’s onboarding with your business and bank details.",
       "When charges are enabled, turn Card / Tap & Go on for each business under My Businesses → manage.",

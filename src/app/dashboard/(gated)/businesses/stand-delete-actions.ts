@@ -11,7 +11,7 @@ export async function deleteStand(standId: string) {
   const existing = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
   });
-  if (!existing) return { error: "Stand not found." };
+  if (!existing) return { error: "Business not found." };
 
   await prisma.$transaction(async (tx) => {
     const orders = await tx.order.findMany({

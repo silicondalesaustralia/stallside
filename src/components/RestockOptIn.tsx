@@ -34,7 +34,7 @@ export default function RestockOptIn({
         Sold out fast last time - get notified when we&apos;re back
       </p>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        We&apos;ll email you when this stand restocks - nothing else.
+        We&apos;ll email you when this shop restocks - nothing else.
       </p>
       <form action={action} className="mt-4 flex flex-col gap-3">
         <input type="hidden" name="standId" value={standId} />

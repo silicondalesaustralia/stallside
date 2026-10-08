@@ -28,7 +28,7 @@ export function trialWelcomeHtml(name: string): string {
         <li>Share your link, or print a QR for customers</li>
         <li>Connect Stripe if you want card payments (optional for cash)</li>
       </ol>
-      ${ctaButton(L.newStand, "Create your first stand")}
+      ${ctaButton(L.newStand, "Create your first business")}
       <p><strong>Pre-orders or subscriptions</strong></p>
       <ol>
         <li>Create a business and add products (if you have not already)</li>
@@ -44,7 +44,7 @@ export function trialWelcomeHtml(name: string): string {
       or want a new feature, reply to this email or
       <a href="${L.featureRequest}">tell us</a> and we will work on it
       ASAP.</p>
-      <p><a href="${L.firstStand}">First stand</a> ·
+      <p><a href="${L.firstStand}">First business</a> ·
       <a href="${L.knowledgePreOrder}">Pre-order pages</a> ·
       <a href="${L.knowledgeSubscriptions}">Subscriptions</a></p>
     `,

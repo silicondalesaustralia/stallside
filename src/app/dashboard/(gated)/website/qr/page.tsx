@@ -113,7 +113,7 @@ export default async function WebsiteQrListPage() {
                   ? primaryCustomHostname
                     ? `Website · ${primaryCustomHostname}`
                     : "Website home"
-                  : "Stand checkout";
+                  : "Shop checkout";
             return (
               <li
                 key={stand.id}

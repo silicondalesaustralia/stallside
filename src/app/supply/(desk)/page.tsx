@@ -67,7 +67,7 @@ export default async function SupplyPage({
 
       {linked.length === 0 && owned.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">
-          Nothing linked yet. Ask the stand owner to link a product under
+          Nothing linked yet. Ask the business owner to link a product under
           Suppliers.
         </p>
       ) : null}
@@ -90,7 +90,7 @@ export default async function SupplyPage({
                     {row.product.name}
                   </p>
                   <p className="text-sm text-[var(--muted)]">
-                    Stand has {row.product.stockQuantity} · Your units on hand{" "}
+                    Business has {row.product.stockQuantity} · Your units on hand{" "}
                     {myUnits.get(row.productId) ?? 0}
                     {row.autoApprove
                       ? ""

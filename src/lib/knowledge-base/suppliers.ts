@@ -15,7 +15,7 @@ export const supplierArticles: KnowledgeArticle[] = [
       { label: "Alert settings", href: "/dashboard/settings" },
     ],
     steps: [
-      "Open More → Suppliers on the stand you have selected.",
+      "Open More → Suppliers on the business you have selected.",
       "Enter their name and email, then send the invite. They sign in with that email and land on Supply. They only see stock they can update — not your orders, customers, takings, or settings.",
       "Open their name. Under “Let them add stock to one of your products”, pick an existing product (for example your eggs), set what you owe them per unit, and choose “Add to stock straight away” if their adds should go live without you tapping Approve. Tap Link product. Shoppers still see your one listing. You can also add their stock yourself on that linked product with Add stock.",
       "On Supply they see “You have approval to add these products”. They add or remove their units into that shared stock. You get an in-app alert, email, and phone push: who, which product, how many, and when.",

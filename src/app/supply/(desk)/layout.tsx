@@ -31,7 +31,7 @@ export default async function SupplyDeskLayout({
         <div className="flex flex-wrap items-center gap-4 text-sm">
           {hasOwnStand ? (
             <Link href="/dashboard" className="text-[var(--leaf-dark)] underline">
-              Your stand
+              Your business
             </Link>
           ) : null}
           <span className="text-[var(--muted)]">{user.email}</span>

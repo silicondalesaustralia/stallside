@@ -81,7 +81,7 @@ export async function createProduct(formData: FormData) {
     where: { id: parsed.data.standId, ownerId: owner.id },
   });
   if (!stand) {
-    return { error: "Stand not found." };
+    return { error: "Business not found." };
   }
 
   const sellOnStand = formData.get("sellOnStand") === "on";
@@ -90,7 +90,7 @@ export async function createProduct(formData: FormData) {
 
   if (!sellOnStand && !showOnline && !preOrderEligible) {
     return {
-      error: "Choose at least farm stand, website, or pre-order pages.",
+      error: "Choose at least shop & QR, website, or pre-order pages.",
     };
   }
 

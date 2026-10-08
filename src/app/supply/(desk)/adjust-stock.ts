@@ -45,7 +45,7 @@ export async function adjustSupplierStock(formData: FormData) {
     where: { productId },
   });
   if (mapped > 0) {
-    return { error: "The stand owner has to update stock for this product." };
+    return { error: "The business owner has to update stock for this product." };
   }
 
   try {

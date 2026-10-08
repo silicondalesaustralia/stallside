@@ -23,7 +23,7 @@ export async function submitGalleryStand(
   const file = formData.get("photo");
 
   if (displayName.length < 2 || displayName.length > 120) {
-    return { error: "Enter a stand name (2-120 characters)." };
+    return { error: "Enter a business name (2-120 characters)." };
   }
   if (location.length < 2 || location.length > 120) {
     return { error: "Enter a location (town or region is enough)." };
@@ -32,7 +32,7 @@ export async function submitGalleryStand(
     return { error: "Please confirm you own the photo and allow us to show it." };
   }
   if (!(file instanceof File) || file.size === 0) {
-    return { error: "Choose a photo of your stand." };
+    return { error: "Choose a photo of your business." };
   }
 
   let standId: string | null = null;
@@ -41,7 +41,7 @@ export async function submitGalleryStand(
       where: { id: standIdRaw, ownerId: owner.id },
       select: { id: true },
     });
-    if (!stand) return { error: "That stand was not found." };
+    if (!stand) return { error: "That business was not found." };
     standId = stand.id;
   }
 

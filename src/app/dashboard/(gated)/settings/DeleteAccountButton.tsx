@@ -7,7 +7,7 @@ const DELETES = [
   "Your Vendl subscription is cancelled immediately (if you have one)",
   "Marketing, sale, and alert emails stop (sign-in codes still work)",
   "Phone push alerts stop",
-  "Your stands go offline (QR links stop working)",
+  "Your businesses go offline (QR links stop working)",
   "Your account data is retained on file",
 ] as const;
 
@@ -31,7 +31,7 @@ export default function DeleteAccountButton() {
       <h3 className="text-base font-semibold text-[var(--gone)]">Delete account</h3>
       <p className="mt-1 text-sm text-[var(--muted)]">
         Close your Vendl account. You can still sign in later, but emails
-        and live stands stop.
+        and live businesses stop.
       </p>
 
       {!open ? (

@@ -15,7 +15,7 @@ export default async function SetupBrandingPage() {
           Brand colours
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          Applied to your public shop or stand. Refine later anytime.
+          Applied to your public shop. Refine later anytime.
         </p>
       </div>
       <form action={saveSetupBranding} className="flex flex-col gap-4">

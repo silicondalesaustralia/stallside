@@ -77,7 +77,7 @@ export default function TermsContent() {
           Owner responsibilities
         </h2>
         <ul className="list-disc space-y-2 pl-5 text-[var(--muted)]">
-          <li>You set product prices, stock, and stand content accurately.</li>
+          <li>You set product prices, stock, and business content accurately.</li>
           <li>
             Cash / honesty-stand sales rely on customer confirmation; {APP_NAME} logs reported
             sales and does not guarantee payment or prevent theft.
@@ -104,7 +104,7 @@ export default function TermsContent() {
         </h2>
         <p className="text-[var(--muted)]">
           {APP_NAME}, its branding, and software remain ours (or our licensors&apos;). You keep
-          ownership of content you upload (product names, images, stand details) and grant us a
+          ownership of content you upload (product names, images, business details) and grant us a
           licence to host and display it to operate the service.
         </p>
       </section>

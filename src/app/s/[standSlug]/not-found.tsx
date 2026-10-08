@@ -7,10 +7,10 @@ export default function StandNotFound() {
     <main className="mx-auto flex min-h-full w-full max-w-lg flex-col items-center px-4 py-16 text-center">
       <BrandMark className="size-14" />
       <h1 className="mt-6 font-[family-name:var(--font-display)] text-3xl font-bold text-[var(--field)]">
-        Stand not found
+        Shop not found
       </h1>
       <p className="mt-4 text-lg leading-relaxed text-[var(--muted)]">
-        This QR may be for a stand that was removed, disabled, or printed with the wrong link.
+        This QR may be for a shop that was removed, disabled, or printed with the wrong link.
         Ask the owner to open <strong>QR &amp; print</strong> and scan again before reprinting.
       </p>
       <Link

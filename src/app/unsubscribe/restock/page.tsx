@@ -31,7 +31,7 @@ export default async function UnsubscribeRestockPage({
 
   const copy =
     result === "ok"
-      ? "You're unsubscribed. We won't email you about this stand again."
+      ? "You're unsubscribed. We won't email you about this shop again."
       : result === "already"
         ? "You're already unsubscribed from restock alerts."
         : "This unsubscribe link is invalid or expired.";

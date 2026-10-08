@@ -34,10 +34,10 @@ export default async function FulfilmentHubPage() {
       {mode === "FARM_STAND" && options === 0 && zones === 0 ? (
         <div className="dash-card p-6">
           <p className="font-medium text-[var(--field)]">
-            Your QR stand is ready to sell
+            Your QR shop is ready to sell
           </p>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Customers scan and pay at your stand with no pickup scheduling. Add
+            Customers scan and pay in person with no pickup scheduling. Add
             pickup or delivery here when you launch online ordering.
           </p>
         </div>

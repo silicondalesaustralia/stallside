@@ -295,7 +295,7 @@ export default async function ProductsPage({
 
       {isSupplier && !showArchived ? (
         <p className="text-sm text-[var(--muted)]">
-          These are products a supplier added. Hide on stand takes them off the
+          These are products a supplier added. Hide in shop takes them off the
           stall and your website. They stay in this list so you can show them
           again. Set the price and publish from{" "}
           <Link

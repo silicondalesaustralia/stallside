@@ -81,7 +81,7 @@ export default async function SettingsPage() {
         <p className="text-[var(--muted)]">
           Pays Vendl for the app. Also sets your Stripe Connect country for card
           payments. Australia can use Stripe or Square; other regions use Stripe.
-          Separate from stand display currency.
+          Separate from each business's display currency.
         </p>
         <BillingRegionForm
           billingCurrency={owner.billingCurrency ?? "AUD"}

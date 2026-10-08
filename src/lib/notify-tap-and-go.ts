@@ -11,7 +11,7 @@ export async function notifyTapAndGoInterest(standSlug: string) {
     include: { owner: { include: { user: true } } },
   });
   if (!stand || !stand.isActive) {
-    return { error: "Stand not found." as const };
+    return { error: "Business not found." as const };
   }
 
   if (!stand.owner.emailAlertsEnabled) {
@@ -20,7 +20,7 @@ export async function notifyTapAndGoInterest(standSlug: string) {
 
   const recipients = ownerAlertRecipients(stand.owner);
   if (!recipients.length) {
-    return { error: "Could not reach the stand owner." as const };
+    return { error: "Could not reach the business owner." as const };
   }
 
   const settingsUrl = `${appBaseUrl()}/dashboard/settings`;

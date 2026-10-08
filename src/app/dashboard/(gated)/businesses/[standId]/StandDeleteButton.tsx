@@ -29,9 +29,9 @@ export default function StandDeleteButton({
 
   return (
     <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-4">
-      <h2 className="text-lg font-semibold text-[var(--gone)]">Delete stand</h2>
+      <h2 className="text-lg font-semibold text-[var(--gone)]">Delete business</h2>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        Remove this site if you created it by mistake. Unlimited stands - delete anytime.
+        Remove this site if you created it by mistake. Unlimited businesses - delete anytime.
       </p>
       {error ? <p className="mt-2 text-sm text-[var(--gone)]">{error}</p> : null}
       <button
@@ -40,7 +40,7 @@ export default function StandDeleteButton({
         disabled={pending}
         className="mt-4 rounded-lg border border-[var(--gone)] px-4 py-2.5 text-sm font-semibold text-[var(--gone)] hover:bg-[var(--gone)]/5 disabled:opacity-60"
       >
-        {pending ? "Deleting…" : "Delete this stand"}
+        {pending ? "Deleting…" : "Delete this business"}
       </button>
     </div>
   );

@@ -62,7 +62,7 @@ export async function startPayPalCheckout(input: {
     const owner = stand.owner;
 
     if (!stand.acceptPayPal) {
-      return { error: "PayPal is not enabled at this stand." };
+      return { error: "PayPal is not enabled at this shop." };
     }
     if (
       !owner.paypalMerchantId ||
@@ -70,7 +70,7 @@ export async function startPayPalCheckout(input: {
       !owner.paypalPaymentsEnabled
     ) {
       return {
-        error: "This stand cannot take PayPal yet (PayPal not connected).",
+        error: "This shop cannot take PayPal yet (PayPal not connected).",
       };
     }
 

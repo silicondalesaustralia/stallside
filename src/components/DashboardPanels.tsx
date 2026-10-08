@@ -33,7 +33,7 @@ export default function DashboardPanels({
           Snapshot
         </p>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          {stands} stand{stands === 1 ? "" : "s"} · {products} active product
+          {stands} {stands === 1 ? "business" : "businesses"} · {products} active product
           {products === 1 ? "" : "s"}
         </p>
         <p className="mt-1 text-sm text-[var(--muted)]">

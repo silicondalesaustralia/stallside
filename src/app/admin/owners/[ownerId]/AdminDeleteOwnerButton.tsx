@@ -8,7 +8,7 @@ const DELETES = [
   "Vendl subscription cancelled immediately (if any)",
   "Marketing, sale, and alert emails stop (sign-in codes still work)",
   "Push alerts stop",
-  "Stands go offline (QR links stop working)",
+  "Businesses go offline (QR links stop working)",
   "Account data is retained",
 ] as const;
 
@@ -32,7 +32,7 @@ export default function AdminDeleteOwnerButton({
       <p className="mt-1 text-sm text-[var(--muted)]">
         Soft-close {businessName}
         {email ? ` (${email})` : ""} - same as Settings → Delete account. Data
-        is kept; they can still sign in, but emails and stands stop.
+        is kept; they can still sign in, but emails and businesses stop.
       </p>
 
       {!open ? (

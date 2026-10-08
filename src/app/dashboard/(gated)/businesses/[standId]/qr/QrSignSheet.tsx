@@ -30,7 +30,7 @@ export type QrSignSheetProps = {
   showInstructions?: boolean;
 };
 
-const defaultMessage = "Scan to browse and pay at this stand.";
+const defaultMessage = "Scan to browse and pay here.";
 
 export default function QrSignSheet({
   name,

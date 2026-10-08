@@ -141,8 +141,8 @@ export default async function EditProductPage({
           {product.isArchived || product.isHidden ? (
             <p className="mt-2 text-sm text-[var(--muted)]">
               {product.isArchived
-                ? "Archived - not on your stand. Restore to sell again."
-                : "Hidden from the stand page - direct link still works."}
+                ? "Archived - not in your shop. Restore to sell again."
+                : "Hidden from the shop page - direct link still works."}
             </p>
           ) : null}
         </div>

@@ -9,7 +9,7 @@ const CHANNEL_META: {
 }[] = [
   { key: "subscription", label: "Subscriptions", color: "var(--leaf)" },
   { key: "preorder", label: "Pre-Orders", color: "var(--marigold)" },
-  { key: "stand", label: "Paid At Stand", color: "var(--field)" },
+  { key: "stand", label: "Paid In Person", color: "var(--field)" },
 ];
 
 export { CHANNEL_META };

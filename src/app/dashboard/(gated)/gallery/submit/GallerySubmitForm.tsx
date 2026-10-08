@@ -28,7 +28,7 @@ export default function GallerySubmitForm({
     <form action={action} className="mt-8 flex flex-col gap-4" encType="multipart/form-data">
       {stands.length > 0 ? (
         <label className="flex flex-col gap-2 text-sm">
-          <span className="font-medium">Your stand (optional)</span>
+          <span className="font-medium">Your business (optional)</span>
           <select
             name="standId"
             className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
@@ -86,7 +86,7 @@ export default function GallerySubmitForm({
       <label className="flex items-start gap-2 text-sm">
         <input type="checkbox" name="consent" required className="mt-1 size-4" />
         <span>
-          I own this photo and allow Vendl to show it publicly in the stand gallery.
+          I own this photo and allow Vendl to show it publicly in the gallery.
         </span>
       </label>
       {state.error ? (

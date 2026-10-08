@@ -110,7 +110,7 @@ export default function PreOrderPageForm({
           className={inputClass}
         />
         <span className="text-[var(--muted)]">
-          Shown under your stand name on the public pre-order page.
+          Shown under your business name on the public pre-order page.
         </span>
       </label>
       <label className="flex items-center gap-2 text-sm">

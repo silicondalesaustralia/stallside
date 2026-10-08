@@ -66,7 +66,7 @@ export const sellingMoreArticles: KnowledgeArticle[] = [
     related: ["email-customers", "alerts-push", "first-stand"],
     ctas: [{ label: "Products", href: "/dashboard/products" }],
     steps: [
-      "After checkout, customers can opt in to restock alerts for your stand. You never see the subscriber list - Vendl keeps emails private.",
+      "After checkout, customers can opt in to restock alerts for your business. You never see the subscriber list - Vendl keeps emails private.",
       "When you have restocked, open Products. If people are waiting, a restock panel appears with the subscriber count.",
       "Send the restock notice from that panel. Buyers get an email that you have stock again, with a link back to your stall.",
       "There is a cooldown between sends so you do not spam the same list. Sale and low-stock alerts to you stay under Settings → Alerts.",
