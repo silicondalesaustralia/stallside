@@ -14,6 +14,8 @@ import { resolveStandTimezone } from "@/lib/stand-timezone";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { loadDashboardHomeData } from "./load-dashboard-home";
+import LiveShopLink from "@/components/LiveShopLink";
+import { loadLiveShopLink } from "@/lib/load-live-shop-link";
 import { loadSetupProgress } from "@/lib/load-setup-progress";
 import { loadVendlFeeEconomics } from "@/lib/vendl-fee-economics";
 
@@ -62,14 +64,17 @@ export default async function DashboardPage({
     );
   }
 
-  const data = await loadDashboardHomeData({
-    ownerId: owner.id,
-    standId: selected.id,
-    window,
-    timeZone: resolveStandTimezone(selected.timezone),
-    monthStart,
-    loadUpgradeSignals: !cardTier,
-  });
+  const [data, shopLink] = await Promise.all([
+    loadDashboardHomeData({
+      ownerId: owner.id,
+      standId: selected.id,
+      window,
+      timeZone: resolveStandTimezone(selected.timezone),
+      monthStart,
+      loadUpgradeSignals: !cardTier,
+    }),
+    loadLiveShopLink(owner.id, selected.id),
+  ]);
 
   const current = data.currentSummaries.all;
   const standName = selected.name;
@@ -91,7 +96,12 @@ export default async function DashboardPage({
   return (
     <main className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <DashboardGreeting standName={standName} />
+        <div className="flex min-w-0 flex-col gap-3">
+          <DashboardGreeting standName={standName} />
+          {shopLink ? (
+            <LiveShopLink link={shopLink} setupHref={`/dashboard/businesses/${selected.id}`} />
+          ) : null}
+        </div>
         <DateRangeFilter
           pathname="/dashboard"
           activeKey={window.key}
