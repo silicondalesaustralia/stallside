@@ -20,7 +20,8 @@ import {
   SQUARE_LIFETIME_CONFIRM_COOKIE,
 } from "@/lib/square/pricing-confirm";
 import { pricingMoveConfirmed, pricingMoveNotice } from "@/lib/pricing-move-gate";
-import { listSquareCatalogItems, suggestCatalogMatches } from "@/lib/square/catalog";
+import { listSquareCatalogItems } from "@/lib/square/catalog";
+import { buildReviewSuggestions } from "@/lib/square/match-suggestions";
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
 import {
   assertOnlineProviderAllowed,
@@ -182,17 +183,31 @@ export async function loadSquareMatchSuggestions() {
   const token = await getValidSquareAccessToken(conn.id);
   if (!token) return { error: "Reconnect Square." as const };
 
-  const [items, products] = await Promise.all([
-    listSquareCatalogItems(token),
-    prisma.product.findMany({
-      where: { ownerId: owner.id, isArchived: false },
-      select: { id: true, name: true, sku: true, upc: true },
-    }),
-  ]);
-  return {
-    suggestions: suggestCatalogMatches(products, items),
-    squareItemCount: items.length,
-  };
+  try {
+    const [items, products, mapped] = await Promise.all([
+      listSquareCatalogItems(token),
+      prisma.product.findMany({
+        where: { ownerId: owner.id, isArchived: false },
+        select: { id: true, name: true, sku: true, upc: true },
+      }),
+      prisma.externalVariantMapping.findMany({
+        where: { connectionId: conn.id, confirmedAt: { not: null } },
+        select: { productId: true, providerVariationId: true },
+      }),
+    ]);
+    return {
+      suggestions: buildReviewSuggestions({
+        products,
+        items,
+        mappedProductIds: new Set(mapped.map((m) => m.productId)),
+        mappedVariationIds: new Set(mapped.map((m) => m.providerVariationId)),
+      }),
+      squareItemCount: items.length,
+    };
+  } catch (error) {
+    console.error("Square match suggestions failed", error);
+    return { error: "Could not load Square items. Try again." as const };
+  }
 }
 
 export async function confirmSquareProductMapping(input: {
