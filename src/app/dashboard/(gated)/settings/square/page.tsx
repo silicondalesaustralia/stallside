@@ -7,6 +7,7 @@ import {
   isSquareIntegrationEnabled,
   isSquarePaymentsEnabled,
   isSquareAppFeesEnabled,
+  isSquareSubscriptionsEnabled,
   squareConnectDiagnostics,
   squareEnvironment,
 } from "@/lib/square/config";
@@ -23,6 +24,8 @@ import SquareLocationForm from "./SquareLocationForm";
 import SquareMappingPanel from "./SquareMappingPanel";
 import SquarePushSection from "./SquarePushSection";
 import SquareImportPanel from "./SquareImportPanel";
+import SquareSubscriptionsToggle from "./SquareSubscriptionsToggle";
+import { hasSquareSubscriptionScopes } from "@/lib/square/scopes";
 
 export default async function SquareSettingsPage({
   searchParams,
@@ -201,6 +204,17 @@ export default async function SquareSettingsPage({
               catalogSyncEnabled={conn.catalogSyncEnabled}
             />
           </section>
+
+          {isSquareSubscriptionsEnabled() ? (
+            <section className="space-y-3 text-sm">
+              <h2 className="text-lg font-semibold">Subscriptions &amp; memberships</h2>
+              <SquareSubscriptionsToggle
+                enabled={conn.subscriptionsEnabled}
+                hasScopes={hasSquareSubscriptionScopes(conn.scopes)}
+                checkoutOnSquare={owner.onlinePaymentProvider === "SQUARE"}
+              />
+            </section>
+          ) : null}
 
           <p className="text-sm text-[var(--muted)]">
             Product checkout currently uses{" "}

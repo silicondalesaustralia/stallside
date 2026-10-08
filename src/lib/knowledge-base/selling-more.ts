@@ -84,13 +84,14 @@ export const sellingMoreArticles: KnowledgeArticle[] = [
       "collections-day",
       "pre-orders",
       "email-customers",
+      "square-subscriptions",
     ],
     ctas: [
       { label: "New subscription", href: "/dashboard/subscriptions/new" },
       { label: "Connect Stripe", href: "/dashboard/settings/stripe" },
     ],
     steps: [
-      "Connect Stripe first (Settings → Stripe) so charges are enabled. Shoppers pay by card only — cash and PayID are not used for subscriptions. Available on Free and Pro.",
+      "Connect Stripe first (Settings → Stripe) so charges are enabled, or in Australia use Square (see Subscriptions and memberships on Square). Shoppers pay by card only — cash and PayID are not used for subscriptions. Available on Free and Pro.",
       "Add the products that go in the box under Products, with the catalogue prices you want. The offer price is the sum of those products × quantity, then synced to Stripe.",
       "Open Subscriptions → New subscription. Name the offer (e.g. Weekly veg box), pick Weekly, Fortnightly, or Monthly, and choose Collect or Deliver.",
       "Optionally set a collection weekday and a short note (gate fridge, delivery window). Leave weekday blank to use the same day as billing.",

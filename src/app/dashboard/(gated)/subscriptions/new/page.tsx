@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { productCatalogWhere } from "@/lib/product-visibility";
+import { squareSubscriptionRail } from "@/lib/square-subscriptions/rail";
 import NewSubscriptionChooser from "./NewSubscriptionChooser";
 
 export default async function NewSubscriptionOfferPage() {
@@ -30,9 +31,13 @@ export default async function NewSubscriptionOfferPage() {
     select: { currency: true },
   });
 
-  const stripeConnected = Boolean(
-    owner.stripeAccountId && owner.stripeChargesEnabled,
-  );
+  const squareReady = await squareSubscriptionRail({
+    stand: { acceptSquare: true },
+    owner,
+    offerCurrency: stand?.currency ?? "AUD",
+  });
+  const stripeConnected =
+    Boolean(owner.stripeAccountId && owner.stripeChargesEnabled) || Boolean(squareReady);
 
   return (
     <main className="flex flex-col gap-8">
