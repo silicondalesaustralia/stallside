@@ -4,43 +4,32 @@ import {
   completeSquareCheckout,
   startSquareCheckout,
 } from "./square-checkout-actions";
-import type { CartItemInput } from "@/lib/checkout";
-
-type CardTokenize = {
-  tokenize: () => Promise<{ status: string; token?: string }>;
-};
+import type { SquareCheckoutCartInput } from "@/lib/square/checkout-create-order";
+import type { SquareCard } from "./use-square-sdk";
 
 export type SquarePaySession = {
   orderId: string;
   applicationId: string;
   locationId: string;
+  amountCents: number;
+  currency: string;
+  /** Deposit orders keep the card on file for the balance. */
+  saveCard: boolean;
 };
 
-export async function continueSquareCardPay(input: {
-  standSlug: string;
-  items?: CartItemInput[];
-  customerChoiceAmountCents?: number;
-  customerName?: string;
-  customerEmail?: string;
-  customerPhone?: string;
-  couponCode?: string | null;
-  session: SquarePaySession | null;
-  card: CardTokenize | null;
-}): Promise<
+export async function continueSquareCardPay(
+  input: SquareCheckoutCartInput & {
+    session: SquarePaySession | null;
+    card: Pick<SquareCard, "tokenize"> | null;
+  },
+): Promise<
   | { kind: "session"; session: SquarePaySession }
   | { kind: "paid"; orderNumber: string }
   | { kind: "error"; message: string }
 > {
-  if (!input.session) {
-    const started = await startSquareCheckout({
-      standSlug: input.standSlug,
-      items: input.items,
-      customerChoiceAmountCents: input.customerChoiceAmountCents,
-      customerName: input.customerName,
-      customerEmail: input.customerEmail,
-      customerPhone: input.customerPhone,
-      couponCode: input.couponCode,
-    });
+  const { session, card, ...cart } = input;
+  if (!session) {
+    const started = await startSquareCheckout(cart);
     if ("error" in started && started.error) {
       return { kind: "error", message: started.error };
     }
@@ -51,21 +40,36 @@ export async function continueSquareCardPay(input: {
       kind: "session",
       session: {
         orderId: started.orderId,
-        applicationId: started.applicationId!,
-        locationId: started.locationId!,
+        applicationId: started.applicationId,
+        locationId: started.locationId,
+        amountCents: started.amountCents,
+        currency: started.currency,
+        saveCard: started.saveCard,
       },
     };
   }
 
-  if (!input.card) {
+  if (!card) {
     return { kind: "error", message: "Card form is still loading." };
   }
-  const result = await input.card.tokenize();
+  const result = session.saveCard
+    ? await card.tokenize({
+        intent: "CHARGE_AND_STORE",
+        amount: (session.amountCents / 100).toFixed(2),
+        currencyCode: session.currency.toUpperCase(),
+        customerInitiated: true,
+        sellerKeyedIn: false,
+        billingContact: {
+          givenName: (cart.customerName ?? "").trim(),
+          email: (cart.customerEmail ?? "").trim(),
+        },
+      })
+    : await card.tokenize();
   if (result.status !== "OK" || !result.token) {
     return { kind: "error", message: "Card was not accepted. Try again." };
   }
   const done = await completeSquareCheckout({
-    orderId: input.session.orderId,
+    orderId: session.orderId,
     sourceId: result.token,
   });
   if ("error" in done && done.error) {

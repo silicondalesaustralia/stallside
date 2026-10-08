@@ -1489,6 +1489,10 @@ model Order {
   /** Saved card on connected account for off-session balance. */
   stripePaymentMethodId   String?
   balancePaymentIntentId  String?
+  /** Square saved card for the balance on deposit orders. */
+  squareCustomerId        String?
+  squareCardId            String?
+  balanceSquarePaymentId  String?
   /** Off-session balance charge attempts (dunning). */
   balanceRetryCount       Int               @default(0)
   balanceLastFailedAt     DateTime?

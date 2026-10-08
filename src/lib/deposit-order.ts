@@ -1,24 +1,17 @@
 import {
+  PaymentMethod,
   PaymentStatus,
   PaymentTiming,
   type Prisma,
 } from "@/generated/prisma/client";
+import { chargeSquareOrderBalance } from "@/lib/square/deposit-balance";
 import { depositOutstandingCapCents } from "@/lib/deposit-liability";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
 import { proVolumeForFees } from "@/lib/pro-volume-fee";
 export { balanceAuthUrl } from "@/lib/order-access-token";
-
-export function splitDepositBalance(
-  totalCents: number,
-  depositPercent: number,
-): { depositCents: number; balanceCents: number } {
-  const pct = Math.min(99, Math.max(1, Math.round(depositPercent)));
-  const depositCents = Math.max(1, Math.round((totalCents * pct) / 100));
-  const balanceCents = Math.max(0, totalCents - depositCents);
-  return { depositCents, balanceCents };
-}
+export { splitDepositBalance } from "@/lib/deposit-split";
 
 /** Sum of deposit principal still outstanding (deposit paid, balance not cleared). */
 export async function outstandingDepositPrincipalCents(
@@ -75,7 +68,7 @@ type OwnerFee = {
 };
 
 /** Charge remaining balance off-session on the connected account. */
-export async function chargeOrderBalance(orderId: string): Promise<
+export async function chargeOrderBalance(orderId: string, squareSourceId?: string): Promise<
   | { ok: true }
   | { ok: false; error: string; needsAuth?: boolean }
 > {
@@ -101,6 +94,9 @@ export async function chargeOrderBalance(orderId: string): Promise<
       data: { paymentStatus: PaymentStatus.PAID },
     });
     return { ok: true };
+  }
+  if (order.paymentMethod === PaymentMethod.SQUARE) {
+    return chargeSquareOrderBalance(order, squareSourceId);
   }
   if (!order.stripePaymentMethodId) {
     return { ok: false, error: "No saved card for balance.", needsAuth: true };

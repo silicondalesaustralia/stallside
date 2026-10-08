@@ -1,17 +1,10 @@
 "use client";
 
-import type { CartItemInput } from "@/lib/checkout";
+import type { SquareCheckoutCartInput } from "@/lib/square/checkout-create-order";
 import { completeSquareWalletCheckout } from "./square-checkout-actions";
 import type { SquareWalletMethod } from "./use-square-sdk";
 
-export type SquareWalletPayProps = {
-  standSlug: string;
-  items?: CartItemInput[];
-  customerChoiceAmountCents?: number;
-  customerName?: string;
-  customerEmail?: string;
-  customerPhone?: string;
-  couponCode?: string | null;
+export type SquareWalletPayProps = SquareCheckoutCartInput & {
   onError: (message: string) => void;
   onSuccess: (orderNumber: string) => void;
 };
@@ -36,6 +29,10 @@ export async function runSquareWalletPay(
         customerName: props.customerName,
         customerEmail: props.customerEmail,
         customerPhone: props.customerPhone,
+        deliveryAddressLine1: props.deliveryAddressLine1,
+        deliverySuburb: props.deliverySuburb,
+        deliveryPostcode: props.deliveryPostcode,
+        deliveryNotes: props.deliveryNotes,
         couponCode: props.couponCode,
         sourceId: token,
       });

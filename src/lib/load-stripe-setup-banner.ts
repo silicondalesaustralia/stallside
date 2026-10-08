@@ -90,8 +90,9 @@ export async function loadStripeSetupBanner(input: {
       title: "Connect Stripe or Square to take card payments",
       body: "Optional if you only take cash or bank transfer. Pick the one that suits how you sell. You can connect both.",
       steps: [
-        "Stripe: cards, Apple Pay / Google Pay, pre-orders and deposits",
+        "Stripe: cards, Apple Pay / Google Pay and pay-later",
         "Square: cards plus stock sync with your Square reader at markets",
+        "Both handle pre-orders, deposits, subscriptions and memberships",
         "Then turn on card payments on your checkout",
       ],
       ctas: [

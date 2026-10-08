@@ -23,7 +23,7 @@ import {
   SQUARE_CURRENCY,
   squareEligibleBillingCurrency,
 } from "@/lib/commerce/payment-rail";
-
+import { cleanShopperDetails, planSquarePreOrder } from "@/lib/square/checkout-preorder";
 export type SquareCheckoutCartInput = {
   standSlug: string;
   items?: CartItemInput[];
@@ -31,6 +31,10 @@ export type SquareCheckoutCartInput = {
   customerName?: string;
   customerEmail?: string;
   customerPhone?: string;
+  deliveryAddressLine1?: string;
+  deliverySuburb?: string;
+  deliveryPostcode?: string;
+  deliveryNotes?: string;
   couponCode?: string | null;
 };
 
@@ -41,58 +45,56 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
   const applicationId = squareApplicationId();
   if (!applicationId) return { error: "Square is not configured." };
 
+  const shopper = cleanShopperDetails(input);
   const amount = input.customerChoiceAmountCents;
   const loaded =
     amount != null
       ? await loadCustomerChoiceCheckout(input.standSlug, amount)
       : await loadStandCart(input.standSlug, input.items ?? [], {
-          receiptEmail:
-            (input.customerEmail ?? "").trim().toLowerCase() || null,
-          claimFirstOrder: Boolean(input.customerEmail),
+          receiptEmail: shopper.customerEmail || null,
+          claimFirstOrder: Boolean(shopper.customerEmail),
         });
   if ("error" in loaded) return { error: loaded.error };
 
-  const {
-    stand,
-    lineData,
-    subtotalCents,
-    discountCents,
-    discountLabel,
-    totalCents,
-    preOrderCart,
-  } = loaded;
+  const { stand, lineData, subtotalCents, discountCents, discountLabel, totalCents, preOrderCart } =
+    loaded;
   if (!stand.acceptSquare) {
-    return { error: "This stand is not accepting card payments." };
+    return { error: "This shop is not accepting card payments." };
   }
   if (
     !squareEligibleBillingCurrency(stand.owner.billingCurrency) ||
     stand.currency.trim().toUpperCase() !== SQUARE_CURRENCY
   ) {
-    return { error: "Square checkout is only available for Australian (AUD) stands." };
+    return { error: "Square checkout is only available for Australian (AUD) businesses." };
   }
 
   const conn = await getSquareConnection(stand.ownerId);
-  if (
-    !conn ||
-    conn.status !== "ACTIVE" ||
-    !conn.paymentsEnabled ||
-    !conn.primaryLocationId
-  ) {
+  if (!conn || conn.status !== "ACTIVE" || !conn.paymentsEnabled || !conn.primaryLocationId) {
     return { error: "Seller Square connection is not ready." };
   }
   if (stand.owner.onlinePaymentProvider !== OnlinePaymentProvider.SQUARE) {
     return { error: "Seller is not using Square for online payments." };
   }
 
-  const { applicationFeeCents, chargeTotalCents } = computeVendlCheckoutFees(
-    totalCents,
+  const plan = preOrderCart
+    ? await planSquarePreOrder({
+        preOrderCart,
+        shopper,
+        totalCents,
+        ownerId: stand.ownerId,
+        grantedScopes: conn.scopes,
+      })
+    : null;
+  if (plan && "error" in plan) return { error: plan.error };
+
+  const { applicationFeeCents, chargeTotalCents, passedOn } = computeVendlCheckoutFees(
+    plan?.chargeGoodsCents ?? totalCents,
     stand.owner,
     { rail: "square", currency: stand.currency },
   );
   const saleOrigin = SaleOrigin.VENDL_WEB;
-  const platformFeeCents = saleOriginIncursVendlFee(saleOrigin)
-    ? applicationFeeCents
-    : 0;
+  const platformFeeCents = saleOriginIncursVendlFee(saleOrigin) ? applicationFeeCents : 0;
+  const deposit = plan?.deposit ?? null;
 
   const order = await prisma.order.create({
     data: {
@@ -104,24 +106,24 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
       saleOrigin,
       onlinePaymentProvider: OnlinePaymentProvider.SQUARE,
       subtotalCents,
-      totalCents: chargeTotalCents,
+      totalCents: deposit ? totalCents + (passedOn ? applicationFeeCents : 0) : chargeTotalCents,
       discountCents,
       discountLabel,
       currency: stand.currency,
       platformFeeCents,
       squareLocationId: conn.primaryLocationId,
-      receiptEmail: (input.customerEmail ?? "").trim().toLowerCase() || null,
-      receiptChannel: input.customerEmail
-        ? ReceiptChannel.EMAIL
-        : ReceiptChannel.NONE,
-      customerName: (input.customerName ?? "").trim().slice(0, 120) || null,
-      customerPhone: (input.customerPhone ?? "").trim().slice(0, 40) || null,
+      receiptEmail: shopper.customerEmail || null,
+      receiptChannel: shopper.customerEmail ? ReceiptChannel.EMAIL : ReceiptChannel.NONE,
+      customerName: shopper.customerName || null,
+      customerPhone: shopper.customerPhone,
       isPreOrder: Boolean(preOrderCart),
       collectionAt: preOrderCart?.collectionAt ?? null,
       collectionNote: preOrderCart?.collectionNote ?? null,
       collectionStatus: preOrderCart ? CollectionStatus.ORDERED : null,
       paymentTiming: preOrderCart?.paymentTiming ?? PaymentTiming.PAY_NOW,
       handoverMode: preOrderCart?.handoverMode ?? HandoverMode.COLLECT,
+      ...(deposit ?? {}),
+      ...(plan?.delivery ?? {}),
       items: { create: orderItemCreates(lineData) },
     },
   });
@@ -133,5 +135,6 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
     amountCents: chargeTotalCents,
     currency: stand.currency,
     appFeeCents: platformFeeCents,
+    saveCard: Boolean(deposit),
   };
 }

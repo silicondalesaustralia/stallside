@@ -1,11 +1,27 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PaymentStatus, PaymentTiming } from "@/generated/prisma/client";
+import { PaymentMethod, PaymentStatus, PaymentTiming } from "@/generated/prisma/client";
 import { formatMoney } from "@/lib/money";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
 import { verifyOrderAccessToken } from "@/lib/order-access-token";
+import { squareApplicationId } from "@/lib/square/config";
+import { getSquareConnection } from "@/lib/square/connection";
 import BalanceAuthButton from "./BalanceAuthButton";
+import SquareBalanceCard from "./SquareBalanceCard";
+
+async function squareBalanceConfig(order: { ownerId: string; squareLocationId: string | null }) {
+  const applicationId = squareApplicationId();
+  try {
+    const conn = await getSquareConnection(order.ownerId);
+    const locationId = order.squareLocationId ?? conn?.primaryLocationId;
+    if (!applicationId || conn?.status !== "ACTIVE" || !locationId) return null;
+    return { applicationId, locationId };
+  } catch (error) {
+    console.error("Square balance config failed", order.ownerId, error);
+    return null;
+  }
+}
 
 export default async function BalanceAuthPage({
   params,
@@ -35,6 +51,8 @@ export default async function BalanceAuthPage({
   }
 
   const balance = formatMoney(order.balanceCents ?? 0, order.currency);
+  const square = order.paymentMethod === PaymentMethod.SQUARE ? await squareBalanceConfig(order) : null;
+  const showRetry = order.paymentMethod !== PaymentMethod.SQUARE || Boolean(order.squareCardId);
 
   return (
     <main className="mx-auto flex min-h-[70vh] max-w-lg flex-col justify-center gap-6 px-4 py-16">
@@ -47,7 +65,15 @@ export default async function BalanceAuthPage({
         owes <strong>{balance}</strong>. Tap below to retry the charge (you may
         need to authenticate with your bank).
       </p>
-      <BalanceAuthButton orderId={order.id} token={token!} />
+      {showRetry ? <BalanceAuthButton orderId={order.id} token={token!} /> : null}
+      {square ? (
+        <SquareBalanceCard
+          orderId={order.id}
+          token={token!}
+          applicationId={square.applicationId}
+          locationId={square.locationId}
+        />
+      ) : null}
       <Link href={`/s/${order.stand.slug}`} className="text-sm text-[var(--leaf-dark)] underline">
         Back to stand
       </Link>

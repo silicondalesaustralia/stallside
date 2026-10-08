@@ -17,10 +17,10 @@ export const storefrontArticles: KnowledgeArticle[] = [
     ],
     ctas: [
       { label: "Pre-order pages", href: "/dashboard/pre-order-pages" },
-      { label: "Connect Stripe", href: "/dashboard/settings/stripe" },
+      { label: "Payments", href: "/dashboard/payments" },
     ],
     steps: [
-      "Pre-orders need Stripe connected so buyers can pay by card to reserve. Available on Free and Pro.",
+      "Pre-orders need Stripe or Square connected so buyers can pay by card to reserve. Whichever you choose as your product checkout provider takes the payment, including deposits. Available on Free and Pro.",
       "You sell from a pre-order page (one link or QR per collection or delivery day), not from a single product toggle. Mark catalogue products as Available for pre-order pages, then add them to a page.",
       "Each page has an orders-close time, a collection or delivery time, optional note, and either pay in full or a deposit with balance due on handover.",
       "Buyers pay by card only, enter name, email, and optional phone (or delivery address when you choose Deliver).",
@@ -42,7 +42,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
       { label: "Products", href: "/dashboard/products" },
     ],
     steps: [
-      "Connect Stripe first (Settings → Stripe). Pre-order pages cannot go live without card payments enabled.",
+      "Connect Stripe or Square first (Payments in the sidebar). Pre-order pages cannot go live without card payments enabled. If you connected Square before deposits were available, you'll be asked to reconnect Square once so it can save shoppers' cards.",
       "On each product you want on the sheet, open the product editor and turn on Available for pre-order pages. Collection day and add-ons are set on the page, not on the product.",
       "Go to Pre-order pages → create a page. Name it (e.g. Friday bake 20 Mar). Optionally set the URL slug or leave it to auto-generate.",
       "Set Orders close and Collection (or delivery) time. Add a short note if buyers need directions or delivery timing.",

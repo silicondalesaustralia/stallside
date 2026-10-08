@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import type { CartItemInput } from "@/lib/checkout";
+import type { SquareCheckoutCartInput } from "@/lib/square/checkout-create-order";
 import PaymentIconRow from "@/components/PaymentIconRow";
 import PoweredByRail from "@/components/PoweredByRail";
 import { SQUARE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
@@ -11,16 +11,11 @@ import {
 } from "./continue-square-card-pay";
 import { getSquarePayConfig } from "./square-checkout-actions";
 import SquareWalletButtons from "./SquareWalletButtons";
-import { useSquareSdk, type SquarePayments } from "./use-square-sdk";
+import { useSquareSdk, type SquareCard, type SquarePayments } from "./use-square-sdk";
 
-type Props = {
-  standSlug: string;
-  items?: CartItemInput[];
-  customerChoiceAmountCents?: number;
-  customerName?: string;
-  customerEmail?: string;
-  customerPhone?: string;
-  couponCode?: string | null;
+type Props = SquareCheckoutCartInput & {
+  /** Deposit carts save the card for the balance, so wallets are hidden. */
+  depositMode?: boolean;
   amountCents: number;
   currency: string;
   disabled?: boolean;
@@ -31,6 +26,7 @@ type Props = {
 export default function SquareWebPayButton(props: Props) {
   const {
     standSlug,
+    depositMode = false,
     amountCents,
     currency,
     disabled,
@@ -42,9 +38,7 @@ export default function SquareWebPayButton(props: Props) {
   const [payments, setPayments] = useState<SquarePayments | null>(null);
   const [countryCode, setCountryCode] = useState("AU");
   const [session, setSession] = useState<SquarePaySession | null>(null);
-  const cardRef = useRef<{
-    tokenize: () => Promise<{ status: string; token?: string }>;
-  } | null>(null);
+  const cardRef = useRef<SquareCard | null>(null);
 
   useEffect(() => {
     if (!ready || !window.Square) return;
@@ -83,7 +77,9 @@ export default function SquareWebPayButton(props: Props) {
           Pay with credit card
         </p>
         <p className="mt-0.5 text-base text-[var(--muted)]">
-          Card, Apple Pay, or Google Pay when available
+          {depositMode
+            ? "Your card is saved securely with Square for the balance"
+            : "Card, Apple Pay, or Google Pay when available"}
         </p>
         <div className="mt-3 flex w-full justify-center rounded-[var(--radius)] bg-[var(--wash)] px-3 py-3">
           <PaymentIconRow
@@ -93,7 +89,7 @@ export default function SquareWebPayButton(props: Props) {
           />
         </div>
       </div>
-      {payments ? (
+      {payments && !depositMode ? (
         <SquareWalletButtons
           {...props}
           payments={payments}
@@ -129,7 +125,15 @@ export default function SquareWebPayButton(props: Props) {
           });
         }}
       >
-        {pending ? "Processing…" : session ? "Pay now" : "Pay with card"}
+        {pending
+          ? "Processing…"
+          : session
+            ? depositMode
+              ? "Pay deposit"
+              : "Pay now"
+            : depositMode
+              ? "Pay deposit with card"
+              : "Pay with card"}
       </button>
       <PoweredByRail rail="square" />
     </div>

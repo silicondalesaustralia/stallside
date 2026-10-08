@@ -10,6 +10,7 @@ import {
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { parsePreOrderFromForm } from "@/lib/pre-order";
+import { loadPreOrderCardRail, SQUARE_DEPOSIT_RECONNECT_ERROR } from "@/lib/preorder-card-rail";
 import { slugify } from "@/lib/slug";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { preOrderPagePath } from "@/lib/preorder-page";
@@ -206,17 +207,18 @@ export async function createPreOrderPage(formData: FormData) {
   });
   if (!stand) return { error: "Create a business first." };
 
-  const stripeConnected = Boolean(
-    owner.stripeAccountId && owner.stripeChargesEnabled,
-  );
+  const rail = await loadPreOrderCardRail(owner);
   formData.set("isPreOrder", "true");
   const pre = parsePreOrderFromForm(
     formData,
     true,
-    stripeConnected,
+    rail.cardReady,
     stand.timezone,
   );
   if (!pre.ok) return { error: pre.error };
+  if (pre.data.paymentTiming === "DEPOSIT_THEN_BALANCE" && rail.squareNeedsReconnectForDeposits) {
+    return { error: SQUARE_DEPOSIT_RECONNECT_ERROR };
+  }
   if (!pre.data.isPreOrder) {
     return { error: "Set order-by and collection times." };
   }
@@ -342,17 +344,18 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
   });
   if (!existing) return { error: "Pre-order page not found." };
 
-  const stripeConnected = Boolean(
-    owner.stripeAccountId && owner.stripeChargesEnabled,
-  );
+  const rail = await loadPreOrderCardRail(owner);
   formData.set("isPreOrder", "true");
   const pre = parsePreOrderFromForm(
     formData,
     true,
-    stripeConnected,
+    rail.cardReady,
     existing.stand.timezone,
   );
   if (!pre.ok) return { error: pre.error };
+  if (pre.data.paymentTiming === "DEPOSIT_THEN_BALANCE" && rail.squareNeedsReconnectForDeposits) {
+    return { error: SQUARE_DEPOSIT_RECONNECT_ERROR };
+  }
   if (!pre.data.isPreOrder) {
     return { error: "Set order-by and collection times." };
   }

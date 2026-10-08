@@ -29,6 +29,7 @@ import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/public-product";
 import { stallsidePassOnFeeCents } from "@/lib/money";
+import { splitDepositBalance } from "@/lib/deposit-split";
 import {
   pruneStandCart,
   productQtyInCart,
@@ -265,6 +266,18 @@ export default function StandCartCheckout({
   const cardTotalCents = total + cardFeeCents;
   const squareTotalCents =
     total + (passOnApplies ? stallsidePassOnFeeCents(total) : 0);
+  const depositPercent =
+    lines.length > 0 &&
+    lines.every((l) => l.product.isPreOrder && l.product.paymentTiming === "DEPOSIT_THEN_BALANCE")
+      ? (lines[0]?.product.depositPercent ?? 30)
+      : null;
+  const squareDeposit = (() => {
+    if (depositPercent == null || total <= 0) return null;
+    const split = splitDepositBalance(total, depositPercent);
+    if (split.balanceCents <= 0) return null;
+    const fee = passOnApplies ? stallsidePassOnFeeCents(split.depositCents) : 0;
+    return { amountCents: split.depositCents + fee, balanceCents: split.balanceCents };
+  })();
   const payload = lines.map((l) => ({
     productId: l.product.id,
     quantity: l.quantity,
@@ -550,6 +563,7 @@ export default function StandCartCheckout({
           cardFeeCents={cardFeeCents}
           cardTotalCents={cardTotalCents}
           squareTotalCents={squareTotalCents}
+          squareDeposit={squareDeposit}
           localTransferLabel={localTransfer?.buttonLabel ?? null}
           pending={pending}
           showDemoCardHint={Boolean(demoProduct)}
