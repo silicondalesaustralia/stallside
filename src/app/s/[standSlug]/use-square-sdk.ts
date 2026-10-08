@@ -16,9 +16,22 @@ export type SquarePayments = {
 
 export type SquarePaymentRequest = object;
 
+/** Buyer verification for saving a card (Square handles any bank check). */
+export type SquareVerificationDetails = {
+  intent: "CHARGE_AND_STORE" | "STORE";
+  amount?: string;
+  currencyCode?: string;
+  customerInitiated: true;
+  sellerKeyedIn: false;
+  billingContact: { givenName: string; email: string };
+};
+
 export type SquareCard = {
   attach: (selector: string) => Promise<void>;
-  tokenize: () => Promise<{ status: string; token?: string }>;
+  tokenize: (
+    verificationDetails?: SquareVerificationDetails,
+  ) => Promise<{ status: string; token?: string }>;
+  destroy?: () => Promise<void>;
 };
 
 export type SquareWalletMethod = {

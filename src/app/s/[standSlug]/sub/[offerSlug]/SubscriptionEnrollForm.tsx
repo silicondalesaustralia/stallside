@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { startShopperSubscriptionCheckout } from "../enroll-actions";
+import SquareSubscriptionCardStep from "../SquareSubscriptionCardStep";
+import type { SquareSubscriptionSession } from "@/lib/square-subscriptions/enrol-start";
 import { formatMoney } from "@/lib/money";
 import {
   intervalLabel,
@@ -31,7 +33,10 @@ export default function SubscriptionEnrollForm({
   lines: Line[];
 }) {
   const [message, setMessage] = useState<string | null>(null);
+  const [squareSession, setSquareSession] = useState<SquareSubscriptionSession | null>(null);
   const [pending, startTransition] = useTransition();
+
+  if (squareSession) return <SquareSubscriptionCardStep session={squareSession} />;
 
   function onSubmit(formData: FormData) {
     setMessage(null);
@@ -49,11 +54,15 @@ export default function SubscriptionEnrollForm({
         deliveryPostcode: String(formData.get("deliveryPostcode") ?? ""),
         deliveryNotes: String(formData.get("deliveryNotes") ?? ""),
       });
-      if (result.error) {
+      if ("error" in result) {
         setMessage(result.error);
         return;
       }
-      if (result.url) window.location.href = result.url;
+      if ("square" in result) {
+        setSquareSession(result.square);
+        return;
+      }
+      window.location.href = result.url;
     });
   }
 

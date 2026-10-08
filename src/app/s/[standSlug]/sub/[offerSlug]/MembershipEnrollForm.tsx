@@ -2,6 +2,8 @@
 
 import { useEffect, useId, useState, useTransition } from "react";
 import { startShopperSubscriptionCheckout } from "../enroll-actions";
+import SquareSubscriptionCardStep from "../SquareSubscriptionCardStep";
+import type { SquareSubscriptionSession } from "@/lib/square-subscriptions/enrol-start";
 import {
   membershipSelectedSummary,
   parseUpfrontBenefits,
@@ -37,6 +39,7 @@ export default function MembershipEnrollForm({
     plans[0]?.plan ?? "",
   );
   const [benefitsOpen, setBenefitsOpen] = useState(false);
+  const [squareSession, setSquareSession] = useState<SquareSubscriptionSession | null>(null);
   const benefits = parseUpfrontBenefits(upfrontBenefitsText);
   const selected =
     plans.find((p) => p.plan === billingPlan) ?? plans[0] ?? null;
@@ -44,6 +47,8 @@ export default function MembershipEnrollForm({
   useEffect(() => {
     setBenefitsOpen(billingPlan === "UPFRONT");
   }, [billingPlan]);
+
+  if (squareSession) return <SquareSubscriptionCardStep session={squareSession} />;
 
   function onSubmit(formData: FormData) {
     setMessage(null);
@@ -62,11 +67,15 @@ export default function MembershipEnrollForm({
         deliveryPostcode: String(formData.get("deliveryPostcode") ?? ""),
         deliveryNotes: String(formData.get("deliveryNotes") ?? ""),
       });
-      if (result.error) {
+      if ("error" in result) {
         setMessage(result.error);
         return;
       }
-      if (result.url) window.location.href = result.url;
+      if ("square" in result) {
+        setSquareSession(result.square);
+        return;
+      }
+      window.location.href = result.url;
     });
   }
 
