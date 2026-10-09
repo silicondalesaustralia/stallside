@@ -3,7 +3,13 @@ import type { PublishResult } from "./publish";
 
 /** Returned by editor save/publish actions when they don't redirect. */
 export type EditorSaveResult =
-  | { ok: false; error: "conflict" | "publish_blocked"; message: string };
+  | { ok: false; error: "conflict" | "publish_blocked" | "invalid"; message: string };
+
+export const invalidResult = (errors: string[]): EditorSaveResult => ({
+  ok: false,
+  error: "invalid",
+  message: `Can't save: ${errors.join(" ")}`,
+});
 
 export const conflictResult = (message: string): EditorSaveResult => ({
   ok: false,

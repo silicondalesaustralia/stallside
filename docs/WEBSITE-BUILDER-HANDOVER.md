@@ -758,7 +758,7 @@ Copy the values from the staging project in Vercel when enabling a feature on th
 ## 12. Testing
 
 ```bash
-npm run test:website      # 99 tests, 14 files (tenancy, domains, studio, website-ai, blueprints, looks, demo kits)
+npm run test:website      # 148 tests (tenancy, domains, studio, website-ai, blueprints, looks, demo kits, persistence, schema, adapter, theme, templates)
 npx tsc --noEmit          # must be zero errors
 npm run build             # production build
 ```
@@ -795,15 +795,67 @@ npm run build             # production build
    - implement renewals.
 8. **Seller-host `robots.txt` and `sitemap.xml`:** rewrite them in middleware, or serve them from the root routes based on host.
 9. **Staging subdomains:** redirect checkout and dashboard to the staging apex instead of production (`apexOrigin` in middleware).
-10. **AI calls:** add timeouts (`AbortController`), set `maxDuration`, reuse the step 1 plan instead of planning again, label heuristic fallbacks correctly, and only send `reasoning` to reasoning models.
-11. **Settings panel controls that do nothing:**
-    - Categories "Layout" writes `layout`, but rendering uses `preset`;
-    - NextDrop "Layout" writes `cardStyle`;
-    - ProductGrid "Layout" is never passed to the block;
+10. **AI calls:** add timeouts (`AbortController`), set `maxDuration`, label heuristic fallbacks correctly, and only send `reasoning` to reasoning models. (The build step now reuses the step 1 plan unless the seller picks a different starting style.)
+11. **Settings panel controls that do nothing:** the Categories, NextDrop and ProductGrid "Layout" controls are now a "Style" picker that writes `preset`. Still open:
     - Hero offers fixed options rather than the template's presets;
     - Image sections take a raw URL, with no upload.
 12. **Request caching:** wrap `loadStorefrontContext` / `buildStudioMetadata` in `cache()`.
-13. **Concurrency:** add an optimistic version check on `draftConfig` writes.
+13. **Autosave and onboarding (spec Milestone 4):** not started. Save actions redirect on success, so autosave needs a non-redirecting save action that returns the new `draftRevision`.
 14. **Remove the dead spike code** once the shared pieces are moved under `studio/` (section 4.6), and remove `@puckeditor/core`.
 15. **Rename `src/middleware.ts` to `proxy.ts`** (Next 16).
-16. **Housekeeping:** many ported files exceed the project's 150-line guideline (for example `AiBuilderForm.tsx` 506, `heuristic-planner.ts` 488, `plan-schema.ts` 397, `custom-pages.ts` 360, `lifecycle.ts` 341). Split them when touching them.
+16. **Housekeeping:** many ported files exceed the project's 150-line guideline (for example `AiBuilderForm.tsx` 506, `heuristic-planner.ts` 488, `plan-schema.ts` 397, `custom-pages.ts` 360, `lifecycle.ts` 341).     Split them when touching them.
+
+---
+
+## 14. Vendl website schema, section registry and templates
+
+Storage is unchanged: pages are still Craft `SerializedNodes` in `draftConfig.websiteStudio`. The new layer sits beside it. It validates what gets saved, describes every section in one place, and gives templates and migrations a stable format that doesn't depend on Craft.
+
+### 14.1 Modules (`src/lib/website/`)
+
+| Module | What it does |
+| --- | --- |
+| `schema/limits.ts` | `WEBSITE_SCHEMA_VERSION` (1) and hard limits (pages, sections, text lengths, payload size). |
+| `schema/definition.ts` | Zod schema for `WebsiteDefinition`: template, theme, identity, navigation, and pages of section instances. |
+| `schema/validate.ts` | `validateWebsiteDefinition` / `validatePage`. A future schema version fails safely instead of being reinterpreted. |
+| `sections/*` | The section registry: one `SectionDefinition` per type (variants, content/settings/binding schemas, allowed page kinds, business modes, singleton/required, empty-state policy). `registry.ts` is checked against `StudioSectionType` at compile time, and so is `studio/resolver.ts`. |
+| `adapter/from-craft.ts`, `to-craft.ts` | Lossless conversion between Craft nodes and section instances. Props the registry doesn't model go to `extras` (a warning), never dropped. Unknown types are errors. |
+| `adapter/from-config.ts` | Converts a whole stored draft or published config into a definition. Pure and read-only. |
+| `adapter/validate-craft-page.ts` | `craftPageSaveErrors`, called by the Studio, commerce and custom-page save/publish actions. An invalid page returns "Can't save: …" and nothing is written. |
+| `theme/resolve-theme.ts` | Theme precedence: platform defaults, then template defaults, then the seller's explicit choices. `fillUnsetTheme` lets AI fill gaps without overriding the seller. |
+| `templates/*` | Template package contract, three packages, validator, instantiation and restore point (14.3). |
+
+Business mode is **not** enforced on save, so existing sites with, say, a farm stand section on a food business never get stuck. It is enforced when a template is instantiated.
+
+### 14.2 Migration dry run
+
+```bash
+npx tsx scripts/website-migrate-dry-run.ts [--verbose] [--slug=my-shop]
+```
+
+- Read-only. It converts every storefront's draft and published config separately.
+- For each one it reports errors, warnings, and whether the Craft round trip is lossless. It exits 1 if any storefront has errors.
+- It never writes, so there's nothing to roll back. There is no "apply" step yet: storage stays Craft, and the definition is derived on demand.
+
+### 14.3 Templates (Website → Edit layout → Choose a template → "Starting layouts")
+
+- **Package contract:** `templates/package-schema.ts`.
+  - A package has an id and version, a skin, the business modes it supports, and slots for the `home` page and optionally the `shop` page.
+  - Slot props may use `{{business.name|headline|subheadline|about|region}}` tokens.
+  - Product and menu detail pages keep the built-in layout.
+- **Packages:**
+  - Product first (market skin, all modes);
+  - Weekly release (farmhouse skin, food business and both);
+  - Story first (artisan skin, all modes).
+- **`validateTemplatePackage`** checks structure, unknown tokens, duplicate slots and demo assets. It also instantiates the package for every business mode it claims, with both sparse and complete seller data, and runs the registry validation on the result. Each package is covered by a test.
+- **Applying** (`studio/templates/actions.ts`):
+  - It replaces only the homepage and shop layouts in the draft, sets the skin, and keeps colours, fonts, logo and custom pages.
+  - The write is revision-guarded.
+  - The previous layouts are stored under `draftConfig.websiteTemplateRestorePoint`, which powers "Undo last layout change". That key is stripped from published snapshots.
+  - Nothing goes live until the seller publishes.
+
+### 14.4 Blog and redirect publishing semantics
+
+- **Blog posts** are saved to the draft first. Publishing a single post patches the live config under a row lock (`persistence/live-patch.ts`). Publishing the whole site publishes exactly the revision it read, so it can't lose a concurrent blog change. Restoring an old publication keeps the current blog posts, topics and redirects (`restore-snapshot.ts`).
+- **Redirects** are edited in the draft. "Publish redirects" patches only redirects into the live config, and needs the site to be published already.
+- **Product SEO edits** on the website SEO page are saved to the website draft (`settings.seo`). The product's own fields are untouched.

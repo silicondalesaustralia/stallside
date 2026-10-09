@@ -5,13 +5,22 @@ import { extractWebsiteStudio, defaultTemplateId } from "@/lib/studio/storage";
 import { STUDIO_TEMPLATE_LIST } from "@/lib/studio/templates";
 import { normalizeBusinessMode } from "@/lib/business-mode";
 import WebStudioSteps from "@/components/website/WebStudioSteps";
+import TemplatePackageList from "@/components/website/TemplatePackageList";
+import { templatePackagesFor } from "@/lib/website/templates/packages";
+import { readTemplateRestorePoint } from "@/lib/website/templates/restore-point";
 import { applyWebsiteStudioTemplate } from "../actions";
 
-export default async function WebsiteStudioTemplatesPage() {
+export default async function WebsiteStudioTemplatesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ applied?: string; undone?: string; error?: string }>;
+}) {
+  const sp = await searchParams;
   const { owner } = await requireOwner();
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const studio = extractWebsiteStudio(storefront.draftConfig);
-  const current = defaultTemplateId(studio ?? null, normalizeBusinessMode(owner.businessMode));
+  const mode = normalizeBusinessMode(owner.businessMode);
+  const current = defaultTemplateId(studio ?? null, mode);
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-8 pb-12">
@@ -67,6 +76,13 @@ export default async function WebsiteStudioTemplatesPage() {
           </li>
         ))}
       </ul>
+      <TemplatePackageList
+        packages={templatePackagesFor(mode)}
+        restorePoint={readTemplateRestorePoint(storefront.draftConfig)}
+        applied={sp.applied}
+        undone={sp.undone === "1"}
+        error={sp.error}
+      />
     </main>
   );
 }

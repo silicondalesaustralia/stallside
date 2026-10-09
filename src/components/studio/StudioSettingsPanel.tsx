@@ -7,6 +7,8 @@ import ProductPickerField from "@/components/puck/editor/fields/ProductPickerFie
 import CategoryPickerField from "@/components/puck/editor/fields/CategoryPickerField";
 import { useStudioMetadata, useStudioEditorChrome } from "./StudioEditorContext";
 import HeaderStyleSettings from "./HeaderStyleSettings";
+import PresetStyleField from "./PresetStyleField";
+import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
 import type { CraftHeroProps } from "@/components/craft/sections/CraftHeroSection";
 import type { CraftProductGridProps } from "@/components/craft/sections/CraftProductGridSection";
 import type { CraftNextDropProps } from "@/components/craft/sections/CraftNextDropSection";
@@ -192,12 +194,7 @@ function ProductGridSettings({
           <ProductPickerField value={props.productIds} onChange={(v) => setProp("productIds", v)} products={metadata.products} />
         </Field>
       ) : null}
-      <Field label="Layout">
-        <select className={INPUT} value={props.layout} onChange={(e) => setProp("layout", e.target.value)}>
-          <option value="grid">Grid</option>
-          <option value="list">List</option>
-        </select>
-      </Field>
+      <PresetStyleField presetsBySkin={PRODUCT_PRESETS} value={props.preset} onChange={(v) => setProp("preset", v)} />
       <Field label="Columns">
         <select className={INPUT} value={props.columns} onChange={(e) => setProp("columns", Number(e.target.value))}>
           <option value={2}>2</option>
@@ -230,13 +227,11 @@ function CategoriesSettings({
       <p className="text-xs text-[var(--muted)]">
         Edit the heading directly on the page.
       </p>
-      <Field label="Layout">
-        <select className={INPUT} value={props.layout} onChange={(e) => setProp("layout", e.target.value)}>
-          <option value="tiles">Tiles</option>
-          <option value="cards">Cards</option>
-          <option value="compact">Compact</option>
-        </select>
-      </Field>
+      <PresetStyleField
+        presetsBySkin={CATEGORY_PRESETS}
+        value={props.preset ?? props.layout}
+        onChange={(v) => setProp("preset", v)}
+      />
       <Field label="Show">
         <label className="flex items-center gap-2 text-sm">
           <input type="radio" checked={props.source === "all"} onChange={() => setProp("source", "all")} />
@@ -295,12 +290,7 @@ function NextDropSettings({
         <input type="checkbox" checked={props.showClosingDate} onChange={(e) => setProp("showClosingDate", e.target.checked)} />
         Show closing date
       </label>
-      <Field label="Layout">
-        <select className={INPUT} value={props.cardStyle} onChange={(e) => setProp("cardStyle", e.target.value)}>
-          <option value="card">Cards</option>
-          <option value="minimal">Compact</option>
-        </select>
-      </Field>
+      <PresetStyleField presetsBySkin={NEXT_DROP_PRESETS} value={props.preset} onChange={(v) => setProp("preset", v)} />
     </>
   );
 }

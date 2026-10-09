@@ -10,8 +10,10 @@ import {
   writeStorefrontDraft,
 } from "@/lib/website/persistence/draft-store";
 import { tryPublishStorefront } from "@/lib/website/persistence/publish";
+import { craftPageSaveErrors } from "@/lib/website/adapter/validate-craft-page";
 import {
   conflictResult,
+  invalidResult,
   publishFailureResult,
   type EditorSaveResult,
 } from "@/lib/website/persistence/editor-result";
@@ -75,6 +77,8 @@ export async function saveCommerceLayoutDraft(
   if (!kind) redirect("/dashboard/website/commerce?error=kind");
   const { owner } = await requireWebsiteOwner();
   const nodes = parseNodesJson(nodesJson, kind);
+  const invalid = craftPageSaveErrors(nodes, kind);
+  if (invalid.length > 0) return invalidResult(invalid);
   const slug = await persistCommerceNodes(
     owner.id,
     owner.businessName,
@@ -98,6 +102,8 @@ export async function publishCommerceLayoutDraft(
   if (!kind) redirect("/dashboard/website/commerce?error=kind");
   const { owner, user } = await requireWebsiteOwner();
   const nodes = parseNodesJson(nodesJson, kind);
+  const invalid = craftPageSaveErrors(nodes, kind);
+  if (invalid.length > 0) return invalidResult(invalid);
   const slug = await persistCommerceNodes(
     owner.id,
     owner.businessName,

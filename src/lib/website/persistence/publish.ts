@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@/generated/prisma/client";
 import { parseStorefrontIdentity, identityColumnData } from "@/lib/storefront/identity";
 import { DraftConflictError } from "./draft-store";
 import { findPublishBlockers } from "./publish-checks";
+import { withoutDraftOnlyKeys } from "@/lib/website/templates/restore-point";
 
 export class PublishBlockedError extends Error {
   constructor(readonly blockers: string[]) {
@@ -31,7 +31,7 @@ export async function publishStorefront(ownerId: string, userId?: string) {
   const blockers = findPublishBlockers(sf.draftConfig);
   if (blockers.length > 0) throw new PublishBlockedError(blockers);
 
-  const snapshot = sf.draftConfig as Prisma.InputJsonValue;
+  const snapshot = withoutDraftOnlyKeys(sf.draftConfig);
   const publishedAt = new Date();
   const publicationId = await prisma.$transaction(async (tx) => {
     const publication = await tx.storefrontPublication.create({

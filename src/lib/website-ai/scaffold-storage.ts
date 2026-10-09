@@ -10,7 +10,16 @@ export type WebsiteAiScaffold = {
   intent: WebsiteGenerationIntent;
   looks: BrandLookCombo[];
   createdAt: string;
+  /** Starting style the plan was laid out for; the build reuses the plan while it still matches. */
+  plannedBlueprintId?: string;
+  provider?: string;
+  model?: string;
 };
+
+/** True when the build can compile the stored plan instead of planning again. */
+export function canReuseScaffoldPlan(scaffold: WebsiteAiScaffold, blueprintId: string): boolean {
+  return Boolean(scaffold.plannedBlueprintId) && scaffold.plannedBlueprintId === blueprintId;
+}
 
 export function extractWebsiteAiScaffold(raw: unknown): WebsiteAiScaffold | null {
   if (!raw || typeof raw !== "object") return null;
@@ -25,6 +34,9 @@ export function extractWebsiteAiScaffold(raw: unknown): WebsiteAiScaffold | null
     intent: obj.intent ?? {},
     looks: obj.looks,
     createdAt: typeof obj.createdAt === "string" ? obj.createdAt : new Date().toISOString(),
+    ...(typeof obj.plannedBlueprintId === "string" ? { plannedBlueprintId: obj.plannedBlueprintId } : {}),
+    ...(typeof obj.provider === "string" ? { provider: obj.provider } : {}),
+    ...(typeof obj.model === "string" ? { model: obj.model } : {}),
   };
 }
 

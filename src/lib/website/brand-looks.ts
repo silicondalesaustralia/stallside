@@ -2,18 +2,22 @@ import type { StudioTemplateId } from "@/lib/studio/types";
 import {
   BRAND_FONT_PAIRS,
   getFontPair as getCatalogFontPair,
-  listFontPairs,
   pickFontForMode,
   type BrandFontPair,
 } from "./brand-fonts";
 import { BLUEPRINT_FONT_PAIRS } from "./blueprints/font-pairs";
 
 export type { BrandFontPair };
-export { BRAND_FONT_PAIRS, listFontPairs, pickFontForMode };
+export { BRAND_FONT_PAIRS, pickFontForMode };
 
 /** Catalog pairs plus starting-style blueprint pairs. */
 export function getFontPair(id: string | null | undefined): BrandFontPair | undefined {
   return getCatalogFontPair(id) ?? BLUEPRINT_FONT_PAIRS.find((f) => f.id === id);
+}
+
+/** Every selectable pair, so any saved fontPairId (incl. AI style-* pairs) appears in pickers. */
+export function listFontPairs(): BrandFontPair[] {
+  return [...BRAND_FONT_PAIRS, ...BLUEPRINT_FONT_PAIRS];
 }
 
 export type BrandPalette = {

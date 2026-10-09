@@ -19,8 +19,10 @@ import {
 } from "@/lib/website/persistence/draft-store";
 import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 import { tryPublishStorefront } from "@/lib/website/persistence/publish";
+import { craftPageSaveErrors } from "@/lib/website/adapter/validate-craft-page";
 import {
   conflictResult,
+  invalidResult,
   publishFailureResult,
   type EditorSaveResult,
 } from "@/lib/website/persistence/editor-result";
@@ -221,6 +223,8 @@ export async function saveCustomPageDraft(
 ): Promise<EditorSaveResult> {
   const { owner } = await requireWebsiteOwner();
   const nodes = parseNodesJson(nodesJson);
+  const invalid = craftPageSaveErrors(nodes, "content");
+  if (invalid.length > 0) return invalidResult(invalid);
   const slug = await persistPageNodes(
     owner.id,
     owner.businessName,
@@ -243,6 +247,8 @@ export async function publishCustomPageDraft(
 ): Promise<EditorSaveResult> {
   const { owner, user } = await requireWebsiteOwner();
   const nodes = parseNodesJson(nodesJson);
+  const invalid = craftPageSaveErrors(nodes, "content");
+  if (invalid.length > 0) return invalidResult(invalid);
   const slug = await persistPageNodes(
     owner.id,
     owner.businessName,

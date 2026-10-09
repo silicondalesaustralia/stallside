@@ -15,6 +15,8 @@ import CraftFarmStandSection from "@/components/studio/sections/CraftFarmStandSe
 import CraftProductDetailSection from "@/components/studio/sections/CraftProductDetailSection";
 import CraftMenuDetailSection from "@/components/studio/sections/CraftMenuDetailSection";
 
+import type { StudioSectionType } from "./types";
+
 export const studioResolver = {
   StudioPageRoot,
   CraftPageRoot: StudioPageRoot,
@@ -32,6 +34,6 @@ export const studioResolver = {
   CraftFarmStandSection,
   CraftProductDetailSection,
   CraftMenuDetailSection,
-};
+} satisfies Record<StudioSectionType | "StudioPageRoot" | "CraftPageRoot", unknown>;
 
 export type StudioResolver = typeof studioResolver;

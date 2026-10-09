@@ -24,6 +24,7 @@ import {
   scaffoldWebsiteDraft,
 } from "@/lib/website-ai/provider";
 import {
+  canReuseScaffoldPlan,
   extractWebsiteAiScaffold,
   mergeWebsiteAiScaffoldIntoRaw,
   WEBSITE_AI_SCAFFOLD_VERSION,
@@ -114,6 +115,9 @@ export async function scaffoldAiWebsiteDraft(
       intent: prepared.intent,
       looks: generated.looks,
       createdAt: new Date().toISOString(),
+      plannedBlueprintId: recommendation.recommendedBlueprintId,
+      provider: generated.provider,
+      model: generated.model,
     });
     const saved = await writeStorefrontDraft({
       ownerId: owner.id,
@@ -184,24 +188,23 @@ export async function buildAiWebsiteDraft(
       layoutRecipe: scaffold.intent.layoutRecipe ?? blueprint.layoutRecipe,
     };
 
-    const replanned = await scaffoldWebsiteDraft({
-      businessContext,
-      intent,
-    });
-    if (!replanned.ok) {
-      return { ok: false, error: replanned.error, details: replanned.details };
+    const planned = canReuseScaffoldPlan(scaffold, blueprintId)
+      ? { ok: true as const, plan: scaffold.plan, provider: scaffold.provider, model: scaffold.model }
+      : await scaffoldWebsiteDraft({ businessContext, intent });
+    if (!planned.ok) {
+      return { ok: false, error: planned.error, details: planned.details };
     }
 
     const generated = await finalizeWebsiteDraft({
       businessContext,
       intent,
-      plan: replanned.plan,
+      plan: planned.plan,
       lookId,
       looks: scaffold.looks,
       fontPairId,
       demoKitId,
-      provider: replanned.provider,
-      model: replanned.model,
+      provider: planned.provider,
+      model: planned.model,
     });
     if (!generated.ok) {
       return { ok: false, error: generated.error, details: generated.details };
@@ -245,7 +248,9 @@ export async function buildAiWebsiteDraft(
         ...(scaffold.intent.sellerAbout && scaffold.intent.sellerAbout.length > 40
           ? { about: scaffold.intent.sellerAbout.slice(0, 2000) }
           : {}),
-        ...(generated.decorativeHeroUrl ? { heroImageUrl: generated.decorativeHeroUrl } : {}),
+        ...(generated.decorativeHeroUrl && !ctx.branding.heroImageUrl
+          ? { heroImageUrl: generated.decorativeHeroUrl }
+          : {}),
       },
       initialBlueprintId: blueprintId,
     };

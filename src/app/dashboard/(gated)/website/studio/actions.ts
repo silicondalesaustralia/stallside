@@ -11,8 +11,10 @@ import {
   writeStorefrontDraft,
 } from "@/lib/website/persistence/draft-store";
 import { tryPublishStorefront } from "@/lib/website/persistence/publish";
+import { craftPageSaveErrors } from "@/lib/website/adapter/validate-craft-page";
 import {
   conflictResult,
+  invalidResult,
   publishFailureResult,
   type EditorSaveResult,
 } from "@/lib/website/persistence/editor-result";
@@ -88,6 +90,8 @@ export async function saveWebsiteStudioDraft(
   const { owner } = await requireWebsiteOwner();
   const templateId = parseTemplateId(templateIdRaw);
   const nodes = parseNodesJson(nodesJson);
+  const invalid = craftPageSaveErrors(nodes, "home");
+  if (invalid.length > 0) return invalidResult(invalid);
   const slug = await persistWebsiteStudioDraft(
     owner.id,
     owner.businessName,
@@ -112,6 +116,8 @@ export async function publishWebsiteStudioDraft(
   const { owner, user } = await requireWebsiteOwner();
   const templateId = parseTemplateId(templateIdRaw);
   const nodes = parseNodesJson(nodesJson);
+  const invalid = craftPageSaveErrors(nodes, "home");
+  if (invalid.length > 0) return invalidResult(invalid);
   const slug = await persistWebsiteStudioDraft(
     owner.id,
     owner.businessName,
