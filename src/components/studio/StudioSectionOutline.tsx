@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type DragEvent, type KeyboardEvent } from "react";
 import { useEditor } from "@craftjs/core";
 import { findStudioCanvasParentId } from "@/lib/studio/page-canvas";
 import { studioSectionLabel, studioSectionRule } from "@/lib/studio/section-registry";
@@ -26,6 +26,8 @@ export default function StudioSectionOutline() {
   });
   const buttons = useRef(new Map<string, HTMLButtonElement>());
   const pendingFocus = useRef<string | null>(null);
+  const drag = useRef<string | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (!pendingFocus.current) return;
@@ -33,14 +35,25 @@ export default function StudioSectionOutline() {
     pendingFocus.current = null;
   }, [rows]);
 
-  function move(index: number, delta: number) {
-    const next = index + delta;
-    if (next < 0 || next >= rows.length) return;
-    const id = rows[index].id;
-    const neighbour = childIds.indexOf(rows[next].id);
+  function moveTo(from: number, to: number) {
+    if (from === to || to < 0 || to >= rows.length) return;
+    const id = rows[from].id;
+    const neighbour = childIds.indexOf(rows[to].id);
     // Craft inserts before removing the old slot, so moving down goes after the neighbour.
-    actions.move(id, parentId, delta > 0 ? neighbour + 1 : neighbour);
+    actions.move(id, parentId, to > from ? neighbour + 1 : neighbour);
     pendingFocus.current = id;
+  }
+
+  function move(index: number, delta: number) {
+    moveTo(index, index + delta);
+  }
+
+  function onDrop(e: DragEvent, to: number) {
+    e.preventDefault();
+    const from = rows.findIndex((r) => r.id === drag.current);
+    drag.current = null;
+    setOverIndex(null);
+    if (from !== -1) moveTo(from, to);
   }
 
   function onKeyDown(e: KeyboardEvent, index: number) {
@@ -53,12 +66,35 @@ export default function StudioSectionOutline() {
   return (
     <div className="vendl-studio-palette__group">
       <p className="vendl-studio-palette__group-label">On this page</p>
-      <p className="mb-1 text-[11px] text-[var(--muted)]">Alt + ↑/↓ moves the focused section.</p>
+      <p className="mb-1 text-[11px] text-[var(--muted)]">Drag to reorder, or Alt + ↑/↓ on the focused section.</p>
       <ol className="space-y-1">
         {rows.map((row, i) => {
           const label = studioSectionLabel(row.type);
           return (
-            <li key={row.id} className="flex items-center gap-1">
+            <li
+              key={row.id}
+              draggable
+              onDragStart={(e) => {
+                drag.current = row.id;
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", row.id);
+              }}
+              onDragOver={(e) => {
+                if (!drag.current) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+                if (overIndex !== i) setOverIndex(i);
+              }}
+              onDragLeave={() => setOverIndex((cur) => (cur === i ? null : cur))}
+              onDrop={(e) => onDrop(e, i)}
+              onDragEnd={() => {
+                drag.current = null;
+                setOverIndex(null);
+              }}
+              className={`flex cursor-grab items-center gap-1 rounded-md ${
+                overIndex === i ? "ring-2 ring-[var(--leaf-dark)]" : ""
+              }`}
+            >
               <button
                 type="button"
                 ref={(el) => {

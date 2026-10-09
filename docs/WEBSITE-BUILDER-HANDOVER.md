@@ -800,7 +800,7 @@ npm run build             # production build
     - Hero offers fixed options rather than the template's presets;
     - Image sections take a raw URL, with no upload.
 12. **Request caching:** wrap `loadStorefrontContext` / `buildStudioMetadata` in `cache()`.
-13. **Onboarding (spec Milestone 4):** done (14.5, 14.6). Still to check by hand: a production dry run (needs the production `DATABASE_URL`) and a logged-in browser pass of the editor and templates page. Drag-to-reorder in the section list isn't built; drag on the canvas still works.
+13. **Onboarding (spec Milestone 4):** done (14.5, 14.6). Still to check by hand: a production dry run (needs the production `DATABASE_URL`) and a logged-in browser pass of the editor and templates page.
 14. **Remove the dead spike code** once the shared pieces are moved under `studio/` (section 4.6), and remove `@puckeditor/core`.
 15. **Rename `src/middleware.ts` to `proxy.ts`** (Next 16).
 16. **Housekeeping:** many ported files exceed the project's 150-line guideline (for example `AiBuilderForm.tsx` 506, `heuristic-planner.ts` 488, `plan-schema.ts` 397, `custom-pages.ts` 360, `lifecycle.ts` 341).     Split them when touching them.
@@ -878,6 +878,6 @@ npx tsx scripts/website-migrate-dry-run.ts [--verbose] [--slug=my-shop]
   - The options are shop, order this week's menu or drop (food business and both only), subscribe, or enquire. Subscribe and enquire explain what setup they need.
   - `rankTemplatePackages` puts the best layout first and marks it "Recommended". Without a goal the order is unchanged.
 - **Demo previews:** `/demo/[template]` (ported from staging) renders the seeded Green Valley demo in each skin, under a toolbar labelled "Demo… sample business with sample products". Every starting layout links to its skin's demo, and sellers with no products see a note pointing them there. It needs `npm run seed:green-valley-demo` on that database.
-- **Editor section list** (`components/studio/StudioSectionOutline.tsx`, at the top of the left panel): the page's sections in order, each with a thumbnail (`SectionThumbnail.tsx`). Click to select; ↑/↓ buttons or Alt+↑/↓ to reorder, and focus stays on the moved section. The palette shows the same thumbnails.
+- **Editor section list** (`components/studio/StudioSectionOutline.tsx`, at the top of the left panel): the page's sections in order, each with a thumbnail (`SectionThumbnail.tsx`). Click to select; drag a row (native HTML drag and drop, no library), the ↑/↓ buttons or Alt+↑/↓ to reorder, and focus stays on the moved section. The palette shows the same thumbnails.
 - **Fixed:** "Move down" in the section toolbar did nothing (Craft's `move` index is taken before the old slot is removed).
 - **Fixed:** the editor and template-skin CSS (`vendl-studio-*`, `craft-section*`, `studio-template-*`, `storefront-page-content` and more) had never been ported to this branch. It's now in `src/app/website-builder.css`, a copy of the matching block of staging's `globals.css`, imported by `app/layout.tsx`.
