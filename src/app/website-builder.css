@@ -453,6 +453,52 @@
   border-left: 1px solid var(--line);
   background: white;
   overflow-y: auto;
+  /* Stays in view while the page scrolls, so edits and the section stay side by side. */
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+}
+
+.vendl-settings-group + .vendl-settings-group {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.75rem;
+}
+
+.vendl-settings-group__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.vendl-settings-group__summary::-webkit-details-marker {
+  display: none;
+}
+
+.vendl-settings-group__summary::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s;
+}
+
+.vendl-settings-group[open] > .vendl-settings-group__summary::after {
+  transform: rotate(-135deg);
+}
+
+.vendl-settings-group__body {
+  padding-top: 0.75rem;
 }
 
 .vendl-studio-settings--empty {

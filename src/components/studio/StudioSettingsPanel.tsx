@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useEditor } from "@craftjs/core";
 import { studioSectionLabel } from "@/lib/studio/section-registry";
 import ProductPickerField from "@/components/puck/editor/fields/ProductPickerField";
@@ -10,6 +10,7 @@ import HeaderStyleSettings from "./HeaderStyleSettings";
 import PresetStyleField from "./PresetStyleField";
 import SectionImageField from "./SectionImageField";
 import SectionStyleSettings from "./SectionStyleSettings";
+import SettingsGroup from "./SettingsGroup";
 import PageStyleSettings from "./PageStyleSettings";
 import { paletteOf } from "@/lib/website/sections/colour";
 import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
@@ -37,6 +38,9 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export default function StudioSettingsPanel() {
   const { chromeTarget, setChromeTarget } = useStudioEditorChrome();
   const metadata = useStudioMetadata();
+  const [openGroups, setOpenGroups] = useState({ content: true, style: false });
+  const toggleGroup = (group: keyof typeof openGroups, open: boolean) =>
+    setOpenGroups((prev) => ({ ...prev, [group]: open }));
   const { actions, selected } = useEditor((state, query) => {
     const ids = Array.from(state.events.selected);
     const id = ids[0] ?? null;
@@ -95,7 +99,8 @@ export default function StudioSettingsPanel() {
           {studioSectionLabel(selected.type)}
         </h2>
       </div>
-      <div className="vendl-studio-settings__body space-y-4">
+      <div className="vendl-studio-settings__body">
+        <SettingsGroup title="Content" open={openGroups.content} onToggle={(o) => toggleGroup("content", o)}>
         {selected.type === "CraftHeroSection" ? (
           <HeroSettings props={selected.props as CraftHeroProps} setProp={setProp} />
         ) : null}
@@ -126,12 +131,15 @@ export default function StudioSettingsPanel() {
             setProp={setProp}
           />
         ) : null}
-        <SectionStyleSettings
-          craftName={selected.type}
-          rawStyle={selected.props.style}
-          onChange={(next) => setProp("style", next)}
-          palette={paletteOf(metadata.resolvedBranding)}
-        />
+        </SettingsGroup>
+        <SettingsGroup title="Style" open={openGroups.style} onToggle={(o) => toggleGroup("style", o)}>
+          <SectionStyleSettings
+            craftName={selected.type}
+            rawStyle={selected.props.style}
+            onChange={(next) => setProp("style", next)}
+            palette={paletteOf(metadata.resolvedBranding)}
+          />
+        </SettingsGroup>
       </div>
     </aside>
   );

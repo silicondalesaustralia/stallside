@@ -71,8 +71,7 @@ export default function SectionStyleSettings({
   }
 
   return (
-    <div className="space-y-4 border-t border-[var(--line)] pt-4">
-      <p className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">Style</p>
+    <div className="space-y-4">
       <ColourField label="Background" value={style.background} onChange={(v) => patch("background", v)} palette={palette} noneLabel="None (template default)" />
       <ColourField label="Text colour" value={style.textColour} onChange={(v) => patch("textColour", v)} palette={palette} noneLabel="Auto (readable on the background)" />
       {hasLowContrast(style, palette) ? (
