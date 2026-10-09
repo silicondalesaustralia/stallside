@@ -12,6 +12,8 @@ import {
 import { studioSectionElement } from "@/lib/studio/insert-section";
 import type { StudioSectionType } from "@/lib/studio/types";
 import { useStudioEditorChrome } from "./StudioEditorContext";
+import SectionThumbnail from "./SectionThumbnail";
+import StudioSectionOutline from "./StudioSectionOutline";
 
 export default function StudioSectionPalette() {
   const {
@@ -72,6 +74,7 @@ export default function StudioSectionPalette() {
         </button>
       </div>
       <div className="vendl-studio-palette__body">
+        <StudioSectionOutline />
         {(Object.keys(grouped) as Array<keyof typeof grouped>).map((cat) => {
           const items = grouped[cat];
           if (items.length === 0) return null;
@@ -101,8 +104,13 @@ export default function StudioSectionPalette() {
                         }
                       }}
                     >
-                      <span className="vendl-studio-palette__item-label">{rule.label}</span>
-                      <span className="vendl-studio-palette__item-hint">{rule.description}</span>
+                      <span className="flex items-start gap-2">
+                        <SectionThumbnail type={rule.type} />
+                        <span>
+                          <span className="vendl-studio-palette__item-label">{rule.label}</span>
+                          <span className="vendl-studio-palette__item-hint">{rule.description}</span>
+                        </span>
+                      </span>
                     </div>
                   </li>
                 ))}

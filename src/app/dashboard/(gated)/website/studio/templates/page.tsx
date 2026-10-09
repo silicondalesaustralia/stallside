@@ -8,12 +8,15 @@ import WebStudioSteps from "@/components/website/WebStudioSteps";
 import TemplatePackageList from "@/components/website/TemplatePackageList";
 import { templatePackagesFor } from "@/lib/website/templates/packages";
 import { readTemplateRestorePoint } from "@/lib/website/templates/restore-point";
+import { goalsFor, parseCustomerGoal, rankTemplatePackages } from "@/lib/website/templates/recommend";
+import CustomerGoalPicker from "@/components/website/CustomerGoalPicker";
+import { prisma } from "@/lib/prisma";
 import { applyWebsiteStudioTemplate } from "../actions";
 
 export default async function WebsiteStudioTemplatesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ applied?: string; undone?: string; error?: string }>;
+  searchParams: Promise<{ applied?: string; undone?: string; error?: string; goal?: string }>;
 }) {
   const sp = await searchParams;
   const { owner } = await requireOwner();
@@ -21,6 +24,9 @@ export default async function WebsiteStudioTemplatesPage({
   const studio = extractWebsiteStudio(storefront.draftConfig);
   const mode = normalizeBusinessMode(owner.businessMode);
   const current = defaultTemplateId(studio ?? null, mode);
+  const goal = parseCustomerGoal(sp.goal, mode);
+  const packages = rankTemplatePackages(templatePackagesFor(mode), goal);
+  const productCount = await prisma.product.count({ where: { ownerId: owner.id } });
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-8 pb-12">
@@ -76,8 +82,16 @@ export default async function WebsiteStudioTemplatesPage({
           </li>
         ))}
       </ul>
+      <CustomerGoalPicker goals={goalsFor(mode)} selected={goal} />
+      {productCount === 0 ? (
+        <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          You haven&apos;t added any products yet, so your layouts will look empty. Use &ldquo;See a demo with
+          sample products&rdquo; to preview each layout with a sample business first.
+        </p>
+      ) : null}
       <TemplatePackageList
-        packages={templatePackagesFor(mode)}
+        packages={packages}
+        recommendedId={goal ? packages[0]?.id : undefined}
         restorePoint={readTemplateRestorePoint(storefront.draftConfig)}
         applied={sp.applied}
         undone={sp.undone === "1"}

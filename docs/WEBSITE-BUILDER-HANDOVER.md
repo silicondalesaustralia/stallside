@@ -800,7 +800,7 @@ npm run build             # production build
     - Hero offers fixed options rather than the template's presets;
     - Image sections take a raw URL, with no upload.
 12. **Request caching:** wrap `loadStorefrontContext` / `buildStudioMetadata` in `cache()`.
-13. **Onboarding (spec Milestone 4), still open:** ask the primary customer action (shop, order a release, subscribe, enquire) and use it to rank the starting layouts; demo previews for sellers with no products; section move up/down buttons and thumbnails in the editor. Autosave and the readiness checklist are done (14.5).
+13. **Onboarding (spec Milestone 4):** done (14.5, 14.6). Still to check by hand: a production dry run (needs the production `DATABASE_URL`) and a logged-in browser pass of the editor and templates page. Drag-to-reorder in the section list isn't built; drag on the canvas still works.
 14. **Remove the dead spike code** once the shared pieces are moved under `studio/` (section 4.6), and remove `@puckeditor/core`.
 15. **Rename `src/middleware.ts` to `proxy.ts`** (Next 16).
 16. **Housekeeping:** many ported files exceed the project's 150-line guideline (for example `AiBuilderForm.tsx` 506, `heuristic-planner.ts` 488, `plan-schema.ts` 397, `custom-pages.ts` 360, `lifecycle.ts` 341).     Split them when touching them.
@@ -871,3 +871,13 @@ npx tsx scripts/website-migrate-dry-run.ts [--verbose] [--slug=my-shop]
   - Header styles keep their own immediate save. The undo/redo buttons only cover the layout.
 - **Readiness checklist** (`lib/website/readiness.ts`, shown at the top of Web Studio until the site is live). The items are: details, starting layout, products (optional), card payments (optional), example text replaced, and publish. Products and payments are optional, so information-only sites can go live.
 - **Dry run against the database in `.env`** (one storefront, Green Valley demo): no errors and lossless. The only warnings are the demo's per-skin `__demo_*` layouts. Product grids no longer write the dead `layout: "grid"` prop.
+
+### 14.6 Recommendations, demo previews and the section list
+
+- **"What do customers mostly do?"** (`templates/recommend.ts`, `components/website/CustomerGoalPicker.tsx`) is a GET form on the templates page (`?goal=`).
+  - The options are shop, order this week's menu or drop (food business and both only), subscribe, or enquire. Subscribe and enquire explain what setup they need.
+  - `rankTemplatePackages` puts the best layout first and marks it "Recommended". Without a goal the order is unchanged.
+- **Demo previews:** `/demo/[template]` (ported from staging) renders the seeded Green Valley demo in each skin, under a toolbar labelled "Demo… sample business with sample products". Every starting layout links to its skin's demo, and sellers with no products see a note pointing them there. It needs `npm run seed:green-valley-demo` on that database.
+- **Editor section list** (`components/studio/StudioSectionOutline.tsx`, at the top of the left panel): the page's sections in order, each with a thumbnail (`SectionThumbnail.tsx`). Click to select; ↑/↓ buttons or Alt+↑/↓ to reorder, and focus stays on the moved section. The palette shows the same thumbnails.
+- **Fixed:** "Move down" in the section toolbar did nothing (Craft's `move` index is taken before the old slot is removed).
+- **Fixed:** the editor and template-skin CSS (`vendl-studio-*`, `craft-section*`, `studio-template-*`, `storefront-page-content` and more) had never been ported to this branch. It's now in `src/app/website-builder.css`, a copy of the matching block of staging's `globals.css`, imported by `app/layout.tsx`.

@@ -37,7 +37,8 @@ export default function CraftSectionChrome({
     if (!parentId) return;
     const next = index + delta;
     if (next < 0 || next >= siblings.length) return;
-    actions.move(id, parentId, next);
+    // Craft inserts before removing the old slot, so moving down needs one extra.
+    actions.move(id, parentId, delta > 0 ? next + 1 : next);
   }
 
   function duplicate() {

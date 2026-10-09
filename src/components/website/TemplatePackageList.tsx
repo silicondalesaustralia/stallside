@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { demoTemplatePath } from "@/lib/demo";
 import ConfirmSubmitButton from "@/components/website/ConfirmSubmitButton";
 import WebsiteFormError from "@/components/website/WebsiteFormError";
 import type { TemplatePackage } from "@/lib/website/templates/package-schema";
@@ -13,8 +15,10 @@ export default function TemplatePackageList({
   applied,
   undone,
   error,
+  recommendedId,
 }: {
   packages: TemplatePackage[];
+  recommendedId?: string;
   restorePoint: TemplateRestorePoint | null;
   applied?: string;
   undone?: boolean;
@@ -56,9 +60,21 @@ export default function TemplatePackageList({
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {packages.map((pkg) => (
           <li key={pkg.id} className="flex flex-col gap-3 rounded-2xl border border-[var(--line)] bg-white p-5 shadow-sm">
+            {pkg.id === recommendedId ? (
+              <p className="w-fit rounded-full bg-[var(--leaf-dark)] px-2.5 py-0.5 text-xs font-bold text-white">
+                Recommended
+              </p>
+            ) : null}
             <h3 className="text-lg font-bold text-[var(--field)]">{pkg.name}</h3>
             <p className="text-sm text-[var(--muted)]">{pkg.summary}</p>
             <p className="text-xs text-[var(--muted)]">{pkg.bestFor}</p>
+            <Link
+              href={demoTemplatePath(pkg.skin)}
+              target="_blank"
+              className="text-sm font-semibold text-[var(--leaf-dark)] underline"
+            >
+              See a demo with sample products
+            </Link>
             <form action={applyTemplatePackage.bind(null, pkg.id)} className="mt-auto">
               <ConfirmSubmitButton
                 message={`Replace your homepage and shop page layout with ${pkg.name}? You can undo this afterwards.`}

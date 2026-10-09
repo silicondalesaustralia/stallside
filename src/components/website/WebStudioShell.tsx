@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   WEB_STUDIO_TABS,
   type WebStudioTabId,
@@ -28,15 +28,12 @@ export default function WebStudioShell({
     () => new Set([initialTab]),
   );
 
-  useEffect(() => {
+  const [syncedTab, setSyncedTab] = useState(initialTab);
+  if (syncedTab !== initialTab) {
+    setSyncedTab(initialTab);
     setTab(initialTab);
-    setVisited((prev) => {
-      if (prev.has(initialTab)) return prev;
-      const copy = new Set(prev);
-      copy.add(initialTab);
-      return copy;
-    });
-  }, [initialTab]);
+    if (!visited.has(initialTab)) setVisited(new Set(visited).add(initialTab));
+  }
 
   function selectTab(next: WebStudioTabId) {
     setTab(next);
