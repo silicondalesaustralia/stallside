@@ -8,6 +8,7 @@ import CategoryPickerField from "@/components/puck/editor/fields/CategoryPickerF
 import { useStudioMetadata, useStudioEditorChrome } from "./StudioEditorContext";
 import HeaderStyleSettings from "./HeaderStyleSettings";
 import PresetStyleField from "./PresetStyleField";
+import SectionImageField from "./SectionImageField";
 import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
 import type { CraftHeroProps } from "@/components/craft/sections/CraftHeroSection";
 import type { CraftProductGridProps } from "@/components/craft/sections/CraftProductGridSection";
@@ -132,11 +133,22 @@ function HeroSettings({
   props: CraftHeroProps;
   setProp: (k: string, v: unknown) => void;
 }) {
+  const brandingHero = useStudioMetadata().branding.heroImageUrl;
   return (
     <>
       <p className="text-xs text-[var(--muted)]">
         Edit the headline and text directly on the page.
       </p>
+      <SectionImageField
+        label="Image"
+        value={props.decorativeImageUrl || props.imageUrl || ""}
+        onChange={(url) => {
+          setProp("imageUrl", url);
+          setProp("decorativeImageUrl", "");
+        }}
+        fallbackUrl={brandingHero}
+        fallbackLabel="Using the hero image from Branding."
+      />
       <Field label="Button">
         <input className={INPUT} value={props.ctaLabel} onChange={(e) => setProp("ctaLabel", e.target.value)} />
       </Field>
@@ -331,9 +343,7 @@ function ImageSettings({
 }) {
   return (
     <>
-      <Field label="Image URL">
-        <input className={INPUT} value={props.imageUrl} onChange={(e) => setProp("imageUrl", e.target.value)} placeholder="https://…" />
-      </Field>
+      <SectionImageField label="Image" value={props.imageUrl ?? ""} onChange={(url) => setProp("imageUrl", url)} />
       <Field label="Alt text">
         <input className={INPUT} value={props.alt} onChange={(e) => setProp("alt", e.target.value)} />
       </Field>
@@ -363,9 +373,7 @@ function ImageTextSettings({
       <p className="text-xs text-[var(--muted)]">
         Edit the heading and text directly on the page.
       </p>
-      <Field label="Image URL">
-        <input className={INPUT} value={props.imageUrl} onChange={(e) => setProp("imageUrl", e.target.value)} />
-      </Field>
+      <SectionImageField label="Image" value={props.imageUrl ?? ""} onChange={(url) => setProp("imageUrl", url)} />
       <Field label="Button label">
         <input className={INPUT} value={props.ctaLabel} onChange={(e) => setProp("ctaLabel", e.target.value)} />
       </Field>
