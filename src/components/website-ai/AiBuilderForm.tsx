@@ -123,9 +123,7 @@ export default function AiBuilderForm({
   );
   const looks = scaffoldState.looks?.length ? scaffoldState.looks : initialLooks;
   const [lookId, setLookId] = useState(looks[0]?.id ?? "");
-  const showLookStep =
-    (scaffoldState.ok && scaffoldState.phase === "scaffold") ||
-    (looks.length > 0 && buildState.phase !== "built");
+  const showLookStep = looks.length > 0;
   const built = buildState.ok && buildState.phase === "built";
   const pending = scaffoldPending || buildPending;
   const error = buildState.error || scaffoldState.error;
@@ -426,8 +424,11 @@ export default function AiBuilderForm({
             disabled={pending}
             className="rounded-md bg-[var(--field)] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
           >
-            {scaffoldPending ? "Building scaffold…" : "Build scaffold"}
+            {scaffoldPending ? "Building scaffold…" : looks.length > 0 ? "Build scaffold again" : "Build scaffold"}
           </button>
+          {looks.length > 0 ? (
+            <span className="text-xs text-[var(--muted)]">Rewrites your page plan and text.</span>
+          ) : null}
           <Link href="/dashboard/website/web-studio?tab=studio" className="text-sm text-[var(--muted)] underline">
             Use classic editor instead
           </Link>
@@ -438,6 +439,11 @@ export default function AiBuilderForm({
         <form action={buildAction} className="flex flex-col gap-6 rounded-md border border-[var(--border)] px-4 py-4">
           <p className="text-sm text-[var(--muted)]">
             {scaffoldState.summary ?? "Scaffold ready — choose a starting style, then a look."}
+          </p>
+          <p className="text-xs text-[var(--muted)]">
+            Your page plan and text are saved. To try a different style or palette, pick it here and
+            click Build site again. You only need to build the scaffold again if you change your
+            pages or business details.
           </p>
           <BlueprintStylePicker
             selectedId={blueprintId}
@@ -463,7 +469,7 @@ export default function AiBuilderForm({
             disabled={pending || !(lookId || looks[0]?.id)}
             className="w-fit rounded-md bg-[var(--field)] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
           >
-            {buildPending ? "Building your website…" : "Build site"}
+            {buildPending ? "Building your website…" : built ? "Build again with this style" : "Build site"}
           </button>
         </form>
       ) : null}

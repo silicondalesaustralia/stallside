@@ -258,8 +258,6 @@ export async function buildAiWebsiteDraft(
       },
       initialBlueprintId: blueprintId,
     };
-    delete nextDraft.websiteAiScaffold;
-
     const saved = await writeStorefrontDraft({
       ownerId: owner.id,
       expectedRevision: storefront.draftRevision,

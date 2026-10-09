@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type TouchEvent } from "react";
+import { useMemo, useRef, useState, type TouchEvent } from "react";
 import {
   listWebsiteBlueprints,
   type BlueprintRecommendation,
@@ -39,7 +39,7 @@ export default function BlueprintStylePicker({
   logoUrl,
   defaultKitId = "green-valley",
 }: Props) {
-  const blueprints = listWebsiteBlueprints();
+  const blueprints = useMemo(() => listWebsiteBlueprints(), []);
   const [kitId, setKitId] = useState<DemoKitId>(defaultKitId);
   const [slideIndex, setSlideIndex] = useState(0);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -58,19 +58,15 @@ export default function BlueprintStylePicker({
   const current = ordered[slideIndex] ?? ordered[0]!;
   const total = ordered.length;
 
-  useEffect(() => {
+  const [syncedId, setSyncedId] = useState<string | null>(null);
+  if (syncedId !== selectedId) {
+    setSyncedId(selectedId);
     const idx = ordered.findIndex((b) => b.id === selectedId);
     if (idx >= 0) setSlideIndex(idx);
-  }, [selectedId, ordered]);
-
-  useEffect(() => {
-    if (!selectedId || selectedId === "vendl-choose") return;
-    setKitId(
-      recommendDemoKit({
-        blueprintId: selectedId,
-      }),
-    );
-  }, [selectedId]);
+    if (selectedId && selectedId !== "vendl-choose") {
+      setKitId(recommendDemoKit({ blueprintId: selectedId }));
+    }
+  }
 
   function go(delta: number) {
     setSlideIndex((i) => (i + delta + total) % total);
@@ -99,6 +95,12 @@ export default function BlueprintStylePicker({
         <p className="text-sm font-medium text-[var(--field)]">Choose your starting style</p>
         <p className="mt-1 text-xs text-[var(--muted)]">
           Scroll each preview to see the full page. Use Prev/Next to compare styles.
+        </p>
+        <p className="mt-1 text-xs font-medium text-[var(--field)]" aria-live="polite">
+          Your choice:{" "}
+          {selectedId === "vendl-choose"
+            ? "Let Vendl choose"
+            : (blueprints.find((b) => b.id === selectedId)?.name ?? selectedId)}
         </p>
       </div>
 

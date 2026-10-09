@@ -81,5 +81,6 @@ export function undoTemplateOnDraft(raw: unknown): Prisma.InputJsonValue | null 
 export function withoutDraftOnlyKeys(raw: unknown): Prisma.InputJsonValue {
   const base = asObject(raw);
   delete base[TEMPLATE_RESTORE_KEY];
+  delete base.websiteAiScaffold;
   return base as Prisma.InputJsonValue;
 }

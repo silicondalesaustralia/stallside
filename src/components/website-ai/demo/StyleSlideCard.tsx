@@ -62,13 +62,21 @@ export default function StyleSlideCard({
           {blueprint.brandKit.typography.display.family} / {blueprint.brandKit.typography.body.family}
         </p>
       </div>
-      <div className="flex gap-2 border-t border-[var(--border)] px-3 py-2">
+      <div className="flex items-center gap-2 border-t border-[var(--border)] px-3 py-2">
+        {selected ? (
+          <p className="text-xs text-[var(--muted)]">Selected. Pick a palette below, then Build site.</p>
+        ) : null}
         <button
           type="button"
-          className="ml-auto rounded-md bg-[var(--field)] px-3 py-1.5 text-xs font-medium text-white"
+          aria-pressed={selected}
+          className={
+            selected
+              ? "ml-auto rounded-md border border-[var(--field)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--field)]"
+              : "ml-auto rounded-md bg-[var(--field)] px-3 py-1.5 text-xs font-medium text-white"
+          }
           onClick={onSelect}
         >
-          Use this style
+          {selected ? "✓ Using this style" : "Use this style"}
         </button>
       </div>
     </div>
