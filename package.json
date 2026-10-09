@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:fees": "npx tsx --test scripts/test-stallside-fee.ts src/lib/fee-v2026.test.ts",
-    "test:website": "NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY=0 npx tsx --test src/lib/tenancy/hostname.test.ts src/lib/domains/domains.test.ts src/lib/storefront/header-style.test.ts src/lib/studio/studio.test.ts src/lib/website-ai/*.test.ts src/lib/website/blueprints/blueprints.test.ts src/lib/website/brand-looks.test.ts src/lib/website/demo-kits/demo-kits.test.ts",
+    "test:website": "NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY=0 npx tsx --test src/lib/tenancy/hostname.test.ts src/lib/domains/domains.test.ts src/lib/storefront/header-style.test.ts src/lib/studio/studio.test.ts src/lib/website-ai/*.test.ts src/lib/website/blueprints/blueprints.test.ts src/lib/website/brand-looks.test.ts src/lib/website/demo-kits/demo-kits.test.ts src/lib/website/persistence/persistence.test.ts",
     "test:square": "npx tsx --test src/lib/square/square.test.ts src/lib/commerce/sale-origin.test.ts src/lib/square-subscriptions/schedule.test.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

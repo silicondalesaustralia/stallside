@@ -2,6 +2,7 @@ import DashboardMobileNav from "@/components/DashboardMobileNav";
 import DashboardNav from "@/components/DashboardNav";
 import { loadDashboardSetupAlerts } from "@/lib/load-dashboard-setup-alerts";
 import { prisma } from "@/lib/prisma";
+import { websiteSectionEnabledFor } from "@/lib/website/access";
 import type { BusinessOption } from "@/lib/selected-business";
 
 export default async function DashboardNavWithUnread({
@@ -31,6 +32,7 @@ export default async function DashboardNavWithUnread({
       stripeChargesEnabled,
     }),
   ]);
+  const showWebsite = websiteSectionEnabledFor(ownerId);
 
   if (variant === "mobile") {
     return (
@@ -39,6 +41,7 @@ export default async function DashboardNavWithUnread({
         selectedBusinessId={selectedBusinessId}
         unreadNotifications={unreadNotifications}
         setupAlerts={setupAlerts}
+        showWebsite={showWebsite}
       />
     );
   }
@@ -49,6 +52,7 @@ export default async function DashboardNavWithUnread({
       selectedBusinessId={selectedBusinessId}
       unreadNotifications={unreadNotifications}
       setupAlerts={setupAlerts}
+      showWebsite={showWebsite}
     />
   );
 }

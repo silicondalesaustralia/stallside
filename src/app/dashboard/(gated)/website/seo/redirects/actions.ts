@@ -13,6 +13,10 @@ import {
   mergeStorefrontRedirectsIntoRaw,
   sanitizeRedirectInput,
 } from "@/lib/studio/redirects";
+import type { Prisma } from "@/generated/prisma/client";
+import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
+
+const REDIRECTS_PATH = "/dashboard/website/seo/redirects";
 
 export async function addStorefrontRedirect(formData: FormData) {
   const { owner } = await requireOwnerWrite();
@@ -33,11 +37,11 @@ export async function addStorefrontRedirect(formData: FormData) {
     ...existing,
     next,
   ]);
-  await prisma.storefront.update({
-    where: { ownerId: owner.id },
-    data: {
-      draftConfig: merged as import("@/generated/prisma/client").Prisma.InputJsonValue,
-    },
+  await writeDraftOrRedirect({
+    ownerId: owner.id,
+    expectedRevision: storefront.draftRevision,
+    draftConfig: merged as Prisma.InputJsonValue,
+    conflictPath: REDIRECTS_PATH,
   });
 
   revalidatePath("/dashboard/website/seo/redirects");
@@ -52,11 +56,11 @@ export async function deleteStorefrontRedirect(formData: FormData) {
   const existing = extractStorefrontRedirects(storefront.draftConfig);
   const next = existing.filter((r) => r.id !== id);
   const merged = mergeStorefrontRedirectsIntoRaw(storefront.draftConfig, next);
-  await prisma.storefront.update({
-    where: { ownerId: owner.id },
-    data: {
-      draftConfig: merged as import("@/generated/prisma/client").Prisma.InputJsonValue,
-    },
+  await writeDraftOrRedirect({
+    ownerId: owner.id,
+    expectedRevision: storefront.draftRevision,
+    draftConfig: merged as Prisma.InputJsonValue,
+    conflictPath: REDIRECTS_PATH,
   });
 
   revalidatePath("/dashboard/website/seo/redirects");
@@ -73,11 +77,11 @@ export async function toggleStorefrontRedirect(formData: FormData) {
     r.id === id ? { ...r, enabled: !r.enabled } : r,
   );
   const merged = mergeStorefrontRedirectsIntoRaw(storefront.draftConfig, next);
-  await prisma.storefront.update({
-    where: { ownerId: owner.id },
-    data: {
-      draftConfig: merged as import("@/generated/prisma/client").Prisma.InputJsonValue,
-    },
+  await writeDraftOrRedirect({
+    ownerId: owner.id,
+    expectedRevision: storefront.draftRevision,
+    draftConfig: merged as Prisma.InputJsonValue,
+    conflictPath: REDIRECTS_PATH,
   });
 
   revalidatePath("/dashboard/website/seo/redirects");

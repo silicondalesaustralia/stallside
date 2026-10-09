@@ -116,9 +116,13 @@ Untyped JSON. Each feature owns one key and has `extractX(raw)` / `mergeXIntoRaw
 
 ## 3. Draft, preview and publish
 
-- **Creating the storefront.** `ensureStorefront()` (`src/lib/catalogue/storefront.ts`) creates it, or seeds a default `draftConfig`, the first time any website action runs.
+- **Creating the storefront.** `ensureStorefront()` (`src/lib/catalogue/storefront.ts`) creates it, or seeds a default `draftConfig`, the first time any website action runs. The seed (`src/lib/website/persistence/seed-draft.ts`) copies the business name, short description, logo and brand colours into `draftConfig.identity` / `themeOverrides`.
+- **Website identity lives in the draft.** Headline, subheadline, about, contact email, show-phone, logo, favicon and hero are stored in `draftConfig.identity` and overlaid on the storefront columns (`src/lib/storefront/identity.ts`). Website edits never write back to the owner/stand. On publish, identity is mirrored to the storefront columns.
 - **Saving.** Every dashboard action calls `requireOwnerWrite()` (an alias of `requireOwner()`, so admin login-as can write), changes one key in `draftConfig`, calls `revalidatePath`, and most then `redirect()` with `?saved=1` or `?published=1`.
-- **Publishing.** `publishStorefront(ownerId)` in `src/lib/catalogue/storefront.ts` sets `isPublished: true, publishedConfig: draftConfig, publishedAt: now`. Callers: `publishWebsiteStudioDraft`, `publishCustomPageDraft`, `publishCommerceLayoutDraft`, `publishStorefrontAction`, `publishAiWebsiteDraft`, and both spike publish actions. There is no per-page publish.
+- **Revision guard.** Every draft write goes through `writeStorefrontDraft` (`src/lib/website/persistence/draft-store.ts`), which only succeeds if `Storefront.draftRevision` still matches the revision the caller read, then increments it. Form actions redirect with `?error=conflict` (`writeDraftOrRedirect`); the Studio editors return `{ ok: false, error: "conflict" }` and show a "Reload latest version" bar.
+- **Publishing.** `publishStorefront(ownerId, userId)` in `src/lib/website/persistence/publish.ts` refuses to publish while any public section still holds instructional copy ("Tell customers …"), then, in one transaction, writes an immutable `StorefrontPublication` snapshot and sets `isPublished`, `publishedConfig`, `publishedAt` and `activePublicationId`. Callers: `publishWebsiteStudioDraft`, `publishCustomPageDraft`, `publishCommerceLayoutDraft`, `publishStorefrontAction`, `publishAiWebsiteDraft`. The spike "publish" actions only save. There is no per-page publish.
+- **History.** Web Studio → Details lists the last 10 publications; "Restore as draft" copies a snapshot back into the draft (it does not go live until published).
+- **Public visibility.** `isPublicStudioNode` (`src/lib/studio/node-visibility.ts`) hides hidden, `EDITOR_ONLY` and not-live placeholder (`SETUP_STUB`, `POLICY_VARIABLE`) sections on the public site.
 - **Exceptions that patch `publishedConfig` directly:**
   - `publishStorefrontRedirects` copies only `storefrontRedirects`. It does not set `isPublished`.
   - Blog `publishBlogPost` / `unpublishBlogPost` / `deleteBlogPost` call `syncPublishedPost`, which patches only `publishedConfig.blogPosts`, and only if the site is already published.
@@ -738,6 +742,7 @@ None of these are in `.env.example`.
 |---|---|
 | Core | `NEXT_PUBLIC_APP_URL`, `VENDL_HOST_ENV` (`staging\|production`), `NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY` (`0` = path URLs), `AUTH_SECRET`, `BLOB_READ_WRITE_TOKEN` |
 | AI builder | `AI_WEBSITE_BUILDER_ENABLED`, `AI_WEBSITE_BUILDER_OWNER_IDS`, `AI_WEBSITE_BUILDER_PERCENT`, `WEBSITE_AI_PROVIDER`, `WEBSITE_AI_MODEL`, `WEBSITE_AI_REASONING_EFFORT`, `OPENAI_API_KEY`, `WEBSITE_AI_IMAGE_MODEL`, `WEBSITE_AI_IMAGE_QUALITY` |
+| Website section access | `WEBSITE_SECTION_OWNER_IDS` (comma-separated owner ids allowed in production), `WEBSITE_SECTION_ENABLED_FOR_ALL` (`1` = everyone). Outside `VERCEL_ENV=production` everyone has access. Redeploy after changing. |
 | Demo | `DEMO_WEBSITE_STAND_SLUG`, `DEMO_WEBSITE_STOREFRONT_SLUG` (default `green-valley-farm-bakes`) |
 | Domain flags | `CUSTOM_DOMAINS_ENABLED`, `CUSTOM_DOMAINS_ROUTING_ENABLED`, `DOMAIN_SEARCH_ENABLED`, `DOMAIN_PURCHASE_ENABLED`, `PREMIUM_DOMAIN_PURCHASE_ENABLED`, `AU_DOMAIN_PURCHASE_ENABLED` (unused) |
 | Cloudflare | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID`, `CLOUDFLARE_ACCOUNT_ID` (checked, not used), `CLOUDFLARE_SAAS_CNAME_TARGET` |

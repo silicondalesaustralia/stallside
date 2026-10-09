@@ -46,7 +46,7 @@ function normalizeStudioPayload(obj: Partial<StudioPayload>): StudioPayload | un
     ? obj.nodes
     : homeFromPages;
 
-  if (!nodes) return undefined;
+  if (!nodes && !pageNodes) return undefined;
 
   const mergedPageNodes = pageNodes ?? {};
   if (!mergedPageNodes[STUDIO_HOME_PAGE_KEY] && isSerializedNodes(obj.nodes)) {
@@ -106,7 +106,7 @@ function mergeRawBase(existingRaw: unknown): Record<string, unknown> {
 export function mergeWebsiteStudioIntoRaw(
   existingRaw: unknown,
   templateId: StudioTemplateId,
-  nodes: SerializedNodes,
+  nodes: SerializedNodes | undefined,
   pageNodes?: StudioPageNodesMap,
 ): Prisma.InputJsonValue {
   const base = mergeRawBase(existingRaw);
@@ -114,7 +114,7 @@ export function mergeWebsiteStudioIntoRaw(
   const mergedPageNodes: StudioPageNodesMap = {
     ...(existing?.pageNodes ?? {}),
     ...(pageNodes ?? {}),
-    [STUDIO_HOME_PAGE_KEY]: nodes,
+    ...(nodes ? { [STUDIO_HOME_PAGE_KEY]: nodes } : {}),
   };
 
   const websiteStudio: StudioPayload = {
@@ -127,6 +127,27 @@ export function mergeWebsiteStudioIntoRaw(
   return { ...base, websiteStudio } as Prisma.InputJsonValue;
 }
 
+/** Replaces the non-home page layouts wholesale (used when deleting a page). */
+export function withoutStudioPage(
+  existingRaw: unknown,
+  templateId: StudioTemplateId,
+  nodes: SerializedNodes | undefined,
+  remainingPageNodes: StudioPageNodesMap,
+): Prisma.InputJsonValue {
+  const base = mergeRawBase(existingRaw);
+  const websiteStudio: StudioPayload = {
+    version: STUDIO_VERSION,
+    engine: "craft",
+    templateId,
+    nodes,
+    pageNodes: {
+      ...remainingPageNodes,
+      ...(nodes ? { [STUDIO_HOME_PAGE_KEY]: nodes } : {}),
+    },
+  };
+  return { ...base, websiteStudio } as Prisma.InputJsonValue;
+}
+
 export function mergeWebsiteStudioPageIntoRaw(
   existingRaw: unknown,
   templateId: StudioTemplateId,
@@ -135,7 +156,8 @@ export function mergeWebsiteStudioPageIntoRaw(
 ): Prisma.InputJsonValue {
   const base = mergeRawBase(existingRaw);
   const existing = extractWebsiteStudio(existingRaw);
-  const homepageNodes = existing?.nodes ?? nodes;
+  const homepageNodes =
+    pageKey === STUDIO_HOME_PAGE_KEY ? nodes : existing?.nodes;
   const mergedPageNodes: StudioPageNodesMap = {
     ...(existing?.pageNodes ?? {}),
     [pageKey]: nodes,
@@ -179,15 +201,10 @@ export function clearHeroDecorativeFromDraftRaw(
   existingRaw: unknown,
 ): unknown {
   const studio = extractWebsiteStudio(existingRaw);
-  if (!studio) return existingRaw;
+  if (!studio?.nodes) return existingRaw;
   const nodes = clearHeroDecorativeFromNodes(studio.nodes);
   const pageNodes = studio.pageNodes
-    ? {
-        ...studio.pageNodes,
-        [STUDIO_HOME_PAGE_KEY]: clearHeroDecorativeFromNodes(
-          studio.pageNodes[STUDIO_HOME_PAGE_KEY] ?? studio.nodes,
-        ),
-      }
+    ? { ...studio.pageNodes, [STUDIO_HOME_PAGE_KEY]: nodes }
     : undefined;
   return mergeWebsiteStudioIntoRaw(
     existingRaw,

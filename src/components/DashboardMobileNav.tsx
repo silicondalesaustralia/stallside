@@ -22,18 +22,18 @@ export default function DashboardMobileNav({
   selectedBusinessId,
   unreadNotifications,
   setupAlerts,
+  showWebsite,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
   unreadNotifications?: number;
   setupAlerts: DashboardSetupAlerts;
+  showWebsite: boolean;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  useEffect(() => setOpen(false), [pathname]);
 
   useEffect(() => {
     if (!open) return;
@@ -83,7 +83,7 @@ export default function DashboardMobileNav({
               needsBusiness={setupAlerts.needsBusiness}
             />
             <nav className="mt-3 flex flex-col gap-1 border-t border-white/10 pt-3">
-              {[websiteLink, ...secondaryLinks].map((link) => {
+              {(showWebsite ? [websiteLink, ...secondaryLinks] : secondaryLinks).map((link) => {
                 const badge = setupNavBadge(
                   link.href,
                   setupAlerts,

@@ -16,7 +16,8 @@ export type StudioPayload = {
   version: typeof STUDIO_VERSION;
   engine: "craft";
   templateId: StudioTemplateId;
-  nodes: SerializedNodes;
+  /** Homepage layout. Absent until the homepage itself has been saved. */
+  nodes?: SerializedNodes;
   pageNodes?: Record<string, SerializedNodes>;
 };
 
@@ -32,6 +33,8 @@ export type StudioMetadata = PuckSpikeMetadata & {
     column: import("./custom-pages").FooterColumnId;
   }[];
   commerceContext?: StudioCommerceContext;
+  /** Draft revision the editor loaded; sent back on save to detect conflicts. */
+  draftRevision: number;
 };
 
 export type StudioSectionType =

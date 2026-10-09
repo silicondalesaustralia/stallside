@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Editor, Frame } from "@craftjs/core";
 import type { SerializedNodes } from "@craftjs/core";
 import { studioResolver } from "@/lib/studio/resolver";
@@ -25,10 +25,12 @@ import { buildCommerceStarterTree } from "@/lib/studio/commerce-starters";
 import type { CustomPageTemplateId } from "@/lib/studio/custom-pages";
 import type { CommercePageKind } from "@/lib/studio/commerce-pages";
 import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style";
-import type { ChromeTarget } from "@/components/craft/CraftEditorContext";
+import type { ChromeTarget, StudioSaveStatus } from "@/components/craft/CraftEditorContext";
+import type { EditorSaveResult } from "@/lib/website/persistence/editor-result";
 import StudioEditorShell from "@/components/studio/shell/StudioEditorShell";
 import { StudioEditorProvider } from "./StudioEditorContext";
 import StudioEditorHeader from "./StudioEditorHeader";
+import StudioSaveNotice from "./StudioSaveNotice";
 import StudioSectionPalette from "./StudioSectionPalette";
 import StudioSettingsPanel from "./StudioSettingsPanel";
 import StudioAddSectionModal from "./StudioAddSectionModal";
@@ -77,9 +79,14 @@ export default function StudioEditorInner({
   const [addAtIndex, setAddAtIndex] = useState<number | null>(null);
   const [paletteCollapsed, setPaletteCollapsed] = useState(true);
   const [dirty, setDirty] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const [saveStatus, setSaveStatus] = useState<StudioSaveStatus>("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const serializedRef = useRef<string>("");
+  const revisionRef = useRef(metadata.draftRevision);
+  useEffect(() => {
+    revisionRef.current = metadata.draftRevision;
+  }, [metadata.draftRevision]);
   const [chromeTarget, setChromeTarget] = useState<ChromeTarget>(null);
   const [headerLayout, setHeaderLayout] = useState<HeaderLayout>(
     metadata.resolvedBranding.headerLayout,
@@ -97,42 +104,62 @@ export default function StudioEditorInner({
       if (patch.brandMark) setBrandMark(patch.brandMark);
       setHeaderStyleStatus("saving");
       startTransition(async () => {
-        const result = await saveStorefrontHeaderStyle(patch);
-        setHeaderStyleStatus(result.ok ? "saved" : "error");
+        try {
+          const result = await saveStorefrontHeaderStyle({
+            ...patch,
+            expectedRevision: revisionRef.current,
+          });
+          if (result.ok) revisionRef.current = result.revision;
+          setHeaderStyleStatus(result.ok ? "saved" : "error");
+        } catch {
+          setHeaderStyleStatus("error");
+        }
       });
     },
     [],
   );
 
-  const onSave = useCallback(() => {
-    setSaveStatus("saving");
-    startTransition(async () => {
-      if (commercePageKind) {
-        await saveCommerceLayoutDraft(commercePageKind, serializedRef.current);
-      } else if (pageId) {
-        await saveCustomPageDraft(pageId, serializedRef.current);
-      } else {
-        await saveWebsiteStudioDraft(serializedRef.current, templateId, returnTo);
-      }
-      setDirty(false);
-      setSaveStatus("saved");
-    });
-  }, [templateId, pageId, commercePageKind, returnTo]);
-
-  const onPublish = useCallback(() => {
-    setSaveStatus("saving");
-    startTransition(async () => {
-      if (commercePageKind) {
-        await publishCommerceLayoutDraft(commercePageKind, serializedRef.current);
-      } else if (pageId) {
-        await publishCustomPageDraft(pageId, serializedRef.current);
-      } else {
-        await publishWebsiteStudioDraft(serializedRef.current, templateId, returnTo);
-      }
-      setDirty(false);
-      setSaveStatus("saved");
-    });
-  }, [templateId, pageId, commercePageKind, returnTo]);
+  const runSave = useCallback(
+    (mode: "save" | "publish") => {
+      setSaveStatus("saving");
+      setSaveError(null);
+      startTransition(async () => {
+        try {
+          const nodes = serializedRef.current;
+          const revision = revisionRef.current;
+          const publish = mode === "publish";
+          const result: EditorSaveResult | undefined = commercePageKind
+            ? await (publish ? publishCommerceLayoutDraft : saveCommerceLayoutDraft)(
+                commercePageKind,
+                nodes,
+                revision,
+              )
+            : pageId
+              ? await (publish ? publishCustomPageDraft : saveCustomPageDraft)(pageId, nodes, revision)
+              : await (publish ? publishWebsiteStudioDraft : saveWebsiteStudioDraft)(
+                  nodes,
+                  templateId,
+                  revision,
+                  returnTo,
+                );
+          // Successful saves redirect, so the action resolves without a result.
+          if (!result) {
+            setDirty(false);
+            setSaveStatus("saved");
+            return;
+          }
+          setSaveStatus(result.error === "conflict" ? "conflict" : "error");
+          setSaveError(result.message);
+        } catch {
+          setSaveStatus("error");
+          setSaveError("Could not save. Check your connection and try again.");
+        }
+      });
+    },
+    [templateId, pageId, commercePageKind, returnTo],
+  );
+  const onSave = useCallback(() => runSave("save"), [runSave]);
+  const onPublish = useCallback(() => runSave("publish"), [runSave]);
 
   const chrome = useMemo(
     () => ({
@@ -147,6 +174,7 @@ export default function StudioEditorInner({
       isPublished,
       dirty,
       saveStatus,
+      saveError,
       onSave,
       onPublish,
       pending,
@@ -175,6 +203,7 @@ export default function StudioEditorInner({
       isPublished,
       dirty,
       saveStatus,
+      saveError,
       onSave,
       onPublish,
       pending,
@@ -234,6 +263,7 @@ export default function StudioEditorInner({
           }}
         >
           <StudioEditorHeader />
+          <StudioSaveNotice />
           <div className="vendl-studio-editor__workspace">
             <StudioSectionPalette />
             <div className="vendl-studio-editor__canvas-wrap">

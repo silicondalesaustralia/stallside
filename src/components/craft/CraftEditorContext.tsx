@@ -9,6 +9,8 @@ import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style"
 
 export type ChromeTarget = "header" | null;
 
+export type StudioSaveStatus = "idle" | "saving" | "saved" | "conflict" | "error";
+
 export type CraftEditorChrome = {
   metadata: CraftSpikeMetadata;
   businessMode: BusinessMode;
@@ -19,7 +21,9 @@ export type CraftEditorChrome = {
   previewUrl: string;
   isPublished: boolean;
   dirty: boolean;
-  saveStatus: "idle" | "saving" | "saved";
+  saveStatus: StudioSaveStatus;
+  /** Seller-facing reason the last save or publish was refused. */
+  saveError?: string | null;
   onSave: () => void;
   onPublish: () => void;
   pending: boolean;

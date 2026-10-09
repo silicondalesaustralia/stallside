@@ -4,12 +4,18 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
 import { requireOwnerWrite } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
+import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import {
-  ensureStorefront,
-  publishStorefront,
-  storefrontPublicPath,
-} from "@/lib/catalogue/storefront";
+  DRAFT_CONFLICT_MESSAGE,
+  writeStorefrontDraft,
+} from "@/lib/website/persistence/draft-store";
+import { tryPublishStorefront } from "@/lib/website/persistence/publish";
+import {
+  conflictResult,
+  publishBlockedResult,
+  type EditorSaveResult,
+} from "@/lib/website/persistence/editor-result";
 import {
   extractWebsiteStudio,
   mergeWebsiteStudioIntoRaw,
@@ -48,7 +54,7 @@ function redirectAfterSave(
   slug: string,
   returnTo: string | undefined,
   query: Record<string, string>,
-) {
+): never {
   const safe = safeStudioPreviewReturnTo(slug, returnTo);
   if (safe) {
     const url = new URL(safe, "https://vendl.local");
@@ -65,25 +71,31 @@ async function persistWebsiteStudioDraft(
   businessName: string,
   templateId: StudioTemplateId,
   nodes: SerializedNodes,
+  expectedRevision: number,
 ) {
   const storefront = await ensureStorefront(ownerId, businessName);
   const merged = mergeWebsiteStudioIntoRaw(storefront.draftConfig, templateId, nodes);
-  await prisma.storefront.update({
-    where: { ownerId },
-    data: { draftConfig: merged },
-  });
-  return storefront.slug;
+  const saved = await writeStorefrontDraft({ ownerId, expectedRevision, draftConfig: merged });
+  return saved.ok ? storefront.slug : null;
 }
 
 export async function saveWebsiteStudioDraft(
   nodesJson: string,
   templateIdRaw: string,
+  expectedRevision: number,
   returnTo?: string,
-) {
+): Promise<EditorSaveResult> {
   const { owner } = await requireOwnerWrite();
   const templateId = parseTemplateId(templateIdRaw);
   const nodes = parseNodesJson(nodesJson);
-  const slug = await persistWebsiteStudioDraft(owner.id, owner.businessName, templateId, nodes);
+  const slug = await persistWebsiteStudioDraft(
+    owner.id,
+    owner.businessName,
+    templateId,
+    nodes,
+    expectedRevision,
+  );
+  if (!slug) return conflictResult(DRAFT_CONFLICT_MESSAGE);
 
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/studio");
@@ -94,13 +106,22 @@ export async function saveWebsiteStudioDraft(
 export async function publishWebsiteStudioDraft(
   nodesJson: string,
   templateIdRaw: string,
+  expectedRevision: number,
   returnTo?: string,
-) {
-  const { owner } = await requireOwnerWrite();
+): Promise<EditorSaveResult> {
+  const { owner, user } = await requireOwnerWrite();
   const templateId = parseTemplateId(templateIdRaw);
   const nodes = parseNodesJson(nodesJson);
-  const slug = await persistWebsiteStudioDraft(owner.id, owner.businessName, templateId, nodes);
-  await publishStorefront(owner.id);
+  const slug = await persistWebsiteStudioDraft(
+    owner.id,
+    owner.businessName,
+    templateId,
+    nodes,
+    expectedRevision,
+  );
+  if (!slug) return conflictResult(DRAFT_CONFLICT_MESSAGE);
+  const published = await tryPublishStorefront(owner.id, user.id);
+  if (!published.ok) return publishBlockedResult(published.blockers);
 
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/studio");
@@ -120,10 +141,12 @@ export async function applyWebsiteStudioTemplate(templateIdRaw: string) {
       templateId,
       existing.nodes,
     );
-    await prisma.storefront.update({
-      where: { ownerId: owner.id },
-      data: { draftConfig: merged },
+    const saved = await writeStorefrontDraft({
+      ownerId: owner.id,
+      expectedRevision: storefront.draftRevision,
+      draftConfig: merged,
     });
+    if (!saved.ok) redirect(webStudioPath("studio", { error: "conflict" }));
     revalidatePath("/dashboard/website/web-studio");
     revalidatePath("/dashboard/website/studio");
     redirect(webStudioPath("studio", { template: "applied" }));
@@ -135,7 +158,8 @@ export async function applyWebsiteStudioTemplate(templateIdRaw: string) {
 export async function saveStorefrontHeaderStyle(input: {
   headerLayout?: string;
   brandMark?: string;
-}): Promise<{ ok: true } | { ok: false; error: string }> {
+  expectedRevision: number;
+}): Promise<{ ok: true; revision: number } | { ok: false; error: string }> {
   try {
     const { owner } = await requireOwnerWrite();
     const storefront = await ensureStorefront(owner.id, owner.businessName);
@@ -157,14 +181,16 @@ export async function saveStorefrontHeaderStyle(input: {
         ...patch,
       },
     };
-    await prisma.storefront.update({
-      where: { ownerId: owner.id },
-      data: { draftConfig: nextDraft as object },
+    const saved = await writeStorefrontDraft({
+      ownerId: owner.id,
+      expectedRevision: input.expectedRevision,
+      draftConfig: nextDraft as Prisma.InputJsonValue,
     });
+    if (!saved.ok) return { ok: false, error: DRAFT_CONFLICT_MESSAGE };
     revalidatePath("/dashboard/website/web-studio");
     revalidatePath("/dashboard/website/studio");
     revalidatePath(`${storefrontPublicPath(storefront.slug)}/studio-preview`);
-    return { ok: true };
+    return { ok: true, revision: saved.revision };
   } catch (err) {
     return {
       ok: false,

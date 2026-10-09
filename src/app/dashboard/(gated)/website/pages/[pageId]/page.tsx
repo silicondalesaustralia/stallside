@@ -12,6 +12,7 @@ import {
 import { customPagePublicPath } from "@/lib/studio/custom-page-paths";
 import StudioPageEditor from "@/components/studio/StudioPageEditor";
 import { updateCustomPageMeta, deleteCustomPage } from "../actions";
+import { DRAFT_CONFLICT_MESSAGE } from "@/lib/website/persistence/draft-store";
 
 export default async function EditWebsitePage({
   params,
@@ -51,7 +52,11 @@ export default async function EditWebsitePage({
       {sp.saved ? <p className="text-sm font-medium text-[var(--ok)]">Draft saved.</p> : null}
       {sp.published ? <p className="text-sm font-medium text-[var(--ok)]">Published.</p> : null}
       {sp.created ? <p className="text-sm font-medium text-[var(--ok)]">Page created — add sections below.</p> : null}
-      {sp.error ? <p className="text-sm font-medium text-[var(--gone)]">Could not save page settings.</p> : null}
+      {sp.error ? (
+        <p className="text-sm font-medium text-[var(--gone)]">
+          {sp.error === "conflict" ? DRAFT_CONFLICT_MESSAGE : "Could not save page settings."}
+        </p>
+      ) : null}
 
       <section className="rounded-2xl border border-[var(--line)] bg-white p-5">
         <h2 className="font-semibold text-[var(--field)]">Page settings</h2>
@@ -107,9 +112,9 @@ export default async function EditWebsitePage({
         previewUrl={previewUrl}
         isPublished={storefront.isPublished}
         starter={{
-          headline: storefront.headline ?? owner.businessName,
-          subheadline: storefront.subheadline,
-          about: storefront.about,
+          headline: ctx.branding.headline,
+          subheadline: ctx.branding.subheadline,
+          about: ctx.branding.about,
         }}
       />
     </main>

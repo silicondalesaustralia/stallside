@@ -748,9 +748,13 @@ model Storefront {
   themePreset     String    @default("market")
   /** Working copy — saved on “Save draft”. */
   draftConfig     Json      @default("{}")
+  /** Bumped on every draft write; writers must match it (optimistic concurrency). */
+  draftRevision   Int       @default(0)
   /** Snapshot copied from draft on publish. */
   publishedConfig Json?
   publishedAt     DateTime?
+  activePublicationId String?
+  publications    StorefrontPublication[]
   contactEmail    String?
   showPhone       Boolean   @default(false)
   /** Legacy single field; prefer StorefrontDomain rows (Phase 9). */
@@ -761,6 +765,19 @@ model Storefront {
   updatedAt       DateTime  @updatedAt
 
   @@index([isPublished])
+}
+
+/** Immutable snapshot of a published website. Never updated after insert. */
+model StorefrontPublication {
+  id              String     @id @default(cuid())
+  storefrontId    String
+  storefront      Storefront @relation(fields: [storefrontId], references: [id], onDelete: Cascade)
+  draftRevision   Int
+  snapshot        Json
+  createdByUserId String?
+  createdAt       DateTime   @default(now())
+
+  @@index([storefrontId, createdAt])
 }
 
 enum StorefrontDomainType {

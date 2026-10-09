@@ -91,7 +91,7 @@ describe("clearHeroDecorativeFromNodes", () => {
     });
     const studio = extractWebsiteStudio(raw);
     assert.ok(studio);
-    const heroProps = (studio!.nodes.a as { props: Record<string, unknown> }).props;
+    const heroProps = (studio!.nodes!.a as { props: Record<string, unknown> }).props;
     assert.equal(heroProps.decorativeImageUrl, undefined);
   });
 });

@@ -34,7 +34,7 @@ export async function resolveStudioPublicContext(
     ctx.storefront.publishedConfig,
   );
 
-  if (!studio?.nodes && !override?.nodes) {
+  if (!studio && !override?.nodes) {
     return { active: false };
   }
 
@@ -43,7 +43,7 @@ export async function resolveStudioPublicContext(
     (studio
       ? defaultTemplateId(studio, ctx.businessMode)
       : ("artisan" as StudioTemplateId));
-  const nodes = override?.nodes ?? studio!.nodes;
+  const nodes = override?.nodes ?? studio?.nodes;
   const resolvedStudio: StudioPayload = {
     version: studio?.version ?? STUDIO_VERSION,
     engine: "craft",

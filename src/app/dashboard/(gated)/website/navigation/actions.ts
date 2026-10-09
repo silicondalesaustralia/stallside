@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOwnerWrite } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
+import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 import { ensureCustomPages, mergeCustomPagesIntoRaw } from "@/lib/studio/custom-pages";
 import { ensureBlogSettings, mergeBlogSettingsIntoRaw } from "@/lib/studio/blog";
 import {
@@ -45,9 +46,11 @@ export async function saveNavigationLayout(layoutJson: string) {
   let merged = mergeCustomPagesIntoRaw(storefront.draftConfig, nextPages);
   merged = mergeBlogSettingsIntoRaw(merged, nextBlog);
 
-  await prisma.storefront.update({
-    where: { ownerId: owner.id },
-    data: { draftConfig: merged as import("@/generated/prisma/client").Prisma.InputJsonValue },
+  await writeDraftOrRedirect({
+    ownerId: owner.id,
+    expectedRevision: storefront.draftRevision,
+    draftConfig: merged as Prisma.InputJsonValue,
+    conflictPath: "/dashboard/website/navigation",
   });
 
   revalidatePath("/dashboard/website/navigation");

@@ -7,15 +7,15 @@ import {
 } from "@/lib/catalogue/channels";
 import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 import { normalizeBusinessMode } from "@/lib/business-mode";
-import {
-  buildDefaultStorefrontConfig,
-  parseStorefrontConfig,
-} from "@/lib/storefront/config";
+import { parseStorefrontConfig } from "@/lib/storefront/config";
 import { resolveStorefrontBranding } from "@/lib/storefront/branding";
 import { loadOnlineFulfilmentOptions } from "@/lib/fulfilment/load-options";
 import { toShopFulfilmentOptionView } from "@/lib/fulfilment/shop-types";
-import type { StorefrontConfig } from "@/lib/storefront/types";
 import { ProductChannelType, Prisma } from "@/generated/prisma/client";
+import {
+  SEED_OWNER_SELECT,
+  buildSeededDraftConfig,
+} from "@/lib/website/persistence/seed-draft";
 
 const ownerInclude = {
   user: { select: { email: true, role: true } },
@@ -65,37 +65,25 @@ export async function ensureStorefront(ownerId: string, businessName: string) {
     if (empty) {
       const owner = await prisma.owner.findUniqueOrThrow({
         where: { id: ownerId },
-        select: { businessMode: true, fulfilmentIntents: true },
+        select: SEED_OWNER_SELECT,
       });
-      const draftConfig = buildDefaultStorefrontConfig({
-        businessMode: normalizeBusinessMode(owner.businessMode),
-        fulfilmentIntents: owner.fulfilmentIntents,
-      });
-      return prisma.storefront.update({
-        where: { ownerId },
+      await prisma.storefront.updateMany({
+        where: { ownerId, draftRevision: existing.draftRevision },
         data: {
-          draftConfig: draftConfig as unknown as Prisma.InputJsonValue,
+          draftConfig: buildSeededDraftConfig(owner) as unknown as Prisma.InputJsonValue,
+          draftRevision: { increment: 1 },
         },
       });
+      return prisma.storefront.findUniqueOrThrow({ where: { ownerId } });
     }
     return existing;
   }
 
   const owner = await prisma.owner.findUniqueOrThrow({
     where: { id: ownerId },
-    select: {
-      businessMode: true,
-      fulfilmentIntents: true,
-      shortDescription: true,
-      businessName: true,
-    },
+    select: SEED_OWNER_SELECT,
   });
-
-  const mode = normalizeBusinessMode(owner.businessMode);
-  const draftConfig = buildDefaultStorefrontConfig({
-    businessMode: mode,
-    fulfilmentIntents: owner.fulfilmentIntents,
-  });
+  const draftConfig = buildSeededDraftConfig(owner);
 
   const slug = await uniqueStorefrontSlug(businessName || "shop");
   return prisma.storefront.create({
@@ -228,93 +216,8 @@ export function slugifyStorefrontInput(input: string) {
   return slugify(input) || "shop";
 }
 
-export async function saveStorefrontDraftData(input: {
-  ownerId: string;
-  headline: string;
-  subheadline: string | null;
-  about: string | null;
-  slug: string;
-  themePreset: string;
-  contactEmail: string | null;
-  showPhone: boolean;
-  heroImageUrl?: string | null;
-  faviconUrl?: string | null;
-  draftConfig: StorefrontConfig;
-  existingDraftConfigRaw?: unknown;
-}) {
-  const preserved =
-    input.existingDraftConfigRaw &&
-    typeof input.existingDraftConfigRaw === "object" &&
-    !Array.isArray(input.existingDraftConfigRaw)
-      ? (input.existingDraftConfigRaw as Record<string, unknown>)
-      : {};
-  const mergedDraftConfig = {
-    ...preserved,
-    ...input.draftConfig,
-  };
-
-  await prisma.storefront.update({
-    where: { ownerId: input.ownerId },
-    data: {
-      headline: input.headline,
-      subheadline: input.subheadline,
-      about: input.about,
-      slug: input.slug,
-      themePreset: input.themePreset,
-      contactEmail: input.contactEmail,
-      showPhone: input.showPhone,
-      ...(input.heroImageUrl !== undefined
-        ? { heroImageUrl: input.heroImageUrl }
-        : {}),
-      ...(input.faviconUrl !== undefined
-        ? { faviconUrl: input.faviconUrl }
-        : {}),
-      draftConfig: mergedDraftConfig as unknown as Prisma.InputJsonValue,
-    },
-  });
-
-  // Keep included Vendl subdomain row in sync when the slug changes.
-  const { APP_DOMAIN } = await import("@/lib/constants");
-  const sf = await prisma.storefront.findUniqueOrThrow({
-    where: { ownerId: input.ownerId },
-    select: { id: true, slug: true },
-  });
-  const vendlHost = `${sf.slug}.${APP_DOMAIN}`;
-  const subdomainRow = await prisma.storefrontDomain.findFirst({
-    where: { storefrontId: sf.id, type: "VENDL_SUBDOMAIN" },
-    select: { id: true, hostname: true },
-  });
-  if (subdomainRow && subdomainRow.hostname !== vendlHost) {
-    const clash = await prisma.storefrontDomain.findUnique({
-      where: { hostname: vendlHost },
-      select: { id: true },
-    });
-    if (!clash) {
-      await prisma.storefrontDomain.update({
-        where: { id: subdomainRow.id },
-        data: { hostname: vendlHost },
-      });
-    }
-  }
-}
-
-export async function publishStorefront(ownerId: string) {
-  const sf = await prisma.storefront.findUniqueOrThrow({
-    where: { ownerId },
-  });
-  await prisma.storefront.update({
-    where: { ownerId },
-    data: {
-      isPublished: true,
-      publishedConfig: sf.draftConfig as Prisma.InputJsonValue,
-      publishedAt: new Date(),
-    },
-  });
-}
-
-export async function unpublishStorefront(ownerId: string) {
-  await prisma.storefront.update({
-    where: { ownerId },
-    data: { isPublished: false },
-  });
-}
+export { saveStorefrontDraftData } from "@/lib/website/persistence/draft-data";
+export {
+  publishStorefront,
+  unpublishStorefront,
+} from "@/lib/website/persistence/publish";

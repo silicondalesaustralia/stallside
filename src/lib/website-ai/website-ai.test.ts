@@ -48,7 +48,7 @@ describe("website-ai heuristic planner", () => {
     const compiled = compilePlanToStudioPayload(result.plan);
     assert.equal(compiled.errors.length, 0);
     assert.ok(compiled.payload);
-    assert.ok(compiled.payload.nodes.ROOT);
+    assert.ok(compiled.payload.nodes?.ROOT);
     assert.equal(compiled.payload.engine, "craft");
   });
 

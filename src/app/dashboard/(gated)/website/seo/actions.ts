@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
-import { ProductChannelType } from "@/generated/prisma/client";
+import { ProductChannelType, type Prisma } from "@/generated/prisma/client";
+import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 import { primaryStandIdForOwner } from "@/lib/catalogue/channels";
 import {
   entityKeyFromParam,
@@ -56,9 +57,11 @@ export async function saveEntitySeo(entityParam: string, formData: FormData) {
     writeEntitySeo(config, entityKey, settings),
   );
 
-  await prisma.storefront.update({
-    where: { ownerId: owner.id },
-    data: { draftConfig: merged as import("@/generated/prisma/client").Prisma.InputJsonValue },
+  await writeDraftOrRedirect({
+    ownerId: owner.id,
+    expectedRevision: storefront.draftRevision,
+    draftConfig: merged as Prisma.InputJsonValue,
+    conflictPath: `/dashboard/website/seo/${entityParam}`,
   });
 
   revalidatePath("/dashboard/website/seo");

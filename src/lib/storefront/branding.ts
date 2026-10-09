@@ -7,6 +7,7 @@ import {
   isBrandMarkMode,
   isHeaderLayout,
 } from "@/lib/storefront/header-style";
+import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
 import type {
   ResolvedStorefrontBranding,
   StorefrontConfig,
@@ -53,10 +54,10 @@ export function resolveStorefrontBranding(input: {
   storefront: StorefrontBrandingSource;
   config: StorefrontConfig;
 }): ResolvedStorefrontBranding {
-  const preset: StorefrontThemePreset = isStorefrontThemePreset(
-    input.storefront.themePreset,
-  )
-    ? input.storefront.themePreset
+  const identity = input.config.identity;
+  const storefront = overlayStorefrontIdentity(input.storefront, identity);
+  const preset: StorefrontThemePreset = isStorefrontThemePreset(storefront.themePreset)
+    ? storefront.themePreset
     : "market";
   const theme = STOREFRONT_THEMES[preset];
   const overrides = input.config.themeOverrides ?? {};
@@ -77,23 +78,26 @@ export function resolveStorefrontBranding(input: {
     Boolean,
   );
 
-  const logoUrl = input.owner.brandLogoUrl ?? input.stand.logoUrl;
+  const logoUrl =
+    identity?.logoUrl !== undefined
+      ? identity.logoUrl
+      : (input.owner.brandLogoUrl ?? input.stand.logoUrl);
   const headerDefaults = defaultHeaderStyle(Boolean(logoUrl));
 
   return {
     businessName: input.owner.businessName,
-    headline: input.storefront.headline?.trim() || input.owner.businessName,
+    headline: storefront.headline?.trim() || input.owner.businessName,
     subheadline:
-      input.storefront.subheadline?.trim() ||
+      storefront.subheadline?.trim() ||
       input.owner.shortDescription?.trim() ||
       null,
     about:
-      input.storefront.about?.trim() ||
+      storefront.about?.trim() ||
       input.owner.shortDescription?.trim() ||
       null,
     logoUrl,
-    faviconUrl: input.storefront.faviconUrl ?? null,
-    heroImageUrl: input.storefront.heroImageUrl,
+    faviconUrl: storefront.faviconUrl ?? null,
+    heroImageUrl: storefront.heroImageUrl,
     accentColor,
     secondaryColor,
     buttonStyle: overrides.buttonStyle ?? theme.buttonStyle,
@@ -107,9 +111,9 @@ export function resolveStorefrontBranding(input: {
       ? overrides.brandMark
       : headerDefaults.brandMark,
     regionLabel: regionParts.length > 0 ? regionParts.join(", ") : null,
-    contactEmail: input.storefront.contactEmail?.trim() || input.owner.contactEmail,
-    contactPhone: input.storefront.showPhone ? input.owner.contactPhone : null,
-    showPhone: input.storefront.showPhone,
+    contactEmail: storefront.contactEmail?.trim() || input.owner.contactEmail,
+    contactPhone: storefront.showPhone ? input.owner.contactPhone : null,
+    showPhone: storefront.showPhone,
     instagramUrl: input.stand.instagramUrl,
     facebookUrl: input.stand.facebookUrl,
     tiktokUrl: input.stand.tiktokUrl,

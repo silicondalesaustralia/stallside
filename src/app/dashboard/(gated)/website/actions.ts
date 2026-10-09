@@ -6,7 +6,6 @@ import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import {
   ensureStorefront,
-  publishStorefront,
   saveStorefrontDraftData,
   slugifyStorefrontInput,
   storefrontPublicPath,
@@ -24,6 +23,8 @@ import { parseAccentColor } from "@/lib/stand-brand";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
 import { clearHeroDecorativeFromDraftRaw } from "@/lib/studio/storage";
 import { getFontPair } from "@/lib/website/brand-looks";
+import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
+import { tryPublishStorefront } from "@/lib/website/persistence/publish";
 
 function removeFlag(formData: FormData, name: string): boolean {
   return formData.has(name);
@@ -59,19 +60,16 @@ export async function saveStorefrontDetails(formData: FormData) {
     : "market";
   const draftConfig = parseStorefrontConfig(storefront.draftConfig);
 
-  await saveStorefrontDraftData({
+  const saved = await saveStorefrontDraftData({
     ownerId: owner.id,
-    headline,
-    subheadline,
-    about,
+    expectedRevision: storefront.draftRevision,
     slug,
     themePreset,
-    contactEmail,
-    showPhone,
-    heroImageUrl: storefront.heroImageUrl,
+    identity: { headline, subheadline, about, contactEmail, showPhone },
     draftConfig,
     existingDraftConfigRaw: storefront.draftConfig,
   });
+  if (!saved.ok) redirect(webStudioPath("details", { error: "conflict" }));
 
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/details");
@@ -91,10 +89,12 @@ export async function saveStorefrontBranding(formData: FormData) {
   const stand = await prisma.stand.findFirst({
     where: { ownerId: owner.id },
     orderBy: { createdAt: "asc" },
-    select: { id: true, logoUrl: true, accentColor: true, secondaryColor: true },
+    select: { logoUrl: true, accentColor: true, secondaryColor: true },
   });
+  const draftConfig = parseStorefrontConfig(storefront.draftConfig);
+  const current = overlayStorefrontIdentity(storefront, draftConfig.identity);
 
-  let heroImageUrl = storefront.heroImageUrl;
+  let heroImageUrl = current.heroImageUrl;
   if (removeHero) heroImageUrl = null;
   const heroFile = formData.get("heroImage");
   if (!removeHero && heroFile instanceof File && heroFile.size > 0) {
@@ -105,7 +105,7 @@ export async function saveStorefrontBranding(formData: FormData) {
     }
   }
 
-  let faviconUrl = storefront.faviconUrl;
+  let faviconUrl = current.faviconUrl ?? null;
   if (removeFavicon) faviconUrl = null;
   const faviconFile = formData.get("favicon");
   if (!removeFavicon && faviconFile instanceof File && faviconFile.size > 0) {
@@ -116,7 +116,10 @@ export async function saveStorefrontBranding(formData: FormData) {
     }
   }
 
-  let logoUrl = owner.brandLogoUrl ?? stand?.logoUrl ?? null;
+  let logoUrl =
+    draftConfig.identity?.logoUrl !== undefined
+      ? draftConfig.identity.logoUrl
+      : (owner.brandLogoUrl ?? stand?.logoUrl ?? null);
   if (removeLogo) logoUrl = null;
   const logoFile = formData.get("logo");
   if (!removeLogo && logoFile instanceof File && logoFile.size > 0) {
@@ -130,33 +133,21 @@ export async function saveStorefrontBranding(formData: FormData) {
   const accentParsed = parseAccentColor(String(formData.get("accentColor") ?? ""));
   const secondaryParsed = parseAccentColor(String(formData.get("secondaryColor") ?? ""));
   const accentColor =
-    accentParsed ?? owner.brandAccentColor ?? stand?.accentColor ?? "#2e7d3f";
+    accentParsed ??
+    draftConfig.themeOverrides?.accentColor ??
+    owner.brandAccentColor ??
+    stand?.accentColor ??
+    "#2e7d3f";
   const secondaryColor =
-    secondaryParsed ?? owner.brandSecondaryColor ?? stand?.secondaryColor ?? accentColor;
-
-  await prisma.owner.update({
-    where: { id: owner.id },
-    data: {
-      brandLogoUrl: logoUrl,
-      brandAccentColor: accentColor,
-      brandSecondaryColor: secondaryColor,
-    },
-  });
-  if (stand) {
-    await prisma.stand.update({
-      where: { id: stand.id },
-      data: {
-        logoUrl,
-        accentColor,
-        secondaryColor,
-      },
-    });
-  }
+    secondaryParsed ??
+    draftConfig.themeOverrides?.secondaryColor ??
+    owner.brandSecondaryColor ??
+    stand?.secondaryColor ??
+    accentColor;
 
   const themePreset = isStorefrontThemePreset(storefront.themePreset)
     ? storefront.themePreset
     : "market";
-  const draftConfig = parseStorefrontConfig(storefront.draftConfig);
   draftConfig.themeOverrides = {
     ...draftConfig.themeOverrides,
     accentColor,
@@ -173,38 +164,31 @@ export async function saveStorefrontBranding(formData: FormData) {
     existingDraftConfigRaw = clearHeroDecorativeFromDraftRaw(storefront.draftConfig);
   }
 
-  await saveStorefrontDraftData({
+  const saved = await saveStorefrontDraftData({
     ownerId: owner.id,
-    headline: storefront.headline ?? owner.businessName,
-    subheadline: storefront.subheadline,
-    about: storefront.about,
+    expectedRevision: storefront.draftRevision,
     slug: storefront.slug,
     themePreset,
-    contactEmail: storefront.contactEmail,
-    showPhone: storefront.showPhone,
-    heroImageUrl,
-    faviconUrl,
+    identity: { heroImageUrl, faviconUrl, logoUrl },
     draftConfig,
     existingDraftConfigRaw,
   });
+  if (!saved.ok) redirect(webStudioPath("branding", { error: "conflict" }));
 
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/branding");
   revalidatePath("/dashboard/website/details");
   revalidatePath("/dashboard/website/studio");
   revalidatePath("/dashboard/website/ai");
-  revalidatePath("/dashboard/businesses");
   revalidatePath(storefrontPublicPath(storefront.slug));
   redirect(webStudioPath("branding", { saved: "1" }));
 }
 
 export async function publishStorefrontAction() {
-  const { owner } = await requireOwnerWrite();
-  await ensureStorefront(owner.id, owner.businessName);
-  const sf = await prisma.storefront.findUniqueOrThrow({
-    where: { ownerId: owner.id },
-  });
-  await publishStorefront(owner.id);
+  const { owner, user } = await requireOwnerWrite();
+  const sf = await ensureStorefront(owner.id, owner.businessName);
+  const published = await tryPublishStorefront(owner.id, user.id);
+  if (!published.ok) redirect(webStudioPath("details", { error: "publish_blocked" }));
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/details");
   revalidatePath("/dashboard/website/studio");

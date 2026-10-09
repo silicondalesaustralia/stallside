@@ -49,12 +49,25 @@ export type StorefrontThemeOverrides = {
   brandMark?: import("./header-style").BrandMarkMode;
 };
 
+/** Website-only identity. Lives in the draft and goes live on publish. */
+export type StorefrontIdentity = {
+  headline?: string | null;
+  subheadline?: string | null;
+  about?: string | null;
+  heroImageUrl?: string | null;
+  faviconUrl?: string | null;
+  logoUrl?: string | null;
+  contactEmail?: string | null;
+  showPhone?: boolean;
+};
+
 export type StorefrontConfig = {
   sections: StorefrontSection[];
   pages: Record<StorefrontPageId, StorefrontPageConfig>;
   featuredProductIds?: string[];
   galleryImages?: string[];
   themeOverrides?: StorefrontThemeOverrides;
+  identity?: StorefrontIdentity;
 };
 
 export type ResolvedStorefrontBranding = {

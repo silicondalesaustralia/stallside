@@ -5,6 +5,10 @@ import {
 } from "@/app/dashboard/(gated)/website/actions";
 import ShopDetailsForm from "@/app/dashboard/(gated)/website/details/ShopDetailsForm";
 import { storefrontPublicPath } from "@/lib/catalogue/storefront";
+import type { ReactNode } from "react";
+import WebStudioDetailsFlash, {
+  type WebStudioDetailsFlashState,
+} from "@/components/website/WebStudioDetailsFlash";
 
 type Props = {
   headline: string;
@@ -15,12 +19,8 @@ type Props = {
   showPhone: boolean;
   isPublished: boolean;
   liveUrl: string;
-  flash?: {
-    saved?: boolean;
-    published?: boolean;
-    unpublished?: boolean;
-    error?: string;
-  };
+  flash?: WebStudioDetailsFlashState;
+  history?: ReactNode;
 };
 
 export default function WebStudioDetailsPanel({
@@ -33,6 +33,7 @@ export default function WebStudioDetailsPanel({
   isPublished,
   liveUrl,
   flash,
+  history,
 }: Props) {
   return (
     <>
@@ -56,6 +57,11 @@ export default function WebStudioDetailsPanel({
               >
                 View live site
               </a>
+              <form action={publishStorefrontAction}>
+                <button type="submit" className={dashCtaClass}>
+                  Publish changes
+                </button>
+              </form>
               <form action={unpublishStorefrontAction}>
                 <button
                   type="submit"
@@ -75,26 +81,7 @@ export default function WebStudioDetailsPanel({
         </div>
       </div>
 
-      {flash?.saved ? (
-        <p className="text-sm font-medium text-[var(--ok)]">Details saved.</p>
-      ) : null}
-      {flash?.published ? (
-        <p className="text-sm font-medium text-[var(--ok)]">Site published.</p>
-      ) : null}
-      {flash?.unpublished ? (
-        <p className="text-sm font-medium text-[var(--ok)]">Site unpublished.</p>
-      ) : null}
-      {flash?.error === "headline" ? (
-        <p className="text-sm font-medium text-[var(--gone)]">Shop name is required.</p>
-      ) : null}
-      {flash?.error === "slug" ? (
-        <p className="text-sm font-medium text-[var(--gone)]">Enter a valid URL slug.</p>
-      ) : null}
-      {flash?.error === "slug_taken" ? (
-        <p className="text-sm font-medium text-[var(--gone)]">
-          That URL is already in use. Try a different slug.
-        </p>
-      ) : null}
+      <WebStudioDetailsFlash flash={flash} />
 
       <ShopDetailsForm
         headline={headline}
@@ -109,6 +96,8 @@ export default function WebStudioDetailsPanel({
         Next: open the Branding tab above · Public path{" "}
         <code className="text-xs">{storefrontPublicPath(slug)}</code>
       </p>
+
+      {history}
     </>
   );
 }

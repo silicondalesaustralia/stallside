@@ -4,12 +4,17 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
 import { requireOwnerWrite } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import {
-  ensureStorefront,
-  publishStorefront,
-  storefrontPublicPath,
-} from "@/lib/catalogue/storefront";
+  DRAFT_CONFLICT_MESSAGE,
+  writeStorefrontDraft,
+} from "@/lib/website/persistence/draft-store";
+import { tryPublishStorefront } from "@/lib/website/persistence/publish";
+import {
+  conflictResult,
+  publishBlockedResult,
+  type EditorSaveResult,
+} from "@/lib/website/persistence/editor-result";
 import {
   defaultTemplateId,
   extractWebsiteStudio,
@@ -42,6 +47,7 @@ async function persistCommerceNodes(
   businessMode: string | null | undefined,
   kind: CommercePageKind,
   nodes: SerializedNodes,
+  expectedRevision: number,
 ) {
   const storefront = await ensureStorefront(ownerId, businessName);
   const studio = extractWebsiteStudio(storefront.draftConfig);
@@ -56,14 +62,15 @@ async function persistCommerceNodes(
     pageKey,
     nodes,
   );
-  await prisma.storefront.update({
-    where: { ownerId },
-    data: { draftConfig: merged },
-  });
-  return storefront.slug;
+  const saved = await writeStorefrontDraft({ ownerId, expectedRevision, draftConfig: merged });
+  return saved.ok ? storefront.slug : null;
 }
 
-export async function saveCommerceLayoutDraft(kindParam: string, nodesJson: string) {
+export async function saveCommerceLayoutDraft(
+  kindParam: string,
+  nodesJson: string,
+  expectedRevision: number,
+): Promise<EditorSaveResult> {
   const kind = commerceKindFromParam(kindParam);
   if (!kind) redirect("/dashboard/website/commerce?error=kind");
   const { owner } = await requireOwnerWrite();
@@ -74,7 +81,9 @@ export async function saveCommerceLayoutDraft(kindParam: string, nodesJson: stri
     owner.businessMode,
     kind,
     nodes,
+    expectedRevision,
   );
+  if (!slug) return conflictResult(DRAFT_CONFLICT_MESSAGE);
   revalidatePath(`/dashboard/website/commerce/${kind}`);
   revalidatePath(storefrontPublicPath(slug));
   redirect(`/dashboard/website/commerce/${kind}?saved=1`);
@@ -83,19 +92,23 @@ export async function saveCommerceLayoutDraft(kindParam: string, nodesJson: stri
 export async function publishCommerceLayoutDraft(
   kindParam: string,
   nodesJson: string,
-) {
+  expectedRevision: number,
+): Promise<EditorSaveResult> {
   const kind = commerceKindFromParam(kindParam);
   if (!kind) redirect("/dashboard/website/commerce?error=kind");
-  const { owner } = await requireOwnerWrite();
+  const { owner, user } = await requireOwnerWrite();
   const nodes = parseNodesJson(nodesJson, kind);
-  await persistCommerceNodes(
+  const slug = await persistCommerceNodes(
     owner.id,
     owner.businessName,
     owner.businessMode,
     kind,
     nodes,
+    expectedRevision,
   );
-  await publishStorefront(owner.id);
+  if (!slug) return conflictResult(DRAFT_CONFLICT_MESSAGE);
+  const published = await tryPublishStorefront(owner.id, user.id);
+  if (!published.ok) return publishBlockedResult(published.blockers);
   revalidatePath(`/dashboard/website/commerce/${kind}`);
   redirect(`/dashboard/website/commerce/${kind}?published=1`);
 }

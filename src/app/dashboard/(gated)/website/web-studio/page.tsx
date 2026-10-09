@@ -1,5 +1,6 @@
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import { listStorefrontPublications } from "@/lib/website/persistence/publish";
+import WebsitePublishHistory from "@/components/website/WebsitePublishHistory";
 import {
   ensureStorefront,
   loadStorefrontContext,
@@ -7,8 +8,6 @@ import {
   storefrontPublicPath,
 } from "@/lib/catalogue/storefront";
 import { appBaseUrl } from "@/lib/app-url";
-import { parseStorefrontConfig } from "@/lib/storefront/config";
-import { parseAccentColor } from "@/lib/stand-brand";
 import { extractWebsiteStudio, defaultTemplateId } from "@/lib/studio/storage";
 import { buildStudioMetadata } from "@/lib/studio/build-metadata";
 import type { StudioTemplateId } from "@/lib/studio/types";
@@ -46,6 +45,7 @@ export default async function WebStudioPage({
     saved?: string;
     published?: string;
     unpublished?: string;
+    restored?: string;
     error?: string;
     template?: string;
   }>;
@@ -54,11 +54,6 @@ export default async function WebStudioPage({
   const sp = await searchParams;
   const initialTab: WebStudioTabId = parseWebStudioTab(sp.tab);
   const storefront = await ensureStorefront(owner.id, owner.businessName);
-  const stand = await prisma.stand.findFirst({
-    where: { ownerId: owner.id },
-    orderBy: { createdAt: "asc" },
-    select: { logoUrl: true, accentColor: true, secondaryColor: true },
-  });
 
   const ctx = await loadStorefrontContext(storefront.slug, {
     draft: true,
@@ -77,18 +72,10 @@ export default async function WebStudioPage({
   const showNextDrop =
     ctx.businessMode === "FOOD_BUSINESS" || ctx.businessMode === "BOTH";
 
-  const logoUrl = owner.brandLogoUrl ?? stand?.logoUrl ?? null;
-  const overrides = parseStorefrontConfig(storefront.draftConfig).themeOverrides;
-  const accentColor =
-    parseAccentColor(overrides?.accentColor) ??
-    parseAccentColor(owner.brandAccentColor) ??
-    parseAccentColor(stand?.accentColor) ??
-    "#2e7d3f";
-  const secondaryColor =
-    parseAccentColor(overrides?.secondaryColor) ??
-    parseAccentColor(owner.brandSecondaryColor) ??
-    parseAccentColor(stand?.secondaryColor) ??
-    accentColor;
+  const draft = ctx.branding;
+  const { logoUrl, accentColor, secondaryColor } = draft;
+  const overrides = ctx.config.themeOverrides;
+  const history = await listStorefrontPublications(owner.id);
 
   const aiEnabled = aiWebsiteBuilderEnabled();
   const aiAllowed = canUseAiWebsiteBuilder(owner.id);
@@ -108,27 +95,29 @@ export default async function WebStudioPage({
         initialTab={initialTab}
         details={
           <WebStudioDetailsPanel
-            headline={storefront.headline ?? owner.businessName}
-            subheadline={storefront.subheadline ?? ""}
-            about={storefront.about ?? ""}
+            headline={draft.headline}
+            subheadline={draft.subheadline ?? ""}
+            about={draft.about ?? ""}
             slug={storefront.slug}
-            contactEmail={storefront.contactEmail ?? owner.contactEmail}
-            showPhone={storefront.showPhone}
+            contactEmail={draft.contactEmail}
+            showPhone={draft.showPhone}
             isPublished={storefront.isPublished}
             liveUrl={storefrontFullUrl(storefront.slug)}
             flash={{
               saved: sp.saved === "1" && initialTab === "details",
               published: sp.published === "1" && initialTab === "details",
               unpublished: sp.unpublished === "1" && initialTab === "details",
+              restored: sp.restored === "1" && initialTab === "details",
               error: initialTab === "details" ? sp.error : undefined,
             }}
+            history={<WebsitePublishHistory {...history} />}
           />
         }
         branding={
           <WebStudioBrandingPanel
             logoUrl={logoUrl}
-            faviconUrl={storefront.faviconUrl}
-            heroImageUrl={storefront.heroImageUrl}
+            faviconUrl={draft.faviconUrl}
+            heroImageUrl={draft.heroImageUrl}
             accentColor={accentColor}
             secondaryColor={secondaryColor}
             fontPairId={overrides?.fontPairId ?? "market-default"}
@@ -159,9 +148,9 @@ export default async function WebStudioPage({
             previewUrl={previewUrl}
             isPublished={storefront.isPublished}
             starter={{
-              headline: storefront.headline ?? owner.businessName,
-              subheadline: storefront.subheadline,
-              about: storefront.about,
+              headline: draft.headline,
+              subheadline: draft.subheadline,
+              about: draft.about,
               showNextDrop,
             }}
             flash={{

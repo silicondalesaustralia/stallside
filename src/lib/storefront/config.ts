@@ -6,6 +6,7 @@ import {
   type StorefrontSection,
   type StorefrontSectionId,
 } from "@/lib/storefront/types";
+import { parseStorefrontIdentity } from "@/lib/storefront/identity";
 
 const SECTION_LABELS: Record<StorefrontSectionId, string> = {
   hero: "Hero",
@@ -115,6 +116,7 @@ export function parseStorefrontConfig(raw: unknown): StorefrontConfig {
     featuredProductIds: obj.featuredProductIds ?? [],
     galleryImages: obj.galleryImages ?? [],
     themeOverrides: obj.themeOverrides,
+    identity: parseStorefrontIdentity(obj.identity),
   };
 }
 
@@ -128,6 +130,7 @@ export function mergeStorefrontConfig(
     featuredProductIds: patch.featuredProductIds ?? base.featuredProductIds,
     galleryImages: patch.galleryImages ?? base.galleryImages,
     themeOverrides: { ...base.themeOverrides, ...patch.themeOverrides },
+    identity: { ...base.identity, ...patch.identity },
   };
 }
 

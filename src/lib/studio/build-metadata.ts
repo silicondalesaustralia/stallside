@@ -45,6 +45,7 @@ export async function buildStudioMetadata(
     reviews,
     fulfilmentOptions,
     standId: ctx.stand.id,
+    draftRevision: ctx.storefront.draftRevision,
     customNavPages: buildStudioHeaderNav(
       pagesForNav,
       blogSettings,

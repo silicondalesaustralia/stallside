@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { loadStorefrontPage } from "@/lib/storefront/page-loader";
 import { storefrontMetadata } from "@/lib/storefront/seo";
 import { resolveStudioPublicContext } from "@/lib/studio/public-context";
@@ -72,16 +72,16 @@ export default async function StudioPreviewPage({
     const base = appBaseUrl();
     return (
       <StudioPreviewEditor
-        initialNodes={studioCtx.studio.nodes}
+        initialNodes={studioCtx.studio.nodes ?? null}
         metadata={studioCtx.metadata}
         templateId={studioCtx.templateId}
         previewUrl={`${base}${editPath}`}
         viewPreviewUrl={`${base}${viewPath}`}
         isPublished={ctx.storefront.isPublished}
         starter={{
-          headline: ctx.storefront.headline ?? ctx.branding.headline,
-          subheadline: ctx.storefront.subheadline,
-          about: ctx.storefront.about,
+          headline: ctx.branding.headline,
+          subheadline: ctx.branding.subheadline,
+          about: ctx.branding.about,
           showNextDrop,
         }}
         returnTo={editPath}
@@ -90,6 +90,12 @@ export default async function StudioPreviewPage({
         error={sp.error}
       />
     );
+  }
+
+  const homeNodes = studioCtx.studio.nodes;
+  if (!homeNodes) {
+    if (draft) redirect(editPath);
+    notFound();
   }
 
   return (
@@ -101,7 +107,7 @@ export default async function StudioPreviewPage({
         />
       ) : null}
       <StorefrontPageShell ctx={ctx} draft={draft} activePage="home">
-        <StudioPublicSections nodes={studioCtx.studio.nodes} metadata={studioCtx.metadata} />
+        <StudioPublicSections nodes={homeNodes} metadata={studioCtx.metadata} />
       </StorefrontPageShell>
       <StorefrontGoToCartBar standSlug={ctx.stand.slug} branding={ctx.branding} />
     </>

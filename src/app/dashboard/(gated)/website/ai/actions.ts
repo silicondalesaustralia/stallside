@@ -3,13 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOwnerWrite } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 import {
   ensureStorefront,
   loadStorefrontContext,
-  publishStorefront,
   storefrontPublicPath,
 } from "@/lib/catalogue/storefront";
+import {
+  DRAFT_CONFLICT_MESSAGE,
+  writeStorefrontDraft,
+} from "@/lib/website/persistence/draft-store";
+import { tryPublishStorefront } from "@/lib/website/persistence/publish";
 import { mergeWebsiteStudioIntoRaw } from "@/lib/studio/storage";
 import { parseStorefrontConfig } from "@/lib/storefront/config";
 import { canUseAiWebsiteBuilder } from "@/lib/website-ai/config";
@@ -64,10 +68,6 @@ async function prepareIntent(ownerId: string, businessName: string, formData: Fo
   const intent = intentFromForm(formData, assessment);
 
   if (intent.sellerAbout && intent.sellerAbout.length > 40) {
-    await prisma.storefront.update({
-      where: { ownerId },
-      data: { about: intent.sellerAbout.slice(0, 2000) },
-    });
     businessContext.about = intent.sellerAbout.slice(0, 2000);
   }
 
@@ -115,10 +115,12 @@ export async function scaffoldAiWebsiteDraft(
       looks: generated.looks,
       createdAt: new Date().toISOString(),
     });
-    await prisma.storefront.update({
-      where: { ownerId: owner.id },
-      data: { draftConfig: draft },
+    const saved = await writeStorefrontDraft({
+      ownerId: owner.id,
+      expectedRevision: refreshed.draftRevision,
+      draftConfig: draft,
     });
+    if (!saved.ok) return { ok: false, error: DRAFT_CONFLICT_MESSAGE };
 
     revalidatePath("/dashboard/website/ai");
     return {
@@ -227,56 +229,34 @@ export async function buildAiWebsiteDraft(
       studioMerged && typeof studioMerged === "object"
         ? (studioMerged as Record<string, unknown>)
         : {};
+    const palette = getPalette(generated.themeOverrides?.paletteId);
+    const accent = generated.themeOverrides?.accentColor ?? palette?.accent;
+    const secondary = generated.themeOverrides?.secondaryColor ?? palette?.secondary;
     const nextDraft: Record<string, unknown> = {
       ...withPages,
       ...studioObj,
       themeOverrides: {
         ...baseConfig.themeOverrides,
         ...generated.themeOverrides,
+        ...(accent && secondary ? { accentColor: accent, secondaryColor: secondary } : {}),
+      },
+      identity: {
+        ...baseConfig.identity,
+        ...(scaffold.intent.sellerAbout && scaffold.intent.sellerAbout.length > 40
+          ? { about: scaffold.intent.sellerAbout.slice(0, 2000) }
+          : {}),
+        ...(generated.decorativeHeroUrl ? { heroImageUrl: generated.decorativeHeroUrl } : {}),
       },
       initialBlueprintId: blueprintId,
     };
     delete nextDraft.websiteAiScaffold;
 
-    const accent =
-      generated.themeOverrides?.accentColor ??
-      getPalette(generated.themeOverrides?.paletteId)?.accent;
-    const secondary =
-      generated.themeOverrides?.secondaryColor ??
-      getPalette(generated.themeOverrides?.paletteId)?.secondary;
-    if (accent && secondary) {
-      await prisma.owner.update({
-        where: { id: owner.id },
-        data: {
-          brandAccentColor: accent,
-          brandSecondaryColor: secondary,
-        },
-      });
-      const stand = await prisma.stand.findFirst({
-        where: { ownerId: owner.id },
-        orderBy: { createdAt: "asc" },
-        select: { id: true },
-      });
-      if (stand) {
-        await prisma.stand.update({
-          where: { id: stand.id },
-          data: {
-            accentColor: accent,
-            secondaryColor: secondary,
-          },
-        });
-      }
-    }
-
-    await prisma.storefront.update({
-      where: { ownerId: owner.id },
-      data: {
-        draftConfig: nextDraft as object,
-        ...(generated.decorativeHeroUrl
-          ? { heroImageUrl: generated.decorativeHeroUrl }
-          : {}),
-      },
+    const saved = await writeStorefrontDraft({
+      ownerId: owner.id,
+      expectedRevision: storefront.draftRevision,
+      draftConfig: nextDraft as Prisma.InputJsonValue,
     });
+    if (!saved.ok) return { ok: false, error: DRAFT_CONFLICT_MESSAGE };
 
     const previewPath = `${storefrontPublicPath(storefront.slug)}/studio-preview?draft=1`;
     revalidatePath("/dashboard/website/web-studio");
@@ -312,12 +292,13 @@ export async function generateAiWebsiteDraft(
 }
 
 export async function publishAiWebsiteDraft() {
-  const { owner } = await requireOwnerWrite();
+  const { owner, user } = await requireOwnerWrite();
   if (!canUseAiWebsiteBuilder(owner.id)) {
     redirect(webStudioPath("studio"));
   }
   const storefront = await ensureStorefront(owner.id, owner.businessName);
-  await publishStorefront(owner.id);
+  const published = await tryPublishStorefront(owner.id, user.id);
+  if (!published.ok) redirect(webStudioPath("ai", { error: "publish_blocked" }));
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/ai");
   revalidatePath("/dashboard/website/studio");

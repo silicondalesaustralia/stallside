@@ -5,18 +5,25 @@ import { redirect } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
 import { randomUUID } from "crypto";
 import { requireOwnerWrite } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
-import {
-  ensureStorefront,
-  publishStorefront,
-  storefrontPublicPath,
-} from "@/lib/catalogue/storefront";
+import type { Prisma } from "@/generated/prisma/client";
+import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import {
   extractWebsiteStudio,
   mergeWebsiteStudioPageIntoRaw,
-  mergeWebsiteStudioIntoRaw,
+  withoutStudioPage,
   defaultTemplateId,
 } from "@/lib/studio/storage";
+import {
+  DRAFT_CONFLICT_MESSAGE,
+  writeStorefrontDraft,
+} from "@/lib/website/persistence/draft-store";
+import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
+import { tryPublishStorefront } from "@/lib/website/persistence/publish";
+import {
+  conflictResult,
+  publishBlockedResult,
+  type EditorSaveResult,
+} from "@/lib/website/persistence/editor-result";
 import { validateStudioNodes } from "@/lib/studio/validate-state";
 import type { StudioTemplateId } from "@/lib/studio/types";
 import {
@@ -62,12 +69,13 @@ export async function syncBuiltinCustomPages() {
   if (!customPagesNeedSync(storefront.draftConfig)) return;
 
   const pages = ensureCustomPages(storefront.draftConfig);
-  await prisma.storefront.update({
-    where: { ownerId: owner.id },
-    data: {
-      draftConfig: mergeCustomPagesIntoRaw(storefront.draftConfig, pages) as import("@/generated/prisma/client").Prisma.InputJsonValue,
-    },
+  const saved = await writeStorefrontDraft({
+    ownerId: owner.id,
+    expectedRevision: storefront.draftRevision,
+    draftConfig: mergeCustomPagesIntoRaw(storefront.draftConfig, pages) as Prisma.InputJsonValue,
   });
+  // Another write got in first; the next page load retries the sync.
+  if (!saved.ok) return;
   revalidatePath("/dashboard/website/pages");
 }
 
@@ -100,9 +108,11 @@ export async function createCustomPage(formData: FormData) {
   };
 
   const merged = mergeCustomPagesIntoRaw(storefront.draftConfig, [...pages, page]);
-  await prisma.storefront.update({
-    where: { ownerId: owner.id },
-    data: { draftConfig: merged as import("@/generated/prisma/client").Prisma.InputJsonValue },
+  await writeDraftOrRedirect({
+    ownerId: owner.id,
+    expectedRevision: storefront.draftRevision,
+    draftConfig: merged as Prisma.InputJsonValue,
+    conflictPath: "/dashboard/website/pages/new",
   });
 
   revalidatePath("/dashboard/website/pages");
@@ -139,11 +149,11 @@ export async function updateCustomPageMeta(pageId: string, formData: FormData) {
       : p,
   );
 
-  await prisma.storefront.update({
-    where: { ownerId: owner.id },
-    data: {
-      draftConfig: mergeCustomPagesIntoRaw(storefront.draftConfig, next) as import("@/generated/prisma/client").Prisma.InputJsonValue,
-    },
+  await writeDraftOrRedirect({
+    ownerId: owner.id,
+    expectedRevision: storefront.draftRevision,
+    draftConfig: mergeCustomPagesIntoRaw(storefront.draftConfig, next) as Prisma.InputJsonValue,
+    conflictPath: `/dashboard/website/pages/${pageId}`,
   });
 
   revalidatePath("/dashboard/website/pages");
@@ -161,19 +171,18 @@ export async function deleteCustomPage(pageId: string) {
   }
 
   const nextPages = pages.filter((p) => p.id !== pageId);
-  let merged: import("@/generated/prisma/client").Prisma.InputJsonValue = mergeCustomPagesIntoRaw(
-    storefront.draftConfig,
-    nextPages,
-  ) as import("@/generated/prisma/client").Prisma.InputJsonValue;
+  let merged = mergeCustomPagesIntoRaw(storefront.draftConfig, nextPages) as Prisma.InputJsonValue;
   const studio = extractWebsiteStudio(merged);
   if (studio?.pageNodes?.[pageId]) {
     const { [pageId]: _removed, ...rest } = studio.pageNodes;
-    merged = mergeWebsiteStudioIntoRaw(merged, studio.templateId, studio.nodes, rest);
+    merged = withoutStudioPage(merged, studio.templateId, studio.nodes, rest);
   }
 
-  await prisma.storefront.update({
-    where: { ownerId: owner.id },
-    data: { draftConfig: merged as import("@/generated/prisma/client").Prisma.InputJsonValue },
+  await writeDraftOrRedirect({
+    ownerId: owner.id,
+    expectedRevision: storefront.draftRevision,
+    draftConfig: merged,
+    conflictPath: "/dashboard/website/pages",
   });
 
   revalidatePath("/dashboard/website/pages");
@@ -186,11 +195,12 @@ async function persistPageNodes(
   businessMode: import("@/lib/business-mode").BusinessMode,
   pageId: string,
   nodes: SerializedNodes,
+  expectedRevision: number,
 ) {
   const storefront = await loadDraftConfig(ownerId, businessName);
   const pages = ensureCustomPages(storefront.draftConfig);
   if (!findCustomPageById(pages, pageId)) {
-    throw new Error("Page not found");
+    redirect("/dashboard/website/pages?error=missing");
   }
   const studio = extractWebsiteStudio(storefront.draftConfig);
   const templateId = defaultTemplateId(studio ?? null, normalizeBusinessMode(businessMode));
@@ -200,14 +210,15 @@ async function persistPageNodes(
     pageId,
     nodes,
   );
-  await prisma.storefront.update({
-    where: { ownerId },
-    data: { draftConfig: merged },
-  });
-  return storefront.slug;
+  const saved = await writeStorefrontDraft({ ownerId, expectedRevision, draftConfig: merged });
+  return saved.ok ? storefront.slug : null;
 }
 
-export async function saveCustomPageDraft(pageId: string, nodesJson: string) {
+export async function saveCustomPageDraft(
+  pageId: string,
+  nodesJson: string,
+  expectedRevision: number,
+): Promise<EditorSaveResult> {
   const { owner } = await requireOwnerWrite();
   const nodes = parseNodesJson(nodesJson);
   const slug = await persistPageNodes(
@@ -216,24 +227,33 @@ export async function saveCustomPageDraft(pageId: string, nodesJson: string) {
     normalizeBusinessMode(owner.businessMode),
     pageId,
     nodes,
+    expectedRevision,
   );
+  if (!slug) return conflictResult(DRAFT_CONFLICT_MESSAGE);
 
   revalidatePath(`/dashboard/website/pages/${pageId}`);
   revalidatePath(`${storefrontPublicPath(slug)}`);
   redirect(`/dashboard/website/pages/${pageId}?saved=1`);
 }
 
-export async function publishCustomPageDraft(pageId: string, nodesJson: string) {
-  const { owner } = await requireOwnerWrite();
+export async function publishCustomPageDraft(
+  pageId: string,
+  nodesJson: string,
+  expectedRevision: number,
+): Promise<EditorSaveResult> {
+  const { owner, user } = await requireOwnerWrite();
   const nodes = parseNodesJson(nodesJson);
-  await persistPageNodes(
+  const slug = await persistPageNodes(
     owner.id,
     owner.businessName,
     normalizeBusinessMode(owner.businessMode),
     pageId,
     nodes,
+    expectedRevision,
   );
-  await publishStorefront(owner.id);
+  if (!slug) return conflictResult(DRAFT_CONFLICT_MESSAGE);
+  const published = await tryPublishStorefront(owner.id, user.id);
+  if (!published.ok) return publishBlockedResult(published.blockers);
 
   revalidatePath(`/dashboard/website/pages/${pageId}`);
   redirect(`/dashboard/website/pages/${pageId}?published=1`);
@@ -255,11 +275,11 @@ export async function reorderCustomPages(formData: FormData) {
     if (!ids.includes(p.id)) reordered.push(p);
   }
 
-  await prisma.storefront.update({
-    where: { ownerId: owner.id },
-    data: {
-      draftConfig: mergeCustomPagesIntoRaw(storefront.draftConfig, reordered) as import("@/generated/prisma/client").Prisma.InputJsonValue,
-    },
+  await writeDraftOrRedirect({
+    ownerId: owner.id,
+    expectedRevision: storefront.draftRevision,
+    draftConfig: mergeCustomPagesIntoRaw(storefront.draftConfig, reordered) as Prisma.InputJsonValue,
+    conflictPath: "/dashboard/website/pages",
   });
 
   revalidatePath("/dashboard/website/pages");

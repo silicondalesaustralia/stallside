@@ -5,11 +5,8 @@ import { redirect } from "next/navigation";
 import type { Data } from "@puckeditor/core";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import {
-  ensureStorefront,
-  publishStorefront,
-  storefrontPublicPath,
-} from "@/lib/catalogue/storefront";
+import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
+import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 import { mergePuckSpikeIntoRaw } from "@/lib/puck/spike-storage";
 import { buildStarterHome } from "@/lib/puck/starter-home";
 import type { BusinessMode } from "@/lib/business-mode";
@@ -29,9 +26,11 @@ async function persistPuckSpikeDraft(
 ) {
   const storefront = await ensureStorefront(ownerId, businessName);
   const merged = mergePuckSpikeIntoRaw(storefront.draftConfig, home);
-  await prisma.storefront.update({
-    where: { ownerId },
-    data: { draftConfig: merged },
+  await writeDraftOrRedirect({
+    ownerId,
+    expectedRevision: storefront.draftRevision,
+    draftConfig: merged,
+    conflictPath: "/dashboard/website/puck-spike",
   });
   return storefront.slug;
 }
@@ -46,15 +45,9 @@ export async function savePuckSpikeDraft(homeJson: string) {
   redirect("/dashboard/website/puck-spike?saved=1");
 }
 
+/** The spike is an experiment: it can save a draft but never publish the live site. */
 export async function publishPuckSpikeDraft(homeJson: string) {
-  const { owner } = await requireOwnerWrite();
-  const home = parseHomeJson(homeJson);
-  const slug = await persistPuckSpikeDraft(owner.id, owner.businessName, home);
-  await publishStorefront(owner.id);
-
-  revalidatePath("/dashboard/website/puck-spike");
-  revalidatePath(`${storefrontPublicPath(slug)}/puck-preview`);
-  redirect("/dashboard/website/puck-spike?published=1");
+  await savePuckSpikeDraft(homeJson);
 }
 
 export async function resetPuckSpikeDraft() {

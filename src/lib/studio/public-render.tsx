@@ -3,6 +3,7 @@ import { ROOT_NODE } from "@craftjs/utils";
 import type { StudioMetadata, StudioSectionType } from "./types";
 import { studioSectionRule } from "./section-registry";
 import { findStudioCanvasParentId } from "./page-canvas";
+import { isPublicStudioNode } from "./node-visibility";
 import StudioHeroBlock from "@/components/studio/blocks/StudioHeroBlock";
 import StudioProductsBlock from "@/components/studio/blocks/StudioProductsBlock";
 import StudioNextDropBlock from "@/components/studio/blocks/StudioNextDropBlock";
@@ -38,6 +39,7 @@ function pageSectionNodes(nodes: SerializedNodes): SectionNode[] {
   return canvas.nodes
     .map((id) => {
       const node = nodes[id];
+      if (!isPublicStudioNode(node)) return null;
       const name = resolvedName(node);
       if (!name || !studioSectionRule(name)) return null;
       return { type: name as StudioSectionType, props: node?.props ?? {} };
@@ -226,7 +228,9 @@ function StudioSectionRender({
           metadata={metadata}
         />
       );
-    default:
-      return null;
+    default: {
+      const unhandled: never = section.type;
+      return unhandled;
+    }
   }
 }

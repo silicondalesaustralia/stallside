@@ -70,6 +70,7 @@ export default function DashboardSidebar({
   onToggle,
   unreadNotifications,
   setupAlerts,
+  showWebsite,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
@@ -77,6 +78,7 @@ export default function DashboardSidebar({
   onToggle: () => void;
   unreadNotifications?: number;
   setupAlerts: DashboardSetupAlerts;
+  showWebsite: boolean;
 }) {
   return (
     <aside
@@ -115,7 +117,7 @@ export default function DashboardSidebar({
             badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
           />
         ))}
-        <SidebarWebsiteMenu collapsed={collapsed} />
+        {showWebsite ? <SidebarWebsiteMenu collapsed={collapsed} /> : null}
         <div className="my-2 border-t border-white/10" />
         {secondaryLinks.map((link) => (
           <NavItem

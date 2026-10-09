@@ -86,7 +86,7 @@ export default async function PublicStorefrontHomePage({
       activePage="home"
       schemaGraph={schemaGraph}
     >
-      {studioCtx.active ? (
+      {studioCtx.active && studioCtx.studio.nodes ? (
         <StudioPublicSections nodes={studioCtx.studio.nodes} metadata={studioCtx.metadata} />
       ) : (
         <StorefrontHomeContent ctx={ctx} draft={draft} />
