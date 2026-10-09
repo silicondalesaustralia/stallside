@@ -6,6 +6,7 @@ import FounderStory from "@/components/lp/home-producers/FounderStory";
 import FreeAccountOffer from "@/components/lp/home-producers/FreeAccountOffer";
 import HomeProducerHero from "@/components/lp/home-producers/HomeProducerHero";
 import ProducerProof from "@/components/lp/home-producers/ProducerProof";
+import ProducerStories from "@/components/lp/home-producers/ProducerStories";
 import RevenueBenefits from "@/components/lp/home-producers/RevenueBenefits";
 import LpCtaClickTracker from "@/components/lp/LpCtaClickTracker";
 import LpCtaParamScript from "@/components/lp/LpCtaParamScript";
@@ -41,11 +42,12 @@ export default function HomeProducersLpPage() {
   return (
     <main className="flex min-h-full flex-1 flex-col overflow-x-clip bg-[var(--wash)] pb-20 md:pb-0">
       <HomeProducerHero />
+      <ProducerProof />
       <RevenueBenefits />
       <CollectionPreview />
+      <ProducerStories />
       <FeaturesIncluded />
       <FounderStory />
-      <ProducerProof />
       <FreeAccountOffer />
       <CampaignFooter />
       <LpMobileStickyCta

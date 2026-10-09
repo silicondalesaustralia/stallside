@@ -1,4 +1,6 @@
 import BotanicalSprig from "@/components/lp/home-producers/BotanicalSprig";
+import LpScrollLink from "@/components/lp/LpScrollLink";
+import { HOME_PRODUCERS_TESTIMONIALS_ID } from "@/lib/home-producers-lp";
 import { testimonials } from "@/lib/testimonials";
 
 const RECOMMEND_QUOTE =
@@ -34,6 +36,13 @@ export default function ProducerProof() {
               through Vendl.
             </span>
           </figcaption>
+          <LpScrollLink
+            targetId={HOME_PRODUCERS_TESTIMONIALS_ID}
+            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--leaf-dark)] underline-offset-4 hover:underline"
+          >
+            Read their story
+            <span aria-hidden>&darr;</span>
+          </LpScrollLink>
         </figure>
       </div>
     </section>
