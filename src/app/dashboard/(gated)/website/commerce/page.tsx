@@ -18,11 +18,11 @@ export default async function WebsiteCommerceHubPage({
     <main className="mx-auto flex max-w-3xl flex-col gap-8 pb-12">
       <div>
         <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[var(--field)]">
-          Shop layouts
+          Shop and product pages
         </h1>
         <p className="mt-2 text-[var(--muted)]">
-          Shared Craft layouts for Shop, Category, Product and Menu pages. Every
-          product and category uses the same template.
+          One layout each for your shop, category, product and menu pages. Every
+          product and category uses the same layout.
         </p>
       </div>
 

@@ -59,7 +59,6 @@ export function craftPropsForAiSection(
         categoryId: "",
         productIds: [],
         limit: templateId === "market" ? 12 : 8,
-        layout: "grid",
         columns: templateId === "market" ? 4 : 3,
         preset: section.preset ?? defaultProductPreset(templateId),
         heading: section.heading ?? "Our products",

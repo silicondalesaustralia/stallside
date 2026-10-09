@@ -35,6 +35,8 @@ import StudioSectionPalette from "./StudioSectionPalette";
 import StudioSettingsPanel from "./StudioSettingsPanel";
 import StudioAddSectionModal from "./StudioAddSectionModal";
 import StudioPageAddFooter from "./StudioPageAddFooter";
+import { useLayoutAutosave } from "./useLayoutAutosave";
+import type { AutosaveTargetInput } from "@/app/dashboard/(gated)/website/autosave/actions";
 
 export default function StudioEditorInner({
   initialNodes,
@@ -87,6 +89,26 @@ export default function StudioEditorInner({
   useEffect(() => {
     revisionRef.current = metadata.draftRevision;
   }, [metadata.draftRevision]);
+  const [changeTick, setChangeTick] = useState(0);
+  const autosaveTarget = useMemo<AutosaveTargetInput>(
+    () =>
+      commercePageKind
+        ? { kind: "commerce", commerceKind: commercePageKind }
+        : pageId
+          ? { kind: "page", pageId }
+          : { kind: "home", templateId },
+    [commercePageKind, pageId, templateId],
+  );
+  const { markInteraction, settle } = useLayoutAutosave({
+    target: autosaveTarget,
+    serializedRef,
+    revisionRef,
+    changeTick,
+    dirty,
+    setDirty,
+    setSaveStatus,
+    setSaveError,
+  });
   const [chromeTarget, setChromeTarget] = useState<ChromeTarget>(null);
   const [headerLayout, setHeaderLayout] = useState<HeaderLayout>(
     metadata.resolvedBranding.headerLayout,
@@ -125,6 +147,7 @@ export default function StudioEditorInner({
       setSaveError(null);
       startTransition(async () => {
         try {
+          await settle();
           const nodes = serializedRef.current;
           const revision = revisionRef.current;
           const publish = mode === "publish";
@@ -156,7 +179,7 @@ export default function StudioEditorInner({
         }
       });
     },
-    [templateId, pageId, commercePageKind, returnTo],
+    [templateId, pageId, commercePageKind, returnTo, settle],
   );
   const onSave = useCallback(() => runSave("save"), [runSave]);
   const onPublish = useCallback(() => runSave("publish"), [runSave]);
@@ -248,6 +271,8 @@ export default function StudioEditorInner({
             ? "min-h-screen border-0"
             : "overflow-hidden rounded-xl border border-[var(--line)]"
         }`}
+        onPointerDownCapture={markInteraction}
+        onKeyDownCapture={markInteraction}
       >
         <Editor
           resolver={studioResolver}
@@ -258,8 +283,7 @@ export default function StudioEditorInner({
           }}
           onNodesChange={(query) => {
             serializedRef.current = query.serialize();
-            setDirty(true);
-            setSaveStatus("idle");
+            setChangeTick((t) => t + 1);
           }}
         >
           <StudioEditorHeader />

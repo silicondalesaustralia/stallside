@@ -800,7 +800,7 @@ npm run build             # production build
     - Hero offers fixed options rather than the template's presets;
     - Image sections take a raw URL, with no upload.
 12. **Request caching:** wrap `loadStorefrontContext` / `buildStudioMetadata` in `cache()`.
-13. **Autosave and onboarding (spec Milestone 4):** not started. Save actions redirect on success, so autosave needs a non-redirecting save action that returns the new `draftRevision`.
+13. **Onboarding (spec Milestone 4), still open:** ask the primary customer action (shop, order a release, subscribe, enquire) and use it to rank the starting layouts; demo previews for sellers with no products; section move up/down buttons and thumbnails in the editor. Autosave and the readiness checklist are done (14.5).
 14. **Remove the dead spike code** once the shared pieces are moved under `studio/` (section 4.6), and remove `@puckeditor/core`.
 15. **Rename `src/middleware.ts` to `proxy.ts`** (Next 16).
 16. **Housekeeping:** many ported files exceed the project's 150-line guideline (for example `AiBuilderForm.tsx` 506, `heuristic-planner.ts` 488, `plan-schema.ts` 397, `custom-pages.ts` 360, `lifecycle.ts` 341).     Split them when touching them.
@@ -859,3 +859,15 @@ npx tsx scripts/website-migrate-dry-run.ts [--verbose] [--slug=my-shop]
 - **Blog posts** are saved to the draft first. Publishing a single post patches the live config under a row lock (`persistence/live-patch.ts`). Publishing the whole site publishes exactly the revision it read, so it can't lose a concurrent blog change. Restoring an old publication keeps the current blog posts, topics and redirects (`restore-snapshot.ts`).
 - **Redirects** are edited in the draft. "Publish redirects" patches only redirects into the live config, and needs the site to be published already.
 - **Product SEO edits** on the website SEO page are saved to the website draft (`settings.seo`). The product's own fields are untouched.
+
+### 14.5 Autosave and readiness checklist
+
+- **Autosave** (`components/studio/useLayoutAutosave.ts`, action `website/autosave/actions.ts`, shared writer `persistence/layout-save.ts`):
+  - Saves the page layout to the draft 2.5 seconds after the last edit. It never redirects; it returns the new `draftRevision`, which the editor keeps.
+  - Only edits the seller makes count. Changes before the first click or keypress in the editor (loading the page or a starter layout) never write, so opening an unsaved product page doesn't create a layout.
+  - Saves run one at a time. A response for older content can't mark newer edits as saved.
+  - A conflict or deleted page stops autosave and shows the reload notice. Network or server errors retry every 15 seconds.
+  - Manual Save and Publish wait for any in-flight autosave first. Pending changes are flushed when the editor unmounts or the tab is hidden, and the browser warns before leaving with unsaved changes.
+  - Header styles keep their own immediate save. The undo/redo buttons only cover the layout.
+- **Readiness checklist** (`lib/website/readiness.ts`, shown at the top of Web Studio until the site is live). The items are: details, starting layout, products (optional), card payments (optional), example text replaced, and publish. Products and payments are optional, so information-only sites can go live.
+- **Dry run against the database in `.env`** (one storefront, Green Valley demo): no errors and lossless. The only warnings are the demo's per-skin `__demo_*` layouts. Product grids no longer write the dead `layout: "grid"` prop.

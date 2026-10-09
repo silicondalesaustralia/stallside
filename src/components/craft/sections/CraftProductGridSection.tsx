@@ -13,7 +13,8 @@ export type CraftProductGridProps = {
   categoryId: string;
   productIds: string[];
   limit: number;
-  layout: "grid" | "list";
+  /** @deprecated Only read by the Puck prototype; Studio uses `preset`. */
+  layout?: "grid" | "list";
   columns: 2 | 3 | 4;
   preset: ProductPreset;
   heading: string;
@@ -53,7 +54,7 @@ export default function CraftProductGridSection(props: CraftProductGridProps) {
             categoryId={props.categoryId}
             productIds={props.productIds}
             limit={props.limit}
-            layout={props.layout}
+            layout={props.layout ?? "grid"}
             columns={props.columns}
             showPrice={props.showPrice}
             showAvailability={props.showAvailability}
@@ -72,7 +73,6 @@ CraftProductGridSection.craft = {
     categoryId: "",
     productIds: [] as string[],
     limit: 8,
-    layout: "grid",
     columns: 3,
     preset: "editorial",
     heading: "Our bakes",

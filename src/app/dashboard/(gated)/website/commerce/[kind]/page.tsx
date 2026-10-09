@@ -80,7 +80,7 @@ export default async function WebsiteCommerceEditPage({
             href="/dashboard/website/commerce"
             className="font-semibold text-[var(--leaf-dark)] underline"
           >
-            ← Shop layouts
+            ← Shop and product pages
           </Link>
         </p>
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">

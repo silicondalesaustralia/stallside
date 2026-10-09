@@ -25,6 +25,9 @@ import WebStudioDetailsPanel from "@/components/website/WebStudioDetailsPanel";
 import WebStudioBrandingPanel from "@/components/website/WebStudioBrandingPanel";
 import WebStudioAiPanel from "@/components/website/WebStudioAiPanel";
 import WebStudioLayoutPanel from "@/components/website/WebStudioLayoutPanel";
+import WebsiteReadinessChecklist from "@/components/website/WebsiteReadinessChecklist";
+import { websiteReadiness } from "@/lib/website/readiness";
+import { findPublishBlockers } from "@/lib/website/persistence/publish-checks";
 
 export const dynamic = "force-dynamic";
 
@@ -88,9 +91,20 @@ export default async function WebStudioPage({
   }
 
   const previewPath = `${storefrontPublicPath(storefront.slug)}/studio-preview?draft=1`;
+  const readiness = websiteReadiness({
+    hasHeadline: Boolean(draft.headline?.trim()),
+    hasLayout: Boolean(websiteStudio?.nodes),
+    productCount: metadata.products.length,
+    canTakeCardPayments: owner.stripeChargesEnabled || owner.paypalOnboardingComplete,
+    publishBlockers: findPublishBlockers(storefront.draftConfig),
+    isPublished: storefront.isPublished,
+  });
 
   return (
     <main>
+      {readiness.complete ? null : (
+        <WebsiteReadinessChecklist items={readiness.items} readyToPublish={readiness.readyToPublish} />
+      )}
       <WebStudioShell
         initialTab={initialTab}
         details={

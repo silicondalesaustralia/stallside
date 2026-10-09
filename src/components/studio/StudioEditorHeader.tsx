@@ -70,9 +70,13 @@ export default function StudioEditorHeader() {
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        {dirty ? (
-          <span className="text-xs text-[var(--muted)]">
-            {saveStatus === "saving" ? "Saving…" : saveStatus === "saved" ? "Saved" : "Unsaved"}
+        {dirty || saveStatus === "saving" || saveStatus === "saved" ? (
+          <span role="status" className="text-xs text-[var(--muted)]">
+            {saveStatus === "saving"
+              ? "Saving draft…"
+              : saveStatus === "saved" && !dirty
+                ? "Draft saved"
+                : "Unsaved changes"}
           </span>
         ) : null}
         <button type="button" disabled={!canUndo} onClick={() => actions.history.undo()} className="rounded-lg border border-[var(--line)] px-2 py-1 text-xs font-semibold disabled:opacity-40">

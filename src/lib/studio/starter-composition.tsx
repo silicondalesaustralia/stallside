@@ -69,7 +69,6 @@ export function buildStudioStarterTree(input: {
       categoryId=""
       productIds={[]}
       limit={input.templateId === "market" ? 12 : input.templateId === "farmhouse" ? 8 : 8}
-      layout="grid"
       columns={input.templateId === "market" ? 4 : 3}
       preset={productPreset}
       heading={

@@ -1,3 +1,4 @@
+import ConfirmSubmitButton from "@/components/website/ConfirmSubmitButton";
 import WebsiteFormError from "@/components/website/WebsiteFormError";
 import type { TemplatePackage } from "@/lib/website/templates/package-schema";
 import type { TemplateRestorePoint } from "@/lib/website/templates/restore-point";
@@ -59,12 +60,12 @@ export default function TemplatePackageList({
             <p className="text-sm text-[var(--muted)]">{pkg.summary}</p>
             <p className="text-xs text-[var(--muted)]">{pkg.bestFor}</p>
             <form action={applyTemplatePackage.bind(null, pkg.id)} className="mt-auto">
-              <button
-                type="submit"
+              <ConfirmSubmitButton
+                message={`Replace your homepage and shop page layout with ${pkg.name}? You can undo this afterwards.`}
                 className="w-full rounded-full bg-[var(--field)] px-4 py-2.5 text-sm font-semibold text-white"
               >
                 Use {pkg.name}
-              </button>
+              </ConfirmSubmitButton>
             </form>
           </li>
         ))}

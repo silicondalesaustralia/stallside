@@ -36,7 +36,6 @@ export function buildCommerceStarterTree(input: {
           categoryId=""
           productIds={[]}
           limit={input.templateId === "market" ? 12 : 8}
-          layout="grid"
           columns={input.templateId === "market" ? 4 : 3}
           preset={productPreset}
           heading={
@@ -61,7 +60,6 @@ export function buildCommerceStarterTree(input: {
           categoryId=""
           productIds={[]}
           limit={12}
-          layout="grid"
           columns={3}
           preset={productPreset}
           heading="In this category"

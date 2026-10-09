@@ -43,7 +43,6 @@ export function studioSectionElement(type: StudioSectionType): ReactElement {
           categoryId=""
           productIds={[]}
           limit={8}
-          layout="grid"
           columns={3}
           preset="editorial"
           heading="Our bakes"

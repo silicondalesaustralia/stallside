@@ -42,7 +42,7 @@ export type HubNavItem = {
 export const WEBSITE_HUB_NAV: HubNavItem[] = [
   { href: "/dashboard/website/web-studio", label: "Web Studio", matchPrefix: "/dashboard/website/web-studio" },
   { href: "/dashboard/website/pages", label: "Pages", matchPrefix: "/dashboard/website/pages" },
-  { href: "/dashboard/website/commerce", label: "Commerce", matchPrefix: "/dashboard/website/commerce" },
+  { href: "/dashboard/website/commerce", label: "Shop and product pages", matchPrefix: "/dashboard/website/commerce" },
   { href: "/dashboard/website/navigation", label: "Navigation", matchPrefix: "/dashboard/website/navigation" },
   { href: "/dashboard/website/blog", label: "Blog", matchPrefix: "/dashboard/website/blog" },
   { href: "/dashboard/website/seo", label: "SEO", matchPrefix: "/dashboard/website/seo" },
