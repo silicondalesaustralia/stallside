@@ -1,6 +1,7 @@
 "use client";
 
 import InlineEditableText from "@/components/studio/InlineEditableText";
+import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 
 export default function StudioTextBlock({
   heading,
@@ -41,7 +42,7 @@ export default function StudioTextBlock({
 
   return (
     <section className="studio-section mx-auto max-w-3xl px-4 py-[var(--studio-section-py,3rem)] sf-sm:px-6">
-      {heading ? <h2 className={headingClass}>{heading}</h2> : null}
+      {heading ? <SectionHeadingTag className={headingClass}>{heading}</SectionHeadingTag> : null}
       {body ? <p className={bodyClass}>{body}</p> : null}
     </section>
   );

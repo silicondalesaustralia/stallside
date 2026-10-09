@@ -1,7 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { createElement } from "react";
+import { createElement, useMemo } from "react";
+import SectionStyleFrame from "@/components/studio/SectionStyleFrame";
+import { parseSectionStyle } from "@/lib/website/sections/section-style";
+import { paletteOf } from "@/lib/website/sections/colour";
 import { useEditor, useNode } from "@craftjs/core";
 import { craftSectionLabel, craftSectionRule } from "@/lib/craft/section-registry";
 import {
@@ -17,12 +20,14 @@ export default function CraftSectionChrome({
   children: ReactNode;
   onAddBelow?: () => void;
 }) {
-  const { id, selected, hovered } = useNode((node) => ({
+  const { id, selected, hovered, rawStyle } = useNode((node) => ({
     selected: node.events.selected,
     hovered: node.events.hovered,
+    rawStyle: (node.data.props as Record<string, unknown>).style,
   }));
   const { actions, query } = useEditor();
-  const { setAddAtIndex, registryMode = "craft" } = useCraftEditorChrome();
+  const { setAddAtIndex, registryMode = "craft", metadata } = useCraftEditorChrome();
+  const sectionStyle = useMemo(() => parseSectionStyle(rawStyle), [rawStyle]);
   const labelFn = registryMode === "studio" ? studioSectionLabel : craftSectionLabel;
   const ruleFn = registryMode === "studio" ? studioSectionRule : craftSectionRule;
   const displayName = query.node(id).get().data.displayName ?? "";
@@ -94,7 +99,9 @@ export default function CraftSectionChrome({
           )}
         </div>
       )}
-      {children}
+      <SectionStyleFrame sectionStyle={sectionStyle} palette={paletteOf(metadata.resolvedBranding)}>
+        {children}
+      </SectionStyleFrame>
       {selected ? (
         <button
           type="button"

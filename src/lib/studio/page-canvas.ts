@@ -1,5 +1,6 @@
 import type { SerializedNodes } from "@craftjs/core";
 import { ROOT_NODE } from "@craftjs/utils";
+import { isColourValue } from "@/lib/website/sections/section-style";
 
 const PAGE_ROOT_NAMES = new Set(["CraftPageRoot"]);
 
@@ -29,6 +30,13 @@ export function findStudioCanvasParentId(nodes: SerializedNodes): string {
 
   // Flat tree: sections hang directly off ROOT
   return ROOT_NODE;
+}
+
+/** This page's own background colour (set on the page canvas), if the seller chose one. */
+export function pageBackgroundOf(nodes: SerializedNodes): string | null {
+  const canvasId = findStudioCanvasParentId(nodes);
+  const value = (nodes[canvasId]?.props as Record<string, unknown> | undefined)?.background;
+  return isColourValue(value) ? value : null;
 }
 
 export function studioSectionInsertIndex(

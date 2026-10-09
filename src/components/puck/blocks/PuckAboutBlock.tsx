@@ -1,6 +1,7 @@
 "use client";
 
 import InlineEditableText from "@/components/studio/InlineEditableText";
+import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 
 type AboutProps = {
   heading: string;
@@ -40,7 +41,7 @@ export default function PuckAboutBlock({
     </>
   ) : (
     <>
-      <h2 className={headingClass}>{heading || "About us"}</h2>
+      <SectionHeadingTag className={headingClass}>{heading || "About us"}</SectionHeadingTag>
       {body ? <p className={bodyClass}>{body}</p> : null}
     </>
   );

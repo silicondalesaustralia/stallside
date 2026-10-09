@@ -560,6 +560,62 @@
   background: var(--panel);
 }
 
+/* Per-section style (SectionStyleFrame). background-color only, so hero images survive. */
+.section-style--bg {
+  background-color: var(--section-bg);
+}
+
+.section-style--bg .studio-section,
+.section-style--bg .studio-hero {
+  background-color: var(--section-bg);
+}
+
+.section-style--ink {
+  color: var(--section-ink);
+}
+
+/* Cards and white buttons keep dark ink on their own light surface. */
+.section-style--ink
+  :is(.bg-white, .bg-\[var\(--panel\)\], .studio-product-card, .studio-btn--secondary):not(
+    .studio-section,
+    .studio-hero
+  ) {
+  --field: #17361f;
+  --ink: #182c1b;
+  --muted: #56684f;
+  color: var(--ink);
+}
+
+.section-style[data-heading-size="sm"] [data-section-heading] {
+  font-size: clamp(1.375rem, 1.1rem + 1.5cqi, 1.75rem);
+}
+
+.section-style[data-heading-size="md"] [data-section-heading] {
+  font-size: clamp(1.75rem, 1.3rem + 2.5cqi, 2.5rem);
+}
+
+.section-style[data-heading-size="lg"] [data-section-heading] {
+  font-size: clamp(2.25rem, 1.5rem + 4cqi, 3.5rem);
+}
+
+.section-style[data-heading-size="xl"] [data-section-heading] {
+  font-size: clamp(2.75rem, 1.6rem + 6cqi, 4.75rem);
+  line-height: 1.05;
+}
+
+.section-style[data-body-size="sm"] :is(p, li):not([data-section-heading]) {
+  font-size: 0.875rem;
+}
+
+.section-style[data-body-size="md"] :is(p, li):not([data-section-heading]) {
+  font-size: 1rem;
+}
+
+.section-style[data-body-size="lg"] :is(p, li):not([data-section-heading]) {
+  font-size: 1.1875rem;
+  line-height: 1.65;
+}
+
 .studio-section__inner {
   margin-inline: auto;
   max-width: var(--studio-content-max, 64rem);

@@ -1,8 +1,10 @@
 import type { SerializedNodes } from "@craftjs/core";
-import { ROOT_NODE } from "@craftjs/utils";
 import type { StudioMetadata, StudioSectionType } from "./types";
 import { studioSectionRule } from "./section-registry";
-import { findStudioCanvasParentId } from "./page-canvas";
+import { findStudioCanvasParentId, pageBackgroundOf } from "./page-canvas";
+import SectionStyleFrame from "@/components/studio/SectionStyleFrame";
+import { parseSectionStyle } from "@/lib/website/sections/section-style";
+import { colourCss, paletteOf } from "@/lib/website/sections/colour";
 import { isPublicStudioNode } from "./node-visibility";
 import StudioHeroBlock from "@/components/studio/blocks/StudioHeroBlock";
 import StudioHeroFrame from "@/components/studio/StudioHeroFrame";
@@ -57,17 +59,24 @@ export default function StudioPublicSections({
   metadata: StudioMetadata;
 }) {
   const sections = pageSectionNodes(nodes);
+  const palette = paletteOf(metadata.resolvedBranding);
+  const pageBackground = pageBackgroundOf(nodes);
 
   return (
-    <>
+    <div
+      className="studio-page-root"
+      style={pageBackground ? { backgroundColor: colourCss(pageBackground) } : undefined}
+    >
       {sections.map((section, index) => (
-        <StudioSectionRender
+        <SectionStyleFrame
           key={`${section.type}-${index}`}
-          section={section}
-          metadata={metadata}
-        />
+          sectionStyle={parseSectionStyle(section.props.style)}
+          palette={palette}
+        >
+          <StudioSectionRender section={section} metadata={metadata} />
+        </SectionStyleFrame>
       ))}
-    </>
+    </div>
   );
 }
 

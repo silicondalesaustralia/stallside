@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { shopMenusPath } from "@/lib/storefront/paths";
 import MenuOrder from "@/components/menu/MenuOrder";
+import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 
 export default function StudioMenuDetailBlock({
   metadata: meta,
@@ -32,9 +33,9 @@ export default function StudioMenuDetailBlock({
       >
         ← Menus
       </Link>
-      <h1 className="studio-display mt-4 text-3xl font-bold text-[var(--field)]">
+      <SectionHeadingTag defaultTag="h1" className="studio-display mt-4 text-3xl font-bold text-[var(--field)]">
         {menu.title}
-      </h1>
+      </SectionHeadingTag>
       {menu.scheduleLabel ? (
         <p className="mt-2 text-sm font-semibold uppercase tracking-wide text-[var(--leaf-dark)]">
           {menu.isPreOrderDrop ? "Pre-order drop" : "Menu"} · {menu.scheduleLabel}

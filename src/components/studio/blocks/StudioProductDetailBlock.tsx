@@ -4,6 +4,7 @@ import type { StudioMetadata } from "@/lib/studio/types";
 import { formatMoney } from "@/lib/public-product";
 import { shopPagePath } from "@/lib/storefront/paths";
 import ProductDetailActions from "@/app/s/[standSlug]/ProductDetailActions";
+import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 
 export default function StudioProductDetailBlock({
   showBackLink,
@@ -62,9 +63,9 @@ export default function StudioProductDetailBlock({
           className="mt-6 aspect-square w-full rounded-[var(--studio-card-radius,var(--storefront-radius,var(--radius)))] object-cover"
         />
       ) : null}
-      <h1 className="studio-display mt-6 text-3xl font-bold tracking-tight text-[var(--field)]">
+      <SectionHeadingTag defaultTag="h1" className="studio-display mt-6 text-3xl font-bold tracking-tight text-[var(--field)]">
         {product.name}
-      </h1>
+      </SectionHeadingTag>
       {product.isPreOrder ? (
         <p className="mt-2 text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">
           Pre-order

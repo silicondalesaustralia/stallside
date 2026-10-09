@@ -1,6 +1,7 @@
 "use client";
 
 import InlineEditableText from "@/components/studio/InlineEditableText";
+import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 
 /** Section h2 — click-to-edit in Craft when `editable`. */
 export default function StudioSectionHeading({
@@ -27,5 +28,5 @@ export default function StudioSectionHeading({
       />
     );
   }
-  return <h2 className={className}>{value || fallback}</h2>;
+  return <SectionHeadingTag className={className}>{value || fallback}</SectionHeadingTag>;
 }

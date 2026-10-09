@@ -24,7 +24,10 @@ export default function StudioEditorShell({
   const template = resolveStudioTemplate(metadata.templateId, metadata.businessMode);
   const enabledPages = metadata.enabledPages ?? DEFAULT_PAGES;
   const branding = metadata.resolvedBranding;
-  const { chromeTarget, setChromeTarget, headerLayout, brandMark } = useStudioEditorChrome();
+  const { chromeTarget, setChromeTarget, headerLayout, brandMark, sitePageBackground } =
+    useStudioEditorChrome();
+  const liveBranding =
+    sitePageBackground === undefined ? branding : { ...branding, pageBackground: sitePageBackground };
   const { actions } = useEditor();
 
   function selectHeader() {
@@ -35,7 +38,7 @@ export default function StudioEditorShell({
   return (
     <div
       className={`storefront-cq min-h-full text-[var(--ink)] ${template.cssClass}`}
-      style={{ ...storefrontThemeStyle(branding), ...template.style }}
+      style={{ ...storefrontThemeStyle(liveBranding), ...template.style }}
     >
       <StorefrontFontLoader fontPairId={branding.fontPairId} />
       <StorefrontLinkProvider slug={metadata.storefrontSlug} basePath={metadata.basePath} draft>

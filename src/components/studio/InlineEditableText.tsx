@@ -1,14 +1,7 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  type KeyboardEvent,
-  type MouseEvent,
-} from "react";
-import { useNode } from "@craftjs/core";
-
-type TextTag = "h1" | "h2" | "h3" | "p" | "span" | "div";
+import { useSectionHeadingTag } from "./SectionStyleContext";
+import EditableTextElement, { type TextTag } from "./EditableTextElement";
 
 type Props = {
   prop: string;
@@ -23,66 +16,23 @@ type Props = {
 export default function InlineEditableText({
   prop,
   value,
-  as: Tag = "p",
+  as = "p",
   className = "",
   multiline = false,
   placeholder = "Click to edit",
 }: Props) {
-  const {
-    actions: { setProp },
-  } = useNode();
-  const elRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const el = elRef.current;
-    if (!el) return;
-    if (document.activeElement === el) return;
-    const next = value || "";
-    if (el.innerText !== next) el.innerText = next;
-  }, [value]);
-
-  function commit() {
-    const el = elRef.current;
-    if (!el) return;
-    const next = (multiline ? el.innerText : el.textContent ?? "")
-      .replace(/\u00a0/g, " ")
-      .replace(/\n+$/g, "")
-      .trimEnd();
-    setProp((props: Record<string, unknown>) => {
-      props[prop] = next;
-    });
-  }
-
-  function onKeyDown(e: KeyboardEvent<HTMLElement>) {
-    e.stopPropagation();
-    if (!multiline && e.key === "Enter") {
-      e.preventDefault();
-      e.currentTarget.blur();
-    }
-    if (e.key === "Escape") {
-      if (elRef.current) elRef.current.innerText = value || "";
-      e.currentTarget.blur();
-    }
-  }
-
-  function onMouseDown(e: MouseEvent) {
-    e.stopPropagation();
-  }
-
+  // h1/h2 are a section's main heading; the seller's heading level replaces them.
+  const isMainHeading = as === "h1" || as === "h2";
+  const headingOverride = useSectionHeadingTag();
   return (
-    <Tag
-      ref={(node) => {
-        elRef.current = node;
-      }}
-      className={`inline-editable ${className}`.trim()}
-      contentEditable
-      suppressContentEditableWarning
-      data-placeholder={placeholder}
-      onBlur={commit}
-      onKeyDown={onKeyDown}
-      onMouseDown={onMouseDown}
-      role="textbox"
-      aria-label={placeholder}
+    <EditableTextElement
+      prop={prop}
+      value={value}
+      as={isMainHeading && headingOverride ? headingOverride : as}
+      sectionHeading={isMainHeading}
+      className={className}
+      multiline={multiline}
+      placeholder={placeholder}
     />
   );
 }

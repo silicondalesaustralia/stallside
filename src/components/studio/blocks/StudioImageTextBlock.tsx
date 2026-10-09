@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import InlineEditableText from "@/components/studio/InlineEditableText";
+import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 
 export default function StudioImageTextBlock({
   imageUrl,
@@ -69,7 +70,7 @@ export default function StudioImageTextBlock({
             </>
           ) : (
             <>
-              {heading ? <h2 className={headingClass}>{heading}</h2> : null}
+              {heading ? <SectionHeadingTag className={headingClass}>{heading}</SectionHeadingTag> : null}
               {body ? <p className={bodyClass}>{body}</p> : null}
               {ctaLabel ? (
                 <span className="mt-6 inline-flex rounded-full bg-[var(--leaf-dark)] px-5 py-2.5 text-sm font-semibold text-white">

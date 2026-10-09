@@ -46,6 +46,10 @@ export type CraftEditorChrome = {
   }) => void;
   headerStyleStatus?: "idle" | "saving" | "saved" | "error";
   headerStyleError?: string | null;
+  sitePageBackground?: string | null;
+  setSitePageBackground?: (value: string | null) => void;
+  sitePageBackgroundStatus?: "idle" | "saving" | "saved" | "error";
+  sitePageBackgroundError?: string | null;
   pageOptions?: { value: string; label: string; href: string }[];
   currentPage?: string;
 };

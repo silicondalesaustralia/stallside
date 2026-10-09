@@ -47,6 +47,8 @@ export type StorefrontThemeOverrides = {
   fontPairId?: string;
   headerLayout?: import("./header-style").HeaderLayout;
   brandMark?: import("./header-style").BrandMarkMode;
+  /** Colour behind the sections on every page (theme token or #rrggbb). */
+  pageBackground?: string;
 };
 
 /** Website-only identity. Lives in the draft and goes live on publish. */
@@ -86,6 +88,7 @@ export type ResolvedStorefrontBranding = {
   fontPairId: string | null;
   headerLayout: import("./header-style").HeaderLayout;
   brandMark: import("./header-style").BrandMarkMode;
+  pageBackground: string | null;
   regionLabel: string | null;
   contactEmail: string;
   contactPhone: string | null;

@@ -8,6 +8,8 @@ import {
   isHeaderLayout,
 } from "@/lib/storefront/header-style";
 import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
+import { isColourValue } from "@/lib/website/sections/section-style";
+import { colourCss } from "@/lib/website/sections/colour";
 import type {
   ResolvedStorefrontBranding,
   StorefrontConfig,
@@ -110,6 +112,7 @@ export function resolveStorefrontBranding(input: {
     brandMark: isBrandMarkMode(overrides.brandMark)
       ? overrides.brandMark
       : headerDefaults.brandMark,
+    pageBackground: isColourValue(overrides.pageBackground) ? overrides.pageBackground : null,
     regionLabel: regionParts.length > 0 ? regionParts.join(", ") : null,
     contactEmail: storefront.contactEmail?.trim() || input.owner.contactEmail,
     contactPhone: storefront.showPhone ? input.owner.contactPhone : null,
@@ -138,6 +141,7 @@ export function storefrontThemeStyle(
     style["--font-body"] = fonts.bodyFamily;
     style["--font-sans"] = fonts.bodyFamily;
   }
+  if (branding.pageBackground) style.backgroundColor = colourCss(branding.pageBackground);
   return style as CSSProperties;
 }
 

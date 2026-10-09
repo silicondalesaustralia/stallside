@@ -6,6 +6,7 @@ import type { StudioMetadata } from "@/lib/studio/types";
 import { shopPagePath } from "@/lib/storefront/paths";
 import type { HeroPreset } from "@/lib/studio/preset-registry";
 import InlineEditableText from "@/components/studio/InlineEditableText";
+import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 
 type Props = {
   headline: string;
@@ -73,7 +74,11 @@ function HeroTitle({
       />
     );
   }
-  return <h1 className={className}>{display}</h1>;
+  return (
+    <SectionHeadingTag defaultTag="h1" className={className}>
+      {display}
+    </SectionHeadingTag>
+  );
 }
 
 function HeroSubtitle({
@@ -180,9 +185,9 @@ export default function StudioHeroBlock({
             </>
           ) : (
             <>
-              <h1 className="studio-display mt-2 text-3xl text-[var(--field)] sf-sm:text-4xl">
+              <SectionHeadingTag defaultTag="h1" className="studio-display mt-2 text-3xl text-[var(--field)] sf-sm:text-4xl">
                 {menu?.title ?? title}
-              </h1>
+              </SectionHeadingTag>
               {menu?.description ? (
                 <p className="mt-3 max-w-2xl text-[var(--muted)]">{menu.description}</p>
               ) : subtitle ? (

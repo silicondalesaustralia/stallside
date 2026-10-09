@@ -3,12 +3,13 @@ import { about, hero, image, imageText, text } from "./content-sections";
 import { categories, menuDetail, nextDrop, productDetail, productGrid } from "./commerce-sections";
 import { farmStand, pickup, reviews, signup } from "./trust-sections";
 import type { SectionDefinition, VendlSectionType } from "./types";
+import { sectionStyleSchema } from "./section-style";
 
 /**
  * The one list of supported website sections. Keyed by stable Vendl type;
  * `satisfies` makes adding a type without a definition a compile error.
  */
-export const SECTION_REGISTRY = {
+const DEFINITIONS = {
   hero,
   productGrid,
   categories,
@@ -24,6 +25,15 @@ export const SECTION_REGISTRY = {
   productDetail,
   menuDetail,
 } satisfies Record<VendlSectionType, SectionDefinition>;
+
+/** Every section shares the same optional colour/typography `style` setting. */
+function withStyle(def: SectionDefinition): SectionDefinition {
+  return { ...def, settings: def.settings.extend({ style: sectionStyleSchema.optional() }) };
+}
+
+export const SECTION_REGISTRY = Object.fromEntries(
+  (Object.keys(DEFINITIONS) as VendlSectionType[]).map((type) => [type, withStyle(DEFINITIONS[type])]),
+) as Record<VendlSectionType, SectionDefinition>;
 
 /** Every Craft resolver name maps to exactly one Vendl type (compile-checked). */
 export const VENDL_TYPE_BY_CRAFT_NAME = {

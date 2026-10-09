@@ -36,6 +36,7 @@ import StudioSettingsPanel from "./StudioSettingsPanel";
 import StudioAddSectionModal from "./StudioAddSectionModal";
 import StudioPageAddFooter from "./StudioPageAddFooter";
 import { useLayoutAutosave } from "./useLayoutAutosave";
+import { useSitePageBackground } from "./useSitePageBackground";
 import type { AutosaveTargetInput } from "@/app/dashboard/(gated)/website/autosave/actions";
 
 export default function StudioEditorInner({
@@ -112,6 +113,11 @@ export default function StudioEditorInner({
     setDirty,
     setSaveStatus,
     setSaveError,
+  });
+  const sitePageBackground = useSitePageBackground({
+    initial: metadata.resolvedBranding.pageBackground,
+    revisionRef,
+    runExclusive,
   });
   const [chromeTarget, setChromeTarget] = useState<ChromeTarget>(null);
   const [headerLayout, setHeaderLayout] = useState<HeaderLayout>(
@@ -225,6 +231,7 @@ export default function StudioEditorInner({
       setHeaderStyle,
       headerStyleStatus,
       headerStyleError,
+      ...sitePageBackground,
       pageOptions,
       currentPage,
     }),
@@ -256,6 +263,7 @@ export default function StudioEditorInner({
       setHeaderStyle,
       headerStyleStatus,
       headerStyleError,
+      sitePageBackground,
     ],
   );
 

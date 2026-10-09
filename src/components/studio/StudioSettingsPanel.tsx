@@ -9,6 +9,9 @@ import { useStudioMetadata, useStudioEditorChrome } from "./StudioEditorContext"
 import HeaderStyleSettings from "./HeaderStyleSettings";
 import PresetStyleField from "./PresetStyleField";
 import SectionImageField from "./SectionImageField";
+import SectionStyleSettings from "./SectionStyleSettings";
+import PageStyleSettings from "./PageStyleSettings";
+import { paletteOf } from "@/lib/website/sections/colour";
 import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
 import type { CraftHeroProps } from "@/components/craft/sections/CraftHeroSection";
 import type { CraftProductGridProps } from "@/components/craft/sections/CraftProductGridSection";
@@ -33,6 +36,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export default function StudioSettingsPanel() {
   const { chromeTarget, setChromeTarget } = useStudioEditorChrome();
+  const metadata = useStudioMetadata();
   const { actions, selected } = useEditor((state, query) => {
     const ids = Array.from(state.events.selected);
     const id = ids[0] ?? null;
@@ -73,6 +77,7 @@ export default function StudioSettingsPanel() {
         >
           Edit header style
         </button>
+        <PageStyleSettings />
       </aside>
     );
   }
@@ -121,6 +126,12 @@ export default function StudioSettingsPanel() {
             setProp={setProp}
           />
         ) : null}
+        <SectionStyleSettings
+          craftName={selected.type}
+          rawStyle={selected.props.style}
+          onChange={(next) => setProp("style", next)}
+          palette={paletteOf(metadata.resolvedBranding)}
+        />
       </div>
     </aside>
   );
