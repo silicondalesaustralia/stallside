@@ -88,13 +88,13 @@ export default function StudioProductsBlock({
 
   const colClass =
     mappedPreset === "compact" || isDense
-      ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+      ? "grid-cols-2 sf-sm:grid-cols-3 sf-lg:grid-cols-4 sf-xl:grid-cols-5"
       : mappedPreset === "featured"
-        ? "grid-cols-1 sm:grid-cols-2"
+        ? "grid-cols-1 sf-sm:grid-cols-2"
         : columns === 4 || isDense
-          ? "grid-cols-2 lg:grid-cols-4"
+          ? "grid-cols-2 sf-lg:grid-cols-4"
           : columns === 3
-            ? "grid-cols-2 lg:grid-cols-3"
+            ? "grid-cols-2 sf-lg:grid-cols-3"
             : "grid-cols-2";
 
   const sectionClass = isFarm ? "studio-section studio-section--wash" : "studio-section";
@@ -171,12 +171,12 @@ function ProductCard({
           </span>
         ) : null}
       </div>
-      <div className={preset === "featured" ? "mt-4 sm:flex sm:items-end sm:justify-between sm:gap-4" : "mt-3"}>
+      <div className={preset === "featured" ? "mt-4 sf-sm:flex sf-sm:items-end sf-sm:justify-between sf-sm:gap-4" : "mt-3"}>
         <p className="font-semibold leading-snug text-[var(--field)] group-hover:text-[var(--leaf-dark)]">
           {product.name}
         </p>
         {showPrice ? (
-          <p className="mt-1 text-sm text-[var(--muted)] sm:mt-0">
+          <p className="mt-1 text-sm text-[var(--muted)] sf-sm:mt-0">
             {formatMoney(product.priceCents, meta.currency)}
           </p>
         ) : null}

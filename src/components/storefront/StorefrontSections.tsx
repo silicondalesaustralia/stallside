@@ -54,7 +54,7 @@ export function StorefrontFarmStandSection({
   const btnClass = storefrontButtonClass(branding);
 
   return (
-    <section className="rounded-[var(--storefront-radius,var(--radius))] border border-[var(--line)] bg-[var(--panel)] p-6 sm:p-8">
+    <section className="rounded-[var(--storefront-radius,var(--radius))] border border-[var(--line)] bg-[var(--panel)] p-6 sf-sm:p-8">
       <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
         {businessMode === "BOTH" ? "Visit our farm stand" : label}
       </h2>
@@ -122,7 +122,7 @@ export function StorefrontPickupSection({
   if (!hasPickup && !hasDelivery) return null;
 
   return (
-    <section className="rounded-[var(--storefront-radius,var(--radius))] bg-[var(--wash)] p-6 sm:p-8">
+    <section className="rounded-[var(--storefront-radius,var(--radius))] bg-[var(--wash)] p-6 sf-sm:p-8">
       <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
         {hasPickup && hasDelivery
           ? "Pickup & delivery"

@@ -15,7 +15,7 @@ export default function StudioImageBlock({
     layout === "full" ? "w-full" : layout === "wide" ? "max-w-6xl" : "max-w-3xl";
 
   return (
-    <section className="studio-section px-4 py-[var(--studio-section-py,3rem)] sm:px-6">
+    <section className="studio-section px-4 py-[var(--studio-section-py,3rem)] sf-sm:px-6">
       <figure className={`mx-auto ${widthClass}`}>
         {imageUrl ? (
           <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--studio-card-radius,var(--storefront-radius))]">

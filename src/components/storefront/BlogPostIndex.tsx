@@ -35,7 +35,7 @@ export default function BlogPostIndex({
       {posts.length === 0 ? (
         <p className="mt-8 text-lg text-[var(--muted)]">No posts yet — check back soon.</p>
       ) : (
-        <ul className={`grid gap-8 ${studioActive ? "" : "mt-10"} sm:grid-cols-2`}>
+        <ul className={`grid gap-8 ${studioActive ? "" : "mt-10"} sf-sm:grid-cols-2`}>
           {posts.map((post) => {
             const postTopics = topicsForPost(topics, post);
             const href = shopBlogPostPath(storefrontSlug, post.slug, draft, basePath);

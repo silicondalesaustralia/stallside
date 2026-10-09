@@ -58,8 +58,8 @@ export default function StudioCategoriesBlock({
     mappedPreset === "compact" || mappedPreset === "minimal"
       ? "flex flex-wrap gap-2"
       : mappedPreset === "cards"
-        ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
-        : "grid grid-cols-2 gap-4 sm:grid-cols-3";
+        ? "grid grid-cols-1 gap-4 sf-sm:grid-cols-2 sf-lg:grid-cols-3"
+        : "grid grid-cols-2 gap-4 sf-sm:grid-cols-3";
 
   return (
     <section className="studio-section">

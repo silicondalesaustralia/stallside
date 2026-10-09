@@ -156,7 +156,7 @@ function MobileNavList({
                   <li key={child.slug}>
                     <Link
                       href={child.href}
-                      className="block py-2 text-sm font-semibold text-[var(--field)]"
+                      className="block py-3 text-base font-semibold text-[var(--field)]"
                       onClick={onNavigate}
                     >
                       {child.label}
@@ -168,7 +168,7 @@ function MobileNavList({
           ) : (
             <Link
               href={item.href}
-              className={`block py-2 text-sm font-semibold text-[var(--field)] ${
+              className={`block py-3 text-base font-semibold text-[var(--field)] ${
                 activePage === item.slug ? "underline" : ""
               }`}
               onClick={onNavigate}
@@ -250,7 +250,7 @@ export default function StudioStorefrontNav({
   const brand = <BrandMark branding={branding} brandMark={brandMark} href={homeHref} />;
   const desktopNav =
     headerLayout === "minimal" ? null : (
-      <nav className="hidden items-center gap-6 md:flex" aria-label="Main" onClick={(e) => e.stopPropagation()}>
+      <nav className="hidden items-center gap-6 sf-md:flex" aria-label="Main" onClick={(e) => e.stopPropagation()}>
         {navItems.map((item) => (
           <NavDropdown key={item.slug} item={item} />
         ))}
@@ -265,11 +265,15 @@ export default function StudioStorefrontNav({
       ) : null}
       <button
         type="button"
-        className="studio-nav__menu-btn md:hidden"
+        className="studio-nav__menu-btn inline-flex size-10 items-center justify-center sf-md:hidden"
         aria-expanded={open}
+        aria-controls="storefront-mobile-nav"
+        aria-label={open ? "Close menu" : "Open menu"}
         onClick={() => setOpen((v) => !v)}
       >
-        Menu
+        <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+          {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+        </svg>
       </button>
     </div>
   );
@@ -277,35 +281,35 @@ export default function StudioStorefrontNav({
   let body: ReactNode;
   if (headerLayout === "centred") {
     body = (
-      <div className="mx-auto grid max-w-[var(--studio-content-max)] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-3 sm:px-8 sm:py-4">
-        <div className="hidden justify-self-start md:block">{desktopNav}</div>
+      <div className="mx-auto grid max-w-[var(--studio-content-max)] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-3 sf-sm:px-8 sf-sm:py-4">
+        <div className="hidden justify-self-start sf-md:block">{desktopNav}</div>
         <div className="col-start-2 justify-self-center">{brand}</div>
         <div className="justify-self-end">{actions}</div>
       </div>
     );
   } else if (headerLayout === "stacked") {
     body = (
-      <div className="mx-auto flex max-w-[var(--studio-content-max)] flex-col gap-2 px-4 py-3 sm:px-8 sm:py-4">
+      <div className="mx-auto flex max-w-[var(--studio-content-max)] flex-col gap-2 px-4 py-3 sf-sm:px-8 sf-sm:py-4">
         <div className="flex items-center justify-between gap-4">
           {brand}
           {actions}
         </div>
-        <div className="flex justify-center border-t border-[var(--line)] pt-2">{desktopNav}</div>
+        <div className="hidden justify-center border-t border-[var(--line)] pt-2 sf-md:flex">{desktopNav}</div>
       </div>
     );
   } else if (headerLayout === "minimal") {
     body = (
-      <div className="mx-auto flex max-w-[var(--studio-content-max)] items-center justify-between gap-4 px-4 py-2.5 sm:px-8">
+      <div className="mx-auto flex max-w-[var(--studio-content-max)] items-center justify-between gap-4 px-4 py-2.5 sf-sm:px-8">
         {brand}
         {actions}
       </div>
     );
   } else {
     body = (
-      <div className="mx-auto flex max-w-[var(--studio-content-max)] items-center justify-between gap-4 px-4 py-3 sm:px-8 sm:py-4">
+      <div className="mx-auto flex max-w-[var(--studio-content-max)] items-center justify-between gap-4 px-4 py-3 sf-sm:px-8 sf-sm:py-4">
         {brand}
         {templateId === "farmhouse" && branding.regionLabel ? (
-          <p className="hidden text-sm text-[var(--muted)] lg:block">{branding.regionLabel}</p>
+          <p className="hidden text-sm text-[var(--muted)] sf-lg:block">{branding.regionLabel}</p>
         ) : null}
         {desktopNav}
         {actions}
@@ -342,7 +346,7 @@ export default function StudioStorefrontNav({
     >
       {body}
       {open ? (
-        <nav className="border-t border-[var(--line)] px-4 py-3 md:hidden" aria-label="Mobile">
+        <nav id="storefront-mobile-nav" className="border-t border-[var(--line)] px-4 py-3 sf-md:hidden" aria-label="Mobile">
           <MobileNavList
             navItems={navItems}
             activePage={activePage}

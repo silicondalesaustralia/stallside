@@ -30,7 +30,7 @@ export default function BlogPostArticle({
   const date = formatBlogDate(post.publishedAt ?? post.updatedAt);
   const headingClass = studioActive
     ? "studio-heading"
-    : "font-[family-name:var(--font-display)] text-3xl font-bold text-[var(--field)] sm:text-4xl";
+    : "font-[family-name:var(--font-display)] text-3xl font-bold text-[var(--field)] sf-sm:text-4xl";
 
   return (
     <article className="storefront-page-content storefront-page-content--narrow">

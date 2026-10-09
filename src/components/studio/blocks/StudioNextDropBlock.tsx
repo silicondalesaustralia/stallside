@@ -96,10 +96,10 @@ function FeaturedMenuCard({
   return (
     <Link
       href={shopMenuPath(meta.storefrontSlug, menu.slug, meta.draft, meta.basePath)}
-      className="mt-8 block overflow-hidden rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-6 sm:p-8"
+      className="mt-8 block overflow-hidden rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-6 sf-sm:p-8"
     >
       <p className="studio-eyebrow text-[var(--leaf-dark)]">Order window open</p>
-      <h3 className="studio-heading mt-2 text-2xl sm:text-3xl">{menu.title}</h3>
+      <h3 className="studio-heading mt-2 text-2xl sf-sm:text-3xl">{menu.title}</h3>
       {menu.description ? (
         <p className="mt-3 max-w-2xl text-[var(--muted)]">{menu.description}</p>
       ) : null}

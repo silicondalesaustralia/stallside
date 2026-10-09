@@ -16,7 +16,7 @@ export default function StorefrontBreadcrumbs({
       className={
         studioActive
           ? "storefront-page-content storefront-page-content--wide pb-0 pt-6"
-          : "mx-auto max-w-5xl px-4 pt-6 sm:px-6"
+          : "mx-auto max-w-5xl px-4 pt-6 sf-sm:px-6"
       }
     >
       <ol className="flex flex-wrap items-center gap-1 text-sm text-[var(--muted)]">

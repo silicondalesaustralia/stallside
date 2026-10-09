@@ -66,7 +66,7 @@ export default async function StorefrontHomeContent({
             return (
               <section
                 key={section.id}
-                className="mx-auto max-w-5xl px-4 py-12 sm:px-6"
+                className="mx-auto max-w-5xl px-4 py-12 sf-sm:px-6"
               >
                 <div className="mb-6 flex items-end justify-between gap-4">
                   <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
@@ -98,7 +98,7 @@ export default async function StorefrontHomeContent({
             return (
               <section
                 key={section.id}
-                className="mx-auto max-w-5xl px-4 py-8 sm:px-6"
+                className="mx-auto max-w-5xl px-4 py-8 sf-sm:px-6"
               >
                 <h2 className="mb-4 font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
                   Shop by category
@@ -123,7 +123,7 @@ export default async function StorefrontHomeContent({
             return (
               <section
                 key={section.id}
-                className="mx-auto max-w-3xl px-4 py-12 sm:px-6"
+                className="mx-auto max-w-3xl px-4 py-12 sf-sm:px-6"
               >
                 <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
                   About us
@@ -137,7 +137,7 @@ export default async function StorefrontHomeContent({
             return (
               <section
                 key={section.id}
-                className="mx-auto max-w-3xl px-4 py-12 sm:px-6"
+                className="mx-auto max-w-3xl px-4 py-12 sf-sm:px-6"
               >
                 <StorefrontHowOrderingSection
                   fulfilmentIntents={ctx.owner.fulfilmentIntents}
@@ -148,7 +148,7 @@ export default async function StorefrontHomeContent({
             return (
               <div
                 key={section.id}
-                className="mx-auto max-w-3xl px-4 py-8 sm:px-6"
+                className="mx-auto max-w-3xl px-4 py-8 sf-sm:px-6"
               >
                 <StorefrontPickupSection
                   fulfilmentIntents={ctx.owner.fulfilmentIntents}
@@ -166,7 +166,7 @@ export default async function StorefrontHomeContent({
             return (
               <div
                 key={section.id}
-                className="mx-auto max-w-3xl px-4 py-8 sm:px-6"
+                className="mx-auto max-w-3xl px-4 py-8 sf-sm:px-6"
               >
                 <StorefrontFarmStandSection
                   standName={ctx.stand.name}
@@ -183,12 +183,12 @@ export default async function StorefrontHomeContent({
             return (
               <section
                 key={section.id}
-                className="mx-auto max-w-5xl px-4 py-12 sm:px-6"
+                className="mx-auto max-w-5xl px-4 py-12 sf-sm:px-6"
               >
                 <h2 className="mb-6 font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
                   Gallery
                 </h2>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <div className="grid grid-cols-2 gap-3 sf-sm:grid-cols-3">
                   {images.map((url) => (
                     <div
                       key={url}
@@ -207,7 +207,7 @@ export default async function StorefrontHomeContent({
             return (
               <section
                 key={section.id}
-                className="mx-auto max-w-3xl px-4 py-12 sm:px-6"
+                className="mx-auto max-w-3xl px-4 py-12 sf-sm:px-6"
               >
                 <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
                   Get in touch
@@ -238,7 +238,7 @@ export default async function StorefrontHomeContent({
             return (
               <section
                 key={section.id}
-                className="mx-auto max-w-3xl px-4 py-8 sm:px-6"
+                className="mx-auto max-w-3xl px-4 py-8 sf-sm:px-6"
               >
                 <StorefrontSocialLinks branding={ctx.branding} />
               </section>

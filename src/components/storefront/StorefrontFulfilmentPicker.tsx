@@ -55,7 +55,7 @@ export default function StorefrontFulfilmentPicker({
 
   return (
     <section className="border-b border-[var(--line)] bg-white">
-      <div className="mx-auto max-w-5xl px-4 py-4 sm:px-6">
+      <div className="mx-auto max-w-5xl px-4 py-4 sf-sm:px-6">
         <p className="text-sm font-semibold text-[var(--field)]">
           How would you like to receive your order?
         </p>

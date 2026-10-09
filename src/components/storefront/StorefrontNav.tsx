@@ -61,7 +61,7 @@ export default function StorefrontNav({
 
   return (
     <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--panel)]/95 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sf-sm:px-6">
         <Link
           href={shopHomePath(storefrontSlug, draft, basePath)}
           className="flex min-w-0 items-center gap-3"
@@ -81,7 +81,7 @@ export default function StorefrontNav({
             {branding.headline}
           </span>
         </Link>
-        <nav className="hidden items-center gap-1 sm:flex">
+        <nav className="hidden items-center gap-1 sf-sm:flex">
           {navItems.map((item) => (
             <Link
               key={item.id}
@@ -105,7 +105,7 @@ export default function StorefrontNav({
           </Link>
         ) : null}
       </div>
-      <nav className="flex gap-1 overflow-x-auto px-4 pb-3 sm:hidden">
+      <nav className="flex gap-1 overflow-x-auto px-4 pb-3 sf-sm:hidden">
         {navItems.map((item) => (
           <Link
             key={item.id}

@@ -70,7 +70,7 @@ export default async function DemoWebsiteTemplatePage({
           nodes={studioCtx.studio.nodes ?? nodes}
           metadata={studioCtx.metadata}
         />
-        <div className="mx-auto max-w-[var(--studio-content-max)] px-4 pb-16 pt-4 text-center sm:px-8">
+        <div className="mx-auto max-w-[var(--studio-content-max)] px-4 pb-16 pt-4 text-center sf-sm:px-8">
           <Link
             href={`/shop/${slug}/shop`}
             className="text-sm font-semibold underline opacity-80"

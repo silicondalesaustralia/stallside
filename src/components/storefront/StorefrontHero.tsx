@@ -23,18 +23,18 @@ export default function StorefrontHero({
   const btnClass = storefrontButtonClass(branding);
 
   const heroContent = (
-    <div className="relative mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
+    <div className="relative mx-auto max-w-5xl px-4 py-12 sf-sm:px-6 sf-sm:py-16 sf-lg:py-20">
       <div className="mx-auto max-w-2xl text-center">
         {!branding.logoUrl && theme.heroStyle !== "minimal" ? (
           <div className="mb-6 flex justify-center">
             <BrandMark className="size-16 opacity-90" />
           </div>
         ) : null}
-        <h1 className="font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight text-[var(--field)] sm:text-5xl">
+        <h1 className="font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight text-[var(--field)] sf-sm:text-5xl">
           {branding.headline}
         </h1>
         {branding.subheadline ? (
-          <p className="mt-4 text-lg leading-relaxed text-[var(--muted)] sm:text-xl">
+          <p className="mt-4 text-lg leading-relaxed text-[var(--muted)] sf-sm:text-xl">
             {branding.subheadline}
           </p>
         ) : null}

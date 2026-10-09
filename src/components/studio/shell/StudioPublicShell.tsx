@@ -26,7 +26,7 @@ export default function StudioPublicShell({
 
   return (
     <div
-      className={`min-h-full text-[var(--ink)] ${template.cssClass}`}
+      className={`storefront-cq min-h-full text-[var(--ink)] ${template.cssClass}`}
       style={{ ...storefrontThemeStyle(branding), ...template.style }}
     >
       <StorefrontFontLoader fontPairId={branding.fontPairId} />

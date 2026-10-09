@@ -24,11 +24,11 @@ export default function StudioImageTextBlock({
   const bodyClass = "mt-4 whitespace-pre-wrap text-lg text-[var(--muted)]";
 
   return (
-    <section className="studio-section mx-auto max-w-5xl px-4 py-[var(--studio-section-py,3rem)] sm:px-6">
+    <section className="studio-section mx-auto max-w-5xl px-4 py-[var(--studio-section-py,3rem)] sf-sm:px-6">
       <div
-        className={`grid items-center gap-8 ${layout === "editorial" ? "lg:grid-cols-1" : "lg:grid-cols-2"} ${reverse ? "lg:[direction:rtl]" : ""}`}
+        className={`grid items-center gap-8 ${layout === "editorial" ? "sf-lg:grid-cols-1" : "sf-lg:grid-cols-2"} ${reverse ? "sf-lg:[direction:rtl]" : ""}`}
       >
-        <div className={reverse ? "lg:[direction:ltr]" : ""}>
+        <div className={reverse ? "sf-lg:[direction:ltr]" : ""}>
           {imageUrl ? (
             <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--studio-card-radius)]">
               <Image src={imageUrl} alt="" fill className="object-cover" sizes="(max-width:768px) 100vw, 480px" />
@@ -39,7 +39,7 @@ export default function StudioImageTextBlock({
             </div>
           )}
         </div>
-        <div className={reverse ? "lg:[direction:ltr]" : ""}>
+        <div className={reverse ? "sf-lg:[direction:ltr]" : ""}>
           {editable ? (
             <>
               <InlineEditableText

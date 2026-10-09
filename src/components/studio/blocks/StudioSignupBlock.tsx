@@ -53,7 +53,7 @@ export default function StudioSignupBlock({
         {state.ok ? (
           <p className="mt-6 text-sm text-[var(--ok)]">Thanks — we&apos;ll be in touch.</p>
         ) : (
-          <form action={action} className="mx-auto mt-6 flex max-w-md flex-col gap-3 sm:flex-row">
+          <form action={action} className="mx-auto mt-6 flex max-w-md flex-col gap-3 sf-sm:flex-row">
             <input type="hidden" name="standId" value={standId} />
             <label className="sr-only" htmlFor="studio-signup-email">
               Email

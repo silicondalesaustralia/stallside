@@ -11,7 +11,7 @@ export default function PuckTextBlock({
 }: TextProps) {
   const align = alignment === "centre" ? "text-center" : "text-left";
   return (
-    <section className={`mx-auto max-w-3xl px-4 py-12 sm:px-6 ${align}`}>
+    <section className={`mx-auto max-w-3xl px-4 py-12 sf-sm:px-6 ${align}`}>
       {heading ? (
         <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
           {heading}

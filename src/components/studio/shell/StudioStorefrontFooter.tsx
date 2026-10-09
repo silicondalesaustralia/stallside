@@ -83,8 +83,8 @@ export default function StudioStorefrontFooter({
 
   return (
     <footer className={footerClass}>
-      <div className="mx-auto max-w-[var(--studio-content-max)] px-4 py-12 sm:px-8 sm:py-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto max-w-[var(--studio-content-max)] px-4 py-12 sf-sm:px-8 sf-sm:py-16">
+        <div className="grid gap-10 sf-sm:grid-cols-2 sf-lg:grid-cols-4">
           <div>
             <p className="studio-footer__brand">{branding.businessName}</p>
             {branding.subheadline ? (

@@ -66,7 +66,7 @@ export default function StudioPickupBlock({
     <section className="studio-section studio-section--wash">
       <div className="studio-section__inner">
         {title}
-        <ul className={`mt-8 grid gap-4 ${viewPreset === "simple" ? "grid-cols-1 max-w-xl" : "sm:grid-cols-2"}`}>
+        <ul className={`mt-8 grid gap-4 ${viewPreset === "simple" ? "grid-cols-1 max-w-xl" : "sf-sm:grid-cols-2"}`}>
           {options.map((opt) => {
             const details =
               opt.kind === "DELIVERY" && opt.deliveryZone

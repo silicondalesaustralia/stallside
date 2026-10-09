@@ -59,7 +59,7 @@ export default function StudioReviewsBlock({
           {title}
           <blockquote className="mt-8">
             <Stars rating={r.rating} />
-            <p className="mt-4 text-xl leading-relaxed text-[var(--field)] sm:text-2xl">
+            <p className="mt-4 text-xl leading-relaxed text-[var(--field)] sf-sm:text-2xl">
               &ldquo;{r.body}&rdquo;
             </p>
             <footer className="mt-4 text-sm text-[var(--muted)]">— {r.customerName}</footer>
@@ -73,7 +73,7 @@ export default function StudioReviewsBlock({
     <section className="studio-section">
       <div className="studio-section__inner">
         {title}
-        <ul className={`mt-8 grid gap-4 ${preset === "quote" ? "grid-cols-1" : "sm:grid-cols-2"}`}>
+        <ul className={`mt-8 grid gap-4 ${preset === "quote" ? "grid-cols-1" : "sf-sm:grid-cols-2"}`}>
           {reviews.map((r) => (
             <li
               key={r.id}

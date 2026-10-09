@@ -108,8 +108,8 @@ export default function StorefrontProductGrid({
   }
 
   const cols = compact
-    ? "grid-cols-2 gap-3 sm:grid-cols-3"
-    : "grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3";
+    ? "grid-cols-2 gap-3 sf-sm:grid-cols-3"
+    : "grid-cols-1 gap-4 sf-sm:grid-cols-2 sf-lg:grid-cols-3";
 
   return (
     <div>

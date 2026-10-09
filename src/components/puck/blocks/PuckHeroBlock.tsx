@@ -38,13 +38,13 @@ export default function PuckHeroBlock({
           <div className="absolute inset-0 bg-gradient-to-b from-white/85 via-white/75 to-[var(--wash)]" />
         </div>
       ) : null}
-      <div className="relative mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
+      <div className="relative mx-auto max-w-5xl px-4 py-12 sf-sm:px-6 sf-sm:py-16">
         <div className="mx-auto max-w-2xl text-center">
-          <h1 className="font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight text-[var(--field)] sm:text-5xl">
+          <h1 className="font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight text-[var(--field)] sf-sm:text-5xl">
             {title}
           </h1>
           {subtitle ? (
-            <p className="mt-4 text-lg leading-relaxed text-[var(--muted)] sm:text-xl">
+            <p className="mt-4 text-lg leading-relaxed text-[var(--muted)] sf-sm:text-xl">
               {subtitle}
             </p>
           ) : null}

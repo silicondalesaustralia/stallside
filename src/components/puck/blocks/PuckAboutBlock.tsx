@@ -47,8 +47,8 @@ export default function PuckAboutBlock({
 
   if (layout === "card") {
     return (
-      <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-        <div className="rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-8">
+      <section className="mx-auto max-w-3xl px-4 py-12 sf-sm:px-6">
+        <div className="rounded-2xl border border-[var(--line)] bg-white p-6 sf-sm:p-8">
           {inner}
         </div>
       </section>
@@ -56,6 +56,6 @@ export default function PuckAboutBlock({
   }
 
   return (
-    <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">{inner}</section>
+    <section className="mx-auto max-w-3xl px-4 py-12 sf-sm:px-6">{inner}</section>
   );
 }

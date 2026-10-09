@@ -34,7 +34,7 @@ export default function StudioFarmStandBlock({
           fallback="Visit the stand"
           placeholder="Farm stand heading"
         />
-        <div className="mt-8 grid gap-6 lg:grid-cols-3">
+        <div className="mt-8 grid gap-6 sf-lg:grid-cols-3">
           {showLocation ? (
             <div className="studio-farm-stand__card rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-[var(--panel)] p-6 shadow-[var(--shadow-card)]">
               <p className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">Location</p>

@@ -19,7 +19,7 @@ export default function PuckUpcomingMenusBlock({
 
   if (menus.length === 0) {
     return (
-      <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+      <section className="mx-auto max-w-3xl px-4 py-12 sf-sm:px-6">
         <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
           Upcoming menus
         </h2>
@@ -29,7 +29,7 @@ export default function PuckUpcomingMenusBlock({
   }
 
   return (
-    <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <section className="mx-auto max-w-3xl px-4 py-12 sf-sm:px-6">
       <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
         Upcoming menus
       </h2>

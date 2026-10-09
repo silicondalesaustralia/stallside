@@ -542,7 +542,11 @@
   padding-block: var(--studio-section-py-mobile);
 }
 
-@media (min-width: 640px) {
+.storefront-cq {
+  container: storefront / inline-size;
+}
+
+@container storefront (min-width: 640px) {
   .studio-section {
     padding-block: var(--studio-section-py, 3.5rem);
   }
@@ -562,7 +566,7 @@
   padding-inline: 1rem;
 }
 
-@media (min-width: 640px) {
+@container storefront (min-width: 640px) {
   .studio-section__inner {
     padding-inline: 2rem;
   }
@@ -574,7 +578,7 @@
   padding: 1rem 1rem 0;
 }
 
-@media (min-width: 640px) {
+@container storefront (min-width: 640px) {
   .studio-hero-frame {
     padding: 1.5rem 2rem 0;
   }
@@ -658,9 +662,8 @@
 .studio-nav__menu-btn {
   border: 1px solid var(--line);
   border-radius: 0.5rem;
-  padding: 0.35rem 0.65rem;
-  font-size: 0.75rem;
-  font-weight: 700;
+  padding: 0;
+  color: var(--field);
 }
 
 .studio-footer--artisan-dark {
@@ -717,7 +720,7 @@
   padding-block: var(--studio-section-py-mobile, 2rem);
 }
 
-@media (min-width: 640px) {
+@container storefront (min-width: 640px) {
   .studio-commerce-page {
     padding-block: var(--studio-section-py, 3rem);
   }
@@ -730,7 +733,7 @@
   padding-block: 2rem;
 }
 
-@media (min-width: 640px) {
+@container storefront (min-width: 640px) {
   .storefront-page-content {
     padding-inline: 1.5rem;
     padding-block: 2.5rem;
@@ -753,7 +756,7 @@
   padding-block: var(--studio-section-py-mobile, 2rem);
 }
 
-@media (min-width: 640px) {
+@container storefront (min-width: 640px) {
   .studio-template-artisan .storefront-page-content,
   .studio-template-farmhouse .storefront-page-content,
   .studio-template-market .storefront-page-content {

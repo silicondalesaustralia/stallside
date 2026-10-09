@@ -44,14 +44,14 @@ export default function PuckFeaturedProductsBlock({
     layout === "list"
       ? "grid-cols-1"
       : columns === 4
-        ? "sm:grid-cols-2 lg:grid-cols-4"
+        ? "sf-sm:grid-cols-2 sf-lg:grid-cols-4"
         : columns === 3
-          ? "sm:grid-cols-2 lg:grid-cols-3"
-          : "sm:grid-cols-2";
+          ? "sf-sm:grid-cols-2 sf-lg:grid-cols-3"
+          : "sf-sm:grid-cols-2";
 
   if (products.length === 0) {
     return (
-      <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+      <section className="mx-auto max-w-5xl px-4 py-12 sf-sm:px-6">
         <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
           Products
         </h2>
@@ -71,7 +71,7 @@ export default function PuckFeaturedProductsBlock({
   }
 
   return (
-    <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+    <section className="mx-auto max-w-5xl px-4 py-12 sf-sm:px-6">
       <h2 className="mb-6 font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
         Products
       </h2>

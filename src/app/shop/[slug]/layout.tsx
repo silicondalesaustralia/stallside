@@ -11,5 +11,5 @@ export default async function ShopSlugLayout({
   const { slug } = await params;
   await applyPreferredOriginRedirect(slug);
   await applyStorefrontRedirects(slug);
-  return children;
+  return <div className="storefront-cq">{children}</div>;
 }

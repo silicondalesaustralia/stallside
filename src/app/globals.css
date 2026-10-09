@@ -1,5 +1,28 @@
 @import "tailwindcss";
 
+/* Storefront breakpoints follow the storefront's own width (container queries), so the
+   editor's phone/tablet preview lays out exactly like a real device. Needs a `.storefront-cq` ancestor. */
+@custom-variant sf-sm {
+  @container storefront (min-width: 40rem) {
+    @slot;
+  }
+}
+@custom-variant sf-md {
+  @container storefront (min-width: 48rem) {
+    @slot;
+  }
+}
+@custom-variant sf-lg {
+  @container storefront (min-width: 64rem) {
+    @slot;
+  }
+}
+@custom-variant sf-xl {
+  @container storefront (min-width: 80rem) {
+    @slot;
+  }
+}
+
 :root {
   --wash: #f2f6ef;
   --panel: #fbfdf9;
