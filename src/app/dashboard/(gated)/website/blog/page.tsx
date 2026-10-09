@@ -1,4 +1,5 @@
 import Link from "next/link";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { appBaseUrl } from "@/lib/app-url";
@@ -59,7 +60,7 @@ export default async function WebsiteBlogPage({
 
       {params.saved ? <p className="text-sm font-medium text-[var(--ok)]">Settings saved.</p> : null}
       {params.deleted ? <p className="text-sm font-medium text-[var(--ok)]">Post deleted.</p> : null}
-      {params.error ? <p className="text-sm font-medium text-[var(--gone)]">Something went wrong.</p> : null}
+      <WebsiteFormError error={params.error} fallback="Something went wrong." />
 
       <section className="rounded-2xl border border-[var(--line)] bg-white p-5">
         <h2 className="font-semibold text-[var(--field)]">Blog settings</h2>

@@ -1,4 +1,5 @@
 import BrandingForm from "@/app/dashboard/(gated)/website/branding/BrandingForm";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 
 type Props = {
   logoUrl: string | null;
@@ -7,7 +8,7 @@ type Props = {
   accentColor: string;
   secondaryColor: string;
   fontPairId?: string | null;
-  flash?: { saved?: boolean; error?: boolean };
+  flash?: { saved?: boolean; error?: string };
 };
 
 export default function WebStudioBrandingPanel({
@@ -32,13 +33,14 @@ export default function WebStudioBrandingPanel({
       </div>
 
       {flash?.saved ? (
-        <p className="text-sm font-medium text-[var(--ok)]">Branding saved.</p>
-      ) : null}
-      {flash?.error ? (
-        <p className="text-sm font-medium text-red-700">
-          Couldn&apos;t save branding. Try another image.
+        <p className="text-sm font-medium text-[var(--ok)]">
+          Branding saved to your draft. Publish your website to make it live.
         </p>
       ) : null}
+      <WebsiteFormError
+        error={flash?.error}
+        fallback="Couldn't save branding. Try another image."
+      />
 
       <BrandingForm
         key={`branding-${logoUrl ?? ""}-${faviconUrl ?? ""}-${heroImageUrl ?? ""}-${fontPairId ?? ""}`}

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import type { SerializedNodes } from "@craftjs/core";
 import type { StudioMetadata, StudioTemplateId } from "@/lib/studio/types";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 
 const StudioEditorInner = dynamic(() => import("./StudioEditorInner"), {
   ssr: false,
@@ -42,8 +43,8 @@ export default function StudioEditor({
   return (
     <div className="flex flex-col gap-3">
       {saved ? <p className="text-sm font-medium text-[var(--ok)]">Draft saved.</p> : null}
-      {published ? <p className="text-sm font-medium text-[var(--ok)]">Published.</p> : null}
-      {error ? <p className="text-sm font-medium text-[var(--gone)]">Could not save — please try again.</p> : null}
+      {published ? <p className="text-sm font-medium text-[var(--ok)]">Website published.</p> : null}
+      <WebsiteFormError error={error} fallback="Could not save — please try again." />
       <StudioEditorInner
         initialNodes={initialNodes}
         metadata={metadata}

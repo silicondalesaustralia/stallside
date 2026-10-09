@@ -1,5 +1,5 @@
 import { requireOwner } from "@/lib/session";
-import { listStorefrontPublications } from "@/lib/website/persistence/publish";
+import { listStorefrontPublications } from "@/lib/website/persistence/publications";
 import WebsitePublishHistory from "@/components/website/WebsitePublishHistory";
 import {
   ensureStorefront,
@@ -123,7 +123,7 @@ export default async function WebStudioPage({
             fontPairId={overrides?.fontPairId ?? "market-default"}
             flash={{
               saved: sp.saved === "1" && initialTab === "branding",
-              error: initialTab === "branding" && Boolean(sp.error),
+              error: initialTab === "branding" ? sp.error : undefined,
             }}
           />
         }
@@ -136,6 +136,7 @@ export default async function WebStudioPage({
             initialLooks={scaffoldLooks}
             draftTemplateId={websiteStudio?.templateId ?? null}
             publishedFlash={sp.published === "1" && initialTab === "ai"}
+            error={initialTab === "ai" ? sp.error : undefined}
             businessName={owner.businessName}
             logoUrl={logoUrl}
           />

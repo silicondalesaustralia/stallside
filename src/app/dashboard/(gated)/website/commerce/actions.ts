@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import {
   DRAFT_CONFLICT_MESSAGE,
@@ -12,7 +12,7 @@ import {
 import { tryPublishStorefront } from "@/lib/website/persistence/publish";
 import {
   conflictResult,
-  publishBlockedResult,
+  publishFailureResult,
   type EditorSaveResult,
 } from "@/lib/website/persistence/editor-result";
 import {
@@ -73,7 +73,7 @@ export async function saveCommerceLayoutDraft(
 ): Promise<EditorSaveResult> {
   const kind = commerceKindFromParam(kindParam);
   if (!kind) redirect("/dashboard/website/commerce?error=kind");
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const nodes = parseNodesJson(nodesJson, kind);
   const slug = await persistCommerceNodes(
     owner.id,
@@ -96,7 +96,7 @@ export async function publishCommerceLayoutDraft(
 ): Promise<EditorSaveResult> {
   const kind = commerceKindFromParam(kindParam);
   if (!kind) redirect("/dashboard/website/commerce?error=kind");
-  const { owner, user } = await requireOwnerWrite();
+  const { owner, user } = await requireWebsiteOwner();
   const nodes = parseNodesJson(nodesJson, kind);
   const slug = await persistCommerceNodes(
     owner.id,
@@ -108,7 +108,7 @@ export async function publishCommerceLayoutDraft(
   );
   if (!slug) return conflictResult(DRAFT_CONFLICT_MESSAGE);
   const published = await tryPublishStorefront(owner.id, user.id);
-  if (!published.ok) return publishBlockedResult(published.blockers);
+  if (!published.ok) return publishFailureResult(published);
   revalidatePath(`/dashboard/website/commerce/${kind}`);
   redirect(`/dashboard/website/commerce/${kind}?published=1`);
 }

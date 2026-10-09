@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import type { Prisma } from "@/generated/prisma/client";
 import {
   ensureStorefront,
@@ -13,7 +13,7 @@ import {
   DRAFT_CONFLICT_MESSAGE,
   writeStorefrontDraft,
 } from "@/lib/website/persistence/draft-store";
-import { tryPublishStorefront } from "@/lib/website/persistence/publish";
+import { publishErrorCode, tryPublishStorefront } from "@/lib/website/persistence/publish";
 import { mergeWebsiteStudioIntoRaw } from "@/lib/studio/storage";
 import { parseStorefrontConfig } from "@/lib/storefront/config";
 import { canUseAiWebsiteBuilder } from "@/lib/website-ai/config";
@@ -84,7 +84,7 @@ export async function scaffoldAiWebsiteDraft(
   _prev: AiGenerateState,
   formData: FormData,
 ): Promise<AiGenerateState> {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   if (!canUseAiWebsiteBuilder(owner.id)) {
     return { ok: false, error: "AI website builder is not enabled for this account." };
   }
@@ -145,7 +145,7 @@ export async function buildAiWebsiteDraft(
   _prev: AiGenerateState,
   formData: FormData,
 ): Promise<AiGenerateState> {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   if (!canUseAiWebsiteBuilder(owner.id)) {
     return { ok: false, error: "AI website builder is not enabled for this account." };
   }
@@ -292,13 +292,13 @@ export async function generateAiWebsiteDraft(
 }
 
 export async function publishAiWebsiteDraft() {
-  const { owner, user } = await requireOwnerWrite();
+  const { owner, user } = await requireWebsiteOwner();
   if (!canUseAiWebsiteBuilder(owner.id)) {
     redirect(webStudioPath("studio"));
   }
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const published = await tryPublishStorefront(owner.id, user.id);
-  if (!published.ok) redirect(webStudioPath("ai", { error: "publish_blocked" }));
+  if (!published.ok) redirect(webStudioPath("ai", { error: publishErrorCode(published) }));
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/ai");
   revalidatePath("/dashboard/website/studio");

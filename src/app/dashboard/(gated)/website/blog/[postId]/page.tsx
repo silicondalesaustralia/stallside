@@ -1,4 +1,5 @@
 import Link from "next/link";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
@@ -50,7 +51,7 @@ export default async function EditBlogPostPage({
       {sp.published ? <p className="text-sm font-medium text-[var(--ok)]">Post published.</p> : null}
       {sp.unpublished ? <p className="text-sm font-medium text-[var(--ok)]">Post unpublished.</p> : null}
       {sp.created ? <p className="text-sm font-medium text-[var(--ok)]">Post created — add your content below.</p> : null}
-      {sp.error ? <p className="text-sm font-medium text-[var(--gone)]">Could not save — check title and slug.</p> : null}
+      <WebsiteFormError error={sp.error} fallback="Could not save — check title and slug." />
 
       <section className="rounded-2xl border border-[var(--line)] bg-white p-5">
         <BlogPostForm post={post} topics={topics} action={updateBlogPost.bind(null, post.id)} />

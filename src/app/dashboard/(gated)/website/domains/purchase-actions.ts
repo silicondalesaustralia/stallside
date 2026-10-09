@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import {
   DomainPurchaseError,
@@ -16,7 +16,7 @@ function field(formData: FormData, name: string): string {
 }
 
 export async function startDomainCheckoutAction(formData: FormData) {
-  const { owner, user } = await requireOwnerWrite();
+  const { owner, user } = await requireWebsiteOwner();
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const domain = field(formData, "domain").toLowerCase();
   const tld = domainTld(domain);

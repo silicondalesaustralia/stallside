@@ -1,4 +1,5 @@
 import { requireOwner } from "@/lib/session";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { prisma } from "@/lib/prisma";
 import { ensureCustomPages } from "@/lib/studio/custom-pages";
@@ -40,9 +41,7 @@ export default async function WebsiteNavigationPage({
       {params.saved ? (
         <p className="text-sm font-medium text-[var(--ok)]">Navigation saved.</p>
       ) : null}
-      {params.error ? (
-        <p className="text-sm font-medium text-[var(--gone)]">Could not save navigation.</p>
-      ) : null}
+      <WebsiteFormError error={params.error} fallback="Could not save navigation." />
 
       <NavigationEditor initialItems={items} hasMenus={hasMenus} />
     </main>

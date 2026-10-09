@@ -4,6 +4,7 @@ import { publishAiWebsiteDraft } from "@/app/dashboard/(gated)/website/ai/action
 import type { WebsiteContextAssessment } from "@/lib/website-ai/assess-context";
 import type { BrandLookCombo } from "@/lib/website/brand-looks";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 
 type Props = {
   enabled: boolean;
@@ -13,6 +14,7 @@ type Props = {
   initialLooks?: BrandLookCombo[];
   draftTemplateId?: string | null;
   publishedFlash?: boolean;
+  error?: string;
   businessName?: string;
   logoUrl?: string | null;
 };
@@ -25,6 +27,7 @@ export default function WebStudioAiPanel({
   initialLooks = [],
   draftTemplateId,
   publishedFlash,
+  error,
   businessName,
   logoUrl,
 }: Props) {
@@ -49,7 +52,7 @@ export default function WebStudioAiPanel({
           AI builder
         </h1>
         <p className="text-sm text-[var(--muted)]">
-          You&apos;re in the classic Studio cohort for this A/B test.
+          The AI builder isn&apos;t available on your account yet.
         </p>
         <p className="text-sm text-[var(--muted)]">Use the Edit layout tab instead.</p>
       </>
@@ -72,6 +75,7 @@ export default function WebStudioAiPanel({
           Website published.
         </p>
       ) : null}
+      <WebsiteFormError error={error} fallback="Something went wrong. Please try again." />
 
       {draftTemplateId && previewPath ? (
         <div className="rounded-md border border-[var(--border)] px-4 py-3 text-sm">

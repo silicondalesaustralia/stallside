@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireOwnerWrite } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { patchLiveConfig } from "@/lib/website/persistence/live-patch";
 import {
   ensureStorefront,
   storefrontPublicPath,
@@ -19,7 +19,7 @@ import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 const REDIRECTS_PATH = "/dashboard/website/seo/redirects";
 
 export async function addStorefrontRedirect(formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const existing = extractStorefrontRedirects(storefront.draftConfig);
   const next = sanitizeRedirectInput({
@@ -50,7 +50,7 @@ export async function addStorefrontRedirect(formData: FormData) {
 }
 
 export async function deleteStorefrontRedirect(formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const id = String(formData.get("id") ?? "");
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const existing = extractStorefrontRedirects(storefront.draftConfig);
@@ -69,7 +69,7 @@ export async function deleteStorefrontRedirect(formData: FormData) {
 }
 
 export async function toggleStorefrontRedirect(formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const id = String(formData.get("id") ?? "");
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const existing = extractStorefrontRedirects(storefront.draftConfig);
@@ -89,30 +89,19 @@ export async function toggleStorefrontRedirect(formData: FormData) {
   redirect("/dashboard/website/seo/redirects?saved=1");
 }
 
+/** Makes only the redirect list live; other draft changes wait for "Publish website". */
 export async function publishStorefrontRedirects() {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const redirects = extractStorefrontRedirects(storefront.draftConfig);
-  const publishedBase =
-    storefront.publishedConfig &&
-    typeof storefront.publishedConfig === "object" &&
-    !Array.isArray(storefront.publishedConfig)
-      ? { ...(storefront.publishedConfig as Record<string, unknown>) }
-      : storefront.draftConfig &&
-          typeof storefront.draftConfig === "object" &&
-          !Array.isArray(storefront.draftConfig)
-        ? { ...(storefront.draftConfig as Record<string, unknown>) }
-        : {};
-  const published = mergeStorefrontRedirectsIntoRaw(publishedBase, redirects);
+  const applied = await patchLiveConfig(
+    owner.id,
+    (publishedConfig) =>
+      mergeStorefrontRedirectsIntoRaw(publishedConfig, redirects) as Prisma.InputJsonValue,
+  );
+  if (!applied) redirect(`${REDIRECTS_PATH}?error=not_published`);
 
-  await prisma.storefront.update({
-    where: { ownerId: owner.id },
-    data: {
-      publishedConfig: published as import("@/generated/prisma/client").Prisma.InputJsonValue,
-    },
-  });
-
-  revalidatePath("/dashboard/website/seo/redirects");
+  revalidatePath(REDIRECTS_PATH);
   revalidatePath(storefrontPublicPath(storefront.slug));
-  redirect("/dashboard/website/seo/redirects?published=1");
+  redirect(`${REDIRECTS_PATH}?published=1`);
 }

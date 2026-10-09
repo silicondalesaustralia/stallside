@@ -2,12 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireOwnerWrite } from "@/lib/session";
-import { restorePublicationAsDraft } from "@/lib/website/persistence/publish";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { restorePublicationAsDraft } from "@/lib/website/persistence/publications";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
 
 export async function restorePublicationAction(formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const publicationId = String(formData.get("publicationId") ?? "").trim();
   if (!publicationId) redirect(webStudioPath("details", { error: "restore" }));
 

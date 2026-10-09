@@ -1,6 +1,6 @@
 "use server";
 
-import { requireOwner } from "@/lib/session";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import { domainSearchEnabled } from "@/lib/domains/config";
 import { searchLaunchDomains } from "@/lib/domains/registrar/search";
 import type { DomainSearchHit } from "@/lib/domains/registrar/search";
@@ -18,7 +18,7 @@ export async function searchDomainsAction(
   prev: SearchDomainState,
   formData: FormData,
 ): Promise<SearchDomainState> {
-  await requireOwner();
+  await requireWebsiteOwner();
   const query = String(formData.get("query") ?? "").trim();
   const currency = parseDomainRetailCurrency(
     String(formData.get("currency") ?? prev.currency ?? "AUD"),

@@ -2,12 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireOwnerWrite } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
-import { ProductChannelType, type Prisma } from "@/generated/prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
-import { primaryStandIdForOwner } from "@/lib/catalogue/channels";
 import {
   entityKeyFromParam,
   extractStorefrontSeo,
@@ -35,22 +33,10 @@ function parseSettings(formData: FormData): EntitySeoSettings {
 }
 
 export async function saveEntitySeo(entityParam: string, formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const entityKey = entityKeyFromParam(entityParam);
   const settings = parseSettings(formData);
   const storefront = await ensureStorefront(owner.id, owner.businessName);
-
-  if (entityKey.startsWith("product:")) {
-    const productId = entityKey.slice("product:".length);
-    await prisma.product.updateMany({
-      where: { id: productId, ownerId: owner.id },
-      data: {
-        seoTitle: settings.seoTitle ?? null,
-        seoDescription: settings.seoDescription ?? null,
-      },
-    });
-  }
-
   const config = extractStorefrontSeo(storefront.draftConfig);
   const merged = mergeStorefrontSeoIntoRaw(
     storefront.draftConfig,
@@ -68,50 +54,4 @@ export async function saveEntitySeo(entityParam: string, formData: FormData) {
   revalidatePath(`/dashboard/website/seo/${entityParam}`);
   revalidatePath(storefrontPublicPath(storefront.slug));
   redirect(`/dashboard/website/seo/${entityParam}?saved=1`);
-}
-
-export async function loadSeoCatalog(ownerId: string, businessName: string) {
-  const storefront = await ensureStorefront(ownerId, businessName);
-  const standId = await primaryStandIdForOwner(ownerId);
-  const seo = extractStorefrontSeo(storefront.draftConfig);
-
-  const [pages, blogPosts, products, categories, menus] = await Promise.all([
-    Promise.resolve(
-      (await import("@/lib/studio/custom-pages")).ensureCustomPages(storefront.draftConfig),
-    ),
-    Promise.resolve(
-      (await import("@/lib/studio/blog")).extractBlogPosts(storefront.draftConfig),
-    ),
-    standId
-      ? prisma.product.findMany({
-          where: {
-            ownerId,
-            isArchived: false,
-            channels: {
-              some: {
-                standId,
-                channelType: ProductChannelType.ONLINE,
-                isEnabled: true,
-              },
-            },
-          },
-          orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-          select: { id: true, name: true, slug: true, seoTitle: true, seoDescription: true },
-        })
-      : Promise.resolve([]),
-    prisma.category.findMany({
-      where: { ownerId, isActive: true },
-      orderBy: { sortOrder: "asc" },
-      select: { id: true, title: true, slug: true },
-    }),
-    standId
-      ? prisma.menu.findMany({
-          where: { standId, isActive: true, showOnShop: true },
-          orderBy: { title: "asc" },
-          select: { id: true, title: true, slug: true, description: true },
-        })
-      : Promise.resolve([]),
-  ]);
-
-  return { storefront, seo, pages, blogPosts, products, categories, menus };
 }

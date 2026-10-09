@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 
-export const DRAFT_CONFLICT_MESSAGE =
-  "Your website was changed somewhere else (another tab or device). Reload to get the latest version, then try again.";
+import { DRAFT_CONFLICT_MESSAGE } from "./messages";
+
+export { DRAFT_CONFLICT_MESSAGE };
 
 export class DraftConflictError extends Error {
   constructor() {

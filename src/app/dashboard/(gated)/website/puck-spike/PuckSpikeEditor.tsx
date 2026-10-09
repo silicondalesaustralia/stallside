@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import type { Data } from "@puckeditor/core";
 import type { PuckSpikeMetadata } from "@/lib/puck/types";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 
 const PuckSpikeEditorInner = dynamic(() => import("./PuckSpikeEditorInner"), {
   ssr: false,
@@ -40,11 +41,7 @@ export default function PuckSpikeEditor({
       {published ? (
         <p className="text-sm font-medium text-[var(--ok)]">Published.</p>
       ) : null}
-      {error ? (
-        <p className="text-sm font-medium text-[var(--gone)]">
-          Could not save — please try again.
-        </p>
-      ) : null}
+      <WebsiteFormError error={error} fallback="Could not save — please try again." />
       {process.env.NODE_ENV === "development" && onResetDraft ? (
         <form action={onResetDraft}>
           <button

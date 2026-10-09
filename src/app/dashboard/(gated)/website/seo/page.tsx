@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { entityKeyToParam, entitySeoKey, readEntitySeo } from "@/lib/studio/seo-settings";
-import { loadSeoCatalog } from "./actions";
+import { loadSeoCatalog } from "./load-seo-catalog";
 
 function SeoRow({
   label,

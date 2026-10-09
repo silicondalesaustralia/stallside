@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { StandQrLinkMode } from "@/generated/prisma/client";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import { prisma } from "@/lib/prisma";
 
 const createSchema = z.object({
@@ -15,7 +15,7 @@ const createSchema = z.object({
 });
 
 export async function createQrCode(formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const parsed = createSchema.safeParse({
     name: formData.get("name"),
     standId: formData.get("standId"),
@@ -64,7 +64,7 @@ export async function createQrCode(formData: FormData) {
 }
 
 export async function updateQrCode(qrId: string, formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const qr = await prisma.qrCode.findFirst({
     where: { id: qrId, ownerId: owner.id },
     select: { id: true },
@@ -86,7 +86,7 @@ export async function updateQrCode(qrId: string, formData: FormData) {
 }
 
 export async function deleteQrCode(qrId: string) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const qr = await prisma.qrCode.findFirst({
     where: { id: qrId, ownerId: owner.id },
     select: { id: true },

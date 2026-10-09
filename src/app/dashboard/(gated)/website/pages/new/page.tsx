@@ -1,4 +1,5 @@
 import { CUSTOM_PAGE_TEMPLATES } from "@/lib/studio/custom-pages";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 import { createCustomPage } from "../actions";
 
 const SEEDED_TEMPLATES = new Set([
@@ -28,9 +29,10 @@ export default async function NewWebsitePage({
       </div>
 
       {params.error ? (
-        <p className="text-sm font-medium text-[var(--gone)]">
-          Check the page title and URL slug — slugs must be lowercase letters, numbers and hyphens.
-        </p>
+        <WebsiteFormError
+          error={params.error}
+          fallback="Check the page title and URL slug — slugs must be lowercase letters, numbers and hyphens."
+        />
       ) : null}
 
       <ul className="grid gap-4 sm:grid-cols-2">

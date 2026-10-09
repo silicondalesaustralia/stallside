@@ -1,3 +1,6 @@
+import { DRAFT_CONFLICT_MESSAGE } from "./draft-store";
+import type { PublishResult } from "./publish";
+
 /** Returned by editor save/publish actions when they don't redirect. */
 export type EditorSaveResult =
   | { ok: false; error: "conflict" | "publish_blocked"; message: string };
@@ -13,3 +16,10 @@ export const publishBlockedResult = (blockers: string[]): EditorSaveResult => ({
   error: "publish_blocked",
   message: blockers.join(" "),
 });
+
+export const publishFailureResult = (
+  result: Exclude<PublishResult, { ok: true }>,
+): EditorSaveResult =>
+  result.reason === "conflict"
+    ? conflictResult(DRAFT_CONFLICT_MESSAGE)
+    : publishBlockedResult(result.blockers);

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import type { Prisma } from "@/generated/prisma/client";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
@@ -31,7 +31,7 @@ function parsePayload(raw: string): NavigationLayoutPayload {
 }
 
 export async function saveNavigationLayout(layoutJson: string) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   await syncBuiltinCustomPages();
   const payload = parsePayload(layoutJson);
   const storefront = await ensureStorefront(owner.id, owner.businessName);

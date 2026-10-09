@@ -1,3 +1,4 @@
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 import { createBlogPost } from "../actions";
 
 export default async function NewBlogPostPage({
@@ -15,11 +16,10 @@ export default async function NewBlogPostPage({
         </h1>
       </div>
 
-      {params.error ? (
-        <p className="text-sm font-medium text-[var(--gone)]">
-          Check the title and slug — slugs must be unique and cannot be reserved words.
-        </p>
-      ) : null}
+      <WebsiteFormError
+        error={params.error}
+        fallback="Check the title and slug — slugs must be unique and cannot be reserved words."
+      />
 
       <form action={createBlogPost} className="space-y-4 rounded-2xl border border-[var(--line)] bg-white p-5">
         <label className="block text-sm">

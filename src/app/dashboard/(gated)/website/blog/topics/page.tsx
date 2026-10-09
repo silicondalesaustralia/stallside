@@ -1,4 +1,5 @@
 import { requireOwner } from "@/lib/session";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { extractBlogTopics } from "@/lib/studio/blog";
 import { createBlogTopic, deleteBlogTopic } from "../actions";
@@ -24,7 +25,7 @@ export default async function BlogTopicsPage({
 
       {params.saved ? <p className="text-sm font-medium text-[var(--ok)]">Topic added.</p> : null}
       {params.deleted ? <p className="text-sm font-medium text-[var(--ok)]">Topic removed.</p> : null}
-      {params.error ? <p className="text-sm font-medium text-[var(--gone)]">Could not save topic.</p> : null}
+      <WebsiteFormError error={params.error} fallback="Could not save topic." />
 
       <form action={createBlogTopic} className="flex flex-wrap gap-3 rounded-2xl border border-[var(--line)] bg-white p-5">
         <input

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { ensureCustomPages, type StorefrontCustomPage } from "@/lib/studio/custom-pages";
@@ -123,7 +124,7 @@ export default async function WebsitePagesListPage({
 
       {params.saved ? <p className="text-sm font-medium text-[var(--ok)]">Page saved.</p> : null}
       {params.deleted ? <p className="text-sm font-medium text-[var(--ok)]">Page deleted.</p> : null}
-      {params.error ? <p className="text-sm font-medium text-[var(--gone)]">Something went wrong.</p> : null}
+      <WebsiteFormError error={params.error} fallback="Something went wrong." />
 
       <PageGroup
         title="Content pages"

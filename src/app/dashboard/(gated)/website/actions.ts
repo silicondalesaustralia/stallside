@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import { prisma } from "@/lib/prisma";
 import {
   ensureStorefront,
@@ -24,14 +24,14 @@ import { webStudioPath } from "@/lib/website/web-studio-nav";
 import { clearHeroDecorativeFromDraftRaw } from "@/lib/studio/storage";
 import { getFontPair } from "@/lib/website/brand-looks";
 import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
-import { tryPublishStorefront } from "@/lib/website/persistence/publish";
+import { publishErrorCode, tryPublishStorefront } from "@/lib/website/persistence/publish";
 
 function removeFlag(formData: FormData, name: string): boolean {
   return formData.has(name);
 }
 
 export async function saveStorefrontDetails(formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const headline = String(formData.get("headline") ?? "").trim().slice(0, 120);
   const subheadline =
     String(formData.get("subheadline") ?? "").trim().slice(0, 240) || null;
@@ -81,7 +81,7 @@ export async function saveStorefrontDetails(formData: FormData) {
 }
 
 export async function saveStorefrontBranding(formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const removeHero = removeFlag(formData, "removeHero");
   const removeLogo = removeFlag(formData, "removeLogo");
   const removeFavicon = removeFlag(formData, "removeFavicon");
@@ -185,10 +185,10 @@ export async function saveStorefrontBranding(formData: FormData) {
 }
 
 export async function publishStorefrontAction() {
-  const { owner, user } = await requireOwnerWrite();
+  const { owner, user } = await requireWebsiteOwner();
   const sf = await ensureStorefront(owner.id, owner.businessName);
   const published = await tryPublishStorefront(owner.id, user.id);
-  if (!published.ok) redirect(webStudioPath("details", { error: "publish_blocked" }));
+  if (!published.ok) redirect(webStudioPath("details", { error: publishErrorCode(published) }));
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/details");
   revalidatePath("/dashboard/website/studio");
@@ -197,7 +197,7 @@ export async function publishStorefrontAction() {
 }
 
 export async function unpublishStorefrontAction() {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const sf = await prisma.storefront.findUniqueOrThrow({
     where: { ownerId: owner.id },
   });
@@ -210,7 +210,7 @@ export async function unpublishStorefrontAction() {
 }
 
 export async function saveStorefrontDomain(formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const customDomain =
     String(formData.get("customDomain") ?? "")
       .trim()

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { extractStorefrontRedirects } from "@/lib/studio/redirects";
@@ -45,7 +46,8 @@ export default async function WebsiteSeoRedirectsPage({
         <p className="mt-2 text-sm text-[var(--muted)]">
           Send old storefront paths to a new page after you change a slug. Paths
           are relative to your shop (e.g. <code>/products/old-name</code>).
-          Publish redirects for them to take effect on the live site.
+          &quot;Publish redirects only&quot; makes just this list live; other website edits stay
+          in your draft. Publishing your website also publishes redirects.
         </p>
       </div>
 
@@ -60,17 +62,14 @@ export default async function WebsiteSeoRedirectsPage({
           Redirects published to the live site.
         </p>
       ) : null}
-      {sp.error === "invalid" ? (
-        <p className="text-sm font-medium text-[var(--gone)]">
-          Check both paths — use storefront paths like /products/slug, or a full
-          https URL for the destination.
-        </p>
-      ) : null}
-      {sp.error === "duplicate" ? (
-        <p className="text-sm font-medium text-[var(--gone)]">
-          A redirect already exists for that from path.
-        </p>
-      ) : null}
+      <WebsiteFormError
+        error={sp.error}
+        fallback={
+          sp.error === "duplicate"
+            ? "A redirect already exists for that from path."
+            : "Check both paths — use storefront paths like /products/slug, or a full https URL for the destination."
+        }
+      />
 
       <section className="rounded-2xl border border-[var(--line)] bg-white p-5">
         <h2 className="font-semibold text-[var(--field)]">Add redirect</h2>
@@ -119,7 +118,7 @@ export default async function WebsiteSeoRedirectsPage({
               type="submit"
               className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold"
             >
-              Publish redirects
+              Publish redirects only
             </button>
           </form>
         </div>

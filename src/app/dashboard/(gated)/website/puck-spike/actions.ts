@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { Data } from "@puckeditor/core";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import { prisma } from "@/lib/prisma";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
@@ -36,7 +36,7 @@ async function persistPuckSpikeDraft(
 }
 
 export async function savePuckSpikeDraft(homeJson: string) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const home = parseHomeJson(homeJson);
   const slug = await persistPuckSpikeDraft(owner.id, owner.businessName, home);
 
@@ -55,7 +55,7 @@ export async function resetPuckSpikeDraft() {
     redirect("/dashboard/website/puck-spike");
   }
 
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   await ensureStorefront(owner.id, owner.businessName);
   const ctx = await prisma.owner.findUnique({
     where: { id: owner.id },

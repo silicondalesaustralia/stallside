@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import type { SerializedNodes } from "@craftjs/core";
 import type { CraftSpikeMetadata } from "@/lib/craft/types";
+import WebsiteFormError from "@/components/website/WebsiteFormError";
 
 const CraftEditorInner = dynamic(() => import("./CraftEditorInner"), {
   ssr: false,
@@ -41,7 +42,7 @@ export default function CraftSpikeEditor({
     <div className="flex flex-col gap-3">
       {saved ? <p className="text-sm font-medium text-[var(--ok)]">Draft saved.</p> : null}
       {published ? <p className="text-sm font-medium text-[var(--ok)]">Published.</p> : null}
-      {error ? <p className="text-sm font-medium text-[var(--gone)]">Could not save — please try again.</p> : null}
+      <WebsiteFormError error={error} fallback="Could not save — please try again." />
       <CraftEditorInner
         initialNodes={initialNodes}
         metadata={metadata}

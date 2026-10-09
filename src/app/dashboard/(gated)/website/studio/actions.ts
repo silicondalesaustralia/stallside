@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import type { Prisma } from "@/generated/prisma/client";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import {
@@ -13,7 +13,7 @@ import {
 import { tryPublishStorefront } from "@/lib/website/persistence/publish";
 import {
   conflictResult,
-  publishBlockedResult,
+  publishFailureResult,
   type EditorSaveResult,
 } from "@/lib/website/persistence/editor-result";
 import {
@@ -85,7 +85,7 @@ export async function saveWebsiteStudioDraft(
   expectedRevision: number,
   returnTo?: string,
 ): Promise<EditorSaveResult> {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const templateId = parseTemplateId(templateIdRaw);
   const nodes = parseNodesJson(nodesJson);
   const slug = await persistWebsiteStudioDraft(
@@ -109,7 +109,7 @@ export async function publishWebsiteStudioDraft(
   expectedRevision: number,
   returnTo?: string,
 ): Promise<EditorSaveResult> {
-  const { owner, user } = await requireOwnerWrite();
+  const { owner, user } = await requireWebsiteOwner();
   const templateId = parseTemplateId(templateIdRaw);
   const nodes = parseNodesJson(nodesJson);
   const slug = await persistWebsiteStudioDraft(
@@ -121,7 +121,7 @@ export async function publishWebsiteStudioDraft(
   );
   if (!slug) return conflictResult(DRAFT_CONFLICT_MESSAGE);
   const published = await tryPublishStorefront(owner.id, user.id);
-  if (!published.ok) return publishBlockedResult(published.blockers);
+  if (!published.ok) return publishFailureResult(published);
 
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/studio");
@@ -130,7 +130,7 @@ export async function publishWebsiteStudioDraft(
 }
 
 export async function applyWebsiteStudioTemplate(templateIdRaw: string) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const templateId = parseTemplateId(templateIdRaw);
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const existing = extractWebsiteStudio(storefront.draftConfig);
@@ -160,8 +160,8 @@ export async function saveStorefrontHeaderStyle(input: {
   brandMark?: string;
   expectedRevision: number;
 }): Promise<{ ok: true; revision: number } | { ok: false; error: string }> {
+  const { owner } = await requireWebsiteOwner();
   try {
-    const { owner } = await requireOwnerWrite();
     const storefront = await ensureStorefront(owner.id, owner.businessName);
     const base = parseStorefrontConfig(storefront.draftConfig);
     const patch: { headerLayout?: HeaderLayout; brandMark?: BrandMarkMode } = {};

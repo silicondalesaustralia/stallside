@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 import { mergeCraftSpikeIntoRaw } from "@/lib/craft/storage";
@@ -39,7 +39,7 @@ async function persistCraftSpikeDraft(
 }
 
 export async function saveCraftSpikeDraft(nodesJson: string) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireWebsiteOwner();
   const nodes = parseNodesJson(nodesJson);
   const slug = await persistCraftSpikeDraft(owner.id, owner.businessName, nodes);
 
