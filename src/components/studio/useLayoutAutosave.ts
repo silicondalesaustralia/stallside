@@ -127,6 +127,20 @@ export function useLayoutAutosave(input: {
     interactedRef.current = true;
   }, []);
 
+  /** Run another draft write after any in-flight autosave so both don't send the same revision. */
+  const runExclusive = useCallback(<T,>(task: () => Promise<T>): Promise<T> => {
+    const run = (inFlightRef.current ?? Promise.resolve()).then(task);
+    const tail = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    inFlightRef.current = tail;
+    void tail.finally(() => {
+      if (inFlightRef.current === tail) inFlightRef.current = null;
+    });
+    return run;
+  }, []);
+
   /** Call before a manual save/publish so it sends the latest revision. */
   const settle = useCallback(async () => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -134,5 +148,5 @@ export function useLayoutAutosave(input: {
     await inFlightRef.current;
   }, []);
 
-  return { markInteraction, settle };
+  return { markInteraction, settle, runExclusive };
 }

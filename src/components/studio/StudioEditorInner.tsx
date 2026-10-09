@@ -91,7 +91,7 @@ export default function StudioEditorInner({
   const serializedRef = useRef<string>("");
   const revisionRef = useRef(metadata.draftRevision);
   useEffect(() => {
-    revisionRef.current = metadata.draftRevision;
+    revisionRef.current = Math.max(revisionRef.current, metadata.draftRevision);
   }, [metadata.draftRevision]);
   const [changeTick, setChangeTick] = useState(0);
   const autosaveTarget = useMemo<AutosaveTargetInput>(
@@ -103,7 +103,7 @@ export default function StudioEditorInner({
           : { kind: "home", templateId },
     [commercePageKind, pageId, templateId],
   );
-  const { markInteraction, settle } = useLayoutAutosave({
+  const { markInteraction, settle, runExclusive } = useLayoutAutosave({
     target: autosaveTarget,
     serializedRef,
     revisionRef,
@@ -123,26 +123,30 @@ export default function StudioEditorInner({
   const [headerStyleStatus, setHeaderStyleStatus] = useState<
     "idle" | "saving" | "saved" | "error"
   >("idle");
+  const [headerStyleError, setHeaderStyleError] = useState<string | null>(null);
 
   const setHeaderStyle = useCallback(
     (patch: { headerLayout?: HeaderLayout; brandMark?: BrandMarkMode }) => {
       if (patch.headerLayout) setHeaderLayout(patch.headerLayout);
       if (patch.brandMark) setBrandMark(patch.brandMark);
       setHeaderStyleStatus("saving");
+      setHeaderStyleError(null);
       startTransition(async () => {
         try {
-          const result = await saveStorefrontHeaderStyle({
-            ...patch,
-            expectedRevision: revisionRef.current,
-          });
+          const result = await runExclusive(() =>
+            saveStorefrontHeaderStyle({ ...patch, expectedRevision: revisionRef.current }),
+          );
           if (result.ok) revisionRef.current = result.revision;
+          else setHeaderStyleError(result.error);
           setHeaderStyleStatus(result.ok ? "saved" : "error");
-        } catch {
+        } catch (err) {
+          console.error("[header style save]", err);
+          setHeaderStyleError("Couldn't reach the server. Try again.");
           setHeaderStyleStatus("error");
         }
       });
     },
-    [],
+    [runExclusive],
   );
 
   const runSave = useCallback(
@@ -220,6 +224,7 @@ export default function StudioEditorInner({
       brandMark,
       setHeaderStyle,
       headerStyleStatus,
+      headerStyleError,
       pageOptions,
       currentPage,
     }),
@@ -250,6 +255,7 @@ export default function StudioEditorInner({
       brandMark,
       setHeaderStyle,
       headerStyleStatus,
+      headerStyleError,
     ],
   );
 

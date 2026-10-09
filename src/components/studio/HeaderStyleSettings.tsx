@@ -16,6 +16,7 @@ export default function HeaderStyleSettings() {
     brandMark = "logo-and-name",
     setHeaderStyle,
     headerStyleStatus,
+    headerStyleError,
     setChromeTarget,
   } = useStudioEditorChrome();
   const hasLogo = Boolean(useStudioMetadata().resolvedBranding.logoUrl);
@@ -77,7 +78,7 @@ export default function HeaderStyleSettings() {
           <p className="text-xs text-[var(--muted)]">Header style saved.</p>
         ) : null}
         {headerStyleStatus === "error" ? (
-          <p className="text-xs text-red-700">Couldn’t save. Try again.</p>
+          <p className="text-xs text-red-700">{headerStyleError ?? "Couldn’t save. Try again."}</p>
         ) : null}
       </div>
     </aside>
