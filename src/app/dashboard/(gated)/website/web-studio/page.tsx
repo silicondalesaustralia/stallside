@@ -15,6 +15,7 @@ import { extractWebsiteAiScaffold } from "@/lib/website-ai/scaffold-storage";
 import { canUseAiWebsiteBuilder, aiWebsiteBuilderEnabled } from "@/lib/website-ai/config";
 import { buildWebsiteBusinessContext } from "@/lib/website-ai/business-context";
 import { assessWebsiteContext } from "@/lib/website-ai/assess-context";
+import { withSavedSelections } from "@/lib/website-ai/saved-selections";
 import type { BrandLookCombo } from "@/lib/website/brand-looks";
 import {
   parseWebStudioTab,
@@ -83,8 +84,9 @@ export default async function WebStudioPage({
   let scaffoldLooks: BrandLookCombo[] = [];
   if (aiEnabled && aiAllowed) {
     const businessContext = await buildWebsiteBusinessContext(ctx);
-    assessment = assessWebsiteContext(businessContext);
-    scaffoldLooks = extractWebsiteAiScaffold(storefront.draftConfig)?.looks ?? [];
+    const scaffold = extractWebsiteAiScaffold(storefront.draftConfig);
+    assessment = withSavedSelections(assessWebsiteContext(businessContext), scaffold?.intent);
+    scaffoldLooks = scaffold?.looks ?? [];
   }
 
   const previewPath = `${storefrontPublicPath(storefront.slug)}/studio-preview?draft=1`;
