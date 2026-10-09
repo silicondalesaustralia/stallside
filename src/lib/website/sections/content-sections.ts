@@ -26,7 +26,10 @@ export const hero: SectionDefinition = {
     imageUrl: mediaUrl.optional(),
     decorativeImageUrl: mediaUrl.optional(),
   }),
-  settings: z.object({ showCta: z.boolean().optional() }),
+  settings: z.object({
+    showCta: z.boolean().optional(),
+    width: z.enum(["full", "contained"]).optional(),
+  }),
   pageKinds: ["home", "content"],
   singleton: true,
   required: false,

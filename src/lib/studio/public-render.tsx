@@ -5,6 +5,7 @@ import { studioSectionRule } from "./section-registry";
 import { findStudioCanvasParentId } from "./page-canvas";
 import { isPublicStudioNode } from "./node-visibility";
 import StudioHeroBlock from "@/components/studio/blocks/StudioHeroBlock";
+import StudioHeroFrame from "@/components/studio/StudioHeroFrame";
 import StudioProductsBlock from "@/components/studio/blocks/StudioProductsBlock";
 import StudioNextDropBlock from "@/components/studio/blocks/StudioNextDropBlock";
 import StudioCategoriesBlock from "@/components/studio/blocks/StudioCategoriesBlock";
@@ -81,6 +82,7 @@ function StudioSectionRender({
   switch (section.type) {
     case "CraftHeroSection":
       return (
+        <StudioHeroFrame width={typeof p.width === "string" ? p.width : undefined}>
         <StudioHeroBlock
           headline={String(p.headline ?? "")}
           supportingText={String(p.supportingText ?? "")}
@@ -96,6 +98,7 @@ function StudioSectionRender({
           }
           metadata={metadata}
         />
+        </StudioHeroFrame>
       );
     case "CraftProductGridSection":
       return (

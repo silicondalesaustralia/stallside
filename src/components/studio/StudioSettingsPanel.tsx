@@ -149,6 +149,12 @@ function HeroSettings({
           <option value="background">Background</option>
         </select>
       </Field>
+      <Field label="Width">
+        <select className={INPUT} value={props.width ?? "full"} onChange={(e) => setProp("width", e.target.value)}>
+          <option value="full">Full width</option>
+          <option value="contained">Contained</option>
+        </select>
+      </Field>
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" checked={props.showCta} onChange={(e) => setProp("showCta", e.target.checked)} />
         Show shop button

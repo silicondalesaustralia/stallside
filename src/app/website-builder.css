@@ -568,6 +568,24 @@
   }
 }
 
+.studio-hero-frame {
+  margin-inline: auto;
+  max-width: var(--studio-content-max, 64rem);
+  padding: 1rem 1rem 0;
+}
+
+@media (min-width: 640px) {
+  .studio-hero-frame {
+    padding: 1.5rem 2rem 0;
+  }
+}
+
+.studio-hero-frame > .studio-hero {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--studio-card-radius, 0.75rem);
+}
+
 .studio-display,
 .studio-heading {
   font-family: var(--font-display), serif;

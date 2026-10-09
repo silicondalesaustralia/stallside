@@ -3,6 +3,7 @@
 import { useNode } from "@craftjs/core";
 import PuckHeroBlock from "@/components/puck/blocks/PuckHeroBlock";
 import StudioHeroBlock from "@/components/studio/blocks/StudioHeroBlock";
+import StudioHeroFrame, { type HeroWidth } from "@/components/studio/StudioHeroFrame";
 import CraftSectionChrome from "../CraftSectionChrome";
 import { useCraftMetadata } from "../CraftEditorContext";
 import type { StudioMetadata } from "@/lib/studio/types";
@@ -15,6 +16,7 @@ export type CraftHeroProps = {
   showCta: boolean;
   decorativeImageUrl?: string;
   imageUrl?: string;
+  width?: HeroWidth;
 };
 
 function isStudioMetadata(meta: unknown): meta is StudioMetadata {
@@ -30,6 +32,7 @@ export default function CraftHeroSection(props: CraftHeroProps) {
     <div ref={(dom) => { if (dom) connect(drag(dom)); }}>
       <CraftSectionChrome>
         {isStudioMetadata(metadata) ? (
+          <StudioHeroFrame width={props.width}>
           <StudioHeroBlock
             headline={props.headline}
             supportingText={props.supportingText}
@@ -41,6 +44,7 @@ export default function CraftHeroSection(props: CraftHeroProps) {
             isEditing
             editable
           />
+          </StudioHeroFrame>
         ) : (
           <PuckHeroBlock
             headline={props.headline}
