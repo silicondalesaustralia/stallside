@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import type { BrandLookCombo } from "@/lib/website/brand-looks";
-import { getFontPair, getPalette } from "@/lib/website/brand-looks";
-import FontPairPicker from "@/components/website/FontPairPicker";
+import { getPalette } from "@/lib/website/brand-looks";
 
 export default function AiLookPicker({
   looks,
@@ -14,14 +12,6 @@ export default function AiLookPicker({
   selectedId: string;
   onSelect: (id: string) => void;
 }) {
-  const selectedLook = looks.find((l) => l.id === selectedId) ?? looks[0];
-  const recommendedFontId = selectedLook?.fontPairId ?? "market-default";
-  const [fontPairId, setFontPairId] = useState(recommendedFontId);
-
-  useEffect(() => {
-    setFontPairId(recommendedFontId);
-  }, [recommendedFontId]);
-
   return (
     <div className="flex flex-col gap-6">
       <fieldset className="flex flex-col gap-3">
@@ -29,8 +19,7 @@ export default function AiLookPicker({
           Choose a colour palette
         </legend>
         <p className="text-xs text-[var(--muted)]">
-          Three looks matched to your brand. Each suggests fonts — you can change fonts
-          below or later in Branding.
+          Three looks matched to your brand. Your site uses the fonts you chose in Branding.
         </p>
         <div className="grid gap-3 sm:grid-cols-3">
           {looks.map((look) => {
@@ -39,7 +28,6 @@ export default function AiLookPicker({
             const secondary = look.secondaryOverride ?? palette?.secondary ?? "#999";
             const wash = palette?.wash ?? "#f5f5f5";
             const selected = selectedId === look.id;
-            const fonts = getFontPair(look.fontPairId);
             return (
               <button
                 key={look.id}
@@ -59,24 +47,12 @@ export default function AiLookPicker({
                 </div>
                 <p className="mt-3 text-sm font-semibold text-[var(--field)]">{look.label}</p>
                 <p className="mt-1 text-xs text-[var(--muted)]">{look.tagline}</p>
-                {fonts ? (
-                  <p className="mt-2 text-xs text-[var(--field)]">
-                    Fonts: <span className="font-medium">{fonts.label}</span>
-                  </p>
-                ) : null}
               </button>
             );
           })}
         </div>
         <input type="hidden" name="lookId" value={selectedId} />
       </fieldset>
-
-      <FontPairPicker
-        selectedId={fontPairId}
-        onSelect={setFontPairId}
-        recommendedId={recommendedFontId}
-        compact
-      />
     </div>
   );
 }
