@@ -1,14 +1,10 @@
 import BotanicalSprig from "@/components/lp/home-producers/BotanicalSprig";
 import LpScrollLink from "@/components/lp/LpScrollLink";
 import { HOME_PRODUCERS_TESTIMONIALS_ID } from "@/lib/home-producers-lp";
-import { testimonials } from "@/lib/testimonials";
-
-const RECOMMEND_QUOTE =
-  "We'd happily recommend Vendl.app to other small businesses and farm stands!";
+import { fletchersShortExcerpt as fletchers } from "@/lib/home-producers-stories";
 
 export default function ProducerProof() {
-  const fletchers = testimonials.find((t) => t.id === "fletchers-donnybrook");
-  if (!fletchers || !fletchers.quote.includes(RECOMMEND_QUOTE)) return null;
+  if (!fletchers) return null;
 
   return (
     <section className="bg-[var(--panel)] px-5 py-14 sm:px-8 lg:py-16">
@@ -25,12 +21,13 @@ export default function ProducerProof() {
           </p>
           <blockquote className="mt-3">
             <p className="font-[family-name:var(--font-display)] text-2xl font-bold leading-snug text-[var(--field)] sm:text-[2rem]">
-              &ldquo;{RECOMMEND_QUOTE}&rdquo;
+              &ldquo;{fletchers.quote[0]}&rdquo;
             </p>
           </blockquote>
           <figcaption className="mt-5 text-sm text-[var(--muted)]">
             <span className="block font-semibold text-[var(--ink)]">{fletchers.name}</span>
             <span className="block">{fletchers.location}</span>
+            <span className="mt-1 block text-xs">Excerpt</span>
             <span className="mt-2 block">
               Farm and home producer selling goat&apos;s milk soaps and farm products
               through Vendl.

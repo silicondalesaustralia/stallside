@@ -19,7 +19,7 @@ export default function HomeProducerHero() {
       <div className="relative z-10 mx-auto max-w-6xl px-5 pb-10 pt-4 sm:px-8 lg:pb-24 lg:pt-12">
         <div className="max-w-xl">
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--ink-on-dark)]/85 sm:text-sm">
-            For home producers, growers &amp; farm stands
+            For home bakers, growers &amp; makers
           </p>
           <h1 className="mt-3 font-[family-name:var(--font-display)] text-[2.25rem] font-bold leading-[1.06] tracking-tight text-white lg:text-[3.5rem]">
             Make <span className="text-[var(--marigold)]">more money</span> from what you

@@ -17,7 +17,7 @@ const FEATURES = [
   },
   {
     title: "Flexible payments",
-    body: "Card, Apple Pay and Google Pay, plus cash and PayID at your stall.",
+    body: "Connect Stripe or Square for card payments. Cash and PayID are also available for eligible local purchases.",
   },
   {
     title: "Inventory control",

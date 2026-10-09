@@ -8,6 +8,7 @@ import HomeProducerHero from "@/components/lp/home-producers/HomeProducerHero";
 import ProducerProof from "@/components/lp/home-producers/ProducerProof";
 import ProducerStories from "@/components/lp/home-producers/ProducerStories";
 import RevenueBenefits from "@/components/lp/home-producers/RevenueBenefits";
+import WhyVendlSection from "@/components/lp/home-producers/WhyVendlSection";
 import LpCtaClickTracker from "@/components/lp/LpCtaClickTracker";
 import LpCtaParamScript from "@/components/lp/LpCtaParamScript";
 import LpMobileStickyCta from "@/components/lp/LpMobileStickyCta";
@@ -45,6 +46,7 @@ export default function HomeProducersLpPage() {
       <ProducerProof />
       <RevenueBenefits />
       <CollectionPreview />
+      <WhyVendlSection />
       <ProducerStories />
       <FeaturesIncluded />
       <FounderStory />
