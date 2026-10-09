@@ -3,6 +3,7 @@ import { COMMERCE_PAGES } from "@/lib/studio/commerce-pages";
 import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { extractWebsiteStudio, studioPageNodes } from "@/lib/studio/storage";
+import { studioEditorPath } from "@/lib/studio/editor-target";
 
 export default async function WebsiteCommerceHubPage({
   searchParams,
@@ -44,7 +45,7 @@ export default async function WebsiteCommerceHubPage({
                   {nodes ? "Custom layout" : "Default"}
                 </span>
                 <Link
-                  href={`/dashboard/website/commerce/${page.kind}`}
+                  href={studioEditorPath(storefront.slug, { kind: "commerce", commerceKind: page.kind })}
                   className="rounded-full bg-[var(--field)] px-3 py-1.5 text-sm font-semibold text-white"
                 >
                   Edit

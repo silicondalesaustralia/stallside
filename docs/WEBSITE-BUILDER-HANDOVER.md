@@ -882,3 +882,12 @@ npx tsx scripts/website-migrate-dry-run.ts [--verbose] [--slug=my-shop]
 - **Hero width:** the hero's settings have "Full width" (default, unchanged for existing sites) or "Contained" (`width` prop, `StudioHeroFrame.tsx`), which insets the hero to the content width with rounded corners.
 - **Fixed:** "Move down" in the section toolbar did nothing (Craft's `move` index is taken before the old slot is removed).
 - **Fixed:** the editor and template-skin CSS (`vendl-studio-*`, `craft-section*`, `studio-template-*`, `storefront-page-content` and more) had never been ported to this branch. It's now in `src/app/website-builder.css`, a copy of the matching block of staging's `globals.css`, imported by `app/layout.tsx`.
+- **Fixed:** section settings (text, colours, hero width…) never changed anything. Craft's `setProp` callback must mutate the props object; its return value is ignored.
+
+### 14.7 One editor, on the storefront
+
+- All layout and page content is edited in one full-screen editor on the storefront: `/shop/[slug]/studio-preview?draft=1&edit=1&page=…` (`StudioStorefrontEditor.tsx`). `page` is `home` (default), `page:<customPageId>` or `commerce:<shop|category|product|menu>` (`lib/studio/editor-target.ts`, use `studioEditorPath`).
+- A page menu next to "Editing draft" (`StudioPageSelector.tsx`, options from `lib/studio/load-editor-page.ts`) switches between Home, every custom page and the shop/category/product/menu layouts (menu only for food businesses and both). Commerce layouts render with a sample product/category/menu.
+- Save and publish for every page type return to the editor (`returnTo` → `lib/studio/redirect-after-save.ts`). The editor works before any layout has been saved; a draft preview with no layout redirects into it.
+- The dashboard keeps only data and settings: Web Studio's Edit layout tab is a launcher card; a custom page's screen keeps title, web address, menu visibility and SEO, plus "Edit this page"; creating a page opens it in the editor; `/dashboard/website/commerce/[kind]` redirects to the editor. Products, categories and SEO stay in the dashboard.
+- Removed the embedded dashboard editors `StudioEditor`, `StudioPageEditor` and `StudioCommerceEditor`.

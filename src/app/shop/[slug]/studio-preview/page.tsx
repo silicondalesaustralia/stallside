@@ -7,13 +7,9 @@ import StudioPublicSections from "@/lib/studio/public-render";
 import StorefrontPageShell from "@/components/storefront/StorefrontPageShell";
 import StorefrontGoToCartBar from "@/components/storefront/StorefrontGoToCartBar";
 import StudioPreviewOwnerBar from "@/components/studio/StudioPreviewOwnerBar";
-import StudioPreviewEditor from "@/components/studio/StudioPreviewEditor";
-import {
-  studioPreviewEditPath,
-  studioPreviewViewPath,
-} from "@/lib/studio/return-to";
+import StudioStorefrontEditor from "@/components/studio/StudioStorefrontEditor";
+import { studioPreviewEditPath } from "@/lib/studio/return-to";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
-import { appBaseUrl } from "@/lib/app-url";
 
 export async function generateMetadata({
   params,
@@ -49,6 +45,7 @@ export default async function StudioPreviewPage({
   searchParams: Promise<{
     draft?: string;
     edit?: string;
+    page?: string;
     saved?: string;
     published?: string;
     error?: string;
@@ -59,38 +56,23 @@ export default async function StudioPreviewPage({
   const draft = sp.draft === "1";
   const edit = draft && sp.edit === "1";
   const ctx = await loadStorefrontPage(slug, draft);
-  const studioCtx = await resolveStudioPublicContext(ctx, draft);
-
-  if (!studioCtx.active) notFound();
-
-  const viewPath = studioPreviewViewPath(ctx.storefront.slug);
-  const editPath = studioPreviewEditPath(ctx.storefront.slug);
-  const showNextDrop =
-    ctx.businessMode === "FOOD_BUSINESS" || ctx.businessMode === "BOTH";
 
   if (edit) {
-    const base = appBaseUrl();
     return (
-      <StudioPreviewEditor
-        initialNodes={studioCtx.studio.nodes ?? null}
-        metadata={studioCtx.metadata}
-        templateId={studioCtx.templateId}
-        previewUrl={`${base}${editPath}`}
-        viewPreviewUrl={`${base}${viewPath}`}
-        isPublished={ctx.storefront.isPublished}
-        starter={{
-          headline: ctx.branding.headline,
-          subheadline: ctx.branding.subheadline,
-          about: ctx.branding.about,
-          showNextDrop,
-        }}
-        returnTo={editPath}
-        saved={sp.saved === "1"}
-        published={sp.published === "1"}
-        error={sp.error}
+      <StudioStorefrontEditor
+        ctx={ctx}
+        page={sp.page}
+        flash={{ saved: sp.saved === "1", published: sp.published === "1", error: sp.error }}
       />
     );
   }
+
+  const studioCtx = await resolveStudioPublicContext(ctx, draft);
+  if (!studioCtx.active) {
+    if (draft) redirect(studioPreviewEditPath(ctx.storefront.slug));
+    notFound();
+  }
+  const editPath = studioPreviewEditPath(ctx.storefront.slug);
 
   const homeNodes = studioCtx.studio.nodes;
   if (!homeNodes) {

@@ -45,6 +45,8 @@ export type CraftEditorChrome = {
     brandMark?: BrandMarkMode;
   }) => void;
   headerStyleStatus?: "idle" | "saving" | "saved" | "error";
+  pageOptions?: { value: string; label: string; href: string }[];
+  currentPage?: string;
 };
 
 const CraftEditorContext = createContext<CraftEditorChrome | null>(null);

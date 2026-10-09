@@ -25,7 +25,7 @@ import {
 import { validateStudioNodes } from "@/lib/studio/validate-state";
 import type { StudioTemplateId } from "@/lib/studio/types";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
-import { safeStudioPreviewReturnTo } from "@/lib/studio/return-to";
+import { redirectAfterSave as redirectAfterSaveTo } from "@/lib/studio/redirect-after-save";
 import { parseStorefrontConfig } from "@/lib/storefront/config";
 import {
   isBrandMarkMode,
@@ -57,15 +57,7 @@ function redirectAfterSave(
   returnTo: string | undefined,
   query: Record<string, string>,
 ): never {
-  const safe = safeStudioPreviewReturnTo(slug, returnTo);
-  if (safe) {
-    const url = new URL(safe, "https://vendl.local");
-    for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
-    url.searchParams.set("draft", "1");
-    url.searchParams.set("edit", "1");
-    redirect(`${url.pathname}?${url.searchParams.toString()}`);
-  }
-  redirect(webStudioPath("studio", query));
+  redirectAfterSaveTo(slug, returnTo, query, webStudioPath("studio"));
 }
 
 async function persistWebsiteStudioDraft(

@@ -7,7 +7,7 @@ import {
   storefrontFullUrl,
   storefrontPublicPath,
 } from "@/lib/catalogue/storefront";
-import { appBaseUrl } from "@/lib/app-url";
+import { studioEditorPath } from "@/lib/studio/editor-target";
 import { extractWebsiteStudio, defaultTemplateId } from "@/lib/studio/storage";
 import { buildStudioMetadata } from "@/lib/studio/build-metadata";
 import type { StudioTemplateId } from "@/lib/studio/types";
@@ -71,9 +71,6 @@ export default async function WebStudioPage({
     ctx.businessMode,
   );
   const metadata = await buildStudioMetadata(ctx, templateId, true);
-  const previewUrl = `${appBaseUrl()}${storefrontPublicPath(storefront.slug)}/studio-preview?draft=1`;
-  const showNextDrop =
-    ctx.businessMode === "FOOD_BUSINESS" || ctx.businessMode === "BOTH";
 
   const draft = ctx.branding;
   const { logoUrl, accentColor, secondaryColor } = draft;
@@ -157,22 +154,8 @@ export default async function WebStudioPage({
         }
         studio={
           <WebStudioLayoutPanel
-            initialNodes={websiteStudio?.nodes ?? null}
-            metadata={metadata}
-            templateId={templateId}
-            previewUrl={previewUrl}
-            isPublished={storefront.isPublished}
-            starter={{
-              headline: draft.headline,
-              subheadline: draft.subheadline,
-              about: draft.about,
-              showNextDrop,
-            }}
-            flash={{
-              saved: sp.saved === "1" && initialTab === "studio",
-              published: sp.published === "1" && initialTab === "studio",
-              error: initialTab === "studio" ? sp.error : undefined,
-            }}
+            editorHref={studioEditorPath(storefront.slug)}
+            flash={{ published: sp.published === "1" && initialTab === "studio" }}
           />
         }
       />

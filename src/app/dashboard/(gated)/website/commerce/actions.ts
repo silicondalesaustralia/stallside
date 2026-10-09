@@ -10,6 +10,7 @@ import {
   writeStorefrontDraft,
 } from "@/lib/website/persistence/draft-store";
 import { tryPublishStorefront } from "@/lib/website/persistence/publish";
+import { redirectAfterSave } from "@/lib/studio/redirect-after-save";
 import { craftPageSaveErrors } from "@/lib/website/adapter/validate-craft-page";
 import {
   conflictResult,
@@ -72,6 +73,7 @@ export async function saveCommerceLayoutDraft(
   kindParam: string,
   nodesJson: string,
   expectedRevision: number,
+  returnTo?: string,
 ): Promise<EditorSaveResult> {
   const kind = commerceKindFromParam(kindParam);
   if (!kind) redirect("/dashboard/website/commerce?error=kind");
@@ -90,13 +92,14 @@ export async function saveCommerceLayoutDraft(
   if (!slug) return conflictResult(DRAFT_CONFLICT_MESSAGE);
   revalidatePath(`/dashboard/website/commerce/${kind}`);
   revalidatePath(storefrontPublicPath(slug));
-  redirect(`/dashboard/website/commerce/${kind}?saved=1`);
+  redirectAfterSave(slug, returnTo, { saved: "1" }, `/dashboard/website/commerce/${kind}`);
 }
 
 export async function publishCommerceLayoutDraft(
   kindParam: string,
   nodesJson: string,
   expectedRevision: number,
+  returnTo?: string,
 ): Promise<EditorSaveResult> {
   const kind = commerceKindFromParam(kindParam);
   if (!kind) redirect("/dashboard/website/commerce?error=kind");
@@ -116,5 +119,6 @@ export async function publishCommerceLayoutDraft(
   const published = await tryPublishStorefront(owner.id, user.id);
   if (!published.ok) return publishFailureResult(published);
   revalidatePath(`/dashboard/website/commerce/${kind}`);
-  redirect(`/dashboard/website/commerce/${kind}?published=1`);
+  revalidatePath(storefrontPublicPath(slug));
+  redirectAfterSave(slug, returnTo, { published: "1" }, `/dashboard/website/commerce/${kind}`);
 }

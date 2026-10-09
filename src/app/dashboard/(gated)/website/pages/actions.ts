@@ -19,6 +19,8 @@ import {
 } from "@/lib/website/persistence/draft-store";
 import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 import { tryPublishStorefront } from "@/lib/website/persistence/publish";
+import { redirectAfterSave } from "@/lib/studio/redirect-after-save";
+import { studioEditorPath } from "@/lib/studio/editor-target";
 import { craftPageSaveErrors } from "@/lib/website/adapter/validate-craft-page";
 import {
   conflictResult,
@@ -118,7 +120,7 @@ export async function createCustomPage(formData: FormData) {
   });
 
   revalidatePath("/dashboard/website/pages");
-  redirect(`/dashboard/website/pages/${page.id}?created=1`);
+  redirect(studioEditorPath(storefront.slug, { kind: "page", pageId: page.id }));
 }
 
 export async function updateCustomPageMeta(pageId: string, formData: FormData) {
@@ -220,6 +222,7 @@ export async function saveCustomPageDraft(
   pageId: string,
   nodesJson: string,
   expectedRevision: number,
+  returnTo?: string,
 ): Promise<EditorSaveResult> {
   const { owner } = await requireWebsiteOwner();
   const nodes = parseNodesJson(nodesJson);
@@ -237,13 +240,14 @@ export async function saveCustomPageDraft(
 
   revalidatePath(`/dashboard/website/pages/${pageId}`);
   revalidatePath(`${storefrontPublicPath(slug)}`);
-  redirect(`/dashboard/website/pages/${pageId}?saved=1`);
+  redirectAfterSave(slug, returnTo, { saved: "1" }, `/dashboard/website/pages/${pageId}`);
 }
 
 export async function publishCustomPageDraft(
   pageId: string,
   nodesJson: string,
   expectedRevision: number,
+  returnTo?: string,
 ): Promise<EditorSaveResult> {
   const { owner, user } = await requireWebsiteOwner();
   const nodes = parseNodesJson(nodesJson);
@@ -262,7 +266,8 @@ export async function publishCustomPageDraft(
   if (!published.ok) return publishFailureResult(published);
 
   revalidatePath(`/dashboard/website/pages/${pageId}`);
-  redirect(`/dashboard/website/pages/${pageId}?published=1`);
+  revalidatePath(storefrontPublicPath(slug));
+  redirectAfterSave(slug, returnTo, { published: "1" }, `/dashboard/website/pages/${pageId}`);
 }
 
 export async function reorderCustomPages(formData: FormData) {

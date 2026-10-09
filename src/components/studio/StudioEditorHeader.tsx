@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEditor } from "@craftjs/core";
 import { STUDIO_TEMPLATES } from "@/lib/studio/templates";
 import { useStudioEditorChrome } from "./StudioEditorContext";
+import StudioPageSelector from "./StudioPageSelector";
 
 const VIEWPORTS = [
   { label: "Desktop", width: 1280 },
@@ -40,9 +41,12 @@ export default function StudioEditorHeader() {
     <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] bg-white px-4 py-2.5">
       <div className="flex flex-wrap items-center gap-2">
         {onStorefront ? (
-          <span className="rounded-full bg-[var(--field)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
-            Editing draft
-          </span>
+          <>
+            <span className="rounded-full bg-[var(--field)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+              Editing draft
+            </span>
+            <StudioPageSelector />
+          </>
         ) : (
           <span className="text-sm font-semibold text-[var(--field)]">Home</span>
         )}
@@ -88,7 +92,7 @@ export default function StudioEditorHeader() {
         {onStorefront ? (
           <>
             <Link
-              href="/dashboard/website/web-studio?tab=studio"
+              href="/dashboard/website/web-studio?tab=details"
               className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-semibold"
             >
               Web Studio

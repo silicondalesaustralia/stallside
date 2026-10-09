@@ -52,6 +52,8 @@ export default function StudioEditorInner({
   commercePageKind,
   returnTo,
   surface = "dashboard",
+  pageOptions,
+  currentPage,
 }: {
   initialNodes: SerializedNodes | null;
   metadata: StudioMetadata;
@@ -71,6 +73,8 @@ export default function StudioEditorInner({
   commercePageKind?: CommercePageKind;
   returnTo?: string;
   surface?: "dashboard" | "storefront-preview";
+  pageOptions?: { value: string; label: string; href: string }[];
+  currentPage?: string;
 }) {
   const editorMetadata = useMemo(
     () => ({ ...metadata, templateId }),
@@ -156,9 +160,10 @@ export default function StudioEditorInner({
                 commercePageKind,
                 nodes,
                 revision,
+                returnTo,
               )
             : pageId
-              ? await (publish ? publishCustomPageDraft : saveCustomPageDraft)(pageId, nodes, revision)
+              ? await (publish ? publishCustomPageDraft : saveCustomPageDraft)(pageId, nodes, revision, returnTo)
               : await (publish ? publishWebsiteStudioDraft : saveWebsiteStudioDraft)(
                   nodes,
                   templateId,
@@ -215,8 +220,12 @@ export default function StudioEditorInner({
       brandMark,
       setHeaderStyle,
       headerStyleStatus,
+      pageOptions,
+      currentPage,
     }),
     [
+      pageOptions,
+      currentPage,
       editorMetadata,
       metadata.businessMode,
       viewportWidth,

@@ -1,16 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
-import { ensureStorefront, loadStorefrontContext } from "@/lib/catalogue/storefront";
+import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { appBaseUrl } from "@/lib/app-url";
-import { buildStudioMetadata } from "@/lib/studio/build-metadata";
-import { extractWebsiteStudio, studioPageNodes, defaultTemplateId } from "@/lib/studio/storage";
+import { studioEditorPath } from "@/lib/studio/editor-target";
 import {
   ensureCustomPages,
   findCustomPageById,
 } from "@/lib/studio/custom-pages";
 import { customPagePublicPath } from "@/lib/studio/custom-page-paths";
-import StudioPageEditor from "@/components/studio/StudioPageEditor";
 import { updateCustomPageMeta, deleteCustomPage } from "../actions";
 import { DRAFT_CONFLICT_MESSAGE } from "@/lib/website/persistence/draft-store";
 
@@ -29,16 +27,6 @@ export default async function EditWebsitePage({
   const page = findCustomPageById(pages, pageId);
   if (!page) notFound();
 
-  const ctx = await loadStorefrontContext(storefront.slug, {
-    draft: true,
-    ownerId: owner.id,
-  });
-  if (!ctx) notFound();
-
-  const websiteStudio = extractWebsiteStudio(storefront.draftConfig);
-  const templateId = defaultTemplateId(websiteStudio ?? null, ctx.businessMode);
-  const metadata = await buildStudioMetadata(ctx, templateId, true);
-  const initialNodes = websiteStudio ? studioPageNodes(websiteStudio, page.id) ?? null : null;
   const previewUrl = `${appBaseUrl()}${customPagePublicPath(storefront.slug, page, true)}`;
 
   return (
@@ -51,7 +39,7 @@ export default async function EditWebsitePage({
 
       {sp.saved ? <p className="text-sm font-medium text-[var(--ok)]">Draft saved.</p> : null}
       {sp.published ? <p className="text-sm font-medium text-[var(--ok)]">Published.</p> : null}
-      {sp.created ? <p className="text-sm font-medium text-[var(--ok)]">Page created — add sections below.</p> : null}
+      {sp.created ? <p className="text-sm font-medium text-[var(--ok)]">Page created. Use Edit this page to add sections.</p> : null}
       {sp.error ? (
         <p className="text-sm font-medium text-[var(--gone)]">
           {sp.error === "conflict" ? DRAFT_CONFLICT_MESSAGE : "Could not save page settings."}
@@ -102,21 +90,23 @@ export default async function EditWebsitePage({
         ) : null}
       </section>
 
-      <StudioPageEditor
-        pageId={page.id}
-        pageTitle={page.title}
-        pageTemplate={page.template}
-        initialNodes={initialNodes}
-        metadata={metadata}
-        templateId={templateId}
-        previewUrl={previewUrl}
-        isPublished={storefront.isPublished}
-        starter={{
-          headline: ctx.branding.headline,
-          subheadline: ctx.branding.subheadline,
-          about: ctx.branding.about,
-        }}
-      />
+      <section className="rounded-2xl border border-[var(--line)] bg-white p-5">
+        <h2 className="font-semibold text-[var(--field)]">Content and layout</h2>
+        <p className="mt-1 text-sm text-[var(--muted)]">
+          Edit this page&apos;s sections and text right on your site.
+        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <Link
+            href={studioEditorPath(storefront.slug, { kind: "page", pageId: page.id })}
+            className="rounded-full bg-[var(--field)] px-5 py-2.5 text-sm font-semibold text-white"
+          >
+            Edit this page
+          </Link>
+          <a href={previewUrl} target="_blank" rel="noreferrer" className="text-sm font-semibold underline">
+            Preview
+          </a>
+        </div>
+      </section>
     </main>
   );
 }

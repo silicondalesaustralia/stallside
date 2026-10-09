@@ -3,6 +3,18 @@
 import dynamic from "next/dynamic";
 import type { SerializedNodes } from "@craftjs/core";
 import type { StudioMetadata, StudioTemplateId } from "@/lib/studio/types";
+import type { CommercePageKind } from "@/lib/studio/commerce-pages";
+import type { CustomPageTemplateId } from "@/lib/studio/custom-pages";
+import type { EditorPageOption } from "@/lib/studio/load-editor-page";
+
+type EditorPageProps = {
+  pageId?: string;
+  pageTitle?: string;
+  pageTemplate?: CustomPageTemplateId;
+  commercePageKind?: CommercePageKind;
+  pageOptions?: EditorPageOption[];
+  currentPage?: string;
+};
 
 const StudioEditorInner = dynamic(() => import("./StudioEditorInner"), {
   ssr: false,
@@ -26,6 +38,7 @@ export default function StudioPreviewEditor({
   saved,
   published,
   error,
+  ...page
 }: {
   initialNodes: SerializedNodes | null;
   metadata: StudioMetadata;
@@ -43,7 +56,7 @@ export default function StudioPreviewEditor({
   saved?: boolean;
   published?: boolean;
   error?: string;
-}) {
+} & EditorPageProps) {
   return (
     <div className="min-h-screen bg-[#f5f5f4]">
       {saved ? (
@@ -71,6 +84,7 @@ export default function StudioPreviewEditor({
         starter={starter}
         returnTo={returnTo}
         surface="storefront-preview"
+        {...page}
       />
     </div>
   );
