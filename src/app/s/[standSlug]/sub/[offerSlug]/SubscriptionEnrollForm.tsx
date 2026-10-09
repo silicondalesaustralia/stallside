@@ -55,7 +55,7 @@ export default function SubscriptionEnrollForm({
         deliveryNotes: String(formData.get("deliveryNotes") ?? ""),
       });
       if ("error" in result) {
-        setMessage(result.error);
+        setMessage(result.error ?? "Could not start checkout. Try again.");
         return;
       }
       if ("square" in result) {

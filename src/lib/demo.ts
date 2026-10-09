@@ -6,6 +6,17 @@ import { preOrderPagePath } from "@/lib/preorder-page";
 export const DEFAULT_DEMO_PREORDER_STAND_SLUG = "green-valley-baked-goods";
 export const DEFAULT_DEMO_PREORDER_PAGE_SLUG = "pre-order-bread-27-may-2027";
 
+export {
+  websiteDemoStandSlug,
+  websiteDemoStorefrontSlug,
+  isWebsiteDemoStandSlug,
+  isWebsiteDemoStorefrontSlug,
+  isGreenValleyDemoTemplate,
+  demoTemplatePath,
+  GREEN_VALLEY_DEMO_COOKIE,
+  GREEN_VALLEY_DEMO_TEMPLATES,
+} from "@/lib/demo/green-valley/constants";
+
 export type DemoProduct = "stall" | "preorder";
 
 export const DEMO_PRODUCTS: {

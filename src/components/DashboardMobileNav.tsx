@@ -9,6 +9,7 @@ import {
   dashLinkActive,
   mobileTabs,
   secondaryLinks,
+  websiteLink,
 } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
@@ -82,7 +83,7 @@ export default function DashboardMobileNav({
               needsBusiness={setupAlerts.needsBusiness}
             />
             <nav className="mt-3 flex flex-col gap-1 border-t border-white/10 pt-3">
-              {secondaryLinks.map((link) => {
+              {[websiteLink, ...secondaryLinks].map((link) => {
                 const badge = setupNavBadge(
                   link.href,
                   setupAlerts,

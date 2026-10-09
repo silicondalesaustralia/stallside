@@ -6,9 +6,16 @@ import {
 } from "@/lib/payment-brand-assets";
 import { isDemoCardReady } from "@/lib/stripe-demo";
 import { localTransferForCurrency } from "@/lib/local-transfer";
-import { isSquarePaymentsEnabled } from "@/lib/square/config";
+import {
+  isSquareConnectEnabled,
+  isSquarePaymentsEnabled,
+} from "@/lib/square/config";
+import { getSquareConnection } from "@/lib/square/connection";
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
-import { squareCurrencyForBilling } from "@/lib/commerce/payment-rail";
+import {
+  squareCurrencyForBilling,
+  squareEligibleBillingCurrency,
+} from "@/lib/commerce/payment-rail";
 
 type StandPaymentFlags = {
   slug?: string;
@@ -34,6 +41,25 @@ export type OwnerPaymentReady = {
   squarePaymentsReady?: boolean;
   user?: { email?: string | null; role?: string | null } | null;
 };
+
+/** Resolve Square connection readiness for brand / checkout gates. */
+export async function withSquarePaymentsReady<T extends OwnerPaymentReady>(
+  owner: T & { id: string },
+): Promise<T & { squarePaymentsReady: boolean }> {
+  if (
+    !isSquareConnectEnabled() ||
+    !squareEligibleBillingCurrency(owner.billingCurrency)
+  ) {
+    return { ...owner, squarePaymentsReady: false };
+  }
+  const conn = await getSquareConnection(owner.id);
+  const squarePaymentsReady = Boolean(
+    conn?.status === "ACTIVE" &&
+      conn.paymentsEnabled &&
+      conn.primaryLocationId,
+  );
+  return { ...owner, squarePaymentsReady };
+}
 
 /** Brands to show on QR signs / checkout based on what’s actually offerable. */
 export function standPaymentBrands(

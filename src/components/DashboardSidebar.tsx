@@ -6,6 +6,7 @@ import BrandLockup from "@/components/BrandLockup";
 import BrandMark from "@/components/BrandMark";
 import DashNavIcon from "@/components/DashNavIcon";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
+import SidebarWebsiteMenu from "@/components/SidebarWebsiteMenu";
 import {
   dashLinkActive,
   primaryLinks,
@@ -114,6 +115,7 @@ export default function DashboardSidebar({
             badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
           />
         ))}
+        <SidebarWebsiteMenu collapsed={collapsed} />
         <div className="my-2 border-t border-white/10" />
         {secondaryLinks.map((link) => (
           <NavItem
