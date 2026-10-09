@@ -77,10 +77,9 @@ export default function StudioSettingsPanel() {
   }
 
   function setProp(key: string, value: unknown) {
-    actions.setProp(selected!.id, (props: Record<string, unknown>) => ({
-      ...props,
-      [key]: value,
-    }));
+    actions.setProp(selected!.id, (props: Record<string, unknown>) => {
+      props[key] = value;
+    });
   }
 
   return (

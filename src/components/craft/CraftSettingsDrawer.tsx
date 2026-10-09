@@ -31,10 +31,9 @@ export default function CraftSettingsDrawer() {
   if (!selected) return null;
 
   function setProp(key: string, value: unknown) {
-    actions.setProp(selected!.id, (props: Record<string, unknown>) => ({
-      ...props,
-      [key]: value,
-    }));
+    actions.setProp(selected!.id, (props: Record<string, unknown>) => {
+      props[key] = value;
+    });
   }
 
   function close() {
