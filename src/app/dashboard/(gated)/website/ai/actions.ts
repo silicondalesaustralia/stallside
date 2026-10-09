@@ -242,6 +242,10 @@ export async function buildAiWebsiteDraft(
         ...baseConfig.themeOverrides,
         ...generated.themeOverrides,
         ...(accent && secondary ? { accentColor: accent, secondaryColor: secondary } : {}),
+        // Fonts chosen in Branding beat the starting style's font pair.
+        ...(baseConfig.themeOverrides?.fontPairId
+          ? { fontPairId: baseConfig.themeOverrides.fontPairId }
+          : {}),
       },
       identity: {
         ...baseConfig.identity,

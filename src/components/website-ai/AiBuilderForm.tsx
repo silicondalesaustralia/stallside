@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { startTransition, useActionState, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   scaffoldAiWebsiteDraft,
@@ -234,6 +234,14 @@ export default function AiBuilderForm({
     });
   }
 
+  // Submitting via `action` makes React reset the form afterwards, which unticks the
+  // controlled checkboxes and clears the notes. Dispatching manually keeps them.
+  function submitScaffold(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    startTransition(() => scaffoldAction(formData));
+  }
+
   function onToggleCapability(id: string) {
     const locked = assessment.capabilityOptions.find((c) => c.id === id)?.disabled;
     setCapabilities((prev) => {
@@ -269,7 +277,7 @@ export default function AiBuilderForm({
         style.
       </p>
 
-      <form action={scaffoldAction} encType="multipart/form-data" className="flex flex-col gap-5">
+      <form onSubmit={submitScaffold} encType="multipart/form-data" className="flex flex-col gap-5">
         {assessment.siteShapeMode !== "skipped" ? (
           <div className="rounded-md border border-[var(--border)] px-4 py-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
