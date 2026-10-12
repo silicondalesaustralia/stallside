@@ -1,12 +1,7 @@
 import { Role, SubscriptionStatus } from "@/generated/prisma/client";
 import { COMPLIMENTARY_ACCESS_EMAILS } from "@/lib/constants";
 import { stallsideFeeCents, stallsidePassOnChargeCents } from "@/lib/money";
-import {
-  isV2026Owner,
-  proOverageFeeCents,
-  stripeFixedFeeCents,
-  type FeeRail,
-} from "@/lib/fee-v2026";
+import type { FeeRail } from "@/lib/fee-v2026";
 
 export type { FeeRail } from "@/lib/fee-v2026";
 
@@ -91,24 +86,10 @@ export function ownerPassesFeeToCustomer(
   return Boolean(owner.passFeeToCustomer) && feePassOnAllowed(owner, currency);
 }
 
-/** Fixed per-transaction Vendl fee: V2026 Free plan on Stripe only. */
-export function vendlFixedFeeCents(
-  owner: FeeOwner,
-  rail: FeeRail,
-  currency: string,
-  access?: FeeAccess,
-): number {
-  if (rail !== "stripe" || !isV2026Owner(owner)) return 0;
-  if (!shouldChargeVendlFee(owner, access)) return 0;
-  return stripeFixedFeeCents(currency);
-}
-
 export type CheckoutFeeOpts = {
   rail: FeeRail;
   currency: string;
   access?: FeeAccess;
-  /** Month-to-date Stripe sales; enables the V2026 Pro overage fee. */
-  monthStripeVolumeCents?: number;
 };
 
 /** Shared checkout fee math for server + cart preview. */
@@ -123,19 +104,11 @@ export function computeVendlCheckoutFees(
   }
 
   if (!shouldChargeVendlFee(owner, opts.access)) {
-    const overage =
-      opts.rail === "stripe" &&
-      isV2026Owner(owner) &&
-      !isComplimentaryFeeWaiver(owner, opts.access) &&
-      opts.monthStripeVolumeCents != null
-        ? proOverageFeeCents(base, opts.monthStripeVolumeCents)
-        : 0;
-    return { applicationFeeCents: overage, chargeTotalCents: base, passedOn: false };
+    return { applicationFeeCents: 0, chargeTotalCents: base, passedOn: false };
   }
 
-  const fixed = vendlFixedFeeCents(owner, opts.rail, opts.currency, opts.access);
   if (ownerPassesFeeToCustomer(owner, opts.currency)) {
-    const chargeTotalCents = stallsidePassOnChargeCents(base, fixed);
+    const chargeTotalCents = stallsidePassOnChargeCents(base);
     return {
       applicationFeeCents: chargeTotalCents - base,
       chargeTotalCents,
@@ -143,7 +116,7 @@ export function computeVendlCheckoutFees(
     };
   }
   return {
-    applicationFeeCents: Math.min(base, stallsideFeeCents(base) + fixed),
+    applicationFeeCents: stallsideFeeCents(base),
     chargeTotalCents: base,
     passedOn: false,
   };

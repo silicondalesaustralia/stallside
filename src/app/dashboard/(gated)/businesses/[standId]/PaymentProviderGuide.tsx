@@ -1,4 +1,8 @@
-export default function PaymentProviderGuide({ v2026 }: { v2026: boolean }) {
+export default function PaymentProviderGuide({
+  weeklyPayouts,
+}: {
+  weeklyPayouts: boolean;
+}) {
   return (
     <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
       <h2 className="text-lg font-semibold">
@@ -12,22 +16,18 @@ export default function PaymentProviderGuide({ v2026 }: { v2026: boolean }) {
         </li>
         <li>
           <strong>Stripe</strong> works outside Australia and offers pay-later.
-          It costs more per sale: the Free plan Vendl fee is 2.5%
-          {v2026 ? " + 30c" : ""}, on top of Stripe&apos;s own processing fee.
+          The Free plan Vendl fee is 2.5%, on top of Stripe&apos;s own
+          processing fee.{weeklyPayouts ? " Stripe payouts are weekly (Mondays)." : ""}
         </li>
         <li>
-          <strong>Square</strong> is usually cheaper: the Free plan Vendl fee is
-          2.5% with no fixed per-sale charge, which matters on small orders. It
-          also syncs stock both ways with Square POS, so it suits market and
-          in-person sellers. Sales on your own Square reader never incur a Vendl
-          fee.
+          <strong>Square</strong> has the same 2.5% Free plan Vendl fee, and
+          Square pays out on its own schedule. It also syncs stock both ways
+          with Square POS, so it suits market and in-person sellers. Sales on
+          your own Square reader never incur a Vendl fee.
         </li>
         <li>
-          <strong>Vendl Pro removes the Vendl fee</strong> on Square
-          {v2026
-            ? ", and on your first A$4,000 of Stripe sales each month (0.5% after that)"
-            : " and Stripe"}
-          . Stripe and Square still charge their own processing fees.
+          <strong>Vendl Pro removes the Vendl fee</strong> on Square and Stripe.
+          Stripe and Square still charge their own processing fees.
         </li>
         <li>
           <strong>Already have a Stripe or Square account?</strong>{" "}

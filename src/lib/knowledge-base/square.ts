@@ -16,7 +16,6 @@ export const squareArticles: KnowledgeArticle[] = [
     steps: [
       "Square is available to Australian accounts selling in AUD. Open Payments in the sidebar, tap Square, then Connect Square.",
       "Sign in to Square (or create an account) and approve Vendl. You come back to Vendl's Square page showing Connected and your business name.",
-      "If your account was created before 2 Oct 2026, you'll be asked to confirm the move to current pricing before connecting.",
       "Under Location, pick the Square location to use and link it to your Vendl business. Stock syncs against this location.",
       "Under Use Square for, turn on what you want: Payments, Inventory sync, and Product / catalogue sync. Each shows a confirmation when saved.",
       "Back on the Payments page, under Product checkout provider, choose Square. Pre-order pages and deposits then take payment through Square too. Subscriptions and memberships can run on Square too (see Subscriptions and memberships on Square).",

@@ -5,13 +5,13 @@ import { updatePassFeeToCustomer } from "./pass-fee-actions";
 
 type PassFeeToggleProps = {
   passFeeToCustomer: boolean;
-  v2026?: boolean;
+  weeklyPayouts?: boolean;
   allowPassOn?: boolean;
 };
 
 export default function PassFeeToggle({
   passFeeToCustomer,
-  v2026 = false,
+  weeklyPayouts = false,
   allowPassOn = true,
 }: PassFeeToggleProps) {
   const [pending, startTransition] = useTransition();
@@ -39,8 +39,9 @@ export default function PassFeeToggle({
   return (
     <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
       <p className="font-semibold">
-        Vendl fee (Free plan): 2.5%{v2026 ? " + 30c" : ""} on card, Tap &amp;
-        Go, and pay-later. Standard Stripe processing fees apply separately.
+        Vendl fee (Free plan): 2.5% on card, Tap &amp; Go, and pay-later.
+        Standard Stripe processing fees apply separately.
+        {weeklyPayouts ? " Payouts are weekly (Mondays)." : ""}
       </p>
       {allowPassOn ? (
       <>

@@ -13,7 +13,6 @@ import {
 import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
-  vendlFixedFeeCents,
 } from "@/lib/stallside-fee";
 import StandStoreHeader from "../StandStoreHeader";
 import CustomerChoiceCheckout from "../CustomerChoiceCheckout";
@@ -119,7 +118,6 @@ export default async function CustomerChoicePayPage({
         localTransfer={localTransfer}
         passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner, stand.currency)}
         stallsideFeeApplies={shouldChargeVendlFee(stand.owner)}
-        stripeFixedFeeCents={vendlFixedFeeCents(stand.owner, "stripe", stand.currency)}
         showDemoCardHint={isDemo}
       />
     </main>

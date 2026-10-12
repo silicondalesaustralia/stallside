@@ -9,7 +9,6 @@ import { depositOutstandingCapCents } from "@/lib/deposit-liability";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
-import { proVolumeForFees } from "@/lib/pro-volume-fee";
 export { balanceAuthUrl } from "@/lib/order-access-token";
 export { splitDepositBalance } from "@/lib/deposit-split";
 
@@ -110,7 +109,6 @@ export async function chargeOrderBalance(orderId: string, squareSourceId?: strin
   const { applicationFeeCents } = computeVendlCheckoutFees(balanceCents, owner, {
     rail: "stripe",
     currency: order.currency,
-    monthStripeVolumeCents: await proVolumeForFees(order.ownerId, owner),
   });
 
   try {

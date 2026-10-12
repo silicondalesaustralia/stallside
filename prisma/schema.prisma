@@ -99,7 +99,7 @@ enum OnlinePaymentProvider {
   SQUARE
 }
 
-/** LEGACY = grandfathered fees; V2026 = current pricing. One-way move. */
+/** LEGACY = grandfathered daily Stripe payouts; V2026 = weekly payouts. Fees are identical. */
 enum PricingModel {
   LEGACY
   V2026

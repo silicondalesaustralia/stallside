@@ -21,9 +21,6 @@ import BillingPlanForms from "./BillingPlanForms";
 import BillingStatusCard from "./BillingStatusCard";
 import BillingRegionForm from "./BillingRegionForm";
 import BillingPricingNotes from "./BillingPricingNotes";
-import { isV2026Owner } from "@/lib/fee-v2026";
-import { pricingMoveNotice } from "@/lib/pricing-move-gate";
-
 export default async function BillingSettingsPage({
   searchParams,
 }: {
@@ -79,11 +76,7 @@ export default async function BillingSettingsPage({
       </p>
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Vendl billing</h1>
-        <BillingPricingNotes
-          v2026={isV2026Owner(owner)}
-          isPaidPro={isPaidPro}
-          confirmError={params.error === "confirm_required"}
-        />
+        <BillingPricingNotes />
       </div>
 
       <BillingNotices
@@ -130,7 +123,6 @@ export default async function BillingSettingsPage({
           proPrices={listConfiguredProPlanPrices()}
           showPro
           proConfigured={proConfigured}
-          pricingNotice={pricingMoveNotice(owner)}
         />
       ) : null}
 

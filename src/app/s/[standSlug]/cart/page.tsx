@@ -19,7 +19,6 @@ import {
 import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
-  vendlFixedFeeCents,
 } from "@/lib/stallside-fee";
 import StandCartCheckout from "../StandCartCheckout";
 import StandStoreHeader from "../StandStoreHeader";
@@ -239,7 +238,6 @@ export default async function StandCartPage({
         restockStandId={restockStandId}
         passFeeToCustomer={ownerPassesFeeToCustomer(stand.owner, stand.currency)}
         stallsideFeeApplies={shouldChargeVendlFee(stand.owner)}
-        stripeFixedFeeCents={vendlFixedFeeCents(stand.owner, "stripe", stand.currency)}
         upsell={upsell}
         preOrderUpsell={preOrderUpsell}
         pagePreOrderUpsells={pagePreOrderUpsells}

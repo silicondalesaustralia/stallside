@@ -21,7 +21,6 @@ import { resolveDemoCardStripe } from "@/lib/stripe-demo";
 import { checkoutCancelledUrl } from "@/lib/order-access-token";
 import { stripeLineItemsFromCart } from "@/lib/stripe-cart-lines";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
-import { proVolumeForFees } from "@/lib/pro-volume-fee";
 import { standCheckoutPaymentMethodTypes } from "@/lib/stripe-checkout-methods";
 import { getDefaultPaymentMethodConfiguration } from "@/lib/stripe-payment-method-config";
 import {
@@ -152,7 +151,6 @@ export async function startCardCheckout(input: {
       computeVendlCheckoutFees(chargeGoodsCents, owner, {
         rail: "stripe",
         currency: stand.currency,
-        monthStripeVolumeCents: await proVolumeForFees(stand.ownerId, owner),
       });
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;

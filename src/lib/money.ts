@@ -27,25 +27,16 @@ export function stallsideFeeCents(amountCents: number): number {
 
 /**
  * Exact gross-up when passing the Vendl fee to the customer:
- * charge = round((subtotal + fixed) / (1 - 0.025)).
+ * charge = round(subtotal / (1 - 0.025)).
  */
-export function stallsidePassOnChargeCents(
-  subtotalCents: number,
-  fixedFeeCents = 0,
-): number {
+export function stallsidePassOnChargeCents(subtotalCents: number): number {
   if (subtotalCents <= 0) return 0;
   const keepRate = 1 - STALLSIDE_FEE_BPS / 10_000;
-  return Math.round((subtotalCents + Math.max(0, fixedFeeCents)) / keepRate);
+  return Math.round(subtotalCents / keepRate);
 }
 
 /** Pass-on fee line = charged total − order subtotal. */
-export function stallsidePassOnFeeCents(
-  subtotalCents: number,
-  fixedFeeCents = 0,
-): number {
+export function stallsidePassOnFeeCents(subtotalCents: number): number {
   if (subtotalCents <= 0) return 0;
-  return Math.max(
-    0,
-    stallsidePassOnChargeCents(subtotalCents, fixedFeeCents) - subtotalCents,
-  );
+  return Math.max(0, stallsidePassOnChargeCents(subtotalCents) - subtotalCents);
 }

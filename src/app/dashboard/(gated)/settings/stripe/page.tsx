@@ -136,13 +136,13 @@ export default async function StripeSettingsPage({
         <PassFeeToggle
           passFeeToCustomer={ownerPassesFeeToCustomer(owner)}
           allowPassOn={feePassOnAllowed(owner)}
-          v2026={isV2026Owner(owner)}
+          weeklyPayouts={isV2026Owner(owner)}
         />
       ) : (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          {isV2026Owner(owner)
-            ? "Vendl Pro: no Vendl fee on your first A$4,000 of Stripe card sales each month, then 0.5%. Payouts are weekly. Standard Stripe processing fees still apply."
-            : "Vendl Pro: no Vendl transaction fee on card sales. Standard Stripe processing fees still apply."}
+          Vendl Pro: no Vendl fee on card sales.
+          {isV2026Owner(owner) ? " Payouts are weekly (Mondays)." : ""} Standard
+          Stripe processing fees still apply.
         </p>
       )}
 
