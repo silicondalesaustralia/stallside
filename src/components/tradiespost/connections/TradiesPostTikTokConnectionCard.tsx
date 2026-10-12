@@ -41,7 +41,7 @@ export function TradiesPostTikTokConnectionCard({
       <TradiesPostProviderConnectionCard
         testId="tp-connection-tiktok"
         name="TikTok"
-        benefit="Post job photos and videos straight to your TikTok account."
+        benefit="Post product photos and videos straight to your TikTok account."
         icon={<Music2 className="h-6 w-6 text-[#18181B]" aria-hidden />}
         status={connected ? 'connected' : 'not_connected'}
         connected={connected}

@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { MetaConnectSection } from '@/components/settings/integrations/MetaConnectSection'
-import { GmbConnectProvider } from '@/components/settings/integrations/GmbConnectContext'
-import { TradiesPostGmbConnectionCard } from '@/components/tradiespost/connections/TradiesPostGmbConnectionCard'
 import { TradiesPostTikTokConnectionCard } from '@/components/tradiespost/connections/TradiesPostTikTokConnectionCard'
+import { TradiesPostComingSoonConnectionCard } from '@/components/tradiespost/connections/TradiesPostComingSoonConnectionCard'
 import { TradiesPostCalendarConnectionsSection } from '@/components/tradiespost/connections/TradiesPostCalendarConnectionsSection'
 import { TradiesPostAppPage, TradiesPostLoading } from '@/components/tradiespost/TradiesPostAppPage'
 import { TradiesPostPageHeader } from '@/components/tradiespost/ui'
@@ -74,38 +73,33 @@ export default function TradiesPostConnectionsPage() {
         </p>
       ) : null}
 
-      <GmbConnectProvider
-        gmbAccountId={business.gmb_account_id ?? undefined}
-        gmbLocationName={business.gmb_location_name ?? undefined}
-        onConnected={loadBusiness}
-        integrationsPath="/dashboard/social/connections"
-      >
-        <section className="mt-8">
-          <TradiesPostSectionTitle className="mb-5">Social accounts</TradiesPostSectionTitle>
+      <section className="mt-8">
+        <TradiesPostSectionTitle className="mb-5">Social accounts</TradiesPostSectionTitle>
 
-          <div className="social-connections-grid">
-            <TradiesPostGmbConnectionCard canManageConnections={canManage} />
-            <MetaConnectSection
-              facebookPageId={business.facebook_page_id ?? undefined}
-              facebookPageName={business.facebook_page_name ?? undefined}
-              instagramAccountId={business.instagram_account_id ?? undefined}
-              instagramUsername={business.instagram_username ?? undefined}
-              onConnected={loadBusiness}
-              integrationsPath="/dashboard/social/connections"
-              presentation="tradiespost"
-              libraryHref="/dashboard/social/library"
-              canManageConnections={canManage}
-            />
-            <TradiesPostTikTokConnectionCard
-              tiktokOpenId={business.tiktok_open_id}
-              tiktokDisplayName={business.tiktok_display_name}
-              onConnected={loadBusiness}
-              integrationsPath="/dashboard/social/connections"
-              canManageConnections={canManage}
-            />
-          </div>
-        </section>
-      </GmbConnectProvider>
+        <div className="social-connections-grid">
+          <MetaConnectSection
+            facebookPageId={business.facebook_page_id ?? undefined}
+            facebookPageName={business.facebook_page_name ?? undefined}
+            instagramAccountId={business.instagram_account_id ?? undefined}
+            instagramUsername={business.instagram_username ?? undefined}
+            onConnected={loadBusiness}
+            integrationsPath="/dashboard/social/connections"
+            presentation="tradiespost"
+            libraryHref="/dashboard/social/library"
+            canManageConnections={canManage}
+          />
+          <TradiesPostTikTokConnectionCard
+            tiktokOpenId={business.tiktok_open_id}
+            tiktokDisplayName={business.tiktok_display_name}
+            onConnected={loadBusiness}
+            integrationsPath="/dashboard/social/connections"
+            canManageConnections={canManage}
+          />
+          <TradiesPostComingSoonConnectionCard platform="youtube" />
+          <TradiesPostComingSoonConnectionCard platform="pinterest" />
+          <TradiesPostComingSoonConnectionCard platform="x" />
+        </div>
+      </section>
 
       <TradiesPostCalendarConnectionsSection />
     </TradiesPostAppPage>

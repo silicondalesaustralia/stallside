@@ -23,7 +23,7 @@ export function ComposerHeadlineField({ value, onChange }: Props) {
         className="w-full rounded-xl border border-[#E4E4E7] bg-white px-3 py-2.5 text-sm font-semibold text-[#18181B] outline-none focus:border-[#F5C518] focus:ring-1 focus:ring-[#F5C518]"
       />
       <p className="mt-1 text-[11px] text-zinc-400">
-        Shown as the first line of your Facebook post. Instagram and Google get the caption only.
+        Shown as the first line of your Facebook post. Instagram gets the caption only.
       </p>
     </div>
   )
