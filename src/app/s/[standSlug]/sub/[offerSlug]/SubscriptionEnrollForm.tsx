@@ -55,7 +55,7 @@ export default function SubscriptionEnrollForm({
         deliveryNotes: String(formData.get("deliveryNotes") ?? ""),
       });
       if ("error" in result) {
-        setMessage(result.error);
+        setMessage(result.error ?? null);
         return;
       }
       if ("square" in result) {

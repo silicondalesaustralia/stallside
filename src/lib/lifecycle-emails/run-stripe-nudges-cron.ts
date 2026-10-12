@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
-import { daysAgo, markSent, recipient } from "@/lib/lifecycle-emails/cron-helpers";
+import {
+  ACTIVE_SQUARE,
+  daysAgo,
+  markSent,
+  recipient,
+} from "@/lib/lifecycle-emails/cron-helpers";
 import { maybeSendStripeRestrictedNudge } from "@/lib/lifecycle-emails/send-stripe-nudges";
 import { sendStripeNeverStartedNudge } from "@/lib/lifecycle-emails/stripe-never-started";
 
@@ -39,7 +44,7 @@ export async function runStripeRestrictedNudgeCron(now: Date): Promise<{
   return { checked: owners.length, sent };
 }
 
-/** Gentle nudge when stand has products but Stripe was never connected. */
+/** Gentle nudge when stand has products but neither Stripe nor Square is connected. */
 export async function runStripeNeverStartedNudgeCron(now: Date): Promise<{
   checked: number;
   sent: number;
@@ -52,6 +57,7 @@ export async function runStripeNeverStartedNudgeCron(now: Date): Promise<{
       createdAt: { lte: daysAgo(NEVER_STARTED_MIN_DAYS, now) },
       stands: { some: {} },
       products: { some: { isArchived: false } },
+      externalCommerceConnections: { none: ACTIVE_SQUARE },
     },
     include: { user: { select: { email: true, name: true } } },
     take: 100,

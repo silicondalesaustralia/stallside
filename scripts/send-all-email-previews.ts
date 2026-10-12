@@ -19,7 +19,20 @@ import {
   FEATURE_ANNOUNCE_SUBJECT,
   featureAnnounceHtml,
 } from "../src/lib/lifecycle-emails/feature-announce";
-import { trialWelcomeHtml } from "../src/lib/lifecycle-emails/trial";
+import {
+  TRIAL_WELCOME_SUBJECT,
+  trialWelcomeHtml,
+} from "../src/lib/lifecycle-emails/trial";
+import { PRO_WELCOME_SUBJECT, proWelcomeHtml } from "../src/lib/lifecycle-emails/plans";
+import {
+  TEN_ORDERS_SUBJECT,
+  firstTenOrdersHtml,
+} from "../src/lib/lifecycle-emails/milestone";
+import { cancellationFeedbackHtml } from "../src/lib/lifecycle-emails/cancellation";
+import {
+  LIFECYCLE_UNSUB_PLACEHOLDER,
+  lifecycleUnsubLinks,
+} from "../src/lib/lifecycle-emails/unsubscribe";
 import {
   CREATOR_DAY3_SUBJECT,
   creatorDay3Html,
@@ -57,7 +70,7 @@ async function sendRaw(job: Job) {
     from,
     to: [to],
     subject: `[PREVIEW] ${job.subject}`,
-    html: job.html,
+    html: job.html.replaceAll(LIFECYCLE_UNSUB_PLACEHOLDER, lifecycleUnsubLinks(to).page),
   };
   if (job.replyTo) body.reply_to = job.replyTo;
   if (job.headers) body.headers = job.headers;
@@ -166,8 +179,8 @@ function buildJobs(): Job[] {
     {
       label: "Welcome (Free signup)",
       kind: "lifecycle_welcome",
-      replyTo: emailReplyTo(),
-      subject: `Welcome to ${APP_NAME} - let’s get you live`,
+      replyTo: "jono@silicondales.com",
+      subject: TRIAL_WELCOME_SUBJECT,
       html: trialWelcomeHtml(name),
     },
     {
@@ -175,23 +188,14 @@ function buildJobs(): Job[] {
       kind: "lifecycle_creator_day3",
       replyTo: "jono@silicondales.com",
       subject: CREATOR_DAY3_SUBJECT,
-      html: creatorDay3Html(name),
+      html: creatorDay3Html(name, true),
     },
     {
       label: "Pro welcome",
       kind: "lifecycle_card_welcome",
       replyTo: emailReplyTo(),
-      subject: `You're on ${APP_NAME} Pro`,
-      html: emailShell(
-        `You're on ${APP_NAME} Pro`,
-        `
-          <p>Hi ${greetName(name)},</p>
-          <p>Welcome to <strong>${APP_NAME} Pro</strong>. Same features as Free - and
-          <strong>no Vendl transaction fee</strong> on card, Tap &amp; Go, or pay-later.</p>
-          ${ctaButton(L.stripe, "Open Stripe settings")}
-          <p>Anything odd in setup? <strong>hello@${APP_DOMAIN}</strong>.</p>
-        `,
-      ),
+      subject: PRO_WELCOME_SUBJECT,
+      html: proWelcomeHtml(name),
     },
     {
       label: "Pro lapse Day 23",
@@ -228,32 +232,16 @@ function buildJobs(): Job[] {
     {
       label: "10 orders milestone",
       kind: "lifecycle_ten_orders",
-      replyTo: emailReplyTo(),
-      subject: `Congrats - 10 orders on ${APP_NAME}`,
-      html: emailShell(
-        "Congrats - 10 orders",
-        `
-          <p>Hi ${greetName(name)},</p>
-          <p><strong>10 orders.</strong> That&apos;s past the &ldquo;just testing&rdquo; stage.</p>
-          ${ctaButton(L.gallerySubmit, "Share your stand")}
-          <p>Questions? <strong>hello@${APP_DOMAIN}</strong></p>
-        `,
-      ),
+      replyTo: "jono@silicondales.com",
+      subject: TEN_ORDERS_SUBJECT,
+      html: firstTenOrdersHtml(name),
     },
     {
       label: "Cancel feedback",
       kind: "cancel_feedback",
       replyTo: emailReplyTo(),
       subject: `Thanks for trying ${APP_NAME} Pro`,
-      html: emailShell(
-        `Thanks for trying ${APP_NAME} Pro`,
-        `
-          <p>Hi ${greetName(name)},</p>
-          <p>Sorry to see you leave <strong>${APP_NAME} Pro</strong>. Your account stays on
-          <strong>Free ($0/mo)</strong>.</p>
-          ${ctaButton(L.billingPro, "Upgrade to Pro anytime")}
-        `,
-      ),
+      html: cancellationFeedbackHtml(name),
     },
     {
       label: "Feature announce",

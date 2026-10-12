@@ -2,6 +2,10 @@ import { APP_DOMAIN, APP_NAME } from "@/lib/constants";
 import { LEGAL_EMAIL } from "@/lib/legal";
 import { cleanEnvSecret } from "@/lib/env";
 import { filterEmailsForActiveOwners } from "@/lib/owner-deleted";
+import {
+  LIFECYCLE_UNSUB_PLACEHOLDER,
+  sendWithLifecycleUnsub,
+} from "@/lib/lifecycle-emails/unsubscribe";
 import { prisma } from "@/lib/prisma";
 
 /** Always deliver platform contact/waitlist/admin alerts here. */
@@ -51,8 +55,9 @@ export async function sendOwnerEmail(
     replyTo?: string;
     headers?: Record<string, string>;
     kind?: string;
+    from?: string;
   },
-) {
+): Promise<void> {
   const requested = (Array.isArray(to) ? to : [to])
     .map((email) => email.trim())
     .filter(Boolean);
@@ -62,6 +67,14 @@ export async function sendOwnerEmail(
       ? requested
       : await filterEmailsForActiveOwners(requested);
   if (!recipients.length) return;
+  if (html.includes(LIFECYCLE_UNSUB_PLACEHOLDER)) {
+    return sendWithLifecycleUnsub(recipients, html, (one, body, headers): Promise<void> =>
+      sendOwnerEmail(one, subject, body, {
+        ...options,
+        headers: { ...options?.headers, ...headers },
+      }),
+    );
+  }
 
   const apiKey = cleanEnvSecret(process.env.RESEND_API_KEY);
   if (!apiKey) {
@@ -81,6 +94,7 @@ export async function sendOwnerEmail(
   }
 
   const from =
+    options?.from ||
     cleanEnvSecret(process.env.EMAIL_FROM) ||
     `${APP_NAME} <hello@${APP_DOMAIN}>`;
   const body: {

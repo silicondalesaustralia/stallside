@@ -1,7 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
 import { sendCreatorDay3 } from "@/lib/lifecycle-emails/creator-intro";
-import { daysAgo, markSent, recipient } from "@/lib/lifecycle-emails/cron-helpers";
+import {
+  ACTIVE_SQUARE,
+  daysAgo,
+  markSent,
+  recipient,
+} from "@/lib/lifecycle-emails/cron-helpers";
 
 /** Day 3 after signup: personal creator intro. Returns send counts. */
 export async function runCreatorDay3Cron(now: Date): Promise<{
@@ -16,7 +21,13 @@ export async function runCreatorDay3Cron(now: Date): Promise<{
     },
     include: {
       user: { select: { email: true, name: true } },
-      _count: { select: { stands: true, products: true } },
+      _count: {
+        select: {
+          stands: true,
+          products: true,
+          externalCommerceConnections: { where: ACTIVE_SQUARE },
+        },
+      },
     },
     take: 200,
   });
@@ -26,12 +37,13 @@ export async function runCreatorDay3Cron(now: Date): Promise<{
   for (const owner of owners) {
     const r = recipient(owner);
     if (!r) continue;
-    const showStripeNudge =
+    const showPaymentNudge =
       owner._count.stands > 0 &&
       owner._count.products > 0 &&
-      !owner.stripeChargesEnabled;
+      !owner.stripeAccountId &&
+      owner._count.externalCommerceConnections === 0;
     try {
-      await sendCreatorDay3({ ...r, showStripeNudge });
+      await sendCreatorDay3({ ...r, showPaymentNudge });
       await markSent(owner.id, "creatorDay3SentAt", now);
       sent += 1;
     } catch (error) {
