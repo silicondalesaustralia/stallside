@@ -9,7 +9,7 @@ import {
 } from "@/lib/stripe-card-checkout";
 
 const GRACE_MS = 15 * 60 * 1000;
-/** Past Stripe's 24h max session life - an unreadable session can no longer be paid. */
+/** Past Stripe's 24h max session life - a session we can't read can no longer be paid. */
 const UNREADABLE_EXPIRE_MS = 48 * 60 * 60 * 1000;
 
 export type CheckoutSweepResult = {
@@ -57,8 +57,14 @@ export async function sweepPendingCardCheckouts(
     const account = livemode
       ? order.owner.stripeAccountId
       : demoStripeAccountId() ?? order.owner.stripeAccountId;
-    if (!stripe || !account) continue;
+    const ageMs = Date.now() - order.createdAt.getTime();
     result.checked += 1;
+    if (!stripe || !account) {
+      if (ageMs > UNREADABLE_EXPIRE_MS) {
+        result.expired += await expirePendingCardOrder(order.id);
+      }
+      continue;
+    }
 
     try {
       const session = await stripe.checkout.sessions.retrieve(
@@ -73,7 +79,6 @@ export async function sweepPendingCardCheckouts(
         result.expired += await expirePendingCardOrder(order.id);
       }
     } catch (error) {
-      const ageMs = Date.now() - order.createdAt.getTime();
       if (ageMs > UNREADABLE_EXPIRE_MS) {
         result.expired += await expirePendingCardOrder(order.id);
       } else {
