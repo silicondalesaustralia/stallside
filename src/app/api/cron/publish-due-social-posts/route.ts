@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { publishDueAutomaticSocialPosts } from '@/lib/social/publishDueSocialPosts'
 
+// Room for a video download + YouTube upload per due post.
+export const maxDuration = 300
+
 // Publishes scheduled posts whose time has passed (StitchedUp runs this inside
 // its hourly payment-expiry cron; the kit gives it its own route).
 export async function GET(req: NextRequest) {

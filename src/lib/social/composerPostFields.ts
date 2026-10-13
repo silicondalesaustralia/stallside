@@ -1,6 +1,8 @@
 import { isProxyableStorageUrl } from '@/lib/social/tiktok/tiktokMediaUrl'
 import { sanitizeTikTokSettings } from '@/lib/social/tiktok/tiktokSettings'
 import { TIKTOK_MAX_PHOTO_SLIDES } from '@/lib/social/tiktokSlides/slideTypes'
+import { sanitizeYouTubeSettings } from '@/lib/social/youtube/youtubeSettings'
+import { VIDEO_PUBLISH_PLATFORMS } from '@/lib/social/libraryPublish'
 
 /** processedPhotoUrls.tiktok: null when absent, 'invalid' when present but unusable. */
 function tiktokSlidesFromBody(processed: unknown): string[] | null | 'invalid' {
@@ -19,6 +21,7 @@ export function composerPostColumns(body: {
   platforms?: unknown
   publishingMode?: unknown
   tiktokSettings?: unknown
+  youtubeSettings?: unknown
   mediaType?: unknown
   videoUrl?: unknown
   videoDurationSeconds?: unknown
@@ -36,6 +39,18 @@ export function composerPostColumns(body: {
     }
   }
 
+  if (platforms.includes('youtube')) {
+    const settings = sanitizeYouTubeSettings(body.youtubeSettings)
+    if (settings) {
+      columns.youtube_settings = settings
+    } else if (body.publishingMode !== 'manual') {
+      return { ok: false, message: 'Add a YouTube title before posting to YouTube.' }
+    }
+    if (body.publishingMode !== 'manual' && body.mediaType !== 'video') {
+      return { ok: false, message: 'YouTube needs a video. Pick a video or deselect YouTube.' }
+    }
+  }
+
   const tiktokSlides = tiktokSlidesFromBody(body.processedPhotoUrls)
   if (tiktokSlides === 'invalid') {
     return { ok: false, message: `TikTok slides must be 1-${TIKTOK_MAX_PHOTO_SLIDES} images from your uploads or Library.` }
@@ -45,8 +60,8 @@ export function composerPostColumns(body: {
     if (typeof body.videoUrl !== 'string' || !isProxyableStorageUrl(body.videoUrl)) {
       return { ok: false, message: 'Video must come from your Library.' }
     }
-    if (body.publishingMode !== 'manual' && platforms.some((p) => p !== 'tiktok')) {
-      return { ok: false, message: 'Videos can only be posted automatically to TikTok for now.' }
+    if (body.publishingMode !== 'manual' && platforms.some((p) => !(VIDEO_PUBLISH_PLATFORMS as unknown[]).includes(p))) {
+      return { ok: false, message: 'Videos can only be posted automatically to TikTok and YouTube for now.' }
     }
     columns.media_type = 'video'
     columns.video_url = body.videoUrl

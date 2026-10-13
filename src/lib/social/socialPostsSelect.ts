@@ -22,5 +22,7 @@ export const SOCIAL_POSTS_SELECT = [
   'tiktok_post_id',
   'tiktok_error',
   'tiktok_status',
+  'youtube_post_id',
+  'youtube_error',
   'created_at',
 ].join(', ')

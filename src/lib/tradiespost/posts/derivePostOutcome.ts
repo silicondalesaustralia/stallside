@@ -14,7 +14,7 @@ export type PostOverallStatus =
 
 export type PostsFilter = 'all' | 'scheduled' | 'posted' | 'needs_attention'
 
-const KNOWN_PLATFORMS: SocialPublishPlatform[] = ['facebook', 'instagram', 'gmb', 'tiktok']
+const KNOWN_PLATFORMS: SocialPublishPlatform[] = ['facebook', 'instagram', 'gmb', 'tiktok', 'youtube']
 
 function isKnownPlatform(p: string): p is SocialPublishPlatform {
   return (KNOWN_PLATFORMS as string[]).includes(p)

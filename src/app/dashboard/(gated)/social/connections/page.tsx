@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { MetaConnectSection } from '@/components/settings/integrations/MetaConnectSection'
 import { TradiesPostTikTokConnectionCard } from '@/components/tradiespost/connections/TradiesPostTikTokConnectionCard'
+import { TradiesPostYouTubeConnectionCard } from '@/components/tradiespost/connections/TradiesPostYouTubeConnectionCard'
 import { TradiesPostComingSoonConnectionCard } from '@/components/tradiespost/connections/TradiesPostComingSoonConnectionCard'
 import { TradiesPostCalendarConnectionsSection } from '@/components/tradiespost/connections/TradiesPostCalendarConnectionsSection'
 import { TradiesPostAppPage, TradiesPostLoading } from '@/components/tradiespost/TradiesPostAppPage'
@@ -20,6 +21,8 @@ export default function TradiesPostConnectionsPage() {
     gmb_location_name?: string | null
     tiktok_open_id?: string | null
     tiktok_display_name?: string | null
+    youtube_channel_id?: string | null
+    youtube_channel_title?: string | null
   } | null>(null)
   const [loading, setLoading] = useState(true)
   const [canManage, setCanManage] = useState(false)
@@ -95,7 +98,13 @@ export default function TradiesPostConnectionsPage() {
             integrationsPath="/dashboard/social/connections"
             canManageConnections={canManage}
           />
-          <TradiesPostComingSoonConnectionCard platform="youtube" />
+          <TradiesPostYouTubeConnectionCard
+            youtubeChannelId={business.youtube_channel_id}
+            youtubeChannelTitle={business.youtube_channel_title}
+            onConnected={loadBusiness}
+            integrationsPath="/dashboard/social/connections"
+            canManageConnections={canManage}
+          />
           <TradiesPostComingSoonConnectionCard platform="pinterest" />
           <TradiesPostComingSoonConnectionCard platform="x" />
         </div>

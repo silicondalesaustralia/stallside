@@ -1,6 +1,7 @@
 import {
   libraryAutomaticScheduleAvailable,
   localDateInputValue,
+  VIDEO_PUBLISH_PLATFORMS,
   type SocialConnectionState,
   type SocialPublishPlatform,
 } from '@/lib/social/libraryPublish'
@@ -12,6 +13,7 @@ export const CAPTION_LIMITS: Record<SocialPublishPlatform, number> = {
   facebook: 63206,
   gmb: 1500,
   tiktok: 2200,
+  youtube: 5000,
 }
 
 /** Strictest limit across the selected platforms (Instagram's when none selected). */
@@ -74,13 +76,19 @@ export function composerBlockReason(params: {
   isVideo?: boolean
   /** From TikTok settings when TikTok is selected and connected. */
   tiktokBlockReason?: string | null
+  /** From YouTube settings when YouTube is selected and connected. */
+  youtubeBlockReason?: string | null
 }): string | null {
   if (!params.selected.length) return 'Pick at least one platform.'
   if (!params.imageUrl) return params.isVideo ? 'Pick a video first.' : 'Add an image first.'
-  if (params.isVideo && params.selected.some((p) => p !== 'tiktok')) {
-    return 'Videos post automatically to TikTok only. Deselect the other platforms.'
+  if (params.isVideo && params.selected.some((p) => !VIDEO_PUBLISH_PLATFORMS.includes(p))) {
+    return 'Videos post automatically to TikTok and YouTube only. Deselect the other platforms.'
+  }
+  if (!params.isVideo && params.selected.includes('youtube')) {
+    return 'YouTube needs a video. Pick a video or deselect YouTube.'
   }
   if (params.tiktokBlockReason) return params.tiktokBlockReason
+  if (params.youtubeBlockReason) return params.youtubeBlockReason
   if (!params.caption.trim()) return 'Write a caption first.'
   if (params.caption.length > captionLimitFor(params.selected)) {
     return 'Caption is too long for one of the selected platforms.'

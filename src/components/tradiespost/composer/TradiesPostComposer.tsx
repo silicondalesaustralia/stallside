@@ -19,6 +19,8 @@ import { useComposerCaption } from '@/components/tradiespost/composer/useCompose
 import { useComposerTikTokGate } from '@/components/tradiespost/composer/useComposerTikTok'
 import { ComposerTikTokSettings } from '@/components/tradiespost/composer/ComposerTikTokSettings'
 import { ComposerTikTokSlides } from '@/components/tradiespost/composer/ComposerTikTokSlides'
+import { useComposerYouTubeGate } from '@/components/tradiespost/composer/useComposerYouTube'
+import { ComposerYouTubeSettings } from '@/components/tradiespost/composer/ComposerYouTubeSettings'
 import {
   defaultLibrarySelectedPlatforms,
   socialConnectionsFromBusiness,
@@ -44,6 +46,7 @@ export function TradiesPostComposer() {
   const captionState = useComposerCaption()
   const videoDuration = media?.video?.durationSeconds ?? null
   const tiktok = useComposerTikTokGate(platforms.includes('tiktok') && connected.tiktok, videoDuration)
+  const youtube = useComposerYouTubeGate(platforms.includes('youtube') && connected.youtube, captionState.caption)
   const { setCaption } = captionState
   const platformsInitRef = useRef(false)
   const duplicateAppliedRef = useRef(false)
@@ -124,6 +127,11 @@ export function TradiesPostComposer() {
               <ComposerTikTokSettings state={tiktok.state} isVideo={Boolean(media?.video)} videoDurationSeconds={videoDuration} />
             </ComposerStep>
           )}
+          {youtube.active && (
+            <ComposerStep number={tiktok.active ? 5 : 4} title="YouTube settings">
+              <ComposerYouTubeSettings state={youtube} caption={captionState.caption} channelTitle={ctx.business?.youtube_channel_title ?? null} />
+            </ComposerStep>
+          )}
         </div>
         <ComposerSidePanel
           business={ctx.business}
@@ -135,6 +143,8 @@ export function TradiesPostComposer() {
           jobId={jobId}
           tiktokSettings={tiktok.settings}
           tiktokBlockReason={tiktok.blockReason}
+          youtubeSettings={youtube.settings}
+          youtubeBlockReason={youtube.blockReason}
           onDone={handleDone}
         />
       </div>

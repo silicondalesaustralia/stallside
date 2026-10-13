@@ -1,7 +1,7 @@
 import { SOCIAL_PUBLISH_PLATFORM_LABELS } from '@/lib/social/libraryPublish'
 import type { platformOutcomes, PlatformOutcome } from '@/lib/tradiespost/posts/derivePostOutcome'
 
-const SHORT: Record<string, string> = { facebook: 'FB', instagram: 'IG', gmb: 'Google', tiktok: 'TikTok' }
+const SHORT: Record<string, string> = { facebook: 'FB', instagram: 'IG', gmb: 'Google', tiktok: 'TikTok', youtube: 'YouTube' }
 
 const TONE: Record<PlatformOutcome, string> = {
   success: 'border-emerald-200 bg-emerald-50 text-emerald-700',

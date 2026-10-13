@@ -9,6 +9,7 @@ import {
 } from '@/lib/social/libraryPublish'
 import type { ComposerMode } from '@/lib/tradiespost/composer/composerState'
 import type { TikTokPostSettings } from '@/lib/social/tiktok/tiktokSettings'
+import type { YouTubePostSettings } from '@/lib/social/youtube/youtubeSettings'
 
 const browserFetch: LibraryPostFetcher = async (url, init) => {
   const res = await fetch(url, init)
@@ -30,6 +31,7 @@ export type ComposerSubmitInput = {
   time: string
   publishingMode: 'automatic' | 'manual'
   tiktokSettings: TikTokPostSettings | null
+  youtubeSettings: YouTubePostSettings | null
   video: { url: string; durationSeconds: number | null } | null
   tiktokSlides: string[] | null
 }
@@ -53,6 +55,7 @@ export function useComposerSubmit(onDone: (result: { mode: ComposerMode }) => vo
               ? { facebook: input.facebookCaption }
               : null,
           tiktokSettings: input.tiktokSettings,
+          youtubeSettings: input.youtubeSettings,
           video: input.video,
           tiktokSlides: input.tiktokSlides,
         }

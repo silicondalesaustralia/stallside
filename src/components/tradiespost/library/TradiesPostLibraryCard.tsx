@@ -88,6 +88,7 @@ export function TradiesPostLibraryCard({
     instagram: false,
     gmb: false,
     tiktok: false,
+    youtube: false,
   }
 
   return (

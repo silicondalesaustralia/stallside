@@ -24,6 +24,11 @@ import {
   type TikTokPostSource,
 } from '@/lib/social/tiktok/publishTikTokForPost'
 import type { TikTokPublishResult } from '@/lib/social/tiktok/tiktokPublish'
+import {
+  publishYouTubeForPost,
+  type YouTubePostSource,
+  type YouTubePublishResult,
+} from '@/lib/social/youtube/publishYouTubeForPost'
 
 const DEMO = process.env.SOCIAL_DEMO_MODE === 'true'
 
@@ -64,6 +69,7 @@ export interface PostResults {
   linkedin?: PublishResult
   /** Async: success means TikTok accepted the publish; status resolves later. */
   tiktok?: TikTokPublishResult
+  youtube?: YouTubePublishResult
 }
 
 // ── Google Business Profile ───────────────────────────────────────────────────
@@ -318,6 +324,8 @@ export async function publishPost(options: {
   }
   /** Required when platforms include 'tiktok'. */
   tiktokPost?: Omit<TikTokPostSource, 'businessId' | 'caption' | 'processedPhotoUrls'>
+  /** Required when platforms include 'youtube'. */
+  youtubePost?: Omit<YouTubePostSource, 'businessId' | 'caption'>
 }): Promise<PostResults> {
   const { platforms, caption, platformCaptions, processedPhotoUrls, businessId, business } = options
   const results: PostResults = {}
@@ -332,6 +340,17 @@ export async function publishPost(options: {
           processedPhotoUrls,
         })
       : { success: false, error: 'TikTok post details missing' }
+  }
+
+  if (platforms.includes('youtube')) {
+    const youtubeOverride = platformCaptions?.youtube
+    results.youtube = options.youtubePost
+      ? await publishYouTubeForPost({
+          ...options.youtubePost,
+          businessId,
+          caption: typeof youtubeOverride === 'string' && youtubeOverride.trim() ? youtubeOverride : caption,
+        })
+      : { success: false, error: 'YouTube post details missing' }
   }
 
   if (platforms.includes('facebook')) {

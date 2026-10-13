@@ -10,6 +10,7 @@ import type { SocialWorkspaceBusiness } from '@/lib/social/useSocialWorkspace'
 import type { SocialConnectionState, SocialPublishPlatform } from '@/lib/social/libraryPublish'
 import { resolveBusinessTimeZone } from '@/lib/social/weekPlan/weekIdentity'
 import type { TikTokPostSettings } from '@/lib/social/tiktok/tiktokSettings'
+import type { YouTubePostSettings } from '@/lib/social/youtube/youtubeSettings'
 import {
   composerBlockReason,
   facebookCaptionWithHeadline,
@@ -29,12 +30,14 @@ type Props = {
   jobId: string | null
   tiktokSettings: TikTokPostSettings | null
   tiktokBlockReason: string | null
+  youtubeSettings: YouTubePostSettings | null
+  youtubeBlockReason: string | null
   onDone: (result: { mode: ComposerMode }) => void
 }
 
 export function ComposerSidePanel(props: Props) {
   const { business, platforms, connected, media, caption, headline, jobId, onDone } = props
-  const { tiktokSettings, tiktokBlockReason } = props
+  const { tiktokSettings, tiktokBlockReason, youtubeSettings, youtubeBlockReason } = props
   const [mode, setMode] = useState<ComposerMode>('now')
   const [date, setDate] = useState('')
   const [time, setTime] = useState('09:00')
@@ -51,6 +54,7 @@ export function ComposerSidePanel(props: Props) {
     date,
     isVideo: Boolean(media?.video),
     tiktokBlockReason,
+    youtubeBlockReason,
   })
 
   return (
@@ -93,6 +97,7 @@ export function ComposerSidePanel(props: Props) {
               time,
               publishingMode,
               tiktokSettings,
+              youtubeSettings,
               video: media.video ?? null,
               tiktokSlides: media.slides ?? null,
             })

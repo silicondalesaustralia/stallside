@@ -57,6 +57,8 @@ export async function GET() {
       gmb_location_name: null,
       tiktok_open_id: null,
       tiktok_display_name: null,
+      youtube_channel_id: null,
+      youtube_channel_title: null,
       ...SOCIAL_DEFAULTS,
       ...(rawBiz as unknown as Record<string, unknown>),
     }

@@ -35,7 +35,9 @@ export function chunkRange(plan: TikTokChunkPlan, index: number): { start: numbe
   return { start, end }
 }
 
-export async function downloadVideo(url: string): Promise<{ bytes: Uint8Array; mimeType: string }> {
+export async function downloadVideo(
+  url: string,
+): Promise<{ bytes: Uint8Array<ArrayBuffer>; mimeType: string }> {
   const res = await fetch(url)
   if (!res.ok) throw new Error(`Could not download video (${res.status})`)
   const mimeType = res.headers.get('content-type')?.split(';')[0]?.trim() || 'video/mp4'

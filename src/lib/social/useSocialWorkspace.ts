@@ -28,6 +28,8 @@ export interface SocialWorkspacePost {
   tiktok_post_id?: string | null
   tiktok_error?: string | null
   tiktok_status?: string | null
+  youtube_post_id?: string | null
+  youtube_error?: string | null
   created_at: string
 }
 
@@ -47,6 +49,9 @@ export interface SocialWorkspaceBusiness {
   tiktok_open_id?: string | null
   tiktok_display_name?: string | null
   tiktok_avatar_url?: string | null
+  youtube_channel_id?: string | null
+  youtube_channel_title?: string | null
+  youtube_channel_thumbnail_url?: string | null
   social_brand_voice: string | null
   social_default_cta: string | null
   social_auto_prompt: boolean | null

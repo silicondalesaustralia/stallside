@@ -5,6 +5,12 @@ import {
   tiktokPostSourceFromRow,
   tiktokResultColumns,
 } from '@/lib/social/tiktok/publishTikTokForPost'
+import {
+  youtubePostSourceFromRow,
+  youtubeResultColumns,
+} from '@/lib/social/youtube/publishYouTubeForPost'
+
+export const maxDuration = 60
 
 export async function POST(
   _req: NextRequest,
@@ -58,6 +64,7 @@ export async function POST(
     businessId,
     business:           business as Parameters<typeof publishPost>[0]['business'],
     tiktokPost:         tiktokPostSourceFromRow(post),
+    youtubePost:        youtubePostSourceFromRow(post),
   })
 
   // Determine overall status
@@ -78,6 +85,7 @@ export async function POST(
     linkedin_post_id: results.linkedin?.postId || null,
     linkedin_error: results.linkedin?.error || null,
     ...tiktokResultColumns(results.tiktok),
+    ...youtubeResultColumns(results.youtube),
   }
 
   await db.from('social_posts').update(update).eq('id', id)
