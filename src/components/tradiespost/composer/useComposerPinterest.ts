@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { PinterestBoard } from '@/lib/social/pinterest/pinterestApi'
 import {
   EMPTY_PINTEREST_DRAFT,
@@ -31,6 +31,8 @@ export function useComposerPinterestGate(active: boolean, caption: string) {
   const [draft, setDraft] = useState<PinterestSettingsDraft>(EMPTY_PINTEREST_DRAFT)
   const [boards, setBoards] = useState<PinterestBoard[] | null>(null)
   const [boardsError, setBoardsError] = useState<string | null>(null)
+  const [titleGenerating, setTitleGenerating] = useState(false)
+  const [titleError, setTitleError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!active || boards) return
@@ -59,6 +61,31 @@ export function useComposerPinterestGate(active: boolean, caption: string) {
     }
   }, [active, boards])
 
+  const writeTitle = useCallback(async (fromCaption: string, jobId: string | null) => {
+    if (!fromCaption.trim()) {
+      setTitleError('Write a caption first')
+      return
+    }
+    setTitleGenerating(true)
+    setTitleError(null)
+    try {
+      const res = await fetch('/api/social/generate-pinterest-title', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ caption: fromCaption, jobId }),
+      })
+      const json = (await res.json().catch(() => ({}))) as { title?: string; error?: string }
+      if (!res.ok || !json.title) throw new Error(json.error || `Title failed (${res.status})`)
+      const title = json.title
+      setDraft((prev) => ({ ...prev, title }))
+    } catch (err) {
+      console.error('[Pinterest title]', err)
+      setTitleError(err instanceof Error ? err.message : 'Could not write a title')
+    } finally {
+      setTitleGenerating(false)
+    }
+  }, [])
+
   const derived = active ? pinterestSettingsFromDraft(draft, caption) : { settings: null, blockReason: null }
   return {
     draft,
@@ -66,6 +93,9 @@ export function useComposerPinterestGate(active: boolean, caption: string) {
     active,
     boards,
     boardsError,
+    writeTitle,
+    titleGenerating,
+    titleError,
     settings: derived.settings,
     blockReason: derived.blockReason,
   }

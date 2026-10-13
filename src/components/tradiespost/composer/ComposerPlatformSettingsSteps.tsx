@@ -17,6 +17,7 @@ type Props = {
   videoDurationSeconds: number | null
   youtubeChannelTitle: string | null
   pinterestUsername: string | null
+  jobId: string | null
 }
 
 /** Per-platform settings steps, numbered from 4 in the order shown. */
@@ -42,7 +43,7 @@ export function ComposerPlatformSettingsSteps(props: Props) {
       )}
       {pinterest.active && (
         <ComposerStep number={next++} title="Pinterest settings">
-          <ComposerPinterestSettings state={pinterest} caption={caption} username={props.pinterestUsername} />
+          <ComposerPinterestSettings state={pinterest} caption={caption} username={props.pinterestUsername} jobId={props.jobId} />
         </ComposerStep>
       )}
     </>

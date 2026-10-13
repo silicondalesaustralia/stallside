@@ -27,6 +27,12 @@ export function cleanPinterestDescription(raw: string): string {
   return raw.trim().slice(0, PINTEREST_DESCRIPTION_MAX)
 }
 
+/** Strip wrapping quotes / hashtags an AI title sometimes has, then apply the Pin title limits. */
+export function tidyPinterestTitle(raw: string): string {
+  const unquoted = raw.trim().replace(/^["'“”‘’]+|["'“”‘’]+$/g, '')
+  return cleanPinterestTitle(unquoted.replace(/#\S+/g, '').trim().replace(/\.$/, ''))
+}
+
 /** First non-empty caption line, used when the seller leaves the title blank. */
 export function defaultPinterestTitle(caption: string): string {
   const firstLine = caption.split('\n').map((l) => l.trim()).find(Boolean) ?? ''

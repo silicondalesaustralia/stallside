@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
       detail,
       locationLabel: stand?.locationLabel ?? null,
     })
-    return NextResponse.json({ jobId, title: detail.title, kind: detail.kind })
+    const imageUrls = detail.imageUrls.filter((url) => url.startsWith('https://'))
+    return NextResponse.json({ jobId, title: detail.title, kind: detail.kind, imageUrls })
   } catch (err) {
     console.error('[social/vendl-content/link]', err)
     return NextResponse.json({ error: 'Could not link that item.' }, { status: 500 })

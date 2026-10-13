@@ -3,6 +3,7 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { ImageIcon, Loader2, Sparkles, Upload, Video } from 'lucide-react'
 import { ComposerLibraryPicker } from '@/components/tradiespost/composer/ComposerLibraryPicker'
+import { ComposerLinkedPhotos } from '@/components/tradiespost/composer/ComposerLinkedPhotos'
 import { ComposerMediaPreviewThumb } from '@/components/tradiespost/composer/ComposerMediaPreviewThumb'
 import { ComposerVideoNotice } from '@/components/tradiespost/composer/ComposerVideoNotice'
 import { ComposerVideoPicker } from '@/components/tradiespost/composer/ComposerVideoPicker'
@@ -19,13 +20,15 @@ type Props = {
   onRemove: () => void
   /** Extra photo-mode content (TikTok slides) rendered below the picker. */
   photoExtras?: ReactNode
+  /** Photos of the linked product / pre-order page. */
+  linkedImages?: string[]
 }
 
 const sourceBtn =
   'flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-[#E4E4E7] bg-white px-3 py-3 text-sm font-bold text-[#18181B] transition-colors hover:border-[#F5C518] disabled:opacity-50'
 
 export function ComposerMediaPicker(props: Props) {
-  const { media, uploading, uploadError, onUpload, onSelectLibrary, onOpenAi, onRemove, photoExtras } = props
+  const { media, uploading, uploadError, onUpload, onSelectLibrary, onOpenAi, onRemove, photoExtras, linkedImages } = props
   const [kind, setKind] = useState<'photo' | 'video'>('photo')
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [videoRefresh, setVideoRefresh] = useState(0)
@@ -89,6 +92,10 @@ export function ComposerMediaPicker(props: Props) {
             setLibraryOpen(false)
           }}
         />
+      )}
+
+      {kind === 'photo' && !media && !libraryOpen && (
+        <ComposerLinkedPhotos urls={linkedImages ?? []} onPick={(url) => onSelectLibrary({ url, renderId: null, aiGenerated: false })} />
       )}
 
       {kind === 'photo' && !media && !libraryOpen && (

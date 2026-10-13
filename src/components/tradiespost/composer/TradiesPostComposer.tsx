@@ -22,6 +22,7 @@ import { useComposerYouTubeGate } from '@/components/tradiespost/composer/useCom
 import { useComposerPinterestGate } from '@/components/tradiespost/composer/useComposerPinterest'
 import { ComposerPlatformSettingsSteps } from '@/components/tradiespost/composer/ComposerPlatformSettingsSteps'
 import { useComposerStartState } from '@/components/tradiespost/composer/useComposerStartState'
+import { useComposerLinkedItem } from '@/components/tradiespost/composer/useComposerLinkedItem'
 import {
   socialConnectionsFromBusiness,
   toggleLibraryPlatform,
@@ -37,10 +38,10 @@ export function TradiesPostComposer() {
   const connected = useMemo(() => socialConnectionsFromBusiness(ctx.business), [ctx.business])
 
   const [platforms, setPlatforms] = useState<SocialPublishPlatform[]>([])
-  const [jobId, setJobId] = useState<string | null>(searchParams.get('jobId'))
   const [aiOpen, setAiOpen] = useState(false)
   const [headline, setHeadline] = useState('')
   const { media, setMedia, uploading, uploadError, upload } = useComposerMedia()
+  const { jobId, onJobChange, linkedImages } = useComposerLinkedItem({ initialJobId: searchParams.get('jobId'), media, setMedia })
   const captionState = useComposerCaption()
   const videoDuration = media?.video?.durationSeconds ?? null
   const tiktok = useComposerTikTokGate(platforms.includes('tiktok') && connected.tiktok, videoDuration)
@@ -61,7 +62,9 @@ export function TradiesPostComposer() {
   if (ctx.loading && !ctx.business) return <SocialTabLoading variant="tradiespost" />
 
   const writeForMe = () =>
-    void captionState.generate({ jobId, renderId: media?.renderId ?? null, platform: platforms[0] })
+    void captionState.generate({ jobId, renderId: media?.renderId ?? null, platform: platforms[0] }).then((written) => {
+      if (written && pinterest.active) void pinterest.writeTitle(written, jobId)
+    })
 
   return (
     <TradiesPostAppPage maxWidth="2xl">
@@ -79,7 +82,7 @@ export function TradiesPostComposer() {
             <div className="mb-4 max-w-md">
               <SocialJobPicker
                 value={jobId}
-                onChange={(id) => setJobId(id)}
+                onChange={onJobChange}
                 helperText="Pick a product, pre-order page or subscription and the AI will write about it and can use its photos."
               />
             </div>
@@ -91,6 +94,7 @@ export function TradiesPostComposer() {
               onSelectLibrary={setMedia}
               onOpenAi={() => setAiOpen(true)}
               onRemove={() => setMedia(null)}
+              linkedImages={linkedImages}
               photoExtras={platforms.includes('tiktok') && (
                 <ComposerTikTokSlides media={media} setMedia={setMedia} jobId={jobId}
                   onSuggestedCaption={(c) => { if (!captionState.caption.trim()) setCaption(c) }} />
@@ -113,6 +117,7 @@ export function TradiesPostComposer() {
             videoDurationSeconds={videoDuration}
             youtubeChannelTitle={ctx.business?.youtube_channel_title ?? null}
             pinterestUsername={ctx.business?.pinterest_username ?? null}
+            jobId={jobId}
           />
         </div>
         <ComposerSidePanel
@@ -123,12 +128,7 @@ export function TradiesPostComposer() {
           caption={captionState.caption}
           headline={platforms.includes('facebook') ? headline : ''}
           jobId={jobId}
-          tiktokSettings={tiktok.settings}
-          tiktokBlockReason={tiktok.blockReason}
-          youtubeSettings={youtube.settings}
-          youtubeBlockReason={youtube.blockReason}
-          pinterestSettings={pinterest.settings}
-          pinterestBlockReason={pinterest.blockReason}
+          gates={{ tiktok, youtube, pinterest }}
           onDone={handleDone}
         />
       </div>

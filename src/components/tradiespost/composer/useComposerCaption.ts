@@ -17,7 +17,7 @@ export function useComposerCaption(initial = '') {
       jobId: string | null
       renderId: string | null
       platform: SocialPublishPlatform | undefined
-    }) => {
+    }): Promise<string | null> => {
       setGenerating(true)
       setCaptionError(null)
       try {
@@ -37,8 +37,10 @@ export function useComposerCaption(initial = '') {
         setAlternatives(captions)
         setAltIndex(0)
         setCaption(captions[0])
+        return captions[0]
       } catch (err) {
         setCaptionError(err instanceof Error ? err.message : 'Could not write a caption')
+        return null
       } finally {
         setGenerating(false)
       }

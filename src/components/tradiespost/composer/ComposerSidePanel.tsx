@@ -21,6 +21,8 @@ import {
   type ComposerMode,
 } from '@/lib/tradiespost/composer/composerState'
 
+type PlatformGate<T> = { settings: T | null; blockReason: string | null }
+
 type Props = {
   business: SocialWorkspaceBusiness | null
   platforms: SocialPublishPlatform[]
@@ -29,19 +31,17 @@ type Props = {
   caption: string
   headline: string
   jobId: string | null
-  tiktokSettings: TikTokPostSettings | null
-  tiktokBlockReason: string | null
-  youtubeSettings: YouTubePostSettings | null
-  youtubeBlockReason: string | null
-  pinterestSettings: PinterestPostSettings | null
-  pinterestBlockReason: string | null
+  gates: {
+    tiktok: PlatformGate<TikTokPostSettings>
+    youtube: PlatformGate<YouTubePostSettings>
+    pinterest: PlatformGate<PinterestPostSettings>
+  }
   onDone: (result: { mode: ComposerMode }) => void
 }
 
 export function ComposerSidePanel(props: Props) {
   const { business, platforms, connected, media, caption, headline, jobId, onDone } = props
-  const { tiktokSettings, tiktokBlockReason, youtubeSettings, youtubeBlockReason } = props
-  const { pinterestSettings, pinterestBlockReason } = props
+  const { tiktok, youtube, pinterest } = props.gates
   const [mode, setMode] = useState<ComposerMode>('now')
   const [date, setDate] = useState('')
   const [time, setTime] = useState('09:00')
@@ -57,9 +57,9 @@ export function ComposerSidePanel(props: Props) {
     caption,
     date,
     isVideo: Boolean(media?.video),
-    tiktokBlockReason,
-    youtubeBlockReason,
-    pinterestBlockReason,
+    tiktokBlockReason: tiktok.blockReason,
+    youtubeBlockReason: youtube.blockReason,
+    pinterestBlockReason: pinterest.blockReason,
   })
 
   return (
@@ -101,9 +101,9 @@ export function ComposerSidePanel(props: Props) {
               date,
               time,
               publishingMode,
-              tiktokSettings,
-              youtubeSettings,
-              pinterestSettings,
+              tiktokSettings: tiktok.settings,
+              youtubeSettings: youtube.settings,
+              pinterestSettings: pinterest.settings,
               video: media.video ?? null,
               tiktokSlides: media.slides ?? null,
             })

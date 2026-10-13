@@ -60,6 +60,11 @@ async function run() {
   const badLink = pinterestSettingsFromDraft({ ...EMPTY_PINTEREST_DRAFT, boardId: '9', link: 'ftp://x' }, 'a')
   assert.equal(badLink.settings, null)
 
+  // AI title clean-up.
+  const { tidyPinterestTitle } = await import('./pinterestSettings')
+  assert.equal(tidyPinterestTitle('"Fresh Sourdough Loaves #bakery."'), 'Fresh Sourdough Loaves')
+  assert.equal(tidyPinterestTitle('x'.repeat(150)).length, 100)
+
   // Result columns.
   assert.deepEqual(pinterestResultColumns(undefined), {})
   assert.deepEqual(pinterestResultColumns({ success: true, postId: 'p1' }), {
