@@ -23,6 +23,10 @@
       "schedule": "15 * * * *"
     },
     {
+      "path": "/api/cron/checkout-sweep",
+      "schedule": "*/15 * * * *"
+    },
+    {
       "path": "/api/cron/square-subscriptions",
       "schedule": "30 * * * *"
     }

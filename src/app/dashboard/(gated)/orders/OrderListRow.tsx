@@ -35,6 +35,12 @@ function channelBadge(order: OrderRow): {
   label: string;
   className: string;
 } {
+  if (!isCountedPaymentStatus(order.paymentStatus)) {
+    return {
+      label: "Not Paid",
+      className: "bg-[var(--warn)]/15 text-[var(--warn)]",
+    };
+  }
   if (order.shopperSubscriptionId) {
     return {
       label: "Subscription",
@@ -92,10 +98,12 @@ export default function OrderListRow({
               </span>
             </p>
             <p className="mt-1 text-sm text-[var(--muted)]">
-              {orderPaymentLabel(
-                order.paymentMethod,
-                order.localTransferMethodId,
-              )}{" "}
+              {isCountedPaymentStatus(order.paymentStatus)
+                ? orderPaymentLabel(
+                    order.paymentMethod,
+                    order.localTransferMethodId,
+                  )
+                : order.paymentMethod.toLowerCase()}{" "}
               · {paymentStatusNote(order.paymentStatus)}
             </p>
             <OrderCustomerBadge
