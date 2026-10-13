@@ -28,11 +28,17 @@ enum PaymentStatus {
   CANCELLED
   REFUNDED
   EXPIRED
-  /** Deposit captured; balance still owed. */
+  /**
+   * Deposit captured; balance still owed.
+   */
   DEPOSIT_PAID
-  /** Balance charge scheduled / due. */
+  /**
+   * Balance charge scheduled / due.
+   */
   BALANCE_DUE
-  /** Off-session balance charge failed (dunning). */
+  /**
+   * Off-session balance charge failed (dunning).
+   */
   BALANCE_FAILED
 }
 
@@ -53,9 +59,13 @@ enum InventorySource {
   ORDER_CARD
   ORDER_PAYPAL
   ORDER_SQUARE
-  /** Mirrored from an external commerce provider (Square POS, Dashboard, etc.). */
+  /**
+   * Mirrored from an external commerce provider (Square POS, Dashboard, etc.).
+   */
   EXTERNAL_SYNC
-  /** Observed external POS sale (no Vendl platform fee). */
+  /**
+   * Observed external POS sale (no Vendl platform fee).
+   */
   EXTERNAL_POS
   RECONCILIATION
   SYSTEM
@@ -68,7 +78,9 @@ enum ProductSupplyStatus {
   DISCONTINUED
 }
 
-/** Provider-neutral external commerce systems (Phase 10/11). */
+/**
+ * Provider-neutral external commerce systems (Phase 10/11).
+ */
 enum CommerceProvider {
   SQUARE
 }
@@ -93,13 +105,17 @@ enum SaleOrigin {
   MANUAL
 }
 
-/** Seller-selected online card rail (Stripe Connect vs Square). */
+/**
+ * Seller-selected online card rail (Stripe Connect vs Square).
+ */
 enum OnlinePaymentProvider {
   STRIPE
   SQUARE
 }
 
-/** LEGACY = grandfathered fees; V2026 = current pricing. One-way move. */
+/**
+ * LEGACY = grandfathered fees; V2026 = current pricing. One-way move.
+ */
 enum PricingModel {
   LEGACY
   V2026
@@ -130,14 +146,18 @@ enum CollectionStatus {
   COLLECTED
 }
 
-/** When money moves relative to goods. */
+/**
+ * When money moves relative to goods.
+ */
 enum PaymentTiming {
   PAY_NOW
   PAY_UPFRONT
   DEPOSIT_THEN_BALANCE
 }
 
-/** How goods reach the buyer. */
+/**
+ * How goods reach the buyer.
+ */
 enum HandoverMode {
   COLLECT
   DELIVER
@@ -153,9 +173,13 @@ enum FulfilmentOptionKind {
 }
 
 enum MenuKind {
-  /** Curated take-now list — uses stand / shop fulfilment as today. */
+  /**
+   * Curated take-now list — uses stand / shop fulfilment as today.
+   */
   ALWAYS_AVAILABLE
-  /** Scheduled drop — syncs pre-order schedule to linked products. */
+  /**
+   * Scheduled drop — syncs pre-order schedule to linked products.
+   */
   PREORDER_DROP
 }
 
@@ -193,7 +217,9 @@ enum CartMode {
   CUSTOMER_CHOICE
 }
 
-/** Cadence for owner-built shopper subscriptions (Connect Billing). */
+/**
+ * Cadence for owner-built shopper subscriptions (Connect Billing).
+ */
 enum ShopperSubInterval {
   WEEKLY
   FORTNIGHTLY
@@ -208,13 +234,17 @@ enum ShopperSubStatus {
   CANCELLED
 }
 
-/** Box = product basket; Membership = typed prices + payment-plan choice. */
+/**
+ * Box = product basket; Membership = typed prices + payment-plan choice.
+ */
 enum SubscriptionOfferKind {
   BOX
   MEMBERSHIP
 }
 
-/** How a membership shopper pays (collection stays weekly). */
+/**
+ * How a membership shopper pays (collection stays weekly).
+ */
 enum MembershipBillingPlan {
   WEEKLY
   MONTHLY
@@ -222,32 +252,40 @@ enum MembershipBillingPlan {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  role          Role      @default(OWNER)
-  accounts      Account[]
-  sessions      Session[]
-  owner         Owner?
+  id               String        @id @default(cuid())
+  name             String?
+  email            String        @unique
+  emailVerified    DateTime?
+  image            String?
+  role             Role          @default(OWNER)
+  accounts         Account[]
+  sessions         Session[]
+  owner            Owner?
   standMemberships StandMember[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 }
 
-/** Pending name from frictionless signup until OTP creates the User */
+/**
+ * Pending name from frictionless signup until OTP creates the User
+ */
 model SignupIntent {
-  email       String   @id
-  name        String
-  /** Free for Life invite token, if signing up via /invite/[token] */
-  inviteToken String?
-  /** Meta/Google click ids + UTMs captured at signup (fbclid etc). */
+  email         String   @id
+  name          String
+  /**
+   * Free for Life invite token, if signing up via /invite/[token]
+   */
+  inviteToken   String?
+  /**
+   * Meta/Google click ids + UTMs captured at signup (fbclid etc).
+   */
   adAttribution Json?
-  createdAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
 }
 
-/** Free for Life invite links (admin-created). maxUses=1 for DMs, higher for group posts. */
+/**
+ * Free for Life invite links (admin-created). maxUses=1 for DMs, higher for group posts.
+ */
 model LifetimeInvite {
   id          String                     @id @default(cuid())
   token       String                     @unique
@@ -270,7 +308,9 @@ model LifetimeInviteRedemption {
   @@index([inviteId])
 }
 
-/** Card / PayPal plan interest from landing waitlist */
+/**
+ * Card / PayPal plan interest from landing waitlist
+ */
 model WaitlistEntry {
   id        String   @id @default(cuid())
   name      String
@@ -315,161 +355,222 @@ model VerificationToken {
 }
 
 model Owner {
-  id                        String             @id @default(cuid())
-  userId                    String             @unique
-  user                      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  businessName              String
-  contactEmail              String
-  contactPhone              String?
-  stripeAccountId           String?
-  stripeOnboardingComplete  Boolean            @default(false)
-  stripeChargesEnabled      Boolean            @default(false)
-  stripePayoutsEnabled      Boolean            @default(false)
-  /** When Connect account id was first saved (onboarding started). */
-  stripeConnectStartedAt    DateTime?
-  /** Email: started Connect but charges still disabled (restricted / incomplete). */
-  stripeRestrictedNudgeSentAt DateTime?
-  /** Email: stand set up but Stripe never connected (optional card nudge). */
+  id                            String                       @id @default(cuid())
+  userId                        String                       @unique
+  user                          User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName                  String
+  contactEmail                  String
+  contactPhone                  String?
+  stripeAccountId               String?
+  stripeOnboardingComplete      Boolean                      @default(false)
+  stripeChargesEnabled          Boolean                      @default(false)
+  stripePayoutsEnabled          Boolean                      @default(false)
+  /**
+   * When Connect account id was first saved (onboarding started).
+   */
+  stripeConnectStartedAt        DateTime?
+  /**
+   * Email: started Connect but charges still disabled (restricted / incomplete).
+   */
+  stripeRestrictedNudgeSentAt   DateTime?
+  /**
+   * Email: stand set up but Stripe never connected (optional card nudge).
+   */
   stripeNeverStartedNudgeSentAt DateTime?
-  /** Platform Billing customer (Vendl SaaS subscription) */
-  stripeCustomerId          String?
-  /** Platform Billing subscription id */
-  stripeSubscriptionId      String?
-  paypalMerchantId          String?
-  paypalOnboardingComplete  Boolean            @default(false)
-  paypalPaymentsEnabled     Boolean            @default(false)
-  emailAlertsEnabled        Boolean            @default(true)
-  pushAlertsEnabled         Boolean            @default(true)
-  alertEmails               String[]           @default([])
-  subscriptionStatus        SubscriptionStatus @default(NONE)
-  /** free | pro | pro_paypal - legacy starter/cash/card values accepted. */
-  subscriptionPlan          String?            @default("free")
-  /** Free Pro forever (invite or admin grant). */
-  lifetimeAccess            Boolean            @default(false)
-  lifetimeEndedAt           DateTime?
-  pricingModel              PricingModel       @default(V2026)
-  pricingModelChangedAt     DateTime?
-  /** pro_subscribed | square_connected */
-  pricingModelReason        String?
-  monthlyFeeCents           Int                @default(0)
-  /** Free plan: pass Vendl card fee to customer (default absorb). */
-  passFeeToCustomer         Boolean            @default(false)
-  /** Currency of the SaaS subscription (AUD/USD/GBP/EUR) */
-  billingCurrency           String             @default("AUD")
-  /** Sum of paid SaaS invoices (platform Billing), in invoice currency units */
-  lifetimePaidCents         Int                @default(0)
-  subscriptionStartedAt     DateTime?
-  /** App-managed trial end (no card until they subscribe) */
-  trialEndsAt               DateTime?
-  /** Day 30 trial-ended email (lifecycle sequence) */
-  trialReminderSentAt       DateTime?
-  trialWelcomeSentAt        DateTime?
-  /** Personal note from Jono, 3 days after signup. */
-  creatorDay3SentAt         DateTime?
-  trialDay7SentAt           DateTime?
-  trialDay14SentAt          DateTime?
-  trialDay23SentAt          DateTime?
-  trialDay28SentAt          DateTime?
-  trialDay45SentAt          DateTime?
-  /** When paid Pro last fully lapsed to Starter (anchor for lapse emails). */
-  proLapsedAt               DateTime?
-  /** Pro cancel/lapse sequence (day 0 / 23 / 45). */
-  proLapseDay0SentAt        DateTime?
-  proLapseDay23SentAt       DateTime?
-  proLapseDay45SentAt       DateTime?
-  cashWelcomeSentAt         DateTime?
-  cashSubscribedAt          DateTime?
-  cashUpgradeDay2SentAt     DateTime?
-  cashUpgradeDay7SentAt     DateTime?
-  cashUpgradeDay14SentAt    DateTime?
-  /** Pro welcome after paid subscribe (legacy name cardWelcomeSentAt). */
-  cardWelcomeSentAt         DateTime?
-  firstTenOrdersEmailSentAt DateTime?
-  /** Cancellation / leave feedback email (portal cancel or delete). */
-  cancelFeedbackSentAt      DateTime?
-  /** Access continues until this time after cancel-at-period-end */
-  currentPeriodEndsAt       DateTime?
-  cancelAtPeriodEnd         Boolean            @default(false)
-  platformFeePercentBps     Int                @default(200)
-  stands                    Stand[]
-  products                  Product[]
-  categories                Category[]
-  qrCodes                   QrCode[]
-  customers                 Customer[]
-  storefront                Storefront?
-  domainPurchases           DomainPurchase[]
-  preOrderPages             PreOrderPage[]
-  menus                     Menu[]
-  subscriptionOffers        SubscriptionOffer[]
-  shopperSubscriptions      ShopperSubscription[]
-  orders                    Order[]
-  inventoryAdjustments      InventoryAdjustment[]
-  standMembers              StandMember[]
-  lowStockAlerts            LowStockAlert[]
-  pushDevices               PushDevice[]
-  galleryStands             GalleryStand[]
-  notifications             Notification[]
-  pickupLocations           PickupLocation[]
-  pickupWindows             PickupWindow[]
-  deliveryZones             DeliveryZone[]
-  fulfilmentOptions         FulfilmentOption[]
-  ingredients               Ingredient[]
-  recipes                   Recipe[]
-  productionPlans           ProductionPlan[]
-  customerTags              CustomerTag[]
-  customerSegments          CustomerSegment[]
-  promotions                Promotion[]
-  campaigns                 Campaign[]
-  marketingSuppressions     MarketingSuppression[]
-  loyaltyProgram            LoyaltyProgram?
-  reviews                   Review[]
-  giftCards                 GiftCard[]
-  customOrderForms          CustomOrderForm[]
-  customOrderRequests       CustomOrderRequest[]
-  sellerEvents              SellerEvent[]
-  externalCommerceConnections ExternalCommerceConnection[]
-  /** Preferred online card rail when both Stripe and Square are connected. */
-  onlinePaymentProvider     OnlinePaymentProvider @default(STRIPE)
-  /** Soft-close: data retained, login/emails/stands stopped. */
-  deletedAt                 DateTime?
-  /** Ad click ids + UTMs from first signup (for Perform/Meta pushback). */
-  adAttribution             Json?
-  /** First catalogue product went live (signup→live timing). */
-  firstProductLiveAt        DateTime?
-  /** Stall→pre-orders contextual cross-sell dismissed. */
+  /**
+   * Platform Billing customer (Vendl SaaS subscription)
+   */
+  stripeCustomerId              String?
+  /**
+   * Platform Billing subscription id
+   */
+  stripeSubscriptionId          String?
+  paypalMerchantId              String?
+  paypalOnboardingComplete      Boolean                      @default(false)
+  paypalPaymentsEnabled         Boolean                      @default(false)
+  emailAlertsEnabled            Boolean                      @default(true)
+  pushAlertsEnabled             Boolean                      @default(true)
+  alertEmails                   String[]                     @default([])
+  subscriptionStatus            SubscriptionStatus           @default(NONE)
+  /**
+   * free | pro | pro_paypal - legacy starter/cash/card values accepted.
+   */
+  subscriptionPlan              String?                      @default("free")
+  /**
+   * Free Pro forever (invite or admin grant).
+   */
+  lifetimeAccess                Boolean                      @default(false)
+  lifetimeEndedAt               DateTime?
+  pricingModel                  PricingModel                 @default(V2026)
+  pricingModelChangedAt         DateTime?
+  /**
+   * pro_subscribed | square_connected
+   */
+  pricingModelReason            String?
+  monthlyFeeCents               Int                          @default(0)
+  /**
+   * Free plan: pass Vendl card fee to customer (default absorb).
+   */
+  passFeeToCustomer             Boolean                      @default(false)
+  /**
+   * Currency of the SaaS subscription (AUD/USD/GBP/EUR)
+   */
+  billingCurrency               String                       @default("AUD")
+  /**
+   * Sum of paid SaaS invoices (platform Billing), in invoice currency units
+   */
+  lifetimePaidCents             Int                          @default(0)
+  subscriptionStartedAt         DateTime?
+  /**
+   * App-managed trial end (no card until they subscribe)
+   */
+  trialEndsAt                   DateTime?
+  /**
+   * Day 30 trial-ended email (lifecycle sequence)
+   */
+  trialReminderSentAt           DateTime?
+  trialWelcomeSentAt            DateTime?
+  /**
+   * Personal note from Jono, 3 days after signup.
+   */
+  creatorDay3SentAt             DateTime?
+  trialDay7SentAt               DateTime?
+  trialDay14SentAt              DateTime?
+  trialDay23SentAt              DateTime?
+  trialDay28SentAt              DateTime?
+  trialDay45SentAt              DateTime?
+  /**
+   * When paid Pro last fully lapsed to Starter (anchor for lapse emails).
+   */
+  proLapsedAt                   DateTime?
+  /**
+   * Pro cancel/lapse sequence (day 0 / 23 / 45).
+   */
+  proLapseDay0SentAt            DateTime?
+  proLapseDay23SentAt           DateTime?
+  proLapseDay45SentAt           DateTime?
+  cashWelcomeSentAt             DateTime?
+  cashSubscribedAt              DateTime?
+  cashUpgradeDay2SentAt         DateTime?
+  cashUpgradeDay7SentAt         DateTime?
+  cashUpgradeDay14SentAt        DateTime?
+  /**
+   * Pro welcome after paid subscribe (legacy name cardWelcomeSentAt).
+   */
+  cardWelcomeSentAt             DateTime?
+  firstTenOrdersEmailSentAt     DateTime?
+  /**
+   * Cancellation / leave feedback email (portal cancel or delete).
+   */
+  cancelFeedbackSentAt          DateTime?
+  /**
+   * Access continues until this time after cancel-at-period-end
+   */
+  currentPeriodEndsAt           DateTime?
+  cancelAtPeriodEnd             Boolean                      @default(false)
+  platformFeePercentBps         Int                          @default(200)
+  stands                        Stand[]
+  products                      Product[]
+  categories                    Category[]
+  qrCodes                       QrCode[]
+  customers                     Customer[]
+  storefront                    Storefront?
+  domainPurchases               DomainPurchase[]
+  preOrderPages                 PreOrderPage[]
+  menus                         Menu[]
+  subscriptionOffers            SubscriptionOffer[]
+  shopperSubscriptions          ShopperSubscription[]
+  orders                        Order[]
+  inventoryAdjustments          InventoryAdjustment[]
+  standMembers                  StandMember[]
+  lowStockAlerts                LowStockAlert[]
+  pushDevices                   PushDevice[]
+  galleryStands                 GalleryStand[]
+  notifications                 Notification[]
+  pickupLocations               PickupLocation[]
+  pickupWindows                 PickupWindow[]
+  deliveryZones                 DeliveryZone[]
+  fulfilmentOptions             FulfilmentOption[]
+  ingredients                   Ingredient[]
+  recipes                       Recipe[]
+  productionPlans               ProductionPlan[]
+  customerTags                  CustomerTag[]
+  customerSegments              CustomerSegment[]
+  promotions                    Promotion[]
+  campaigns                     Campaign[]
+  marketingSuppressions         MarketingSuppression[]
+  loyaltyProgram                LoyaltyProgram?
+  reviews                       Review[]
+  giftCards                     GiftCard[]
+  customOrderForms              CustomOrderForm[]
+  customOrderRequests           CustomOrderRequest[]
+  sellerEvents                  SellerEvent[]
+  externalCommerceConnections   ExternalCommerceConnection[]
+  calendarConnections           CalendarConnection[]
+  /**
+   * Preferred online card rail when both Stripe and Square are connected.
+   */
+  onlinePaymentProvider         OnlinePaymentProvider        @default(STRIPE)
+  /**
+   * Soft-close: data retained, login/emails/stands stopped.
+   */
+  deletedAt                     DateTime?
+  /**
+   * Ad click ids + UTMs from first signup (for Perform/Meta pushback).
+   */
+  adAttribution                 Json?
+  /**
+   * First catalogue product went live (signup→live timing).
+   */
+  firstProductLiveAt            DateTime?
+  /**
+   * Stall→pre-orders contextual cross-sell dismissed.
+   */
   preOrdersCrossSellDismissedAt DateTime?
   /**
    * Onboarding preset: FARM_STAND | FOOD_BUSINESS | BOTH.
    * Configures checklist/nav emphasis only — not a separate account type.
    */
-  businessMode              String?
-  /** ISO country; AU-first onboarding defaults here. */
-  country                   String             @default("AU")
-  stateTerritory            String?
-  suburb                    String?
-  postcode                  String?
-  abn                       String?
-  gstRegistered             Boolean            @default(false)
-  pricesIncludeGst          Boolean            @default(true)
-  shortDescription          String?
-  /** Multi-select sell categories from onboarding (eggs, bread, …). */
-  sellCategories            String[]           @default([])
-  /** Intents: farm_stand | pickup | delivery | preorders | subscriptions */
-  fulfilmentIntents         String[]           @default([])
-  /** Null until guided setup finished or skipped (legacy backfilled). */
-  onboardingCompletedAt     DateTime?
-  /** Brand defaults applied to first stand during onboarding theme step. */
-  brandAccentColor          String?
-  brandSecondaryColor       String?
-  brandLogoUrl              String?
-  defaultTimezone           String             @default("Australia/Adelaide")
-  createdAt                 DateTime           @default(now())
-  updatedAt                 DateTime           @updatedAt
+  businessMode                  String?
+  /**
+   * ISO country; AU-first onboarding defaults here.
+   */
+  country                       String                       @default("AU")
+  stateTerritory                String?
+  suburb                        String?
+  postcode                      String?
+  abn                           String?
+  gstRegistered                 Boolean                      @default(false)
+  pricesIncludeGst              Boolean                      @default(true)
+  shortDescription              String?
+  /**
+   * Multi-select sell categories from onboarding (eggs, bread, …).
+   */
+  sellCategories                String[]                     @default([])
+  /**
+   * Intents: farm_stand | pickup | delivery | preorders | subscriptions
+   */
+  fulfilmentIntents             String[]                     @default([])
+  /**
+   * Null until guided setup finished or skipped (legacy backfilled).
+   */
+  onboardingCompletedAt         DateTime?
+  /**
+   * Brand defaults applied to first stand during onboarding theme step.
+   */
+  brandAccentColor              String?
+  brandSecondaryColor           String?
+  brandLogoUrl                  String?
+  defaultTimezone               String                       @default("Australia/Adelaide")
+  createdAt                     DateTime                     @default(now())
+  updatedAt                     DateTime                     @updatedAt
 
   @@index([deletedAt])
 }
 
-/** Public stand gallery - admin-curated + owner submissions */
+/**
+ * Public stand gallery - admin-curated + owner submissions
+ */
 model GalleryStand {
   id          String        @id @default(cuid())
   displayName String
@@ -502,106 +603,152 @@ model PushDevice {
 }
 
 model Stand {
-  id                 String               @id @default(cuid())
-  ownerId            String
-  owner              Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  name               String
-  slug               String               @unique
-  description        String?
-  locationLabel      String?
-  qrSignMessage      String?
-  qrCallout          String?
-  currency           String               @default("AUD")
-  /** IANA timezone for order-by / collection wall-clock times. */
-  timezone           String               @default("Australia/Adelaide")
-  /** PayID / Pix / UPI alias shown at checkout (owner-direct; not verified). */
-  localTransferAlias String?
-  localTransferMethodId String?
-  /** Per-stand checkout method toggles (still need owner Connect for card/PayPal). */
-  acceptCash         Boolean              @default(true)
-  acceptLocalTransfer Boolean             @default(true)
-  acceptCard         Boolean              @default(true)
-  acceptPayPal       Boolean              @default(false)
-  /** Square Web Payments at stand checkout (requires healthy Square connection). */
-  acceptSquare       Boolean              @default(false)
-  showExactStock     Boolean              @default(false)
-  /** Show “Only N left” when stock ≤ lowStockThreshold (public). */
-  showPublicScarcity Boolean              @default(true)
-  /** Show Subscriptions / Memberships in the public stand header nav. */
-  showSubscriptionsOnStand Boolean        @default(false)
-  isActive           Boolean              @default(true)
-  /** PRODUCT = catalog cart (default); CUSTOMER_CHOICE = open dollar amount. */
-  cartMode           CartMode             @default(PRODUCT)
-  /** Hidden sentinel product for Customer Choice checkout lines. */
-  customerChoiceProductId String?
-  /** Stand-level cart upsell product (optional) - take-now carts. */
-  upsellProductId    String?
-  /** Optional override price when added via upsell card. */
-  upsellPriceCents   Int?
-  /** Pre-order cart add-on (name + price); linked hidden product. */
-  preOrderUpsellName String?
-  preOrderUpsellPriceCents Int?
-  /** PERCENT | AMOUNT - off the list price for customer display. */
-  preOrderUpsellDiscountKind String?
-  /** Percent 1–100, or cents off when AMOUNT. */
-  preOrderUpsellDiscountValue Int?
-  preOrderUpsellProductId String?
-  firstOrderDiscountEnabled Boolean        @default(false)
-  /** Percent off first order (used when amount cents unset). */
-  firstOrderDiscountPercent Int            @default(10)
-  /** Fixed amount off; if set, wins over percent. */
+  id                            String                    @id @default(cuid())
+  ownerId                       String
+  owner                         Owner                     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name                          String
+  slug                          String                    @unique
+  description                   String?
+  locationLabel                 String?
+  qrSignMessage                 String?
+  qrCallout                     String?
+  currency                      String                    @default("AUD")
+  /**
+   * IANA timezone for order-by / collection wall-clock times.
+   */
+  timezone                      String                    @default("Australia/Adelaide")
+  /**
+   * PayID / Pix / UPI alias shown at checkout (owner-direct; not verified).
+   */
+  localTransferAlias            String?
+  localTransferMethodId         String?
+  /**
+   * Per-stand checkout method toggles (still need owner Connect for card/PayPal).
+   */
+  acceptCash                    Boolean                   @default(true)
+  acceptLocalTransfer           Boolean                   @default(true)
+  acceptCard                    Boolean                   @default(true)
+  acceptPayPal                  Boolean                   @default(false)
+  /**
+   * Square Web Payments at stand checkout (requires healthy Square connection).
+   */
+  acceptSquare                  Boolean                   @default(false)
+  showExactStock                Boolean                   @default(false)
+  /**
+   * Show “Only N left” when stock ≤ lowStockThreshold (public).
+   */
+  showPublicScarcity            Boolean                   @default(true)
+  /**
+   * Show Subscriptions / Memberships in the public stand header nav.
+   */
+  showSubscriptionsOnStand      Boolean                   @default(false)
+  isActive                      Boolean                   @default(true)
+  /**
+   * PRODUCT = catalog cart (default); CUSTOMER_CHOICE = open dollar amount.
+   */
+  cartMode                      CartMode                  @default(PRODUCT)
+  /**
+   * Hidden sentinel product for Customer Choice checkout lines.
+   */
+  customerChoiceProductId       String?
+  /**
+   * Stand-level cart upsell product (optional) - take-now carts.
+   */
+  upsellProductId               String?
+  /**
+   * Optional override price when added via upsell card.
+   */
+  upsellPriceCents              Int?
+  /**
+   * Pre-order cart add-on (name + price); linked hidden product.
+   */
+  preOrderUpsellName            String?
+  preOrderUpsellPriceCents      Int?
+  /**
+   * PERCENT | AMOUNT - off the list price for customer display.
+   */
+  preOrderUpsellDiscountKind    String?
+  /**
+   * Percent 1–100, or cents off when AMOUNT.
+   */
+  preOrderUpsellDiscountValue   Int?
+  preOrderUpsellProductId       String?
+  firstOrderDiscountEnabled     Boolean                   @default(false)
+  /**
+   * Percent off first order (used when amount cents unset).
+   */
+  firstOrderDiscountPercent     Int                       @default(10)
+  /**
+   * Fixed amount off; if set, wins over percent.
+   */
   firstOrderDiscountAmountCents Int?
-  posterShowCta      Boolean              @default(true)
-  posterCtaText      String?
-  posterShowBundles  Boolean              @default(true)
-  posterShowFirstOrder Boolean            @default(true)
-  posterShowInstructions Boolean          @default(true)
-  posterShowFreshness Boolean             @default(false)
-  posterShowHowItWorks Boolean            @default(false)
-  /** Owner logo for public stall + QR poster (Pro). */
-  logoUrl            String?
-  /** Landscape image for link previews (WhatsApp, Facebook, iMessage). Falls back to logo. */
-  ogImageUrl         String?
-  /** Hex accent e.g. #2e7d3f - overrides --leaf on public stall + QR. */
-  accentColor        String?
-  /** Hex secondary for prices / stock labels - overrides --ok. */
-  secondaryColor     String?
-  /** Optional social / website links shown on the public stall (Pro). */
-  instagramUrl       String?
-  facebookUrl        String?
-  tiktokUrl          String?
-  youtubeUrl         String?
-  websiteUrl         String?
-  /** Vertical config key: bakers | farm-stalls | firewood | … */
-  verticalSlug       String?
-  /** Where printed QR codes should land. Prefer website when a storefront exists. */
-  qrLinkMode         StandQrLinkMode      @default(WEBSITE_HOME)
-  /** Public shop page: every product, or category tiles. */
-  shopLayout         StandShopLayout      @default(ALL_PRODUCTS)
-  qrCategoryId       String?
-  qrCategory         Category?            @relation("StandQrCategory", fields: [qrCategoryId], references: [id], onDelete: SetNull)
-  products           Product[]
-  productChannels    ProductChannel[]
-  externalLocationMappings ExternalLocationMapping[]
-  preOrderPages      PreOrderPage[]
-  menus              Menu[]
-  subscriptionOffers SubscriptionOffer[]
-  shopperSubscriptions ShopperSubscription[]
-  orders             Order[]
-  inventoryAdjustments InventoryAdjustment[]
-  standMembers       StandMember[]
-  lowStockAlerts     LowStockAlert[]
-  restockSubscribers RestockSubscriber[]
-  restockNotifications RestockNotification[]
-  cardInterests      CardInterest[]
-  channelInterests   ChannelInterest[]
-  notifications      Notification[]
-  fulfilmentOptions  FulfilmentOption[]
-  pickupLocations    PickupLocation[]
-  sellerEvents       SellerEvent[]
-  qrCodes            QrCode[]
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  posterShowCta                 Boolean                   @default(true)
+  posterCtaText                 String?
+  posterShowBundles             Boolean                   @default(true)
+  posterShowFirstOrder          Boolean                   @default(true)
+  posterShowInstructions        Boolean                   @default(true)
+  posterShowFreshness           Boolean                   @default(false)
+  posterShowHowItWorks          Boolean                   @default(false)
+  /**
+   * Owner logo for public stall + QR poster (Pro).
+   */
+  logoUrl                       String?
+  /**
+   * Landscape image for link previews (WhatsApp, Facebook, iMessage). Falls back to logo.
+   */
+  ogImageUrl                    String?
+  /**
+   * Hex accent e.g. #2e7d3f - overrides --leaf on public stall + QR.
+   */
+  accentColor                   String?
+  /**
+   * Hex secondary for prices / stock labels - overrides --ok.
+   */
+  secondaryColor                String?
+  /**
+   * Optional social / website links shown on the public stall (Pro).
+   */
+  instagramUrl                  String?
+  facebookUrl                   String?
+  tiktokUrl                     String?
+  youtubeUrl                    String?
+  websiteUrl                    String?
+  /**
+   * Vertical config key: bakers | farm-stalls | firewood | …
+   */
+  verticalSlug                  String?
+  /**
+   * Where printed QR codes should land. Prefer website when a storefront exists.
+   */
+  qrLinkMode                    StandQrLinkMode           @default(WEBSITE_HOME)
+  /**
+   * Public shop page: every product, or category tiles.
+   */
+  shopLayout                    StandShopLayout           @default(ALL_PRODUCTS)
+  qrCategoryId                  String?
+  qrCategory                    Category?                 @relation("StandQrCategory", fields: [qrCategoryId], references: [id], onDelete: SetNull)
+  products                      Product[]
+  productChannels               ProductChannel[]
+  externalLocationMappings      ExternalLocationMapping[]
+  preOrderPages                 PreOrderPage[]
+  menus                         Menu[]
+  subscriptionOffers            SubscriptionOffer[]
+  shopperSubscriptions          ShopperSubscription[]
+  orders                        Order[]
+  inventoryAdjustments          InventoryAdjustment[]
+  standMembers                  StandMember[]
+  lowStockAlerts                LowStockAlert[]
+  restockSubscribers            RestockSubscriber[]
+  restockNotifications          RestockNotification[]
+  cardInterests                 CardInterest[]
+  channelInterests              ChannelInterest[]
+  notifications                 Notification[]
+  fulfilmentOptions             FulfilmentOption[]
+  pickupLocations               PickupLocation[]
+  sellerEvents                  SellerEvent[]
+  qrCodes                       QrCode[]
+  createdAt                     DateTime                  @default(now())
+  updatedAt                     DateTime                  @updatedAt
 
   @@index([ownerId])
   @@index([qrCategoryId])
@@ -640,24 +787,28 @@ model QrCode {
   @@index([categoryId])
 }
 
-/** Owner catalogue taxonomy (not onboarding sellCategories tips). */
+/**
+ * Owner catalogue taxonomy (not onboarding sellCategories tips).
+ */
 model Category {
-  id             String             @id @default(cuid())
-  ownerId        String
-  owner          Owner              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  title          String
-  slug           String
-  description    String?
-  imageUrl       String?
-  sortOrder      Int                @default(0)
-  isActive       Boolean            @default(true)
-  /** When false, hidden from main-site nav/chips; direct /shop/{slug} still works (QR/stall). */
-  showOnWebsite  Boolean            @default(true)
-  products       ProductCategory[]
-  qrStands       Stand[]            @relation("StandQrCategory")
-  qrCodes        QrCode[]
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  id            String            @id @default(cuid())
+  ownerId       String
+  owner         Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title         String
+  slug          String
+  description   String?
+  imageUrl      String?
+  sortOrder     Int               @default(0)
+  isActive      Boolean           @default(true)
+  /**
+   * When false, hidden from main-site nav/chips; direct /shop/{slug} still works (QR/stall).
+   */
+  showOnWebsite Boolean           @default(true)
+  products      ProductCategory[]
+  qrStands      Stand[]           @relation("StandQrCategory")
+  qrCodes       QrCode[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 
   @@unique([ownerId, slug])
   @@index([ownerId, sortOrder])
@@ -702,19 +853,25 @@ model ProductChannel {
   @@index([productId])
 }
 
-/** Lightweight CRM — only created when an email exists (never for cash anonymity). */
+/**
+ * Lightweight CRM — only created when an email exists (never for cash anonymity).
+ */
 model Customer {
-  id                   String                 @id @default(cuid())
+  id                   String                @id @default(cuid())
   ownerId              String
-  owner                Owner                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  /** Normalised lowercase email when known. */
+  owner                Owner                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  /**
+   * Normalised lowercase email when known.
+   */
   email                String?
   name                 String?
   phone                String?
   notes                String?
-  marketingConsent     Boolean                @default(false)
+  marketingConsent     Boolean               @default(false)
   marketingConsentAt   DateTime?
-  /** First-seen channel hint e.g. order | subscription | restock */
+  /**
+   * First-seen channel hint e.g. order | subscription | restock
+   */
   source               String?
   orders               Order[]
   shopperSubscriptions ShopperSubscription[]
@@ -724,50 +881,66 @@ model Customer {
   reviews              Review[]
   campaignRecipients   CampaignRecipient[]
   giftCardsIssued      GiftCard[]
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 
   @@unique([ownerId, email])
   @@index([ownerId, createdAt])
 }
 
-/** Owner online shop at /shop/{slug} — separate from farm-stand QR URLs. */
+/**
+ * Owner online shop at /shop/{slug} — separate from farm-stand QR URLs.
+ */
 model Storefront {
-  id              String    @id @default(cuid())
-  ownerId         String    @unique
-  owner           Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  /** Public path segment: vendl.app/shop/{slug} */
-  slug            String    @unique
-  isPublished     Boolean   @default(false)
-  headline        String?
-  subheadline     String?
-  about           String?
-  heroImageUrl    String?
-  /** Browser tab icon for the shop storefront. */
-  faviconUrl      String?
-  themePreset     String    @default("market")
-  /** Working copy — saved on “Save draft”. */
-  draftConfig     Json      @default("{}")
-  /** Bumped on every draft write; writers must match it (optimistic concurrency). */
-  draftRevision   Int       @default(0)
-  /** Snapshot copied from draft on publish. */
-  publishedConfig Json?
-  publishedAt     DateTime?
+  id                  String                  @id @default(cuid())
+  ownerId             String                  @unique
+  owner               Owner                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  /**
+   * Public path segment: vendl.app/shop/{slug}
+   */
+  slug                String                  @unique
+  isPublished         Boolean                 @default(false)
+  headline            String?
+  subheadline         String?
+  about               String?
+  heroImageUrl        String?
+  /**
+   * Browser tab icon for the shop storefront.
+   */
+  faviconUrl          String?
+  themePreset         String                  @default("market")
+  /**
+   * Working copy — saved on “Save draft”.
+   */
+  draftConfig         Json                    @default("{}")
+  /**
+   * Bumped on every draft write; writers must match it (optimistic concurrency).
+   */
+  draftRevision       Int                     @default(0)
+  /**
+   * Snapshot copied from draft on publish.
+   */
+  publishedConfig     Json?
+  publishedAt         DateTime?
   activePublicationId String?
-  publications    StorefrontPublication[]
-  contactEmail    String?
-  showPhone       Boolean   @default(false)
-  /** Legacy single field; prefer StorefrontDomain rows (Phase 9). */
-  customDomain    String?
-  domains         StorefrontDomain[]
-  domainPurchases DomainPurchase[]
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  publications        StorefrontPublication[]
+  contactEmail        String?
+  showPhone           Boolean                 @default(false)
+  /**
+   * Legacy single field; prefer StorefrontDomain rows (Phase 9).
+   */
+  customDomain        String?
+  domains             StorefrontDomain[]
+  domainPurchases     DomainPurchase[]
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
 
   @@index([isPublished])
 }
 
-/** Immutable snapshot of a published website. Never updated after insert. */
+/**
+ * Immutable snapshot of a published website. Never updated after insert.
+ */
 model StorefrontPublication {
   id              String     @id @default(cuid())
   storefrontId    String
@@ -805,7 +978,9 @@ enum DomainPurchaseStatus {
   CANCELLED
 }
 
-/** Phase 9A — Buy a Domain order (pay before Namecheap register). */
+/**
+ * Phase 9A — Buy a Domain order (pay before Namecheap register).
+ */
 model DomainPurchase {
   id                      String               @id @default(cuid())
   ownerId                 String
@@ -816,7 +991,9 @@ model DomainPurchase {
   storefrontDomain        StorefrontDomain?    @relation(fields: [storefrontDomainId], references: [id], onDelete: SetNull)
   registrar               String               @default("NAMECHEAP")
   registrarDomainId       String?
-  /** Apex hostname purchased (e.g. farm.com.au). */
+  /**
+   * Apex hostname purchased (e.g. farm.com.au).
+   */
   hostname                String
   tld                     String
   status                  DomainPurchaseStatus @default(AWAITING_PAYMENT)
@@ -830,7 +1007,9 @@ model DomainPurchase {
   stripeCheckoutSessionId String?
   stripePaymentIntentId   String?
   idempotencyKey          String               @unique
-  /** Minimal registrant snapshot for post-payment register (server-only). */
+  /**
+   * Minimal registrant snapshot for post-payment register (server-only).
+   */
   registrantJson          Json
   auEligibilityJson       Json?
   lastError               String?
@@ -844,12 +1023,16 @@ model DomainPurchase {
   @@index([hostname])
 }
 
-/** Phase 9 — hostname → storefront mapping (Vendl subdomain or Cloudflare custom hostname). */
+/**
+ * Phase 9 — hostname → storefront mapping (Vendl subdomain or Cloudflare custom hostname).
+ */
 model StorefrontDomain {
   id                         String                 @id @default(cuid())
   storefrontId               String
   storefront                 Storefront             @relation(fields: [storefrontId], references: [id], onDelete: Cascade)
-  /** Normalized hostname only (no scheme/path/port). */
+  /**
+   * Normalized hostname only (no scheme/path/port).
+   */
   hostname                   String                 @unique
   type                       StorefrontDomainType
   status                     StorefrontDomainStatus @default(PENDING)
@@ -937,14 +1120,14 @@ model PickupWindow {
 }
 
 model DeliveryZone {
-  id                   String             @id @default(cuid())
+  id                   String                 @id @default(cuid())
   ownerId              String
-  owner                Owner              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner                Owner                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   name                 String
-  deliveryFeeCents     Int                @default(0)
+  deliveryFeeCents     Int                    @default(0)
   freeDeliveryMinCents Int?
-  minOrderCents        Int                @default(0)
-  timezone             String             @default("Australia/Adelaide")
+  minOrderCents        Int                    @default(0)
+  timezone             String                 @default("Australia/Adelaide")
   recurrence           PickupWindowRecurrence @default(WEEKLY)
   weekday              Int?
   startTimeMin         Int?
@@ -952,10 +1135,10 @@ model DeliveryZone {
   orderCloseWeekday    Int?
   orderCloseTimeMin    Int?
   customerInstructions String?
-  isActive             Boolean            @default(true)
-  sortOrder            Int                @default(0)
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
+  isActive             Boolean                @default(true)
+  sortOrder            Int                    @default(0)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
   rules                DeliveryZoneRule[]
   fulfilmentOptions    FulfilmentOption[]
 
@@ -963,9 +1146,9 @@ model DeliveryZone {
 }
 
 model DeliveryZoneRule {
-  id             String              @id @default(cuid())
+  id             String               @id @default(cuid())
   deliveryZoneId String
-  deliveryZone   DeliveryZone        @relation(fields: [deliveryZoneId], references: [id], onDelete: Cascade)
+  deliveryZone   DeliveryZone         @relation(fields: [deliveryZoneId], references: [id], onDelete: Cascade)
   kind           DeliveryZoneRuleKind
   value          String
 
@@ -973,36 +1156,38 @@ model DeliveryZoneRule {
 }
 
 model FulfilmentOption {
-  id                  String               @id @default(cuid())
+  id                  String                    @id @default(cuid())
   ownerId             String
-  owner               Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner               Owner                     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   kind                FulfilmentOptionKind
   label               String
   standId             String?
-  stand               Stand?               @relation(fields: [standId], references: [id], onDelete: Cascade)
+  stand               Stand?                    @relation(fields: [standId], references: [id], onDelete: Cascade)
   pickupLocationId    String?
-  pickupLocation      PickupLocation?      @relation(fields: [pickupLocationId], references: [id], onDelete: SetNull)
+  pickupLocation      PickupLocation?           @relation(fields: [pickupLocationId], references: [id], onDelete: SetNull)
   pickupWindowId      String?
-  pickupWindow        PickupWindow?        @relation(fields: [pickupWindowId], references: [id], onDelete: SetNull)
+  pickupWindow        PickupWindow?             @relation(fields: [pickupWindowId], references: [id], onDelete: SetNull)
   deliveryZoneId      String?
-  deliveryZone        DeliveryZone?        @relation(fields: [deliveryZoneId], references: [id], onDelete: SetNull)
-  preOrderPageId      String?              @unique
-  preOrderPage        PreOrderPage?        @relation(fields: [preOrderPageId], references: [id], onDelete: SetNull)
-  menuId              String?              @unique
-  menu                Menu?                @relation(fields: [menuId], references: [id], onDelete: SetNull)
-  subscriptionOfferId String?              @unique
-  subscriptionOffer   SubscriptionOffer?   @relation(fields: [subscriptionOfferId], references: [id], onDelete: SetNull)
-  handoverMode        HandoverMode         @default(COLLECT)
-  paymentTiming       PaymentTiming        @default(PAY_NOW)
+  deliveryZone        DeliveryZone?             @relation(fields: [deliveryZoneId], references: [id], onDelete: SetNull)
+  preOrderPageId      String?                   @unique
+  preOrderPage        PreOrderPage?             @relation(fields: [preOrderPageId], references: [id], onDelete: SetNull)
+  menuId              String?                   @unique
+  menu                Menu?                     @relation(fields: [menuId], references: [id], onDelete: SetNull)
+  subscriptionOfferId String?                   @unique
+  subscriptionOffer   SubscriptionOffer?        @relation(fields: [subscriptionOfferId], references: [id], onDelete: SetNull)
+  handoverMode        HandoverMode              @default(COLLECT)
+  paymentTiming       PaymentTiming             @default(PAY_NOW)
   depositPercent      Int?
-  minOrderCents       Int                  @default(0)
-  feeCents            Int                  @default(0)
-  /** STAND | ONLINE — which channels surface this option. */
-  channels            String[]             @default(["STAND"])
-  isActive            Boolean              @default(true)
-  sortOrder           Int                  @default(0)
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  minOrderCents       Int                       @default(0)
+  feeCents            Int                       @default(0)
+  /**
+   * STAND | ONLINE — which channels surface this option.
+   */
+  channels            String[]                  @default(["STAND"])
+  isActive            Boolean                   @default(true)
+  sortOrder           Int                       @default(0)
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
   products            ProductFulfilmentOption[]
   orderSnapshots      OrderFulfilment[]
 
@@ -1049,7 +1234,9 @@ model OrderFulfilment {
   @@index([fulfilmentOptionId])
 }
 
-/** Starter checkout: shopper tapped "I'd have paid by card" (no PII). */
+/**
+ * Starter checkout: shopper tapped "I'd have paid by card" (no PII).
+ */
 model CardInterest {
   id            String   @id @default(cuid())
   standId       String
@@ -1066,14 +1253,16 @@ enum ChannelInterestKind {
   SUBSCRIPTION
 }
 
-/** Shopper asked the stall to offer pre-orders or subscriptions. */
+/**
+ * Shopper asked the stall to offer pre-orders or subscriptions.
+ */
 model ChannelInterest {
-  id        String               @id @default(cuid())
+  id        String              @id @default(cuid())
   standId   String
-  stand     Stand                @relation(fields: [standId], references: [id], onDelete: Cascade)
+  stand     Stand               @relation(fields: [standId], references: [id], onDelete: Cascade)
   kind      ChannelInterestKind
   email     String
-  createdAt DateTime             @default(now())
+  createdAt DateTime            @default(now())
 
   @@unique([standId, kind, email])
   @@index([standId, createdAt])
@@ -1086,93 +1275,139 @@ model ChannelInterest {
  * via ProductChannel. External commerce IDs live in External*Mapping tables.
  */
 model Product {
-  id                 String               @id @default(cuid())
-  standId            String
-  stand              Stand                @relation(fields: [standId], references: [id], onDelete: Cascade)
-  ownerId            String
-  owner              Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  name               String
-  /** URL segment under /s/{standSlug}/{slug}; unique per stand. */
-  slug               String
-  description        String?
-  imageUrl           String?
-  seoTitle           String?
-  seoDescription     String?
-  priceCents         Int
-  /** Owner-only unit cost; profit = priceCents - costCents when set. */
-  costCents          Int?
-  /** Owner-only stock-keeping unit. */
-  sku                String?
-  /** Owner-only barcode / UPC. */
-  upc                String?
-  currency           String               @default("AUD")
-  stockQuantity      Int                  @default(0)
-  lowStockThreshold  Int                  @default(5)
-  /** Owner-set supply status shown on the inventory report (null = none). */
-  supplyStatus       ProductSupplyStatus?
-  /** Legacy soft-off; kept in sync with isArchived for older queries. */
-  isActive           Boolean              @default(true)
-  /** Hidden from stand catalog; direct link + checkout still work. */
-  isHidden           Boolean              @default(false)
-  /** Archived from selling; restorable. Not shown publicly. */
-  isArchived         Boolean              @default(false)
-  sortOrder          Int                  @default(0)
-  /** Card-tier pay-upfront pre-order; stockQuantity is the cap. Synced from pre-order pages. */
-  isPreOrder         Boolean              @default(false)
-  /** Owner opted this catalogue product into pre-order pages. */
-  preOrderEligible   Boolean              @default(false)
-  orderByAt          DateTime?
-  collectionAt       DateTime?
-  collectionNote     String?
-  /** When pre-order: show remaining slots publicly (e.g. "3 left"). */
-  showExactStock     Boolean              @default(false)
-  /** Defaults for new pre-order checkouts from this product. */
-  paymentTiming      PaymentTiming        @default(PAY_NOW)
-  /** 1–99 when paymentTiming is DEPOSIT_THEN_BALANCE. */
-  depositPercent     Int?
-  handoverMode       HandoverMode         @default(COLLECT)
-  /** Optional provenance line e.g. "Laid this morning". */
-  freshnessNote      String?
-  /** Cart upsell offered when this product is in the cart (overrides stand-level). */
-  upsellProductId    String?
-  /** Optional override price when added via this product's upsell. */
-  upsellPriceCents   Int?
-  /** Pre-order add-on for carts that include this product. */
-  preOrderUpsellName String?
-  preOrderUpsellPriceCents Int?
-  preOrderUpsellDiscountKind String?
+  id                          String                     @id @default(cuid())
+  standId                     String
+  stand                       Stand                      @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId                     String
+  owner                       Owner                      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name                        String
+  /**
+   * URL segment under /s/{standSlug}/{slug}; unique per stand.
+   */
+  slug                        String
+  description                 String?
+  imageUrl                    String?
+  seoTitle                    String?
+  seoDescription              String?
+  priceCents                  Int
+  /**
+   * Owner-only unit cost; profit = priceCents - costCents when set.
+   */
+  costCents                   Int?
+  /**
+   * Owner-only stock-keeping unit.
+   */
+  sku                         String?
+  /**
+   * Owner-only barcode / UPC.
+   */
+  upc                         String?
+  currency                    String                     @default("AUD")
+  stockQuantity               Int                        @default(0)
+  lowStockThreshold           Int                        @default(5)
+  /**
+   * Owner-set supply status shown on the inventory report (null = none).
+   */
+  supplyStatus                ProductSupplyStatus?
+  /**
+   * Legacy soft-off; kept in sync with isArchived for older queries.
+   */
+  isActive                    Boolean                    @default(true)
+  /**
+   * Hidden from stand catalog; direct link + checkout still work.
+   */
+  isHidden                    Boolean                    @default(false)
+  /**
+   * Archived from selling; restorable. Not shown publicly.
+   */
+  isArchived                  Boolean                    @default(false)
+  sortOrder                   Int                        @default(0)
+  /**
+   * Card-tier pay-upfront pre-order; stockQuantity is the cap. Synced from pre-order pages.
+   */
+  isPreOrder                  Boolean                    @default(false)
+  /**
+   * Owner opted this catalogue product into pre-order pages.
+   */
+  preOrderEligible            Boolean                    @default(false)
+  orderByAt                   DateTime?
+  collectionAt                DateTime?
+  collectionNote              String?
+  /**
+   * When pre-order: show remaining slots publicly (e.g. "3 left").
+   */
+  showExactStock              Boolean                    @default(false)
+  /**
+   * Defaults for new pre-order checkouts from this product.
+   */
+  paymentTiming               PaymentTiming              @default(PAY_NOW)
+  /**
+   * 1–99 when paymentTiming is DEPOSIT_THEN_BALANCE.
+   */
+  depositPercent              Int?
+  handoverMode                HandoverMode               @default(COLLECT)
+  /**
+   * Optional provenance line e.g. "Laid this morning".
+   */
+  freshnessNote               String?
+  /**
+   * Cart upsell offered when this product is in the cart (overrides stand-level).
+   */
+  upsellProductId             String?
+  /**
+   * Optional override price when added via this product's upsell.
+   */
+  upsellPriceCents            Int?
+  /**
+   * Pre-order add-on for carts that include this product.
+   */
+  preOrderUpsellName          String?
+  preOrderUpsellPriceCents    Int?
+  preOrderUpsellDiscountKind  String?
   preOrderUpsellDiscountValue Int?
-  preOrderUpsellProductId String?
-  /** Exact-qty totals: [{ "qty": 2, "totalCents": 900 }, ...] — XOR with optionGroups. */
-  priceTiers         Json?
-  optionGroups       ProductOptionGroup[]
-  categoryLinks      ProductCategory[]
-  channels           ProductChannel[]
-  preOrderPageItems  PreOrderPageProduct[]
-  menuItems          MenuProduct[]
-  subscriptionOfferItems SubscriptionOfferProduct[]
-  /** Hidden product used as OrderItem target for membership collection orders. */
-  membershipFulfilmentOffers SubscriptionOffer[] @relation("MembershipFulfilmentProduct")
-  fulfilmentOptions      ProductFulfilmentOption[]
-  /** Optional link to a production recipe (Phase 6). */
-  productRecipe      ProductRecipe?
-  /** Optional packaging/materials cost per sellable unit (cents). */
-  packagingCostCents Int?
-  /** Supplier who owns this product. Null means the stand owner. */
-  memberId           String?
-  member             StandMember?         @relation(fields: [memberId], references: [id], onDelete: SetNull)
-  /** Amount the owner owes the supplier per unit sold. Not the retail price. */
-  supplierUnitCents  Int?
-  orderItems         OrderItem[]
-  inventoryAdjustments InventoryAdjustment[]
-  stockLots          StockLot[]
-  supplierAccess     SupplierProductAccess[]
-  lowStockAlerts     LowStockAlert[]
-  eventProducts      SellerEventProduct[]
-  externalProductMappings ExternalProductMapping[]
-  externalVariantMappings ExternalVariantMapping[]
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  preOrderUpsellProductId     String?
+  /**
+   * Exact-qty totals: [{ "qty": 2, "totalCents": 900 }, ...] — XOR with optionGroups.
+   */
+  priceTiers                  Json?
+  optionGroups                ProductOptionGroup[]
+  categoryLinks               ProductCategory[]
+  channels                    ProductChannel[]
+  preOrderPageItems           PreOrderPageProduct[]
+  menuItems                   MenuProduct[]
+  subscriptionOfferItems      SubscriptionOfferProduct[]
+  /**
+   * Hidden product used as OrderItem target for membership collection orders.
+   */
+  membershipFulfilmentOffers  SubscriptionOffer[]        @relation("MembershipFulfilmentProduct")
+  fulfilmentOptions           ProductFulfilmentOption[]
+  /**
+   * Optional link to a production recipe (Phase 6).
+   */
+  productRecipe               ProductRecipe?
+  /**
+   * Optional packaging/materials cost per sellable unit (cents).
+   */
+  packagingCostCents          Int?
+  /**
+   * Supplier who owns this product. Null means the stand owner.
+   */
+  memberId                    String?
+  member                      StandMember?               @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  /**
+   * Amount the owner owes the supplier per unit sold. Not the retail price.
+   */
+  supplierUnitCents           Int?
+  orderItems                  OrderItem[]
+  inventoryAdjustments        InventoryAdjustment[]
+  stockLots                   StockLot[]
+  supplierAccess              SupplierProductAccess[]
+  lowStockAlerts              LowStockAlert[]
+  eventProducts               SellerEventProduct[]
+  externalProductMappings     ExternalProductMapping[]
+  externalVariantMappings     ExternalVariantMapping[]
+  createdAt                   DateTime                   @default(now())
+  updatedAt                   DateTime                   @updatedAt
 
   @@unique([standId, slug])
   @@index([standId, isActive])
@@ -1180,52 +1415,70 @@ model Product {
   @@index([memberId])
 }
 
-/** Recurring box / membership basket built from catalog products. */
+/**
+ * Recurring box / membership basket built from catalog products.
+ */
 model SubscriptionOffer {
-  id                 String                     @id @default(cuid())
-  standId            String
-  stand              Stand                      @relation(fields: [standId], references: [id], onDelete: Cascade)
-  ownerId            String
-  owner              Owner                      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  kind               SubscriptionOfferKind      @default(BOX)
-  title              String
-  slug               String
-  description        String?
-  /** Cover image for public offer page / OG. */
-  imageUrl           String?
-  isActive           Boolean                    @default(true)
-  /** Max active members allowed; null = unlimited. Blocks new signup when full. */
-  maxMembers         Int?
-  interval           ShopperSubInterval         @default(WEEKLY)
-  handoverMode       HandoverMode               @default(COLLECT)
-  /** 0=Sun … 6=Sat; next collection weekday for COLLECT. */
-  collectionWeekday  Int?
-  collectionNote     String?
-  /** Snapshot total of line prices (qty × product.priceCents), or display fallback for membership. */
-  priceCents         Int
-  currency           String                     @default("AUD")
-  /** Membership: fixed term length in weekly collections. */
-  termWeeks          Int?
-  weeklyPriceCents   Int?
-  monthlyPriceCents  Int?
-  upfrontPriceCents  Int?
-  upfrontBenefitsText String?
-  termsText          String?
-  /** Stripe Product on the connected account. */
-  stripeProductId    String?
-  /** Stripe Price on the connected account (recurring) — BOX offers. */
-  stripePriceId      String?
+  id                   String                     @id @default(cuid())
+  standId              String
+  stand                Stand                      @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId              String
+  owner                Owner                      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  kind                 SubscriptionOfferKind      @default(BOX)
+  title                String
+  slug                 String
+  description          String?
+  /**
+   * Cover image for public offer page / OG.
+   */
+  imageUrl             String?
+  isActive             Boolean                    @default(true)
+  /**
+   * Max active members allowed; null = unlimited. Blocks new signup when full.
+   */
+  maxMembers           Int?
+  interval             ShopperSubInterval         @default(WEEKLY)
+  handoverMode         HandoverMode               @default(COLLECT)
+  /**
+   * 0=Sun … 6=Sat; next collection weekday for COLLECT.
+   */
+  collectionWeekday    Int?
+  collectionNote       String?
+  /**
+   * Snapshot total of line prices (qty × product.priceCents), or display fallback for membership.
+   */
+  priceCents           Int
+  currency             String                     @default("AUD")
+  /**
+   * Membership: fixed term length in weekly collections.
+   */
+  termWeeks            Int?
+  weeklyPriceCents     Int?
+  monthlyPriceCents    Int?
+  upfrontPriceCents    Int?
+  upfrontBenefitsText  String?
+  termsText            String?
+  /**
+   * Stripe Product on the connected account.
+   */
+  stripeProductId      String?
+  /**
+   * Stripe Price on the connected account (recurring) — BOX offers.
+   */
+  stripePriceId        String?
   stripeWeeklyPriceId  String?
   stripeMonthlyPriceId String?
   stripeUpfrontPriceId String?
-  /** Hidden catalog product for membership collection OrderItems. */
+  /**
+   * Hidden catalog product for membership collection OrderItems.
+   */
   fulfillmentProductId String?
-  fulfillmentProduct   Product?                 @relation("MembershipFulfilmentProduct", fields: [fulfillmentProductId], references: [id], onDelete: SetNull)
-  items              SubscriptionOfferProduct[]
-  subscriptions      ShopperSubscription[]
-  fulfilmentOption   FulfilmentOption?
-  createdAt          DateTime                   @default(now())
-  updatedAt          DateTime                   @updatedAt
+  fulfillmentProduct   Product?                   @relation("MembershipFulfilmentProduct", fields: [fulfillmentProductId], references: [id], onDelete: SetNull)
+  items                SubscriptionOfferProduct[]
+  subscriptions        ShopperSubscription[]
+  fulfilmentOption     FulfilmentOption?
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
 
   @@unique([standId, slug])
   @@index([standId, isActive])
@@ -1233,71 +1486,89 @@ model SubscriptionOffer {
 }
 
 model SubscriptionOfferProduct {
-  id                 String            @id @default(cuid())
+  id                  String            @id @default(cuid())
   subscriptionOfferId String
-  subscriptionOffer  SubscriptionOffer @relation(fields: [subscriptionOfferId], references: [id], onDelete: Cascade)
-  productId          String
-  product            Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
-  quantity           Int               @default(1)
-  sortOrder          Int               @default(0)
+  subscriptionOffer   SubscriptionOffer @relation(fields: [subscriptionOfferId], references: [id], onDelete: Cascade)
+  productId           String
+  product             Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity            Int               @default(1)
+  sortOrder           Int               @default(0)
 
   @@unique([subscriptionOfferId, productId])
   @@index([productId])
 }
 
-/** Shopper enrolled in an offer; Stripe Customer/Sub live on Connect account. */
+/**
+ * Shopper enrolled in an offer; Stripe Customer/Sub live on Connect account.
+ */
 model ShopperSubscription {
-  id                     String            @id @default(cuid())
-  offerId                String
-  offer                  SubscriptionOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
-  standId                String
-  stand                  Stand             @relation(fields: [standId], references: [id], onDelete: Cascade)
-  ownerId                String
-  owner                  Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  status                 ShopperSubStatus  @default(INCOMPLETE)
-  /** Set for membership enrollments; null for legacy BOX. */
-  billingPlan            MembershipBillingPlan?
-  termEndsAt             DateTime?
-  collectionsRemaining   Int?
-  paidThroughAt          DateTime?
-  customerName           String
-  customerEmail          String
-  customerPhone          String?
-  customerId             String?
-  customer               Customer?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  deliveryAddressLine1   String?
-  deliverySuburb         String?
-  deliveryPostcode       String?
-  deliveryNotes          String?
-  stripeCustomerId       String?
-  stripeSubscriptionId   String?
-  /** Who bills this subscription. SQUARE = Vendl charges a saved Square card on schedule. */
-  paymentProvider        OnlinePaymentProvider @default(STRIPE)
-  squareCustomerId       String?
-  squareCardId           String?
-  /** e.g. "Visa •••• 4242", shown on the manage page. */
-  squareCardLabel        String?
-  /** Price charged each period, fixed at signup (Square billing). */
-  recurringPriceCents    Int?
-  /** Start of the next period to charge; stays put while a failed charge is retried. */
-  nextBillingAt          DateTime?
-  billingRetryAt         DateTime?
-  /** Failed attempts for the current period. */
-  billingFailures        Int               @default(0)
-  /** Short claim so overlapping billing runs never charge the same period twice. */
-  billingLockedUntil     DateTime?
-  lastPaymentAt          DateTime?
-  charges                ShopperSubscriptionCharge[]
-  /** Opaque token for manage / portal / skip / pause links. */
-  manageToken            String            @unique
-  skipNextCycle          Boolean           @default(false)
-  pausedAt               DateTime?
-  cancelAtPeriodEnd      Boolean           @default(false)
-  currentPeriodEndsAt    DateTime?
-  nextCollectionAt       DateTime?
-  orders                 Order[]
-  createdAt              DateTime          @default(now())
-  updatedAt              DateTime          @updatedAt
+  id                   String                      @id @default(cuid())
+  offerId              String
+  offer                SubscriptionOffer           @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  standId              String
+  stand                Stand                       @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId              String
+  owner                Owner                       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  status               ShopperSubStatus            @default(INCOMPLETE)
+  /**
+   * Set for membership enrollments; null for legacy BOX.
+   */
+  billingPlan          MembershipBillingPlan?
+  termEndsAt           DateTime?
+  collectionsRemaining Int?
+  paidThroughAt        DateTime?
+  customerName         String
+  customerEmail        String
+  customerPhone        String?
+  customerId           String?
+  customer             Customer?                   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  deliveryAddressLine1 String?
+  deliverySuburb       String?
+  deliveryPostcode     String?
+  deliveryNotes        String?
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  /**
+   * Who bills this subscription. SQUARE = Vendl charges a saved Square card on schedule.
+   */
+  paymentProvider      OnlinePaymentProvider       @default(STRIPE)
+  squareCustomerId     String?
+  squareCardId         String?
+  /**
+   * e.g. "Visa •••• 4242", shown on the manage page.
+   */
+  squareCardLabel      String?
+  /**
+   * Price charged each period, fixed at signup (Square billing).
+   */
+  recurringPriceCents  Int?
+  /**
+   * Start of the next period to charge; stays put while a failed charge is retried.
+   */
+  nextBillingAt        DateTime?
+  billingRetryAt       DateTime?
+  /**
+   * Failed attempts for the current period.
+   */
+  billingFailures      Int                         @default(0)
+  /**
+   * Short claim so overlapping billing runs never charge the same period twice.
+   */
+  billingLockedUntil   DateTime?
+  lastPaymentAt        DateTime?
+  charges              ShopperSubscriptionCharge[]
+  /**
+   * Opaque token for manage / portal / skip / pause links.
+   */
+  manageToken          String                      @unique
+  skipNextCycle        Boolean                     @default(false)
+  pausedAt             DateTime?
+  cancelAtPeriodEnd    Boolean                     @default(false)
+  currentPeriodEndsAt  DateTime?
+  nextCollectionAt     DateTime?
+  orders               Order[]
+  createdAt            DateTime                    @default(now())
+  updatedAt            DateTime                    @updatedAt
 
   @@unique([stripeSubscriptionId])
   @@index([standId, status])
@@ -1308,7 +1579,9 @@ model ShopperSubscription {
   @@index([paymentProvider, status, nextBillingAt])
 }
 
-/** One Square charge attempt for a Vendl-billed subscription period. */
+/**
+ * One Square charge attempt for a Vendl-billed subscription period.
+ */
 model ShopperSubscriptionCharge {
   id                    String              @id @default(cuid())
   shopperSubscriptionId String
@@ -1318,7 +1591,9 @@ model ShopperSubscriptionCharge {
   amountCents           Int
   appFeeCents           Int                 @default(0)
   currency              String
-  /** PAID | FAILED */
+  /**
+   * PAID | FAILED
+   */
   status                String
   squarePaymentId       String?             @unique
   failureReason         String?
@@ -1328,38 +1603,46 @@ model ShopperSubscriptionCharge {
   @@index([ownerId, createdAt])
 }
 
-/** Multi-product pre-order sheet: one link, shared collection day. */
+/**
+ * Multi-product pre-order sheet: one link, shared collection day.
+ */
 model PreOrderPage {
-  id               String               @id @default(cuid())
-  standId          String
-  stand            Stand                @relation(fields: [standId], references: [id], onDelete: Cascade)
-  ownerId          String
-  owner            Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  title            String
-  slug             String
-  description      String?
-  /** Optional cover used for social link previews (Open Graph). */
-  imageUrl         String?
-  isActive         Boolean              @default(true)
-  /** When true, page products stay off the business catalog and business QR. */
-  hideOnBusinessPage Boolean            @default(true)
-  orderByAt        DateTime
-  collectionAt     DateTime
-  collectionNote   String?
-  showExactStock   Boolean              @default(false)
-  paymentTiming    PaymentTiming        @default(PAY_UPFRONT)
-  depositPercent   Int?
-  handoverMode     HandoverMode         @default(COLLECT)
-  /** Page-level cart add-on for this pre-order sheet. */
-  preOrderUpsellName String?
-  preOrderUpsellPriceCents Int?
-  preOrderUpsellDiscountKind String?
+  id                          String                @id @default(cuid())
+  standId                     String
+  stand                       Stand                 @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId                     String
+  owner                       Owner                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title                       String
+  slug                        String
+  description                 String?
+  /**
+   * Optional cover used for social link previews (Open Graph).
+   */
+  imageUrl                    String?
+  isActive                    Boolean               @default(true)
+  /**
+   * When true, page products stay off the business catalog and business QR.
+   */
+  hideOnBusinessPage          Boolean               @default(true)
+  orderByAt                   DateTime
+  collectionAt                DateTime
+  collectionNote              String?
+  showExactStock              Boolean               @default(false)
+  paymentTiming               PaymentTiming         @default(PAY_UPFRONT)
+  depositPercent              Int?
+  handoverMode                HandoverMode          @default(COLLECT)
+  /**
+   * Page-level cart add-on for this pre-order sheet.
+   */
+  preOrderUpsellName          String?
+  preOrderUpsellPriceCents    Int?
+  preOrderUpsellDiscountKind  String?
   preOrderUpsellDiscountValue Int?
-  preOrderUpsellProductId String?
-  items            PreOrderPageProduct[]
-  fulfilmentOption FulfilmentOption?
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
+  preOrderUpsellProductId     String?
+  items                       PreOrderPageProduct[]
+  fulfilmentOption            FulfilmentOption?
+  createdAt                   DateTime              @default(now())
+  updatedAt                   DateTime              @updatedAt
 
   @@unique([standId, slug])
   @@index([standId, isActive])
@@ -1377,34 +1660,40 @@ model PreOrderPageProduct {
   @@index([productId])
 }
 
-/** Curated product list — always-on menu or scheduled pre-order drop. */
+/**
+ * Curated product list — always-on menu or scheduled pre-order drop.
+ */
 model Menu {
-  id                 String        @id @default(cuid())
+  id                 String            @id @default(cuid())
   standId            String
-  stand              Stand         @relation(fields: [standId], references: [id], onDelete: Cascade)
+  stand              Stand             @relation(fields: [standId], references: [id], onDelete: Cascade)
   ownerId            String
-  owner              Owner         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner              Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   title              String
   slug               String
   description        String?
-  isActive           Boolean       @default(true)
-  kind               MenuKind      @default(ALWAYS_AVAILABLE)
-  /** When true, menu products stay off the stand catalog / QR grid. */
-  hideOnBusinessPage Boolean       @default(false)
-  showOnStand        Boolean       @default(true)
-  showOnShop         Boolean       @default(true)
-  /** PREORDER_DROP schedule (null for ALWAYS_AVAILABLE). */
+  isActive           Boolean           @default(true)
+  kind               MenuKind          @default(ALWAYS_AVAILABLE)
+  /**
+   * When true, menu products stay off the stand catalog / QR grid.
+   */
+  hideOnBusinessPage Boolean           @default(false)
+  showOnStand        Boolean           @default(true)
+  showOnShop         Boolean           @default(true)
+  /**
+   * PREORDER_DROP schedule (null for ALWAYS_AVAILABLE).
+   */
   orderByAt          DateTime?
   collectionAt       DateTime?
   collectionNote     String?
-  showExactStock     Boolean       @default(false)
-  paymentTiming      PaymentTiming @default(PAY_UPFRONT)
+  showExactStock     Boolean           @default(false)
+  paymentTiming      PaymentTiming     @default(PAY_UPFRONT)
   depositPercent     Int?
-  handoverMode       HandoverMode  @default(COLLECT)
+  handoverMode       HandoverMode      @default(COLLECT)
   items              MenuProduct[]
   fulfilmentOption   FulfilmentOption?
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
 
   @@unique([standId, slug])
   @@index([standId, isActive, kind])
@@ -1422,7 +1711,9 @@ model MenuProduct {
   @@index([productId])
 }
 
-/** Named option group on a product (e.g. Size, Flavour). Max 3 per product in app. */
+/**
+ * Named option group on a product (e.g. Size, Flavour). Max 3 per product in app.
+ */
 model ProductOptionGroup {
   id        String                @id @default(cuid())
   productId String
@@ -1441,7 +1732,9 @@ model ProductOptionChoice {
   groupId         String
   group           ProductOptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
   name            String
-  /** Added to product base price (can be 0 or positive). */
+  /**
+   * Added to product base price (can be 0 or positive).
+   */
   priceDeltaCents Int                @default(0)
   sortOrder       Int                @default(0)
   createdAt       DateTime           @default(now())
@@ -1451,90 +1744,122 @@ model ProductOptionChoice {
 }
 
 model Order {
-  id                      String            @id @default(cuid())
+  id                      String                 @id @default(cuid())
   standId                 String
-  stand                   Stand             @relation(fields: [standId], references: [id], onDelete: Cascade)
+  stand                   Stand                  @relation(fields: [standId], references: [id], onDelete: Cascade)
   ownerId                 String
-  owner                   Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  orderNumber             String            @unique
+  owner                   Owner                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  orderNumber             String                 @unique
   paymentMethod           PaymentMethod
   paymentStatus           PaymentStatus
-  /** payid | pix | upi when paymentMethod is LOCAL_TRANSFER */
+  /**
+   * payid | pix | upi when paymentMethod is LOCAL_TRANSFER
+   */
   localTransferMethodId   String?
   subtotalCents           Int
   totalCents              Int
-  /** First-order (or other) discount applied to this order. */
-  discountCents           Int               @default(0)
+  /**
+   * First-order (or other) discount applied to this order.
+   */
+  discountCents           Int                    @default(0)
   discountLabel           String?
-  /** Phase 7 promotion used (nullable; label/code snapshotted). */
+  /**
+   * Phase 7 promotion used (nullable; label/code snapshotted).
+   */
   promotionId             String?
-  promotion               Promotion?        @relation(fields: [promotionId], references: [id], onDelete: SetNull)
+  promotion               Promotion?             @relation(fields: [promotionId], references: [id], onDelete: SetNull)
   promotionCodeSnapshot   String?
-  /** Campaign attribution (first-party click → order within window). */
+  /**
+   * Campaign attribution (first-party click → order within window).
+   */
   campaignId              String?
-  campaign                Campaign?         @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  campaign                Campaign?              @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   currency                String
-  platformFeeCents        Int               @default(0)
-  /** Fee + reporting: Vendl-originated vs observed external (e.g. Square POS). */
-  saleOrigin              SaleOrigin        @default(VENDL_WEB)
+  platformFeeCents        Int                    @default(0)
+  /**
+   * Fee + reporting: Vendl-originated vs observed external (e.g. Square POS).
+   */
+  saleOrigin              SaleOrigin             @default(VENDL_WEB)
   onlinePaymentProvider   OnlinePaymentProvider?
   stripeCheckoutSessionId String?
   stripePaymentIntentId   String?
   paypalOrderId           String?
   paypalCaptureId         String?
-  squarePaymentId         String?           @unique
+  squarePaymentId         String?                @unique
   squareOrderId           String?
   squareLocationId        String?
   receiptEmail            String?
-  receiptChannel          ReceiptChannel    @default(NONE)
+  receiptChannel          ReceiptChannel         @default(NONE)
   customerId              String?
-  customer                Customer?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  isPreOrder              Boolean           @default(false)
+  customer                Customer?              @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  isPreOrder              Boolean                @default(false)
   collectionAt            DateTime?
   collectionNote          String?
   customerName            String?
   customerPhone           String?
   collectionStatus        CollectionStatus?
-  paymentTiming           PaymentTiming     @default(PAY_NOW)
-  handoverMode            HandoverMode      @default(COLLECT)
-  /** Amount charged as deposit (cents). */
+  paymentTiming           PaymentTiming          @default(PAY_NOW)
+  handoverMode            HandoverMode           @default(COLLECT)
+  /**
+   * Amount charged as deposit (cents).
+   */
   depositCents            Int?
-  /** Remaining balance owed (cents). */
+  /**
+   * Remaining balance owed (cents).
+   */
   balanceCents            Int?
-  /** When to charge the balance (usually delivery/collection day). */
+  /**
+   * When to charge the balance (usually delivery/collection day).
+   */
   balanceDueAt            DateTime?
-  /** Saved card on connected account for off-session balance. */
+  /**
+   * Saved card on connected account for off-session balance.
+   */
   stripePaymentMethodId   String?
   balancePaymentIntentId  String?
-  /** Square saved card for the balance on deposit orders. */
+  /**
+   * Square saved card for the balance on deposit orders.
+   */
   squareCustomerId        String?
   squareCardId            String?
   balanceSquarePaymentId  String?
-  /** Off-session balance charge attempts (dunning). */
-  balanceRetryCount       Int               @default(0)
+  /**
+   * Off-session balance charge attempts (dunning).
+   */
+  balanceRetryCount       Int                    @default(0)
   balanceLastFailedAt     DateTime?
   deliveryAddressLine1    String?
   deliverySuburb          String?
   deliveryPostcode        String?
   deliveryNotes           String?
-  /** Set when this order was created from a shopper subscription invoice. */
+  /**
+   * Set when this order was created from a shopper subscription invoice.
+   */
   shopperSubscriptionId   String?
-  shopperSubscription     ShopperSubscription? @relation(fields: [shopperSubscriptionId], references: [id], onDelete: SetNull)
-  /** Connect invoice id — idempotency for subscription cycle orders. */
-  stripeInvoiceId         String?           @unique
+  shopperSubscription     ShopperSubscription?   @relation(fields: [shopperSubscriptionId], references: [id], onDelete: SetNull)
+  /**
+   * Connect invoice id — idempotency for subscription cycle orders.
+   */
+  stripeInvoiceId         String?                @unique
   items                   OrderItem[]
   inventoryAdjustments    InventoryAdjustment[]
   fulfilment              OrderFulfilment?
-  /** Opaque QR lookup token for seller handover (Phase 8). */
-  opsLookupToken          String?           @unique
-  /** Market/event sale link (nullable). */
+  /**
+   * Opaque QR lookup token for seller handover (Phase 8).
+   */
+  opsLookupToken          String?                @unique
+  /**
+   * Market/event sale link (nullable).
+   */
   sellerEventId           String?
-  sellerEvent             SellerEvent?      @relation(fields: [sellerEventId], references: [id], onDelete: SetNull)
-  /** Converted from a custom order request. */
-  customOrderRequestId    String?           @unique
-  customOrderRequest      CustomOrderRequest? @relation(fields: [customOrderRequestId], references: [id], onDelete: SetNull)
-  createdAt               DateTime          @default(now())
-  updatedAt               DateTime          @updatedAt
+  sellerEvent             SellerEvent?           @relation(fields: [sellerEventId], references: [id], onDelete: SetNull)
+  /**
+   * Converted from a custom order request.
+   */
+  customOrderRequestId    String?                @unique
+  customOrderRequest      CustomOrderRequest?    @relation(fields: [customOrderRequestId], references: [id], onDelete: SetNull)
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
 
   @@index([ownerId, createdAt])
   @@index([standId, createdAt])
@@ -1549,53 +1874,67 @@ model Order {
 }
 
 model OrderItem {
-  id                  String    @id @default(cuid())
+  id                  String       @id @default(cuid())
   orderId             String
-  order               Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order               Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId           String
-  product             Product   @relation(fields: [productId], references: [id])
+  product             Product      @relation(fields: [productId], references: [id])
   productNameSnapshot String
-  /** e.g. "Size: Dozen · Flavour: Chocolate" */
+  /**
+   * e.g. "Size: Dozen · Flavour: Chocolate"
+   */
   optionsSnapshot     String?
   quantity            Int
   unitPriceCents      Int
   lineTotalCents      Int
-  /** Phase 8 packing checkoff — set when line is packed (qty unchanged). */
+  /**
+   * Phase 8 packing checkoff — set when line is packed (qty unchanged).
+   */
   packedAt            DateTime?
-  /** Supplier attributed at sale time. */
+  /**
+   * Supplier attributed at sale time.
+   */
   memberId            String?
   member              StandMember? @relation(fields: [memberId], references: [id], onDelete: SetNull)
-  /** Owed to the supplier per unit, copied at sale time. */
+  /**
+   * Owed to the supplier per unit, copied at sale time.
+   */
   supplierUnitCents   Int?
-  createdAt           DateTime  @default(now())
+  createdAt           DateTime     @default(now())
 
   @@index([orderId])
   @@index([memberId])
 }
 
 model InventoryAdjustment {
-  id               String          @id @default(cuid())
-  productId        String
-  product          Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
-  ownerId          String
-  owner            Owner           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  standId          String
-  stand            Stand           @relation(fields: [standId], references: [id], onDelete: Cascade)
-  changeQuantity   Int
-  previousQuantity Int
-  newQuantity      Int
-  reason           String
-  source           InventorySource
-  orderId          String?
-  order            Order?          @relation(fields: [orderId], references: [id])
-  /** Idempotent external event id (Square webhook event_id, adjust request id, …). */
-  externalEventId  String?         @unique
-  /** Provider-side reference for echo-loop detection (e.g. Square adjustment id). */
+  id                String          @id @default(cuid())
+  productId         String
+  product           Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ownerId           String
+  owner             Owner           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  standId           String
+  stand             Stand           @relation(fields: [standId], references: [id], onDelete: Cascade)
+  changeQuantity    Int
+  previousQuantity  Int
+  newQuantity       Int
+  reason            String
+  source            InventorySource
+  orderId           String?
+  order             Order?          @relation(fields: [orderId], references: [id])
+  /**
+   * Idempotent external event id (Square webhook event_id, adjust request id, …).
+   */
+  externalEventId   String?         @unique
+  /**
+   * Provider-side reference for echo-loop detection (e.g. Square adjustment id).
+   */
   externalReference String?
-  /** Set when a supplier changed stock. Contribution history. */
-  memberId         String?
-  member           StandMember?    @relation(fields: [memberId], references: [id], onDelete: SetNull)
-  createdAt        DateTime        @default(now())
+  /**
+   * Set when a supplier changed stock. Contribution history.
+   */
+  memberId          String?
+  member            StandMember?    @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  createdAt         DateTime        @default(now())
 
   @@index([productId, createdAt])
   @@index([externalReference])
@@ -1608,27 +1947,29 @@ enum StandMemberStatus {
   REVOKED
 }
 
-/** Neighbour or other producer with limited access to one stand. */
+/**
+ * Neighbour or other producer with limited access to one stand.
+ */
 model StandMember {
-  id          String            @id @default(cuid())
-  standId     String
-  stand       Stand             @relation(fields: [standId], references: [id], onDelete: Cascade)
-  ownerId     String
-  owner       Owner             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  email       String
-  name        String
-  userId      String?
-  user        User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
-  status      StandMemberStatus @default(INVITED)
-  inviteToken String            @unique
-  products    Product[]
-  adjustments InventoryAdjustment[]
-  orderItems  OrderItem[]
-  payouts     SupplierPayout[]
+  id            String                  @id @default(cuid())
+  standId       String
+  stand         Stand                   @relation(fields: [standId], references: [id], onDelete: Cascade)
+  ownerId       String
+  owner         Owner                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  email         String
+  name          String
+  userId        String?
+  user          User?                   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status        StandMemberStatus       @default(INVITED)
+  inviteToken   String                  @unique
+  products      Product[]
+  adjustments   InventoryAdjustment[]
+  orderItems    OrderItem[]
+  payouts       SupplierPayout[]
   productAccess SupplierProductAccess[]
-  stockLots   StockLot[]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  stockLots     StockLot[]
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
 
   @@unique([standId, email])
   @@index([ownerId])
@@ -1641,16 +1982,22 @@ enum StockLotStatus {
   ACTIVE
 }
 
-/** Owner pre-approves a stand product a supplier may add stock into. */
+/**
+ * Owner pre-approves a stand product a supplier may add stock into.
+ */
 model SupplierProductAccess {
   id                String      @id @default(cuid())
   memberId          String
   member            StandMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
   productId         String
   product           Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
-  /** Amount the owner owes this supplier per unit sold from their lots. */
+  /**
+   * Amount the owner owes this supplier per unit sold from their lots.
+   */
   supplierUnitCents Int
-  /** When true, their stock goes live immediately. When false, owner must approve. */
+  /**
+   * When true, their stock goes live immediately. When false, owner must approve.
+   */
   autoApprove       Boolean     @default(true)
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
@@ -1659,7 +2006,9 @@ model SupplierProductAccess {
   @@index([productId])
 }
 
-/** FIFO contribution lot on a shared product. memberId null = owner stock. */
+/**
+ * FIFO contribution lot on a shared product. memberId null = owner stock.
+ */
 model StockLot {
   id                String         @id @default(cuid())
   productId         String
@@ -1675,7 +2024,9 @@ model StockLot {
   @@index([memberId])
 }
 
-/** Manual record that the owner paid a supplier outside Vendl. */
+/**
+ * Manual record that the owner paid a supplier outside Vendl.
+ */
 model SupplierPayout {
   id          String      @id @default(cuid())
   memberId    String
@@ -1736,15 +2087,23 @@ model RestockNotification {
   @@index([standId, sentAt])
 }
 
-/** Audit log for outbound emails (Resend + local console fallback). */
+/**
+ * Audit log for outbound emails (Resend + local console fallback).
+ */
 model EmailSendLog {
   id        String   @id @default(cuid())
-  /** Lowercased recipient addresses */
+  /**
+   * Lowercased recipient addresses
+   */
   toEmails  String[]
   subject   String
-  /** e.g. otp, sale, lifecycle_welcome, restock, waitlist */
+  /**
+   * e.g. otp, sale, lifecycle_welcome, restock, waitlist
+   */
   kind      String?
-  /** sent | failed | console */
+  /**
+   * sent | failed | console
+   */
   status    String
   resendId  String?
   error     String?
@@ -1773,7 +2132,9 @@ enum NotificationStatus {
   CLOSED
 }
 
-/** In-app notifications for business owners. */
+/**
+ * In-app notifications for business owners.
+ */
 model Notification {
   id        String             @id @default(cuid())
   ownerId   String
@@ -1784,7 +2145,9 @@ model Notification {
   status    NotificationStatus @default(OPEN)
   title     String
   message   String
-  /** JSON metadata specific to notification type (email, productId, orderId, etc.) */
+  /**
+   * JSON metadata specific to notification type (email, productId, orderId, etc.)
+   */
   metadata  Json?
   isRead    Boolean            @default(false)
   readAt    DateTime?
@@ -1795,7 +2158,9 @@ model Notification {
   @@index([standId, createdAt])
 }
 
-/** Canonical recipe/ingredient measure units (Phase 6). */
+/**
+ * Canonical recipe/ingredient measure units (Phase 6).
+ */
 enum MeasureUnit {
   MG
   G
@@ -1811,16 +2176,22 @@ enum ProductionStatus {
   COMPLETE
 }
 
-/** Owner-scoped purchasable ingredient with current buy-price. */
+/**
+ * Owner-scoped purchasable ingredient with current buy-price.
+ */
 model Ingredient {
   id                 String                  @id @default(cuid())
   ownerId            String
   owner              Owner                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   name               String
   description        String?
-  /** Unit recipes usually reference (e.g. G for flour). */
+  /**
+   * Unit recipes usually reference (e.g. G for flour).
+   */
   baseUnit           MeasureUnit
-  /** How much you buy in one purchase (e.g. 12.5). */
+  /**
+   * How much you buy in one purchase (e.g. 12.5).
+   */
   purchaseQuantity   Decimal                 @db.Decimal(18, 6)
   purchaseUnit       MeasureUnit
   purchasePriceCents Int
@@ -1837,7 +2208,9 @@ model Ingredient {
   @@index([ownerId, name])
 }
 
-/** Snapshot when purchase price/qty changes — current costing uses Ingredient fields. */
+/**
+ * Snapshot when purchase price/qty changes — current costing uses Ingredient fields.
+ */
 model IngredientCostHistory {
   id                 String      @id @default(cuid())
   ingredientId       String
@@ -1857,9 +2230,13 @@ model Recipe {
   owner           Owner              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   name            String
   description     String?
-  /** How many sellable/yield units one batch produces. */
+  /**
+   * How many sellable/yield units one batch produces.
+   */
   yieldQuantity   Decimal            @db.Decimal(18, 6)
-  /** Human label for yield units — e.g. "buns", "loaves", "batches". */
+  /**
+   * Human label for yield units — e.g. "buns", "loaves", "batches".
+   */
   yieldLabel      String             @default("units")
   instructions    String?
   prepNotes       String?
@@ -1887,7 +2264,9 @@ model RecipeIngredient {
   componentRecipeId String?
   componentRecipe   Recipe?      @relation("RecipeComponent", fields: [componentRecipeId], references: [id], onDelete: Restrict)
   quantity          Decimal      @db.Decimal(18, 6)
-  /** Required for ingredient lines; ignored for component-recipe lines. */
+  /**
+   * Required for ingredient lines; ignored for component-recipe lines.
+   */
   unit              MeasureUnit?
   sortOrder         Int          @default(0)
   createdAt         DateTime     @default(now())
@@ -1898,7 +2277,9 @@ model RecipeIngredient {
   @@index([componentRecipeId])
 }
 
-/** One primary production recipe per product. */
+/**
+ * One primary production recipe per product.
+ */
 model ProductRecipe {
   id                   String   @id @default(cuid())
   productId            String   @unique
@@ -2002,20 +2383,24 @@ model CustomerTagLink {
   @@index([tagId])
 }
 
-/** Dynamic segment — rules stored as JSON conditions evaluated at query time. */
+/**
+ * Dynamic segment — rules stored as JSON conditions evaluated at query time.
+ */
 model CustomerSegment {
   id          String     @id @default(cuid())
   ownerId     String
   owner       Owner      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   name        String
   description String?
-  /** Preset key e.g. best_customers | custom */
+  /**
+   * Preset key e.g. best_customers | custom
+   */
   presetKey   String?
   /**
    * Conditions object, e.g.
    * { "minOrders": 2, "minSpendCents": 10000, "daysSinceLastOrderMin": 60,
-   *   "tagIds": [], "productIds": [], "menuIds": [], "marketingConsent": true,
-   *   "subscriptionActive": true }
+   * "tagIds": [], "productIds": [], "menuIds": [], "marketingConsent": true,
+   * "subscriptionActive": true }
    */
   rules       Json       @default("{}")
   isActive    Boolean    @default(true)
@@ -2027,32 +2412,38 @@ model CustomerSegment {
 }
 
 model Promotion {
-  id                 String        @id @default(cuid())
-  ownerId            String
-  owner              Owner         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  code               String
-  name               String
-  type               PromotionType @default(PERCENT_OFF)
-  /** Percent 1–100 when PERCENT_OFF; ignored for FIXED. */
-  percentOff         Int?
-  /** Fixed cents off when FIXED_OFF. */
-  amountOffCents     Int?
-  minOrderCents      Int           @default(0)
-  startsAt           DateTime?
-  endsAt             DateTime?
-  usageLimit         Int?
-  perCustomerLimit   Int           @default(1)
-  usageCount         Int           @default(0)
-  /** Empty = all products. */
-  productIds         String[]      @default([])
-  categoryIds        String[]      @default([])
-  menuIds            String[]      @default([])
-  firstOrderOnly     Boolean       @default(false)
-  isActive           Boolean       @default(true)
-  orders             Order[]
-  campaigns          Campaign[]
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+  id               String        @id @default(cuid())
+  ownerId          String
+  owner            Owner         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  code             String
+  name             String
+  type             PromotionType @default(PERCENT_OFF)
+  /**
+   * Percent 1–100 when PERCENT_OFF; ignored for FIXED.
+   */
+  percentOff       Int?
+  /**
+   * Fixed cents off when FIXED_OFF.
+   */
+  amountOffCents   Int?
+  minOrderCents    Int           @default(0)
+  startsAt         DateTime?
+  endsAt           DateTime?
+  usageLimit       Int?
+  perCustomerLimit Int           @default(1)
+  usageCount       Int           @default(0)
+  /**
+   * Empty = all products.
+   */
+  productIds       String[]      @default([])
+  categoryIds      String[]      @default([])
+  menuIds          String[]      @default([])
+  firstOrderOnly   Boolean       @default(false)
+  isActive         Boolean       @default(true)
+  orders           Order[]
+  campaigns        Campaign[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   @@unique([ownerId, code])
   @@index([ownerId, isActive])
@@ -2063,7 +2454,9 @@ model MarketingSuppression {
   ownerId   String
   owner     Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   email     String
-  /** unsubscribed | bounce | complaint | manual */
+  /**
+   * unsubscribed | bounce | complaint | manual
+   */
   reason    String   @default("unsubscribed")
   token     String   @unique
   createdAt DateTime @default(now())
@@ -2073,54 +2466,56 @@ model MarketingSuppression {
 }
 
 model Campaign {
-  id              String              @id @default(cuid())
-  ownerId         String
-  owner           Owner               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  name            String
-  status          CampaignStatus      @default(DRAFT)
-  subject         String
-  previewText     String?
-  heading         String?
-  body            String
-  imageUrl        String?
-  ctaLabel        String?
-  ctaUrl          String?
-  segmentId       String?
-  segment         CustomerSegment?    @relation(fields: [segmentId], references: [id], onDelete: SetNull)
-  promotionId     String?
-  promotion       Promotion?          @relation(fields: [promotionId], references: [id], onDelete: SetNull)
-  /** menu | product | custom audience hint */
-  audienceType    String              @default("segment")
-  audienceRefId   String?
-  templateKey     String?
-  sentAt          DateTime?
-  recipientCount  Int                 @default(0)
-  sentCount       Int                 @default(0)
-  failedCount     Int                 @default(0)
-  clickCount      Int                 @default(0)
-  attributedOrders Int                @default(0)
-  attributedRevenueCents Int          @default(0)
-  recipients      CampaignRecipient[]
-  clicks          CampaignClick[]
-  orders          Order[]
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
+  id                     String              @id @default(cuid())
+  ownerId                String
+  owner                  Owner               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name                   String
+  status                 CampaignStatus      @default(DRAFT)
+  subject                String
+  previewText            String?
+  heading                String?
+  body                   String
+  imageUrl               String?
+  ctaLabel               String?
+  ctaUrl                 String?
+  segmentId              String?
+  segment                CustomerSegment?    @relation(fields: [segmentId], references: [id], onDelete: SetNull)
+  promotionId            String?
+  promotion              Promotion?          @relation(fields: [promotionId], references: [id], onDelete: SetNull)
+  /**
+   * menu | product | custom audience hint
+   */
+  audienceType           String              @default("segment")
+  audienceRefId          String?
+  templateKey            String?
+  sentAt                 DateTime?
+  recipientCount         Int                 @default(0)
+  sentCount              Int                 @default(0)
+  failedCount            Int                 @default(0)
+  clickCount             Int                 @default(0)
+  attributedOrders       Int                 @default(0)
+  attributedRevenueCents Int                 @default(0)
+  recipients             CampaignRecipient[]
+  clicks                 CampaignClick[]
+  orders                 Order[]
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
 
   @@index([ownerId, status])
 }
 
 model CampaignRecipient {
-  id           String                   @id @default(cuid())
+  id           String                  @id @default(cuid())
   campaignId   String
-  campaign     Campaign                 @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaign     Campaign                @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   customerId   String?
-  customer     Customer?                @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  customer     Customer?               @relation(fields: [customerId], references: [id], onDelete: SetNull)
   email        String
-  status       CampaignRecipientStatus  @default(PENDING)
+  status       CampaignRecipientStatus @default(PENDING)
   errorMessage String?
   resendId     String?
   sentAt       DateTime?
-  createdAt    DateTime                 @default(now())
+  createdAt    DateTime                @default(now())
 
   @@unique([campaignId, email])
   @@index([campaignId, status])
@@ -2128,80 +2523,88 @@ model CampaignRecipient {
 }
 
 model CampaignClick {
-  id         String    @id @default(cuid())
+  id         String   @id @default(cuid())
   campaignId String
-  campaign   Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  token      String    @unique
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  token      String   @unique
   email      String?
-  clickedAt  DateTime  @default(now())
+  clickedAt  DateTime @default(now())
   orderId    String?
 
   @@index([campaignId, clickedAt])
 }
 
 model LoyaltyProgram {
-  id                 String           @id @default(cuid())
-  ownerId            String           @unique
-  owner              Owner            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  name               String           @default("Rewards")
-  isActive           Boolean          @default(false)
-  /** Points earned per whole currency unit spent (e.g. 1 = 1pt per $1). */
-  pointsPerCurrency  Int              @default(1)
-  /** Points required for one reward. */
-  rewardThreshold    Int              @default(100)
-  /** Reward value in cents. */
-  rewardCents        Int              @default(1000)
-  accounts           LoyaltyAccount[]
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  id                String           @id @default(cuid())
+  ownerId           String           @unique
+  owner             Owner            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name              String           @default("Rewards")
+  isActive          Boolean          @default(false)
+  /**
+   * Points earned per whole currency unit spent (e.g. 1 = 1pt per $1).
+   */
+  pointsPerCurrency Int              @default(1)
+  /**
+   * Points required for one reward.
+   */
+  rewardThreshold   Int              @default(100)
+  /**
+   * Reward value in cents.
+   */
+  rewardCents       Int              @default(1000)
+  accounts          LoyaltyAccount[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 }
 
 model LoyaltyAccount {
-  id          String               @id @default(cuid())
-  programId   String
-  program     LoyaltyProgram       @relation(fields: [programId], references: [id], onDelete: Cascade)
-  customerId  String               @unique
-  customer    Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  /** Cached balance; ledger is source of truth. */
-  balance     Int                  @default(0)
+  id           String               @id @default(cuid())
+  programId    String
+  program      LoyaltyProgram       @relation(fields: [programId], references: [id], onDelete: Cascade)
+  customerId   String               @unique
+  customer     Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  /**
+   * Cached balance; ledger is source of truth.
+   */
+  balance      Int                  @default(0)
   transactions LoyaltyTransaction[]
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
 
   @@index([programId])
 }
 
 model LoyaltyTransaction {
-  id          String         @id @default(cuid())
-  accountId   String
-  account     LoyaltyAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  type        LoyaltyTxnType
-  points      Int
-  orderId     String?
-  note        String?
-  createdAt   DateTime       @default(now())
+  id        String         @id @default(cuid())
+  accountId String
+  account   LoyaltyAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  type      LoyaltyTxnType
+  points    Int
+  orderId   String?
+  note      String?
+  createdAt DateTime       @default(now())
 
   @@unique([accountId, type, orderId])
   @@index([accountId, createdAt])
 }
 
 model Review {
-  id           String       @id @default(cuid())
-  ownerId      String
-  owner        Owner        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  customerId   String?
-  customer     Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  orderId      String
-  orderItemId  String?
-  productId    String?
-  rating       Int
-  title        String?
-  body         String
-  status       ReviewStatus @default(PENDING)
-  token        String       @unique
-  sellerReply  String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id          String       @id @default(cuid())
+  ownerId     String
+  owner       Owner        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  customerId  String?
+  customer    Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  orderId     String
+  orderItemId String?
+  productId   String?
+  rating      Int
+  title       String?
+  body        String
+  status      ReviewStatus @default(PENDING)
+  token       String       @unique
+  sellerReply String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@unique([orderId, productId])
   @@index([ownerId, status])
@@ -2209,37 +2612,41 @@ model Review {
 }
 
 model GiftCard {
-  id            String               @id @default(cuid())
-  ownerId       String
-  owner         Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  code          String
-  /** Initial face value cents. */
-  initialCents  Int
-  /** Cached remaining; ledger is source of truth. */
-  balanceCents  Int
-  currency      String               @default("AUD")
-  customerId    String?
-  customer      Customer?            @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  expiresAt     DateTime?
-  isActive      Boolean              @default(true)
-  note          String?
-  transactions  GiftCardTransaction[]
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
+  id           String                @id @default(cuid())
+  ownerId      String
+  owner        Owner                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  code         String
+  /**
+   * Initial face value cents.
+   */
+  initialCents Int
+  /**
+   * Cached remaining; ledger is source of truth.
+   */
+  balanceCents Int
+  currency     String                @default("AUD")
+  customerId   String?
+  customer     Customer?             @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  expiresAt    DateTime?
+  isActive     Boolean               @default(true)
+  note         String?
+  transactions GiftCardTransaction[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
 
   @@unique([ownerId, code])
   @@index([ownerId, isActive])
 }
 
 model GiftCardTransaction {
-  id         String          @id @default(cuid())
-  giftCardId String
-  giftCard   GiftCard        @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
-  type       GiftCardTxnType
+  id          String          @id @default(cuid())
+  giftCardId  String
+  giftCard    GiftCard        @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
+  type        GiftCardTxnType
   amountCents Int
-  orderId    String?
-  note       String?
-  createdAt  DateTime        @default(now())
+  orderId     String?
+  note        String?
+  createdAt   DateTime        @default(now())
 
   @@index([giftCardId, createdAt])
 }
@@ -2272,75 +2679,79 @@ enum SellerEventStatus {
 }
 
 model CustomOrderForm {
-  id          String               @id @default(cuid())
-  ownerId     String
-  owner       Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  title       String
-  slug        String
-  description String?
-  isPublished Boolean              @default(false)
+  id           String               @id @default(cuid())
+  ownerId      String
+  owner        Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title        String
+  slug         String
+  description  String?
+  isPublished  Boolean              @default(false)
   thankYouNote String?
-  fields      CustomOrderField[]
-  requests    CustomOrderRequest[]
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
+  fields       CustomOrderField[]
+  requests     CustomOrderRequest[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
 
   @@unique([ownerId, slug])
   @@index([ownerId, isPublished])
 }
 
 model CustomOrderField {
-  id         String               @id @default(cuid())
-  formId     String
-  form       CustomOrderForm      @relation(fields: [formId], references: [id], onDelete: Cascade)
-  label      String
-  fieldType  CustomOrderFieldType @default(TEXT)
-  required   Boolean              @default(false)
-  sortOrder  Int                  @default(0)
-  /** SELECT options as string[]. */
-  options    Json?
-  createdAt  DateTime             @default(now())
+  id        String               @id @default(cuid())
+  formId    String
+  form      CustomOrderForm      @relation(fields: [formId], references: [id], onDelete: Cascade)
+  label     String
+  fieldType CustomOrderFieldType @default(TEXT)
+  required  Boolean              @default(false)
+  sortOrder Int                  @default(0)
+  /**
+   * SELECT options as string[].
+   */
+  options   Json?
+  createdAt DateTime             @default(now())
 
   @@index([formId, sortOrder])
 }
 
 model CustomOrderRequest {
-  id            String                   @id @default(cuid())
-  ownerId       String
-  owner         Owner                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  formId        String
-  form          CustomOrderForm          @relation(fields: [formId], references: [id], onDelete: Cascade)
-  status        CustomOrderRequestStatus @default(SUBMITTED)
-  customerName  String?
-  email         String?
-  phone         String?
-  /** Field id → answer value. */
-  answers       Json
-  sellerNotes   String?
+  id             String                   @id @default(cuid())
+  ownerId        String
+  owner          Owner                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  formId         String
+  form           CustomOrderForm          @relation(fields: [formId], references: [id], onDelete: Cascade)
+  status         CustomOrderRequestStatus @default(SUBMITTED)
+  customerName   String?
+  email          String?
+  phone          String?
+  /**
+   * Field id → answer value.
+   */
+  answers        Json
+  sellerNotes    String?
   convertedOrder Order?
-  createdAt     DateTime                 @default(now())
-  updatedAt     DateTime                 @updatedAt
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
 
   @@index([ownerId, status, createdAt])
   @@index([formId, createdAt])
 }
 
 model SellerEvent {
-  id            String              @id @default(cuid())
+  id            String               @id @default(cuid())
   ownerId       String
-  owner         Owner               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner         Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   standId       String
-  stand         Stand               @relation(fields: [standId], references: [id], onDelete: Cascade)
+  stand         Stand                @relation(fields: [standId], references: [id], onDelete: Cascade)
   name          String
   locationLabel String?
   startsAt      DateTime
   endsAt        DateTime?
-  status        SellerEventStatus   @default(DRAFT)
+  status        SellerEventStatus    @default(DRAFT)
   notes         String?
   products      SellerEventProduct[]
   orders        Order[]
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
 
   @@index([ownerId, startsAt])
   @@index([standId, status])
@@ -2352,7 +2763,9 @@ model SellerEventProduct {
   event        SellerEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
   productId    String
   product      Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
-  /** Soft allocation for packing/close-out — not a stock reservation. */
+  /**
+   * Soft allocation for packing/close-out — not a stock reservation.
+   */
   allocatedQty Int?
   soldQty      Int         @default(0)
 
@@ -2360,29 +2773,39 @@ model SellerEventProduct {
   @@index([productId])
 }
 
-/** Provider-neutral OAuth connection (Square today; extensible later). */
+/**
+ * Provider-neutral OAuth connection (Square today; extensible later).
+ */
 model ExternalCommerceConnection {
-  id                   String                   @id @default(cuid())
+  id                   String                    @id @default(cuid())
   ownerId              String
-  owner                Owner                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner                Owner                     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   provider             CommerceProvider
   providerMerchantId   String
-  /** Square seller country ("AU" / "US"); also which Vendl Square app issued the tokens. Null = AU. */
+  /**
+   * Square seller country ("AU" / "US"); also which Vendl Square app issued the tokens. Null = AU.
+   */
   providerCountry      String?
-  status               ExternalConnectionStatus @default(PENDING)
-  /** AES-GCM ciphertext (AUTH_SECRET); never send to browser. */
+  status               ExternalConnectionStatus  @default(PENDING)
+  /**
+   * AES-GCM ciphertext (AUTH_SECRET); never send to browser.
+   */
   accessTokenEnc       String?
   refreshTokenEnc      String?
   tokenExpiresAt       DateTime?
-  scopes               String[]                 @default([])
+  scopes               String[]                  @default([])
   merchantName         String?
-  /** Primary synced Square location id (multi-location mappings also exist). */
+  /**
+   * Primary synced Square location id (multi-location mappings also exist).
+   */
   primaryLocationId    String?
-  paymentsEnabled      Boolean                  @default(false)
-  inventorySyncEnabled Boolean                  @default(false)
-  catalogSyncEnabled   Boolean                  @default(false)
-  /** Bill new subscriptions / memberships to saved Square cards (needs CUSTOMERS_* scopes). */
-  subscriptionsEnabled Boolean                  @default(false)
+  paymentsEnabled      Boolean                   @default(false)
+  inventorySyncEnabled Boolean                   @default(false)
+  catalogSyncEnabled   Boolean                   @default(false)
+  /**
+   * Bill new subscriptions / memberships to saved Square cards (needs CUSTOMERS_* scopes).
+   */
+  subscriptionsEnabled Boolean                   @default(false)
   lastSyncAt           DateTime?
   lastError            String?
   disconnectedAt       DateTime?
@@ -2390,8 +2813,8 @@ model ExternalCommerceConnection {
   productMappings      ExternalProductMapping[]
   variantMappings      ExternalVariantMapping[]
   webhookReceipts      SquareWebhookReceipt[]
-  createdAt            DateTime                 @default(now())
-  updatedAt            DateTime                 @updatedAt
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @updatedAt
 
   @@unique([ownerId, provider])
   @@unique([provider, providerMerchantId])
@@ -2399,35 +2822,39 @@ model ExternalCommerceConnection {
 }
 
 model ExternalLocationMapping {
-  id                     String                     @id @default(cuid())
-  connectionId           String
-  connection             ExternalCommerceConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
-  providerLocationId     String
-  providerLocationName   String?
-  /** Vendl stand used as operational location reference (nullable until mapped). */
-  standId                String?
-  stand                  Stand?                     @relation(fields: [standId], references: [id], onDelete: SetNull)
-  isPrimary              Boolean                    @default(false)
-  createdAt              DateTime                   @default(now())
-  updatedAt              DateTime                   @updatedAt
+  id                   String                     @id @default(cuid())
+  connectionId         String
+  connection           ExternalCommerceConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  providerLocationId   String
+  providerLocationName String?
+  /**
+   * Vendl stand used as operational location reference (nullable until mapped).
+   */
+  standId              String?
+  stand                Stand?                     @relation(fields: [standId], references: [id], onDelete: SetNull)
+  isPrimary            Boolean                    @default(false)
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
 
   @@unique([connectionId, providerLocationId])
   @@index([standId])
 }
 
 model ExternalProductMapping {
-  id                 String                     @id @default(cuid())
-  connectionId       String
-  connection         ExternalCommerceConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
-  productId          String
-  product            Product                    @relation(fields: [productId], references: [id], onDelete: Cascade)
-  providerProductId  String
-  inventorySyncEnabled Boolean                  @default(true)
-  /** Seller confirmed this mapping (never auto from fuzzy name alone). */
-  confirmedAt        DateTime?
-  lastSyncedAt       DateTime?
-  createdAt          DateTime                   @default(now())
-  updatedAt          DateTime                   @updatedAt
+  id                   String                     @id @default(cuid())
+  connectionId         String
+  connection           ExternalCommerceConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  productId            String
+  product              Product                    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  providerProductId    String
+  inventorySyncEnabled Boolean                    @default(true)
+  /**
+   * Seller confirmed this mapping (never auto from fuzzy name alone).
+   */
+  confirmedAt          DateTime?
+  lastSyncedAt         DateTime?
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
 
   @@unique([connectionId, productId])
   @@unique([connectionId, providerProductId])
@@ -2457,20 +2884,80 @@ model ExternalVariantMapping {
   @@index([productId])
 }
 
-/** Idempotent Square webhook receipt (process async after ACK). */
+/**
+ * Idempotent Square webhook receipt (process async after ACK).
+ */
 model SquareWebhookReceipt {
-  id             String                     @id @default(cuid())
-  connectionId   String?
-  connection     ExternalCommerceConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
-  eventId        String                     @unique
-  eventType      String
-  merchantId     String?
-  payload        Json
-  processedAt    DateTime?
-  processError   String?
-  createdAt      DateTime                   @default(now())
+  id           String                      @id @default(cuid())
+  connectionId String?
+  connection   ExternalCommerceConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+  eventId      String                      @unique
+  eventType    String
+  merchantId   String?
+  payload      Json
+  processedAt  DateTime?
+  processError String?
+  createdAt    DateTime                    @default(now())
 
   @@index([processedAt, createdAt])
   @@index([merchantId])
 }
 
+enum CalendarProvider {
+  GOOGLE
+  OUTLOOK
+}
+
+/**
+ * External calendar (Google today, Outlook later) synced with the Vendl operations calendar.
+ */
+model CalendarConnection {
+  id               String               @id @default(cuid())
+  ownerId          String
+  owner            Owner                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  provider         CalendarProvider
+  accountEmail     String?
+  /**
+   * AES-GCM ciphertext (AUTH_SECRET); never send to browser.
+   */
+  accessTokenEnc   String
+  refreshTokenEnc  String?
+  tokenExpiresAt   DateTime?
+  scopes           String[]             @default([])
+  /**
+   * Show the owner's own calendar events on the Vendl calendar (read-only).
+   */
+  importEnabled    Boolean              @default(true)
+  /**
+   * Push Vendl pickups, cut-offs and markets into a "Vendl" calendar at the provider.
+   */
+  exportEnabled    Boolean              @default(true)
+  exportCalendarId String?
+  lastSyncAt       DateTime?
+  lastError        String?
+  exportLinks      CalendarExportLink[]
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@unique([ownerId, provider])
+}
+
+/**
+ * Vendl calendar event id -> provider event id, so re-syncs update instead of duplicating.
+ */
+model CalendarExportLink {
+  id              String             @id @default(cuid())
+  connectionId    String
+  connection      CalendarConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  vendlEventId    String
+  externalEventId String
+  /**
+   * Hash of the pushed fields; unchanged events are skipped.
+   */
+  fingerprint     String
+  startsAt        DateTime
+  updatedAt       DateTime           @updatedAt
+
+  @@unique([connectionId, vendlEventId])
+  @@index([connectionId, startsAt])
+}

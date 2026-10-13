@@ -60,6 +60,9 @@ const ICONS: Record<string, React.ReactNode> = {
       extra={<circle cx="12" cy="12" r="9" />}
     />
   ),
+  "/dashboard/calendar": (
+    <Icon d="M6 4h12v16H6zM6 9h12M9 2v4M15 2v4" />
+  ),
   "/dashboard/social": (
     <Icon
       d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"

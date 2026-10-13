@@ -4,6 +4,7 @@ export const primaryLinks = [
   { href: "/dashboard/orders", label: "Orders" },
   { href: "/dashboard/customers", label: "Customers" },
   { href: "/dashboard/collections", label: "Collections" },
+  { href: "/dashboard/calendar", label: "Calendar" },
 ] as const;
 
 export const websiteLink = {

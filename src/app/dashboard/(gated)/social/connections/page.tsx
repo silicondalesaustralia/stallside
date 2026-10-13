@@ -101,7 +101,7 @@ export default function TradiesPostConnectionsPage() {
         </div>
       </section>
 
-      <TradiesPostCalendarConnectionsSection />
+      <TradiesPostCalendarConnectionsSection canManageConnections={canManage} />
     </TradiesPostAppPage>
   )
 }
