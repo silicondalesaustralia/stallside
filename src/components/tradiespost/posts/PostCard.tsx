@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Copy, ImageIcon, Loader2, RefreshCw, XCircle } from 'lucide-react'
 import { TradiesPostStatusBadge } from '@/components/tradiespost/ui/TradiesPostStatusBadge'
 import { PostPlatformIcons } from '@/components/tradiespost/posts/PostPlatformIcons'
+import { PostLiveLinks } from '@/components/tradiespost/posts/PostLiveLinks'
 import type { SocialWorkspacePost } from '@/lib/social/useSocialWorkspace'
 import { SOCIAL_PUBLISH_PLATFORM_LABELS } from '@/lib/social/libraryPublish'
 import { calendarPostTitle } from '@/lib/social/socialCalendar'
@@ -84,6 +85,7 @@ export function PostCard({ post, timeZone, busy, onRetry, onCancel }: Props) {
           <Link href={`/dashboard/social/create?fromPost=${post.id}`} className={actionBtn}>
             <Copy className="h-3 w-3" /> Duplicate
           </Link>
+          <PostLiveLinks post={post} outcomes={outcomes} className={actionBtn} />
         </div>
       </div>
     </div>
