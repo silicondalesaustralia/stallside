@@ -4,12 +4,7 @@ import { DEFAULT_CURRENCY } from "@/lib/constants";
 import { demoStandSlugs } from "@/lib/demo";
 import { COUNTED_STATUSES } from "@/lib/order-metrics";
 import { audRatesFromMarket, billingCentsToAud } from "@/lib/fx-to-aud";
-import { bucketsToAud, platformFeesByCurrency } from "@/lib/owner-ltv";
-import { getStripe, isStripeConfigured } from "@/lib/stripe";
-import {
-  applicationFeesToAud,
-  listApplicationFeeEvents,
-} from "@/lib/stripe-application-fees";
+import { getFeeSplit } from "@/lib/admin-fee-split";
 
 /** Statuses that still bill (exclude comps). */
 const BILLING_LIVE: SubscriptionStatus[] = [
@@ -34,7 +29,6 @@ export async function getSaasStats() {
     byStatus,
     paidSubscribers,
     ltvOwners,
-    feeBuckets,
     demoCompletions,
     demoCompletions7d,
     fx,
@@ -52,7 +46,6 @@ export async function getSaasStats() {
       where: { lifetimePaidCents: { gt: 0 } },
       select: { lifetimePaidCents: true, billingCurrency: true },
     }),
-    platformFeesByCurrency(demoSlugs),
     demoSlugs.length
       ? prisma.order.count({
           where: {
@@ -89,18 +82,8 @@ export async function getSaasStats() {
     0,
   );
 
-  let feesAllTimeCents = bucketsToAud(feeBuckets, fx);
-  let feesFromStripe = false;
-  if (isStripeConfigured()) {
-    try {
-      const fees = await listApplicationFeeEvents(getStripe());
-      feesAllTimeCents = applicationFeesToAud(fees, fx);
-      feesFromStripe = true;
-    } catch (error) {
-      console.error("Admin SaaS stats: application fees", error);
-    }
-  }
-
+  const fees = await getFeeSplit({}, fx);
+  const feesAllTimeCents = fees.totalAudCents;
   const totalLtvCents = subscriptionLtvCents + feesAllTimeCents;
 
   return {
@@ -109,7 +92,9 @@ export async function getSaasStats() {
     mrrCents,
     arrCents,
     feesAllTimeCents,
-    feesFromStripe,
+    stripeFeesAllTimeCents: fees.stripe.audCents,
+    squareFeesAllTimeCents: fees.square.audCents,
+    feesFromStripe: fees.stripe.fromStripe,
     totalLtvCents,
     liveSubscribers: paidSubscribers.length,
     active: statusCounts.ACTIVE ?? 0,

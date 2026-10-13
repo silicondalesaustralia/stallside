@@ -37,28 +37,6 @@ export async function platformFeesByOwner(
   return map;
 }
 
-/** All counted platform fees, for the platform-wide LTV total. */
-export async function platformFeesByCurrency(
-  excludeStandSlugs: string[] = [],
-): Promise<FeeBucket[]> {
-  const rows = await prisma.order.groupBy({
-    by: ["currency"],
-    where: {
-      ...countedFeeWhere,
-      ...(excludeStandSlugs.length
-        ? { stand: { slug: { notIn: excludeStandSlugs } } }
-        : {}),
-    },
-    _sum: { platformFeeCents: true },
-  });
-  return rows
-    .map((row) => ({
-      currency: row.currency,
-      cents: row._sum.platformFeeCents ?? 0,
-    }))
-    .filter((row) => row.cents > 0);
-}
-
 export function bucketsToAud(buckets: FeeBucket[], rates: AudRates): number {
   return buckets.reduce(
     (sum, bucket) =>

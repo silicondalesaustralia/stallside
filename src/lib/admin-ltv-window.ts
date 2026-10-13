@@ -1,23 +1,19 @@
-import { prisma } from "@/lib/prisma";
-import { demoStandSlugs } from "@/lib/demo";
-import { COUNTED_STATUSES } from "@/lib/order-metrics";
 import {
   audRatesFromMarket,
   billingCentsToAud,
   type AudRates,
 } from "@/lib/fx-to-aud";
+import { getFeeSplit } from "@/lib/admin-fee-split";
 import { buildSalesSeries, type SeriesPoint } from "@/lib/sales-series";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
-import {
-  applicationFeesToAud,
-  listApplicationFeeEvents,
-} from "@/lib/stripe-application-fees";
 import { listPaidSubscriptionInvoicesInRange } from "@/lib/stripe-ltv";
 
 export type LtvWindow = {
   points: SeriesPoint[];
   totalAudCents: number;
   feeAudCents: number;
+  stripeFeeAudCents: number;
+  squareFeeAudCents: number;
   subscriptionAudCents: number;
   subscriptionsLoaded: boolean;
   feesFromStripe: boolean;
@@ -32,8 +28,8 @@ export async function getLtvWindow(
   const fx = rates ?? (await audRatesFromMarket());
   const payments: { totalCents: number; createdAt: Date }[] = [];
 
-  const fees = await loadFeeEvents(start, end, fx);
-  for (const event of fees.events) {
+  const fees = await getFeeSplit({ start, end }, fx);
+  for (const event of [...fees.stripe.events, ...fees.square.events]) {
     payments.push({ totalCents: event.audCents, createdAt: event.at });
   }
 
@@ -59,58 +55,12 @@ export async function getLtvWindow(
 
   return {
     points: buildSalesSeries(payments, start, end),
-    totalAudCents: fees.audCents + subscriptionAudCents,
-    feeAudCents: fees.audCents,
+    totalAudCents: fees.totalAudCents + subscriptionAudCents,
+    feeAudCents: fees.totalAudCents,
+    stripeFeeAudCents: fees.stripe.audCents,
+    squareFeeAudCents: fees.square.audCents,
     subscriptionAudCents,
     subscriptionsLoaded,
-    feesFromStripe: fees.fromStripe,
-  };
-}
-
-async function loadFeeEvents(
-  start: Date,
-  end: Date,
-  fx: AudRates,
-): Promise<{
-  audCents: number;
-  fromStripe: boolean;
-  events: { audCents: number; at: Date }[];
-}> {
-  if (isStripeConfigured()) {
-    try {
-      const fees = await listApplicationFeeEvents(getStripe(), { start, end });
-      return {
-        audCents: applicationFeesToAud(fees, fx),
-        fromStripe: true,
-        events: fees.map((fee) => ({
-          audCents: billingCentsToAud(fee.amountCents, fee.currency, fx),
-          at: fee.createdAt,
-        })),
-      };
-    } catch (error) {
-      console.error("Admin LTV window: application fees", error);
-    }
-  }
-
-  const demoSlugs = [...demoStandSlugs()];
-  const orders = await prisma.order.findMany({
-    where: {
-      createdAt: { gte: start, lte: end },
-      paymentStatus: { in: COUNTED_STATUSES },
-      platformFeeCents: { gt: 0 },
-      ...(demoSlugs.length
-        ? { stand: { slug: { notIn: demoSlugs } } }
-        : {}),
-    },
-    select: { createdAt: true, platformFeeCents: true, currency: true },
-  });
-  const events = orders.map((order) => ({
-    audCents: billingCentsToAud(order.platformFeeCents, order.currency, fx),
-    at: order.createdAt,
-  }));
-  return {
-    audCents: events.reduce((sum, event) => sum + event.audCents, 0),
-    fromStripe: false,
-    events,
+    feesFromStripe: fees.stripe.fromStripe,
   };
 }

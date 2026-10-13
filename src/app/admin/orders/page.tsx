@@ -2,6 +2,7 @@ import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
 import { shouldChargeVendlFee } from "@/lib/stallside-fee";
+import { paymentProviderLabel, paymentTypeLabel } from "@/lib/payment-rail";
 
 export default async function AdminOrdersPage() {
   await requireAdmin();
@@ -37,6 +38,7 @@ export default async function AdminOrdersPage() {
             })
               ? order.platformFeeCents
               : 0;
+            const provider = paymentProviderLabel(order);
             return (
               <li key={order.id} className="py-4 text-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -47,10 +49,10 @@ export default async function AdminOrdersPage() {
                 </div>
                 <p className="mt-1 text-[var(--muted)]">
                   {order.createdAt.toLocaleString()} · {order.owner.businessName}{" "}
-                  · {order.paymentMethod.toLowerCase()} ·{" "}
+                  · {provider} · {paymentTypeLabel(order)} ·{" "}
                   {order.paymentStatus.toLowerCase()}
                   {feeCents > 0
-                    ? ` · fee ${formatMoney(feeCents, order.currency)}`
+                    ? ` · ${provider === "Direct" ? "" : `${provider} `}fee ${formatMoney(feeCents, order.currency)}`
                     : ""}
                 </p>
                 <p className="mt-2 text-[var(--muted)]">
