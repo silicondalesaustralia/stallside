@@ -1,18 +1,29 @@
-'use client'
-
 import { Suspense } from 'react'
 import { Loader2 } from 'lucide-react'
-import { SocialRoutePage } from '@/components/tradiespost/SocialRoutePage'
+import UnifiedCalendar from '@/components/unified-calendar/UnifiedCalendar'
+import { TradiesPostAppPage } from '@/components/tradiespost/TradiesPostAppPage'
+import { TradiesPostPageHeader } from '@/components/tradiespost/ui'
+import {
+  loadUnifiedCalendar,
+  type UnifiedCalendarSearchParams,
+} from '@/lib/unified-calendar/loadUnifiedCalendar'
 
-export default function TradiesPostCalendarPage() {
+export default async function SocialCalendarPage({
+  searchParams,
+}: {
+  searchParams: Promise<UnifiedCalendarSearchParams>
+}) {
+  const data = await loadUnifiedCalendar(await searchParams)
+
   return (
-    <Suspense fallback={<Loader2 className="mx-auto mt-24 h-8 w-8 animate-spin text-[#F5C518]" />}>
-      <SocialRoutePage
-        tab="calendar"
+    <TradiesPostAppPage maxWidth="6xl">
+      <TradiesPostPageHeader
         title="Calendar"
-        subtitle="Your social posting calendar - plan the month, schedule by week."
-        wide
+        subtitle="Your posts, with pickups, markets and cut-offs one tap away."
       />
-    </Suspense>
+      <Suspense fallback={<Loader2 className="mx-auto mt-24 h-8 w-8 animate-spin text-[#F5C518]" />}>
+        <UnifiedCalendar {...data} initialCategories={['social']} />
+      </Suspense>
+    </TradiesPostAppPage>
   )
 }
