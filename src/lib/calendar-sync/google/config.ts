@@ -16,9 +16,13 @@ export const GOOGLE_CALENDAR_CALLBACK_PATH = "/api/calendar/connect/google/callb
 
 export type GoogleOAuthCredentials = { clientId: string; clientSecret: string };
 
+/** A dedicated Calendar client wins; otherwise the StitchedUp Google client shared with YouTube. */
 export function googleOAuthCredentials(): GoogleOAuthCredentials | null {
-  const clientId = cleanEnvSecret(process.env.GOOGLE_OAUTH_CLIENT_ID);
-  const clientSecret = cleanEnvSecret(process.env.GOOGLE_OAUTH_CLIENT_SECRET);
+  const dedicatedId = cleanEnvSecret(process.env.GOOGLE_OAUTH_CLIENT_ID);
+  const clientId = dedicatedId || cleanEnvSecret(process.env.GOOGLE_YOUTUBE_CLIENT_ID);
+  const clientSecret = dedicatedId
+    ? cleanEnvSecret(process.env.GOOGLE_OAUTH_CLIENT_SECRET)
+    : cleanEnvSecret(process.env.GOOGLE_YOUTUBE_CLIENT_SECRET);
   if (!clientId || !clientSecret) return null;
   return { clientId, clientSecret };
 }
