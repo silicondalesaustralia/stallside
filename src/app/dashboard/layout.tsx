@@ -27,7 +27,6 @@ export default async function DashboardLayout({
   const stripeSetupBanner = await loadStripeSetupBanner({
     ownerId: owner.id,
     businessCount: businesses.length,
-    selectedStandId: selected?.id ?? null,
     stripeAccountId: owner.stripeAccountId,
     stripeChargesEnabled: owner.stripeChargesEnabled,
     billingCurrency: owner.billingCurrency,
