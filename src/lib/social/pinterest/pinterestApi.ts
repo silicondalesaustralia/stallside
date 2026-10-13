@@ -3,7 +3,11 @@
 // Pinterest v5 calls used by Vendl: account, boards, create Pin.
 // ============================================================
 
-import { pinterestApiBase } from '@/lib/social/pinterest/pinterestConfig'
+import {
+  PINTEREST_PRODUCTION_API,
+  pinterestApiBase,
+  pinterestSandboxAccessToken,
+} from '@/lib/social/pinterest/pinterestConfig'
 
 export type PinterestAccount = {
   id: string
@@ -26,12 +30,26 @@ export type CreatePinInput = {
   altText: string
 }
 
+type PinterestTarget = { base: string; accessToken: string }
+
+/** Boards and Pins go to the sandbox (with the sandbox token) while the app is on Trial access. */
+function contentTarget(accessToken: string): PinterestTarget {
+  const base = pinterestApiBase()
+  if (base === PINTEREST_PRODUCTION_API) return { base, accessToken }
+  const sandboxToken = pinterestSandboxAccessToken()
+  if (!sandboxToken) {
+    throw new Error('Pinterest sandbox needs PINTEREST_SANDBOX_ACCESS_TOKEN (from the app page)')
+  }
+  return { base, accessToken: sandboxToken }
+}
+
 async function pinterestRequest<T>(
-  accessToken: string,
+  target: PinterestTarget,
   path: string,
   init?: { method: 'POST'; body: unknown },
 ): Promise<T> {
-  const res = await fetch(`${pinterestApiBase()}/v5${path}`, {
+  const { base, accessToken } = target
+  const res = await fetch(`${base}/v5${path}`, {
     method: init?.method ?? 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -56,7 +74,7 @@ async function pinterestRequest<T>(
 
 export async function getPinterestAccount(accessToken: string): Promise<PinterestAccount> {
   const json = await pinterestRequest<{ id?: string; username?: string; profile_image?: string }>(
-    accessToken,
+    { base: PINTEREST_PRODUCTION_API, accessToken },
     '/user_account',
   )
   const username = json.username ?? 'Pinterest account'
@@ -65,14 +83,14 @@ export async function getPinterestAccount(accessToken: string): Promise<Pinteres
 
 export async function listPinterestBoards(accessToken: string): Promise<PinterestBoard[]> {
   const json = await pinterestRequest<{ items?: { id: string; name: string; privacy?: string }[] }>(
-    accessToken,
+    contentTarget(accessToken),
     '/boards?page_size=250',
   )
   return (json.items ?? []).map((b) => ({ id: b.id, name: b.name, privacy: b.privacy ?? 'PUBLIC' }))
 }
 
 export async function createPinterestPin(accessToken: string, input: CreatePinInput): Promise<string> {
-  const json = await pinterestRequest<{ id: string }>(accessToken, '/pins', {
+  const json = await pinterestRequest<{ id: string }>(contentTarget(accessToken), '/pins', {
     method: 'POST',
     body: {
       board_id: input.boardId,

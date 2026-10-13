@@ -23,12 +23,19 @@ export function requirePinterestCredentials(): { appId: string; appSecret: strin
   return { appId, appSecret }
 }
 
+export const PINTEREST_PRODUCTION_API = 'https://api.pinterest.com'
+
 /**
  * Pins/boards API host. Trial-access apps may only write to the sandbox:
  * set PINTEREST_API_BASE=https://api-sandbox.pinterest.com until Standard access.
  */
 export function pinterestApiBase(): string {
-  return (process.env.PINTEREST_API_BASE?.trim() || 'https://api.pinterest.com').replace(/\/$/, '')
+  return (process.env.PINTEREST_API_BASE?.trim() || PINTEREST_PRODUCTION_API).replace(/\/$/, '')
+}
+
+/** The sandbox rejects OAuth tokens; it only accepts the sandbox token generated on the app page. */
+export function pinterestSandboxAccessToken(): string | null {
+  return process.env.PINTEREST_SANDBOX_ACCESS_TOKEN?.trim() || null
 }
 
 /**
