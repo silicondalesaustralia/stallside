@@ -18,7 +18,8 @@ export function addDaysToDateKey(dateKey: string, days: number, timeZone: string
 
 export function weekdayNameInTimeZone(dateKey: string, timeZone: string): string {
   const ms = localDateTimeToUtc(dateKey, '12:00', timeZone).getTime()
-  return new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'long' }).format(new Date(ms))
+  const weekdayFormat = new Intl.DateTimeFormat('en-US', { timeZone: timeZone, weekday: 'long' })
+  return weekdayFormat.format(new Date(ms))
 }
 
 /** Monday (YYYY-MM-DD) of the week containing dateKey in the given IANA timezone. */
