@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useToast } from '@/components/ui/Toast'
 import { useTradiesPostSocialWorkspace } from '@/components/tradiespost/TradiesPostSocialWorkspaceProvider'
@@ -17,19 +17,17 @@ import { ComposerAiStudioDrawer } from '@/components/tradiespost/composer/Compos
 import { useComposerMedia } from '@/components/tradiespost/composer/useComposerMedia'
 import { useComposerCaption } from '@/components/tradiespost/composer/useComposerCaption'
 import { useComposerTikTokGate } from '@/components/tradiespost/composer/useComposerTikTok'
-import { ComposerTikTokSettings } from '@/components/tradiespost/composer/ComposerTikTokSettings'
 import { ComposerTikTokSlides } from '@/components/tradiespost/composer/ComposerTikTokSlides'
 import { useComposerYouTubeGate } from '@/components/tradiespost/composer/useComposerYouTube'
-import { ComposerYouTubeSettings } from '@/components/tradiespost/composer/ComposerYouTubeSettings'
+import { useComposerPinterestGate } from '@/components/tradiespost/composer/useComposerPinterest'
+import { ComposerPlatformSettingsSteps } from '@/components/tradiespost/composer/ComposerPlatformSettingsSteps'
+import { useComposerStartState } from '@/components/tradiespost/composer/useComposerStartState'
 import {
-  defaultLibrarySelectedPlatforms,
   socialConnectionsFromBusiness,
   toggleLibraryPlatform,
   type SocialPublishPlatform,
 } from '@/lib/social/libraryPublish'
 import { isAiPhotoSource } from '@/lib/tradiespost/composer/composerState'
-import { mediaFromSavedPost } from '@/lib/tradiespost/composer/composerSlides'
-import { postImageUrl } from '@/lib/tradiespost/posts/derivePostOutcome'
 
 export function TradiesPostComposer() {
   const router = useRouter()
@@ -47,25 +45,9 @@ export function TradiesPostComposer() {
   const videoDuration = media?.video?.durationSeconds ?? null
   const tiktok = useComposerTikTokGate(platforms.includes('tiktok') && connected.tiktok, videoDuration)
   const youtube = useComposerYouTubeGate(platforms.includes('youtube') && connected.youtube, captionState.caption)
+  const pinterest = useComposerPinterestGate(platforms.includes('pinterest') && connected.pinterest, captionState.caption)
   const { setCaption } = captionState
-  const platformsInitRef = useRef(false)
-  const duplicateAppliedRef = useRef(false)
-
-  useEffect(() => {
-    if (platformsInitRef.current || !ctx.business) return
-    platformsInitRef.current = true
-    setPlatforms(defaultLibrarySelectedPlatforms(connected))
-  }, [ctx.business, connected])
-
-  useEffect(() => {
-    const fromPost = searchParams.get('fromPost')
-    if (!fromPost || duplicateAppliedRef.current || !ctx.posts.length) return
-    const source = ctx.posts.find((p) => p.id === fromPost)
-    if (!source) return
-    duplicateAppliedRef.current = true
-    setCaption(source.caption ?? '')
-    setMedia(mediaFromSavedPost(postImageUrl(source), source.processed_photo_urls))
-  }, [searchParams, ctx.posts, setCaption, setMedia])
+  useComposerStartState({ business: ctx.business, posts: ctx.posts, connected, setPlatforms, setCaption, setMedia })
 
   const handleDone = useCallback(
     ({ mode }: { mode: 'now' | 'schedule' }) => {
@@ -122,16 +104,16 @@ export function TradiesPostComposer() {
             captionState={captionState}
             onWriteForMe={writeForMe}
           />
-          {tiktok.active && (
-            <ComposerStep number={4} title="TikTok settings">
-              <ComposerTikTokSettings state={tiktok.state} isVideo={Boolean(media?.video)} videoDurationSeconds={videoDuration} />
-            </ComposerStep>
-          )}
-          {youtube.active && (
-            <ComposerStep number={tiktok.active ? 5 : 4} title="YouTube settings">
-              <ComposerYouTubeSettings state={youtube} caption={captionState.caption} channelTitle={ctx.business?.youtube_channel_title ?? null} />
-            </ComposerStep>
-          )}
+          <ComposerPlatformSettingsSteps
+            tiktok={tiktok}
+            youtube={youtube}
+            pinterest={pinterest}
+            caption={captionState.caption}
+            isVideo={Boolean(media?.video)}
+            videoDurationSeconds={videoDuration}
+            youtubeChannelTitle={ctx.business?.youtube_channel_title ?? null}
+            pinterestUsername={ctx.business?.pinterest_username ?? null}
+          />
         </div>
         <ComposerSidePanel
           business={ctx.business}
@@ -145,6 +127,8 @@ export function TradiesPostComposer() {
           tiktokBlockReason={tiktok.blockReason}
           youtubeSettings={youtube.settings}
           youtubeBlockReason={youtube.blockReason}
+          pinterestSettings={pinterest.settings}
+          pinterestBlockReason={pinterest.blockReason}
           onDone={handleDone}
         />
       </div>

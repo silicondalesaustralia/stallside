@@ -59,6 +59,8 @@ export async function GET() {
       tiktok_display_name: null,
       youtube_channel_id: null,
       youtube_channel_title: null,
+      pinterest_user_id: null,
+      pinterest_username: null,
       ...SOCIAL_DEFAULTS,
       ...(rawBiz as unknown as Record<string, unknown>),
     }

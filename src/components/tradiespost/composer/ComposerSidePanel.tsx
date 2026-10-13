@@ -11,6 +11,7 @@ import type { SocialConnectionState, SocialPublishPlatform } from '@/lib/social/
 import { resolveBusinessTimeZone } from '@/lib/social/weekPlan/weekIdentity'
 import type { TikTokPostSettings } from '@/lib/social/tiktok/tiktokSettings'
 import type { YouTubePostSettings } from '@/lib/social/youtube/youtubeSettings'
+import type { PinterestPostSettings } from '@/lib/social/pinterest/pinterestSettings'
 import {
   composerBlockReason,
   facebookCaptionWithHeadline,
@@ -32,12 +33,15 @@ type Props = {
   tiktokBlockReason: string | null
   youtubeSettings: YouTubePostSettings | null
   youtubeBlockReason: string | null
+  pinterestSettings: PinterestPostSettings | null
+  pinterestBlockReason: string | null
   onDone: (result: { mode: ComposerMode }) => void
 }
 
 export function ComposerSidePanel(props: Props) {
   const { business, platforms, connected, media, caption, headline, jobId, onDone } = props
   const { tiktokSettings, tiktokBlockReason, youtubeSettings, youtubeBlockReason } = props
+  const { pinterestSettings, pinterestBlockReason } = props
   const [mode, setMode] = useState<ComposerMode>('now')
   const [date, setDate] = useState('')
   const [time, setTime] = useState('09:00')
@@ -55,6 +59,7 @@ export function ComposerSidePanel(props: Props) {
     isVideo: Boolean(media?.video),
     tiktokBlockReason,
     youtubeBlockReason,
+    pinterestBlockReason,
   })
 
   return (
@@ -98,6 +103,7 @@ export function ComposerSidePanel(props: Props) {
               publishingMode,
               tiktokSettings,
               youtubeSettings,
+              pinterestSettings,
               video: media.video ?? null,
               tiktokSlides: media.slides ?? null,
             })

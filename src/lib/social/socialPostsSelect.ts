@@ -24,5 +24,7 @@ export const SOCIAL_POSTS_SELECT = [
   'tiktok_status',
   'youtube_post_id',
   'youtube_error',
+  'pinterest_post_id',
+  'pinterest_error',
   'created_at',
 ].join(', ')

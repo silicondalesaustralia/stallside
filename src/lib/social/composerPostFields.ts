@@ -2,6 +2,7 @@ import { isProxyableStorageUrl } from '@/lib/social/tiktok/tiktokMediaUrl'
 import { sanitizeTikTokSettings } from '@/lib/social/tiktok/tiktokSettings'
 import { TIKTOK_MAX_PHOTO_SLIDES } from '@/lib/social/tiktokSlides/slideTypes'
 import { sanitizeYouTubeSettings } from '@/lib/social/youtube/youtubeSettings'
+import { sanitizePinterestSettings } from '@/lib/social/pinterest/pinterestSettings'
 import { VIDEO_PUBLISH_PLATFORMS } from '@/lib/social/libraryPublish'
 
 /** processedPhotoUrls.tiktok: null when absent, 'invalid' when present but unusable. */
@@ -22,6 +23,7 @@ export function composerPostColumns(body: {
   publishingMode?: unknown
   tiktokSettings?: unknown
   youtubeSettings?: unknown
+  pinterestSettings?: unknown
   mediaType?: unknown
   videoUrl?: unknown
   videoDurationSeconds?: unknown
@@ -48,6 +50,15 @@ export function composerPostColumns(body: {
     }
     if (body.publishingMode !== 'manual' && body.mediaType !== 'video') {
       return { ok: false, message: 'YouTube needs a video. Pick a video or deselect YouTube.' }
+    }
+  }
+
+  if (platforms.includes('pinterest')) {
+    const settings = sanitizePinterestSettings(body.pinterestSettings)
+    if (settings) {
+      columns.pinterest_settings = settings
+    } else if (body.publishingMode !== 'manual') {
+      return { ok: false, message: 'Pick a Pinterest board before posting to Pinterest.' }
     }
   }
 

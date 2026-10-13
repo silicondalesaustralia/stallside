@@ -9,6 +9,10 @@ import {
   youtubePostSourceFromRow,
   youtubeResultColumns,
 } from '@/lib/social/youtube/publishYouTubeForPost'
+import {
+  pinterestPostSourceFromRow,
+  pinterestResultColumns,
+} from '@/lib/social/pinterest/publishPinterestForPost'
 
 export const maxDuration = 60
 
@@ -65,6 +69,7 @@ export async function POST(
     business:           business as Parameters<typeof publishPost>[0]['business'],
     tiktokPost:         tiktokPostSourceFromRow(post),
     youtubePost:        youtubePostSourceFromRow(post),
+    pinterestPost:      pinterestPostSourceFromRow(post),
   })
 
   // Determine overall status
@@ -86,6 +91,7 @@ export async function POST(
     linkedin_error: results.linkedin?.error || null,
     ...tiktokResultColumns(results.tiktok),
     ...youtubeResultColumns(results.youtube),
+    ...pinterestResultColumns(results.pinterest),
   }
 
   await db.from('social_posts').update(update).eq('id', id)

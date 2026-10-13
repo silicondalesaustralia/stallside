@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { MetaConnectSection } from '@/components/settings/integrations/MetaConnectSection'
 import { TradiesPostTikTokConnectionCard } from '@/components/tradiespost/connections/TradiesPostTikTokConnectionCard'
 import { TradiesPostYouTubeConnectionCard } from '@/components/tradiespost/connections/TradiesPostYouTubeConnectionCard'
+import { TradiesPostPinterestConnectionCard } from '@/components/tradiespost/connections/TradiesPostPinterestConnectionCard'
 import { TradiesPostComingSoonConnectionCard } from '@/components/tradiespost/connections/TradiesPostComingSoonConnectionCard'
 import { TradiesPostCalendarConnectionsSection } from '@/components/tradiespost/connections/TradiesPostCalendarConnectionsSection'
 import { TradiesPostAppPage, TradiesPostLoading } from '@/components/tradiespost/TradiesPostAppPage'
@@ -24,6 +25,8 @@ export default function ConnectionsView({ integrationsPath }: { integrationsPath
     tiktok_display_name?: string | null
     youtube_channel_id?: string | null
     youtube_channel_title?: string | null
+    pinterest_user_id?: string | null
+    pinterest_username?: string | null
   } | null>(null)
   const [loading, setLoading] = useState(true)
   const [canManage, setCanManage] = useState(false)
@@ -106,7 +109,13 @@ export default function ConnectionsView({ integrationsPath }: { integrationsPath
             integrationsPath={integrationsPath}
             canManageConnections={canManage}
           />
-          <TradiesPostComingSoonConnectionCard platform="pinterest" />
+          <TradiesPostPinterestConnectionCard
+            pinterestUserId={business.pinterest_user_id}
+            pinterestUsername={business.pinterest_username}
+            onConnected={loadBusiness}
+            integrationsPath={integrationsPath}
+            canManageConnections={canManage}
+          />
           <TradiesPostComingSoonConnectionCard platform="x" />
         </div>
       </section>

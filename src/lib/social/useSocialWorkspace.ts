@@ -30,6 +30,8 @@ export interface SocialWorkspacePost {
   tiktok_status?: string | null
   youtube_post_id?: string | null
   youtube_error?: string | null
+  pinterest_post_id?: string | null
+  pinterest_error?: string | null
   created_at: string
 }
 
@@ -52,6 +54,9 @@ export interface SocialWorkspaceBusiness {
   youtube_channel_id?: string | null
   youtube_channel_title?: string | null
   youtube_channel_thumbnail_url?: string | null
+  pinterest_user_id?: string | null
+  pinterest_username?: string | null
+  pinterest_profile_image_url?: string | null
   social_brand_voice: string | null
   social_default_cta: string | null
   social_auto_prompt: boolean | null

@@ -9,6 +9,10 @@ import {
   youtubePostSourceFromRow,
   youtubeResultColumns,
 } from '@/lib/social/youtube/publishYouTubeForPost'
+import {
+  pinterestPostSourceFromRow,
+  pinterestResultColumns,
+} from '@/lib/social/pinterest/publishPinterestForPost'
 
 export type DueSocialPostRow = {
   id: string
@@ -23,6 +27,7 @@ export type DueSocialPostRow = {
   platform_captions?: Record<string, unknown> | null
   tiktok_settings?: unknown
   youtube_settings?: unknown
+  pinterest_settings?: unknown
   media_type?: string | null
   video_url?: string | null
   video_duration_seconds?: number | string | null
@@ -107,6 +112,7 @@ export async function publishDueAutomaticSocialPosts(
         business: business as Parameters<typeof publishPost>[0]['business'],
         tiktokPost: tiktokPostSourceFromRow(post as DueSocialPostRow),
         youtubePost: youtubePostSourceFromRow(post as DueSocialPostRow),
+        pinterestPost: pinterestPostSourceFromRow(post as DueSocialPostRow),
       })
 
       const anySuccess = Object.values(postResults).some((r) => r?.success)
@@ -123,6 +129,7 @@ export async function publishDueAutomaticSocialPosts(
         gmb_error: postResults.gmb?.error || null,
         ...tiktokResultColumns(postResults.tiktok),
         ...youtubeResultColumns(postResults.youtube),
+        ...pinterestResultColumns(postResults.pinterest),
       }).eq('id', post.id)
 
       const platformNames = post.platforms.join(', ')

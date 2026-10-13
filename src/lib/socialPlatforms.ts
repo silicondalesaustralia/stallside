@@ -29,6 +29,11 @@ import {
   type YouTubePostSource,
   type YouTubePublishResult,
 } from '@/lib/social/youtube/publishYouTubeForPost'
+import {
+  publishPinterestForPost,
+  type PinterestPostSource,
+  type PinterestPublishResult,
+} from '@/lib/social/pinterest/publishPinterestForPost'
 
 const DEMO = process.env.SOCIAL_DEMO_MODE === 'true'
 
@@ -70,6 +75,7 @@ export interface PostResults {
   /** Async: success means TikTok accepted the publish; status resolves later. */
   tiktok?: TikTokPublishResult
   youtube?: YouTubePublishResult
+  pinterest?: PinterestPublishResult
 }
 
 // ── Google Business Profile ───────────────────────────────────────────────────
@@ -326,6 +332,8 @@ export async function publishPost(options: {
   tiktokPost?: Omit<TikTokPostSource, 'businessId' | 'caption' | 'processedPhotoUrls'>
   /** Required when platforms include 'youtube'. */
   youtubePost?: Omit<YouTubePostSource, 'businessId' | 'caption'>
+  /** Required when platforms include 'pinterest'. */
+  pinterestPost?: Omit<PinterestPostSource, 'businessId' | 'caption' | 'processedPhotoUrls'>
 }): Promise<PostResults> {
   const { platforms, caption, platformCaptions, processedPhotoUrls, businessId, business } = options
   const results: PostResults = {}
@@ -351,6 +359,18 @@ export async function publishPost(options: {
           caption: typeof youtubeOverride === 'string' && youtubeOverride.trim() ? youtubeOverride : caption,
         })
       : { success: false, error: 'YouTube post details missing' }
+  }
+
+  if (platforms.includes('pinterest')) {
+    const pinterestOverride = platformCaptions?.pinterest
+    results.pinterest = options.pinterestPost
+      ? await publishPinterestForPost({
+          ...options.pinterestPost,
+          businessId,
+          caption: typeof pinterestOverride === 'string' && pinterestOverride.trim() ? pinterestOverride : caption,
+          processedPhotoUrls,
+        })
+      : { success: false, error: 'Pinterest post details missing' }
   }
 
   if (platforms.includes('facebook')) {

@@ -1,7 +1,8 @@
 import type { TikTokPostSettings } from '@/lib/social/tiktok/tiktokSettings'
 import type { YouTubePostSettings } from '@/lib/social/youtube/youtubeSettings'
+import type { PinterestPostSettings } from '@/lib/social/pinterest/pinterestSettings'
 
-export type SocialPublishPlatform = 'facebook' | 'instagram' | 'gmb' | 'tiktok' | 'youtube'
+export type SocialPublishPlatform = 'facebook' | 'instagram' | 'gmb' | 'tiktok' | 'youtube' | 'pinterest'
 
 export type SocialConnectionState = {
   facebook: boolean
@@ -9,22 +10,24 @@ export type SocialConnectionState = {
   gmb: boolean
   tiktok: boolean
   youtube: boolean
+  pinterest: boolean
 }
 
-export type LibraryPublishPlatform = Exclude<SocialPublishPlatform, 'tiktok' | 'youtube'>
+export type LibraryPublishPlatform = Exclude<SocialPublishPlatform, 'tiktok' | 'youtube' | 'pinterest'>
 
-/** Library / Planner surfaces. TikTok and YouTube are excluded: they need per-post settings only Create collects. */
+/** Library / Planner surfaces. TikTok, YouTube and Pinterest are excluded: they need per-post settings only Create collects. */
 export const SOCIAL_PUBLISH_PLATFORMS: LibraryPublishPlatform[] = [
   'facebook',
   'instagram',
   'gmb',
 ]
 
-/** Create composer (collects TikTok and YouTube per-post settings). */
+/** Create composer (collects TikTok, YouTube and Pinterest per-post settings). */
 export const COMPOSER_PUBLISH_PLATFORMS: SocialPublishPlatform[] = [
   ...SOCIAL_PUBLISH_PLATFORMS,
   'tiktok',
   'youtube',
+  'pinterest',
 ]
 
 /** Platforms that accept an automatically published video. */
@@ -36,6 +39,7 @@ export const SOCIAL_PUBLISH_PLATFORM_LABELS: Record<SocialPublishPlatform, strin
   gmb: 'Google Business',
   tiktok: 'TikTok',
   youtube: 'YouTube',
+  pinterest: 'Pinterest',
 }
 
 /** Publishing / scheduling / download from Library never charges render credits. */
@@ -48,6 +52,7 @@ export function socialConnectionsFromBusiness(business: {
   gmb_account_id?: string | null
   tiktok_open_id?: string | null
   youtube_channel_id?: string | null
+  pinterest_user_id?: string | null
 } | null | undefined): SocialConnectionState {
   return {
     facebook: Boolean(business?.facebook_page_id?.trim()),
@@ -55,6 +60,7 @@ export function socialConnectionsFromBusiness(business: {
     gmb: Boolean(business?.gmb_account_id?.trim()),
     tiktok: Boolean(business?.tiktok_open_id?.trim()),
     youtube: Boolean(business?.youtube_channel_id?.trim()),
+    pinterest: Boolean(business?.pinterest_user_id?.trim()),
   }
 }
 
@@ -232,6 +238,7 @@ export type LibrarySocialPostBody = {
   platformCaptions?: PlatformCaptions
   tiktokSettings?: TikTokPostSettings
   youtubeSettings?: YouTubePostSettings
+  pinterestSettings?: PinterestPostSettings
   mediaType?: 'video'
   videoUrl?: string
   videoDurationSeconds?: number | null
@@ -241,6 +248,7 @@ export type LibrarySocialPostBody = {
 export type ComposerPostExtras = {
   tiktokSettings?: TikTokPostSettings | null
   youtubeSettings?: YouTubePostSettings | null
+  pinterestSettings?: PinterestPostSettings | null
   video?: { url: string; durationSeconds: number | null } | null
   /** Ordered TikTok photo slides; resultUrl stays the feed cover for other platforms. */
   tiktokSlides?: string[] | null
@@ -290,6 +298,9 @@ export function buildLibrarySocialPostBody(params: {
       : {}),
     ...(params.youtubeSettings && params.platforms.includes('youtube')
       ? { youtubeSettings: params.youtubeSettings }
+      : {}),
+    ...(params.pinterestSettings && params.platforms.includes('pinterest')
+      ? { pinterestSettings: params.pinterestSettings }
       : {}),
     ...(params.video
       ? {

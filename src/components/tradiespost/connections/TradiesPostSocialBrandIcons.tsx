@@ -11,3 +11,15 @@ export function YouTubeBrandIcon({ className = 'h-6 w-6' }: IconProps) {
     </svg>
   )
 }
+
+export function PinterestBrandIcon({ className = 'h-6 w-6' }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden>
+      <circle cx="12" cy="12" r="12" fill="#E60023" />
+      <path
+        fill="#FFFFFF"
+        d="M12.3 4.5c-4.1 0-6.2 2.9-6.2 5.4 0 1.5.6 2.8 1.8 3.3.2.1.4 0 .4-.2l.2-.7c.1-.2 0-.3-.1-.5-.4-.4-.6-1-.6-1.8 0-2.3 1.7-4.4 4.5-4.4 2.5 0 3.8 1.5 3.8 3.5 0 2.6-1.2 4.9-2.9 4.9-1 0-1.7-.8-1.4-1.8.3-1.1.8-2.4.8-3.2 0-.7-.4-1.4-1.2-1.4-1 0-1.7 1-1.7 2.3 0 .8.3 1.4.3 1.4l-1.1 4.7c-.3 1.4 0 3.1 0 3.3 0 .1.1.1.2 0 .1-.1 1-1.3 1.4-2.6l.5-2.1c.3.5 1.1 1 2 1 2.6 0 4.4-2.4 4.4-5.6 0-2.4-2-4.6-5.1-4.6Z"
+      />
+    </svg>
+  )
+}
