@@ -1,5 +1,6 @@
 import { cleanEnvSecret } from "@/lib/env";
 import { hostPublicOrigin } from "@/lib/socialHost/hostConfig";
+import { envFlag } from "@/lib/social/envFlag";
 
 /**
  * Read the owner's events (import) and manage only calendars this app creates (export).
@@ -34,7 +35,7 @@ export function requireGoogleOAuthCredentials(): GoogleOAuthCredentials {
 }
 
 export function isGoogleCalendarConnectEnabled(): boolean {
-  return process.env.GOOGLE_CALENDAR_CONNECT_ENABLED === "true" && googleOAuthCredentials() !== null;
+  return envFlag(process.env.GOOGLE_CALENDAR_CONNECT_ENABLED) && googleOAuthCredentials() !== null;
 }
 
 /** Must exactly match an Authorised redirect URI on the Google OAuth client. */

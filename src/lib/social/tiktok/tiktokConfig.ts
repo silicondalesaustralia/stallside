@@ -1,11 +1,12 @@
 import { productPublicOrigin } from '@/lib/products/productRedirect'
 import { resolveKnownProductFromHostname } from '@/lib/products/resolveProductContext'
 import { isSocialDemoMode } from '@/lib/social/metaConnectConfig'
+import { envFlag } from '@/lib/social/envFlag'
 
 export const TIKTOK_SCOPES = ['user.info.basic', 'video.publish']
 
 export function isTikTokConnectEnabled(): boolean {
-  return process.env.TIKTOK_CONNECT_ENABLED === 'true'
+  return envFlag(process.env.TIKTOK_CONNECT_ENABLED)
 }
 
 /** Demo connect without live TikTok credentials. */

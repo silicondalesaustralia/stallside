@@ -1,8 +1,9 @@
 import { socialIntegrationsReturnUrl } from '@/lib/products/productRoutes'
 import type { ProductId } from '@/lib/products/productTypes'
+import { envFlag } from '@/lib/social/envFlag'
 
 export function isMetaConnectEnabled(): boolean {
-  return process.env.META_CONNECT_ENABLED === 'true'
+  return envFlag(process.env.META_CONNECT_ENABLED)
 }
 
 export function isSocialDemoMode(): boolean {

@@ -1,6 +1,7 @@
 import { productPublicOrigin } from '@/lib/products/productRedirect'
 import { resolveKnownProductFromHostname } from '@/lib/products/resolveProductContext'
 import { isSocialDemoMode } from '@/lib/social/metaConnectConfig'
+import { envFlag } from '@/lib/social/envFlag'
 
 export const YOUTUBE_SCOPES = [
   'https://www.googleapis.com/auth/youtube.upload',
@@ -8,7 +9,7 @@ export const YOUTUBE_SCOPES = [
 ]
 
 export function isYouTubeConnectEnabled(): boolean {
-  return process.env.YOUTUBE_CONNECT_ENABLED === 'true'
+  return envFlag(process.env.YOUTUBE_CONNECT_ENABLED)
 }
 
 /** Demo connect without live Google credentials. */
