@@ -41,12 +41,12 @@ export function TradiesPostComposer() {
   const [aiOpen, setAiOpen] = useState(false)
   const [headline, setHeadline] = useState('')
   const { media, setMedia, uploading, uploadError, upload } = useComposerMedia()
-  const { jobId, onJobChange, linkedImages } = useComposerLinkedItem({ initialJobId: searchParams.get('jobId'), media, setMedia })
+  const { jobId, onJobChange, linkedImages, linkedUrl } = useComposerLinkedItem({ initialJobId: searchParams.get('jobId'), media, setMedia })
   const captionState = useComposerCaption()
   const videoDuration = media?.video?.durationSeconds ?? null
   const tiktok = useComposerTikTokGate(platforms.includes('tiktok') && connected.tiktok, videoDuration)
   const youtube = useComposerYouTubeGate(platforms.includes('youtube') && connected.youtube, captionState.caption)
-  const pinterest = useComposerPinterestGate(platforms.includes('pinterest') && connected.pinterest, captionState.caption)
+  const pinterest = useComposerPinterestGate(platforms.includes('pinterest') && connected.pinterest, captionState.caption, linkedUrl)
   const { setCaption } = captionState
   useComposerStartState({ business: ctx.business, posts: ctx.posts, connected, setPlatforms, setCaption, setMedia })
 

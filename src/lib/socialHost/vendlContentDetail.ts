@@ -1,5 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import { formatMoney } from '@/lib/money'
+import { preOrderPageUrl } from '@/lib/preorder-page'
+import { subscriptionOfferUrl } from '@/lib/subscription-offer'
+import { productPageUrl } from '@/lib/socialHost/standPublicUrls'
 import type { VendlContentKind, VendlContentRef } from '@/lib/socialHost/vendlContentTypes'
 
 export type VendlContentDetail = {
@@ -9,6 +12,8 @@ export type VendlContentDetail = {
   /** Plain facts for the caption/image AI (price, dates, what's included). */
   notes: string
   imageUrls: string[]
+  /** Public shop page for the item. */
+  publicUrl: string
 }
 
 function longDate(d: Date, timeZone: string): string {
@@ -24,13 +29,14 @@ export async function loadVendlContentDetail(
   standId: string,
   ref: VendlContentRef,
 ): Promise<VendlContentDetail | null> {
-  const stand = await prisma.stand.findUnique({ where: { id: standId }, select: { timezone: true } })
-  const timeZone = stand?.timezone ?? 'Australia/Adelaide'
+  const stand = await prisma.stand.findUnique({ where: { id: standId }, select: { timezone: true, slug: true } })
+  if (!stand) return null
+  const timeZone = stand.timezone ?? 'Australia/Adelaide'
 
   if (ref.source === 'product') {
     const p = await prisma.product.findFirst({
       where: { id: ref.id, standId },
-      select: { name: true, description: true, imageUrl: true, priceCents: true, currency: true, freshnessNote: true },
+      select: { name: true, slug: true, description: true, imageUrl: true, priceCents: true, currency: true, freshnessNote: true },
     })
     if (!p) return null
     const notes = [`Product: ${p.name}`, `Price: ${formatMoney(p.priceCents, p.currency)}`, p.freshnessNote]
@@ -40,6 +46,7 @@ export async function loadVendlContentDetail(
       description: p.description,
       notes: notes.filter(Boolean).join('. '),
       imageUrls: uniqueUrls([p.imageUrl]),
+      publicUrl: productPageUrl(stand.slug, p.slug),
     }
   }
 
@@ -47,7 +54,7 @@ export async function loadVendlContentDetail(
     const page = await prisma.preOrderPage.findFirst({
       where: { id: ref.id, standId },
       select: {
-        title: true, description: true, imageUrl: true, orderByAt: true, collectionAt: true, collectionNote: true,
+        title: true, slug: true, description: true, imageUrl: true, orderByAt: true, collectionAt: true, collectionNote: true,
         items: { orderBy: { sortOrder: 'asc' }, select: { product: { select: { name: true, imageUrl: true } } } },
       },
     })
@@ -66,13 +73,14 @@ export async function loadVendlContentDetail(
       description: page.description,
       notes: notes.filter(Boolean).join('. '),
       imageUrls: uniqueUrls([page.imageUrl, ...page.items.map((i) => i.product.imageUrl)]),
+      publicUrl: preOrderPageUrl(stand.slug, page.slug),
     }
   }
 
   const offer = await prisma.subscriptionOffer.findFirst({
     where: { id: ref.id, standId },
     select: {
-      title: true, description: true, imageUrl: true, kind: true, interval: true, priceCents: true, currency: true,
+      title: true, slug: true, description: true, imageUrl: true, kind: true, interval: true, priceCents: true, currency: true,
       termWeeks: true, collectionNote: true,
       items: { orderBy: { sortOrder: 'asc' }, select: { quantity: true, product: { select: { name: true, imageUrl: true } } } },
     },
@@ -93,5 +101,6 @@ export async function loadVendlContentDetail(
     description: offer.description,
     notes: notes.filter(Boolean).join('. '),
     imageUrls: uniqueUrls([offer.imageUrl, ...offer.items.map((i) => i.product.imageUrl)]),
+    publicUrl: subscriptionOfferUrl(stand.slug, offer.slug),
   }
 }

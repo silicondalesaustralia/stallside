@@ -27,8 +27,10 @@ export function rememberPinterestBoard(boardId: string) {
 }
 
 /** Board list, board/title/link draft, and the derived settings payload + block reason for submit. */
-export function useComposerPinterestGate(active: boolean, caption: string) {
+export function useComposerPinterestGate(active: boolean, caption: string, linkedUrl: string | null) {
   const [draft, setDraft] = useState<PinterestSettingsDraft>(EMPTY_PINTEREST_DRAFT)
+  const [linkTouched, setLinkTouched] = useState(false)
+  const [shopUrl, setShopUrl] = useState<string | null>(null)
   const [boards, setBoards] = useState<PinterestBoard[] | null>(null)
   const [boardsError, setBoardsError] = useState<string | null>(null)
   const [titleGenerating, setTitleGenerating] = useState(false)
@@ -40,11 +42,16 @@ export function useComposerPinterestGate(active: boolean, caption: string) {
     async function loadBoards() {
       try {
         const res = await fetch('/api/social/connect/pinterest/boards')
-        const json = (await res.json().catch(() => ({}))) as { boards?: PinterestBoard[]; error?: string }
+        const json = (await res.json().catch(() => ({}))) as {
+          boards?: PinterestBoard[]
+          shopUrl?: string | null
+          error?: string
+        }
         if (!res.ok) throw new Error(json.error || `Could not load boards (${res.status})`)
         if (cancelled) return
         const list = json.boards ?? []
         setBoards(list)
+        setShopUrl(json.shopUrl ?? null)
         setBoardsError(null)
         const remembered = list.find((b) => b.id === rememberedBoardId()) ?? (list.length === 1 ? list[0] : null)
         if (remembered) {
@@ -86,10 +93,21 @@ export function useComposerPinterestGate(active: boolean, caption: string) {
     }
   }, [])
 
-  const derived = active ? pinterestSettingsFromDraft(draft, caption) : { settings: null, blockReason: null }
+  /** Linked item's page, else the shop, until the seller edits the field (clearing it means no link). */
+  const link = linkTouched ? draft.link : linkedUrl ?? shopUrl ?? ''
+  const setLink = useCallback((value: string) => {
+    setLinkTouched(true)
+    setDraft((prev) => ({ ...prev, link: value }))
+  }, [])
+
+  const derived = active
+    ? pinterestSettingsFromDraft({ ...draft, link }, caption)
+    : { settings: null, blockReason: null }
   return {
     draft,
     setDraft,
+    link,
+    setLink,
     active,
     boards,
     boardsError,

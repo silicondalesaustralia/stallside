@@ -13,6 +13,7 @@ export function useComposerLinkedItem(params: {
   const { media, setMedia } = params
   const [jobId, setJobId] = useState<string | null>(params.initialJobId)
   const [linkedImages, setLinkedImages] = useState<string[]>([])
+  const [linkedUrl, setLinkedUrl] = useState<string | null>(null)
 
   const onJobChange = useCallback(
     (id: string | null, option: SocialJobOption | null) => {
@@ -20,6 +21,7 @@ export function useComposerLinkedItem(params: {
       const showingOldLinkedPhoto = Boolean(media && !media.video && linkedImages.includes(media.url))
       setJobId(id)
       setLinkedImages(images)
+      setLinkedUrl(option?.publicUrl ?? null)
       if (images[0] && (!media || showingOldLinkedPhoto)) {
         setMedia({ url: images[0], renderId: null, aiGenerated: false })
       } else if (!images.length && showingOldLinkedPhoto) {
@@ -29,5 +31,5 @@ export function useComposerLinkedItem(params: {
     [media, linkedImages, setMedia],
   )
 
-  return { jobId, onJobChange, linkedImages }
+  return { jobId, onJobChange, linkedImages, linkedUrl }
 }

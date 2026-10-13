@@ -91,14 +91,14 @@ export function ComposerPinterestSettings({ state, caption, username, jobId }: P
         Link (optional)
         <input
           type="url"
-          value={draft.link}
-          onChange={(e) => setDraft((prev) => ({ ...prev, link: e.target.value }))}
+          value={state.link}
+          onChange={(e) => state.setLink(e.target.value)}
           placeholder="https://your-shop-link"
           className={FIELD}
           data-testid="pinterest-link"
         />
         <span className="mt-1 block text-xs font-normal text-zinc-500">
-          Where people go when they tap the Pin, like your shop or a product page.
+          Where people go when they tap the Pin. Starts as the page you picked above, or your shop. Edit or clear it if you like.
         </span>
       </label>
 

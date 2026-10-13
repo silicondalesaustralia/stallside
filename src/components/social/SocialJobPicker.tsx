@@ -13,6 +13,8 @@ export type SocialJobOption = {
   label: string
   /** The item's own photos (https only), usable as the post image. */
   imageUrls?: string[]
+  /** Public shop page for the item. */
+  publicUrl?: string | null
 }
 
 type Props = {
@@ -50,7 +52,7 @@ export function SocialJobPicker({
         setLinkError('Could not link that item. Try again.')
         return
       }
-      const json = (await res.json()) as { jobId: string; imageUrls?: string[] }
+      const json = (await res.json()) as { jobId: string; imageUrls?: string[]; publicUrl?: string }
       setSelected(item)
       setOpen(false)
       setQuery('')
@@ -60,6 +62,7 @@ export function SocialJobPicker({
         suburb: null,
         label: item.title,
         imageUrls: json.imageUrls ?? [],
+        publicUrl: json.publicUrl ?? null,
       })
     } catch (err) {
       console.error('[SocialJobPicker] link failed', err)
