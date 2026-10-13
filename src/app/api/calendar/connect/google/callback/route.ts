@@ -5,13 +5,14 @@ import { GOOGLE_CALENDAR_SCOPES } from '@/lib/calendar-sync/google/config'
 import { exchangeGoogleCalendarCode, fetchGoogleAccountEmail } from '@/lib/calendar-sync/google/oauth'
 import { decodeCalendarOAuthState } from '@/lib/calendar-sync/oauthState'
 import { syncCalendarExports } from '@/lib/calendar-sync/export'
-import { CALENDAR_CONNECTIONS_PATH } from '@/lib/calendar-sync/paths'
+import { calendarReturnUrl } from '@/lib/calendar-sync/paths'
 
 const REQUIRED_SCOPES = GOOGLE_CALENDAR_SCOPES.filter((s) => s.startsWith('https://'))
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const back = new URL(CALENDAR_CONNECTIONS_PATH, req.url)
+  const state = decodeCalendarOAuthState(searchParams.get('state'))
+  const back = calendarReturnUrl(req.url, state?.returnPath ?? null)
   const fail = (code: string) => {
     back.searchParams.set('calendar_error', code)
     return NextResponse.redirect(back)
@@ -19,7 +20,6 @@ export async function GET(req: NextRequest) {
 
   const code = searchParams.get('code')
   if (searchParams.get('error') || !code) return fail('cancelled')
-  const state = decodeCalendarOAuthState(searchParams.get('state'))
   if (!state) return fail('invalid_state')
 
   try {

@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cleanEnvSecret } from "@/lib/env";
 
-type CalendarOAuthState = { ownerId: string; issuedAt: number };
+type CalendarOAuthState = { ownerId: string; returnPath: string | null; issuedAt: number };
 
 const STATE_MAX_AGE_MS = 15 * 60 * 1000;
 
@@ -11,8 +11,8 @@ function sign(payload: string): string {
   return createHmac("sha256", `calendar-oauth:${secret}`).update(payload).digest("base64url");
 }
 
-export function encodeCalendarOAuthState(ownerId: string): string {
-  const payload = Buffer.from(JSON.stringify({ ownerId, issuedAt: Date.now() })).toString("base64url");
+export function encodeCalendarOAuthState(ownerId: string, returnPath: string | null): string {
+  const payload = Buffer.from(JSON.stringify({ ownerId, returnPath, issuedAt: Date.now() })).toString("base64url");
   return `${payload}.${sign(payload)}`;
 }
 
@@ -28,7 +28,11 @@ export function decodeCalendarOAuthState(raw: string | null): CalendarOAuthState
     const parsed = JSON.parse(Buffer.from(payload, "base64url").toString()) as Partial<CalendarOAuthState>;
     if (typeof parsed.ownerId !== "string" || typeof parsed.issuedAt !== "number") return null;
     if (Date.now() - parsed.issuedAt > STATE_MAX_AGE_MS) return null;
-    return { ownerId: parsed.ownerId, issuedAt: parsed.issuedAt };
+    return {
+      ownerId: parsed.ownerId,
+      returnPath: typeof parsed.returnPath === "string" ? parsed.returnPath : null,
+      issuedAt: parsed.issuedAt,
+    };
   } catch {
     return null;
   }

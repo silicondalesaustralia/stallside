@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Calendar } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
@@ -15,21 +15,22 @@ import {
   syncCalendarNowAction,
   type CalendarConnectionsState,
 } from '@/app/dashboard/(gated)/social/connections/calendar-actions'
+import { useCalendarConnectReturn } from '@/components/tradiespost/connections/useCalendarConnectReturn'
 
-type Props = { canManageConnections: boolean }
+type Props = { canManageConnections: boolean; integrationsPath: string }
 
 function formatSynced(iso: string | null): string {
   if (!iso) return 'Not synced yet'
   return `Last synced ${new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`
 }
 
-export default function GoogleCalendarConnectionCard({ canManageConnections }: Props) {
+export default function GoogleCalendarConnectionCard({ canManageConnections, integrationsPath }: Props) {
   const [state, setState] = useState<CalendarConnectionsState | null>(null)
   const [busy, setBusy] = useState<'sync' | 'disconnect' | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [showDisconnect, setShowDisconnect] = useState(false)
 
-  useEffect(() => {
+  const reload = useCallback(() => {
     loadCalendarConnectionsAction()
       .then(setState)
       .catch((err: unknown) => {
@@ -37,6 +38,9 @@ export default function GoogleCalendarConnectionCard({ canManageConnections }: P
         setError('Could not load calendar connection.')
       })
   }, [])
+
+  useEffect(reload, [reload])
+  useCalendarConnectReturn(integrationsPath, reload)
 
   async function run(kind: 'sync' | 'disconnect', action: () => Promise<CalendarConnectionsState>) {
     setBusy(kind)
@@ -54,7 +58,8 @@ export default function GoogleCalendarConnectionCard({ canManageConnections }: P
 
   const conn = state?.connections.find((c) => c.provider === 'GOOGLE') ?? null
   const enabled = state?.googleEnabled ?? false
-  const beginConnect = () => window.location.assign('/api/calendar/connect/google')
+  const beginConnect = () =>
+    window.location.assign(`/api/calendar/connect/google?returnPath=${encodeURIComponent(integrationsPath)}`)
   const problem = error ?? conn?.lastError ?? null
 
   return (

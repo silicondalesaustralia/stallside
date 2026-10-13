@@ -92,6 +92,9 @@ const ICONS: Record<string, React.ReactNode> = {
   "/dashboard/knowledge": (
     <Icon d="M4 5h7v14H4zM13 5h7v14h-7M8 8h1M17 8h1" />
   ),
+  "/dashboard/connectors": (
+    <Icon d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0V8zM12 17v4" />
+  ),
   "/dashboard/settings": (
     <Icon d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM12 3v2M12 19v2M4.9 6.5l1.7 1M17.4 16.5l1.7 1M3 12h2M19 12h2M4.9 17.5l1.7-1M17.4 7.5l1.7-1" />
   ),

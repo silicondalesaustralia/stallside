@@ -7,8 +7,10 @@ import GoogleCalendarConnectionCard from '@/components/tradiespost/connections/G
 
 export function TradiesPostCalendarConnectionsSection({
   canManageConnections,
+  integrationsPath,
 }: {
   canManageConnections: boolean
+  integrationsPath: string
 }) {
   return (
     <section className="mt-12" data-testid="tp-calendar-connections-section">
@@ -18,7 +20,10 @@ export function TradiesPostCalendarConnectionsSection({
       </p>
 
       <div className="social-connections-grid">
-        <GoogleCalendarConnectionCard canManageConnections={canManageConnections} />
+        <GoogleCalendarConnectionCard
+          canManageConnections={canManageConnections}
+          integrationsPath={integrationsPath}
+        />
         <TradiesPostProviderConnectionCard
           name="Microsoft Outlook & 365"
           benefit="Sync collection days and market dates with Outlook and Microsoft 365."
