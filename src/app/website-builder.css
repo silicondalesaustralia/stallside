@@ -761,6 +761,49 @@
   border-bottom-color: var(--leaf-dark);
 }
 
+.studio-nav__logo-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  --logo-h-shown: min(var(--logo-h, 36px), 56px);
+}
+
+@container storefront (min-width: 48rem) {
+  .studio-nav__logo-wrap {
+    --logo-h-shown: var(--logo-h, 36px);
+  }
+}
+
+.studio-nav__logo {
+  height: var(--logo-h-shown);
+  max-width: calc(var(--logo-h-shown) * 4);
+}
+
+.studio-nav__logo-wrap--active {
+  outline: 2px dashed var(--leaf);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.studio-nav__logo-handle {
+  position: absolute;
+  right: -9px;
+  bottom: -9px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid white;
+  border-radius: 3px;
+  background: var(--leaf);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+  cursor: nwse-resize;
+  touch-action: none;
+}
+
+.studio-nav__logo-handle:focus-visible {
+  outline: 2px solid var(--field);
+  outline-offset: 2px;
+}
+
 .studio-nav__menu-btn {
   border: 1px solid var(--line);
   border-radius: 0.5rem;

@@ -6,14 +6,18 @@ import {
   BRAND_MARK_MODES,
   HEADER_LAYOUT_LABELS,
   HEADER_LAYOUTS,
+  LOGO_HEIGHT_DEFAULT,
   type BrandMarkMode,
   type HeaderLayout,
 } from "@/lib/storefront/header-style";
+import LogoSizeField from "./LogoSizeField";
 
 export default function HeaderStyleSettings() {
   const {
     headerLayout = "classic",
     brandMark = "logo-and-name",
+    logoHeight = LOGO_HEIGHT_DEFAULT,
+    previewLogoHeight,
     setHeaderStyle,
     headerStyleStatus,
     headerStyleError,
@@ -71,6 +75,12 @@ export default function HeaderStyleSettings() {
             </label>
           ))}
         </div>
+        <LogoSizeField
+          disabled={!hasLogo || brandMark === "name-only"}
+          height={logoHeight}
+          onPreview={(h) => previewLogoHeight?.(h)}
+          onCommit={(h) => setHeaderStyle?.({ logoHeight: h })}
+        />
         {headerStyleStatus === "saving" ? (
           <p className="text-xs text-[var(--muted)]">Saving…</p>
         ) : null}

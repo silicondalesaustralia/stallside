@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  LOGO_HEIGHT_MAX,
+  LOGO_HEIGHT_MIN,
+  clampLogoHeight,
   defaultHeaderStyle,
   headerStyleFromBlueprint,
   isBrandMarkMode,
@@ -38,5 +41,13 @@ describe("header-style", () => {
     assert.equal(isHeaderLayout("nope"), false);
     assert.equal(isBrandMarkMode("logo-only"), true);
     assert.equal(isBrandMarkMode("both"), false);
+  });
+
+  it("clamps logo height and rejects non-numbers", () => {
+    assert.equal(clampLogoHeight(64.4), 64);
+    assert.equal(clampLogoHeight(5), LOGO_HEIGHT_MIN);
+    assert.equal(clampLogoHeight(999), LOGO_HEIGHT_MAX);
+    assert.equal(clampLogoHeight("80"), undefined);
+    assert.equal(clampLogoHeight(Number.NaN), undefined);
   });
 });

@@ -24,8 +24,16 @@ export default function StudioEditorShell({
   const template = resolveStudioTemplate(metadata.templateId, metadata.businessMode);
   const enabledPages = metadata.enabledPages ?? DEFAULT_PAGES;
   const branding = metadata.resolvedBranding;
-  const { chromeTarget, setChromeTarget, headerLayout, brandMark, sitePageBackground } =
-    useStudioEditorChrome();
+  const {
+    chromeTarget,
+    setChromeTarget,
+    headerLayout,
+    brandMark,
+    logoHeight,
+    previewLogoHeight,
+    setHeaderStyle,
+    sitePageBackground,
+  } = useStudioEditorChrome();
   const liveBranding =
     sitePageBackground === undefined ? branding : { ...branding, pageBackground: sitePageBackground };
   const { actions } = useEditor();
@@ -57,6 +65,9 @@ export default function StudioEditorShell({
           onSelect={selectHeader}
           headerLayout={headerLayout}
           brandMark={brandMark}
+          logoHeight={logoHeight}
+          onLogoResize={previewLogoHeight}
+          onLogoResizeEnd={(height) => setHeaderStyle?.({ logoHeight: height })}
         />
         <main
           onClick={() => {

@@ -126,15 +126,17 @@ export default function StudioEditorInner({
   const [brandMark, setBrandMark] = useState<BrandMarkMode>(
     metadata.resolvedBranding.brandMark,
   );
+  const [logoHeight, setLogoHeight] = useState(metadata.resolvedBranding.logoHeight);
   const [headerStyleStatus, setHeaderStyleStatus] = useState<
     "idle" | "saving" | "saved" | "error"
   >("idle");
   const [headerStyleError, setHeaderStyleError] = useState<string | null>(null);
 
   const setHeaderStyle = useCallback(
-    (patch: { headerLayout?: HeaderLayout; brandMark?: BrandMarkMode }) => {
+    (patch: { headerLayout?: HeaderLayout; brandMark?: BrandMarkMode; logoHeight?: number }) => {
       if (patch.headerLayout) setHeaderLayout(patch.headerLayout);
       if (patch.brandMark) setBrandMark(patch.brandMark);
+      if (patch.logoHeight !== undefined) setLogoHeight(patch.logoHeight);
       setHeaderStyleStatus("saving");
       setHeaderStyleError(null);
       startTransition(async () => {
@@ -228,6 +230,8 @@ export default function StudioEditorInner({
       setChromeTarget,
       headerLayout,
       brandMark,
+      logoHeight,
+      previewLogoHeight: setLogoHeight,
       setHeaderStyle,
       headerStyleStatus,
       headerStyleError,
@@ -260,6 +264,7 @@ export default function StudioEditorInner({
       chromeTarget,
       headerLayout,
       brandMark,
+      logoHeight,
       setHeaderStyle,
       headerStyleStatus,
       headerStyleError,

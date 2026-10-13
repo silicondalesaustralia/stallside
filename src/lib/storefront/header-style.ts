@@ -6,6 +6,17 @@ export type HeaderLayout = (typeof HEADER_LAYOUTS)[number];
 export const BRAND_MARK_MODES = ["logo-and-name", "logo-only", "name-only"] as const;
 export type BrandMarkMode = (typeof BRAND_MARK_MODES)[number];
 
+/** Logo height in the header, in CSS pixels. Phones cap it at LOGO_HEIGHT_MOBILE_MAX. */
+export const LOGO_HEIGHT_MIN = 24;
+export const LOGO_HEIGHT_MAX = 120;
+export const LOGO_HEIGHT_DEFAULT = 36;
+export const LOGO_HEIGHT_MOBILE_MAX = 56;
+
+export function clampLogoHeight(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.round(Math.min(LOGO_HEIGHT_MAX, Math.max(LOGO_HEIGHT_MIN, value)));
+}
+
 export function isHeaderLayout(value: unknown): value is HeaderLayout {
   return typeof value === "string" && (HEADER_LAYOUTS as readonly string[]).includes(value);
 }

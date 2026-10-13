@@ -3,6 +3,8 @@ import { parseAccentColor, darkenHex } from "@/lib/stand-brand";
 import { STOREFRONT_THEMES, isStorefrontThemePreset } from "@/lib/storefront/themes";
 import { getFontPair } from "@/lib/website/brand-looks";
 import {
+  LOGO_HEIGHT_DEFAULT,
+  clampLogoHeight,
   defaultHeaderStyle,
   isBrandMarkMode,
   isHeaderLayout,
@@ -112,6 +114,7 @@ export function resolveStorefrontBranding(input: {
     brandMark: isBrandMarkMode(overrides.brandMark)
       ? overrides.brandMark
       : headerDefaults.brandMark,
+    logoHeight: clampLogoHeight(overrides.logoHeight) ?? LOGO_HEIGHT_DEFAULT,
     pageBackground: isColourValue(overrides.pageBackground) ? overrides.pageBackground : null,
     regionLabel: regionParts.length > 0 ? regionParts.join(", ") : null,
     contactEmail: storefront.contactEmail?.trim() || input.owner.contactEmail,

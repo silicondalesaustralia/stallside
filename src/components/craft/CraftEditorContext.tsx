@@ -40,9 +40,13 @@ export type CraftEditorChrome = {
   setChromeTarget?: (t: ChromeTarget) => void;
   headerLayout?: HeaderLayout;
   brandMark?: BrandMarkMode;
+  logoHeight?: number;
+  /** Updates the logo size on screen without saving (during a drag). */
+  previewLogoHeight?: (height: number) => void;
   setHeaderStyle?: (patch: {
     headerLayout?: HeaderLayout;
     brandMark?: BrandMarkMode;
+    logoHeight?: number;
   }) => void;
   headerStyleStatus?: "idle" | "saving" | "saved" | "error";
   headerStyleError?: string | null;

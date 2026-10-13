@@ -47,6 +47,8 @@ export type StorefrontThemeOverrides = {
   fontPairId?: string;
   headerLayout?: import("./header-style").HeaderLayout;
   brandMark?: import("./header-style").BrandMarkMode;
+  /** Header logo height in px (clamped to LOGO_HEIGHT_MIN–MAX). */
+  logoHeight?: number;
   /** Colour behind the sections on every page (theme token or #rrggbb). */
   pageBackground?: string;
 };
@@ -88,6 +90,7 @@ export type ResolvedStorefrontBranding = {
   fontPairId: string | null;
   headerLayout: import("./header-style").HeaderLayout;
   brandMark: import("./header-style").BrandMarkMode;
+  logoHeight: number;
   pageBackground: string | null;
   regionLabel: string | null;
   contactEmail: string;

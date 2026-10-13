@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState, useSyncExternalStore, useCallback, type ReactNode } from "react";
 import {
@@ -16,6 +15,7 @@ import type { StudioTemplateId } from "@/lib/studio/types";
 import type { StudioNavItem } from "@/lib/studio/navigation";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
 import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style";
+import StudioBrandMark from "./StudioBrandMark";
 
 const SHOP_LABEL: Record<StudioTemplateId, string> = {
   artisan: "Shop",
@@ -49,41 +49,6 @@ function NavDropdown({ item }: { item: StudioNavItem }) {
         </ul>
       </div>
     </div>
-  );
-}
-
-function BrandMark({
-  branding,
-  brandMark,
-  href,
-}: {
-  branding: ResolvedStorefrontBranding;
-  brandMark: BrandMarkMode;
-  href: string;
-}) {
-  const hasLogo = Boolean(branding.logoUrl);
-  const showLogo =
-    hasLogo && (brandMark === "logo-and-name" || brandMark === "logo-only");
-  const showName =
-    brandMark === "name-only" ||
-    brandMark === "logo-and-name" ||
-    (!hasLogo && brandMark === "logo-only");
-
-  return (
-    <Link href={href} className="flex min-w-0 items-center gap-3" onClick={(e) => e.stopPropagation()}>
-      {showLogo && branding.logoUrl ? (
-        <Image
-          src={branding.logoUrl}
-          alt={showName ? "" : branding.headline}
-          width={120}
-          height={48}
-          className="h-9 w-auto max-w-[140px] object-contain"
-        />
-      ) : null}
-      {showName ? (
-        <span className="studio-nav__brand truncate">{branding.headline}</span>
-      ) : null}
-    </Link>
   );
 }
 
@@ -198,6 +163,9 @@ export default function StudioStorefrontNav({
   onSelect,
   headerLayout: layoutOverride,
   brandMark: markOverride,
+  logoHeight: logoHeightOverride,
+  onLogoResize,
+  onLogoResizeEnd,
 }: {
   storefrontSlug: string;
   standSlug: string;
@@ -214,6 +182,9 @@ export default function StudioStorefrontNav({
   onSelect?: () => void;
   headerLayout?: HeaderLayout;
   brandMark?: BrandMarkMode;
+  logoHeight?: number;
+  onLogoResize?: (height: number) => void;
+  onLogoResizeEnd?: (height: number) => void;
 }) {
   const [open, setOpen] = useState(false);
   const template = resolveStudioTemplate(templateId, "FOOD_BUSINESS");
@@ -247,7 +218,19 @@ export default function StudioStorefrontNav({
         : "studio-nav studio-nav--market";
 
   const homeHref = shopHomePath(storefrontSlug, draft, basePath);
-  const brand = <BrandMark branding={branding} brandMark={brandMark} href={homeHref} />;
+  const brand = (
+    <StudioBrandMark
+      branding={branding}
+      brandMark={brandMark}
+      href={homeHref}
+      logoHeight={logoHeightOverride ?? branding.logoHeight}
+      editable={editable}
+      resizable={editable && selected}
+      onSelect={onSelect}
+      onLogoResize={onLogoResize}
+      onLogoResizeEnd={onLogoResizeEnd}
+    />
+  );
   const desktopNav =
     headerLayout === "minimal" ? null : (
       <nav className="hidden items-center gap-6 sf-md:flex" aria-label="Main" onClick={(e) => e.stopPropagation()}>

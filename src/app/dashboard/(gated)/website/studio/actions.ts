@@ -28,6 +28,7 @@ import { webStudioPath } from "@/lib/website/web-studio-nav";
 import { redirectAfterSave as redirectAfterSaveTo } from "@/lib/studio/redirect-after-save";
 import { parseStorefrontConfig } from "@/lib/storefront/config";
 import {
+  clampLogoHeight,
   isBrandMarkMode,
   isHeaderLayout,
   type BrandMarkMode,
@@ -156,16 +157,19 @@ export async function applyWebsiteStudioTemplate(templateIdRaw: string) {
 export async function saveStorefrontHeaderStyle(input: {
   headerLayout?: string;
   brandMark?: string;
+  logoHeight?: number;
   expectedRevision: number;
 }): Promise<{ ok: true; revision: number } | { ok: false; error: string }> {
   const { owner } = await requireWebsiteOwner();
   try {
     const storefront = await ensureStorefront(owner.id, owner.businessName);
     const base = parseStorefrontConfig(storefront.draftConfig);
-    const patch: { headerLayout?: HeaderLayout; brandMark?: BrandMarkMode } = {};
+    const patch: { headerLayout?: HeaderLayout; brandMark?: BrandMarkMode; logoHeight?: number } = {};
     if (isHeaderLayout(input.headerLayout)) patch.headerLayout = input.headerLayout;
     if (isBrandMarkMode(input.brandMark)) patch.brandMark = input.brandMark;
-    if (!patch.headerLayout && !patch.brandMark) {
+    const logoHeight = clampLogoHeight(input.logoHeight);
+    if (logoHeight !== undefined) patch.logoHeight = logoHeight;
+    if (!patch.headerLayout && !patch.brandMark && patch.logoHeight === undefined) {
       return { ok: false, error: "Invalid header style." };
     }
     const nextDraft = {
