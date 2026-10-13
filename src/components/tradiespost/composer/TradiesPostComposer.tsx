@@ -20,6 +20,7 @@ import { useComposerTikTokGate } from '@/components/tradiespost/composer/useComp
 import { ComposerTikTokSlides } from '@/components/tradiespost/composer/ComposerTikTokSlides'
 import { useComposerYouTubeGate } from '@/components/tradiespost/composer/useComposerYouTube'
 import { useComposerPinterestGate } from '@/components/tradiespost/composer/useComposerPinterest'
+import { useComposerXGate } from '@/components/tradiespost/composer/useComposerX'
 import { ComposerPlatformSettingsSteps } from '@/components/tradiespost/composer/ComposerPlatformSettingsSteps'
 import { useComposerStartState } from '@/components/tradiespost/composer/useComposerStartState'
 import { useComposerLinkedItem } from '@/components/tradiespost/composer/useComposerLinkedItem'
@@ -47,6 +48,8 @@ export function TradiesPostComposer() {
   const tiktok = useComposerTikTokGate(platforms.includes('tiktok') && connected.tiktok, videoDuration)
   const youtube = useComposerYouTubeGate(platforms.includes('youtube') && connected.youtube, captionState.caption)
   const pinterest = useComposerPinterestGate(platforms.includes('pinterest') && connected.pinterest, captionState.caption, linkedUrl)
+  const x = useComposerXGate(platforms.includes('x') && connected.x, captionState.caption)
+  const gates = { tiktok, youtube, pinterest, x }
   const { setCaption } = captionState
   useComposerStartState({ business: ctx.business, posts: ctx.posts, connected, setPlatforms, setCaption, setMedia })
 
@@ -109,14 +112,13 @@ export function TradiesPostComposer() {
             onWriteForMe={writeForMe}
           />
           <ComposerPlatformSettingsSteps
-            tiktok={tiktok}
-            youtube={youtube}
-            pinterest={pinterest}
+            gates={gates}
             caption={captionState.caption}
             isVideo={Boolean(media?.video)}
             videoDurationSeconds={videoDuration}
             youtubeChannelTitle={ctx.business?.youtube_channel_title ?? null}
             pinterestUsername={ctx.business?.pinterest_username ?? null}
+            xUsername={ctx.business?.x_username ?? null}
             jobId={jobId}
           />
         </div>
@@ -128,7 +130,7 @@ export function TradiesPostComposer() {
           caption={captionState.caption}
           headline={platforms.includes('facebook') ? headline : ''}
           jobId={jobId}
-          gates={{ tiktok, youtube, pinterest }}
+          gates={gates}
           onDone={handleDone}
         />
       </div>

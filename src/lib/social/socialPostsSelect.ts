@@ -26,5 +26,7 @@ export const SOCIAL_POSTS_SELECT = [
   'youtube_error',
   'pinterest_post_id',
   'pinterest_error',
+  'x_post_id',
+  'x_error',
   'created_at',
 ].join(', ')

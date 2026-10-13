@@ -15,6 +15,8 @@ export function directPostUrl(platform: SocialPublishPlatform, postId: string): 
       return `https://www.youtube.com/watch?v=${id}`
     case 'pinterest':
       return `https://www.pinterest.com/pin/${id}/`
+    case 'x':
+      return `https://x.com/i/web/status/${id}`
     case 'tiktok':
       // Public post ids are numeric; anything else is the publish id (no public page yet).
       return /^\d+$/.test(postId) ? `https://www.tiktok.com/@/video/${id}` : null

@@ -34,6 +34,7 @@ export type ComposerSubmitInput = {
   tiktokSettings: TikTokPostSettings | null
   youtubeSettings: YouTubePostSettings | null
   pinterestSettings: PinterestPostSettings | null
+  xText: string | null
   video: { url: string; durationSeconds: number | null } | null
   tiktokSlides: string[] | null
 }
@@ -52,10 +53,10 @@ export function useComposerSubmit(onDone: (result: { mode: ComposerMode }) => vo
           platforms: input.platforms,
           resultUrl: input.imageUrl,
           jobId: input.jobId,
-          platformCaptions:
-            input.facebookCaption && input.platforms.includes('facebook')
-              ? { facebook: input.facebookCaption }
-              : null,
+          platformCaptions: {
+            ...(input.facebookCaption && input.platforms.includes('facebook') ? { facebook: input.facebookCaption } : {}),
+            ...(input.xText && input.platforms.includes('x') ? { x: input.xText } : {}),
+          },
           tiktokSettings: input.tiktokSettings,
           youtubeSettings: input.youtubeSettings,
           pinterestSettings: input.pinterestSettings,

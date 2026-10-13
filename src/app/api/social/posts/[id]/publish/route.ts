@@ -13,6 +13,7 @@ import {
   pinterestPostSourceFromRow,
   pinterestResultColumns,
 } from '@/lib/social/pinterest/publishPinterestForPost'
+import { xResultColumns } from '@/lib/social/x/publishXForPost'
 
 export const maxDuration = 60
 
@@ -70,6 +71,7 @@ export async function POST(
     tiktokPost:         tiktokPostSourceFromRow(post),
     youtubePost:        youtubePostSourceFromRow(post),
     pinterestPost:      pinterestPostSourceFromRow(post),
+    xPost:              { postId: post.id, mediaType: post.media_type ?? null },
   })
 
   // Determine overall status
@@ -92,6 +94,7 @@ export async function POST(
     ...tiktokResultColumns(results.tiktok),
     ...youtubeResultColumns(results.youtube),
     ...pinterestResultColumns(results.pinterest),
+    ...xResultColumns(results.x),
   }
 
   await db.from('social_posts').update(update).eq('id', id)

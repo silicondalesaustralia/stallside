@@ -5,7 +5,7 @@ import { MetaConnectSection } from '@/components/settings/integrations/MetaConne
 import { TradiesPostTikTokConnectionCard } from '@/components/tradiespost/connections/TradiesPostTikTokConnectionCard'
 import { TradiesPostYouTubeConnectionCard } from '@/components/tradiespost/connections/TradiesPostYouTubeConnectionCard'
 import { TradiesPostPinterestConnectionCard } from '@/components/tradiespost/connections/TradiesPostPinterestConnectionCard'
-import { TradiesPostComingSoonConnectionCard } from '@/components/tradiespost/connections/TradiesPostComingSoonConnectionCard'
+import { TradiesPostXConnectionCard } from '@/components/tradiespost/connections/TradiesPostXConnectionCard'
 import { TradiesPostCalendarConnectionsSection } from '@/components/tradiespost/connections/TradiesPostCalendarConnectionsSection'
 import { TradiesPostAppPage, TradiesPostLoading } from '@/components/tradiespost/TradiesPostAppPage'
 import { TradiesPostPageHeader } from '@/components/tradiespost/ui'
@@ -27,6 +27,8 @@ export default function ConnectionsView({ integrationsPath }: { integrationsPath
     youtube_channel_title?: string | null
     pinterest_user_id?: string | null
     pinterest_username?: string | null
+    x_user_id?: string | null
+    x_username?: string | null
   } | null>(null)
   const [loading, setLoading] = useState(true)
   const [canManage, setCanManage] = useState(false)
@@ -116,7 +118,13 @@ export default function ConnectionsView({ integrationsPath }: { integrationsPath
             integrationsPath={integrationsPath}
             canManageConnections={canManage}
           />
-          <TradiesPostComingSoonConnectionCard platform="x" />
+          <TradiesPostXConnectionCard
+            xUserId={business.x_user_id}
+            xUsername={business.x_username}
+            onConnected={loadBusiness}
+            integrationsPath={integrationsPath}
+            canManageConnections={canManage}
+          />
         </div>
       </section>
 

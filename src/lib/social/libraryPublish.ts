@@ -2,7 +2,7 @@ import type { TikTokPostSettings } from '@/lib/social/tiktok/tiktokSettings'
 import type { YouTubePostSettings } from '@/lib/social/youtube/youtubeSettings'
 import type { PinterestPostSettings } from '@/lib/social/pinterest/pinterestSettings'
 
-export type SocialPublishPlatform = 'facebook' | 'instagram' | 'gmb' | 'tiktok' | 'youtube' | 'pinterest'
+export type SocialPublishPlatform = 'facebook' | 'instagram' | 'gmb' | 'tiktok' | 'youtube' | 'pinterest' | 'x'
 
 export type SocialConnectionState = {
   facebook: boolean
@@ -11,11 +11,12 @@ export type SocialConnectionState = {
   tiktok: boolean
   youtube: boolean
   pinterest: boolean
+  x: boolean
 }
 
-export type LibraryPublishPlatform = Exclude<SocialPublishPlatform, 'tiktok' | 'youtube' | 'pinterest'>
+export type LibraryPublishPlatform = Exclude<SocialPublishPlatform, 'tiktok' | 'youtube' | 'pinterest' | 'x'>
 
-/** Library / Planner surfaces. TikTok, YouTube and Pinterest are excluded: they need per-post settings only Create collects. */
+/** Library / Planner surfaces. TikTok, YouTube, Pinterest and X are excluded: they need per-post settings only Create collects. */
 export const SOCIAL_PUBLISH_PLATFORMS: LibraryPublishPlatform[] = [
   'facebook',
   'instagram',
@@ -28,6 +29,7 @@ export const COMPOSER_PUBLISH_PLATFORMS: SocialPublishPlatform[] = [
   'tiktok',
   'youtube',
   'pinterest',
+  'x',
 ]
 
 /** Platforms that accept an automatically published video. */
@@ -40,6 +42,7 @@ export const SOCIAL_PUBLISH_PLATFORM_LABELS: Record<SocialPublishPlatform, strin
   tiktok: 'TikTok',
   youtube: 'YouTube',
   pinterest: 'Pinterest',
+  x: 'X',
 }
 
 /** Publishing / scheduling / download from Library never charges render credits. */
@@ -53,6 +56,7 @@ export function socialConnectionsFromBusiness(business: {
   tiktok_open_id?: string | null
   youtube_channel_id?: string | null
   pinterest_user_id?: string | null
+  x_user_id?: string | null
 } | null | undefined): SocialConnectionState {
   return {
     facebook: Boolean(business?.facebook_page_id?.trim()),
@@ -61,6 +65,7 @@ export function socialConnectionsFromBusiness(business: {
     tiktok: Boolean(business?.tiktok_open_id?.trim()),
     youtube: Boolean(business?.youtube_channel_id?.trim()),
     pinterest: Boolean(business?.pinterest_user_id?.trim()),
+    x: Boolean(business?.x_user_id?.trim()),
   }
 }
 

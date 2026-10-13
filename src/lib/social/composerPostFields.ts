@@ -4,6 +4,15 @@ import { TIKTOK_MAX_PHOTO_SLIDES } from '@/lib/social/tiktokSlides/slideTypes'
 import { sanitizeYouTubeSettings } from '@/lib/social/youtube/youtubeSettings'
 import { sanitizePinterestSettings } from '@/lib/social/pinterest/pinterestSettings'
 import { VIDEO_PUBLISH_PLATFORMS } from '@/lib/social/libraryPublish'
+import { xTextBlockReason } from '@/lib/social/x/xText'
+
+/** platformCaptions.x when set, else the shared caption (mirrors publishPost). */
+function xTextFromBody(body: { caption?: unknown; platformCaptions?: unknown }): string {
+  const captions = body.platformCaptions
+  const override = captions && typeof captions === 'object' ? (captions as Record<string, unknown>).x : undefined
+  if (typeof override === 'string' && override.trim()) return override
+  return typeof body.caption === 'string' ? body.caption : ''
+}
 
 /** processedPhotoUrls.tiktok: null when absent, 'invalid' when present but unusable. */
 function tiktokSlidesFromBody(processed: unknown): string[] | null | 'invalid' {
@@ -28,6 +37,8 @@ export function composerPostColumns(body: {
   videoUrl?: unknown
   videoDurationSeconds?: unknown
   processedPhotoUrls?: unknown
+  caption?: unknown
+  platformCaptions?: unknown
 }): { ok: true; columns: Record<string, unknown> } | { ok: false; message: string } {
   const columns: Record<string, unknown> = {}
   const platforms = Array.isArray(body.platforms) ? body.platforms : []
@@ -60,6 +71,11 @@ export function composerPostColumns(body: {
     } else if (body.publishingMode !== 'manual') {
       return { ok: false, message: 'Pick a Pinterest board before posting to Pinterest.' }
     }
+  }
+
+  if (platforms.includes('x') && body.publishingMode !== 'manual') {
+    const reason = xTextBlockReason(xTextFromBody(body))
+    if (reason) return { ok: false, message: reason }
   }
 
   const tiktokSlides = tiktokSlidesFromBody(body.processedPhotoUrls)

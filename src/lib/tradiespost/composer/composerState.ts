@@ -15,6 +15,8 @@ export const CAPTION_LIMITS: Record<SocialPublishPlatform, number> = {
   tiktok: 2200,
   youtube: 5000,
   pinterest: 800,
+  /** X has its own 280-character text (platform_captions.x), checked by xBlockReason. */
+  x: 63206,
 }
 
 /** Strictest limit across the selected platforms (Instagram's when none selected). */
@@ -81,6 +83,8 @@ export function composerBlockReason(params: {
   youtubeBlockReason?: string | null
   /** From Pinterest settings when Pinterest is selected and connected. */
   pinterestBlockReason?: string | null
+  /** From the X text when X is selected. */
+  xBlockReason?: string | null
 }): string | null {
   if (!params.selected.length) return 'Pick at least one platform.'
   if (!params.imageUrl) return params.isVideo ? 'Pick a video first.' : 'Add an image first.'
@@ -93,6 +97,7 @@ export function composerBlockReason(params: {
   if (params.tiktokBlockReason) return params.tiktokBlockReason
   if (params.youtubeBlockReason) return params.youtubeBlockReason
   if (params.pinterestBlockReason) return params.pinterestBlockReason
+  if (params.xBlockReason) return params.xBlockReason
   if (!params.caption.trim()) return 'Write a caption first.'
   if (params.caption.length > captionLimitFor(params.selected)) {
     return 'Caption is too long for one of the selected platforms.'

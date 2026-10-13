@@ -61,6 +61,8 @@ export async function GET() {
       youtube_channel_title: null,
       pinterest_user_id: null,
       pinterest_username: null,
+      x_user_id: null,
+      x_username: null,
       ...SOCIAL_DEFAULTS,
       ...(rawBiz as unknown as Record<string, unknown>),
     }

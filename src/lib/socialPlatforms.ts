@@ -34,6 +34,7 @@ import {
   type PinterestPostSource,
   type PinterestPublishResult,
 } from '@/lib/social/pinterest/publishPinterestForPost'
+import { publishXForPost, type XPublishResult } from '@/lib/social/x/publishXForPost'
 
 const DEMO = process.env.SOCIAL_DEMO_MODE === 'true'
 
@@ -76,6 +77,7 @@ export interface PostResults {
   tiktok?: TikTokPublishResult
   youtube?: YouTubePublishResult
   pinterest?: PinterestPublishResult
+  x?: XPublishResult
 }
 
 // ── Google Business Profile ───────────────────────────────────────────────────
@@ -334,6 +336,8 @@ export async function publishPost(options: {
   youtubePost?: Omit<YouTubePostSource, 'businessId' | 'caption'>
   /** Required when platforms include 'pinterest'. */
   pinterestPost?: Omit<PinterestPostSource, 'businessId' | 'caption' | 'processedPhotoUrls'>
+  /** social_posts.id and media_type; required when platforms include 'x'. */
+  xPost?: { postId: string; mediaType: string | null }
 }): Promise<PostResults> {
   const { platforms, caption, platformCaptions, processedPhotoUrls, businessId, business } = options
   const results: PostResults = {}
@@ -371,6 +375,18 @@ export async function publishPost(options: {
           processedPhotoUrls,
         })
       : { success: false, error: 'Pinterest post details missing' }
+  }
+
+  if (platforms.includes('x')) {
+    const xOverride = platformCaptions?.x
+    results.x = options.xPost
+      ? await publishXForPost({
+          ...options.xPost,
+          businessId,
+          text: typeof xOverride === 'string' && xOverride.trim() ? xOverride : caption,
+          processedPhotoUrls,
+        })
+      : { success: false, error: 'X post details missing' }
   }
 
   if (platforms.includes('facebook')) {

@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
     const mode = parsePublishingMode(publishingMode) ?? 'automatic'
     const { data: businessRow } = await db
       .from('businesses')
-      .select('facebook_page_id, instagram_account_id, gmb_account_id, tiktok_open_id, youtube_channel_id, pinterest_user_id')
+      .select('facebook_page_id, instagram_account_id, gmb_account_id, tiktok_open_id, youtube_channel_id, pinterest_user_id, x_user_id')
       .eq('id', businessId)
       .maybeSingle()
     const connected = socialConnectionsFromBusiness(businessRow)

@@ -32,6 +32,8 @@ export interface SocialWorkspacePost {
   youtube_error?: string | null
   pinterest_post_id?: string | null
   pinterest_error?: string | null
+  x_post_id?: string | null
+  x_error?: string | null
   created_at: string
 }
 
@@ -57,6 +59,9 @@ export interface SocialWorkspaceBusiness {
   pinterest_user_id?: string | null
   pinterest_username?: string | null
   pinterest_profile_image_url?: string | null
+  x_user_id?: string | null
+  x_username?: string | null
+  x_profile_image_url?: string | null
   social_brand_voice: string | null
   social_default_cta: string | null
   social_auto_prompt: boolean | null

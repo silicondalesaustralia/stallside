@@ -13,6 +13,7 @@ import {
   pinterestPostSourceFromRow,
   pinterestResultColumns,
 } from '@/lib/social/pinterest/publishPinterestForPost'
+import { xResultColumns } from '@/lib/social/x/publishXForPost'
 
 export type DueSocialPostRow = {
   id: string
@@ -113,6 +114,7 @@ export async function publishDueAutomaticSocialPosts(
         tiktokPost: tiktokPostSourceFromRow(post as DueSocialPostRow),
         youtubePost: youtubePostSourceFromRow(post as DueSocialPostRow),
         pinterestPost: pinterestPostSourceFromRow(post as DueSocialPostRow),
+        xPost: { postId: post.id, mediaType: (post as DueSocialPostRow).media_type ?? null },
       })
 
       const anySuccess = Object.values(postResults).some((r) => r?.success)
@@ -130,6 +132,7 @@ export async function publishDueAutomaticSocialPosts(
         ...tiktokResultColumns(postResults.tiktok),
         ...youtubeResultColumns(postResults.youtube),
         ...pinterestResultColumns(postResults.pinterest),
+        ...xResultColumns(postResults.x),
       }).eq('id', post.id)
 
       const platformNames = post.platforms.join(', ')

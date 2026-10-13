@@ -35,13 +35,14 @@ type Props = {
     tiktok: PlatformGate<TikTokPostSettings>
     youtube: PlatformGate<YouTubePostSettings>
     pinterest: PlatformGate<PinterestPostSettings>
+    x: PlatformGate<string>
   }
   onDone: (result: { mode: ComposerMode }) => void
 }
 
 export function ComposerSidePanel(props: Props) {
   const { business, platforms, connected, media, caption, headline, jobId, onDone } = props
-  const { tiktok, youtube, pinterest } = props.gates
+  const { tiktok, youtube, pinterest, x } = props.gates
   const [mode, setMode] = useState<ComposerMode>('now')
   const [date, setDate] = useState('')
   const [time, setTime] = useState('09:00')
@@ -60,6 +61,7 @@ export function ComposerSidePanel(props: Props) {
     tiktokBlockReason: tiktok.blockReason,
     youtubeBlockReason: youtube.blockReason,
     pinterestBlockReason: pinterest.blockReason,
+    xBlockReason: x.blockReason,
   })
 
   return (
@@ -104,6 +106,7 @@ export function ComposerSidePanel(props: Props) {
               tiktokSettings: tiktok.settings,
               youtubeSettings: youtube.settings,
               pinterestSettings: pinterest.settings,
+              xText: x.settings,
               video: media.video ?? null,
               tiktokSlides: media.slides ?? null,
             })
