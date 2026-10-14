@@ -1,4 +1,5 @@
 import type { SerializedNodes } from "@craftjs/core";
+import { isReservedSiteSlug } from "@/lib/storefront/site-slugs";
 
 export const BLOG_INDEX_BUILTIN_ID = "builtin-blog";
 
@@ -143,7 +144,7 @@ export function slugifyPageSlug(input: string): string {
 
 export function isValidPageSlug(slug: string): boolean {
   if (!slug || slug.length < 1) return false;
-  if (RESERVED_PAGE_SLUGS.has(slug)) return false;
+  if (RESERVED_PAGE_SLUGS.has(slug) || isReservedSiteSlug(slug)) return false;
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
 }
 

@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { addSiteRenameRedirect, clearSiteRedirectFrom } from "@/lib/website/persistence/site-redirect-patch";
 import {
   revalidateOwnerStores,
   uniqueCategorySlug,
@@ -35,6 +36,7 @@ export async function createCategory(formData: FormData) {
       sortOrder: (last?.sortOrder ?? -1) + 1,
     },
   });
+  await clearSiteRedirectFrom(owner.id, `/${category.slug}`);
   await revalidateOwnerStores(owner.id);
   redirect(`/dashboard/categories/${category.id}`);
 }
@@ -48,7 +50,7 @@ export async function updateCategory(categoryId: string, formData: FormData) {
   const { title, description } = readFields(formData);
   if (!title) redirect(`/dashboard/categories/${categoryId}?error=name`);
 
-  await prisma.category.update({
+  const updated = await prisma.category.update({
     where: { id: categoryId },
     data: {
       title,
@@ -60,7 +62,11 @@ export async function updateCategory(categoryId: string, formData: FormData) {
           ? existing.slug
           : await uniqueCategorySlug(owner.id, title, categoryId),
     },
+    select: { slug: true },
   });
+  if (updated.slug !== existing.slug) {
+    await addSiteRenameRedirect(owner.id, `/${existing.slug}`, `/${updated.slug}`);
+  }
   await revalidateOwnerStores(owner.id);
   redirect(`/dashboard/categories/${categoryId}?saved=1`);
 }

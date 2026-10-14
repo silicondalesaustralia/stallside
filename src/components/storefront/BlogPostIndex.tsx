@@ -38,7 +38,7 @@ export default function BlogPostIndex({
         <ul className={`grid gap-8 ${studioActive ? "" : "mt-10"} sf-sm:grid-cols-2`}>
           {posts.map((post) => {
             const postTopics = topicsForPost(topics, post);
-            const href = shopBlogPostPath(storefrontSlug, post.slug, draft, basePath);
+            const href = shopBlogPostPath(storefrontSlug, post, topics, draft, basePath);
             const date = formatBlogDate(post.publishedAt ?? post.updatedAt);
             return (
               <li key={post.id} className="flex flex-col overflow-hidden rounded-2xl border border-[var(--line)] bg-white">

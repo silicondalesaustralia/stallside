@@ -15,7 +15,7 @@ const SEEDED_TEMPLATES = new Set([
 export default async function NewWebsitePage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; msg?: string }>;
 }) {
   const params = await searchParams;
 
@@ -31,7 +31,7 @@ export default async function NewWebsitePage({
       {params.error ? (
         <WebsiteFormError
           error={params.error}
-          fallback="Check the page title and URL slug — slugs must be lowercase letters, numbers and hyphens."
+          fallback={params.msg ?? "Check the page title and URL slug — slugs must be lowercase letters, numbers and hyphens."}
         />
       ) : null}
 

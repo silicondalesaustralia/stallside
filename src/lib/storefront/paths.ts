@@ -1,4 +1,6 @@
 import { appBaseUrl } from "@/lib/app-url";
+import type { StorefrontBlogPost, StorefrontBlogTopic } from "@/lib/studio/blog";
+import { blogPostRelativePath } from "@/lib/studio/blog-topics";
 
 function rootFor(
   storefrontSlug: string,
@@ -45,7 +47,7 @@ export function shopCategoryPath(
 ): string {
   const base = joinRoot(
     rootFor(storefrontSlug, basePath),
-    `/shop/${encodeURIComponent(categorySlug)}`,
+    `/${encodeURIComponent(categorySlug)}`,
   );
   return draft ? `${base}?draft=1` : base;
 }
@@ -68,7 +70,7 @@ export function shopMenusPath(
   draft = false,
   basePath?: string,
 ): string {
-  const base = joinRoot(rootFor(storefrontSlug, basePath), "/menu");
+  const base = joinRoot(rootFor(storefrontSlug, basePath), "/menus");
   return draft ? `${base}?draft=1` : base;
 }
 
@@ -77,10 +79,11 @@ export function shopMenuPath(
   menuSlug: string,
   draft = false,
   basePath?: string,
+  preOrder = false,
 ): string {
   const base = joinRoot(
     rootFor(storefrontSlug, basePath),
-    `/menu/${encodeURIComponent(menuSlug)}`,
+    `/${preOrder ? "pre-orders" : "menus"}/${encodeURIComponent(menuSlug)}`,
   );
   return draft ? `${base}?draft=1` : base;
 }
@@ -93,7 +96,7 @@ export function shopCustomPagePath(
 ): string {
   const base = joinRoot(
     rootFor(storefrontSlug, basePath),
-    `/pages/${encodeURIComponent(pageSlug)}`,
+    `/${encodeURIComponent(pageSlug)}`,
   );
   return draft ? `${base}?draft=1` : base;
 }
@@ -107,16 +110,46 @@ export function shopBlogPath(
   return draft ? `${base}?draft=1` : base;
 }
 
+/** Blog posts live under their main category: `/{category}/{post}`. */
 export function shopBlogPostPath(
   storefrontSlug: string,
-  postSlug: string,
+  post: Pick<StorefrontBlogPost, "slug" | "topicIds" | "mainTopicId">,
+  topics: StorefrontBlogTopic[],
   draft = false,
   basePath?: string,
 ): string {
-  const base = joinRoot(
-    rootFor(storefrontSlug, basePath),
-    `/blog/${encodeURIComponent(postSlug)}`,
-  );
+  const base = joinRoot(rootFor(storefrontSlug, basePath), blogPostRelativePath(post, topics));
+  return draft ? `${base}?draft=1` : base;
+}
+
+export function shopBlogTopicPath(
+  storefrontSlug: string,
+  topicSlug: string,
+  draft = false,
+  basePath?: string,
+): string {
+  const base = joinRoot(rootFor(storefrontSlug, basePath), `/${encodeURIComponent(topicSlug)}`);
+  return draft ? `${base}?draft=1` : base;
+}
+
+export function shopPreOrderPath(
+  storefrontSlug: string,
+  slug: string,
+  draft = false,
+  basePath?: string,
+): string {
+  const base = joinRoot(rootFor(storefrontSlug, basePath), `/pre-orders/${encodeURIComponent(slug)}`);
+  return draft ? `${base}?draft=1` : base;
+}
+
+export function shopSubscriptionsPath(
+  storefrontSlug: string,
+  offerSlug?: string,
+  draft = false,
+  basePath?: string,
+): string {
+  const rest = offerSlug ? `/subscriptions/${encodeURIComponent(offerSlug)}` : "/subscriptions";
+  const base = joinRoot(rootFor(storefrontSlug, basePath), rest);
   return draft ? `${base}?draft=1` : base;
 }
 

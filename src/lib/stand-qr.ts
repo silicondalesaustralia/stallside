@@ -56,7 +56,7 @@ export function standQrTargetUrl(input: StandQrTargetInput): string {
 
   if (mode === "WEBSITE_CATEGORY" && storefrontSlug && categorySlug) {
     return storefrontPublicUrl(storefrontSlug, {
-      path: `/shop/${encodeURIComponent(categorySlug)}`,
+      path: `/${encodeURIComponent(categorySlug)}`,
       primaryCustomHostname: input.primaryCustomHostname,
     });
   }

@@ -17,7 +17,7 @@ export default async function EditWebsitePage({
   searchParams,
 }: {
   params: Promise<{ pageId: string }>;
-  searchParams: Promise<{ saved?: string; published?: string; created?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; published?: string; created?: string; error?: string; msg?: string }>;
 }) {
   const { owner } = await requireOwner();
   const { pageId } = await params;
@@ -42,7 +42,7 @@ export default async function EditWebsitePage({
       {sp.created ? <p className="text-sm font-medium text-[var(--ok)]">Page created. Use Edit this page to add sections.</p> : null}
       {sp.error ? (
         <p className="text-sm font-medium text-[var(--gone)]">
-          {sp.error === "conflict" ? DRAFT_CONFLICT_MESSAGE : "Could not save page settings."}
+          {sp.error === "conflict" ? DRAFT_CONFLICT_MESSAGE : sp.msg ?? "Could not save page settings."}
         </p>
       ) : null}
 

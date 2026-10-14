@@ -30,12 +30,12 @@ export function legacyStorefrontRedirect(
 
   const nestedShop = pathname.match(/^\/shop\/([^/]+)\/shop\/?$/);
   if (nestedShop) {
-    const dest = `/shop/${nestedShop[1]}/shop/${encodeURIComponent(cat)}`;
+    const dest = `/shop/${nestedShop[1]}/${encodeURIComponent(cat)}`;
     return s ? `${dest}?${s}` : dest;
   }
 
   if (pathname === "/shop" || pathname === "/shop/") {
-    const dest = `/shop/${encodeURIComponent(cat)}`;
+    const dest = `/${encodeURIComponent(cat)}`;
     return s ? `${dest}?${s}` : dest;
   }
 

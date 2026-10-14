@@ -1,5 +1,8 @@
 "use server";
 
+import { siteSlugOwnersFromConfig } from "@/lib/storefront/resolve-site-slug";
+import { siteSlugProblem } from "@/lib/storefront/site-slugs";
+import { withRenameRedirect, withoutRedirectFrom } from "@/lib/studio/rename-redirects";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
@@ -97,6 +100,8 @@ export async function createCustomPage(formData: FormData) {
   if (pages.some((p) => p.slug === slugInput)) {
     redirect("/dashboard/website/pages/new?error=duplicate");
   }
+  const clash = siteSlugProblem(slugInput, await siteSlugOwnersFromConfig(owner.id, storefront.draftConfig));
+  if (clash) redirect(`/dashboard/website/pages/new?error=duplicate&msg=${encodeURIComponent(clash)}`);
 
   const page: StorefrontCustomPage = {
     id: randomUUID(),
@@ -111,7 +116,7 @@ export async function createCustomPage(formData: FormData) {
     routeKind: "custom",
   };
 
-  const merged = mergeCustomPagesIntoRaw(storefront.draftConfig, [...pages, page]);
+  const merged = withoutRedirectFrom(mergeCustomPagesIntoRaw(storefront.draftConfig, [...pages, page]), `/${page.slug}`);
   await writeDraftOrRedirect({
     ownerId: owner.id,
     expectedRevision: storefront.draftRevision,
@@ -146,6 +151,11 @@ export async function updateCustomPageMeta(pageId: string, formData: FormData) {
   if (pages.some((p) => p.id !== pageId && p.slug === slugInput)) {
     redirect(`/dashboard/website/pages/${pageId}?error=duplicate`);
   }
+  if (page.routeKind === "custom") {
+    const owners = await siteSlugOwnersFromConfig(owner.id, storefront.draftConfig);
+    const clash = siteSlugProblem(slugInput, owners, { kind: "page", id: pageId });
+    if (clash) redirect(`/dashboard/website/pages/${pageId}?error=duplicate&msg=${encodeURIComponent(clash)}`);
+  }
 
   const next = pages.map((p) =>
     p.id === pageId
@@ -156,7 +166,9 @@ export async function updateCustomPageMeta(pageId: string, formData: FormData) {
   await writeDraftOrRedirect({
     ownerId: owner.id,
     expectedRevision: storefront.draftRevision,
-    draftConfig: mergeCustomPagesIntoRaw(storefront.draftConfig, next) as Prisma.InputJsonValue,
+    draftConfig: (slugInput !== page.slug
+      ? withRenameRedirect(mergeCustomPagesIntoRaw(storefront.draftConfig, next), `/${page.slug}`, `/${slugInput}`)
+      : mergeCustomPagesIntoRaw(storefront.draftConfig, next)) as Prisma.InputJsonValue,
     conflictPath: `/dashboard/website/pages/${pageId}`,
   });
 

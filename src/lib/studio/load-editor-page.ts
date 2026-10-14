@@ -27,9 +27,12 @@ export type EditorPage = {
 
 function commerceViewPath(slug: string, kind: CommercePageKind, cc: StudioCommerceContext): string {
   const base = storefrontPublicPath(slug);
-  if (kind === "category" && cc.category?.slug) return `${base}/shop/${encodeURIComponent(cc.category.slug)}?draft=1`;
+  if (kind === "category" && cc.category?.slug) return `${base}/${encodeURIComponent(cc.category.slug)}?draft=1`;
   if (kind === "product" && cc.product?.slug) return `${base}/products/${encodeURIComponent(cc.product.slug)}?draft=1`;
-  if (kind === "menu") return cc.menu?.slug ? `${base}/menu/${encodeURIComponent(cc.menu.slug)}?draft=1` : `${base}/menu?draft=1`;
+  if (kind === "menu") {
+    if (!cc.menu?.slug) return `${base}/menus?draft=1`;
+    return `${base}/${cc.menu.isPreOrderDrop ? "pre-orders" : "menus"}/${encodeURIComponent(cc.menu.slug)}?draft=1`;
+  }
   return `${base}/shop?draft=1`;
 }
 

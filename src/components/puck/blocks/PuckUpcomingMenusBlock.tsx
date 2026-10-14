@@ -47,6 +47,7 @@ export default function PuckUpcomingMenusBlock({
                   menu.slug,
                   meta.draft,
                   meta.basePath,
+                  menu.isPreOrderDrop,
                 )}
                 className={cardClass}
               >

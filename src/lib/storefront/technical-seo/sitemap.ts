@@ -7,12 +7,14 @@ import { ensureCustomPages } from "@/lib/studio/custom-pages";
 import {
   ensureBlogSettings,
   extractBlogPosts,
+  extractBlogTopics,
   listVisibleBlogPosts,
 } from "@/lib/studio/blog";
 import { resolveStorefrontEntitySeo } from "@/lib/studio/resolve-seo-metadata";
 import { seoRobotsIndex } from "@/lib/studio/seo-settings";
 import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
+import { blogPostRelativePath, withDefaultBlogTopic } from "@/lib/studio/blog-topics";
 
 function includeEntity(
   configRaw: unknown,
@@ -76,7 +78,7 @@ export async function buildStorefrontSitemap(
       entries.push(entry(slug, "/blog", lastModified, 0.7, primaryCustomHostname));
       continue;
     }
-    const path = page.routeKind === "custom" ? `/pages/${page.slug}` : `/${page.slug}`;
+    const path = `/${page.slug}`;
     entries.push(
       entry(
         slug,
@@ -89,13 +91,14 @@ export async function buildStorefrontSitemap(
   }
 
   const blogPosts = listVisibleBlogPosts(extractBlogPosts(configRaw), false);
+  const blogTopics = withDefaultBlogTopic(extractBlogTopics(configRaw));
   for (const post of blogPosts) {
     if (post.status !== "published") continue;
     if (!includeEntity(configRaw, published, "blog", post.id)) continue;
     entries.push(
       entry(
         slug,
-        `/blog/${post.slug}`,
+        blogPostRelativePath(post, blogTopics),
         new Date(post.updatedAt),
         0.6,
         primaryCustomHostname,
@@ -122,7 +125,7 @@ export async function buildStorefrontSitemap(
     entries.push(
       entry(
         slug,
-        `/shop/${encodeURIComponent(cat.slug)}`,
+        `/${encodeURIComponent(cat.slug)}`,
         lastModified,
         0.7,
         primaryCustomHostname,
@@ -137,12 +140,13 @@ export async function buildStorefrontSitemap(
       showOnShop: true,
       kind: { in: [MenuKind.ALWAYS_AVAILABLE, MenuKind.PREORDER_DROP] },
     },
-    select: { id: true, slug: true, updatedAt: true },
+    select: { id: true, slug: true, kind: true, updatedAt: true },
   });
   for (const menu of menus) {
     if (!includeEntity(configRaw, published, "menu", menu.id)) continue;
+    const prefix = menu.kind === MenuKind.PREORDER_DROP ? "pre-orders" : "menus";
     entries.push(
-      entry(slug, `/menu/${menu.slug}`, menu.updatedAt, 0.7, primaryCustomHostname),
+      entry(slug, `/${prefix}/${menu.slug}`, menu.updatedAt, 0.7, primaryCustomHostname),
     );
   }
 

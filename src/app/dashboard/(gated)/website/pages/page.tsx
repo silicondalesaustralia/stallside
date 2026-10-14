@@ -1,5 +1,6 @@
 import Link from "next/link";
 import WebsiteFormError from "@/components/website/WebsiteFormError";
+import SiteSlugClashNotice from "@/components/website/SiteSlugClashNotice";
 import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { ensureCustomPages, type StorefrontCustomPage } from "@/lib/studio/custom-pages";
@@ -19,7 +20,7 @@ function PageRow({
       <div>
         <p className="font-semibold text-[var(--field)]">{page.title}</p>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          /{page.routeKind === "builtin" ? page.slug : `pages/${page.slug}`}
+          /{page.slug}
           {page.routeKind === "builtin" ? " · Built-in" : ""}
           {!page.enabled ? " · Hidden" : ""}
           {page.showInFooter && !page.showInNav ? " · Footer" : ""}
@@ -125,6 +126,7 @@ export default async function WebsitePagesListPage({
       {params.saved ? <p className="text-sm font-medium text-[var(--ok)]">Page saved.</p> : null}
       {params.deleted ? <p className="text-sm font-medium text-[var(--ok)]">Page deleted.</p> : null}
       <WebsiteFormError error={params.error} fallback="Something went wrong." />
+      <SiteSlugClashNotice ownerId={owner.id} configRaw={storefront.draftConfig} />
 
       <PageGroup
         title="Content pages"

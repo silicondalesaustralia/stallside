@@ -35,6 +35,7 @@ export type PuckSpikeMetadata = {
     slug: string;
     title: string;
     description: string | null;
+    isPreOrderDrop: boolean;
     orderByLabel: string | null;
     collectionLabel: string | null;
   }>;

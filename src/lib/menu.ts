@@ -19,23 +19,23 @@ export function shopMenusPath(
     basePath !== undefined
       ? basePath
       : `/shop/${encodeURIComponent(storefrontSlug)}`;
-  const base = root ? `${root}/menu` : "/menu";
+  const base = `${root}/menus`;
   return draft ? `${base}?draft=1` : base;
 }
 
+/** Menus live at `/menus/{menu}`; pre-order drops at `/pre-orders/{menu}`. */
 export function shopMenuPath(
   storefrontSlug: string,
   menuSlug: string,
   draft = false,
   basePath?: string,
+  preOrder = false,
 ) {
   const root =
     basePath !== undefined
       ? basePath
       : `/shop/${encodeURIComponent(storefrontSlug)}`;
-  const base = root
-    ? `${root}/menu/${encodeURIComponent(menuSlug)}`
-    : `/menu/${encodeURIComponent(menuSlug)}`;
+  const base = `${root}/${preOrder ? "pre-orders" : "menus"}/${encodeURIComponent(menuSlug)}`;
   return draft ? `${base}?draft=1` : base;
 }
 
@@ -44,10 +44,11 @@ export function menuPublicUrl(input: {
   standSlug: string;
   menuSlug: string;
   showOnShop: boolean;
+  preOrder?: boolean;
 }) {
   if (input.showOnShop && input.storefrontSlug) {
     return storefrontPublicUrl(input.storefrontSlug, {
-      path: `/menu/${encodeURIComponent(input.menuSlug)}`,
+      path: `/${input.preOrder ? "pre-orders" : "menus"}/${encodeURIComponent(input.menuSlug)}`,
     });
   }
   return `${appBaseUrl()}${standMenuDetailPath(input.standSlug, input.menuSlug)}`;

@@ -14,15 +14,16 @@ import {
   mergeBlogSettingsIntoRaw,
   ensureBlogSettings,
   findBlogPostById,
-  findBlogTopicById,
   isValidBlogSlug,
   slugifyBlogSlug,
   newBlogPost,
-  newBlogTopic,
   blogPostsNeedSync,
   type StorefrontBlogPost,
   type StorefrontBlogSettings,
+  type StorefrontBlogTopic,
 } from "@/lib/studio/blog";
+import { blogPostRelativePath, withDefaultBlogTopic } from "@/lib/studio/blog-topics";
+import { withRenameRedirect } from "@/lib/studio/rename-redirects";
 import {
   ensureCustomPages,
   mergeCustomPagesIntoRaw,
@@ -33,7 +34,6 @@ import { writeStorefrontDraft } from "@/lib/website/persistence/draft-store";
 import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 
 const BLOG_PATH = "/dashboard/website/blog";
-const TOPICS_PATH = "/dashboard/website/blog/topics";
 
 async function loadStorefront(ownerId: string, businessName: string) {
   return ensureStorefront(ownerId, businessName);
@@ -53,27 +53,36 @@ async function saveDraftPosts(
   sf: LoadedStorefront,
   posts: StorefrontBlogPost[],
   conflictPath = BLOG_PATH,
+  rename?: { from: string; to: string },
 ) {
+  const merged = mergeBlogPostsIntoRaw(sf.draftConfig, posts);
   await writeDraftOrRedirect({
     ownerId: sf.ownerId,
     expectedRevision: sf.draftRevision,
-    draftConfig: mergeBlogPostsIntoRaw(sf.draftConfig, posts) as Prisma.InputJsonValue,
+    draftConfig: (rename ? withRenameRedirect(merged, rename.from, rename.to) : merged) as Prisma.InputJsonValue,
     conflictPath,
   });
   return sf.slug;
 }
 
-/** Blog posts publish individually; this updates only that post on the live site. */
-async function syncPublishedPost(ownerId: string, post: StorefrontBlogPost) {
+/**
+ * Blog posts publish individually; this updates only that post on the live site, plus the
+ * blog categories it uses (its URL is `/{main category}/{post}`).
+ */
+async function syncPublishedPost(ownerId: string, post: StorefrontBlogPost, draftTopics: StorefrontBlogTopic[] = []) {
   await patchLiveConfig(ownerId, (publishedConfig) => {
     const pubPosts = extractBlogPosts(publishedConfig);
+    const pubTopics = extractBlogTopics(publishedConfig);
+    const used = draftTopics.filter((t) => post.topicIds.includes(t.id));
+    const topics = [...pubTopics.map((t) => used.find((u) => u.id === t.id) ?? t), ...used.filter((u) => !pubTopics.some((t) => t.id === u.id))];
     const next =
       post.status === "published"
         ? pubPosts.some((p) => p.id === post.id)
           ? pubPosts.map((p) => (p.id === post.id ? post : p))
           : [...pubPosts, post]
         : pubPosts.filter((p) => p.id !== post.id);
-    return mergeBlogPostsIntoRaw(publishedConfig, next) as Prisma.InputJsonValue;
+    const withTopics = post.status === "published" ? mergeBlogTopicsIntoRaw(publishedConfig, topics) : publishedConfig;
+    return mergeBlogPostsIntoRaw(withTopics, next) as Prisma.InputJsonValue;
   });
 }
 
@@ -153,6 +162,10 @@ export async function updateBlogPost(postId: string, formData: FormData) {
   const featuredImageUrl = String(formData.get("featuredImageUrl") ?? "").trim().slice(0, 500) || null;
   const bodyHtml = sanitizeSignHtml(String(formData.get("bodyHtml") ?? ""), false, 50000);
   const topicIds = parseTopicIds(formData);
+  const mainRaw = String(formData.get("mainTopicId") ?? "");
+  const known = withDefaultBlogTopic(extractBlogTopics(sf.draftConfig));
+  const mainTopicId = known.some((t) => t.id === mainRaw) ? mainRaw : null;
+  if (mainTopicId && !topicIds.includes(mainTopicId)) topicIds.unshift(mainTopicId);
 
   if (!title || !isValidBlogSlug(slug)) redirect(`/dashboard/website/blog/${postId}?error=slug`);
   if (posts.some((p) => p.id !== postId && p.slug === slug)) {
@@ -167,15 +180,25 @@ export async function updateBlogPost(postId: string, formData: FormData) {
     featuredImageUrl,
     bodyHtml,
     topicIds,
+    mainTopicId,
     updatedAt: new Date().toISOString(),
   };
 
+  const fromPath = blogPostRelativePath(post, known);
+  const toPath = blogPostRelativePath(next, known);
+  const rename = post.slug !== next.slug ? { from: fromPath, to: toPath } : undefined;
   const slugPath = await saveDraftPosts(
     sf,
     posts.map((p) => (p.id === postId ? next : p)),
     `${BLOG_PATH}/${postId}`,
+    rename,
   );
-  if (next.status === "published") await syncPublishedPost(owner.id, next);
+  if (next.status === "published") {
+    await syncPublishedPost(owner.id, next, extractBlogTopics(sf.draftConfig));
+    if (rename) {
+      await patchLiveConfig(owner.id, (live) => withRenameRedirect(live, rename.from, rename.to) as Prisma.InputJsonValue);
+    }
+  }
 
   revalidatePath("/dashboard/website/blog");
   revalidatePath(`/dashboard/website/blog/${postId}`);
@@ -203,7 +226,7 @@ export async function publishBlogPost(postId: string) {
     posts.map((p) => (p.id === postId ? next : p)),
     `${BLOG_PATH}/${postId}`,
   );
-  await syncPublishedPost(owner.id, next);
+  await syncPublishedPost(owner.id, next, extractBlogTopics(sf.draftConfig));
 
   revalidatePath("/dashboard/website/blog");
   revalidatePath(`${storefrontPublicPath(slugPath)}/blog`);
@@ -251,49 +274,4 @@ export async function deleteBlogPost(postId: string) {
   revalidatePath("/dashboard/website/blog");
   revalidatePath(`${storefrontPublicPath(slugPath)}/blog`);
   redirect("/dashboard/website/blog?deleted=1");
-}
-
-export async function createBlogTopic(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
-  const sf = await loadStorefront(owner.id, owner.businessName);
-  const name = String(formData.get("name") ?? "").trim().slice(0, 60);
-  if (!name) redirect("/dashboard/website/blog/topics?error=name");
-
-  const topics = extractBlogTopics(sf.draftConfig);
-  const slug = slugifyBlogSlug(name);
-  if (topics.some((t) => t.slug === slug)) redirect("/dashboard/website/blog/topics?error=duplicate");
-
-  const merged = mergeBlogTopicsIntoRaw(sf.draftConfig, [...topics, newBlogTopic(name)]);
-  await writeDraftOrRedirect({
-    ownerId: owner.id,
-    expectedRevision: sf.draftRevision,
-    draftConfig: merged as Prisma.InputJsonValue,
-    conflictPath: TOPICS_PATH,
-  });
-  revalidatePath("/dashboard/website/blog/topics");
-  redirect("/dashboard/website/blog/topics?saved=1");
-}
-
-export async function deleteBlogTopic(topicId: string) {
-  const { owner } = await requireWebsiteOwner();
-  const sf = await loadStorefront(owner.id, owner.businessName);
-  const topics = extractBlogTopics(sf.draftConfig);
-  if (!findBlogTopicById(topics, topicId)) redirect("/dashboard/website/blog/topics?error=missing");
-
-  const nextTopics = topics.filter((t) => t.id !== topicId);
-  const posts = extractBlogPosts(sf.draftConfig).map((p) => ({
-    ...p,
-    topicIds: p.topicIds.filter((id) => id !== topicId),
-  }));
-
-  let merged = mergeBlogTopicsIntoRaw(sf.draftConfig, nextTopics);
-  merged = mergeBlogPostsIntoRaw(merged, posts);
-  await writeDraftOrRedirect({
-    ownerId: owner.id,
-    expectedRevision: sf.draftRevision,
-    draftConfig: merged as Prisma.InputJsonValue,
-    conflictPath: TOPICS_PATH,
-  });
-  revalidatePath("/dashboard/website/blog/topics");
-  redirect("/dashboard/website/blog/topics?deleted=1");
 }

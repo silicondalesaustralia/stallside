@@ -5,6 +5,7 @@ import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { appBaseUrl } from "@/lib/app-url";
 import { shopBlogPostPath } from "@/lib/storefront/paths";
+import { withDefaultBlogTopic } from "@/lib/studio/blog-topics";
 import { extractBlogPosts, extractBlogTopics, findBlogPostById } from "@/lib/studio/blog";
 import BlogPostForm from "../BlogPostForm";
 import {
@@ -28,8 +29,8 @@ export default async function EditBlogPostPage({
   const posts = extractBlogPosts(storefront.draftConfig);
   const post = findBlogPostById(posts, postId);
   if (!post) notFound();
-  const topics = extractBlogTopics(storefront.draftConfig);
-  const preview = `${appBaseUrl()}${shopBlogPostPath(storefront.slug, post.slug, true)}`;
+  const topics = withDefaultBlogTopic(extractBlogTopics(storefront.draftConfig));
+  const preview = `${appBaseUrl()}${shopBlogPostPath(storefront.slug, post, topics, true)}`;
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-8 pb-12">

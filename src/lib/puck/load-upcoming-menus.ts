@@ -6,6 +6,7 @@ export type UpcomingMenuView = {
   slug: string;
   title: string;
   description: string | null;
+  isPreOrderDrop: boolean;
   orderByLabel: string | null;
   collectionLabel: string | null;
 };
@@ -46,6 +47,7 @@ export async function loadUpcomingMenusForStorefront(input: {
       slug: m.slug,
       title: m.title,
       description: m.description,
+      isPreOrderDrop: m.kind !== MenuKind.ALWAYS_AVAILABLE,
       orderByLabel:
         m.orderByAt && m.kind !== MenuKind.ALWAYS_AVAILABLE
           ? formatOrderByLabel(m.orderByAt, input.timeZone)

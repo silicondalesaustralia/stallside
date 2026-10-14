@@ -124,7 +124,7 @@ export default async function WebsiteSeoPage() {
                 <SeoRow
                   key={post.id}
                   label={post.title}
-                  sublabel={`/blog/${post.slug}`}
+                  sublabel={post.path}
                   href={`/dashboard/website/seo/${entityKeyToParam(key)}`}
                   hasCustom={hasCustomSeo(readEntitySeo(seo, key))}
                 />
@@ -164,7 +164,7 @@ export default async function WebsiteSeoPage() {
                 <SeoRow
                   key={cat.id}
                   label={cat.title}
-                  sublabel={`/shop/${cat.slug}`}
+                  sublabel={`/${cat.slug}`}
                   href={`/dashboard/website/seo/${entityKeyToParam(key)}`}
                   hasCustom={hasCustomSeo(readEntitySeo(seo, key))}
                 />
@@ -184,7 +184,7 @@ export default async function WebsiteSeoPage() {
                 <SeoRow
                   key={menu.id}
                   label={menu.title}
-                  sublabel={`/menu/${menu.slug}`}
+                  sublabel={menu.path}
                   href={`/dashboard/website/seo/${entityKeyToParam(key)}`}
                   hasCustom={hasCustomSeo(readEntitySeo(seo, key))}
                 />

@@ -1,19 +1,24 @@
 import { prisma } from "@/lib/prisma";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
-import { ProductChannelType } from "@/generated/prisma/client";
+import { MenuKind, ProductChannelType } from "@/generated/prisma/client";
 import { primaryStandIdForOwner } from "@/lib/catalogue/channels";
 import { extractStorefrontSeo } from "@/lib/studio/seo-settings";
 import { ensureCustomPages } from "@/lib/studio/custom-pages";
-import { extractBlogPosts } from "@/lib/studio/blog";
+import { extractBlogPosts, extractBlogTopics } from "@/lib/studio/blog";
+import { blogPostRelativePath } from "@/lib/studio/blog-topics";
 
 export async function loadSeoCatalog(ownerId: string, businessName: string) {
   const storefront = await ensureStorefront(ownerId, businessName);
   const standId = await primaryStandIdForOwner(ownerId);
   const seo = extractStorefrontSeo(storefront.draftConfig);
   const pages = ensureCustomPages(storefront.draftConfig);
-  const blogPosts = extractBlogPosts(storefront.draftConfig);
+  const topics = extractBlogTopics(storefront.draftConfig);
+  const blogPosts = extractBlogPosts(storefront.draftConfig).map((post) => ({
+    ...post,
+    path: blogPostRelativePath(post, topics),
+  }));
 
-  const [products, categories, menus] = await Promise.all([
+  const [products, categories, menuRows] = await Promise.all([
     standId
       ? prisma.product.findMany({
           where: {
@@ -40,10 +45,15 @@ export async function loadSeoCatalog(ownerId: string, businessName: string) {
       ? prisma.menu.findMany({
           where: { standId, isActive: true, showOnShop: true },
           orderBy: { title: "asc" },
-          select: { id: true, title: true, slug: true, description: true },
+          select: { id: true, title: true, slug: true, description: true, kind: true },
         })
       : Promise.resolve([]),
   ]);
+
+  const menus = menuRows.map((m) => ({
+    ...m,
+    path: `/${m.kind === MenuKind.PREORDER_DROP ? "pre-orders" : "menus"}/${m.slug}`,
+  }));
 
   return { storefront, seo, pages, blogPosts, products, categories, menus };
 }

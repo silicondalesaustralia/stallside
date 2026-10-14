@@ -11,7 +11,7 @@ export function customPagePublicPath(
     return shopPagePath(storefrontSlug, page.builtinKey, draft, basePath);
   }
   const root = basePath ?? `/shop/${encodeURIComponent(storefrontSlug)}`;
-  const path = `${root}/pages/${encodeURIComponent(page.slug)}`;
+  const path = `${root}/${encodeURIComponent(page.slug)}`.replace(/\/{2,}/g, "/");
   return draft ? `${path}?draft=1` : path;
 }
 

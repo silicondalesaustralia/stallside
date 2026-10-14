@@ -2,6 +2,7 @@
 
 import SignHtmlEditor from "@/components/SignHtmlEditor";
 import type { StorefrontBlogPost, StorefrontBlogTopic } from "@/lib/studio/blog";
+import { mainBlogTopic } from "@/lib/studio/blog-topics";
 
 export default function BlogPostForm({
   post,
@@ -58,9 +59,27 @@ export default function BlogPostForm({
         </label>
       </div>
 
+      <label className="block text-sm">
+        <span className="font-medium">Main blog category</span>
+        <select
+          name="mainTopicId"
+          defaultValue={mainBlogTopic(post, topics).id}
+          className="mt-1 w-full rounded-lg border border-[var(--line)] px-3 py-2"
+        >
+          {topics.map((topic) => (
+            <option key={topic.id} value={topic.id}>
+              {topic.name} (/{topic.slug}/{post.slug})
+            </option>
+          ))}
+        </select>
+        <span className="mt-1 block text-xs text-[var(--muted)]">
+          Sets the post&apos;s web address. Changing it later redirects the old address.
+        </span>
+      </label>
+
       {topics.length > 0 ? (
         <fieldset>
-          <legend className="text-sm font-medium">Topics</legend>
+          <legend className="text-sm font-medium">Also show in</legend>
           <div className="mt-2 flex flex-wrap gap-3">
             {topics.map((topic) => (
               <label key={topic.id} className="flex items-center gap-2 text-sm">

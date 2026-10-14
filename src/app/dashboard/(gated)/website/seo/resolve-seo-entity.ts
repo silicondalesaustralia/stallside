@@ -1,7 +1,8 @@
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { prisma } from "@/lib/prisma";
 import { ensureCustomPages, findCustomPageById } from "@/lib/studio/custom-pages";
-import { extractBlogPosts, findBlogPostById } from "@/lib/studio/blog";
+import { extractBlogPosts, extractBlogTopics, findBlogPostById } from "@/lib/studio/blog";
+import { blogPostRelativePath } from "@/lib/studio/blog-topics";
 import {
   extractStorefrontSeo,
   readEntitySeo,
@@ -67,7 +68,7 @@ export async function resolveEntityContext(
     if (!post) return null;
     return {
       label: post.title,
-      pathLabel: `/blog/${post.slug}`,
+      pathLabel: blogPostRelativePath(post, extractBlogTopics(storefront.draftConfig)),
       defaults: {
         title: post.title,
         description: post.excerpt || post.title,
@@ -111,7 +112,7 @@ export async function resolveEntityContext(
     if (!cat) return null;
     return {
       label: cat.title,
-      pathLabel: `/shop/${cat.slug}`,
+      pathLabel: `/${cat.slug}`,
       defaults: {
         title: cat.title,
         description: cat.description ?? `${cat.title} at ${branding.headline}`,
@@ -123,12 +124,12 @@ export async function resolveEntityContext(
   if (entityKey.startsWith("menu:")) {
     const menu = await prisma.menu.findFirst({
       where: { id: entityKey.slice(5), ownerId },
-      select: { title: true, slug: true, description: true },
+      select: { title: true, slug: true, description: true, kind: true },
     });
     if (!menu) return null;
     return {
       label: menu.title,
-      pathLabel: `/menu/${menu.slug}`,
+      pathLabel: `/${menu.kind === "PREORDER_DROP" ? "pre-orders" : "menus"}/${menu.slug}`,
       defaults: {
         title: menu.title,
         description: menu.description ?? menu.title,

@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { isReservedSiteSlug } from "@/lib/storefront/site-slugs";
 import { slugifyPageSlug, isValidPageSlug, RESERVED_PAGE_SLUGS, BLOG_INDEX_BUILTIN_ID } from "./custom-pages";
 
 export { BLOG_INDEX_BUILTIN_ID };
@@ -19,6 +20,8 @@ export type StorefrontBlogPost = {
   bodyHtml: string;
   featuredImageUrl: string | null;
   topicIds: string[];
+  /** Category that sets the post URL (`/{category}/{post}`); defaults to the first topic. */
+  mainTopicId?: string | null;
   status: BlogPostStatus;
   publishedAt: string | null;
   createdAt: string;
@@ -63,6 +66,7 @@ function isBlogPost(raw: unknown): raw is StorefrontBlogPost {
     typeof p.bodyHtml === "string" &&
     (p.featuredImageUrl === null || typeof p.featuredImageUrl === "string") &&
     Array.isArray(p.topicIds) &&
+    (p.mainTopicId === undefined || p.mainTopicId === null || typeof p.mainTopicId === "string") &&
     (p.status === "draft" || p.status === "published") &&
     (p.publishedAt === null || typeof p.publishedAt === "string") &&
     typeof p.createdAt === "string" &&
@@ -160,7 +164,7 @@ export function slugifyBlogSlug(input: string): string {
 export function isValidBlogSlug(slug: string): boolean {
   if (!slug || slug.length < 1) return false;
   if (slug === "blog") return false;
-  if (RESERVED_PAGE_SLUGS.has(slug)) return false;
+  if (RESERVED_PAGE_SLUGS.has(slug) || isReservedSiteSlug(slug)) return false;
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
 }
 

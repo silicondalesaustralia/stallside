@@ -8,6 +8,7 @@ import {
   type StorefrontBlogSettings,
   type StorefrontBlogTopic,
 } from "./blog";
+import { withDefaultBlogTopic } from "./blog-topics";
 
 export function blogConfigSource(
   ctx: NonNullable<StorefrontContext>,
@@ -38,7 +39,7 @@ export function loadBlogTopicsFromContext(
   ctx: NonNullable<StorefrontContext>,
   draft?: boolean,
 ): StorefrontBlogTopic[] {
-  return extractBlogTopics(blogConfigSource(ctx, draft));
+  return withDefaultBlogTopic(extractBlogTopics(blogConfigSource(ctx, draft)));
 }
 
 export function loadBlogPostFromContext(

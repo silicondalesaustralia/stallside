@@ -102,11 +102,11 @@ describe("legacyStorefrontRedirect", () => {
   it("rewrites category query to path", () => {
     assert.equal(
       legacyStorefrontRedirect("/shop", "?category=farm-stand"),
-      "/shop/farm-stand",
+      "/farm-stand",
     );
     assert.equal(
       legacyStorefrontRedirect("/shop/demo/shop", "?category=Bread&draft=1"),
-      "/shop/demo/shop/bread?draft=1",
+      "/shop/demo/bread?draft=1",
     );
   });
 });
