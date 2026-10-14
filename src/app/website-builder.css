@@ -340,6 +340,44 @@
   pointer-events: none;
 }
 
+/* Rich body text (RichText on the site, InlineRichText in the editor). */
+.studio-rich-text > * + * {
+  margin-top: 0.75em;
+}
+
+.studio-rich-text ul {
+  list-style: disc;
+  padding-left: 1.25em;
+}
+
+.studio-rich-text ol {
+  list-style: decimal;
+  padding-left: 1.25em;
+}
+
+.studio-rich-text li + li {
+  margin-top: 0.25em;
+}
+
+.studio-rich-text a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.inline-rich {
+  position: relative;
+  min-height: 1.5em;
+}
+
+.inline-rich[data-empty="true"]::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
 @media (max-width: 1024px) {
   .vendl-studio-editor__workspace {
     grid-template-columns: minmax(0, 1fr);

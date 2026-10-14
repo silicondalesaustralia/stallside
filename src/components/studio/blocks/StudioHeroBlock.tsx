@@ -7,6 +7,8 @@ import { shopPagePath } from "@/lib/storefront/paths";
 import type { HeroPreset } from "@/lib/studio/preset-registry";
 import InlineEditableText from "@/components/studio/InlineEditableText";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
+import InlineRichText from "@/components/studio/InlineRichText";
+import RichText from "@/components/studio/RichText";
 
 type Props = {
   headline: string;
@@ -94,18 +96,11 @@ function HeroSubtitle({
 }) {
   if (editable) {
     return (
-      <InlineEditableText
-        prop="supportingText"
-        value={value}
-        as="p"
-        className={className}
-        multiline
-        placeholder="Add supporting text"
-      />
+      <InlineRichText prop="supportingText" value={value} className={className} placeholder="Add supporting text" />
     );
   }
   if (!display) return null;
-  return <p className={className}>{display}</p>;
+  return <RichText value={display} className={className} />;
 }
 
 export default function StudioHeroBlock({

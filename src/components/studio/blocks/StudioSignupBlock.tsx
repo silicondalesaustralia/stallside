@@ -6,7 +6,8 @@ import {
   type RestockSubscribeState,
 } from "@/app/checkout/success/restock-actions";
 import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
-import InlineEditableText from "@/components/studio/InlineEditableText";
+import InlineRichText from "@/components/studio/InlineRichText";
+import RichText from "@/components/studio/RichText";
 
 const initial: RestockSubscribeState = { ok: false };
 
@@ -39,16 +40,9 @@ export default function StudioSignupBlock({
           placeholder="Signup heading"
         />
         {editable ? (
-          <InlineEditableText
-            prop="body"
-            value={body}
-            as="p"
-            className="mt-3 text-[var(--muted)]"
-            multiline
-            placeholder="Signup supporting text"
-          />
+          <InlineRichText prop="body" value={body} className="mt-3 text-[var(--muted)]" placeholder="Signup supporting text" />
         ) : body ? (
-          <p className="mt-3 text-[var(--muted)]">{body}</p>
+          <RichText value={body} className="mt-3 text-[var(--muted)]" />
         ) : null}
         {state.ok ? (
           <p className="mt-6 text-sm text-[var(--ok)]">Thanks — we&apos;ll be in touch.</p>

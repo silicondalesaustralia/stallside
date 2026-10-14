@@ -2,6 +2,8 @@
 
 import InlineEditableText from "@/components/studio/InlineEditableText";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
+import InlineRichText from "@/components/studio/InlineRichText";
+import RichText from "@/components/studio/RichText";
 
 type AboutProps = {
   heading: string;
@@ -30,19 +32,12 @@ export default function PuckAboutBlock({
         className={headingClass}
         placeholder="About us"
       />
-      <InlineEditableText
-        prop="body"
-        value={body}
-        as="p"
-        className={bodyClass}
-        multiline
-        placeholder="Tell your story — click to edit"
-      />
+      <InlineRichText prop="body" value={body} className={bodyClass} placeholder="Tell your story — click to edit" />
     </>
   ) : (
     <>
       <SectionHeadingTag className={headingClass}>{heading || "About us"}</SectionHeadingTag>
-      {body ? <p className={bodyClass}>{body}</p> : null}
+      {body ? <RichText value={body} className={bodyClass} /> : null}
     </>
   );
 

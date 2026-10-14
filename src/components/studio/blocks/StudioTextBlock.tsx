@@ -2,6 +2,8 @@
 
 import InlineEditableText from "@/components/studio/InlineEditableText";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
+import InlineRichText from "@/components/studio/InlineRichText";
+import RichText from "@/components/studio/RichText";
 
 export default function StudioTextBlock({
   heading,
@@ -28,14 +30,7 @@ export default function StudioTextBlock({
           className={headingClass}
           placeholder="Add a heading"
         />
-        <InlineEditableText
-          prop="body"
-          value={body}
-          as="p"
-          className={bodyClass}
-          multiline
-          placeholder="Add text — click to edit"
-        />
+        <InlineRichText prop="body" value={body} className={bodyClass} placeholder="Add text — click to edit" />
       </section>
     );
   }
@@ -43,7 +38,7 @@ export default function StudioTextBlock({
   return (
     <section className="studio-section mx-auto max-w-3xl px-4 py-[var(--studio-section-py,3rem)] sf-sm:px-6">
       {heading ? <SectionHeadingTag className={headingClass}>{heading}</SectionHeadingTag> : null}
-      {body ? <p className={bodyClass}>{body}</p> : null}
+      {body ? <RichText value={body} className={bodyClass} /> : null}
     </section>
   );
 }
