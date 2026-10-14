@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, type ChangeEvent, type DragEvent } from "react";
-import { uploadSectionImage } from "@/app/dashboard/(gated)/website/media/actions";
-import { prepareImageFile } from "@/lib/prepare-image-file";
-import { LOGO_IMAGE_MAX_BYTES } from "@/lib/image-upload-limits";
+import { uploadSectionImageFile } from "./uploadSectionImageFile";
 
 type Props = {
   label: string;
@@ -56,12 +54,7 @@ export default function SectionImageField({ label, value, onChange, fallbackUrl,
     setStatus("uploading");
     setError(null);
     try {
-      const prepared = await prepareImageFile(file, LOGO_IMAGE_MAX_BYTES);
-      const formData = new FormData();
-      formData.set("image", prepared);
-      const result = await uploadSectionImage(formData);
-      if (result.ok) onChange(result.url);
-      else setError(result.error);
+      onChange(await uploadSectionImageFile(file));
     } catch (err) {
       console.error("[section image]", err);
       setError(err instanceof Error ? err.message : "Couldn't upload that image.");

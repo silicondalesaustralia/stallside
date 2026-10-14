@@ -1,31 +1,59 @@
 import Image from "next/image";
+import type { GalleryImage, ImageAspect, ImageDisplay } from "@/lib/studio/gallery-images";
+import StudioImageGallery from "./StudioImageGallery";
+import StudioImageSlider from "./StudioImageSlider";
+
+const EMPTY =
+  "studio-section-image flex aspect-[16/10] items-center justify-center rounded-[var(--studio-card-radius)] border border-dashed border-[var(--line)] bg-[var(--wash)] text-sm text-[var(--muted)]";
 
 export default function StudioImageBlock({
   imageUrl,
   alt,
   caption,
   layout,
+  display = "single",
+  images = [],
+  columns = 3,
+  aspect = "landscape",
+  autoplay = false,
+  editable = false,
 }: {
   imageUrl: string | null;
   alt: string;
   caption: string;
   layout: "full" | "contained" | "wide";
+  display?: ImageDisplay;
+  images?: GalleryImage[];
+  columns?: 2 | 3 | 4;
+  aspect?: ImageAspect;
+  autoplay?: boolean;
+  editable?: boolean;
 }) {
   const widthClass =
     layout === "full" ? "w-full" : layout === "wide" ? "max-w-6xl" : "max-w-3xl";
+  const many = display !== "single";
+  const empty = many ? images.length === 0 : !imageUrl;
+  if (empty && !editable) return null;
+
+  let media;
+  if (empty) {
+    media = <div className={EMPTY}>{many ? "Add images in section settings" : "Add an image in section settings"}</div>;
+  } else if (display === "gallery") {
+    media = <StudioImageGallery images={images} columns={columns} aspect={aspect} />;
+  } else if (display === "slider") {
+    media = <StudioImageSlider images={images} aspect={aspect} autoplay={autoplay} />;
+  } else {
+    media = (
+      <div className="studio-section-image relative aspect-[16/10] overflow-hidden rounded-[var(--studio-card-radius,var(--storefront-radius))]">
+        <Image src={imageUrl ?? ""} alt={alt} fill className="object-cover" sizes="(max-width:768px) 100vw, 960px" />
+      </div>
+    );
+  }
 
   return (
     <section className="studio-section px-4 py-[var(--studio-section-py,3rem)] sf-sm:px-6">
       <figure className={`mx-auto ${widthClass}`}>
-        {imageUrl ? (
-          <div className="studio-section-image relative aspect-[16/10] overflow-hidden rounded-[var(--studio-card-radius,var(--storefront-radius))]">
-            <Image src={imageUrl} alt={alt} fill className="object-cover" sizes="(max-width:768px) 100vw, 960px" />
-          </div>
-        ) : (
-          <div className="studio-section-image flex aspect-[16/10] items-center justify-center rounded-[var(--studio-card-radius)] border border-dashed border-[var(--line)] bg-[var(--wash)] text-sm text-[var(--muted)]">
-            Add an image in section settings
-          </div>
-        )}
+        {media}
         {caption ? (
           <figcaption className="mt-3 text-center text-sm text-[var(--muted)]">{caption}</figcaption>
         ) : null}

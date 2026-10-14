@@ -29,6 +29,7 @@ import type { CraftImageProps } from "@/components/studio/sections/CraftImageSec
 import type { CraftImageTextProps } from "@/components/studio/sections/CraftImageTextSection";
 import type { CraftPaymentsProps } from "@/components/studio/sections/CraftPaymentsSection";
 import PaymentsSettings from "./PaymentsSettings";
+import ImageSectionSettings from "./ImageSectionSettings";
 
 const INPUT =
   "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
@@ -132,7 +133,7 @@ export default function StudioSettingsPanel() {
           <TextSettings props={selected.props as CraftTextProps} setProp={setProp} />
         ) : null}
         {selected.type === "CraftImageSection" ? (
-          <ImageSettings props={selected.props as CraftImageProps} setProp={setProp} />
+          <ImageSectionSettings props={selected.props as CraftImageProps} setProp={setProp} />
         ) : null}
         {selected.type === "CraftImageTextSection" ? (
           <ImageTextSettings props={selected.props as CraftImageTextProps} setProp={setProp} />
@@ -407,33 +408,6 @@ function TextSettings({
         <select className={INPUT} value={props.alignment} onChange={(e) => setProp("alignment", e.target.value)}>
           <option value="left">Left</option>
           <option value="centre">Centre</option>
-        </select>
-      </Field>
-    </>
-  );
-}
-
-function ImageSettings({
-  props,
-  setProp,
-}: {
-  props: CraftImageProps;
-  setProp: (k: string, v: unknown) => void;
-}) {
-  return (
-    <>
-      <SectionImageField label="Image" value={props.imageUrl ?? ""} onChange={(url) => setProp("imageUrl", url)} />
-      <Field label="Alt text">
-        <input className={INPUT} value={props.alt} onChange={(e) => setProp("alt", e.target.value)} />
-      </Field>
-      <Field label="Caption">
-        <input className={INPUT} value={props.caption} onChange={(e) => setProp("caption", e.target.value)} />
-      </Field>
-      <Field label="Layout">
-        <select className={INPUT} value={props.layout} onChange={(e) => setProp("layout", e.target.value)}>
-          <option value="contained">Contained</option>
-          <option value="wide">Wide</option>
-          <option value="full">Full width</option>
         </select>
       </Field>
     </>

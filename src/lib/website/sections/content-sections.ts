@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { ALL_PAGE_KINDS, body, heading, label, mediaUrl, shortText } from "./fields";
 import type { SectionDefinition } from "./types";
+import { IMAGE_ASPECTS, IMAGE_DISPLAYS, galleryImagesSchema } from "@/lib/studio/gallery-images";
 import {
   ABOUT_VARIANTS,
   DEFAULT_ONLY,
@@ -63,8 +64,14 @@ export const image: SectionDefinition = {
     imageUrl: mediaUrl.nullable().optional(),
     alt: shortText.optional(),
     caption: shortText.optional(),
+    images: galleryImagesSchema.optional(),
   }),
-  settings: z.object({}),
+  settings: z.object({
+    display: z.enum(IMAGE_DISPLAYS).optional(),
+    columns: z.union([z.literal(2), z.literal(3), z.literal(4)]).optional(),
+    aspect: z.enum(IMAGE_ASPECTS).optional(),
+    autoplay: z.boolean().optional(),
+  }),
   pageKinds: CONTENT_PAGES,
   singleton: false,
   required: false,
