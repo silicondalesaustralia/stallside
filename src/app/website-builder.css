@@ -323,9 +323,9 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: -4px;
+  left: -6px;
   z-index: 20;
-  width: 8px;
+  width: 12px;
   cursor: col-resize;
   touch-action: none;
 }
@@ -334,7 +334,7 @@
 .vendl-studio-settings-column__handle:focus-visible,
 .vendl-studio-settings-column__handle:active {
   outline: none;
-  background: linear-gradient(to right, transparent 3px, rgb(23 54 31 / 0.35) 3px, rgb(23 54 31 / 0.35) 5px, transparent 5px);
+  background: linear-gradient(to right, transparent 5px, rgb(23 54 31 / 0.4) 5px, rgb(23 54 31 / 0.4) 7px, transparent 7px);
 }
 
 .vendl-studio-editor--preview-first .vendl-studio-editor__canvas-wrap {
