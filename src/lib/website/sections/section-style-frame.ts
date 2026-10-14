@@ -6,6 +6,8 @@ export type SectionStyleFrameAttrs = {
   style: Record<string, string>;
   "data-heading-size"?: string;
   "data-body-size"?: string;
+  "data-image-radius"?: string;
+  "data-swap-sides"?: string;
 };
 
 /**
@@ -38,5 +40,7 @@ export function sectionStyleFrame(style: SectionStyle, palette: ThemePalette): S
     style: vars,
     ...(style.headingSize ? { "data-heading-size": style.headingSize } : {}),
     ...(style.bodySize ? { "data-body-size": style.bodySize } : {}),
+    ...(style.imageRadius ? { "data-image-radius": style.imageRadius } : {}),
+    ...(style.swapSides ? { "data-swap-sides": "" } : {}),
   };
 }

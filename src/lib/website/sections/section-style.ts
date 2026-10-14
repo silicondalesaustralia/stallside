@@ -10,6 +10,13 @@ export const HEADING_TAGS = ["h1", "h2", "h3", "h4"] as const;
 export type HeadingSize = (typeof HEADING_SIZES)[number];
 export type BodySize = (typeof BODY_SIZES)[number];
 export type HeadingTag = (typeof HEADING_TAGS)[number];
+export const IMAGE_RADII = ["none", "sm", "md", "lg", "xl"] as const;
+export type ImageRadius = (typeof IMAGE_RADII)[number];
+
+/** Sections with a main image whose corners can be rounded. */
+export const IMAGE_RADIUS_SECTIONS = new Set(["CraftHeroSection", "CraftImageSection", "CraftImageTextSection"]);
+/** Sections with a side-by-side (image | text) layout that can be swapped. */
+export const SPLIT_SECTIONS = new Set(["CraftHeroSection", "CraftImageTextSection"]);
 
 const HEX = /^#[0-9a-f]{6}$/i;
 
@@ -30,6 +37,8 @@ export const sectionStyleSchema = z.object({
   headingSize: z.enum(HEADING_SIZES).optional(),
   bodySize: z.enum(BODY_SIZES).optional(),
   headingTag: z.enum(HEADING_TAGS).optional(),
+  imageRadius: z.enum(IMAGE_RADII).optional(),
+  swapSides: z.boolean().optional(),
 });
 
 export type SectionStyle = z.infer<typeof sectionStyleSchema>;
@@ -48,6 +57,10 @@ export function parseSectionStyle(raw: unknown): SectionStyle {
   if ((HEADING_TAGS as readonly unknown[]).includes(obj.headingTag)) {
     out.headingTag = obj.headingTag as HeadingTag;
   }
+  if ((IMAGE_RADII as readonly unknown[]).includes(obj.imageRadius)) {
+    out.imageRadius = obj.imageRadius as ImageRadius;
+  }
+  if (obj.swapSides === true) out.swapSides = true;
   return out;
 }
 

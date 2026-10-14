@@ -18,11 +18,11 @@ export default function StudioImageBlock({
     <section className="studio-section px-4 py-[var(--studio-section-py,3rem)] sf-sm:px-6">
       <figure className={`mx-auto ${widthClass}`}>
         {imageUrl ? (
-          <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--studio-card-radius,var(--storefront-radius))]">
+          <div className="studio-section-image relative aspect-[16/10] overflow-hidden rounded-[var(--studio-card-radius,var(--storefront-radius))]">
             <Image src={imageUrl} alt={alt} fill className="object-cover" sizes="(max-width:768px) 100vw, 960px" />
           </div>
         ) : (
-          <div className="flex aspect-[16/10] items-center justify-center rounded-[var(--studio-card-radius)] border border-dashed border-[var(--line)] bg-[var(--wash)] text-sm text-[var(--muted)]">
+          <div className="studio-section-image flex aspect-[16/10] items-center justify-center rounded-[var(--studio-card-radius)] border border-dashed border-[var(--line)] bg-[var(--wash)] text-sm text-[var(--muted)]">
             Add an image in section settings
           </div>
         )}

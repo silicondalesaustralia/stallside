@@ -761,6 +761,33 @@
   border-bottom-color: var(--leaf-dark);
 }
 
+/* Section style: image corners and swapped split layouts. */
+[data-image-radius="none"] { --section-image-radius: 0; }
+[data-image-radius="sm"] { --section-image-radius: 0.5rem; }
+[data-image-radius="md"] { --section-image-radius: 1rem; }
+[data-image-radius="lg"] { --section-image-radius: 1.75rem; }
+[data-image-radius="xl"] { --section-image-radius: 3rem; }
+
+[data-image-radius] .studio-section-image {
+  border-radius: var(--section-image-radius);
+  overflow: hidden;
+}
+
+/* The split hero image is edge-to-edge; inset it when rounded so the corners show. */
+[data-image-radius]:not([data-image-radius="none"]) .studio-hero__split-image {
+  margin: 0 1rem 1rem;
+}
+
+@container storefront (min-width: 64rem) {
+  [data-image-radius]:not([data-image-radius="none"]) .studio-hero__split-image {
+    margin: 2rem;
+  }
+
+  [data-swap-sides] .studio-split > :first-child {
+    order: 2;
+  }
+}
+
 .studio-nav__logo-wrap {
   position: relative;
   display: inline-flex;

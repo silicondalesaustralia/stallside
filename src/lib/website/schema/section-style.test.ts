@@ -39,8 +39,19 @@ describe("section style values", () => {
     assert.deepEqual(parseSectionStyle("nope"), {});
   });
 
+  it("keeps image corners and side swap; drops bad values", () => {
+    assert.deepEqual(parseSectionStyle({ imageRadius: "lg", swapSides: true }), {
+      imageRadius: "lg",
+      swapSides: true,
+    });
+    assert.deepEqual(parseSectionStyle({ imageRadius: "round", swapSides: "yes" }), {});
+    const frame = sectionStyleFrame({ imageRadius: "xl", swapSides: true }, palette);
+    assert.equal(frame["data-image-radius"], "xl");
+    assert.equal(frame["data-swap-sides"], "");
+  });
+
   it("validates as part of section settings", () => {
-    const ok = hero({ style: { background: "accent", headingTag: "h3" } });
+    const ok = hero({ style: { background: "accent", headingTag: "h3", imageRadius: "md", swapSides: true } });
     assert.equal(hasErrors(validateSection(ok, "home", "s")), false);
     assert.ok(hasErrors(validateSection(hero({ style: { background: "javascript:1" } }), "home", "s")));
   });

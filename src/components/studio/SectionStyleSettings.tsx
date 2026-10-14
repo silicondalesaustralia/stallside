@@ -14,6 +14,7 @@ import {
 import { hasLowContrast, type ThemePalette } from "@/lib/website/sections/colour";
 import { countPageH1, h1Warning } from "@/lib/website/sections/heading-outline";
 import ColourField from "./ColourField";
+import SectionImageLayoutFields from "./SectionImageLayoutFields";
 
 const SIZE_LABELS: Record<string, string> = { sm: "S", md: "M", lg: "L", xl: "XL" };
 const PILL = "rounded-lg border px-2.5 py-1.5 text-xs font-semibold";
@@ -77,6 +78,13 @@ export default function SectionStyleSettings({
       {hasLowContrast(style, palette) ? (
         <p className="text-xs text-red-700">Text may be hard to read on this background. Try Auto text colour.</p>
       ) : null}
+      <SectionImageLayoutFields
+        craftName={craftName}
+        imageRadius={style.imageRadius}
+        swapSides={style.swapSides}
+        onRadius={(v) => patch("imageRadius", v)}
+        onSwap={(v) => patch("swapSides", v || undefined)}
+      />
       <div className="space-y-1.5">
         <p className="block text-xs font-semibold text-[var(--field)]">Heading size</p>
         {sizeRow("headingSize", HEADING_SIZES)}

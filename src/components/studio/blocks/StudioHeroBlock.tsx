@@ -205,7 +205,7 @@ export default function StudioHeroBlock({
     const collage = meta.products.slice(0, 4);
     return (
       <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
-        <div className="mx-auto grid max-w-[var(--studio-content-max)] gap-8 px-4 py-10 sf-lg:grid-cols-2 sf-lg:items-center sf-sm:px-8">
+        <div className="studio-split mx-auto grid max-w-[var(--studio-content-max)] gap-8 px-4 py-10 sf-lg:grid-cols-2 sf-lg:items-center sf-sm:px-8">
           <div>
             <HeroTitle
               editable={editable}
@@ -224,7 +224,7 @@ export default function StudioHeroBlock({
           </div>
           <ul className="grid grid-cols-2 gap-3">
             {collage.map((p) => (
-              <li key={p.id} className="relative aspect-square overflow-hidden rounded-[var(--studio-card-radius)] bg-[var(--wash)]">
+              <li key={p.id} className="studio-section-image relative aspect-square overflow-hidden rounded-[var(--studio-card-radius)] bg-[var(--wash)]">
                 {p.imageUrl ? (
                   <Image src={p.imageUrl} alt={p.name} fill className="object-cover" sizes="25vw" />
                 ) : (
@@ -306,7 +306,7 @@ export default function StudioHeroBlock({
   if (variant === "split" || variant === "produce-split") {
     return (
       <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
-        <div className="mx-auto grid max-w-[var(--studio-content-max)] sf-lg:grid-cols-2">
+        <div className="studio-split mx-auto grid max-w-[var(--studio-content-max)] sf-lg:grid-cols-2">
           <div className="flex flex-col justify-center px-4 py-12 sf-sm:px-8 sf-sm:py-16 sf-lg:py-20">
             {meta.branding.regionLabel ? (
               <p className="studio-eyebrow text-[var(--leaf-dark)]">{meta.branding.regionLabel}</p>
@@ -326,7 +326,7 @@ export default function StudioHeroBlock({
             />
             {cta ? <div className="mt-8">{cta}</div> : null}
           </div>
-          <div className="relative aspect-[4/3] bg-[var(--wash)] sf-lg:aspect-auto sf-lg:min-h-[28rem]">
+          <div className="studio-section-image studio-hero__split-image relative aspect-[4/3] overflow-hidden bg-[var(--wash)] sf-lg:aspect-auto sf-lg:min-h-[28rem]">
             {heroImage ? (
               <Image src={heroImage} alt="" fill className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" priority />
             ) : (
@@ -369,7 +369,7 @@ export default function StudioHeroBlock({
   return (
     <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
       <div className="mx-auto max-w-[var(--studio-content-max)] px-4 py-10 sf-sm:px-8 sf-sm:py-14">
-        <div className="relative aspect-[16/9] overflow-hidden rounded-[var(--studio-card-radius)]">
+        <div className="studio-section-image relative aspect-[16/9] overflow-hidden rounded-[var(--studio-card-radius)]">
           <Image src={heroImage} alt="" fill className="object-cover" sizes="100vw" priority />
         </div>
         <div className="mx-auto mt-10 max-w-[var(--studio-prose-max)] text-center">
