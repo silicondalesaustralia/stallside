@@ -1,10 +1,8 @@
 import { APP_NAME } from "@/lib/constants";
 import { sendOwnerEmail } from "@/lib/notify-email";
 import { escapeHtml } from "@/lib/lifecycle-emails/html";
-import {
-  membershipPlanLabel,
-  subscriptionManageUrl,
-} from "@/lib/subscription-offer";
+import { membershipPlanLabel } from "@/lib/subscription-offer";
+import { subscriptionManageLink } from "@/lib/subscription-manage-link";
 
 export async function sendShopperSubscriptionWelcome(params: {
   to: string;
@@ -18,7 +16,7 @@ export async function sendShopperSubscriptionWelcome(params: {
   collectionsRemaining?: number | null;
   isMembership?: boolean;
 }) {
-  const manageUrl = subscriptionManageUrl(
+  const manageUrl = await subscriptionManageLink(
     params.standSlug,
     params.manageToken,
   );

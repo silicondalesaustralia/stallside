@@ -32,6 +32,7 @@ import MembershipContentShell from "./MembershipContentShell";
 import MembershipEnrollForm from "./MembershipEnrollForm";
 import MembershipOfferStory from "./MembershipOfferStory";
 import MembershipTermsAccordion from "./MembershipTermsAccordion";
+import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
 
 export async function generateMetadata({
   params,
@@ -76,6 +77,7 @@ export default async function PublicSubscriptionOfferPage({
   searchParams: Promise<{ cancelled?: string }>;
 }) {
   const { standSlug, offerSlug } = await params;
+  await redirectLegacyStandToWebsite(standSlug, { kind: "subscription", offerSlug });
   const sp = await searchParams;
   const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
   const offerKey = decodeURIComponent(offerSlug).trim().toLowerCase();

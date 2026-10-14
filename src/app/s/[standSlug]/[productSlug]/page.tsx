@@ -10,6 +10,7 @@ import { productMetadata, standCatalogPath } from "@/lib/stand-seo";
 import { productLiveWhere } from "@/lib/product-visibility";
 import ProductDetailActions from "../ProductDetailActions";
 import StandStoreHeader from "../StandStoreHeader";
+import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
 
 export async function generateMetadata({
   params,
@@ -55,6 +56,7 @@ export default async function PublicProductPage({
   params: Promise<{ standSlug: string; productSlug: string }>;
 }) {
   const { standSlug, productSlug } = await params;
+  await redirectLegacyStandToWebsite(standSlug, { kind: "product", productSlug });
   const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
   const productKey = decodeURIComponent(productSlug).trim().toLowerCase();
   if (isReservedProductSlug(productKey)) notFound();

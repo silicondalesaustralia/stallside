@@ -3,11 +3,11 @@ import type { Prisma } from "@/generated/prisma/client";
 import { withRenameRedirect, withoutRedirectFrom } from "@/lib/studio/rename-redirects";
 
 /**
- * Applies a redirect change to both draft and live config, for things that are
+ * Applies a config change to both draft and live config, for things that are
  * live immediately (e.g. product categories). Bumps the draft revision so an
  * open editor reloads instead of overwriting it.
  */
-async function patchSiteRedirects(ownerId: string, patch: (raw: unknown) => Record<string, unknown>): Promise<void> {
+export async function patchSiteConfig(ownerId: string, patch: (raw: unknown) => Record<string, unknown>): Promise<void> {
   await prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT "id" FROM "Storefront" WHERE "ownerId" = ${ownerId} FOR UPDATE`;
     const sf = await tx.storefront.findUnique({
@@ -30,9 +30,9 @@ async function patchSiteRedirects(ownerId: string, patch: (raw: unknown) => Reco
 
 export async function addSiteRenameRedirect(ownerId: string, from: string, to: string): Promise<void> {
   if (from === to) return;
-  await patchSiteRedirects(ownerId, (raw) => withRenameRedirect(raw, from, to));
+  await patchSiteConfig(ownerId, (raw) => withRenameRedirect(raw, from, to));
 }
 
 export async function clearSiteRedirectFrom(ownerId: string, path: string): Promise<void> {
-  await patchSiteRedirects(ownerId, (raw) => withoutRedirectFrom(raw, path));
+  await patchSiteConfig(ownerId, (raw) => withoutRedirectFrom(raw, path));
 }

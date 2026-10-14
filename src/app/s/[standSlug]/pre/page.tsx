@@ -10,6 +10,7 @@ import {
 import StandStoreHeader from "../StandStoreHeader";
 import ChannelInterestForm from "../ChannelInterestForm";
 import PreOrderCategoryView from "./PreOrderCategoryView";
+import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
 
 export async function generateMetadata({
   params,
@@ -46,6 +47,7 @@ export default async function PublicPreOrdersIndexPage({
   params: Promise<{ standSlug: string }>;
 }) {
   const { standSlug } = await params;
+  await redirectLegacyStandToWebsite(standSlug, { kind: "preOrders" });
   const slug = decodeURIComponent(standSlug).trim().toLowerCase();
   const stand = await prisma.stand.findUnique({
     where: { slug },

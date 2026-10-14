@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { APP_DOMAIN } from "@/lib/constants";
 import { storefrontSubdomainHost } from "@/lib/tenancy/public-url";
+import DomainPrimaryPrompts from "./DomainPrimaryPrompts";
 import CustomDomainCard from "./CustomDomainCard";
 import BuyDomainSearch from "./BuyDomainSearch";
 import DomainPathCards from "./DomainPathCards";
@@ -156,6 +157,7 @@ export default async function WebsiteDomainsPage({
         </section>
       ) : (
         <>
+          <DomainPrimaryPrompts domains={domains} />
           {domains.map((d) => (
             <CustomDomainCard
               key={d.id}

@@ -23,6 +23,7 @@ import {
 } from "@/lib/website/web-studio-nav";
 import WebStudioShell from "@/components/website/WebStudioShell";
 import WebStudioDetailsPanel from "@/components/website/WebStudioDetailsPanel";
+import WebsiteStandPicker from "@/components/website/WebsiteStandPicker";
 import WebStudioBrandingPanel from "@/components/website/WebStudioBrandingPanel";
 import WebStudioAiPanel from "@/components/website/WebStudioAiPanel";
 import WebStudioLayoutPanel from "@/components/website/WebStudioLayoutPanel";
@@ -52,6 +53,7 @@ export default async function WebStudioPage({
     restored?: string;
     error?: string;
     template?: string;
+    stand_saved?: string;
   }>;
 }) {
   const { owner } = await requireOwner();
@@ -124,6 +126,13 @@ export default async function WebStudioPage({
               error: initialTab === "details" ? sp.error : undefined,
             }}
             history={<WebsitePublishHistory {...history} />}
+            standPicker={
+              <WebsiteStandPicker
+                ownerId={owner.id}
+                draftConfig={storefront.draftConfig}
+                saved={sp.stand_saved === "1"}
+              />
+            }
           />
         }
         branding={

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { MenuKind, ProductChannelType } from "@/generated/prisma/client";
-import { primaryStandIdForOwner } from "@/lib/catalogue/channels";
+import { websiteStandIdForOwner } from "@/lib/storefront/website-stand-db";
 import { extractStorefrontSeo } from "@/lib/studio/seo-settings";
 import { ensureCustomPages } from "@/lib/studio/custom-pages";
 import { extractBlogPosts, extractBlogTopics } from "@/lib/studio/blog";
@@ -9,7 +9,7 @@ import { blogPostRelativePath } from "@/lib/studio/blog-topics";
 
 export async function loadSeoCatalog(ownerId: string, businessName: string) {
   const storefront = await ensureStorefront(ownerId, businessName);
-  const standId = await primaryStandIdForOwner(ownerId);
+  const standId = await websiteStandIdForOwner(ownerId);
   const seo = extractStorefrontSeo(storefront.draftConfig);
   const pages = ensureCustomPages(storefront.draftConfig);
   const topics = extractBlogTopics(storefront.draftConfig);

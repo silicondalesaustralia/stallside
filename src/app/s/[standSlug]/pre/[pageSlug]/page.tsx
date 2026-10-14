@@ -10,6 +10,7 @@ import StandStoreHeader from "../../StandStoreHeader";
 import StandGoToCartBar from "../../StandGoToCartBar";
 import PreOrderPageContent from "./PreOrderPageContent";
 import { preOrderDetailMetadata } from "./pre-order-detail-metadata";
+import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
 
 export async function generateMetadata({
   params,
@@ -26,6 +27,7 @@ export default async function PublicPreOrderPage({
   params: Promise<{ standSlug: string; pageSlug: string }>;
 }) {
   const { standSlug, pageSlug } = await params;
+  await redirectLegacyStandToWebsite(standSlug, { kind: "preOrder", pageSlug });
   const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
   const pageKey = decodeURIComponent(pageSlug).trim().toLowerCase();
 

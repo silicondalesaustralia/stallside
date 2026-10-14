@@ -12,6 +12,7 @@ import { catalogMetadata, standCatalogPath } from "@/lib/stand-seo";
 import StandCatalogGrid from "../../StandCatalogGrid";
 import StandGoToCartBar from "../../StandGoToCartBar";
 import StandStoreHeader from "../../StandStoreHeader";
+import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
 type Params = Promise<{ standSlug: string; categorySlug: string }>;
 
 function normalise(value: string) {
@@ -39,6 +40,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function StandCategoryPage({ params }: { params: Params }) {
   const { standSlug, categorySlug } = await params;
+  await redirectLegacyStandToWebsite(standSlug, { kind: "category", categorySlug });
   const slug = normalise(standSlug);
   const [stand, categories] = await Promise.all([
     loadPublicStandCatalog(slug, "catalog"),

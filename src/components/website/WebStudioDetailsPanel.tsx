@@ -21,6 +21,7 @@ type Props = {
   liveUrl: string;
   flash?: WebStudioDetailsFlashState;
   history?: ReactNode;
+  standPicker?: ReactNode;
 };
 
 export default function WebStudioDetailsPanel({
@@ -34,6 +35,7 @@ export default function WebStudioDetailsPanel({
   liveUrl,
   flash,
   history,
+  standPicker,
 }: Props) {
   return (
     <>
@@ -91,6 +93,8 @@ export default function WebStudioDetailsPanel({
         contactEmail={contactEmail}
         showPhone={showPhone}
       />
+
+      {standPicker}
 
       <p className="text-sm text-[var(--muted)]">
         Next: open the Branding tab above · Public path{" "}

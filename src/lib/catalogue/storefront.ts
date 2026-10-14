@@ -8,6 +8,7 @@ import {
 import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 import { normalizeBusinessMode } from "@/lib/business-mode";
 import { parseStorefrontConfig } from "@/lib/storefront/config";
+import { pickWebsiteStand } from "@/lib/storefront/website-stand";
 import { resolveStorefrontBranding } from "@/lib/storefront/branding";
 import { loadOnlineFulfilmentOptions } from "@/lib/fulfilment/load-options";
 import { toShopFulfilmentOptionView } from "@/lib/fulfilment/shop-types";
@@ -19,7 +20,7 @@ import {
 
 const ownerInclude = {
   user: { select: { email: true, role: true } },
-  stands: { orderBy: { createdAt: "asc" as const }, take: 1 },
+  stands: { orderBy: { createdAt: "asc" as const } },
 } as const;
 
 export async function uniqueStorefrontSlug(
@@ -120,7 +121,7 @@ export async function loadStorefrontContext(
   if (options.draft && !isOwnerPreview) return null;
   if (!options.draft && !storefront.isPublished) return null;
 
-  const stand = storefront.owner.stands[0];
+  const stand = pickWebsiteStand(storefront.owner.stands, storefront.draftConfig);
   if (!stand?.isActive) return null;
 
   const config = parseStorefrontConfig(

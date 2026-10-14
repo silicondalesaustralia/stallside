@@ -11,6 +11,7 @@ import {
 import { homeSeoDefaults } from "@/lib/studio/resolve-seo-metadata";
 import { resolveStorefrontBranding } from "@/lib/storefront/branding";
 import { parseStorefrontConfig } from "@/lib/storefront/config";
+import { pickWebsiteStand } from "@/lib/storefront/website-stand";
 
 export type EntityContext = {
   label: string;
@@ -28,11 +29,11 @@ export async function resolveEntityContext(
     where: { id: ownerId },
     include: {
       user: { select: { email: true, role: true } },
-      stands: { orderBy: { createdAt: "asc" }, take: 1 },
+      stands: { orderBy: { createdAt: "asc" } },
     },
   });
   const storefront = await ensureStorefront(ownerId, businessName);
-  const stand = owner.stands[0];
+  const stand = pickWebsiteStand(owner.stands, storefront.draftConfig);
   if (!stand) return null;
   const config = parseStorefrontConfig(storefront.draftConfig);
   const branding = resolveStorefrontBranding({ owner, stand, storefront, config });

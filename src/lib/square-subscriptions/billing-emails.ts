@@ -1,6 +1,6 @@
 import { escapeHtml } from "@/lib/lifecycle-emails/html";
 import { sendOwnerEmail } from "@/lib/notify-email";
-import { subscriptionManageUrl } from "@/lib/subscription-offer";
+import { subscriptionManageLink } from "@/lib/subscription-manage-link";
 
 export type BillingEmailSub = {
   customerName: string;
@@ -11,8 +11,8 @@ export type BillingEmailSub = {
   owner: { contactEmail: string };
 };
 
-function manageLink(sub: BillingEmailSub): string {
-  const url = subscriptionManageUrl(sub.stand.slug, sub.manageToken);
+async function manageLink(sub: BillingEmailSub): Promise<string> {
+  const url = await subscriptionManageLink(sub.stand.slug, sub.manageToken);
   return `<a href="${escapeHtml(url)}">update your card</a>`;
 }
 
@@ -26,10 +26,11 @@ async function safeSend(to: string, subject: string, html: string, kind: string)
 
 /** First failed renewal: ask the shopper to update their card before we retry. */
 export async function sendPaymentFailedEmail(sub: BillingEmailSub, retryAt: Date) {
+  const link = await manageLink(sub);
   const html = `
     <p>Hi ${escapeHtml(sub.customerName)},</p>
     <p>We couldn't take this period's payment for <strong>${escapeHtml(sub.offer.title)}</strong> from ${escapeHtml(sub.stand.name)}.</p>
-    <p>We'll try again on ${escapeHtml(retryAt.toLocaleDateString("en-AU"))}. To keep your subscription going, ${manageLink(sub)}.</p>
+    <p>We'll try again on ${escapeHtml(retryAt.toLocaleDateString("en-AU"))}. To keep your subscription going, ${link}.</p>
   `;
   await safeSend(
     sub.customerEmail,

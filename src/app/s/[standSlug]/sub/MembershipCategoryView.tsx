@@ -28,11 +28,13 @@ export default function MembershipCategoryView({
   standName,
   accentColor,
   offers,
+  offerHrefBase,
 }: {
   standSlug: string;
   standName: string;
   accentColor?: string | null;
   offers: Offer[];
+  offerHrefBase?: string;
 }) {
   const intro = membershipCategoryIntro(standSlug, standName);
   const ordered = sortMembershipCategoryOffers(standSlug, offers);
@@ -72,7 +74,7 @@ export default function MembershipCategoryView({
           return (
             <li key={offer.slug} className="min-w-0">
               <MembershipCategoryCard
-                href={subscriptionOfferPath(standSlug, offer.slug)}
+                href={offerHrefBase ? `${offerHrefBase}/${encodeURIComponent(offer.slug)}` : subscriptionOfferPath(standSlug, offer.slug)}
                 title={offer.title}
                 imageUrl={offer.imageUrl}
                 quantityLabel={copy.quantityLabel}

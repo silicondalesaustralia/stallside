@@ -1,19 +1,24 @@
 import { headers } from "next/headers";
-import { permanentRedirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { resolveHostname } from "@/lib/tenancy/hostname";
 import { publicHostnameFromHeaders } from "@/lib/tenancy/request-hostname";
 import { customDomainsRoutingEnabled } from "@/lib/domains/config";
 import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
 import { prisma } from "@/lib/prisma";
 import { storefrontRelativePath } from "@/lib/studio/redirects";
+import {
+  storefrontSubdomainOrigin,
+  storefrontSubdomainPrimaryEnabled,
+} from "@/lib/tenancy/public-url";
 
 /**
- * When a custom hostname is primary, redirect Vendl subdomain and
- * /shop/{slug} path hosts to the preferred origin (preserve deep path + query).
+ * Sends a published site to its preferred origin, keeping the deep path + query:
+ * - primary custom domain set → subdomain, `/shop/{slug}` and other custom hosts (www/apex) go there;
+ * - otherwise `vendl.app/shop/{slug}` goes to `{slug}.vendl.app`.
+ * Temporary (307) because the preferred origin changes when a domain is added, made
+ * primary or removed, and browsers cache permanent redirects.
  */
 export async function applyPreferredOriginRedirect(storefrontSlug: string) {
-  if (!customDomainsRoutingEnabled()) return;
-
   const headersList = await headers();
   const search = headersList.get("x-stallside-search") ?? "";
   if (search.includes("draft=1")) return;
@@ -24,29 +29,29 @@ export async function applyPreferredOriginRedirect(storefrontSlug: string) {
   });
   if (!storefront) return;
 
-  const primary = await loadPrimaryCustomHostname(storefront.id);
-  if (!primary) return;
-
-  // Use CF-preserved seller host when Host was rewritten to fallback.vendl.app
   const host = publicHostnameFromHeaders(headersList);
   const resolution = resolveHostname(host);
-  const onPreferred =
-    resolution.type === "CUSTOM_DOMAIN" && resolution.hostname === primary;
-  if (onPreferred) return;
-
-  const onVendlSub =
-    resolution.type === "VENDL_SUBDOMAIN" &&
-    resolution.slug === storefront.slug;
   const pathname = headersList.get("x-stallside-pathname") ?? "";
-  const onPathShop =
-    resolution.type === "APP" ||
-    resolution.type === "LOCAL" ||
-    resolution.type === "UNKNOWN";
-
-  if (!onVendlSub && !onPathShop) return;
-  if (onPathShop && !pathname.startsWith(`/shop/${storefront.slug}`)) return;
-
+  const shopPrefix = `/shop/${storefront.slug}`;
+  const onApexPath =
+    resolution.type === "APP" && (pathname === shopPrefix || pathname.startsWith(`${shopPrefix}/`));
   const relative = storefrontRelativePath(pathname, storefront.slug) || "/";
   const destPath = relative === "/" ? "" : relative;
-  permanentRedirect(`https://${primary}${destPath}${search}`);
+
+  const primary = customDomainsRoutingEnabled() ? await loadPrimaryCustomHostname(storefront.id) : null;
+  if (primary) {
+    if (resolution.type === "CUSTOM_DOMAIN" && resolution.hostname === primary) return;
+    const onOwnSubdomain =
+      (resolution.type === "VENDL_SUBDOMAIN" || resolution.type === "STAGING_SUBDOMAIN") &&
+      resolution.slug === storefront.slug;
+    const onOtherCustomHost = resolution.type === "CUSTOM_DOMAIN";
+    if (onOwnSubdomain || onApexPath || onOtherCustomHost) {
+      redirect(`https://${primary}${destPath}${search}`);
+    }
+    return;
+  }
+
+  if (onApexPath && storefrontSubdomainPrimaryEnabled()) {
+    redirect(`${storefrontSubdomainOrigin(storefront.slug)}${destPath}${search}`);
+  }
 }

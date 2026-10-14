@@ -10,6 +10,7 @@ import {
 import { blogPostRelativePath, mainBlogTopic, withDefaultBlogTopic } from "../../studio/blog-topics";
 import { extractStorefrontRedirects } from "../../studio/redirects";
 import { withRenameRedirect, withoutRedirectFrom } from "../../studio/rename-redirects";
+import { pickWebsiteStand, websiteStandIdFromConfig, withWebsiteStandId } from "../../storefront/website-stand";
 
 const owners: SiteSlugOwner[] = [
   { kind: "blogCategory", id: "t1", slug: "eggs", label: "Egg news" },
@@ -41,6 +42,14 @@ test("blog posts always sit under a category", () => {
   assert.equal(blogPostRelativePath(base, topics), "/news/omelette");
   assert.equal(blogPostRelativePath({ ...base, topicIds: ["a"] }, topics), "/recipes/omelette");
   assert.equal(mainBlogTopic({ topicIds: ["a"], mainTopicId: "missing" }, topics).id, "a");
+});
+
+test("website stand falls back to the first stand", () => {
+  const stands = [{ id: "a" }, { id: "b" }];
+  assert.equal(pickWebsiteStand(stands, {})?.id, "a");
+  assert.equal(pickWebsiteStand(stands, withWebsiteStandId({ x: 1 }, "b"))?.id, "b");
+  assert.equal(pickWebsiteStand(stands, { websiteStandId: "gone" })?.id, "a");
+  assert.equal(websiteStandIdFromConfig(withWebsiteStandId(null, "b")), "b");
 });
 
 test("rename redirects flatten chains and clear reused paths", () => {
