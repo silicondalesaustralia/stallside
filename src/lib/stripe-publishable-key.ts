@@ -1,9 +1,13 @@
 import { cleanEnvSecret } from "@/lib/env";
 
-/** Mode + account part of a Stripe key (`sk_live_51Abc…` → `live:51Abc…`); keys from one account share it. */
+/**
+ * Mode + account part of a Stripe key (`sk_live_51Abc…` → `live:51Abc…`); keys from one account
+ * share it. Older short keys (24 random chars) carry no account, so only the mode can be compared.
+ */
 function keyAccount(key: string): string | null {
-  const m = /^(?:sk|rk|pk)_(live|test)_(.{16})/.exec(key);
-  return m ? `${m[1]}:${m[2]}` : null;
+  const m = /^(?:sk|rk|pk)_(live|test)_(.+)$/.exec(key);
+  if (!m) return null;
+  return m[2].length > 24 ? `${m[1]}:${m[2].slice(0, 16)}` : `${m[1]}:legacy`;
 }
 
 /**

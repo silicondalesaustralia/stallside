@@ -53,7 +53,7 @@ describe("cart & order confirmation layouts", () => {
 
 describe("embedded Stripe checkout", () => {
   it("only uses a browser key from the same account and mode as the secret key", () => {
-    const fake = (kind: string, mode: string, account: string) => [kind, mode, `51${account.repeat(14)}x`].join("_");
+    const fake = (kind: string, mode: string, account: string) => [kind, mode, `51${account.repeat(14)}${"x".repeat(40)}`].join("_");
     const saved = { ...process.env };
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = fake("pk", "live", "A");
     process.env.STRIPE_PUBLISHABLE_KEY_TEST = fake("pk", "test", "B");
@@ -62,6 +62,10 @@ describe("embedded Stripe checkout", () => {
     assert.equal(stripePublishableKeyFor(fake("sk", "test", "B")), fake("pk", "test", "B"));
     assert.equal(stripePublishableKeyFor(fake("sk", "test", "C")), null);
     assert.equal(stripePublishableKeyFor(null), null);
+    const legacy = (kind: string, mode: string, fill: string) => [kind, mode, fill.repeat(24)].join("_");
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = legacy("pk", "live", "P");
+    assert.equal(stripePublishableKeyFor(legacy("sk", "live", "S")), legacy("pk", "live", "P"));
+    assert.equal(stripePublishableKeyFor(fake("sk", "live", "A")), null);
     process.env.STRIPE_EMBEDDED_CHECKOUT = "off";
     assert.equal(stripePublishableKeyFor(fake("sk", "live", "A")), null);
     process.env = saved;
