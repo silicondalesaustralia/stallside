@@ -75,3 +75,21 @@ export const farmStand: SectionDefinition = {
   required: false,
   emptyState: "render",
 };
+
+export const payments: SectionDefinition = {
+  type: "payments",
+  version: 1,
+  craftName: "CraftPaymentsSection",
+  label: "Payment options",
+  variants: DEFAULT_ONLY,
+  defaultVariant: "default",
+  content: z.object({ heading: heading.optional() }),
+  settings: z.object({
+    layout: z.enum(["slider", "bar"]).optional(),
+    showLabels: z.boolean().optional(),
+  }),
+  pageKinds: CONTENT_PAGES,
+  singleton: false,
+  required: false,
+  emptyState: "omit",
+};

@@ -21,6 +21,7 @@ const SHAPES: Record<StudioSectionType, Shape[]> = {
   CraftPickupSection: [[3, 6, 16, 16, 0], [21, 6, 16, 16, 0], [6, 10, 6, 6, 1], [24, 10, 6, 6, 1]],
   CraftSignupSection: [[6, 6, 28, 3, 1], [6, 14, 18, 6, 0], [26, 14, 8, 6, 1]],
   CraftFarmStandSection: [[3, 4, 18, 20, 0], [24, 7, 12, 3, 1], [24, 13, 12, 2, 0], [24, 17, 8, 2, 0]],
+  CraftPaymentsSection: [[3, 10, 7, 8, 1], [12, 10, 7, 8, 0], [21, 10, 7, 8, 1], [30, 10, 7, 8, 0]],
   CraftProductDetailSection: [[3, 4, 18, 20, 0], [24, 5, 12, 3, 1], [24, 11, 10, 2, 0], [24, 18, 12, 4, 1]],
   CraftMenuDetailSection: [[5, 4, 30, 3, 1], [5, 10, 30, 3, 0], [5, 15, 30, 3, 0], [5, 20, 30, 3, 0]],
 };

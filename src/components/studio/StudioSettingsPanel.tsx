@@ -27,6 +27,8 @@ import type { CraftCategoriesProps } from "@/components/studio/sections/CraftCat
 import type { CraftTextProps } from "@/components/studio/sections/CraftTextSection";
 import type { CraftImageProps } from "@/components/studio/sections/CraftImageSection";
 import type { CraftImageTextProps } from "@/components/studio/sections/CraftImageTextSection";
+import type { CraftPaymentsProps } from "@/components/studio/sections/CraftPaymentsSection";
+import PaymentsSettings from "./PaymentsSettings";
 
 const INPUT =
   "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
@@ -61,13 +63,13 @@ export default function StudioSettingsPanel() {
   });
 
   useEffect(() => {
-    if (selected && chromeTarget === "header") {
+    if (selected && chromeTarget) {
       setChromeTarget?.(null);
     }
   }, [selected, chromeTarget, setChromeTarget]);
 
-  if (chromeTarget === "header") {
-    return <HeaderStyleSettings />;
+  if (chromeTarget) {
+    return <HeaderStyleSettings key={chromeTarget} focus={chromeTarget} />;
   }
 
   if (!selected) {
@@ -84,7 +86,7 @@ export default function StudioSettingsPanel() {
             setChromeTarget?.("header");
           }}
         >
-          Edit header style
+          Edit header, menu &amp; announcement bar
         </button>
         <PageStyleSettings />
       </aside>
@@ -134,6 +136,9 @@ export default function StudioSettingsPanel() {
         ) : null}
         {selected.type === "CraftImageTextSection" ? (
           <ImageTextSettings props={selected.props as CraftImageTextProps} setProp={setProp} />
+        ) : null}
+        {selected.type === "CraftPaymentsSection" ? (
+          <PaymentsSettings props={selected.props as CraftPaymentsProps} setProp={setProp} />
         ) : null}
         {selected.type === "CraftAboutSection" ? (
           <AboutSettings props={selected.props as CraftAboutProps} setProp={setProp} />

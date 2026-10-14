@@ -11,9 +11,12 @@ import {
   type HeaderLayout,
 } from "@/lib/storefront/header-style";
 import LogoSizeField from "./LogoSizeField";
+import { useState } from "react";
 import HeaderMenuEditor from "./HeaderMenuEditor";
+import AnnouncementBarSettings from "./AnnouncementBarSettings";
+import SettingsGroup from "./SettingsGroup";
 
-export default function HeaderStyleSettings() {
+export default function HeaderStyleSettings({ focus }: { focus: "header" | "announcement" }) {
   const {
     headerLayout = "classic",
     brandMark = "logo-and-name",
@@ -25,6 +28,8 @@ export default function HeaderStyleSettings() {
     setChromeTarget,
   } = useStudioEditorChrome();
   const hasLogo = Boolean(useStudioMetadata().resolvedBranding.logoUrl);
+  const [open, setOpen] = useState({ style: focus === "header", menu: false, announcement: focus === "announcement" });
+  const toggle = (group: keyof typeof open, value: boolean) => setOpen((prev) => ({ ...prev, [group]: value }));
 
   return (
     <aside className="vendl-studio-settings" role="complementary" aria-label="Header settings">
@@ -38,7 +43,8 @@ export default function HeaderStyleSettings() {
           Done
         </button>
       </div>
-      <div className="vendl-studio-settings__body space-y-4">
+      <div className="vendl-studio-settings__body">
+        <SettingsGroup title="Header style" open={open.style} onToggle={(v) => toggle("style", v)}>
         <div className="space-y-1.5">
           <p className="block text-xs font-semibold text-[var(--field)]">Layout</p>
           <div className="grid grid-cols-2 gap-2">
@@ -82,7 +88,6 @@ export default function HeaderStyleSettings() {
           onPreview={(h) => previewLogoHeight?.(h)}
           onCommit={(h) => setHeaderStyle?.({ logoHeight: h })}
         />
-        <HeaderMenuEditor />
         {headerStyleStatus === "saving" ? (
           <p className="text-xs text-[var(--muted)]">Saving…</p>
         ) : null}
@@ -92,6 +97,13 @@ export default function HeaderStyleSettings() {
         {headerStyleStatus === "error" ? (
           <p className="text-xs text-red-700">{headerStyleError ?? "Couldn’t save. Try again."}</p>
         ) : null}
+        </SettingsGroup>
+        <SettingsGroup title="Menu links" open={open.menu} onToggle={(v) => toggle("menu", v)}>
+          <HeaderMenuEditor />
+        </SettingsGroup>
+        <SettingsGroup title="Announcement bar" open={open.announcement} onToggle={(v) => toggle("announcement", v)}>
+          <AnnouncementBarSettings />
+        </SettingsGroup>
       </div>
     </aside>
   );

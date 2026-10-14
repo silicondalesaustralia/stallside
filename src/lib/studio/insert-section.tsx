@@ -13,6 +13,7 @@ import CraftReviewsSection from "@/components/studio/sections/CraftReviewsSectio
 import CraftPickupSection from "@/components/studio/sections/CraftPickupSection";
 import CraftSignupSection from "@/components/studio/sections/CraftSignupSection";
 import CraftFarmStandSection from "@/components/studio/sections/CraftFarmStandSection";
+import CraftPaymentsSection from "@/components/studio/sections/CraftPaymentsSection";
 import CraftProductDetailSection from "@/components/studio/sections/CraftProductDetailSection";
 import CraftMenuDetailSection from "@/components/studio/sections/CraftMenuDetailSection";
 
@@ -122,6 +123,8 @@ export function studioSectionElement(type: StudioSectionType): ReactElement {
           heading="Pickup & delivery"
         />
       );
+    case "CraftPaymentsSection":
+      return <Element is={CraftPaymentsSection} heading="Ways to pay" layout="slider" showLabels={false} />;
     case "CraftSignupSection":
       return (
         <Element

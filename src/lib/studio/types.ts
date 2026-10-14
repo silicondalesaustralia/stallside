@@ -31,6 +31,9 @@ export type StudioMetadata = PuckSpikeMetadata & {
   linkablePages: { slug: string; label: string; href: string }[];
   /** The seller's own header menu, or null for the automatic one. */
   headerMenu: import("./header-menu").HeaderMenu | null;
+  announcementBar: import("./announcement-bar").AnnouncementBar | null;
+  /** Payment methods customers can actually use right now (stand toggles + connected providers). */
+  paymentBrands: import("@/lib/payment-brand-assets").PaymentBrand[];
   customFooterPages: {
     label: string;
     href: string;
@@ -54,6 +57,7 @@ export type StudioSectionType =
   | "CraftPickupSection"
   | "CraftSignupSection"
   | "CraftFarmStandSection"
+  | "CraftPaymentsSection"
   | "CraftProductDetailSection"
   | "CraftMenuDetailSection";
 

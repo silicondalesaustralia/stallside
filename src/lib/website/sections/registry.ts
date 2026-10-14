@@ -1,7 +1,7 @@
 import type { StudioSectionType } from "@/lib/studio/types";
 import { about, hero, image, imageText, text } from "./content-sections";
 import { categories, menuDetail, nextDrop, productDetail, productGrid } from "./commerce-sections";
-import { farmStand, pickup, reviews, signup } from "./trust-sections";
+import { farmStand, payments, pickup, reviews, signup } from "./trust-sections";
 import type { SectionDefinition, VendlSectionType } from "./types";
 import { sectionStyleSchema } from "./section-style";
 import { buttonLinkSchema } from "@/lib/studio/button-link";
@@ -23,6 +23,7 @@ const DEFINITIONS = {
   pickup,
   signup,
   farmStand,
+  payments,
   productDetail,
   menuDetail,
 } satisfies Record<VendlSectionType, SectionDefinition>;
@@ -56,6 +57,7 @@ export const VENDL_TYPE_BY_CRAFT_NAME = {
   CraftPickupSection: "pickup",
   CraftSignupSection: "signup",
   CraftFarmStandSection: "farmStand",
+  CraftPaymentsSection: "payments",
   CraftProductDetailSection: "productDetail",
   CraftMenuDetailSection: "menuDetail",
 } as const satisfies Record<StudioSectionType, VendlSectionType>;

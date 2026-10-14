@@ -4,9 +4,22 @@ import { loadStorefrontReviews } from "./load-reviews";
 import { ensureCustomPages } from "./custom-pages";
 import { customPagePublicPath, footerPagesFromCustomPages } from "./custom-page-paths";
 import { parseHeaderMenu } from "./header-menu";
+import { parseAnnouncementBar } from "./announcement-bar";
+import { standPaymentBrands, withSquarePaymentsReady } from "@/lib/stand-payment-brands";
+import type { PaymentBrand } from "@/lib/payment-brand-assets";
 import { ensureBlogSettings } from "./blog";
 import { buildStudioHeaderNav } from "./navigation";
 import type { StudioMetadata, StudioTemplateId } from "./types";
+
+async function loadPaymentBrands(ctx: NonNullable<StorefrontContext>): Promise<PaymentBrand[]> {
+  try {
+    const owner = await withSquarePaymentsReady(ctx.owner);
+    return standPaymentBrands(ctx.stand, { ...owner, user: ctx.owner.user });
+  } catch (err) {
+    console.error("[studio metadata] payment brands", err);
+    return standPaymentBrands(ctx.stand, { ...ctx.owner, squarePaymentsReady: false, user: ctx.owner.user });
+  }
+}
 
 export async function buildStudioMetadata(
   ctx: NonNullable<StorefrontContext>,
@@ -14,8 +27,9 @@ export async function buildStudioMetadata(
   draft?: boolean,
 ): Promise<StudioMetadata> {
   const base = await buildPuckSpikeMetadata(ctx, draft);
-  const [reviews] = await Promise.all([
+  const [reviews, paymentBrands] = await Promise.all([
     loadStorefrontReviews(ctx.owner.id, 6),
+    loadPaymentBrands(ctx),
   ]);
 
   const categories = ctx.categories
@@ -62,6 +76,8 @@ export async function buildStudioMetadata(
         href: customPagePublicPath(ctx.storefront.slug, p, draft, base.basePath),
       })),
     headerMenu: parseHeaderMenu(configSource),
+    paymentBrands,
+    announcementBar: parseAnnouncementBar(configSource),
     customFooterPages: footerPagesFromCustomPages(
       pagesForNav,
       ctx.storefront.slug,

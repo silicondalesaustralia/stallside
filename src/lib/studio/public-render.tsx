@@ -14,6 +14,7 @@ import StudioCategoriesBlock from "@/components/studio/blocks/StudioCategoriesBl
 import StudioTextBlock from "@/components/studio/blocks/StudioTextBlock";
 import StudioImageBlock from "@/components/studio/blocks/StudioImageBlock";
 import StudioImageTextBlock from "@/components/studio/blocks/StudioImageTextBlock";
+import StudioPaymentsBlock from "@/components/studio/blocks/StudioPaymentsBlock";
 import StudioReviewsBlock from "@/components/studio/blocks/StudioReviewsBlock";
 import StudioPickupBlock from "@/components/studio/blocks/StudioPickupBlock";
 import StudioSignupBlock from "@/components/studio/blocks/StudioSignupBlock";
@@ -222,6 +223,15 @@ function StudioSectionRender({
           preset={(p.preset as "cards") ?? "cards"}
           heading={String(p.heading ?? "Pickup & delivery")}
           metadata={metadata}
+        />
+      );
+    case "CraftPaymentsSection":
+      return (
+        <StudioPaymentsBlock
+          heading={String(p.heading ?? "")}
+          layout={p.layout === "bar" ? "bar" : "slider"}
+          showLabels={Boolean(p.showLabels)}
+          brands={metadata.paymentBrands}
         />
       );
     case "CraftSignupSection":

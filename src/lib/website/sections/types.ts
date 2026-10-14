@@ -16,6 +16,7 @@ export type VendlSectionType =
   | "pickup"
   | "signup"
   | "farmStand"
+  | "payments"
   | "productDetail"
   | "menuDetail";
 

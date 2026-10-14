@@ -8,6 +8,8 @@ import type { StudioMetadata } from "@/lib/studio/types";
 import type { StorefrontPageId } from "@/lib/storefront/types";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
 import { resolveHeaderMenu } from "@/lib/studio/header-menu";
+import { paletteOf } from "@/lib/website/sections/colour";
+import AnnouncementBarView from "./AnnouncementBarView";
 import StudioStorefrontNav from "./StudioStorefrontNav";
 import StudioStorefrontFooter from "./StudioStorefrontFooter";
 
@@ -32,6 +34,11 @@ export default function StudioPublicShell({
     >
       <StorefrontFontLoader fontPairId={branding.fontPairId} />
       <StorefrontLinkProvider slug={metadata.storefrontSlug} basePath={metadata.basePath} draft={draft}>
+        <AnnouncementBarView
+          bar={metadata.announcementBar}
+          linkContext={{ ...metadata, draft }}
+          palette={paletteOf(branding)}
+        />
         <StudioStorefrontNav
           storefrontSlug={metadata.storefrontSlug}
           standSlug={metadata.standSlug}

@@ -7,8 +7,9 @@ import type { StudioTemplateId } from "@/lib/studio/types";
 import type { CommercePageKind } from "@/lib/studio/commerce-pages";
 import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style";
 import type { HeaderMenu } from "@/lib/studio/header-menu";
+import type { AnnouncementBar } from "@/lib/studio/announcement-bar";
 
-export type ChromeTarget = "header" | null;
+export type ChromeTarget = "header" | "announcement" | null;
 
 export type StudioSaveStatus = "idle" | "saving" | "saved" | "conflict" | "error";
 
@@ -56,6 +57,10 @@ export type CraftEditorChrome = {
   setHeaderMenu?: (menu: HeaderMenu | null) => void;
   headerMenuStatus?: "idle" | "saving" | "saved" | "error";
   headerMenuError?: string | null;
+  announcementBar?: AnnouncementBar | null;
+  setAnnouncementBar?: (bar: AnnouncementBar) => void;
+  announcementBarStatus?: "idle" | "saving" | "saved" | "error";
+  announcementBarError?: string | null;
   sitePageBackground?: string | null;
   setSitePageBackground?: (value: string | null) => void;
   sitePageBackgroundStatus?: "idle" | "saving" | "saved" | "error";

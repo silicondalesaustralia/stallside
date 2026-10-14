@@ -147,6 +147,15 @@ export const STUDIO_SECTION_RULES: StudioSectionRule[] = [
     duplicable: false,
     deletable: true,
   },
+  {
+    type: "CraftPaymentsSection",
+    label: "Payment options",
+    description: "Show the ways customers can pay",
+    category: "trust",
+    paletteOrder: 5,
+    duplicable: true,
+    deletable: true,
+  },
 ];
 
 export const STUDIO_RESOLVER_NAMES = [

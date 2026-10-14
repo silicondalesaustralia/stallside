@@ -23,12 +23,15 @@ export default function ButtonLinkField({
   value,
   label = "Button link",
   defaultLabel,
+  emptyOptionLabel,
   onChange,
 }: {
   value: string | undefined;
   label?: string;
   /** Text for the "Default (…)" choice; null hides it and asks the seller to choose. */
   defaultLabel: string | null;
+  /** Replaces the whole "Default (…)" option text, e.g. "No link". */
+  emptyOptionLabel?: string;
   onChange: (value: string | undefined) => void;
 }) {
   const meta = useStudioMetadata();
@@ -69,7 +72,7 @@ export default function ButtonLinkField({
       <label className="block text-xs font-semibold text-[var(--field)]">{label}</label>
       <select className={INPUT} value={urlMode ? URL_OPTION : stored} onChange={(e) => pick(e.target.value)}>
         <option value="" disabled={defaultLabel === null}>
-          {defaultLabel === null ? "Choose where it goes…" : `Default (${defaultLabel})`}
+          {emptyOptionLabel ?? (defaultLabel === null ? "Choose where it goes…" : `Default (${defaultLabel})`)}
         </option>
         <optgroup label="Pages">
           {PAGES.map(([token, label]) => (

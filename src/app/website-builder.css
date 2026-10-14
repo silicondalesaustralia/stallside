@@ -1042,3 +1042,60 @@
 .vendl-puck-spike {
   min-height: 70vh;
 }
+
+/* Payment options section */
+.studio-payments__chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 4.75rem;
+  height: 3.5rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--studio-card-radius, 0.75rem);
+  background: #fff;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.studio-payments__label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.studio-payments__slider {
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 2.5rem, #000 calc(100% - 2.5rem), transparent);
+}
+
+/* Announcement bar (above the header) */
+.studio-announcement {
+  position: relative;
+  z-index: 31;
+}
+.studio-announcement__inner {
+  margin-inline: auto;
+  max-width: var(--studio-content-max, 72rem);
+  padding: 0.45rem 1rem;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  text-align: center;
+}
+.studio-announcement[data-size="md"] .studio-announcement__inner {
+  padding-block: 0.65rem;
+  font-size: 0.95rem;
+}
+.studio-announcement[data-align="left"] .studio-announcement__inner {
+  text-align: left;
+}
+.studio-announcement[data-bold] .studio-announcement__inner {
+  font-weight: 600;
+}
+.studio-announcement a {
+  color: inherit;
+}

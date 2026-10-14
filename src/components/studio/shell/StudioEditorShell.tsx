@@ -9,6 +9,8 @@ import StorefrontFontLoader from "@/components/storefront/StorefrontFontLoader";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
 import { resolveHeaderMenu } from "@/lib/studio/header-menu";
+import { paletteOf } from "@/lib/website/sections/colour";
+import AnnouncementBarView from "./AnnouncementBarView";
 import { useStudioEditorChrome } from "@/components/studio/StudioEditorContext";
 import StudioStorefrontNav from "./StudioStorefrontNav";
 import StudioStorefrontFooter from "./StudioStorefrontFooter";
@@ -35,6 +37,7 @@ export default function StudioEditorShell({
     setHeaderStyle,
     sitePageBackground,
     headerMenu,
+    announcementBar,
   } = useStudioEditorChrome();
   const liveBranding =
     sitePageBackground === undefined ? branding : { ...branding, pageBackground: sitePageBackground };
@@ -52,6 +55,16 @@ export default function StudioEditorShell({
     >
       <StorefrontFontLoader fontPairId={branding.fontPairId} />
       <StorefrontLinkProvider slug={metadata.storefrontSlug} basePath={metadata.basePath} draft>
+        <AnnouncementBarView
+          bar={announcementBar ?? null}
+          linkContext={{ ...metadata, draft: true }}
+          palette={paletteOf(branding)}
+          editable
+          onSelect={() => {
+            actions.selectNode(undefined);
+            setChromeTarget?.("announcement");
+          }}
+        />
         <StudioStorefrontNav
           storefrontSlug={metadata.storefrontSlug}
           standSlug={metadata.standSlug}
@@ -75,7 +88,7 @@ export default function StudioEditorShell({
         />
         <main
           onClick={() => {
-            if (chromeTarget === "header") setChromeTarget?.(null);
+            if (chromeTarget) setChromeTarget?.(null);
           }}
         >
           {children}
