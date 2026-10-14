@@ -5,12 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import BrandLockup from "@/components/BrandLockup";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
-import {
-  dashLinkActive,
-  mobileTabs,
-  secondaryLinks,
-  websiteLink,
-} from "@/components/dash-nav-links";
+import { dashLinkActive, mobileTabs, visibleNavGroups } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
   type DashboardSetupAlerts,
@@ -82,29 +77,34 @@ export default function DashboardMobileNav({
               tone="dark"
               needsBusiness={setupAlerts.needsBusiness}
             />
-            <nav className="mt-3 flex flex-col gap-1 border-t border-white/10 pt-3">
-              {(showWebsite ? [websiteLink, ...secondaryLinks] : secondaryLinks).map((link) => {
-                const badge = setupNavBadge(
-                  link.href,
-                  setupAlerts,
-                  unreadNotifications,
-                );
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-between rounded-lg px-2 py-2.5 text-sm text-[var(--ink-on-dark)] hover:bg-white/10"
-                  >
-                    <span>{link.label}</span>
-                    {badge && badge > 0 ? (
-                      <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
-                        {badge > 9 ? "9+" : badge}
-                      </span>
-                    ) : null}
-                  </Link>
-                );
-              })}
+            <nav className="mt-3 max-h-[70vh] overflow-y-auto border-t border-white/10 pt-3">
+              {visibleNavGroups(showWebsite).map((group, index) => (
+                <div key={group.heading ?? `group-${index}`} className={index > 0 ? "mt-2" : undefined}>
+                  {group.heading ? (
+                    <p className="px-2 pb-0.5 pt-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--ink-on-dark)]/45">
+                      {group.heading}
+                    </p>
+                  ) : null}
+                  {group.links.map((link) => {
+                    const badge = setupNavBadge(link.href, setupAlerts, unreadNotifications);
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setOpen(false)}
+                        className="flex items-center justify-between rounded-lg px-2 py-2 text-sm text-[var(--ink-on-dark)] hover:bg-white/10"
+                      >
+                        <span>{link.label}</span>
+                        {badge && badge > 0 ? (
+                          <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
+                            {badge > 9 ? "9+" : badge}
+                          </span>
+                        ) : null}
+                      </Link>
+                    );
+                  })}
+                </div>
+              ))}
             </nav>
           </div>
         </div>

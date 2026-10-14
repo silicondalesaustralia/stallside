@@ -1,4 +1,3 @@
-import Link from "next/link";
 import WebsiteFormError from "@/components/website/WebsiteFormError";
 import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
@@ -32,15 +31,7 @@ export default async function WebsiteSeoRedirectsPage({
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-8 pb-12">
       <div>
-        <p className="text-sm">
-          <Link
-            href="/dashboard/website/seo"
-            className="font-semibold text-[var(--leaf-dark)] underline"
-          >
-            ← Search & social
-          </Link>
-        </p>
-        <h1 className="mt-4 font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
+        <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
           URL redirects
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">

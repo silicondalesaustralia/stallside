@@ -69,7 +69,7 @@ export default async function WebsiteQrListPage() {
             “Farm Stand”. Same business, different doors.
           </p>
         </div>
-        <DashPrimaryCta href="/dashboard/website/qr/new">
+        <DashPrimaryCta href="/dashboard/qr/new">
           + New QR code
         </DashPrimaryCta>
       </div>
@@ -164,7 +164,7 @@ export default async function WebsiteQrListPage() {
                   </p>
                 </div>
                 <Link
-                  href={`/dashboard/website/qr/${qr.id}`}
+                  href={`/dashboard/qr/${qr.id}`}
                   className="text-sm font-semibold text-[var(--leaf-dark)] underline"
                 >
                   Edit &amp; print

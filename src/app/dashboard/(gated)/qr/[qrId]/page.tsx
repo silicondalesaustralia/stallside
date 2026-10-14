@@ -64,7 +64,7 @@ export default async function WebsiteQrDetailPage({
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 pb-10 print:max-w-none print:gap-0 print:px-0">
       <p className="text-sm text-[var(--muted)] print:hidden">
-        <Link href="/dashboard/website/qr" className="underline">
+        <Link href="/dashboard/qr" className="underline">
           QR codes
         </Link>
         {" · "}

@@ -2,15 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { WEBSITE_HUB_NAV, hubNavItemActive } from "@/components/dash-nav-links";
+import { WEBSITE_NAV_LINKS, activeNavHref } from "@/components/dash-nav-links";
 
 /** Website sub-section tabs for small screens (desktop uses the sidebar menu). */
 export default function WebsiteMobileSubnav() {
   const pathname = usePathname();
+  const activeHref = activeNavHref(pathname, WEBSITE_NAV_LINKS);
   return (
     <nav className="-mx-1 mb-4 flex gap-1.5 overflow-x-auto px-1 pb-1 md:hidden">
-      {WEBSITE_HUB_NAV.map((item) => {
-        const active = hubNavItemActive(pathname, item);
+      {WEBSITE_NAV_LINKS.map((item) => {
+        const active = item.href === activeHref;
         return (
           <Link
             key={item.href}

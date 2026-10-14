@@ -76,7 +76,7 @@ export const sellingMoreArticles: KnowledgeArticle[] = [
     slug: "subscriptions",
     title: "Shopper subscriptions (recurring boxes)",
     summary:
-      "Sell a weekly, fortnightly, or monthly box on card via Stripe. Each paid cycle becomes a Collections order.",
+      "Sell a weekly, fortnightly, or monthly box on card via Stripe. Each paid cycle becomes an order under Pick Ups & Delivery.",
     videoUrl: null,
     omitVideo: true,
     related: [
@@ -98,8 +98,8 @@ export const sellingMoreArticles: KnowledgeArticle[] = [
       "Tick the products in the box and set quantities. Save. If the list shows “needs Stripe sync”, open the offer and save again after Stripe is connected.",
       "Copy the public enrol link from the offer (or Subscriptions list) and share it — Instagram, email, or a dedicated QR. It is separate from take-now stall checkout and from one-off pre-order pages.",
       "The shopper enters name, email, and phone (plus address if you deliver), then pays in Stripe Checkout. Billing repeats until they skip, pause, or cancel.",
-      "Each successful cycle creates a paid order, drops stock, and emails you and the shopper. Pack and mark Ready / Collected under Collections — subscription cycles sit in their own groups, not mixed with a pre-order page.",
-      "Shoppers get a manage link: skip the next cycle (no Collections order or stock drop for that invoice), pause billing, resume, update card, or cancel. You can see subscribers on the offer page. Turn Offer is live off to stop new sign-ups; existing subscribers keep billing until they cancel.",
+      "Each successful cycle creates a paid order, drops stock, and emails you and the shopper. Pack and mark Ready / Collected under Pick Ups & Delivery — subscription cycles sit in their own groups, not mixed with a pre-order page.",
+      "Shoppers get a manage link: skip the next cycle (no pick-up order or stock drop for that invoice), pause billing, resume, update card, or cancel. You can see subscribers on the offer page. Turn Offer is live off to stop new sign-ups; existing subscribers keep billing until they cancel.",
       "Test with a cheap product first. Changing products or prices on a live offer updates what new cycles charge after Stripe sync — tell current subscribers if the box contents change.",
     ],
   },

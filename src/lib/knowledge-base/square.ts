@@ -63,7 +63,7 @@ export const squareArticles: KnowledgeArticle[] = [
       "On the Square settings page, under Subscriptions & memberships, turn on Take subscription and membership payments with Square.",
       "If you connected Square before this feature, you'll be asked to reconnect once so Vendl can save shoppers' cards. Your settings and product links stay as they are.",
       "Create or open a subscription or membership as usual. No Stripe connection is needed; shoppers pay by card on your sign-up page and the money lands in your Square account.",
-      "Each period Vendl charges the saved card. Box subscriptions create a Collections order each time; memberships keep their weekly collections.",
+      "Each period Vendl charges the saved card. Box subscriptions create an order under Pick Ups & Delivery each time; memberships keep their weekly collections.",
       "If a payment fails, the shopper is emailed a link to update their card. Vendl retries after 1, 3 and 5 days, then cancels and lets you know.",
       "Shoppers can update their card, skip the next cycle (no charge, no order), pause, resume or cancel from their manage link. Cancelling stops at the end of the period they've paid for.",
       "The price is locked in when a shopper signs up. Changing an offer's price applies to new sign-ups only.",

@@ -272,7 +272,6 @@ export async function buildAiWebsiteDraft(
     revalidatePath("/dashboard/website/details");
     revalidatePath("/dashboard/website/branding");
     revalidatePath("/dashboard/website/pages");
-    revalidatePath("/dashboard/website/navigation");
     revalidatePath(previewPath);
 
     return {

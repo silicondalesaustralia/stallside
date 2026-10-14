@@ -3,6 +3,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
+import { websiteSectionEnabledFor } from "@/lib/website/access";
 import { createQrCode } from "../actions";
 import NewQrCodeForm from "./NewQrCodeForm";
 
@@ -42,7 +43,7 @@ export default async function NewWebsiteQrPage() {
     <main className="mx-auto flex max-w-lg flex-col gap-6">
       <div>
         <p className="text-sm text-[var(--muted)]">
-          <Link href="/dashboard/website/qr" className="underline">
+          <Link href="/dashboard/qr" className="underline">
             QR codes
           </Link>
         </p>
@@ -54,13 +55,18 @@ export default async function NewWebsiteQrPage() {
         </p>
       </div>
 
-      {!storefront ? (
+      {!storefront && websiteSectionEnabledFor(owner.id) ? (
         <p className="text-sm text-[var(--warn)]">
           Set up your{" "}
           <Link href="/dashboard/website/web-studio?tab=details" className="underline">
             website details
           </Link>{" "}
-          first so the QR can open your shop.
+          so the QR can open your shop. Until then, scans open your business&apos;s order page.
+        </p>
+      ) : null}
+      {!storefront && !websiteSectionEnabledFor(owner.id) ? (
+        <p className="text-sm text-[var(--muted)]">
+          Scans open your business&apos;s order page.
         </p>
       ) : null}
 
@@ -79,7 +85,6 @@ export default async function NewWebsiteQrPage() {
         stands={stands}
         categories={categories}
         defaultStandId={selected?.id ?? stands[0].id}
-        hasStorefront={Boolean(storefront)}
       />
     </main>
   );

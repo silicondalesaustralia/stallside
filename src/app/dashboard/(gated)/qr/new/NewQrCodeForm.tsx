@@ -11,13 +11,11 @@ export default function NewQrCodeForm({
   stands,
   categories,
   defaultStandId,
-  hasStorefront,
 }: {
   action: (formData: FormData) => Promise<{ error?: string } | void>;
   stands: StandOpt[];
   categories: CatOpt[];
   defaultStandId: string;
-  hasStorefront: boolean;
 }) {
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -136,7 +134,7 @@ export default function NewQrCodeForm({
 
       <button
         type="submit"
-        disabled={pending || !hasStorefront}
+        disabled={pending}
         className={dashCtaClass}
       >
         {pending ? "Creating…" : "Create QR code"}

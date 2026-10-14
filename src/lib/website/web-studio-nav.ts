@@ -1,5 +1,3 @@
-import type { HubNavItem } from "@/components/dash-nav-links";
-
 export type WebStudioTabId = "details" | "branding" | "ai" | "studio";
 
 export const WEB_STUDIO_TABS: {
@@ -13,10 +11,9 @@ export const WEB_STUDIO_TABS: {
 ];
 
 /** Ordered create-flow steps inside Web Studio (URL targets for deep links). */
-export const WEB_STUDIO_STEPS: HubNavItem[] = WEB_STUDIO_TABS.map((tab) => ({
+export const WEB_STUDIO_STEPS: { href: string; label: string }[] = WEB_STUDIO_TABS.map((tab) => ({
   href: `/dashboard/website/web-studio?tab=${tab.id}`,
   label: tab.label,
-  matchPrefix: "/dashboard/website/web-studio",
 }));
 
 export function parseWebStudioTab(raw: string | undefined): WebStudioTabId {

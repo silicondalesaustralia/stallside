@@ -16,7 +16,7 @@ import {
 import type { Prisma } from "@/generated/prisma/client";
 import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 
-const REDIRECTS_PATH = "/dashboard/website/seo/redirects";
+const REDIRECTS_PATH = "/dashboard/website/redirects";
 
 export async function addStorefrontRedirect(formData: FormData) {
   const { owner } = await requireWebsiteOwner();
@@ -28,9 +28,9 @@ export async function addStorefrontRedirect(formData: FormData) {
     code: String(formData.get("code") ?? "301"),
     enabled: true,
   });
-  if (!next) redirect("/dashboard/website/seo/redirects?error=invalid");
+  if (!next) redirect("/dashboard/website/redirects?error=invalid");
   if (existing.some((r) => r.fromPath === next.fromPath)) {
-    redirect("/dashboard/website/seo/redirects?error=duplicate");
+    redirect("/dashboard/website/redirects?error=duplicate");
   }
 
   const merged = mergeStorefrontRedirectsIntoRaw(storefront.draftConfig, [
@@ -44,9 +44,9 @@ export async function addStorefrontRedirect(formData: FormData) {
     conflictPath: REDIRECTS_PATH,
   });
 
-  revalidatePath("/dashboard/website/seo/redirects");
+  revalidatePath("/dashboard/website/redirects");
   revalidatePath(storefrontPublicPath(storefront.slug));
-  redirect("/dashboard/website/seo/redirects?saved=1");
+  redirect("/dashboard/website/redirects?saved=1");
 }
 
 export async function deleteStorefrontRedirect(formData: FormData) {
@@ -63,9 +63,9 @@ export async function deleteStorefrontRedirect(formData: FormData) {
     conflictPath: REDIRECTS_PATH,
   });
 
-  revalidatePath("/dashboard/website/seo/redirects");
+  revalidatePath("/dashboard/website/redirects");
   revalidatePath(storefrontPublicPath(storefront.slug));
-  redirect("/dashboard/website/seo/redirects?deleted=1");
+  redirect("/dashboard/website/redirects?deleted=1");
 }
 
 export async function toggleStorefrontRedirect(formData: FormData) {
@@ -84,9 +84,9 @@ export async function toggleStorefrontRedirect(formData: FormData) {
     conflictPath: REDIRECTS_PATH,
   });
 
-  revalidatePath("/dashboard/website/seo/redirects");
+  revalidatePath("/dashboard/website/redirects");
   revalidatePath(storefrontPublicPath(storefront.slug));
-  redirect("/dashboard/website/seo/redirects?saved=1");
+  redirect("/dashboard/website/redirects?saved=1");
 }
 
 /** Makes only the redirect list live; other draft changes wait for "Publish website". */

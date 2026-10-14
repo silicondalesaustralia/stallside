@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { StandQrLinkMode } from "@/generated/prisma/client";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
 const createSchema = z.object({
@@ -15,7 +15,7 @@ const createSchema = z.object({
 });
 
 export async function createQrCode(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireOwnerWrite();
   const parsed = createSchema.safeParse({
     name: formData.get("name"),
     standId: formData.get("standId"),
@@ -59,12 +59,12 @@ export async function createQrCode(formData: FormData) {
     },
   });
 
-  revalidatePath("/dashboard/website/qr");
-  redirect(`/dashboard/website/qr/${qr.id}`);
+  revalidatePath("/dashboard/qr");
+  redirect(`/dashboard/qr/${qr.id}`);
 }
 
 export async function updateQrCode(qrId: string, formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireOwnerWrite();
   const qr = await prisma.qrCode.findFirst({
     where: { id: qrId, ownerId: owner.id },
     select: { id: true },
@@ -80,13 +80,13 @@ export async function updateQrCode(qrId: string, formData: FormData) {
     where: { id: qr.id },
     data: { name },
   });
-  revalidatePath(`/dashboard/website/qr/${qr.id}`);
-  revalidatePath("/dashboard/website/qr");
+  revalidatePath(`/dashboard/qr/${qr.id}`);
+  revalidatePath("/dashboard/qr");
   return { ok: true as const };
 }
 
 export async function deleteQrCode(qrId: string) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireOwnerWrite();
   const qr = await prisma.qrCode.findFirst({
     where: { id: qrId, ownerId: owner.id },
     select: { id: true },
@@ -94,6 +94,6 @@ export async function deleteQrCode(qrId: string) {
   if (!qr) return { error: "QR not found." };
 
   await prisma.qrCode.delete({ where: { id: qr.id } });
-  revalidatePath("/dashboard/website/qr");
-  redirect("/dashboard/website/qr");
+  revalidatePath("/dashboard/qr");
+  redirect("/dashboard/qr");
 }

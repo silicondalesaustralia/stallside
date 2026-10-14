@@ -33,7 +33,7 @@ export const VERTICALS: Record<string, VerticalConfig> = {
       },
       {
         q: "How do I know what to bake?",
-        a: "Open Collections for a make list by day - totals per item, then packing by customer.",
+        a: "Open Pick Ups & Delivery for a make list by day - totals per item, then packing by customer.",
       },
       {
         q: "Is it only for bread?",

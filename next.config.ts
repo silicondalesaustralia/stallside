@@ -74,6 +74,30 @@ const nextConfig: NextConfig = {
         destination: "/dashboard/businesses",
         permanent: true,
       },
+      { source: "/dashboard/website/qr", destination: "/dashboard/qr", permanent: false },
+      { source: "/dashboard/website/qr/:path*", destination: "/dashboard/qr/:path*", permanent: false },
+      {
+        source: "/dashboard/website/seo/redirects",
+        destination: "/dashboard/website/redirects",
+        permanent: false,
+      },
+      { source: "/dashboard/website/seo", destination: "/dashboard/website/pages", permanent: false },
+      { source: "/dashboard/website/seo/:path*", destination: "/dashboard/website/pages", permanent: false },
+      {
+        source: "/dashboard/website/navigation",
+        destination: "/dashboard/website/web-studio",
+        permanent: false,
+      },
+      {
+        source: "/dashboard/website/commerce/:path*",
+        destination: "/dashboard/website/web-studio",
+        permanent: false,
+      },
+      {
+        source: "/dashboard/website/commerce",
+        destination: "/dashboard/website/web-studio",
+        permanent: false,
+      },
       {
         source: "/dashboard/stands/:path*",
         destination: "/dashboard/businesses/:path*",

@@ -1,28 +1,5 @@
-const iconClass = "size-5 shrink-0";
-
-function Icon({
-  d,
-  extra,
-}: {
-  d: string;
-  extra?: React.ReactNode;
-}) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={iconClass}
-      aria-hidden
-    >
-      <path d={d} />
-      {extra}
-    </svg>
-  );
-}
+import Icon from "@/components/NavIconSvg";
+import { CONTENT_NAV_ICONS } from "@/components/dash-nav-content-icons";
 
 const ICONS: Record<string, React.ReactNode> = {
   "/dashboard": (
@@ -122,5 +99,5 @@ const ICONS: Record<string, React.ReactNode> = {
 };
 
 export default function DashNavIcon({ href }: { href: string }) {
-  return ICONS[href] ?? <Icon d="M5 12h14" />;
+  return ICONS[href] ?? CONTENT_NAV_ICONS[href] ?? <Icon d="M5 12h14" />;
 }

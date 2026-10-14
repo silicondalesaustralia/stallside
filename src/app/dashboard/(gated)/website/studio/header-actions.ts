@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import { writeDraftConfigKey, type DraftKeyResult } from "@/lib/website/persistence/draft-key";
 import { headerMenuProblem, headerMenuSchema, type HeaderMenu } from "@/lib/studio/header-menu";
@@ -22,9 +21,7 @@ export async function saveStorefrontHeaderMenu(input: {
     menu = parsed.data;
   }
   try {
-    const result = await writeDraftConfigKey({ owner, key: "headerMenu", value: menu, expectedRevision: input.expectedRevision });
-    if (result.ok) revalidatePath("/dashboard/website/navigation");
-    return result;
+    return await writeDraftConfigKey({ owner, key: "headerMenu", value: menu, expectedRevision: input.expectedRevision });
   } catch (err) {
     console.error("[header menu save]", err);
     return { ok: false, error: err instanceof Error ? err.message : "Could not save the header menu." };

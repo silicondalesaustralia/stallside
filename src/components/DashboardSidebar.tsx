@@ -6,12 +6,7 @@ import BrandLockup from "@/components/BrandLockup";
 import BrandMark from "@/components/BrandMark";
 import DashNavIcon from "@/components/DashNavIcon";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
-import SidebarWebsiteMenu from "@/components/SidebarWebsiteMenu";
-import {
-  dashLinkActive,
-  primaryLinks,
-  secondaryLinks,
-} from "@/components/dash-nav-links";
+import { activeNavHref, visibleNavGroups } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
   type DashboardSetupAlerts,
@@ -22,21 +17,21 @@ function NavItem({
   href,
   label,
   collapsed,
+  active,
   badge,
 }: {
   href: string;
   label: string;
   collapsed: boolean;
+  active: boolean;
   badge?: number;
 }) {
-  const pathname = usePathname();
-  const active = dashLinkActive(pathname, href);
   return (
     <Link
       href={href}
       title={collapsed ? label : undefined}
       className={`flex items-center rounded-lg transition-colors duration-200 ${
-        collapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2.5"
+        collapsed ? "justify-center px-2 py-2" : "gap-3 px-3 py-2"
       } ${
         active
           ? "bg-white/12 text-[var(--ink-on-dark)]"
@@ -80,6 +75,9 @@ export default function DashboardSidebar({
   setupAlerts: DashboardSetupAlerts;
   showWebsite: boolean;
 }) {
+  const pathname = usePathname();
+  const groups = visibleNavGroups(showWebsite);
+  const activeHref = activeNavHref(pathname, groups.flatMap((g) => g.links));
   return (
     <aside
       className={`sticky top-3 m-3 hidden h-[calc(100vh-1.5rem)] shrink-0 flex-col rounded-2xl bg-[var(--field)] shadow-2xl print:hidden md:flex [color-scheme:dark] ${
@@ -107,72 +105,41 @@ export default function DashboardSidebar({
           <span className="text-xs font-bold">{collapsed ? "»" : "«"}</span>
         </button>
       </div>
-      <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-3">
-        {primaryLinks.map((link) => (
-          <NavItem
-            key={link.href}
-            href={link.href}
-            label={link.label}
-            collapsed={collapsed}
-            badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
-          />
-        ))}
-        {showWebsite ? <SidebarWebsiteMenu collapsed={collapsed} /> : null}
-        <div className="my-2 border-t border-white/10" />
-        {secondaryLinks.map((link) => (
-          <NavItem
-            key={link.href}
-            href={link.href}
-            label={link.label}
-            collapsed={collapsed}
-            badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
-          />
+      <nav className="flex-1 overflow-y-auto px-2 py-3">
+        {groups.map((group, index) => (
+          <div key={group.heading ?? `group-${index}`} className={index > 0 ? "mt-3" : undefined}>
+            {group.heading && !collapsed ? (
+              <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--ink-on-dark)]/45">
+                {group.heading}
+              </p>
+            ) : index > 0 ? (
+              <div className="mx-2 mb-2 border-t border-white/10" />
+            ) : null}
+            <div className="space-y-0.5">
+              {group.links.map((link) => (
+                <NavItem
+                  key={link.href}
+                  href={link.href}
+                  label={link.label}
+                  collapsed={collapsed}
+                  active={link.href === activeHref}
+                  badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
+                />
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
-      <div className="border-t border-white/10 px-2 py-3">
-        {collapsed ? (
-          <Link
-            href="/dashboard/settings"
-            title="Settings"
-            className="relative flex justify-center rounded-lg px-2 py-2 text-[var(--ink-on-dark)]/80 hover:bg-white/10"
-          >
-            <span className="relative flex size-8 items-center justify-center text-[var(--ink-on-dark)]">
-              <DashNavIcon href="/dashboard/settings" />
-              {setupAlerts.needsStripe ? (
-                <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-[var(--gone)]" />
-              ) : null}
-            </span>
-          </Link>
-        ) : (
-          <>
-            <DashboardBusinessSelect
-              businesses={businesses}
-              selectedId={selectedBusinessId}
-              tone="dark"
-              needsBusiness={setupAlerts.needsBusiness}
-            />
-            <Link
-              href="/dashboard/settings"
-              className="relative mt-2 flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-white/10"
-            >
-              <span className="relative flex size-8 items-center justify-center rounded-full bg-[var(--ink-on-dark)]/15 text-xs font-medium text-[var(--ink-on-dark)]">
-                Me
-                {setupAlerts.needsStripe ? (
-                  <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-[var(--gone)]" />
-                ) : null}
-              </span>
-              <span className="flex flex-1 items-center justify-between gap-2 truncate text-sm font-medium text-[var(--ink-on-dark)]">
-                Account
-                {setupAlerts.needsStripe ? (
-                  <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
-                    1
-                  </span>
-                ) : null}
-              </span>
-            </Link>
-          </>
-        )}
-      </div>
+      {collapsed ? null : (
+        <div className="border-t border-white/10 px-2 py-3">
+          <DashboardBusinessSelect
+            businesses={businesses}
+            selectedId={selectedBusinessId}
+            tone="dark"
+            needsBusiness={setupAlerts.needsBusiness}
+          />
+        </div>
+      )}
     </aside>
   );
 }
