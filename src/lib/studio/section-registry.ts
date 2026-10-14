@@ -121,6 +121,15 @@ export const STUDIO_SECTION_RULES: StudioSectionRule[] = [
     deletable: true,
   },
   {
+    type: "CraftFaqSection",
+    label: "FAQ",
+    description: "Questions and answers customers can open",
+    category: "content",
+    paletteOrder: 6,
+    duplicable: true,
+    deletable: true,
+  },
+  {
     type: "CraftAboutSection",
     label: "About",
     description: "Introduce your business",

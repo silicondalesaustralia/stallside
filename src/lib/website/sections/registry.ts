@@ -1,5 +1,5 @@
 import type { StudioSectionType } from "@/lib/studio/types";
-import { about, hero, image, imageText, text } from "./content-sections";
+import { about, faq, hero, image, imageText, text } from "./content-sections";
 import {
   cart,
   categories,
@@ -25,6 +25,7 @@ const DEFINITIONS = {
   categories,
   nextDrop,
   text,
+  faq,
   image,
   imageText,
   about,
@@ -62,6 +63,7 @@ export const VENDL_TYPE_BY_CRAFT_NAME = {
   CraftCategoriesSection: "categories",
   CraftNextDropSection: "nextDrop",
   CraftTextSection: "text",
+  CraftFaqSection: "faq",
   CraftImageSection: "image",
   CraftImageTextSection: "imageText",
   CraftAboutSection: "about",

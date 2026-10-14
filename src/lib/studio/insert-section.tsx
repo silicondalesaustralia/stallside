@@ -7,6 +7,8 @@ import CraftNextDropSection from "@/components/craft/sections/CraftNextDropSecti
 import CraftAboutSection from "@/components/craft/sections/CraftAboutSection";
 import CraftCategoriesSection from "@/components/studio/sections/CraftCategoriesSection";
 import CraftTextSection from "@/components/studio/sections/CraftTextSection";
+import CraftFaqSection from "@/components/studio/sections/CraftFaqSection";
+import { newMenuId } from "./header-menu";
 import CraftImageSection from "@/components/studio/sections/CraftImageSection";
 import CraftImageTextSection from "@/components/studio/sections/CraftImageTextSection";
 import CraftReviewsSection from "@/components/studio/sections/CraftReviewsSection";
@@ -81,6 +83,16 @@ export function studioSectionElement(type: StudioSectionType): ReactElement {
     case "CraftTextSection":
       return (
         <Element is={CraftTextSection} heading="" body="" alignment="left" />
+      );
+    case "CraftFaqSection":
+      return (
+        <Element
+          is={CraftFaqSection}
+          heading="Frequently asked questions"
+          intro=""
+          items={[{ id: newMenuId(), question: "", answer: "" }]}
+          startOpen={false}
+        />
       );
     case "CraftImageSection":
       return (

@@ -53,6 +53,7 @@ export type StudioSectionType =
   | "CraftCategoriesSection"
   | "CraftNextDropSection"
   | "CraftTextSection"
+  | "CraftFaqSection"
   | "CraftImageSection"
   | "CraftImageTextSection"
   | "CraftAboutSection"

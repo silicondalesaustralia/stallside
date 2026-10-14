@@ -33,6 +33,8 @@ import type { CraftImageTextProps } from "@/components/studio/sections/CraftImag
 import type { CraftPaymentsProps } from "@/components/studio/sections/CraftPaymentsSection";
 import PaymentsSettings from "./PaymentsSettings";
 import ImageSectionSettings from "./ImageSectionSettings";
+import FaqSettings from "./FaqSettings";
+import type { CraftFaqProps } from "@/components/studio/sections/CraftFaqSection";
 
 const INPUT =
   "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
@@ -147,6 +149,9 @@ export default function StudioSettingsPanel() {
         ) : null}
         {selected.type === "CraftTextSection" ? (
           <TextSettings props={selected.props as CraftTextProps} setProp={setProp} />
+        ) : null}
+        {selected.type === "CraftFaqSection" ? (
+          <FaqSettings props={selected.props as CraftFaqProps} setProp={setProp} />
         ) : null}
         {selected.type === "CraftImageSection" ? (
           <ImageSectionSettings props={selected.props as CraftImageProps} setProp={setProp} />

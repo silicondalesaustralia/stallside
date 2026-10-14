@@ -12,6 +12,8 @@ import StudioProductsBlock from "@/components/studio/blocks/StudioProductsBlock"
 import StudioNextDropBlock from "@/components/studio/blocks/StudioNextDropBlock";
 import StudioCategoriesBlock from "@/components/studio/blocks/StudioCategoriesBlock";
 import StudioTextBlock from "@/components/studio/blocks/StudioTextBlock";
+import StudioFaqBlock from "@/components/studio/blocks/StudioFaqBlock";
+import { parseFaqItems } from "@/lib/studio/faq-items";
 import StudioImageBlock from "@/components/studio/blocks/StudioImageBlock";
 import StudioImageTextBlock from "@/components/studio/blocks/StudioImageTextBlock";
 import StudioPaymentsBlock from "@/components/studio/blocks/StudioPaymentsBlock";
@@ -186,6 +188,15 @@ function StudioSectionRender({
           heading={String(p.heading ?? "")}
           body={String(p.body ?? "")}
           alignment={(p.alignment as "left") ?? "left"}
+        />
+      );
+    case "CraftFaqSection":
+      return (
+        <StudioFaqBlock
+          heading={String(p.heading ?? "")}
+          intro={String(p.intro ?? "")}
+          items={parseFaqItems(p.items)}
+          startOpen={p.startOpen === true}
         />
       );
     case "CraftImageSection":

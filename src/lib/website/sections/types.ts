@@ -9,6 +9,7 @@ export type VendlSectionType =
   | "categories"
   | "nextDrop"
   | "text"
+  | "faq"
   | "image"
   | "imageText"
   | "about"

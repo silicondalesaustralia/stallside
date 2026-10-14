@@ -2,6 +2,7 @@ import { z } from "zod";
 import { ALL_PAGE_KINDS, body, heading, label, mediaUrl, shortText } from "./fields";
 import type { SectionDefinition } from "./types";
 import { IMAGE_ASPECTS, IMAGE_DISPLAYS, galleryImagesSchema } from "@/lib/studio/gallery-images";
+import { faqItemsSchema } from "@/lib/studio/faq-items";
 import {
   ABOUT_VARIANTS,
   DEFAULT_ONLY,
@@ -46,6 +47,21 @@ export const text: SectionDefinition = {
   defaultVariant: "default",
   content: z.object({ heading: heading.optional(), body: body.optional() }),
   settings: z.object({ alignment: z.enum(["left", "centre"]).optional() }),
+  pageKinds: CONTENT_PAGES,
+  singleton: false,
+  required: false,
+  emptyState: "omit",
+};
+
+export const faq: SectionDefinition = {
+  type: "faq",
+  version: 1,
+  craftName: "CraftFaqSection",
+  label: "FAQ",
+  variants: DEFAULT_ONLY,
+  defaultVariant: "default",
+  content: z.object({ heading: heading.optional(), intro: shortText.optional(), items: faqItemsSchema.optional() }),
+  settings: z.object({ startOpen: z.boolean().optional() }),
   pageKinds: CONTENT_PAGES,
   singleton: false,
   required: false,
