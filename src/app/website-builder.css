@@ -493,9 +493,21 @@
   overflow-y: auto;
   /* Stays in view while the page scrolls, so edits and the section stay side by side. */
   position: sticky;
-  top: 0;
+  top: var(--studio-toolbar-h, 0px);
   align-self: start;
-  max-height: 100vh;
+  max-height: calc(100vh - var(--studio-toolbar-h, 0px));
+}
+
+/* Save / Publish stay in reach while scrolling the page being edited. */
+.vendl-studio-editor__toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* The storefront header would stick under the toolbar; in the editor it scrolls with the page. */
+.vendl-studio-editor header.studio-nav {
+  position: relative;
 }
 
 .vendl-settings-group + .vendl-settings-group {

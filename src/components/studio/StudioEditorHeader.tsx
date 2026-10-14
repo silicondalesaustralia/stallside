@@ -5,6 +5,7 @@ import { useEditor } from "@craftjs/core";
 import { STUDIO_TEMPLATES } from "@/lib/studio/templates";
 import { useStudioEditorChrome } from "./StudioEditorContext";
 import StudioPageSelector from "./StudioPageSelector";
+import { useStickyToolbarHeight } from "./useStickyToolbarHeight";
 
 const VIEWPORTS = [
   { label: "Desktop", width: 1280 },
@@ -33,12 +34,16 @@ export default function StudioEditorHeader() {
     canRedo: query.history.canRedo(),
   }));
 
+  const headerRef = useStickyToolbarHeight();
   const templateLabel = templateId ? STUDIO_TEMPLATES[templateId].label : "Template";
   const onStorefront = surface === "storefront-preview";
   const viewHref = viewPreviewUrl ?? previewUrl;
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] bg-white px-4 py-2.5">
+    <header
+      ref={headerRef}
+      className="vendl-studio-editor__toolbar flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] bg-white px-4 py-2.5"
+    >
       <div className="flex flex-wrap items-center gap-2">
         {onStorefront ? (
           <>
@@ -109,8 +114,18 @@ export default function StudioEditorHeader() {
             Preview
           </a>
         )}
-        <button type="button" disabled={pending} onClick={onSave} className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-semibold disabled:opacity-60">
-          Save draft
+        <button
+          type="button"
+          disabled={pending}
+          onClick={onSave}
+          className={`rounded-lg border px-3 py-1.5 text-sm font-semibold disabled:opacity-60 ${
+            dirty
+              ? "border-[var(--leaf)] bg-[var(--leaf)] text-white"
+              : "border-[var(--line)] bg-white text-[var(--field)]"
+          }`}
+          title={dirty ? "Save your changes to the draft" : "Your draft is saved. Click to save again."}
+        >
+          {pending ? "Saving…" : dirty ? "Save draft" : "Saved ✓"}
         </button>
         <button type="button" disabled={pending} onClick={onPublish} className="rounded-lg bg-[var(--field)] px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-60">
           {isPublished ? "Update published" : "Publish"}

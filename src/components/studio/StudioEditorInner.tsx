@@ -88,7 +88,8 @@ export default function StudioEditorInner({
   const [dirty, setDirty] = useState(false);
   const [saveStatus, setSaveStatus] = useState<StudioSaveStatus>("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
+  const [pending, startSaveTransition] = useTransition();
   const serializedRef = useRef<string>("");
   const revisionRef = useRef(metadata.draftRevision);
   useEffect(() => {
@@ -161,7 +162,7 @@ export default function StudioEditorInner({
     (mode: "save" | "publish") => {
       setSaveStatus("saving");
       setSaveError(null);
-      startTransition(async () => {
+      startSaveTransition(async () => {
         try {
           await settle();
           const nodes = serializedRef.current;
