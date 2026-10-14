@@ -21,6 +21,8 @@ import {
 import { isStorefrontThemePreset } from "@/lib/storefront/themes";
 import { parseAccentColor } from "@/lib/stand-brand";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
+import { patchSiteConfig } from "@/lib/website/persistence/site-redirect-patch";
+import { withSlugAlias } from "@/lib/storefront/slug-alias";
 import { clearHeroDecorativeFromDraftRaw } from "@/lib/studio/storage";
 import { getFontPair } from "@/lib/website/brand-looks";
 import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
@@ -70,6 +72,13 @@ export async function saveStorefrontDetails(formData: FormData) {
     existingDraftConfigRaw: storefront.draftConfig,
   });
   if (!saved.ok) redirect(webStudioPath("details", { error: "conflict" }));
+  if (slug !== storefront.slug) {
+    try {
+      await patchSiteConfig(owner.id, (raw) => withSlugAlias(raw, storefront.slug, slug));
+    } catch (err) {
+      console.error("saveStorefrontDetails: old slug alias not saved", err);
+    }
+  }
 
   revalidatePath("/dashboard/website/web-studio");
   revalidatePath("/dashboard/website/details");

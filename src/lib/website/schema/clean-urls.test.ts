@@ -11,6 +11,8 @@ import { blogPostRelativePath, mainBlogTopic, withDefaultBlogTopic } from "../..
 import { extractStorefrontRedirects } from "../../studio/redirects";
 import { withRenameRedirect, withoutRedirectFrom } from "../../studio/rename-redirects";
 import { pickWebsiteStand, websiteStandIdFromConfig, withWebsiteStandId } from "../../storefront/website-stand";
+import { slugAliasesFromConfig, withSlugAlias } from "../../storefront/slug-alias";
+import { siteClashReport } from "../../storefront/clash-report";
 
 const owners: SiteSlugOwner[] = [
   { kind: "blogCategory", id: "t1", slug: "eggs", label: "Egg news" },
@@ -60,4 +62,28 @@ test("rename redirects flatten chains and clear reused paths", () => {
   cfg = withRenameRedirect(cfg, "/c", "/a");
   assert.deepEqual(extractStorefrontRedirects(cfg).map((r) => [r.fromPath, r.toPath]), [["/b", "/a"], ["/c", "/a"]]);
   assert.deepEqual(extractStorefrontRedirects(withoutRedirectFrom(cfg, "/b")).map((r) => r.fromPath), ["/c"]);
+});
+
+test("storefront slug aliases keep old slugs, never the current one", () => {
+  let cfg: unknown = withSlugAlias({}, "old", "new");
+  cfg = withSlugAlias(cfg, "new", "newer");
+  assert.deepEqual(slugAliasesFromConfig(cfg), ["new", "old"]);
+  assert.deepEqual(slugAliasesFromConfig(withSlugAlias(cfg, "newer", "old")), ["newer", "new"]);
+});
+
+test("clash report flags hidden slugs, hijacking redirects and pre-order clashes", () => {
+  const issues = siteClashReport({
+    configRaw: {
+      blogTopics: [{ id: "t", slug: "eggs", name: "Egg news" }],
+      storefrontRedirects: [{ id: "r", fromPath: "/eggs", toPath: "/x", code: 301, enabled: true }],
+    },
+    categories: [{ id: "c", slug: "eggs", title: "Eggs" }],
+    standCount: 2,
+    isPublished: true,
+    preOrderMenuSlugs: ["xmas"],
+    preOrderPageSlugs: ["xmas"],
+    subscriptionOfferSlugs: ["manage"],
+  });
+  assert.equal(issues.filter((i) => i.level === "block").length, 3);
+  assert.equal(issues.filter((i) => i.level === "warn").length, 2);
 });

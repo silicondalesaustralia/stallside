@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { addSiteRenameRedirect } from "@/lib/website/persistence/site-redirect-patch";
 import { dollarsToCents } from "@/lib/money";
 import { InventorySource } from "@/generated/prisma/client";
 import { notifyLowStockForProducts } from "@/lib/notify";
@@ -409,6 +410,13 @@ export async function updateProduct(productId: string, formData: FormData) {
             : Prisma.DbNull,
       },
     });
+    if (product.slug !== slug) {
+      try {
+        await addSiteRenameRedirect(owner.id, `/products/${product.slug}`, `/products/${slug}`);
+      } catch (err) {
+        console.error("updateProduct: rename redirect not saved", err);
+      }
+    }
 
     revalidatePath("/dashboard/products");
     revalidatePath(`/dashboard/products/${product.id}`);

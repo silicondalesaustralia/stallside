@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { APP_DOMAIN } from "@/lib/constants";
-import { standQrDataUrl, standQrTargetUrl } from "@/lib/stand-qr";
+import { standQrDataUrl } from "@/lib/stand-qr";
+import { qrShortUrl } from "@/lib/qr-short-link";
 import { standPaymentBrands, withSquarePaymentsReady } from "@/lib/stand-payment-brands";
 import { publicApexHost } from "@/lib/tenancy/host-mode";
-import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
 import CategoryQrStudio from "./CategoryQrStudio";
 
 export default async function WebsiteQrDetailPage({
@@ -45,22 +45,7 @@ export default async function WebsiteQrDetailPage({
   });
   if (!qr) notFound();
 
-  const storefront = await prisma.storefront.findUnique({
-    where: { ownerId: owner.id },
-    select: { id: true, slug: true },
-  });
-  const primaryCustomHostname = storefront
-    ? await loadPrimaryCustomHostname(storefront.id)
-    : null;
-
-  const checkoutUrl = standQrTargetUrl({
-    linkMode: qr.linkMode,
-    standSlug: qr.stand.slug,
-    cartMode: qr.stand.cartMode,
-    storefrontSlug: storefront?.slug,
-    categorySlug: qr.category?.slug,
-    primaryCustomHostname,
-  });
+  const checkoutUrl = qrShortUrl(qr.id);
   const qrDataUrl = await standQrDataUrl(checkoutUrl, 640);
   const siteUrl = `https://${publicApexHost()}`;
   const paymentBrands = standPaymentBrands(
