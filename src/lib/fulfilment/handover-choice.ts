@@ -3,13 +3,13 @@ export type HandoverValue = "COLLECT" | "DELIVER";
 
 export const FULFILMENT_CHOICE_LABELS: Record<FulfilmentChoiceValue, string> = {
   PICKUP: "Pickup only",
-  DELIVERY: "Delivery only",
-  BOTH: "Pickup and delivery",
+  DELIVERY: "Shipping only",
+  BOTH: "Pickup and shipping",
 };
 
 export const CART_MIX_HANDOVER =
-  "Some items are pickup only and others are delivery only. Please place them as separate orders.";
-export const DELIVERY_NEEDS_CARD = "Delivery orders are paid by card.";
+  "Some items are pickup only and others are shipping only. Please place them as separate orders.";
+export const DELIVERY_NEEDS_CARD = "Shipped orders are paid by card.";
 
 export function parseFulfilmentChoice(value: unknown): FulfilmentChoiceValue | null {
   return value === "PICKUP" || value === "DELIVERY" || value === "BOTH" ? value : null;
@@ -45,7 +45,7 @@ export function resolveCartHandover(
   const options = cartHandoverOptions(choices);
   if (!options.pickup && !options.delivery) return { error: CART_MIX_HANDOVER };
   if (requested === "DELIVER") {
-    return options.delivery ? { mode: "DELIVER" } : { error: "Delivery isn't available for these items." };
+    return options.delivery ? { mode: "DELIVER" } : { error: "Shipping isn't available for these items." };
   }
   if (requested === "COLLECT") {
     return options.pickup ? { mode: "COLLECT" } : { error: "Pickup isn't available for these items." };

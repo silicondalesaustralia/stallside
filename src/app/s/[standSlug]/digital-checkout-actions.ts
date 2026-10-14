@@ -34,6 +34,7 @@ import {
   splitDepositBalance,
 } from "@/lib/deposit-order";
 import { contactError, loadedCartHandover } from "@/lib/fulfilment/cart-handover";
+import { loadedCartShippingCents } from "@/lib/shipping/cart-shipping";
 import { parseHandover, type HandoverValue } from "@/lib/fulfilment/handover-choice";
 
 export async function startCardCheckout(input: {
@@ -151,7 +152,8 @@ export async function startCardCheckout(input: {
     const stripeAccountId =
       demoStripe?.stripeAccountId ?? owner.stripeAccountId!;
 
-    const chargeGoodsCents = depositMode ? depositCents : totalCents;
+    const shippingCents = loadedCartShippingCents(loaded, deliver);
+    const chargeGoodsCents = depositMode ? depositCents : totalCents + shippingCents;
     const {
       applicationFeeCents: applicationFee,
       chargeTotalCents: chargeTotal,
@@ -204,6 +206,7 @@ export async function startCardCheckout(input: {
             }
           : { paymentTiming: PaymentTiming.PAY_NOW }),
         handoverMode: handover.mode,
+        shippingCents,
         ...(deliver ? { customerName, customerPhone, ...delivery } : {}),
       },
     });
@@ -237,6 +240,17 @@ export async function startCardCheckout(input: {
           },
         },
       ];
+    }
+
+    if (shippingCents > 0) {
+      lineItems.push({
+        quantity: 1,
+        price_data: {
+          currency: stand.currency.toLowerCase(),
+          unit_amount: shippingCents,
+          product_data: { name: "Shipping" },
+        },
+      });
     }
 
     if (passOn && applicationFee > 0) {

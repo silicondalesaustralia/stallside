@@ -172,6 +172,15 @@ enum FulfilmentChoice {
   BOTH
 }
 
+/**
+ * FREE = no charge; FLAT = one amount per order; CUSTOM = each product's shippingCents × quantity.
+ */
+enum ShippingMode {
+  FREE
+  FLAT
+  CUSTOM
+}
+
 enum FulfilmentOptionKind {
   STAND_IMMEDIATE
   PICKUP
@@ -658,6 +667,11 @@ model Stand {
   cartMode                      CartMode                  @default(PRODUCT)
   /** Site-wide pickup / delivery for take-now products; a product's own setting wins. */
   fulfilmentDefault             FulfilmentChoice          @default(PICKUP)
+  /** How shipping is charged on shipped (non pre-order) orders. */
+  shippingMode                  ShippingMode              @default(FREE)
+  shippingFlatCents             Int                       @default(0)
+  /** Order goods total at or above this ships free (FLAT / CUSTOM). */
+  shippingFreeOverCents         Int?
   /**
    * Hidden sentinel product for Customer Choice checkout lines.
    */
@@ -1370,6 +1384,8 @@ model Product {
    * Pre-order products follow handoverMode (set by their pre-order page).
    */
   fulfilment                  FulfilmentChoice?
+  /** Shipping per item when the stand uses CUSTOM shipping. Null = no charge. */
+  shippingCents               Int?
   /**
    * Optional provenance line e.g. "Laid this morning".
    */
@@ -1856,6 +1872,13 @@ model Order {
   deliverySuburb          String?
   deliveryPostcode        String?
   deliveryNotes           String?
+  /** Shipping charged on this order (included in totalCents). */
+  shippingCents           Int                    @default(0)
+  shippingCarrier         String?
+  trackingNumber          String?
+  trackingUrl             String?
+  shippedAt               DateTime?
+  deliveredAt             DateTime?
   /**
    * Set when this order was created from a shopper subscription invoice.
    */

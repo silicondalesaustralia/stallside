@@ -35,6 +35,10 @@ export async function notifyOrderCustomer(orderId: string) {
     order.handoverMode === HandoverMode.DELIVER && order.deliveryAddressLine1
       ? `<p><strong>Deliver to:</strong> ${escapeHtml(order.deliveryAddressLine1)}, ${escapeHtml(order.deliverySuburb ?? "")} ${escapeHtml(order.deliveryPostcode ?? "")}</p>`
       : "";
+  const shippingLine =
+    order.shippingCents > 0
+      ? `<p>Shipping: ${escapeHtml(formatMoney(order.shippingCents, order.currency))}</p>`
+      : "";
   const note = order.collectionNote
     ? `<p>${escapeHtml(order.collectionNote)}</p>`
     : "";
@@ -58,7 +62,7 @@ export async function notifyOrderCustomer(orderId: string) {
      <p>Thanks for your order at <strong>${escapeHtml(order.stand.name)}</strong>.</p>
      <p><strong>Order ${escapeHtml(order.orderNumber)}</strong> · ${escapeHtml(total)}</p>
      <ul>${lines}</ul>
-     ${collect}${address}${note}${depositBit}
+     ${collect}${address}${shippingLine}${note}${depositBit}
      <p style="font-size:12px;color:#56684F">Keep this email for your records.</p>`,
     { kind: "order_customer" },
   );

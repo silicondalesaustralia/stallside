@@ -1,6 +1,7 @@
 import type { ProductSupplyStatus } from "@/generated/prisma/client";
 import type { PriceTier } from "@/lib/price-tiers";
 import type { FulfilmentChoiceValue } from "@/lib/fulfilment/handover-choice";
+import type { ShippingModeValue } from "@/lib/shipping/shipping-cost";
 import type { SavedOptionGroup } from "./ProductOptionsEditor";
 import type { CategoryChoice } from "./ProductOrganisationSection";
 
@@ -34,6 +35,8 @@ export type ProductFields = {
   /** Null = the business's site-wide setting. */
   fulfilment: FulfilmentChoiceValue | null;
   standFulfilmentDefault: FulfilmentChoiceValue;
+  shippingCents: number | null;
+  standShippingMode: ShippingModeValue;
   priceTiers: PriceTier[];
   hasOptions: boolean;
   options: SavedOptionGroup[];

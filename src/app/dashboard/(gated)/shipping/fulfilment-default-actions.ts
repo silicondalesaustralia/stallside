@@ -11,23 +11,23 @@ import { parseFulfilmentChoice } from "@/lib/fulfilment/handover-choice";
 export async function saveFulfilmentDefault(standId: string, formData: FormData) {
   const { owner } = await requireOwnerWrite();
   const choice = parseFulfilmentChoice(formData.get("fulfilmentDefault"));
-  if (!choice) redirect("/dashboard/collections?fulfilment=invalid");
+  if (!choice) redirect("/dashboard/shipping?fulfilment=invalid");
   let slug: string | null = null;
   try {
     const stand = await prisma.stand.findFirst({
       where: { id: standId, ownerId: owner.id },
       select: { slug: true },
     });
-    if (!stand) redirect("/dashboard/collections?fulfilment=invalid");
+    if (!stand) redirect("/dashboard/shipping?fulfilment=invalid");
     await prisma.stand.update({ where: { id: standId }, data: { fulfilmentDefault: choice } });
     slug = stand.slug;
   } catch (error) {
     unstable_rethrow(error);
     console.error("saveFulfilmentDefault failed", error);
-    redirect("/dashboard/collections?fulfilment=error");
+    redirect("/dashboard/shipping?fulfilment=error");
   }
   revalidateTag(standCatalogTag(slug), "max");
-  revalidatePath("/dashboard/collections");
+  revalidatePath("/dashboard/shipping");
   revalidatePath("/dashboard/products", "layout");
-  redirect("/dashboard/collections?fulfilment=saved");
+  redirect("/dashboard/shipping?fulfilment=saved");
 }

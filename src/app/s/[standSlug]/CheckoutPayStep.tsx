@@ -36,6 +36,8 @@ type CheckoutPayStepProps = {
   customerChoiceAmountCents?: number;
   /** Cart total for card-demand logging. */
   subtotalCents?: number;
+  /** Shipping included in subtotalCents (shipped shop orders). */
+  shippingCents?: number;
   /** Pass-on Vendl fee (0 when absorb or Pro). */
   cardFeeCents?: number;
   cardTotalCents?: number;
@@ -90,6 +92,7 @@ export default function CheckoutPayStep({
   items = [],
   customerChoiceAmountCents,
   subtotalCents = 0,
+  shippingCents = 0,
   cardFeeCents = 0,
   cardTotalCents = 0,
   squareTotalCents,
@@ -140,6 +143,12 @@ export default function CheckoutPayStep({
       )}
       {handoverChoice ? (
         <HandoverPicker value={handoverChoice.value} onChange={handoverChoice.onChange} />
+      ) : null}
+      {deliver && !preOrderOnly ? (
+        <p className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm">
+          Shipping: <strong>{shippingCents > 0 ? formatMoney(shippingCents, currency) : "Free"}</strong>
+          <span className="text-[var(--muted)]"> · Total {formatMoney(subtotalCents, currency)}</span>
+        </p>
       ) : null}
       {cardOnly ? (
         <PreOrderContactFields

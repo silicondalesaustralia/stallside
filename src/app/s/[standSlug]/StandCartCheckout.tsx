@@ -58,6 +58,7 @@ import {
   type HandoverValue,
 } from "@/lib/fulfilment/handover-choice";
 import { shopButtonColour } from "@/lib/storefront/shop-button-colour";
+import { shippingCostCents, type ShippingSettings } from "@/lib/shipping/shipping-cost";
 
 type LocalTransferInfo = {
   methodId: string;
@@ -114,6 +115,7 @@ export default function StandCartCheckout({
   passFeeToCustomer = false,
   stallsideFeeApplies = false,
   stripeFixedFeeCents = 0,
+  shipping = null,
   upsell = null,
   preOrderUpsell = null,
   pagePreOrderUpsells = [],
@@ -136,6 +138,8 @@ export default function StandCartCheckout({
   passFeeToCustomer?: boolean;
   stallsideFeeApplies?: boolean;
   stripeFixedFeeCents?: number;
+  /** Shipping charged on shipped (non pre-order) carts. */
+  shipping?: ShippingSettings | null;
   /** Stand-level default; product-level upsells on PublicProductCard win when set. */
   upsell?: CartUpsellConfig | null;
   preOrderUpsell?: CartUpsellConfig | null;
@@ -273,8 +277,31 @@ export default function StandCartCheckout({
       .filter((l): l is NonNullable<typeof l> => Boolean(l));
   }, [products, cartLines, upsell, preOrderUpsell, pagePreOrderUpsells]);
 
+  const preOrderOnly =
+    lines.length > 0 && lines.every((l) => l.product.isPreOrder);
+  const handoverOptions = cartHandoverOptions(
+    lines.filter((l) => !l.asUpsell).map((l) => l.product.fulfilment),
+  );
+  const handoverConflict = !handoverOptions.pickup && !handoverOptions.delivery;
+  const canChooseHandover = handoverOptions.pickup && handoverOptions.delivery;
+  const handover: HandoverValue = canChooseHandover
+    ? handoverPick
+    : handoverOptions.pickup
+      ? "COLLECT"
+      : "DELIVER";
+  const deliver = handover === "DELIVER";
+  const needsContact = preOrderOnly || deliver;
+
   const subtotal = lines.reduce((sum, l) => sum + l.lineTotalCents, 0);
-  const total = subtotal;
+  const shippingCents =
+    deliver && !preOrderOnly && shipping
+      ? shippingCostCents(
+          shipping,
+          lines.map((l) => ({ shippingCents: l.product.shippingCents, quantity: l.quantity })),
+          subtotal,
+        )
+      : 0;
+  const total = subtotal + shippingCents;
   const passOnApplies = stallsideFeeApplies && passFeeToCustomer && total > 0;
   const cardFeeCents = passOnApplies
     ? stallsidePassOnFeeCents(total, stripeFixedFeeCents)
@@ -317,20 +344,6 @@ export default function StandCartCheckout({
       ? `First visit? Enter email for ${formatMoney(firstOrder.amountCents, currency)} off`
       : `First visit? Enter email for ${firstOrder.percent}% off`
     : null;
-  const preOrderOnly =
-    lines.length > 0 && lines.every((l) => l.product.isPreOrder);
-  const handoverOptions = cartHandoverOptions(
-    lines.filter((l) => !l.asUpsell).map((l) => l.product.fulfilment),
-  );
-  const handoverConflict = !handoverOptions.pickup && !handoverOptions.delivery;
-  const canChooseHandover = handoverOptions.pickup && handoverOptions.delivery;
-  const handover: HandoverValue = canChooseHandover
-    ? handoverPick
-    : handoverOptions.pickup
-      ? "COLLECT"
-      : "DELIVER";
-  const deliver = handover === "DELIVER";
-  const needsContact = preOrderOnly || deliver;
   const hasMixedCart =
     lines.some((l) => l.product.isPreOrder) &&
     lines.some((l) => !l.product.isPreOrder);
@@ -574,6 +587,7 @@ export default function StandCartCheckout({
           standSlug={standSlug}
           items={payload}
           subtotalCents={total}
+          shippingCents={shippingCents}
           cardFeeCents={cardFeeCents}
           cardTotalCents={cardTotalCents}
           squareTotalCents={squareTotalCents}

@@ -347,6 +347,17 @@ export async function updateProduct(productId: string, formData: FormData) {
     const ownerMeta = parseProductOwnerMeta(formData);
     if (!ownerMeta.ok) return { error: ownerMeta.error };
 
+    let shippingCents: number | null | undefined;
+    if (formData.has("shippingCost")) {
+      const raw = String(formData.get("shippingCost") ?? "").trim();
+      try {
+        shippingCents = raw ? dollarsToCents(raw) : null;
+      } catch {
+        return { error: "Invalid shipping cost." };
+      }
+      if (shippingCents != null && shippingCents < 0) return { error: "Invalid shipping cost." };
+    }
+
     const preOrderEligible = formData.get("preOrderEligible") === "on";
     if (!preOrderEligible) {
       const onPage = await prisma.preOrderPageProduct.findFirst({
@@ -390,6 +401,7 @@ export async function updateProduct(productId: string, formData: FormData) {
         ...(formData.has("fulfilment")
           ? { fulfilment: parseFulfilmentChoice(formData.get("fulfilment")) }
           : {}),
+        ...(shippingCents !== undefined ? { shippingCents } : {}),
         upsellProductId: preOrderEligible ? null : upsellProductId,
         upsellPriceCents: preOrderEligible ? null : upsellPriceCents,
         preOrderEligible,

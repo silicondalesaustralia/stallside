@@ -7,6 +7,7 @@ import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label"
 import OrderCustomerBadge from "./OrderCustomerBadge";
 import OrderDeleteButton from "./OrderDeleteButton";
 import OrderDeliveryLine, { type OrderDeliveryFields } from "./OrderDeliveryLine";
+import OrderShippingPanel, { type OrderShippingFields } from "./OrderShippingPanel";
 
 type OrderItem = {
   quantity: number;
@@ -30,7 +31,8 @@ type OrderRow = {
   shopperSubscriptionId: string | null;
   stand: { name: string };
   items: OrderItem[];
-} & OrderDeliveryFields;
+} & OrderDeliveryFields &
+  OrderShippingFields;
 
 function channelBadge(order: OrderRow): {
   label: string;
@@ -107,6 +109,9 @@ export default function OrderListRow({
               defaultSubject={`${order.stand.name} · order ${order.orderNumber}`}
             />
             <OrderDeliveryLine order={order} />
+            {order.handoverMode === "DELIVER" && isCountedPaymentStatus(order.paymentStatus) ? (
+              <OrderShippingPanel order={order} />
+            ) : null}
             <p className="mt-2 text-sm text-[var(--muted)]">
               {order.items
                 .map(

@@ -10,6 +10,7 @@ import { demoProductForStandSlug, isDemoStandSlug } from "@/lib/demo";
 import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 import { mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
+import { standShippingSettings } from "@/lib/shipping/shipping-cost";
 import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
@@ -108,6 +109,7 @@ export async function loadStandCartData(standSlug: string): Promise<StandCartDat
       passFeeToCustomer: ownerPassesFeeToCustomer(stand.owner, stand.currency),
       stallsideFeeApplies: shouldChargeVendlFee(stand.owner),
       stripeFixedFeeCents: vendlFixedFeeCents(stand.owner, "stripe", stand.currency),
+      shipping: standShippingSettings(stand),
       upsell: standCartUpsell(stand),
       preOrderUpsell: standPreOrderUpsell(stand),
       pagePreOrderUpsells: await standPagePreOrderUpsells(stand),

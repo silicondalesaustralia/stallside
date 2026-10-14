@@ -34,7 +34,7 @@ export default async function EditProductPage({
   const product = await prisma.product.findFirst({
     where: { id: productId, ownerId: owner.id },
     include: {
-      stand: { select: { id: true, name: true, slug: true, fulfilmentDefault: true } },
+      stand: { select: { id: true, name: true, slug: true, fulfilmentDefault: true, shippingMode: true } },
       optionGroups: {
         orderBy: { sortOrder: "asc" },
         include: { choices: { orderBy: { sortOrder: "asc" } } },
@@ -110,6 +110,8 @@ export default async function EditProductPage({
           freshnessNote: product.freshnessNote,
           fulfilment: product.fulfilment,
           standFulfilmentDefault: product.stand.fulfilmentDefault,
+          shippingCents: product.shippingCents,
+          standShippingMode: product.stand.shippingMode,
           priceTiers,
           hasOptions: product.optionGroups.length > 0,
           options: product.optionGroups.map((g) => ({

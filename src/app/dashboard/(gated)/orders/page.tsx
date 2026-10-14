@@ -95,6 +95,11 @@ export default async function OrdersPage({
         deliverySuburb: true,
         deliveryPostcode: true,
         deliveryNotes: true,
+        shippingCarrier: true,
+        trackingNumber: true,
+        trackingUrl: true,
+        shippedAt: true,
+        deliveredAt: true,
         stand: { select: { name: true } },
         items: {
           select: {

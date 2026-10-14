@@ -21,12 +21,12 @@ export default function FulfilmentDefaultCard({
 }) {
   const notice = status ? STATUS_TEXT[status] : undefined;
   return (
-    <section className="collections-screen-only dash-card flex flex-col gap-3 p-5">
+    <section className="dash-card flex flex-col gap-3 p-5">
       <div>
-        <h2 className="text-lg font-semibold">Pickup &amp; delivery for your shop</h2>
+        <h2 className="text-lg font-semibold">Pickup &amp; shipping</h2>
         <p className="mt-1 text-sm text-[var(--muted)]">
           Applies to every product unless you change it on the product. With both on, customers choose at
-          checkout. Delivery orders give their address and pay by card. Pre-order pages keep their own
+          checkout. Shipped orders give their address and pay by card. Pre-order pages keep their own
           setting.
         </p>
       </div>

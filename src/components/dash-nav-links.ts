@@ -28,7 +28,7 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
     heading: "Pages & Posts",
     links: [
       { href: "/dashboard/categories", label: "Product categories" },
-      { href: "/dashboard/products", label: "Products", alsoActiveOn: ["/dashboard/inventory"] },
+      { href: "/dashboard/products", label: "Products" },
       { href: "/dashboard/pre-order-pages", label: "Pre-order pages" },
       { href: "/dashboard/subscriptions", label: "Subscriptions" },
       { href: "/dashboard/website/pages", label: "Pages", websiteOnly: true },
@@ -47,6 +47,8 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
     heading: "Operations",
     links: [
       { href: "/dashboard/orders", label: "Orders" },
+      { href: "/dashboard/shipping", label: "Shipping" },
+      { href: "/dashboard/inventory", label: "Inventory" },
       { href: "/dashboard/customers", label: "Customers" },
       { href: "/dashboard/suppliers", label: "Suppliers" },
       { href: "/dashboard/collections", label: "Pick Ups & Delivery" },

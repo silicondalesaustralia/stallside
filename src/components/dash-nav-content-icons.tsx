@@ -20,6 +20,12 @@ export const CONTENT_NAV_ICONS: Record<string, React.ReactNode> = {
   "/dashboard/website/domains": (
     <Icon d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1" />
   ),
+  "/dashboard/shipping": (
+    <Icon d="M3 6h11v10H3zM14 9h4l3 3v4h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+  ),
+  "/dashboard/inventory": (
+    <Icon d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8" />
+  ),
   "/dashboard/qr": (
     <Icon d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2" />
   ),

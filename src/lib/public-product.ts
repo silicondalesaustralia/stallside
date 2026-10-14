@@ -39,6 +39,8 @@ export type PublicProductCard = {
   handoverMode: "COLLECT" | "DELIVER";
   /** Pickup / delivery this product allows at checkout (own setting, else the stand default). */
   fulfilment: FulfilmentChoiceValue;
+  /** Per-item shipping when the stand uses custom shipping. */
+  shippingCents: number | null;
   paymentTiming: "PAY_NOW" | "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE";
   depositPercent: number | null;
   /** When this product is in the cart, offer this product as upsell. */
@@ -105,6 +107,7 @@ export function mapPublicProduct(
     depositPercent?: number | null;
     handoverMode?: "COLLECT" | "DELIVER";
     fulfilment?: FulfilmentChoiceValue | null;
+    shippingCents?: number | null;
     upsellProductId?: string | null;
     upsellPriceCents?: number | null;
     preOrderUpsellName?: string | null;
@@ -205,6 +208,7 @@ export function mapPublicProduct(
       { isPreOrder: Boolean(isPre), handoverMode: p.handoverMode ?? "COLLECT", fulfilment: p.fulfilment ?? null },
       opts.fulfilmentDefault ?? "PICKUP",
     ),
+    shippingCents: p.shippingCents ?? null,
     paymentTiming,
     depositPercent:
       paymentTiming === "DEPOSIT_THEN_BALANCE"

@@ -4,7 +4,7 @@ import type { HandoverValue } from "@/lib/fulfilment/handover-choice";
 
 const OPTIONS: { value: HandoverValue; label: string }[] = [
   { value: "COLLECT", label: "Pick up" },
-  { value: "DELIVER", label: "Delivery" },
+  { value: "DELIVER", label: "Shipping" },
 ];
 
 export default function HandoverPicker({

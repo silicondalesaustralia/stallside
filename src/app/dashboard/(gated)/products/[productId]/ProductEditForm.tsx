@@ -92,6 +92,9 @@ export default function ProductEditForm({
             value={product.fulfilment}
             standDefault={product.standFulfilmentDefault}
             preOrderEligible={preOrderEligible}
+            shippingCents={product.shippingCents}
+            shippingMode={product.standShippingMode}
+            currency={product.currency}
           />
           <ProductOrganisationSection
             categories={product.categories}
