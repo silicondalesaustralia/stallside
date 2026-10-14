@@ -3,6 +3,7 @@ import {
   formatPreorderCollectionDate,
   preorderHandoverHeading,
 } from "@/lib/preorder-category-copy";
+import { richTextToPlain } from "@/lib/website/rich-text/plain";
 
 const FLETCHERBROOK_INTROS: Record<string, string> = {
   "unscented-goat-s-milk-soap-preorder":
@@ -28,7 +29,7 @@ export function preorderDetailIntro(input: {
     const hit = FLETCHERBROOK_INTROS[input.pageSlug];
     if (hit) return hit;
   }
-  const raw = input.description?.trim() || input.productDescription?.trim();
+  const raw = input.description?.trim() || richTextToPlain(input.productDescription);
   if (!raw) return null;
   const first = raw.split(/(?<=[.!?])\s+/).find((p) => p.trim());
   return first?.trim() || null;

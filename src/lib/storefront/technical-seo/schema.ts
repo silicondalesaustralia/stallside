@@ -2,6 +2,7 @@ import type { ResolvedStorefrontBranding } from "@/lib/storefront/types";
 import type { PublicProductCard } from "@/lib/public-product";
 import type { StorefrontBlogPost } from "@/lib/studio/blog";
 import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
+import { richTextToPlainOrNull } from "@/lib/website/rich-text/plain";
 import { breadcrumbListSchema } from "./breadcrumbs";
 
 export function storefrontSchemaGraph(input: {
@@ -75,7 +76,7 @@ export function productSchemaNode(input: {
     "@type": "Product",
     "@id": `${input.pageUrl}#product`,
     name: input.product.name,
-    description: input.product.description ?? undefined,
+    description: richTextToPlainOrNull(input.product.description) ?? undefined,
     image: input.product.imageUrl ?? undefined,
     url: input.pageUrl,
     brand: { "@type": "Brand", name: input.branding.headline },

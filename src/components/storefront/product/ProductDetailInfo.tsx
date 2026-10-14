@@ -5,6 +5,7 @@ import type { ProductDetailView } from "@/lib/studio/product-detail-settings";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 import SectionCopy from "@/components/studio/SectionCopy";
 import CartButtonLabels from "@/components/studio/CartButtonLabels";
+import RichText from "@/components/studio/RichText";
 import ProductBuyBox from "./ProductBuyBox";
 import ProductInfoRows from "./ProductInfoRows";
 import ProductInfoTabs from "./ProductInfoTabs";
@@ -39,7 +40,7 @@ export default function ProductDetailInfo({
         {formatMoney(product.priceCents, meta.currency)}
       </p>
       {product.description ? (
-        <p className="mt-4 whitespace-pre-line text-lg leading-relaxed text-[var(--muted)]">{product.description}</p>
+        <RichText value={product.description} className="mt-4 text-lg leading-relaxed text-[var(--muted)]" />
       ) : null}
       <CartButtonLabels />
       <ProductBuyBox

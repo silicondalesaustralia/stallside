@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import FilePickButton from "@/components/FilePickButton";
 import DashFormSection from "@/components/DashFormSection";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
+import RichTextField from "@/components/RichTextField";
+import { PRODUCT_DESCRIPTION_MAX } from "@/lib/product-limits";
 import { createProduct } from "../actions";
 import ProductOwnerMetaFields from "../ProductOwnerMetaFields";
 import {
@@ -105,10 +107,13 @@ export default function NewProductForm({
             />
           </label>
         </div>
-        <label className="flex flex-col gap-2 text-sm">
-          <span className="font-medium">Description (optional)</span>
-          <input name="description" className={inputClass} />
-        </label>
+        <RichTextField
+          name="description"
+          label="Description (optional)"
+          defaultValue={null}
+          placeholder="What makes it special, how it's made, how to use or store it…"
+          maxLength={PRODUCT_DESCRIPTION_MAX}
+        />
       </DashFormSection>
 
       <DashFormSection title="Price & stock">

@@ -1,0 +1,30 @@
+import DashFormSection from "@/components/DashFormSection";
+import ProductOwnerMetaFields from "../ProductOwnerMetaFields";
+import ProductPriceTiersFields from "./ProductPriceTiersFields";
+import type { ProductFields } from "./product-edit-fields";
+
+/** Price, cost/SKU/barcode and volume prices. */
+export default function ProductPricingSection({ product }: { product: ProductFields }) {
+  return (
+    <DashFormSection title="Pricing">
+      <label className="flex max-w-xs flex-col gap-2 text-sm">
+        <span className="font-medium">Price ({product.currency})</span>
+        <input
+          name="price"
+          required
+          inputMode="decimal"
+          defaultValue={(product.priceCents / 100).toFixed(2)}
+          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+        />
+      </label>
+      <ProductOwnerMetaFields
+        currency={product.currency}
+        sku={product.sku}
+        upc={product.upc}
+        costCents={product.costCents}
+        priceCents={product.priceCents}
+      />
+      <ProductPriceTiersFields currency={product.currency} initial={product.priceTiers} disabled={product.hasOptions} />
+    </DashFormSection>
+  );
+}

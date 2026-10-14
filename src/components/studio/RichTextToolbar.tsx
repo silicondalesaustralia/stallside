@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type MouseEvent } from "react";
+import { useState, type MouseEvent, type SyntheticEvent } from "react";
 import { normaliseLinkInput } from "@/lib/website/rich-text/parse";
 
 type Command = "bold" | "italic" | "insertUnorderedList" | "insertOrderedList" | "removeFormat";
@@ -16,6 +16,7 @@ export default function RichTextToolbar({
   linkOpen,
   setLinkOpen,
   currentHref,
+  docked = false,
 }: {
   onCommand: (command: Command) => void;
   onLink: (href: string) => void;
@@ -23,12 +24,14 @@ export default function RichTextToolbar({
   linkOpen: boolean;
   setLinkOpen: (open: boolean) => void;
   currentHref: string | null;
+  /** Sits at the top of a text box instead of floating above it. */
+  docked?: boolean;
 }) {
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const keep = (e: MouseEvent) => e.preventDefault();
 
-  function submit(e: FormEvent) {
+  function submit(e: SyntheticEvent) {
     e.preventDefault();
     e.stopPropagation();
     const href = normaliseLinkInput(draft);
@@ -42,7 +45,11 @@ export default function RichTextToolbar({
 
   return (
     <div
-      className="absolute bottom-full left-0 z-40 mb-2 rounded-lg border border-[#d9e2d4] bg-white p-1 text-left shadow-lg"
+      className={
+        docked
+          ? "border-b border-[#d9e2d4] bg-[#fbfdf9] p-1 text-left"
+          : "absolute bottom-full left-0 z-40 mb-2 rounded-lg border border-[#d9e2d4] bg-white p-1 text-left shadow-lg"
+      }
       onMouseDown={(e) => e.stopPropagation()}
       onKeyDown={(e) => e.stopPropagation()}
       role="toolbar"
@@ -80,19 +87,20 @@ export default function RichTextToolbar({
         </button>
       </div>
       {linkOpen ? (
-        <form className="mt-1 flex items-center gap-1 border-t border-[#d9e2d4] pt-1" onSubmit={submit}>
+        <div className="mt-1 flex items-center gap-1 border-t border-[#d9e2d4] pt-1" role="group" aria-label="Link">
           <input
             autoFocus
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Escape") setLinkOpen(false);
+              if (e.key === "Enter") submit(e);
             }}
             placeholder="https://… or email"
             className="w-48 rounded border border-[#d9e2d4] px-2 py-1 text-xs text-[#17361f]"
             aria-label="Link address"
           />
-          <button type="submit" className={BTN}>
+          <button type="button" className={BTN} onClick={submit}>
             Apply
           </button>
           {currentHref ? (
@@ -100,7 +108,7 @@ export default function RichTextToolbar({
               Remove
             </button>
           ) : null}
-        </form>
+        </div>
       ) : null}
       {error ? <p className="px-1 pt-1 text-xs text-red-700">{error}</p> : null}
     </div>

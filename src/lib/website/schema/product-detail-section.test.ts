@@ -4,7 +4,13 @@ import type { SerializedNodes } from "@craftjs/core";
 import { craftNodeToSection } from "@/lib/website/adapter/from-craft";
 import { validateSection } from "@/lib/website/sections/validate-section";
 import { DEFAULT_INFO_ROWS, INFO_ROWS_MAX, productDetailView } from "@/lib/studio/product-detail-settings";
-import { PRODUCT_PHOTOS_MAX, moveGalleryImage, productImageList } from "@/lib/product-images";
+import {
+  PRODUCT_PHOTOS_MAX,
+  isPhotoReorder,
+  moveGalleryImage,
+  productImageList,
+  splitProductPhotos,
+} from "@/lib/product-images";
 
 function detailNode(props: Record<string, unknown>): SerializedNodes[string] {
   return {
@@ -88,5 +94,14 @@ describe("product photos", () => {
     assert.deepEqual(moveGalleryImage(list, "b", -1), ["b", "a", "c"]);
     assert.deepEqual(moveGalleryImage(list, "c", 1), list);
     assert.deepEqual(moveGalleryImage(list, "zzz", 1), list);
+  });
+
+  it("splits photos back into main + extras and only accepts true reorders", () => {
+    assert.deepEqual(splitProductPhotos(["a", "b", "c"]), { imageUrl: "a", galleryImageUrls: ["b", "c"] });
+    assert.deepEqual(splitProductPhotos([]), { imageUrl: null, galleryImageUrls: [] });
+    assert.equal(isPhotoReorder(["a", "b"], ["b", "a"]), true);
+    assert.equal(isPhotoReorder(["a", "b"], ["a", "x"]), false);
+    assert.equal(isPhotoReorder(["a", "b"], ["a", "a"]), false);
+    assert.equal(isPhotoReorder(["a", "b"], ["a"]), false);
   });
 });

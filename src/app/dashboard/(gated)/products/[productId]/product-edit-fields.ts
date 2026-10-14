@@ -1,11 +1,14 @@
+import type { ProductSupplyStatus } from "@/generated/prisma/client";
 import type { PriceTier } from "@/lib/price-tiers";
+import type { SavedOptionGroup } from "./ProductOptionsEditor";
+import type { CategoryChoice } from "./ProductOrganisationSection";
 
 export type ProductFields = {
   id: string;
   name: string;
   slug: string;
   description: string | null;
-  imageUrl: string | null;
+  photos: string[];
   seoTitle: string | null;
   seoDescription: string | null;
   priceCents: number;
@@ -13,7 +16,11 @@ export type ProductFields = {
   sku: string | null;
   upc: string | null;
   currency: string;
+  stockQuantity: number;
   lowStockThreshold: number;
+  supplyStatus: ProductSupplyStatus | null;
+  isHidden: boolean;
+  isArchived: boolean;
   standId: string;
   standName: string;
   standSlug: string;
@@ -23,6 +30,8 @@ export type ProductFields = {
   freshnessNote: string | null;
   priceTiers: PriceTier[];
   hasOptions: boolean;
+  options: SavedOptionGroup[];
+  categories: CategoryChoice[];
   upsellProductId: string | null;
   upsellPriceCents: number | null;
   siblingProducts: { id: string; name: string; priceCents: number }[];

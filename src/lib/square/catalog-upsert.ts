@@ -1,4 +1,5 @@
 import { SquareApiError, squareFetch } from "@/lib/square/client";
+import { richTextToPlain } from "@/lib/website/rich-text/plain";
 
 const LOCK_RETRY_DELAYS_MS = [1000, 2000, 4000, 8000];
 
@@ -41,7 +42,7 @@ export type SquareCreatedItem = {
 
 function plainDescription(html: string | null): string | undefined {
   if (!html) return undefined;
-  const text = html
+  const text = richTextToPlain(html)
     .replace(/<[^>]*>/g, " ")
     .replace(/&nbsp;/g, " ")
     .replace(/\s+/g, " ")

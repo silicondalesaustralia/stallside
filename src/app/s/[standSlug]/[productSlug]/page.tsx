@@ -11,6 +11,8 @@ import { productLiveWhere } from "@/lib/product-visibility";
 import ProductDetailActions from "../ProductDetailActions";
 import StandStoreHeader from "../StandStoreHeader";
 import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
+import { richTextToPlainOrNull } from "@/lib/website/rich-text/plain";
+import RichText from "@/components/studio/RichText";
 
 export async function generateMetadata({
   params,
@@ -41,7 +43,7 @@ export async function generateMetadata({
     productSlug: product.slug,
     seoTitle: product.seoTitle,
     seoDescription: product.seoDescription,
-    description: product.description,
+    description: richTextToPlainOrNull(product.description),
     imageUrl: product.imageUrl,
     isPreOrder: product.isPreOrder,
     collectionNote: product.collectionNote,
@@ -131,9 +133,7 @@ export default async function PublicProductPage({
           </p>
         ) : null}
         {product.description ? (
-          <p className="mt-3 text-lg leading-snug text-[var(--muted)]">
-            {product.description}
-          </p>
+          <RichText value={product.description} className="mt-3 text-lg leading-snug text-[var(--muted)]" />
         ) : null}
         {product.freshnessNote ? (
           <p className="mt-2 text-base text-[var(--leaf-dark)]">

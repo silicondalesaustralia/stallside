@@ -4,6 +4,7 @@ import { preOrderPageUrl } from '@/lib/preorder-page'
 import { subscriptionOfferUrl } from '@/lib/subscription-offer'
 import { productPageUrl } from '@/lib/socialHost/standPublicUrls'
 import type { VendlContentKind, VendlContentRef } from '@/lib/socialHost/vendlContentTypes'
+import { richTextToPlainOrNull } from '@/lib/website/rich-text/plain'
 
 export type VendlContentDetail = {
   kind: VendlContentKind
@@ -43,7 +44,7 @@ export async function loadVendlContentDetail(
     return {
       kind: 'product',
       title: p.name,
-      description: p.description,
+      description: richTextToPlainOrNull(p.description),
       notes: notes.filter(Boolean).join('. '),
       imageUrls: uniqueUrls([p.imageUrl]),
       publicUrl: productPageUrl(stand.slug, p.slug),

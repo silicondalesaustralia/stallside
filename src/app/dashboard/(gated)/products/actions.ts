@@ -26,11 +26,12 @@ import {
   upsertPreOrderAddonProduct,
 } from "@/lib/preorder-upsell-addon";
 import { parseProductOwnerMeta } from "@/lib/product-owner-meta";
+import { PRODUCT_DESCRIPTION_MAX } from "@/lib/product-limits";
 
 const productSchema = z.object({
   standId: z.string().min(1),
   name: z.string().trim().min(1).max(120),
-  description: z.string().trim().max(500).optional(),
+  description: z.string().trim().max(PRODUCT_DESCRIPTION_MAX, `Description must be ${PRODUCT_DESCRIPTION_MAX} characters or fewer.`).optional(),
   price: z.string().min(1),
   stockQuantity: z.coerce.number().int().min(0),
   lowStockThreshold: z.coerce.number().int().min(0),
@@ -256,7 +257,7 @@ export async function updateProduct(productId: string, formData: FormData) {
     const parsed = z
       .object({
         name: z.string().trim().min(1).max(120),
-        description: z.string().trim().max(500).optional(),
+        description: z.string().trim().max(PRODUCT_DESCRIPTION_MAX, `Description must be ${PRODUCT_DESCRIPTION_MAX} characters or fewer.`).optional(),
         price: z.string().min(1),
         lowStockThreshold: z.coerce.number().int().min(0),
         slug: z.string().trim().min(1).max(60),
