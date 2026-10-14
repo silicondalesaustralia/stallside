@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Editor, Frame } from "@craftjs/core";
+import { unstable_rethrow } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
 import { studioResolver } from "@/lib/studio/resolver";
 import { buildStudioStarterTree } from "@/lib/studio/starter-composition";
@@ -204,7 +205,13 @@ export default function StudioEditorInner({
           }
           setSaveStatus(result.error === "conflict" ? "conflict" : "error");
           setSaveError(result.message);
-        } catch {
+        } catch (err) {
+          if (String((err as { digest?: unknown } | null)?.digest ?? "").startsWith("NEXT_REDIRECT")) {
+            setDirty(false);
+            setSaveStatus("saved");
+            unstable_rethrow(err);
+          }
+          console.error("[editor save]", err);
           setSaveStatus("error");
           setSaveError("Could not save. Check your connection and try again.");
         }
