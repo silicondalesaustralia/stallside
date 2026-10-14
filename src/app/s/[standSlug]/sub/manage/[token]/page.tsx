@@ -54,7 +54,7 @@ export default async function ShopperSubscriptionManagePage({
         <BrandLockup href="/" size="sm" />
         <Link
           href={`/s/${sub.stand.slug}`}
-          className="text-sm font-semibold text-[var(--leaf-dark)] underline"
+          className="text-sm font-semibold text-[var(--site-link,var(--leaf-dark))] underline"
         >
           {sub.stand.name}
         </Link>

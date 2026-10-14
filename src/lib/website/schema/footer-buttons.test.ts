@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { footerBottomLine, footerColours, footerSettingsProblem, parseFooterSettings } from "@/lib/studio/footer-settings";
 import { autoFooterColumns, resolveFooterColumns } from "@/lib/studio/footer-columns";
-import { siteButtonVars } from "@/lib/storefront/site-buttons";
+import { siteButtonVars, siteLinkVars } from "@/lib/storefront/site-buttons";
 
 const palette = { accent: "#2f6b3a", secondary: "#c9a227" };
 const ctx = {
@@ -74,5 +74,10 @@ describe("site button colours", () => {
       "--site-btn-ink": "#17361f",
     });
     assert.deepEqual(siteButtonVars({ background: null, text: "dark" }, palette), { "--site-btn-ink": "#17361f" });
+  });
+
+  it("sets the link colour only when chosen", () => {
+    assert.deepEqual(siteLinkVars(null, palette), {});
+    assert.deepEqual(siteLinkVars("secondary", palette), { "--site-link": "#c9a227" });
   });
 });

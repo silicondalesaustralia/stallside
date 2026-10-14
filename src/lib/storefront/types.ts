@@ -54,6 +54,8 @@ export type StorefrontThemeOverrides = {
   /** Every main button on the site, unless a section sets its own (theme token or #rrggbb). */
   buttonColour?: string;
   buttonTextColour?: string;
+  /** Text links in page content (theme token or #rrggbb). */
+  linkColour?: string;
 };
 
 /** Website-only identity. Lives in the draft and goes live on publish. */
@@ -97,6 +99,7 @@ export type ResolvedStorefrontBranding = {
   pageBackground: string | null;
   buttonColour: string | null;
   buttonTextColour: string | null;
+  linkColour: string | null;
   regionLabel: string | null;
   contactEmail: string;
   contactPhone: string | null;

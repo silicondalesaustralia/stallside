@@ -18,6 +18,7 @@ import ButtonLinkField from "./ButtonLinkField";
 import { LINKABLE_BUTTON_SECTIONS } from "@/lib/studio/button-link";
 import PageStyleSettings from "./PageStyleSettings";
 import SiteButtonSettings from "./SiteButtonSettings";
+import SiteLinkSettings from "./SiteLinkSettings";
 import FooterSettingsPanel from "./FooterSettingsPanel";
 import { paletteOf } from "@/lib/website/sections/colour";
 import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
@@ -104,6 +105,7 @@ export default function StudioSettingsPanel() {
         </button>
         <PageStyleSettings />
         <SiteButtonSettings />
+        <SiteLinkSettings />
       </aside>
     );
   }

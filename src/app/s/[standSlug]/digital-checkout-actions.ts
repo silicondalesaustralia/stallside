@@ -335,6 +335,9 @@ export async function startCardCheckout(input: {
     if (process.env.NODE_ENV !== "production" && stripeMessage) {
       return { error: stripeMessage };
     }
+    if ((error as { code?: unknown } | null)?.code === "account_invalid") {
+      return { error: "Card payments aren't available for this shop right now. Please choose another way to pay." };
+    }
     return { error: "Could not start card checkout." };
   }
 }

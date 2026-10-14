@@ -31,7 +31,7 @@ export default function StudioMenuDetailBlock({
     <div className="storefront-page-content storefront-page-content--narrow">
       <Link
         href={shopMenusPath(meta.storefrontSlug, meta.draft, meta.basePath)}
-        className="text-sm font-semibold text-[var(--leaf-dark)] underline"
+        className="text-sm font-semibold text-[var(--site-link,var(--leaf-dark))] underline"
       >
         <SectionCopy k="backLink" fallback="← Menus" />
       </Link>

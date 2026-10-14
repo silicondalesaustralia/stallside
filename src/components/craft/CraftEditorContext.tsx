@@ -72,6 +72,10 @@ export type CraftEditorChrome = {
   setSiteButtonColours?: (colours: SiteButtonColours) => void;
   siteButtonColoursStatus?: "idle" | "saving" | "saved" | "error";
   siteButtonColoursError?: string | null;
+  siteLinkColour?: string | null;
+  setSiteLinkColour?: (colour: string | null) => void;
+  siteLinkColourStatus?: "idle" | "saving" | "saved" | "error";
+  siteLinkColourError?: string | null;
   sitePageBackground?: string | null;
   setSitePageBackground?: (value: string | null) => void;
   sitePageBackgroundStatus?: "idle" | "saving" | "saved" | "error";

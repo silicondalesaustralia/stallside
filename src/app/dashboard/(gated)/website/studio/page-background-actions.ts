@@ -8,7 +8,7 @@ import { DRAFT_CONFLICT_MESSAGE, writeStorefrontDraft } from "@/lib/website/pers
 import { parseStorefrontConfig } from "@/lib/storefront/config";
 import { isColourValue } from "@/lib/website/sections/section-style";
 
-type ThemeColourKey = "pageBackground" | "buttonColour" | "buttonTextColour";
+type ThemeColourKey = "pageBackground" | "buttonColour" | "buttonTextColour" | "linkColour";
 type SaveResult = { ok: true; revision: number } | { ok: false; error: string };
 
 /** Sets (or clears, with null) site-wide theme colours in the draft. */
@@ -67,4 +67,12 @@ export async function saveStorefrontButtonColours(input: {
     input.expectedRevision,
     "button colours",
   );
+}
+
+/** Sets (or clears) the colour of text links in page content on every page, in the draft. */
+export async function saveStorefrontLinkColour(input: {
+  linkColour: string | null;
+  expectedRevision: number;
+}): Promise<SaveResult> {
+  return saveThemeColours({ linkColour: input.linkColour }, input.expectedRevision, "link colour");
 }

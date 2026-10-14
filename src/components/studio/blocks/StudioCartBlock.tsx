@@ -20,7 +20,7 @@ export default function StudioCartBlock({
 
   return (
     <div className="storefront-page-content storefront-page-content--narrow">
-      <Link href={shopHref} className="text-sm font-semibold text-[var(--leaf-dark)] underline">
+      <Link href={shopHref} className="text-sm font-semibold text-[var(--site-link,var(--leaf-dark))] underline">
         <SectionCopy k="backLink" fallback="← Continue shopping" />
       </Link>
       <SectionHeadingTag defaultTag="h1" className="studio-display mt-4 text-3xl font-bold text-[var(--field)]">

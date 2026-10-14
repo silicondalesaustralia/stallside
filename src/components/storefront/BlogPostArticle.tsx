@@ -35,7 +35,7 @@ export default function BlogPostArticle({
   return (
     <article className="storefront-page-content storefront-page-content--narrow">
       <p className="text-sm">
-        <Link href={shopBlogPath(storefrontSlug, draft, basePath)} className="font-semibold text-[var(--leaf-dark)] underline">
+        <Link href={shopBlogPath(storefrontSlug, draft, basePath)} className="font-semibold text-[var(--site-link,var(--leaf-dark))] underline">
           ← Blog
         </Link>
       </p>
@@ -61,7 +61,7 @@ export default function BlogPostArticle({
       ) : null}
       {bodyHtml ? (
         <div
-          className="blog-article-body mt-8 space-y-4 text-[var(--field)] leading-relaxed [&_a]:text-[var(--leaf-dark)] [&_a]:underline"
+          className="blog-article-body mt-8 space-y-4 text-[var(--field)] leading-relaxed [&_a]:text-[var(--site-link,var(--leaf-dark))] [&_a]:underline"
           dangerouslySetInnerHTML={{ __html: bodyHtml }}
         />
       ) : (

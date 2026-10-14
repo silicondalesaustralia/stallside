@@ -360,6 +360,7 @@
 }
 
 .studio-rich-text a {
+  color: var(--site-link, inherit);
   text-decoration: underline;
   text-underline-offset: 2px;
 }

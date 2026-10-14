@@ -229,7 +229,7 @@ export default function CustomerChoiceCheckout({
             setPaidVia(null);
             setStep("amount");
           }}
-          className="text-center font-semibold text-[var(--leaf-dark)] underline"
+          className="text-center font-semibold text-[var(--site-link,var(--leaf-dark))] underline"
         >
           Start another payment
         </button>

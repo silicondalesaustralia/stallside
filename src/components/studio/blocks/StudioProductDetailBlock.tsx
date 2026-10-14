@@ -49,7 +49,7 @@ export default function StudioProductDetailBlock({
       {showBackLink ? (
         <Link
           href={backHref}
-          className="text-sm font-semibold text-[var(--leaf-dark)] underline"
+          className="text-sm font-semibold text-[var(--site-link,var(--leaf-dark))] underline"
         >
           <SectionCopy k="backLink" fallback={backLabel} />
         </Link>

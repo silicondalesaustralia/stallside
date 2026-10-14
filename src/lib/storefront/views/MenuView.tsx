@@ -95,7 +95,7 @@ export default async function MenuView({ slug, menuSlug, draft, preOrderRoute }:
         <div className="storefront-page-content storefront-page-content--narrow">
           <Link
             href={shopMenusPath(ctx.storefront.slug, draft, basePath)}
-            className="text-sm font-semibold text-[var(--leaf-dark)] underline"
+            className="text-sm font-semibold text-[var(--site-link,var(--leaf-dark))] underline"
           >
             ← Menus
           </Link>

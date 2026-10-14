@@ -47,7 +47,7 @@ export default function CartDoneView({
         {restockStandId ? <RestockOptIn standId={restockStandId} inputId="restock-email-cash" /> : null}
       </div>
       {showTapAndGo ? <TapAndGoInterestCta standSlug={standSlug} /> : null}
-      <Link href={shopHref} className="text-center font-semibold text-[var(--leaf-dark)] underline">
+      <Link href={shopHref} className="text-center font-semibold text-[var(--site-link,var(--leaf-dark))] underline">
         <SectionCopy k="backToShop" fallback="Back to shop" />
       </Link>
     </div>

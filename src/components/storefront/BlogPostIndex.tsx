@@ -73,7 +73,7 @@ export default function BlogPostIndex({
                   {post.excerpt ? (
                     <p className="mt-3 flex-1 text-[var(--muted)] leading-relaxed">{post.excerpt}</p>
                   ) : null}
-                  <Link href={href} className="mt-4 text-sm font-semibold text-[var(--leaf-dark)] underline">
+                  <Link href={href} className="mt-4 text-sm font-semibold text-[var(--site-link,var(--leaf-dark))] underline">
                     Read more
                   </Link>
                 </div>

@@ -75,7 +75,7 @@ export default async function StorefrontHomeContent({
                   {products.length > featured.length ? (
                     <Link
                       href={shopPagePath(ctx.storefront.slug, "shop", draft, basePath)}
-                      className="text-sm font-semibold text-[var(--leaf-dark)] underline"
+                      className="text-sm font-semibold text-[var(--site-link,var(--leaf-dark))] underline"
                     >
                       View all
                     </Link>

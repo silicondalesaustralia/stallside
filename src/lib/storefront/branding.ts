@@ -12,7 +12,7 @@ import {
 import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
 import { isColourValue } from "@/lib/website/sections/section-style";
 import { colourCss, paletteOf } from "@/lib/website/sections/colour";
-import { siteButtonColoursOf, siteButtonVars } from "@/lib/storefront/site-buttons";
+import { siteButtonColoursOf, siteButtonVars, siteLinkVars } from "@/lib/storefront/site-buttons";
 import type {
   ResolvedStorefrontBranding,
   StorefrontConfig,
@@ -119,6 +119,7 @@ export function resolveStorefrontBranding(input: {
     pageBackground: isColourValue(overrides.pageBackground) ? overrides.pageBackground : null,
     buttonColour: isColourValue(overrides.buttonColour) ? overrides.buttonColour : null,
     buttonTextColour: isColourValue(overrides.buttonTextColour) ? overrides.buttonTextColour : null,
+    linkColour: isColourValue(overrides.linkColour) ? overrides.linkColour : null,
     regionLabel: regionParts.length > 0 ? regionParts.join(", ") : null,
     contactEmail: storefront.contactEmail?.trim() || input.owner.contactEmail,
     contactPhone: storefront.showPhone ? input.owner.contactPhone : null,
@@ -148,7 +149,11 @@ export function storefrontThemeStyle(
     style["--font-sans"] = fonts.bodyFamily;
   }
   if (branding.pageBackground) style.backgroundColor = colourCss(branding.pageBackground);
-  Object.assign(style, siteButtonVars(siteButtonColoursOf(branding), paletteOf(branding)));
+  Object.assign(
+    style,
+    siteButtonVars(siteButtonColoursOf(branding), paletteOf(branding)),
+    siteLinkVars(branding.linkColour, paletteOf(branding)),
+  );
   return style as CSSProperties;
 }
 

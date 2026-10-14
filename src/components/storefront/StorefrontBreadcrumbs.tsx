@@ -26,7 +26,7 @@ export default function StorefrontBreadcrumbs({
             <li key={`${item.label}-${index}`} className="flex items-center gap-1">
               {index > 0 ? <span aria-hidden>/</span> : null}
               {item.href && !isLast ? (
-                <Link href={item.href} className="font-medium text-[var(--leaf-dark)] hover:underline">
+                <Link href={item.href} className="font-medium text-[var(--site-link,var(--leaf-dark))] hover:underline">
                   {item.label}
                 </Link>
               ) : (

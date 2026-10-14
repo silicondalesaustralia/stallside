@@ -23,3 +23,8 @@ export function siteButtonVars(colours: SiteButtonColours, palette: ThemePalette
   if (text) vars["--site-btn-ink"] = colourHex(text, palette);
   return vars;
 }
+
+/** `--site-link` for text links in page content (theme override `linkColour`); unset = template default. */
+export function siteLinkVars(linkColour: string | null, palette: ThemePalette): Record<string, string> {
+  return linkColour ? { "--site-link": colourHex(linkColour, palette) } : {};
+}

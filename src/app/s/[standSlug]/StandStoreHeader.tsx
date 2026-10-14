@@ -69,7 +69,7 @@ export default async function StandStoreHeader({
       </div>
       {backHref ? (
         <p className="text-center text-sm">
-          <Link href={backHref} className="font-medium text-[var(--leaf-dark)] underline">
+          <Link href={backHref} className="font-medium text-[var(--site-link,var(--leaf-dark))] underline">
             {backLabel ?? "← Back"}
           </Link>
         </p>
