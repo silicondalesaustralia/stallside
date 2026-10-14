@@ -14,6 +14,8 @@ import StudioCategoriesBlock from "@/components/studio/blocks/StudioCategoriesBl
 import StudioTextBlock from "@/components/studio/blocks/StudioTextBlock";
 import StudioFaqBlock from "@/components/studio/blocks/StudioFaqBlock";
 import { parseFaqItems } from "@/lib/studio/faq-items";
+import StudioContactFormBlock from "@/components/studio/blocks/StudioContactFormBlock";
+import { parseContactLayout } from "@/lib/studio/contact-form";
 import StudioImageBlock from "@/components/studio/blocks/StudioImageBlock";
 import StudioImageTextBlock from "@/components/studio/blocks/StudioImageTextBlock";
 import StudioPaymentsBlock from "@/components/studio/blocks/StudioPaymentsBlock";
@@ -199,6 +201,17 @@ function StudioSectionRender({
           intro={String(p.intro ?? "")}
           items={parseFaqItems(p.items)}
           startOpen={p.startOpen === true}
+        />
+      );
+    case "CraftContactFormSection":
+      return (
+        <StudioContactFormBlock
+          heading={String(p.heading ?? "")}
+          body={String(p.body ?? "")}
+          buttonLabel={String(p.buttonLabel ?? "")}
+          layout={parseContactLayout(p.layout)}
+          showPhone={p.showPhone !== false}
+          standId={metadata.standId}
         />
       );
     case "CraftImageSection":

@@ -23,6 +23,7 @@ export const BUTTON_SECTIONS = new Set([
   "CraftHeroSection",
   "CraftImageTextSection",
   "CraftSignupSection",
+  "CraftContactFormSection",
   "CraftNextDropSection",
   "CraftFarmStandSection",
 ]);

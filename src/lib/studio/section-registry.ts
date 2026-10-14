@@ -130,6 +130,15 @@ export const STUDIO_SECTION_RULES: StudioSectionRule[] = [
     deletable: true,
   },
   {
+    type: "CraftContactFormSection",
+    label: "Contact form",
+    description: "Customers send you a message by email",
+    category: "content",
+    paletteOrder: 7,
+    duplicable: true,
+    deletable: true,
+  },
+  {
     type: "CraftAboutSection",
     label: "About",
     description: "Introduce your business",

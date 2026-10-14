@@ -9,6 +9,7 @@ import CraftAboutSection from "@/components/craft/sections/CraftAboutSection";
 import CraftImageTextSection from "@/components/studio/sections/CraftImageTextSection";
 import CraftPickupSection from "@/components/studio/sections/CraftPickupSection";
 import CraftSignupSection from "@/components/studio/sections/CraftSignupSection";
+import CraftContactFormSection from "@/components/studio/sections/CraftContactFormSection";
 
 function minimalHero(title: string, subtitle: string) {
   return (
@@ -76,10 +77,12 @@ export function buildCustomPageStarterTree(input: {
     case "contact":
       sections.push(minimalHero(input.title, "We'd love to hear from you."));
       sections.push(
-        <CraftTextSection
-          heading="Get in touch"
-          body="Whether it's about an order, pickup times, or our products — send us a message and we'll get back to you."
-          alignment="left"
+        <CraftContactFormSection
+          heading="Send us a message"
+          body="Whether it's about an order, pickup times, or our products - send us a message and we'll get back to you by email."
+          buttonLabel="Send message"
+          layout="split"
+          showPhone
         />,
       );
       break;

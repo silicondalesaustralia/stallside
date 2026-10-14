@@ -10,6 +10,7 @@ export type VendlSectionType =
   | "nextDrop"
   | "text"
   | "faq"
+  | "contactForm"
   | "image"
   | "imageText"
   | "about"

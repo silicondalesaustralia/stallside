@@ -6,6 +6,7 @@ import CraftAboutSection from "@/components/craft/sections/CraftAboutSection";
 import CraftCategoriesSection from "@/components/studio/sections/CraftCategoriesSection";
 import CraftTextSection from "@/components/studio/sections/CraftTextSection";
 import CraftFaqSection from "@/components/studio/sections/CraftFaqSection";
+import CraftContactFormSection from "@/components/studio/sections/CraftContactFormSection";
 import CraftImageSection from "@/components/studio/sections/CraftImageSection";
 import CraftImageTextSection from "@/components/studio/sections/CraftImageTextSection";
 
@@ -30,6 +31,7 @@ export const studioResolver = {
   CraftNextDropSection,
   CraftTextSection,
   CraftFaqSection,
+  CraftContactFormSection,
   CraftImageSection,
   CraftImageTextSection,
   CraftAboutSection,

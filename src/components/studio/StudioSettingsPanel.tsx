@@ -42,6 +42,8 @@ import PaymentsSettings from "./PaymentsSettings";
 import ImageSectionSettings from "./ImageSectionSettings";
 import FaqSettings from "./FaqSettings";
 import type { CraftFaqProps } from "@/components/studio/sections/CraftFaqSection";
+import ContactFormSettings from "./ContactFormSettings";
+import type { CraftContactFormProps } from "@/components/studio/sections/CraftContactFormSection";
 
 const INPUT =
   "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
@@ -165,6 +167,9 @@ export default function StudioSettingsPanel() {
         ) : null}
         {selected.type === "CraftFaqSection" ? (
           <FaqSettings props={selected.props as CraftFaqProps} setProp={setProp} />
+        ) : null}
+        {selected.type === "CraftContactFormSection" ? (
+          <ContactFormSettings props={selected.props as CraftContactFormProps} setProp={setProp} />
         ) : null}
         {selected.type === "CraftImageSection" ? (
           <ImageSectionSettings props={selected.props as CraftImageProps} setProp={setProp} />

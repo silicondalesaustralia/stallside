@@ -10,6 +10,7 @@ import {
   productGrid,
 } from "./commerce-sections";
 import { farmStand, payments, pickup, reviews, signup } from "./trust-sections";
+import { contactForm } from "./contact-sections";
 import type { SectionDefinition, VendlSectionType } from "./types";
 import { sectionStyleSchema } from "./section-style";
 import { buttonLinkSchema } from "@/lib/studio/button-link";
@@ -26,6 +27,7 @@ const DEFINITIONS = {
   nextDrop,
   text,
   faq,
+  contactForm,
   image,
   imageText,
   about,
@@ -64,6 +66,7 @@ export const VENDL_TYPE_BY_CRAFT_NAME = {
   CraftNextDropSection: "nextDrop",
   CraftTextSection: "text",
   CraftFaqSection: "faq",
+  CraftContactFormSection: "contactForm",
   CraftImageSection: "image",
   CraftImageTextSection: "imageText",
   CraftAboutSection: "about",

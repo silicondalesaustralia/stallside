@@ -8,6 +8,7 @@ import CraftAboutSection from "@/components/craft/sections/CraftAboutSection";
 import CraftCategoriesSection from "@/components/studio/sections/CraftCategoriesSection";
 import CraftTextSection from "@/components/studio/sections/CraftTextSection";
 import CraftFaqSection from "@/components/studio/sections/CraftFaqSection";
+import CraftContactFormSection from "@/components/studio/sections/CraftContactFormSection";
 import { newMenuId } from "./header-menu";
 import CraftImageSection from "@/components/studio/sections/CraftImageSection";
 import CraftImageTextSection from "@/components/studio/sections/CraftImageTextSection";
@@ -93,6 +94,17 @@ export function studioSectionElement(type: StudioSectionType): ReactElement {
           intro=""
           items={[{ id: newMenuId(), question: "", answer: "" }]}
           startOpen={false}
+        />
+      );
+    case "CraftContactFormSection":
+      return (
+        <Element
+          is={CraftContactFormSection}
+          heading="Get in touch"
+          body="Questions about an order, pickup or our products? Send us a message and we'll reply by email."
+          buttonLabel="Send message"
+          layout="stacked"
+          showPhone
         />
       );
     case "CraftImageSection":

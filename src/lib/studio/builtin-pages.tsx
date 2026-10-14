@@ -17,6 +17,7 @@ import { storefrontButtonClass } from "@/lib/storefront/branding";
 import { StorefrontSocialLinks } from "@/components/storefront/StorefrontSections";
 import type { BuiltinPageKey } from "@/lib/studio/custom-pages";
 import { POLICY_STATIC_FALLBACK } from "@/lib/studio/policy-content";
+import StudioContactFormBlock from "@/components/studio/blocks/StudioContactFormBlock";
 
 type StorefrontCtx = Awaited<ReturnType<typeof loadStorefrontPage>>;
 
@@ -120,6 +121,16 @@ async function renderBuiltinContact(ctx: StorefrontCtx, draft?: boolean) {
       ) : null}
       <div className="mt-10">
         <StorefrontSocialLinks branding={ctx.branding} />
+      </div>
+      <div className="mt-6 [&_.studio-section__inner]:px-0">
+        <StudioContactFormBlock
+          heading="Send us a message"
+          body=""
+          buttonLabel="Send message"
+          layout="stacked"
+          showPhone
+          standId={ctx.stand.id}
+        />
       </div>
     </div>,
   );
