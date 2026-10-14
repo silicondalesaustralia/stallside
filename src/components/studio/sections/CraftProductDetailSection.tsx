@@ -22,6 +22,7 @@ export type CraftProductDetailProps = {
   layout?: ProductLayout;
   imageRatio?: ProductImageRatio;
   imageSide?: "left" | "right";
+  imageSize?: number;
   enlarge?: boolean;
   stickyCart?: boolean;
   showPayments?: boolean;
@@ -49,7 +50,7 @@ export default function CraftProductDetailSection(props: CraftProductDetailProps
         {isStudioMetadata(metadata) ? (
           <StudioProductDetailBlock
             showBreadcrumbs={props.showBreadcrumbs !== false}
-            showBackLink={props.showBackLink}
+            showBackLink={props.showBackLink !== false}
             view={productDetailView(props)}
             metadata={metadata}
             isEditing

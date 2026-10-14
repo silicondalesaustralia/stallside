@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { parseRichText, type RichInline } from "@/lib/website/rich-text/parse";
 
 const LINK = "underline underline-offset-2 hover:opacity-80";
@@ -25,22 +25,32 @@ function renderInline(nodes: RichInline[], key = ""): ReactNode[] {
 }
 
 /** Section body text with its bold, italic, links and lists. Renders React elements only, never raw HTML. */
-export default function RichText({ value, className = "" }: { value: string; className?: string }) {
+export default function RichText({
+  value,
+  className = "",
+  listStyle,
+}: {
+  value: string;
+  className?: string;
+  /** Inline look for bullet and numbered lists (a section's own list element style). */
+  listStyle?: CSSProperties;
+}) {
   const blocks = parseRichText(value);
   if (blocks.length === 0) return null;
+  const listProps = listStyle ? { style: listStyle, ...(listStyle.fontSize ? { "data-el-sized": "" } : {}) } : {};
   return (
     <div className={`studio-rich-text ${className}`.trim()}>
       {blocks.map((b, i) =>
         b.t === "p" ? (
           <p key={i}>{renderInline(b.c, `${i}-`)}</p>
         ) : b.t === "ul" ? (
-          <ul key={i}>
+          <ul key={i} {...listProps}>
             {b.items.map((item, j) => (
               <li key={j}>{renderInline(item, `${i}-${j}-`)}</li>
             ))}
           </ul>
         ) : (
-          <ol key={i}>
+          <ol key={i} {...listProps}>
             {b.items.map((item, j) => (
               <li key={j}>{renderInline(item, `${i}-${j}-`)}</li>
             ))}

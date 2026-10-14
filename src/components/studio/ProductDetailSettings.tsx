@@ -1,13 +1,20 @@
 "use client";
 
 import type { CraftProductDetailProps } from "@/components/studio/sections/CraftProductDetailSection";
-import { PRODUCT_IMAGE_RATIOS, PRODUCT_LAYOUTS, productDetailView } from "@/lib/studio/product-detail-settings";
+import {
+  IMAGE_SIZE_MAX,
+  IMAGE_SIZE_MIN,
+  PRODUCT_IMAGE_RATIOS,
+  PRODUCT_LAYOUTS,
+  productDetailView,
+} from "@/lib/studio/product-detail-settings";
 import SiteChoice from "./SiteChoice";
 import ProductInfoRowsEditor from "./ProductInfoRowsEditor";
 import ProductTabsEditor from "./ProductTabsEditor";
 
-const LAYOUTS = { classic: "Classic", gallery: "Gallery", simple: "Simple" } as const;
+const LAYOUTS = { featured: "Featured", classic: "Classic", gallery: "Gallery", simple: "Simple" } as const;
 const LAYOUT_HINTS = {
+  featured: "Large main photo with thumbnails under it; tap a thumbnail to show it. Drag to set the photo size.",
   classic: "Main photo with thumbnails, details beside it.",
   gallery: "All photos stacked; details stay in view while scrolling.",
   simple: "One column: photo, details, then extra photos in a grid.",
@@ -38,6 +45,24 @@ export default function ProductDetailSettings({
       <p className="text-xs text-[var(--muted)]">These settings apply to every product page. Add more photos on each product&apos;s edit page.</p>
       <SiteChoice label="Layout" options={PRODUCT_LAYOUTS} labels={LAYOUTS} value={view.layout} onChange={(v) => setProp("layout", v)} />
       <p className="text-xs text-[var(--muted)]">{LAYOUT_HINTS[view.layout]}</p>
+      {view.layout === "featured" ? (
+        <div className="space-y-1.5">
+          <label htmlFor="product-image-size" className="flex justify-between text-xs font-semibold text-[var(--field)]">
+            Main photo size <span className="font-normal text-[var(--muted)]">{view.imageSize}% of the width</span>
+          </label>
+          <input
+            id="product-image-size"
+            type="range"
+            min={IMAGE_SIZE_MIN}
+            max={IMAGE_SIZE_MAX}
+            step={1}
+            value={view.imageSize}
+            onChange={(e) => setProp("imageSize", Number(e.target.value))}
+            className="w-full accent-[var(--leaf)]"
+          />
+          <p className="text-xs text-[var(--muted)]">Wider screens only; on phones the photo is full width.</p>
+        </div>
+      ) : null}
       <SiteChoice label="Photo shape" options={PRODUCT_IMAGE_RATIOS} labels={RATIOS} value={view.imageRatio} onChange={(v) => setProp("imageRatio", v)} />
       {view.layout !== "simple" ? (
         <SiteChoice
@@ -52,7 +77,7 @@ export default function ProductDetailSettings({
       <Toggle label="Sticky Add to cart bar on phones" checked={view.stickyCart} onChange={(v) => setProp("stickyCart", v)} />
       <Toggle label="Show payment options under the buttons" checked={view.showPayments} onChange={(v) => setProp("showPayments", v)} />
       <Toggle label="Show breadcrumbs" checked={props.showBreadcrumbs !== false} onChange={(v) => setProp("showBreadcrumbs", v)} />
-      <Toggle label="Show back to shop link" checked={props.showBackLink} onChange={(v) => setProp("showBackLink", v)} />
+      <Toggle label="Show back to shop link" checked={props.showBackLink !== false} onChange={(v) => setProp("showBackLink", v)} />
       <Toggle label="Show product reviews under detail" checked={props.showReviews} onChange={(v) => setProp("showReviews", v)} />
       <ProductInfoRowsEditor value={props.infoRows} onChange={(rows) => setProp("infoRows", rows)} />
       <ProductTabsEditor value={props.tabs} onChange={(tabs) => setProp("tabs", tabs)} />

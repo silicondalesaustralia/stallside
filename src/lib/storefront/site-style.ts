@@ -47,6 +47,9 @@ export const siteStyleSchema = z.object({
   cardHover: z.enum(CARD_HOVERS).optional(),
   animation: z.enum(SECTION_ANIMATIONS).optional(),
   dividers: z.enum(SECTION_DIVIDERS).optional(),
+  /** The large "View cart" bar at the bottom of shop pages; shown unless set to false. */
+  cartBarDesktop: z.boolean().optional(),
+  cartBarMobile: z.boolean().optional(),
 });
 
 export type SiteStyle = z.infer<typeof siteStyleSchema>;

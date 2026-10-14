@@ -5,6 +5,8 @@ import type { SectionDefinition } from "./types";
 import {
   PRODUCT_IMAGE_RATIOS,
   PRODUCT_IMAGE_SIDES,
+  IMAGE_SIZE_MAX,
+  IMAGE_SIZE_MIN,
   PRODUCT_LAYOUTS,
   infoRowsSchema,
   productTabsSchema,
@@ -99,6 +101,7 @@ export const productDetail: SectionDefinition = {
     layout: z.enum(PRODUCT_LAYOUTS).optional(),
     imageRatio: z.enum(PRODUCT_IMAGE_RATIOS).optional(),
     imageSide: z.enum(PRODUCT_IMAGE_SIDES).optional(),
+    imageSize: z.number().int().min(IMAGE_SIZE_MIN).max(IMAGE_SIZE_MAX).optional(),
     enlarge: z.boolean().optional(),
     stickyCart: z.boolean().optional(),
     showPayments: z.boolean().optional(),

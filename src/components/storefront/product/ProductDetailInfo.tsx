@@ -6,7 +6,7 @@ import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 import SectionCopy from "@/components/studio/SectionCopy";
 import SectionElement from "@/components/studio/SectionElement";
 import CartButtonLabels from "@/components/studio/CartButtonLabels";
-import RichText from "@/components/studio/RichText";
+import ProductDescription from "./ProductDescription";
 import ProductBuyBox from "./ProductBuyBox";
 import ProductInfoRows from "./ProductInfoRows";
 import ProductInfoTabs from "./ProductInfoTabs";
@@ -40,11 +40,7 @@ export default function ProductDetailInfo({
       <SectionElement el="price" className="mt-3 font-receipt text-2xl text-[var(--stand-secondary,var(--ok))]">
         {formatMoney(product.priceCents, meta.currency)}
       </SectionElement>
-      {product.description ? (
-        <SectionElement el="description" as="div" className="mt-4 text-lg leading-relaxed text-[var(--muted)]">
-          <RichText value={product.description} />
-        </SectionElement>
-      ) : null}
+      {product.description ? <ProductDescription value={product.description} /> : null}
       <CartButtonLabels />
       <ProductBuyBox
         standSlug={meta.standSlug}

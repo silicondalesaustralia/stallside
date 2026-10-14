@@ -35,23 +35,39 @@ export function normaliseLinkInput(raw: string): string | null {
   return safeHref(v);
 }
 
+function lineKind(line: string): "ul" | "ol" | "p" {
+  return BULLET.test(line) ? "ul" : NUMBERED.test(line) ? "ol" : "p";
+}
+
+/** Consecutive lines of the same kind, so "Intro\n- a\n- b" is a paragraph then a list. */
+function lineRuns(lines: string[]): { kind: "ul" | "ol" | "p"; lines: string[] }[] {
+  const runs: { kind: "ul" | "ol" | "p"; lines: string[] }[] = [];
+  for (const line of lines) {
+    const kind = lineKind(line);
+    const last = runs[runs.length - 1];
+    if (last && last.kind === kind) last.lines.push(line);
+    else runs.push({ kind, lines: [line] });
+  }
+  return runs;
+}
+
 export function parseRichText(source: string): RichBlock[] {
   const blocks: RichBlock[] = [];
   for (const chunk of source.replace(/\r\n?/g, "\n").split(/\n{2,}/)) {
     if (!chunk.trim()) continue;
-    const lines = chunk.replace(/^\n+|\n+$/g, "").split("\n");
-    const listType = lines.every((l) => BULLET.test(l)) ? "ul" : lines.every((l) => NUMBERED.test(l)) ? "ol" : null;
-    if (listType) {
-      const marker = listType === "ul" ? BULLET : NUMBERED;
-      blocks.push({ t: listType, items: lines.map((l) => parseInline(l.replace(marker, ""))) });
-      continue;
+    for (const run of lineRuns(chunk.replace(/^\n+|\n+$/g, "").split("\n"))) {
+      if (run.kind !== "p") {
+        const marker = run.kind === "ul" ? BULLET : NUMBERED;
+        blocks.push({ t: run.kind, items: run.lines.map((l) => parseInline(l.replace(marker, ""))) });
+        continue;
+      }
+      const c: RichInline[] = [];
+      run.lines.forEach((line, i) => {
+        if (i > 0) c.push({ t: "br" });
+        c.push(...parseInline(line));
+      });
+      blocks.push({ t: "p", c });
     }
-    const c: RichInline[] = [];
-    lines.forEach((line, i) => {
-      if (i > 0) c.push({ t: "br" });
-      c.push(...parseInline(line));
-    });
-    blocks.push({ t: "p", c });
   }
   return blocks;
 }

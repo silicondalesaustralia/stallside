@@ -7,8 +7,16 @@ import SectionCopy from "@/components/studio/SectionCopy";
 import ProductGallery from "@/components/storefront/product/ProductGallery";
 import ProductPhotoGrid from "@/components/storefront/product/ProductPhotoGrid";
 import ProductDetailInfo from "@/components/storefront/product/ProductDetailInfo";
+import type { CSSProperties } from "react";
 
-/** The product page: Classic (photo + thumbnails beside the details), Gallery (stacked photos, details stay in view) or Simple (one column). */
+/** Featured layout columns: the main photo takes `imageSize` percent of the row. */
+function featuredColumns(view: ProductDetailView): string {
+  const photo = `minmax(0,${view.imageSize}fr)`;
+  const details = `minmax(0,${100 - view.imageSize}fr)`;
+  return view.imageOnRight ? `${details} ${photo}` : `${photo} ${details}`;
+}
+
+/** The product page: Featured (large photo, adjustable width, thumbnails under it), Classic (photo + thumbnails beside the details), Gallery (stacked photos, details stay in view) or Simple (one column). */
 export default function StudioProductDetailBlock({
   showBreadcrumbs,
   showBackLink,
@@ -44,6 +52,7 @@ export default function StudioProductDetailBlock({
   ];
   const enlarge = view.enlarge && !isEditing;
   const simple = view.layout === "simple";
+  const featured = view.layout === "featured";
   const info = { product, catalog, meta, view, isEditing };
   const top = showBreadcrumbs || showBackLink ? "mt-6" : "";
 
@@ -64,7 +73,10 @@ export default function StudioProductDetailBlock({
           <ProductPhotoGrid images={product.images} alts={product.imageAlts} name={product.name} ratio={view.imageRatio} enlarge={enlarge} />
         </>
       ) : (
-        <div className={`${top} grid gap-8 sf-md:grid-cols-2 sf-lg:gap-12`}>
+        <div
+          className={`${top} grid gap-8 sf-lg:gap-12 ${featured ? "sf-md:grid-cols-[var(--pd-cols)]" : "sf-md:grid-cols-2"}`}
+          style={featured ? ({ "--pd-cols": featuredColumns(view) } as CSSProperties) : undefined}
+        >
           <div className={view.imageOnRight ? "sf-md:order-2" : ""}>
             <ProductGallery
               images={product.images}

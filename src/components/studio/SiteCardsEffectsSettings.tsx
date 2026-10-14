@@ -33,6 +33,18 @@ export default function SiteCardsEffectsSettings() {
         onChange={(v) => set("animation", v === "none" ? undefined : v)}
       />
       <p className="text-xs text-[var(--muted)]">Animations show on your live site only, and are skipped for visitors who turn off motion.</p>
+      <div className="space-y-2">
+        <p className="block text-xs font-semibold text-[var(--field)]">Large &ldquo;View cart&rdquo; bar</p>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={siteStyle.cartBarDesktop !== false} onChange={(e) => set("cartBarDesktop", e.target.checked ? undefined : false)} />
+          Show on desktop
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={siteStyle.cartBarMobile !== false} onChange={(e) => set("cartBarMobile", e.target.checked ? undefined : false)} />
+          Show on mobile
+        </label>
+        <p className="text-xs text-[var(--muted)]">Appears at the bottom of shop pages once something is in the cart.</p>
+      </div>
     </div>
   );
 }

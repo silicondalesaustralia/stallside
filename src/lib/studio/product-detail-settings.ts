@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { WEBSITE_LIMITS as L } from "@/lib/website/schema/limits";
 
-export const PRODUCT_LAYOUTS = ["classic", "gallery", "simple"] as const;
+export const PRODUCT_LAYOUTS = ["featured", "classic", "gallery", "simple"] as const;
+/** Featured layout: share of the row the main photo takes on wider screens (percent). */
+export const IMAGE_SIZE_MIN = 35;
+export const IMAGE_SIZE_MAX = 75;
+export const IMAGE_SIZE_DEFAULT = 60;
 export const PRODUCT_IMAGE_RATIOS = ["square", "portrait", "landscape"] as const;
 export const PRODUCT_IMAGE_SIDES = ["left", "right"] as const;
 export const INFO_ROW_ICONS = ["pickup", "delivery", "secure", "fresh", "local", "info"] as const;
@@ -42,6 +46,8 @@ export type ProductDetailView = {
   layout: ProductLayout;
   imageRatio: ProductImageRatio;
   imageOnRight: boolean;
+  /** Featured layout only: main photo width in percent. */
+  imageSize: number;
   enlarge: boolean;
   stickyCart: boolean;
   /** Payment marks under the cart buttons; off unless the seller turns it on. */
@@ -61,6 +67,11 @@ export function parseProductTabs(value: unknown): ProductTab[] {
   return parsed.success ? parsed.data : [];
 }
 
+function imageSizeOf(value: unknown): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return IMAGE_SIZE_DEFAULT;
+  return Math.min(IMAGE_SIZE_MAX, Math.max(IMAGE_SIZE_MIN, Math.round(value)));
+}
+
 function pick<T extends string>(options: readonly T[], value: unknown, fallback: T): T {
   return options.includes(value as T) ? (value as T) : fallback;
 }
@@ -74,6 +85,7 @@ export function productDetailView(props: Record<string, unknown>): ProductDetail
     layout: pick(PRODUCT_LAYOUTS, props.layout, "simple"),
     imageRatio: pick(PRODUCT_IMAGE_RATIOS, props.imageRatio, "square"),
     imageOnRight: props.imageSide === "right",
+    imageSize: imageSizeOf(props.imageSize),
     enlarge: props.enlarge !== false,
     stickyCart: props.stickyCart !== false,
     showPayments: props.showPayments === true,

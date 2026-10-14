@@ -30,12 +30,15 @@ export default function StorefrontGoToCartBar({
 
   const count = useSyncExternalStore(subscribe, getSnapshot, () => 0);
   const cartHref = useCartHref(standSlug);
-  if (count <= 0) return null;
+  const desktop = branding.siteStyle.cartBarDesktop !== false;
+  const mobile = branding.siteStyle.cartBarMobile !== false;
+  if (count <= 0 || (!desktop && !mobile)) return null;
 
   const btnClass = storefrontButtonClass(branding);
+  const visibility = desktop && mobile ? "" : desktop ? "hidden sf-md:block" : "sf-md:hidden";
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-[var(--panel)]/95 px-4 py-4 backdrop-blur pb-[max(1rem,env(safe-area-inset-bottom))]">
+    <div className={`${visibility} fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-[var(--panel)]/95 px-4 py-4 backdrop-blur pb-[max(1rem,env(safe-area-inset-bottom))]`}>
       <div className="mx-auto max-w-5xl">
         <Link
           href={cartHref}

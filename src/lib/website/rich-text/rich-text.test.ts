@@ -33,6 +33,11 @@ describe("rich text parsing", () => {
     assert.equal(ul?.t === "ul" ? ul.items.length : 0, 2);
   });
 
+  it("splits a paragraph line followed by bullet lines into a paragraph and a list", () => {
+    const blocks = parseRichText("Fresh laid daily.\n- Local\n- Pick up only");
+    assert.deepEqual(blocks.map((b) => b.t), ["p", "ul"]);
+  });
+
   it("leaves snake_case words and unsafe links as text", () => {
     assert.deepEqual(parseRichText("jo_smith_farm"), [{ t: "p", c: [{ t: "text", v: "jo_smith_farm" }] }]);
     const [p] = parseRichText("[x](javascript:alert(1))");

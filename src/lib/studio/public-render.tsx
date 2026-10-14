@@ -141,7 +141,7 @@ function StudioSectionRender({
         <>
           <StudioProductDetailBlock
             showBreadcrumbs={p.showBreadcrumbs !== false}
-            showBackLink={Boolean(p.showBackLink ?? true)}
+            showBackLink={p.showBackLink !== false}
             view={productDetailView(p)}
             metadata={metadata}
           />
