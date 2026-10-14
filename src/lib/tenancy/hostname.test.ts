@@ -9,8 +9,10 @@ import { isReservedVendlSubdomain } from "./reserved-subdomains";
 import { legacyStorefrontRedirect } from "./legacy-redirects";
 import {
   storefrontBasePath,
+  storefrontPublicUrl,
   storefrontReturnShopUrl,
   storefrontSubdomainHost,
+  storefrontSubdomainPrimaryEnabled,
 } from "./public-url";
 
 describe("normalizeHostname", () => {
@@ -138,6 +140,26 @@ describe("public URL helpers", () => {
   it("uses /shop/{slug} on apex", () => {
     assert.equal(storefrontBasePath("jackos-buns", "vendl.app"), "/shop/jackos-buns");
     assert.equal(storefrontBasePath("jackos-buns"), "/shop/jackos-buns");
+  });
+
+  it("uses /shop/{slug} links on staging unless subdomains are forced on", () => {
+    const saved = { flag: process.env.NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY, host: process.env.VENDL_HOST_ENV };
+    try {
+      process.env.VENDL_HOST_ENV = "staging";
+      delete process.env.NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY;
+      assert.equal(storefrontSubdomainPrimaryEnabled(), false);
+      assert.equal(storefrontPublicUrl("Jackos-Buns"), "https://staging.vendl.app/shop/jackos-buns");
+      process.env.NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY = "1";
+      assert.equal(storefrontPublicUrl("jackos-buns"), "https://jackos-buns.staging.vendl.app");
+      process.env.VENDL_HOST_ENV = "production";
+      delete process.env.NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY;
+      assert.equal(storefrontSubdomainPrimaryEnabled(), true);
+    } finally {
+      for (const [key, value] of [["NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY", saved.flag], ["VENDL_HOST_ENV", saved.host]] as const) {
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      }
+    }
   });
 
   it("builds return shop URLs", () => {
