@@ -17,10 +17,11 @@ import {
 } from "@/lib/checkout";
 import { isDemoStandSlug } from "@/lib/demo";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
-import { resolveDemoCardStripe } from "@/lib/stripe-demo";
+import { resolveDemoCardStripe, stripeTestSecretKey } from "@/lib/stripe-demo";
 import { checkoutCancelledUrl } from "@/lib/order-access-token";
 import { checkoutSuccessUrl } from "@/lib/storefront/checkout-return-url";
-import { platformStripeMode, stripePublishableKeyFor } from "@/lib/stripe-publishable-key";
+import { stripePublishableKeyFor } from "@/lib/stripe-publishable-key";
+import { cleanEnvSecret } from "@/lib/env";
 import { checkoutUiParams, type EmbeddedCheckoutInfo } from "@/lib/stripe-embedded-checkout";
 import { ensurePaymentMethodDomain } from "@/lib/stripe-payment-domain";
 import { stripeLineItemsFromCart } from "@/lib/stripe-cart-lines";
@@ -259,7 +260,7 @@ export async function startCardCheckout(input: {
     }
 
     const publishableKey = input.embedded
-      ? stripePublishableKeyFor(demo ? "test" : platformStripeMode())
+      ? stripePublishableKeyFor(demo ? stripeTestSecretKey() : cleanEnvSecret(process.env.STRIPE_SECRET_KEY))
       : null;
     if (publishableKey) await ensurePaymentMethodDomain(stripe, stripeAccountId);
     const sessionParams = {
