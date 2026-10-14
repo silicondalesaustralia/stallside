@@ -34,6 +34,7 @@ import StudioEditorHeader from "./StudioEditorHeader";
 import StudioSaveNotice from "./StudioSaveNotice";
 import StudioSectionPalette from "./StudioSectionPalette";
 import StudioSettingsPanel from "./StudioSettingsPanel";
+import StudioSettingsColumn from "./StudioSettingsColumn";
 import StudioAddSectionModal from "./StudioAddSectionModal";
 import StudioPageAddFooter from "./StudioPageAddFooter";
 import { useLayoutAutosave } from "./useLayoutAutosave";
@@ -364,7 +365,9 @@ export default function StudioEditorInner({
                 </StudioEditorShell>
               </div>
             </div>
-            <StudioSettingsPanel />
+            <StudioSettingsColumn>
+              <StudioSettingsPanel />
+            </StudioSettingsColumn>
           </div>
           <StudioAddSectionModal />
         </Editor>

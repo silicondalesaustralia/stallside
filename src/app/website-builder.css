@@ -311,7 +311,30 @@
 }
 
 .vendl-studio-editor--preview-first .vendl-studio-editor__workspace {
-  grid-template-columns: auto minmax(0, 1fr) minmax(200px, 260px);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.vendl-studio-settings-column {
+  position: relative;
+  min-width: 0;
+}
+
+.vendl-studio-settings-column__handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  z-index: 20;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.vendl-studio-settings-column__handle:hover,
+.vendl-studio-settings-column__handle:focus-visible,
+.vendl-studio-settings-column__handle:active {
+  outline: none;
+  background: linear-gradient(to right, transparent 3px, rgb(23 54 31 / 0.35) 3px, rgb(23 54 31 / 0.35) 5px, transparent 5px);
 }
 
 .vendl-studio-editor--preview-first .vendl-studio-editor__canvas-wrap {
@@ -385,7 +408,8 @@
   }
 
   .vendl-studio-palette,
-  .vendl-studio-settings {
+  .vendl-studio-settings,
+  .vendl-studio-settings-column {
     display: none;
   }
 }
