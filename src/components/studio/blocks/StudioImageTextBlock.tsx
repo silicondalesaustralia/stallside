@@ -63,7 +63,7 @@ export default function StudioImageTextBlock({
                   prop="ctaLabel"
                   value={ctaLabel}
                   as="span"
-                  className="mt-6 inline-flex rounded-full bg-[var(--leaf-dark)] px-5 py-2.5 text-sm font-semibold text-white"
+                  className="studio-btn studio-btn--primary mt-6"
                   placeholder="Button label"
                 />
               ) : null}
@@ -73,7 +73,7 @@ export default function StudioImageTextBlock({
               {heading ? <SectionHeadingTag className={headingClass}>{heading}</SectionHeadingTag> : null}
               {body ? <p className={bodyClass}>{body}</p> : null}
               {ctaLabel ? (
-                <span className="mt-6 inline-flex rounded-full bg-[var(--leaf-dark)] px-5 py-2.5 text-sm font-semibold text-white">
+                <span className="studio-btn studio-btn--primary mt-6">
                   {ctaLabel}
                 </span>
               ) : null}

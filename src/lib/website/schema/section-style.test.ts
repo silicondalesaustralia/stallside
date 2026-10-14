@@ -50,6 +50,23 @@ describe("section style values", () => {
     assert.equal(frame["data-swap-sides"], "");
   });
 
+  it("styles the button: sizes, font, colours with auto text", () => {
+    const style = parseSectionStyle({
+      buttonSize: "lg",
+      buttonTextSize: "sm",
+      buttonColour: "light",
+      buttonFont: "serif",
+      buttonTextColour: "nope",
+    });
+    assert.deepEqual(style, { buttonSize: "lg", buttonTextSize: "sm", buttonColour: "light", buttonFont: "serif" });
+    const frame = sectionStyleFrame(style, palette);
+    assert.match(frame.className, /section-style--btn/);
+    assert.equal(frame.style["--section-btn-bg"], "#ffffff");
+    assert.equal(frame.style["--section-btn-ink"], "#17361f");
+    assert.equal(frame["data-button-size"], "lg");
+    assert.equal(frame["data-button-font"], "serif");
+  });
+
   it("validates as part of section settings", () => {
     const ok = hero({ style: { background: "accent", headingTag: "h3", imageRadius: "md", swapSides: true } });
     assert.equal(hasErrors(validateSection(ok, "home", "s")), false);

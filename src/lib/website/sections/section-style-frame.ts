@@ -8,6 +8,9 @@ export type SectionStyleFrameAttrs = {
   "data-body-size"?: string;
   "data-image-radius"?: string;
   "data-swap-sides"?: string;
+  "data-button-size"?: string;
+  "data-button-text-size"?: string;
+  "data-button-font"?: string;
 };
 
 /**
@@ -35,6 +38,14 @@ export function sectionStyleFrame(style: SectionStyle, palette: ThemePalette): S
     vars["--muted"] = `color-mix(in srgb, ${ink} 78%, transparent)`;
     classes.push("section-style--ink");
   }
+  if (style.buttonColour || style.buttonTextColour) {
+    if (style.buttonColour) vars["--section-btn-bg"] = stableColour(style.buttonColour, palette);
+    const btnText =
+      style.buttonTextColour ??
+      (style.buttonColour ? resolvedTextColour({ background: style.buttonColour }, palette) : null);
+    if (btnText) vars["--section-btn-ink"] = stableColour(btnText, palette);
+    classes.push("section-style--btn");
+  }
   return {
     className: classes.join(" "),
     style: vars,
@@ -42,5 +53,13 @@ export function sectionStyleFrame(style: SectionStyle, palette: ThemePalette): S
     ...(style.bodySize ? { "data-body-size": style.bodySize } : {}),
     ...(style.imageRadius ? { "data-image-radius": style.imageRadius } : {}),
     ...(style.swapSides ? { "data-swap-sides": "" } : {}),
+    ...(style.buttonSize ? { "data-button-size": style.buttonSize } : {}),
+    ...(style.buttonTextSize ? { "data-button-text-size": style.buttonTextSize } : {}),
+    ...(style.buttonFont ? { "data-button-font": style.buttonFont } : {}),
   };
+}
+
+/** Theme accent/secondary stay live CSS variables; fixed tokens become hex so section ink overrides can't change them. */
+function stableColour(value: string, palette: ThemePalette): string {
+  return value === "accent" || value === "secondary" ? colourCss(value) : colourHex(value, palette);
 }

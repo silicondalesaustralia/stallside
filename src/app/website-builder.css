@@ -773,6 +773,25 @@
   overflow: hidden;
 }
 
+/* Section style: primary buttons. Doubled class beats template button rules. */
+.section-style.section-style--btn .studio-btn--primary {
+  background: var(--section-btn-bg, var(--leaf-dark));
+  color: var(--section-btn-ink, white);
+}
+
+.section-style[data-button-size="sm"] .studio-btn--primary { min-height: 2.25rem; padding-inline: 1rem; }
+.section-style[data-button-size="md"] .studio-btn--primary { min-height: 2.75rem; padding-inline: 1.375rem; }
+.section-style[data-button-size="lg"] .studio-btn--primary { min-height: 3.375rem; padding-inline: 2rem; }
+
+.section-style[data-button-text-size="sm"] .studio-btn--primary { font-size: 0.8125rem; }
+.section-style[data-button-text-size="md"] .studio-btn--primary { font-size: 0.9375rem; }
+.section-style[data-button-text-size="lg"] .studio-btn--primary { font-size: 1.125rem; }
+
+.section-style[data-button-font="heading"] .studio-btn--primary { font-family: var(--font-display), serif; }
+.section-style[data-button-font="body"] .studio-btn--primary { font-family: var(--font-body, inherit); }
+.section-style[data-button-font="sans"] .studio-btn--primary { font-family: ui-sans-serif, system-ui, sans-serif; }
+.section-style[data-button-font="serif"] .studio-btn--primary { font-family: ui-serif, Georgia, "Times New Roman", serif; }
+
 /* The split hero image is edge-to-edge; inset it when rounded so the corners show. */
 [data-image-radius]:not([data-image-radius="none"]) .studio-hero__split-image {
   margin: 0 1rem 1rem;

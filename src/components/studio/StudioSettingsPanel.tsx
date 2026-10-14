@@ -12,7 +12,8 @@ import SectionImageField from "./SectionImageField";
 import SectionStyleSettings from "./SectionStyleSettings";
 import SettingsGroup from "./SettingsGroup";
 import SectionImageLayoutFields from "./SectionImageLayoutFields";
-import { parseSectionStyle, type SectionStyle } from "@/lib/website/sections/section-style";
+import { BUTTON_SECTIONS, parseSectionStyle, type SectionStyle } from "@/lib/website/sections/section-style";
+import SectionButtonFields from "./SectionButtonFields";
 import PageStyleSettings from "./PageStyleSettings";
 import { paletteOf } from "@/lib/website/sections/colour";
 import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
@@ -40,7 +41,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export default function StudioSettingsPanel() {
   const { chromeTarget, setChromeTarget } = useStudioEditorChrome();
   const metadata = useStudioMetadata();
-  const [openGroups, setOpenGroups] = useState({ content: true, style: false });
+  const [openGroups, setOpenGroups] = useState({ content: true, button: false, style: false });
   const toggleGroup = (group: keyof typeof openGroups, open: boolean) =>
     setOpenGroups((prev) => ({ ...prev, [group]: open }));
   const { actions, selected } = useEditor((state, query) => {
@@ -149,6 +150,15 @@ export default function StudioSettingsPanel() {
           onSwap={(v) => setStyleField("swapSides", v || undefined)}
         />
         </SettingsGroup>
+        {BUTTON_SECTIONS.has(selected.type) ? (
+          <SettingsGroup title="Button" open={openGroups.button} onToggle={(o) => toggleGroup("button", o)}>
+            <SectionButtonFields
+              style={sectionStyle}
+              palette={paletteOf(metadata.resolvedBranding)}
+              setField={setStyleField}
+            />
+          </SettingsGroup>
+        ) : null}
         <SettingsGroup title="Style" open={openGroups.style} onToggle={(o) => toggleGroup("style", o)}>
           <SectionStyleSettings
             craftName={selected.type}

@@ -13,6 +13,19 @@ export type HeadingTag = (typeof HEADING_TAGS)[number];
 export const IMAGE_RADII = ["none", "sm", "md", "lg", "xl"] as const;
 export type ImageRadius = (typeof IMAGE_RADII)[number];
 
+export const BUTTON_SIZES = ["sm", "md", "lg"] as const;
+export type ButtonSize = (typeof BUTTON_SIZES)[number];
+export const BUTTON_FONTS = ["heading", "body", "sans", "serif"] as const;
+export type ButtonFont = (typeof BUTTON_FONTS)[number];
+
+/** Sections with a primary button (`.studio-btn--primary`). */
+export const BUTTON_SECTIONS = new Set([
+  "CraftHeroSection",
+  "CraftImageTextSection",
+  "CraftSignupSection",
+  "CraftNextDropSection",
+  "CraftFarmStandSection",
+]);
 /** Sections with a main image whose corners can be rounded. */
 export const IMAGE_RADIUS_SECTIONS = new Set(["CraftHeroSection", "CraftImageSection", "CraftImageTextSection"]);
 /** Sections with a side-by-side (image | text) layout that can be swapped. */
@@ -39,6 +52,11 @@ export const sectionStyleSchema = z.object({
   headingTag: z.enum(HEADING_TAGS).optional(),
   imageRadius: z.enum(IMAGE_RADII).optional(),
   swapSides: z.boolean().optional(),
+  buttonSize: z.enum(BUTTON_SIZES).optional(),
+  buttonTextSize: z.enum(BUTTON_SIZES).optional(),
+  buttonColour: colourValue.optional(),
+  buttonTextColour: colourValue.optional(),
+  buttonFont: z.enum(BUTTON_FONTS).optional(),
 });
 
 export type SectionStyle = z.infer<typeof sectionStyleSchema>;
@@ -61,6 +79,12 @@ export function parseSectionStyle(raw: unknown): SectionStyle {
     out.imageRadius = obj.imageRadius as ImageRadius;
   }
   if (obj.swapSides === true) out.swapSides = true;
+  const isSize = (v: unknown): v is ButtonSize => (BUTTON_SIZES as readonly unknown[]).includes(v);
+  if (isSize(obj.buttonSize)) out.buttonSize = obj.buttonSize;
+  if (isSize(obj.buttonTextSize)) out.buttonTextSize = obj.buttonTextSize;
+  if (isColourValue(obj.buttonColour)) out.buttonColour = obj.buttonColour;
+  if (isColourValue(obj.buttonTextColour)) out.buttonTextColour = obj.buttonTextColour;
+  if ((BUTTON_FONTS as readonly unknown[]).includes(obj.buttonFont)) out.buttonFont = obj.buttonFont as ButtonFont;
   return out;
 }
 
