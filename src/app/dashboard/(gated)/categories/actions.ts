@@ -55,7 +55,6 @@ export async function updateCategory(categoryId: string, formData: FormData) {
     data: {
       title,
       description,
-      isActive: formData.get("isActive") === "on",
       showOnWebsite: formData.get("showOnWebsite") === "on",
       slug:
         title === existing.title
@@ -69,6 +68,18 @@ export async function updateCategory(categoryId: string, formData: FormData) {
   }
   await revalidateOwnerStores(owner.id);
   redirect(`/dashboard/categories/${categoryId}?saved=1`);
+}
+
+/** Publish or unpublish a category everywhere it shows (shop, website, QR codes). */
+export async function setCategoryActive(categoryId: string, isActive: boolean) {
+  const { owner } = await requireOwnerWrite();
+  const updated = await prisma.category.updateMany({
+    where: { id: categoryId, ownerId: owner.id },
+    data: { isActive },
+  });
+  if (updated.count === 0) redirect("/dashboard/categories");
+  await revalidateOwnerStores(owner.id);
+  redirect(`/dashboard/categories/${categoryId}?${isActive ? "published" : "unpublished"}=1`);
 }
 
 export async function deleteCategory(categoryId: string) {

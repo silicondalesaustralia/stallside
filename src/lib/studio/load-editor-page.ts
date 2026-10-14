@@ -50,13 +50,20 @@ export function editorPageOptions(ctx: Ctx): EditorPageOption[] {
     label,
     href: studioEditorPath(slug, target),
   });
-  const pages = ensureCustomPages(ctx.storefront.draftConfig).map((p) =>
-    option({ kind: "page", pageId: p.id }, p.enabled ? p.title : `${p.title} (hidden)`),
-  );
+  const pages = ensureCustomPages(ctx.storefront.draftConfig)
+    .filter((p) => p.enabled)
+    .map((p) => option({ kind: "page", pageId: p.id }, p.title));
   const commerce = COMMERCE_PAGES.filter((p) => p.kind !== "menu" || showsMenus(ctx)).map((p) =>
     option({ kind: "commerce", commerceKind: p.kind }, `${p.label} layout`),
   );
   return [option({ kind: "home" }, "Home"), ...pages, ...commerce];
+}
+
+/** True when the target is a page that exists but is unpublished (not editable on the site). */
+export function isUnpublishedPageTarget(ctx: Ctx, target: EditorTarget): boolean {
+  if (target.kind !== "page") return false;
+  const page = findCustomPageById(ensureCustomPages(ctx.storefront.draftConfig), target.pageId);
+  return Boolean(page && !page.enabled);
 }
 
 /** Loads the nodes, metadata and "Done" link for one editor page; null if it no longer exists. */

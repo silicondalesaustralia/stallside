@@ -12,12 +12,12 @@ import {
   formatBlogDate,
   topicsForPost,
 } from "@/lib/studio/blog";
-import { syncBlogDefaults, updateBlogSettings } from "./actions";
+import { syncBlogDefaults } from "./actions";
 
 export default async function WebsiteBlogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; deleted?: string; error?: string }>;
+  searchParams: Promise<{ deleted?: string; error?: string }>;
 }) {
   const { owner } = await requireOwner();
   await syncBlogDefaults();
@@ -36,10 +36,11 @@ export default async function WebsiteBlogPage({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[var(--field)]">
-            Blog
+            Blog Posts
           </h1>
           <p className="mt-2 max-w-2xl text-[var(--muted)]">
-            Write articles with rich text. Craft sections on the blog index page control the intro layout.
+            Write articles with rich text. Blog settings and the blog index layout are on the Blog
+            page under Pages.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -49,54 +50,22 @@ export default async function WebsiteBlogPage({
           >
             New post
           </Link>
-          <Link
-            href="/dashboard/website/blog/topics"
-            className="rounded-full border border-[var(--line)] px-5 py-2.5 text-sm font-semibold"
-          >
-            Topics
-          </Link>
+          <a href={preview} target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-5 py-2.5 text-sm font-semibold">
+            Preview blog
+          </a>
         </div>
       </div>
 
-      {params.saved ? <p className="text-sm font-medium text-[var(--ok)]">Settings saved.</p> : null}
       {params.deleted ? <p className="text-sm font-medium text-[var(--ok)]">Post deleted.</p> : null}
       <WebsiteFormError error={params.error} fallback="Something went wrong." />
-
-      <section className="rounded-2xl border border-[var(--line)] bg-white p-5">
-        <h2 className="font-semibold text-[var(--field)]">Blog settings</h2>
-        <form action={updateBlogSettings} className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className="flex items-center gap-2 text-sm sm:col-span-2">
-            <input type="checkbox" name="enabled" defaultChecked={settings.enabled} />
-            Blog enabled on storefront
-          </label>
-          <label className="flex items-center gap-2 text-sm sm:col-span-2">
-            <input type="checkbox" name="showInNav" defaultChecked={settings.showInNav} />
-            Show in header navigation
-          </label>
-          <label className="text-sm">
-            <span className="font-medium">Nav label</span>
-            <input name="navLabel" defaultValue={settings.navLabel} className="mt-1 w-full rounded-lg border border-[var(--line)] px-3 py-2" />
-          </label>
-          <label className="text-sm">
-            <span className="font-medium">Index page title</span>
-            <input name="indexTitle" defaultValue={settings.indexTitle} className="mt-1 w-full rounded-lg border border-[var(--line)] px-3 py-2" />
-          </label>
-          <div className="sm:col-span-2 flex flex-wrap gap-3">
-            <button type="submit" className="rounded-full border border-[var(--line)] px-4 py-2 text-sm font-semibold">
-              Save settings
-            </button>
-            <Link
-              href={`/dashboard/website/pages/${BLOG_INDEX_BUILTIN_ID}`}
-              className="rounded-full border border-[var(--line)] px-4 py-2 text-sm font-semibold"
-            >
-              Edit index layout
-            </Link>
-            <a href={preview} target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-4 py-2 text-sm font-semibold">
-              Preview blog
-            </a>
-          </div>
-        </form>
-      </section>
+      {!settings.enabled ? (
+        <p className="text-sm text-[var(--muted)]">
+          Your blog is switched off.{" "}
+          <Link href={`/dashboard/website/pages/${BLOG_INDEX_BUILTIN_ID}`} className="font-semibold underline">
+            Blog settings
+          </Link>
+        </p>
+      ) : null}
 
       <section>
         <h2 className="font-semibold text-[var(--field)]">Posts</h2>

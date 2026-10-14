@@ -1,9 +1,9 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { storefrontFullUrl, type StorefrontContext } from "@/lib/catalogue/storefront";
 import { appBaseUrl } from "@/lib/app-url";
 import { buildStudioMetadata } from "@/lib/studio/build-metadata";
 import { parseEditorTarget, studioEditorPath } from "@/lib/studio/editor-target";
-import { editorPageOptions, loadEditorPage } from "@/lib/studio/load-editor-page";
+import { editorPageOptions, isUnpublishedPageTarget, loadEditorPage } from "@/lib/studio/load-editor-page";
 import { defaultTemplateId, extractWebsiteStudio } from "@/lib/studio/storage";
 import StudioPreviewEditor from "./StudioPreviewEditor";
 
@@ -18,6 +18,7 @@ export default async function StudioStorefrontEditor({
   flash: { saved?: boolean; published?: boolean; error?: string };
 }) {
   const target = parseEditorTarget(page);
+  if (isUnpublishedPageTarget(ctx, target)) redirect(studioEditorPath(ctx.storefront.slug));
   const studio = extractWebsiteStudio(ctx.storefront.draftConfig) ?? null;
   const templateId = defaultTemplateId(studio, ctx.businessMode);
   const baseMetadata = await buildStudioMetadata(ctx, templateId, true);

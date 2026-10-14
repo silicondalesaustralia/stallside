@@ -4,6 +4,8 @@ import { requireOwner } from "@/lib/session";
 import { loadPreOrderCardRail } from "@/lib/preorder-card-rail";
 import { prisma } from "@/lib/prisma";
 import { preOrderPageUrl } from "@/lib/preorder-page";
+import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
+import { entitySeoKey } from "@/lib/studio/seo-settings";
 import PreOrderPageForm from "../PreOrderPageForm";
 import { deletePreOrderPage } from "../actions";
 
@@ -12,10 +14,10 @@ export default async function EditPreOrderPagePage({
   searchParams,
 }: {
   params: Promise<{ pageId: string }>;
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; seo?: string }>;
 }) {
   const { pageId } = await params;
-  const { saved } = await searchParams;
+  const { saved, seo } = await searchParams;
   const { owner } = await requireOwner();
   const page = await prisma.preOrderPage.findFirst({
     where: { id: pageId, ownerId: owner.id },
@@ -125,6 +127,13 @@ export default async function EditPreOrderPagePage({
           }}
         />
       </div>
+      <EntitySeoCard
+        ownerId={owner.id}
+        businessName={owner.businessName}
+        entityKey={entitySeoKey("menu", page.id)}
+        returnTo={`/dashboard/pre-order-pages/${page.id}`}
+        status={seo}
+      />
       <form action={remove} className="mt-8">
         <button
           type="submit"

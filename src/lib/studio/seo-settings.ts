@@ -11,11 +11,21 @@ export type EntitySeoSettings = {
 
 export type StorefrontSeoConfig = {
   home?: EntitySeoSettings;
-  /** Keys: page:{id}, blog:{id}, product:{id}, category:{id}, menu:{id} */
+  /**
+   * Keys: page:{id} (blog topics use page:blog-topic-{id}), blog:{id}, product:{id},
+   * category:{id}, menu:{id} (menus and pre-order pages), subscription:{id}
+   */
   entities?: Record<string, EntitySeoSettings>;
 };
 
-export type SeoEntityType = "home" | "page" | "blog" | "product" | "category" | "menu";
+export type SeoEntityType =
+  | "home"
+  | "page"
+  | "blog"
+  | "product"
+  | "category"
+  | "menu"
+  | "subscription";
 
 export function entitySeoKey(type: SeoEntityType, id?: string): string {
   if (type === "home") return "home";

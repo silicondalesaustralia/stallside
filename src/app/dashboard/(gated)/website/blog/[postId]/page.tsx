@@ -7,6 +7,8 @@ import { appBaseUrl } from "@/lib/app-url";
 import { shopBlogPostPath } from "@/lib/storefront/paths";
 import { withDefaultBlogTopic } from "@/lib/studio/blog-topics";
 import { extractBlogPosts, extractBlogTopics, findBlogPostById } from "@/lib/studio/blog";
+import { entitySeoKey } from "@/lib/studio/seo-settings";
+import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
 import BlogPostForm from "../BlogPostForm";
 import {
   deleteBlogPost,
@@ -20,7 +22,7 @@ export default async function EditBlogPostPage({
   searchParams,
 }: {
   params: Promise<{ postId: string }>;
-  searchParams: Promise<{ saved?: string; published?: string; unpublished?: string; created?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; published?: string; unpublished?: string; created?: string; error?: string; seo?: string }>;
 }) {
   const { owner } = await requireOwner();
   const { postId } = await params;
@@ -57,6 +59,14 @@ export default async function EditBlogPostPage({
       <section className="rounded-2xl border border-[var(--line)] bg-white p-5">
         <BlogPostForm post={post} topics={topics} action={updateBlogPost.bind(null, post.id)} />
       </section>
+
+      <EntitySeoCard
+        ownerId={owner.id}
+        businessName={owner.businessName}
+        entityKey={entitySeoKey("blog", post.id)}
+        returnTo={`/dashboard/website/blog/${post.id}`}
+        status={sp.seo}
+      />
 
       <section className="flex flex-wrap gap-3">
         {post.status === "draft" ? (

@@ -141,7 +141,7 @@ export async function updateCustomPageMeta(pageId: string, formData: FormData) {
     page.routeKind === "builtin"
       ? page.slug
       : slugifyPageSlug(String(formData.get("slug") ?? page.slug));
-  const enabled = formData.get("enabled") === "on";
+  const enabled = page.enabled;
   const showInNav = formData.get("showInNav") === "on";
   const showInFooter = formData.get("showInFooter") === "on";
 

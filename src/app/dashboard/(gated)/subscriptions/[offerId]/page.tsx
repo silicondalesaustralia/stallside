@@ -17,11 +17,15 @@ import SubscriptionOfferForm from "../SubscriptionOfferForm";
 import MembershipOfferForm from "../MembershipOfferForm";
 import SubscriptionSubscribersList from "../SubscriptionSubscribersList";
 import SubscriptionLifecycleActions from "../SubscriptionLifecycleActions";
+import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
+import { entitySeoKey } from "@/lib/studio/seo-settings";
 
 export default async function EditSubscriptionOfferPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ offerId: string }>;
+  searchParams: Promise<{ seo?: string }>;
 }) {
   const { offerId } = await params;
   const { owner } = await requireOwner();
@@ -179,6 +183,14 @@ export default async function EditSubscriptionOfferPage({
           }}
         />
       )}
+
+      <EntitySeoCard
+        ownerId={owner.id}
+        businessName={owner.businessName}
+        entityKey={entitySeoKey("subscription", offer.id)}
+        returnTo={`/dashboard/subscriptions/${offer.id}`}
+        status={(await searchParams).seo}
+      />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold">Subscribers</h2>

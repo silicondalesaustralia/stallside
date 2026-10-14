@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import PublicSubscriptionOfferPage, {
-  generateMetadata as offerMetadata,
-} from "@/app/s/[standSlug]/sub/[offerSlug]/page";
+import PublicSubscriptionOfferPage from "@/app/s/[standSlug]/sub/[offerSlug]/page";
 import { loadStorefrontPage } from "@/lib/storefront/page-loader";
-import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
-import { getCanonicalStorefrontUrl } from "@/lib/domains/preferred-origin";
+import { prisma } from "@/lib/prisma";
+import { buildStorefrontPageMetadata, seoConfigSource } from "@/lib/studio/resolve-seo-metadata";
 
 type Props = {
   params: Promise<{ slug: string; offer: string }>;
@@ -13,13 +11,28 @@ type Props = {
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug, offer } = await params;
-  const ctx = await loadStorefrontPage(slug, (await searchParams).draft === "1");
-  const base = await offerMetadata({ params: Promise.resolve({ standSlug: ctx.stand.slug, offerSlug: offer }) });
-  const canonical = getCanonicalStorefrontUrl(
-    { slug: ctx.storefront.slug, primaryCustomHostname: await loadPrimaryCustomHostname(ctx.storefront.id) },
-    `/subscriptions/${encodeURIComponent(offer)}`,
-  );
-  return { ...base, alternates: { ...base.alternates, canonical } };
+  const draft = (await searchParams).draft === "1";
+  const ctx = await loadStorefrontPage(slug, draft);
+  const row = await prisma.subscriptionOffer.findFirst({
+    where: { standId: ctx.stand.id, slug: decodeURIComponent(offer).trim().toLowerCase(), isActive: true },
+    select: { id: true, slug: true, title: true, description: true, imageUrl: true },
+  });
+  if (!row) return { title: "Subscription", robots: { index: false, follow: false } };
+  const published = ctx.storefront.isPublished && !draft;
+  return buildStorefrontPageMetadata({
+    branding: ctx.branding,
+    slug: ctx.storefront.slug,
+    published,
+    configRaw: seoConfigSource(ctx.storefront.draftConfig, ctx.storefront.publishedConfig, published),
+    entityType: "subscription",
+    entityId: row.id,
+    defaults: {
+      title: row.title,
+      description: row.description?.trim() || `${row.title} from ${ctx.branding.headline}`,
+      ogImageUrl: row.imageUrl,
+    },
+    path: `/subscriptions/${encodeURIComponent(row.slug)}`,
+  });
 }
 
 /** A subscription offer on the website (`/subscriptions/{offer}`); sign-up and payment work as on the stand page. */

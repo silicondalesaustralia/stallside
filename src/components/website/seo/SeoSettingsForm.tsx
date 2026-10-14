@@ -1,6 +1,4 @@
-"use client";
-
-import type { EntitySeoSettings } from "@/lib/studio/seo-settings";
+import type { EntitySeoSettings, SeoDefaults } from "@/lib/studio/seo-settings";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
@@ -9,43 +7,44 @@ export default function SeoSettingsForm({
   action,
   defaults,
   settings,
+  showSearchFields,
 }: {
   action: (formData: FormData) => void | Promise<void>;
-  defaults: { title: string; description: string };
+  defaults: SeoDefaults;
   settings: EntitySeoSettings;
+  showSearchFields: boolean;
 }) {
   return (
     <form action={action} className="space-y-5">
-      <p className="text-sm text-[var(--muted)]">
-        Leave fields blank to use defaults: <strong>{defaults.title}</strong>
-      </p>
-
-      <label className="block text-sm">
-        <span className="font-medium">Search title</span>
-        <input
-          name="seoTitle"
-          defaultValue={settings.seoTitle ?? ""}
-          maxLength={120}
-          placeholder={defaults.title}
-          className={inputClass}
-        />
-      </label>
-
-      <label className="block text-sm">
-        <span className="font-medium">Meta description</span>
-        <textarea
-          name="seoDescription"
-          defaultValue={settings.seoDescription ?? ""}
-          maxLength={320}
-          rows={3}
-          placeholder={defaults.description}
-          className={inputClass}
-        />
-      </label>
+      {showSearchFields ? (
+        <>
+          <label className="block text-sm">
+            <span className="font-medium">Search title</span>
+            <input
+              name="seoTitle"
+              defaultValue={settings.seoTitle ?? ""}
+              maxLength={120}
+              placeholder={defaults.title}
+              className={inputClass}
+            />
+          </label>
+          <label className="block text-sm">
+            <span className="font-medium">Meta description</span>
+            <textarea
+              name="seoDescription"
+              defaultValue={settings.seoDescription ?? ""}
+              maxLength={320}
+              rows={3}
+              placeholder={defaults.description}
+              className={inputClass}
+            />
+          </label>
+        </>
+      ) : null}
 
       <fieldset className="space-y-4 rounded-xl border border-[var(--line)] p-4">
         <legend className="px-1 text-sm font-semibold text-[var(--field)]">
-          Social sharing (Open Graph)
+          Social sharing
         </legend>
         <label className="block text-sm">
           <span className="font-medium">Social title</span>
@@ -67,7 +66,7 @@ export default function SeoSettingsForm({
             name="ogImageUrl"
             type="url"
             defaultValue={settings.ogImageUrl ?? ""}
-            placeholder="https://"
+            placeholder={defaults.ogImageUrl ?? "https://"}
             className={inputClass}
           />
         </label>
@@ -86,7 +85,7 @@ export default function SeoSettingsForm({
         type="submit"
         className="rounded-full bg-[var(--field)] px-5 py-2.5 text-sm font-semibold text-white"
       >
-        Save SEO settings
+        Save search &amp; social
       </button>
     </form>
   );

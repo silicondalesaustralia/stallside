@@ -6,71 +6,22 @@ import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { ensureCustomPages, type StorefrontCustomPage } from "@/lib/studio/custom-pages";
 import { customPagePublicPath } from "@/lib/studio/custom-page-paths";
 import { appBaseUrl } from "@/lib/app-url";
+import { shopHomePath } from "@/lib/storefront/paths";
 import { syncBuiltinCustomPages } from "./actions";
+import PageGroup from "./PageGroup";
+import PageRow from "./PageRow";
 
-function PageRow({
-  page,
-  preview,
-}: {
-  page: StorefrontCustomPage;
-  preview: string;
-}) {
-  return (
-    <li className="flex flex-wrap items-center justify-between gap-4 p-5">
-      <div>
-        <p className="font-semibold text-[var(--field)]">{page.title}</p>
-        <p className="mt-1 text-sm text-[var(--muted)]">
-          /{page.slug}
-          {page.routeKind === "builtin" ? " · Built-in" : ""}
-          {!page.enabled ? " · Hidden" : ""}
-          {page.showInFooter && !page.showInNav ? " · Footer" : ""}
-        </p>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <a
-          href={preview}
-          target="_blank"
-          rel="noreferrer"
-          className="rounded-full border border-[var(--line)] px-3 py-1.5 text-sm font-semibold"
-        >
-          Preview
-        </a>
-        <Link
-          href={`/dashboard/website/pages/${page.id}`}
-          className="rounded-full bg-[var(--field)] px-3 py-1.5 text-sm font-semibold text-white"
-        >
-          Edit
-        </Link>
-      </div>
-    </li>
-  );
-}
+const POLICY_KEYS = ["privacy", "terms", "returns", "shipping"];
 
-function PageGroup({
-  title,
-  description,
-  pages,
-  previewFor,
-}: {
-  title: string;
-  description: string;
-  pages: StorefrontCustomPage[];
-  previewFor: (page: StorefrontCustomPage) => string;
-}) {
-  if (pages.length === 0) return null;
-  return (
-    <section>
-      <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
-        {title}
-      </h2>
-      <p className="mt-1 text-sm text-[var(--muted)]">{description}</p>
-      <ul className="mt-4 divide-y divide-[var(--line)] overflow-hidden rounded-2xl border border-[var(--line)] bg-white">
-        {pages.map((page) => (
-          <PageRow key={page.id} page={page} preview={previewFor(page)} />
-        ))}
-      </ul>
-    </section>
-  );
+function pageDetail(page: StorefrontCustomPage): string {
+  return [
+    `/${page.slug}`,
+    page.routeKind === "builtin" ? "Built-in" : null,
+    page.enabled ? null : "Unpublished",
+    page.showInFooter && !page.showInNav ? "Footer" : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 export default async function WebsitePagesListPage({
@@ -85,23 +36,20 @@ export default async function WebsitePagesListPage({
   const params = await searchParams;
   const base = appBaseUrl();
 
-  const contentPages = pages.filter(
-    (p) =>
-      p.routeKind === "custom" ||
-      p.builtinKey === "about" ||
-      p.builtinKey === "contact" ||
-      p.builtinKey === "blog",
-  );
-  const policyPages = pages.filter(
-    (p) =>
-      p.builtinKey === "privacy" ||
-      p.builtinKey === "terms" ||
-      p.builtinKey === "returns" ||
-      p.builtinKey === "shipping",
-  );
+  const policyPages = pages.filter((p) => p.builtinKey && POLICY_KEYS.includes(p.builtinKey));
+  const contentPages = pages
+    .filter((p) => p.routeKind === "custom" || ["about", "contact", "blog"].includes(p.builtinKey ?? ""))
+    .sort((a, b) => a.sortOrder - b.sortOrder);
 
-  const previewFor = (page: StorefrontCustomPage) =>
-    `${base}${customPagePublicPath(storefront.slug, page, true)}`;
+  const row = (page: StorefrontCustomPage) => (
+    <PageRow
+      key={page.id}
+      label={page.title}
+      detail={pageDetail(page)}
+      previewUrl={`${base}${customPagePublicPath(storefront.slug, page, true)}`}
+      editHref={`/dashboard/website/pages/${page.id}`}
+    />
+  );
 
   return (
     <main className="mx-auto flex max-w-4xl flex-col gap-8 pb-12">
@@ -111,8 +59,8 @@ export default async function WebsitePagesListPage({
             Pages
           </h1>
           <p className="mt-2 max-w-2xl text-[var(--muted)]">
-            Manage content pages, policy pages, and section layouts. Header/footer order is set under
-            Navigation.
+            Page settings, publishing and search &amp; social. Page content, and the header and footer
+            menus, are edited right on your site.
           </p>
         </div>
         <Link
@@ -128,19 +76,29 @@ export default async function WebsitePagesListPage({
       <WebsiteFormError error={params.error} fallback="Something went wrong." />
       <SiteSlugClashNotice ownerId={owner.id} configRaw={storefront.draftConfig} />
 
-      <PageGroup
-        title="Content pages"
-        description="About, contact, blog index, and custom pages."
-        pages={contentPages.sort((a, b) => a.sortOrder - b.sortOrder)}
-        previewFor={previewFor}
-      />
+      <PageGroup title="Home page">
+        <PageRow
+          label="Home"
+          detail="/"
+          previewUrl={`${base}${shopHomePath(storefront.slug, true)}`}
+          editHref="/dashboard/website/pages/home"
+        />
+      </PageGroup>
 
-      <PageGroup
-        title="Policy pages"
-        description="Standard policy starters — editable placeholder text, not legal advice. Shown in footer by default."
-        pages={policyPages}
-        previewFor={previewFor}
-      />
+      {contentPages.length > 0 ? (
+        <PageGroup title="Content pages" description="About, contact, blog index, and custom pages.">
+          {contentPages.map(row)}
+        </PageGroup>
+      ) : null}
+
+      {policyPages.length > 0 ? (
+        <PageGroup
+          title="Policy pages"
+          description="Standard policy starters — editable placeholder text, not legal advice. Shown in footer by default."
+        >
+          {policyPages.map(row)}
+        </PageGroup>
+      ) : null}
     </main>
   );
 }

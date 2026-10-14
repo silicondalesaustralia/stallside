@@ -9,6 +9,8 @@ import { publishedWebsiteForStand, standWebsiteUrl } from "@/lib/storefront/stan
 import { productImageList } from "@/lib/product-images";
 import { parseImageAlts } from "@/lib/product-image-alts";
 import { parsePriceTiers } from "@/lib/price-tiers";
+import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
+import { entitySeoKey } from "@/lib/studio/seo-settings";
 import ProductEditForm from "./ProductEditForm";
 
 /** Auth-gated; never serve a cached anonymous RSC payload for Edit links. */
@@ -19,12 +21,12 @@ export default async function EditProductPage({
   searchParams,
 }: {
   params: Promise<{ productId: string }>;
-  searchParams: Promise<{ imageError?: string }>;
+  searchParams: Promise<{ imageError?: string; seo?: string }>;
 }) {
   const { productId: rawProductId } = await params;
   const productId =
     typeof rawProductId === "string" ? rawProductId.trim() : "";
-  const { imageError } = await searchParams;
+  const { imageError, seo } = await searchParams;
   if (!productId) notFound();
 
   const { owner } = await requireOwner();
@@ -118,6 +120,14 @@ export default async function EditProductPage({
           siblingProducts,
         }}
         initialImageError={imageError ?? null}
+      />
+      <EntitySeoCard
+        ownerId={owner.id}
+        businessName={owner.businessName}
+        entityKey={entitySeoKey("product", product.id)}
+        returnTo={`/dashboard/products/${product.id}`}
+        status={seo}
+        variant="social"
       />
     </main>
   );

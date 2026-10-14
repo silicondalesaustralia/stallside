@@ -35,8 +35,8 @@ export default function WebStudioLayoutPanel({ editorHref, flash }: Props) {
         </Link>
       </div>
       <p className="text-xs text-[var(--muted)]">
-        Products, categories, SEO and page settings (titles, web addresses, menu visibility) stay here in
-        the dashboard.
+        Page settings, publishing and search &amp; social for pages, products, categories and posts are
+        under Pages &amp; Posts in the dashboard.
       </p>
     </>
   );

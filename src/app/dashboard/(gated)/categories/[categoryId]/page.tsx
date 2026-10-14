@@ -6,17 +6,21 @@ import SortableOrderList from "@/components/SortableOrderList";
 import CategoryEditForm from "./CategoryEditForm";
 import CategoryProductsPicker from "./CategoryProductsPicker";
 import { saveCategoryProductOrder } from "../category-product-actions";
+import { setCategoryActive } from "../actions";
+import PublishStatusCard from "@/components/website/PublishStatusCard";
+import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
+import { entitySeoKey } from "@/lib/studio/seo-settings";
 
 export default async function CategoryDetailPage({
   params,
   searchParams,
 }: {
   params: Promise<{ categoryId: string }>;
-  searchParams: Promise<{ saved?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; error?: string; published?: string; unpublished?: string; seo?: string }>;
 }) {
   const { owner } = await requireOwner();
   const { categoryId } = await params;
-  const { saved, error } = await searchParams;
+  const { saved, error, published, unpublished, seo } = await searchParams;
 
   const [category, products] = await Promise.all([
     prisma.category.findFirst({
@@ -62,6 +66,16 @@ export default async function CategoryDetailPage({
         </h1>
       </div>
 
+      {published ? <p className="text-sm font-medium text-[var(--ok)]">Category published.</p> : null}
+      {unpublished ? <p className="text-sm font-medium text-[var(--ok)]">Category unpublished.</p> : null}
+
+      <PublishStatusCard
+        live={category.isActive}
+        liveNote="Shown in your shop, on your website and in QR codes."
+        offNote="Hidden from your shop, your website and QR codes. Its products are kept."
+        toggleAction={setCategoryActive.bind(null, category.id, !category.isActive)}
+      />
+
       <CategoryEditForm category={category} saved={saved === "1"} nameError={error === "name"} />
 
       <section className="flex flex-col gap-2">
@@ -88,6 +102,14 @@ export default async function CategoryDetailPage({
           }))}
         />
       </section>
+
+      <EntitySeoCard
+        ownerId={owner.id}
+        businessName={owner.businessName}
+        entityKey={entitySeoKey("category", category.id)}
+        returnTo={`/dashboard/categories/${category.id}`}
+        status={seo}
+      />
     </main>
   );
 }

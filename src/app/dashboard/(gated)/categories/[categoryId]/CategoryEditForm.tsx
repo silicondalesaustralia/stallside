@@ -9,7 +9,6 @@ export default function CategoryEditForm({
     id: string;
     title: string;
     description: string | null;
-    isActive: boolean;
     showOnWebsite: boolean;
   };
   saved: boolean;
@@ -37,10 +36,6 @@ export default function CategoryEditForm({
             defaultValue={category.description ?? ""}
             className="rounded-lg border border-[var(--line)] px-3 py-2"
           />
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" name="isActive" defaultChecked={category.isActive} />
-          Active
         </label>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" name="showOnWebsite" defaultChecked={category.showOnWebsite} />

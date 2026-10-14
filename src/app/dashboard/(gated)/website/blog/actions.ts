@@ -28,12 +28,14 @@ import {
   ensureCustomPages,
   mergeCustomPagesIntoRaw,
   customPagesNeedSync,
+  BLOG_INDEX_BUILTIN_ID,
 } from "@/lib/studio/custom-pages";
 import type { Prisma } from "@/generated/prisma/client";
 import { writeStorefrontDraft } from "@/lib/website/persistence/draft-store";
 import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 
 const BLOG_PATH = "/dashboard/website/blog";
+const BLOG_SETTINGS_PATH = `/dashboard/website/pages/${BLOG_INDEX_BUILTIN_ID}`;
 
 async function loadStorefront(ownerId: string, businessName: string) {
   return ensureStorefront(ownerId, businessName);
@@ -127,10 +129,10 @@ export async function updateBlogSettings(formData: FormData) {
     ownerId: owner.id,
     expectedRevision: sf.draftRevision,
     draftConfig: mergeBlogSettingsIntoRaw(sf.draftConfig, settings) as Prisma.InputJsonValue,
-    conflictPath: BLOG_PATH,
+    conflictPath: BLOG_SETTINGS_PATH,
   });
-  revalidatePath("/dashboard/website/blog");
-  redirect("/dashboard/website/blog?saved=1");
+  revalidatePath(BLOG_SETTINGS_PATH);
+  redirect(`${BLOG_SETTINGS_PATH}?saved=1`);
 }
 
 export async function createBlogPost(formData: FormData) {

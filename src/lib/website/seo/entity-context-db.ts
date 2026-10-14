@@ -1,0 +1,99 @@
+import { prisma } from "@/lib/prisma";
+import type { EntitySeoSettings } from "@/lib/studio/seo-settings";
+import type { EntitySeoContext } from "./entity-context-types";
+
+/** SEO context for entities stored in their own tables (products, categories, menus, offers). */
+export async function resolveDbEntityContext(
+  ownerId: string,
+  entityKey: string,
+  stored: EntitySeoSettings,
+  siteName: string,
+): Promise<EntitySeoContext | null> {
+  const [type, id] = [entityKey.slice(0, entityKey.indexOf(":")), entityKey.slice(entityKey.indexOf(":") + 1)];
+
+  if (type === "product") {
+    const product = await prisma.product.findFirst({
+      where: { id, ownerId },
+      select: { name: true, slug: true, description: true, seoTitle: true, seoDescription: true, imageUrl: true },
+    });
+    if (!product) return null;
+    return {
+      label: product.name,
+      pathLabel: `/products/${product.slug}`,
+      defaults: {
+        title: product.seoTitle ?? product.name,
+        description: product.seoDescription ?? product.description ?? product.name,
+        ogImageUrl: product.imageUrl,
+      },
+      settings: stored,
+    };
+  }
+
+  if (type === "category") {
+    const cat = await prisma.category.findFirst({
+      where: { id, ownerId },
+      select: { title: true, slug: true, description: true, imageUrl: true },
+    });
+    if (!cat) return null;
+    return {
+      label: cat.title,
+      pathLabel: `/${cat.slug}`,
+      defaults: {
+        title: cat.title,
+        description: cat.description ?? `${cat.title} at ${siteName}`,
+        ogImageUrl: cat.imageUrl,
+      },
+      settings: stored,
+    };
+  }
+
+  if (type === "menu") {
+    const preOrder = await prisma.preOrderPage.findFirst({
+      where: { id, ownerId },
+      select: { title: true, slug: true, description: true, imageUrl: true },
+    });
+    if (preOrder) {
+      return {
+        label: preOrder.title,
+        pathLabel: `/pre-orders/${preOrder.slug}`,
+        defaults: {
+          title: preOrder.title,
+          description: preOrder.description ?? preOrder.title,
+          ogImageUrl: preOrder.imageUrl,
+        },
+        settings: stored,
+      };
+    }
+    const menu = await prisma.menu.findFirst({
+      where: { id, ownerId },
+      select: { title: true, slug: true, description: true, kind: true },
+    });
+    if (!menu) return null;
+    return {
+      label: menu.title,
+      pathLabel: `/${menu.kind === "PREORDER_DROP" ? "pre-orders" : "menus"}/${menu.slug}`,
+      defaults: { title: menu.title, description: menu.description ?? menu.title },
+      settings: stored,
+    };
+  }
+
+  if (type === "subscription") {
+    const offer = await prisma.subscriptionOffer.findFirst({
+      where: { id, ownerId },
+      select: { title: true, slug: true, description: true, imageUrl: true },
+    });
+    if (!offer) return null;
+    return {
+      label: offer.title,
+      pathLabel: `/subscriptions/${offer.slug}`,
+      defaults: {
+        title: offer.title,
+        description: offer.description?.trim() || `${offer.title} from ${siteName}`,
+        ogImageUrl: offer.imageUrl,
+      },
+      settings: stored,
+    };
+  }
+
+  return null;
+}
