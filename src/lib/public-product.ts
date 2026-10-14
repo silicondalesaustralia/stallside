@@ -6,6 +6,7 @@ import type { PublicOptionGroup } from "@/lib/product-options";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
 import { productImageList } from "@/lib/product-images";
+import { imageAltList, parseImageAlts } from "@/lib/product-image-alts";
 
 export type PreOrderDetailsData = {
   ordersCloseLabel: string | null;
@@ -21,6 +22,8 @@ export type PublicProductCard = {
   imageUrl: string | null;
   /** Every photo, main first. Empty when the product has none. */
   images: string[];
+  /** Seller's alt text per photo, same order as `images`; blank uses the product name. */
+  imageAlts: string[];
   priceCents: number;
   stockQuantity: number;
   label: string;
@@ -84,6 +87,7 @@ export function mapPublicProduct(
     description: string | null;
     imageUrl: string | null;
     galleryImageUrls?: string[] | null;
+    imageAlts?: unknown;
     priceCents: number;
     stockQuantity: number;
     lowStockThreshold: number;
@@ -169,13 +173,16 @@ export function mapPublicProduct(
       : "PAY_UPFRONT"
     : "PAY_NOW";
 
+  const images = productImageList(p.imageUrl, p.galleryImageUrls);
+
   return {
     id: p.id,
     slug: p.slug,
     name: p.name,
     description: p.description,
     imageUrl: p.imageUrl,
-    images: productImageList(p.imageUrl, p.galleryImageUrls),
+    images,
+    imageAlts: imageAltList(images, parseImageAlts(p.imageAlts)),
     priceCents: p.priceCents,
     stockQuantity: closed ? 0 : p.stockQuantity,
     label,

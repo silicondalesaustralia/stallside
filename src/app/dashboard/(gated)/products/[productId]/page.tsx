@@ -7,6 +7,7 @@ import { standProductPath } from "@/lib/stand-seo";
 import { shopProductPath } from "@/lib/storefront/paths";
 import { publishedWebsiteForStand, standWebsiteUrl } from "@/lib/storefront/stand-website";
 import { productImageList } from "@/lib/product-images";
+import { parseImageAlts } from "@/lib/product-image-alts";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import ProductEditForm from "./ProductEditForm";
 
@@ -85,6 +86,7 @@ export default async function EditProductPage({
           slug: product.slug,
           description: product.description,
           photos: productImageList(product.imageUrl, product.galleryImageUrls),
+          photoAlts: parseImageAlts(product.imageAlts),
           seoTitle: product.seoTitle,
           seoDescription: product.seoDescription,
           priceCents: product.priceCents,

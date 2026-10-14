@@ -9,6 +9,8 @@ export type ProductFields = {
   slug: string;
   description: string | null;
   photos: string[];
+  /** Alt text by photo URL. */
+  photoAlts: Record<string, string>;
   seoTitle: string | null;
   seoDescription: string | null;
   priceCents: number;

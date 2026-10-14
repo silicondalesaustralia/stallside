@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { uniqueProductSlug } from "@/lib/slug";
+import { parseImageAlts } from "@/lib/product-image-alts";
 
 async function productSlugExists(
   standId: string,
@@ -70,6 +71,7 @@ export async function duplicateProduct(productId: string) {
       description: source.description,
       imageUrl: source.imageUrl,
       galleryImageUrls: source.galleryImageUrls,
+      imageAlts: parseImageAlts(source.imageAlts),
       seoTitle: source.seoTitle,
       seoDescription: source.seoDescription,
       priceCents: source.priceCents,

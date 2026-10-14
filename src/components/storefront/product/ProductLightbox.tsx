@@ -6,12 +6,14 @@ import ProductImageTrack from "./ProductImageTrack";
 /** Full-screen photo viewer: swipe, arrows or keyboard; Escape or the close button exits. */
 export default function ProductLightbox({
   images,
+  alts,
   name,
   index,
   onIndexChange,
   onClose,
 }: {
   images: string[];
+  alts?: string[];
   name: string;
   index: number;
   onIndexChange: (i: number) => void;
@@ -50,6 +52,7 @@ export default function ProductLightbox({
         <div className="min-h-0 flex-1">
           <ProductImageTrack
             images={images}
+            alts={alts}
             name={name}
             index={index}
             onIndexChange={onIndexChange}

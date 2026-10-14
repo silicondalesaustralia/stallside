@@ -58,16 +58,17 @@ export default function StudioProductDetailBlock({
       {simple ? (
         <>
           <div className={top}>
-            <ProductGallery images={product.images.slice(0, 1)} name={product.name} ratio={view.imageRatio} enlarge={enlarge} variant="classic" />
+            <ProductGallery images={product.images.slice(0, 1)} alts={product.imageAlts} name={product.name} ratio={view.imageRatio} enlarge={enlarge} variant="classic" />
           </div>
           <ProductDetailInfo {...info} className="mt-6" />
-          <ProductPhotoGrid images={product.images} name={product.name} ratio={view.imageRatio} enlarge={enlarge} />
+          <ProductPhotoGrid images={product.images} alts={product.imageAlts} name={product.name} ratio={view.imageRatio} enlarge={enlarge} />
         </>
       ) : (
         <div className={`${top} grid gap-8 sf-md:grid-cols-2 sf-lg:gap-12`}>
           <div className={view.imageOnRight ? "sf-md:order-2" : ""}>
             <ProductGallery
               images={product.images}
+              alts={product.imageAlts}
               name={product.name}
               ratio={view.imageRatio}
               enlarge={enlarge}

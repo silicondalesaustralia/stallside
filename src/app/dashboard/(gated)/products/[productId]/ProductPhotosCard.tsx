@@ -2,19 +2,32 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
-import { ImagePlus } from "lucide-react";
 import DashFormSection from "@/components/DashFormSection";
 import { prepareImageFile } from "@/lib/prepare-image-file";
 import { PRODUCT_IMAGE_HINT, PRODUCT_IMAGE_MAX_BYTES } from "@/lib/image-upload-limits";
 import { PRODUCT_PHOTOS_MAX, moveGalleryImage } from "@/lib/product-images";
 import { addProductPhoto, removeProductPhoto, reorderProductPhotos } from "../product-gallery-actions";
+import type { ProductImageAlts } from "@/lib/product-image-alts";
 import ProductPhotoTile from "./ProductPhotoTile";
+import ProductPhotoAltEditor from "./ProductPhotoAltEditor";
+import ProductPhotoAddTile from "./ProductPhotoAddTile";
 
 type Result = { ok: true } | { ok: false; error: string };
 
 /** Main photo and extra photos in one place. Changes save straight away. */
-export default function ProductPhotosCard({ productId, photos }: { productId: string; photos: string[] }) {
+export default function ProductPhotosCard({
+  productId,
+  productName,
+  photos,
+  alts,
+}: {
+  productId: string;
+  productName: string;
+  photos: string[];
+  alts: ProductImageAlts;
+}) {
   const router = useRouter();
+  const [altFor, setAltFor] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
@@ -82,6 +95,9 @@ export default function ProductPhotosCard({ productId, photos }: { productId: st
           <ProductPhotoTile
             key={url}
             url={url}
+            alt={alts[url] ?? ""}
+            editingAlt={altFor === url}
+            onEditAlt={() => setAltFor(altFor === url ? null : url)}
             index={i}
             count={order.length}
             busy={pending}
@@ -100,32 +116,19 @@ export default function ProductPhotosCard({ productId, photos }: { productId: st
             }}
           />
         ))}
-        {free > 0 ? (
-          <li className={order.length === 0 ? "col-span-2 row-span-2" : ""}>
-            <label
-              className={`flex aspect-square size-full cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-[var(--line)] bg-white p-2 text-center text-xs font-semibold text-[var(--leaf-dark)] hover:border-[var(--leaf)] hover:bg-[var(--wash)] ${
-                pending ? "pointer-events-none opacity-60" : ""
-              }`}
-            >
-              <ImagePlus className="size-6" aria-hidden />
-              {progress ?? (order.length === 0 ? "Add photos" : "Add more")}
-              <input
-                type="file"
-                multiple
-                accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-                className="sr-only"
-                disabled={pending}
-                onChange={(e) => {
-                  const files = Array.from(e.target.files ?? []);
-                  e.target.value = "";
-                  if (files.length) upload(files);
-                }}
-              />
-            </label>
-          </li>
-        ) : null}
+        {free > 0 ? <ProductPhotoAddTile empty={order.length === 0} busy={pending} label={progress} onFiles={upload} /> : null}
       </ul>
-      <p className="text-xs text-[var(--muted)]">{PRODUCT_IMAGE_HINT}</p>
+      {altFor && order.includes(altFor) ? (
+        <ProductPhotoAltEditor
+          key={altFor}
+          productId={productId}
+          url={altFor}
+          initial={alts[altFor] ?? ""}
+          productName={productName}
+          onClose={() => setAltFor(null)}
+        />
+      ) : null}
+      <p className="text-xs text-[var(--muted)]">{PRODUCT_IMAGE_HINT} Tap ALT on a photo to describe it for search engines and screen readers.</p>
       {message ? <p role="alert" className="text-sm text-[var(--gone)]">{message}</p> : null}
     </DashFormSection>
   );

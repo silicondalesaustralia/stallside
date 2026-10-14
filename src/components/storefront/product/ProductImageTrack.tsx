@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef } from "react";
+import { photoAlt } from "@/lib/product-image-alts";
 
 const ARROW =
   "absolute top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-lg font-bold text-[var(--field)] shadow disabled:opacity-0";
@@ -9,6 +10,7 @@ const ARROW =
 /** Swipeable row of photos, one per view, with arrows. `index` is controlled by the parent. */
 export default function ProductImageTrack({
   images,
+  alts,
   name,
   index,
   onIndexChange,
@@ -19,6 +21,7 @@ export default function ProductImageTrack({
   onOpen,
 }: {
   images: string[];
+  alts?: string[];
   name: string;
   index: number;
   onIndexChange: (i: number) => void;
@@ -73,7 +76,7 @@ export default function ProductImageTrack({
           <div key={src} className={`relative w-full shrink-0 snap-center ${slideClass}`} aria-label={`Photo ${i + 1} of ${images.length}`}>
             <Image
               src={src}
-              alt={i === 0 ? name : `${name}, photo ${i + 1}`}
+              alt={photoAlt(name, alts, i)}
               fill
               sizes={sizes}
               priority={priority && i === 0}

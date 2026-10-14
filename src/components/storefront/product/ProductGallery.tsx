@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { RATIO_CLASS, type ProductImageRatio } from "@/lib/studio/product-detail-settings";
+import { photoAlt } from "@/lib/product-image-alts";
 import ProductImageTrack from "./ProductImageTrack";
 import ProductThumbnails from "./ProductThumbnails";
 import ProductLightbox from "./ProductLightbox";
@@ -15,12 +16,14 @@ const FRAME = "overflow-hidden rounded-[var(--studio-card-radius,var(--storefron
  */
 export default function ProductGallery({
   images,
+  alts,
   name,
   ratio,
   enlarge,
   variant,
 }: {
   images: string[];
+  alts?: string[];
   name: string;
   ratio: ProductImageRatio;
   enlarge: boolean;
@@ -37,6 +40,7 @@ export default function ProductGallery({
       <div className={FRAME}>
         <ProductImageTrack
           images={images}
+          alts={alts}
           name={name}
           index={index}
           onIndexChange={setIndex}
@@ -58,7 +62,7 @@ export default function ProductGallery({
           <ul className="hidden flex-col gap-4 sf-md:flex">
             {images.map((src, i) => (
               <li key={src} className={`relative ${FRAME} ${RATIO_CLASS[ratio]}`}>
-                <Image src={src} alt={i === 0 ? name : `${name}, photo ${i + 1}`} fill sizes={sizes} priority={i === 0} className="object-cover" />
+                <Image src={src} alt={photoAlt(name, alts, i)} fill sizes={sizes} priority={i === 0} className="object-cover" />
                 {openAt ? (
                   <button type="button" className="absolute inset-0 cursor-zoom-in" aria-label={`Enlarge photo ${i + 1}`} onClick={() => openAt(i)} />
                 ) : null}
@@ -70,7 +74,7 @@ export default function ProductGallery({
         classic
       )}
       {open !== null ? (
-        <ProductLightbox images={images} name={name} index={open} onIndexChange={setOpen} onClose={() => setOpen(null)} />
+        <ProductLightbox images={images} alts={alts} name={name} index={open} onIndexChange={setOpen} onClose={() => setOpen(null)} />
       ) : null}
     </div>
   );

@@ -8,6 +8,9 @@ const ICON_BTN =
 
 type Props = {
   url: string;
+  alt: string;
+  editingAlt: boolean;
+  onEditAlt: () => void;
   index: number;
   count: number;
   busy: boolean;
@@ -19,7 +22,7 @@ type Props = {
 };
 
 /** One photo in the product photo grid. The first photo is the main photo and shows larger. */
-export default function ProductPhotoTile({ url, index, count, busy, onMove, onMakeMain, onRemove, onDragStart, onDrop }: Props) {
+export default function ProductPhotoTile({ url, alt, editingAlt, onEditAlt, index, count, busy, onMove, onMakeMain, onRemove, onDragStart, onDrop }: Props) {
   const main = index === 0;
   return (
     <li
@@ -35,15 +38,27 @@ export default function ProductPhotoTile({ url, index, count, busy, onMove, onMa
       }}
       className={`group relative overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--panel)] ${
         main ? "col-span-2 row-span-2" : ""
-      } ${busy ? "" : "cursor-grab active:cursor-grabbing"}`}
+      } ${editingAlt ? "ring-2 ring-[var(--leaf)]" : ""} ${busy ? "" : "cursor-grab active:cursor-grabbing"}`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={url} alt={main ? "Main photo" : `Photo ${index + 1}`} className="aspect-square size-full object-cover" draggable={false} />
+      <img src={url} alt={alt || (main ? "Main photo" : `Photo ${index + 1}`)} className="aspect-square size-full object-cover" draggable={false} />
       {main ? (
         <span className="absolute left-2 top-2 rounded-full bg-[var(--leaf)] px-2 py-0.5 text-[11px] font-semibold text-white shadow-sm">
           Main photo
         </span>
       ) : null}
+      <button
+        type="button"
+        onClick={onEditAlt}
+        disabled={busy}
+        title={alt ? `Alt text: ${alt}` : "Add alt text"}
+        aria-label={alt ? "Edit alt text" : "Add alt text"}
+        className={`absolute right-2 top-2 rounded-md px-1.5 py-0.5 text-[11px] font-bold shadow-sm disabled:opacity-40 ${
+          alt ? "bg-[var(--leaf)] text-white" : "bg-white/95 text-[var(--ink)] hover:bg-white"
+        }`}
+      >
+        {alt ? "ALT ✓" : "+ ALT"}
+      </button>
       <div className="absolute inset-x-0 bottom-0 flex justify-between gap-1 bg-gradient-to-t from-black/45 to-transparent p-1.5 pt-6">
         <div className="flex gap-1">
           <button type="button" aria-label="Move earlier" title="Move earlier" disabled={busy || main} className={ICON_BTN} onClick={() => onMove(-1)}>

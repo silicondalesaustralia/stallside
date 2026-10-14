@@ -68,7 +68,7 @@ export default function ProductEditForm({
       <div key={resetKey} className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="flex min-w-0 flex-col gap-5">
           <ProductBasicsSection name={product.name} description={product.description} />
-          <ProductPhotosCard productId={product.id} photos={product.photos} />
+          <ProductPhotosCard productId={product.id} productName={product.name} photos={product.photos} alts={product.photoAlts} />
           <ProductPricingSection product={product} />
           <ProductOptionsEditor initial={product.options} disabled={product.priceTiers.length > 0} />
           {!preOrderEligible ? (

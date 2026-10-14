@@ -1291,6 +1291,10 @@ model Product {
    * Extra product photos after imageUrl, in display order (max 7).
    */
   galleryImageUrls            String[]                   @default([])
+  /**
+   * Alt text per photo, keyed by photo URL. Photos without an entry use the product name.
+   */
+  imageAlts                   Json                       @default("{}")
   seoTitle                    String?
   seoDescription              String?
   priceCents                  Int
