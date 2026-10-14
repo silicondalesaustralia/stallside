@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import SectionButtonLink from "@/components/studio/SectionButtonLink";
 import Image from "next/image";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { shopPagePath } from "@/lib/storefront/paths";
@@ -123,9 +123,9 @@ export default function StudioHeroBlock({
   const brandHeadline = meta.branding.headline || "Add a headline";
 
   const cta = showButton ? (
-    <Link href={shopHref} className="studio-btn studio-btn--primary">
+    <SectionButtonLink meta={meta} defaultHref={shopHref} className="studio-btn studio-btn--primary">
       {ctaLabel || (meta.templateId === "market" ? "Shop now" : "Browse")}
-    </Link>
+    </SectionButtonLink>
   ) : null;
 
   if (variant === "shop-first" || variant === "promo") {

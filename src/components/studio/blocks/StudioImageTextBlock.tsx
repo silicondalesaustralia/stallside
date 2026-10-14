@@ -5,6 +5,8 @@ import InlineEditableText from "@/components/studio/InlineEditableText";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 import InlineRichText from "@/components/studio/InlineRichText";
 import RichText from "@/components/studio/RichText";
+import SectionButtonLink from "@/components/studio/SectionButtonLink";
+import type { StudioMetadata } from "@/lib/studio/types";
 
 export default function StudioImageTextBlock({
   imageUrl,
@@ -12,6 +14,7 @@ export default function StudioImageTextBlock({
   body,
   layout,
   ctaLabel,
+  metadata,
   editable = false,
 }: {
   imageUrl: string | null;
@@ -19,6 +22,7 @@ export default function StudioImageTextBlock({
   body: string;
   layout: "image-left" | "image-right" | "editorial";
   ctaLabel: string;
+  metadata?: StudioMetadata;
   editable?: boolean;
 }) {
   const reverse = layout === "image-right";
@@ -67,10 +71,12 @@ export default function StudioImageTextBlock({
             <>
               {heading ? <SectionHeadingTag className={headingClass}>{heading}</SectionHeadingTag> : null}
               {body ? <RichText value={body} className={bodyClass} /> : null}
-              {ctaLabel ? (
-                <span className="studio-btn studio-btn--primary mt-6">
+              {ctaLabel && metadata ? (
+                <SectionButtonLink meta={metadata} defaultHref={null} className="studio-btn studio-btn--primary mt-6">
                   {ctaLabel}
-                </span>
+                </SectionButtonLink>
+              ) : ctaLabel ? (
+                <span className="studio-btn studio-btn--primary mt-6">{ctaLabel}</span>
               ) : null}
             </>
           )}

@@ -4,6 +4,7 @@ import { categories, menuDetail, nextDrop, productDetail, productGrid } from "./
 import { farmStand, pickup, reviews, signup } from "./trust-sections";
 import type { SectionDefinition, VendlSectionType } from "./types";
 import { sectionStyleSchema } from "./section-style";
+import { buttonLinkSchema } from "@/lib/studio/button-link";
 
 /**
  * The one list of supported website sections. Keyed by stable Vendl type;
@@ -28,7 +29,13 @@ const DEFINITIONS = {
 
 /** Every section shares the same optional colour/typography `style` setting. */
 function withStyle(def: SectionDefinition): SectionDefinition {
-  return { ...def, settings: def.settings.extend({ style: sectionStyleSchema.optional() }) };
+  return {
+    ...def,
+    settings: def.settings.extend({
+      style: sectionStyleSchema.optional(),
+      buttonLink: buttonLinkSchema.optional(),
+    }),
+  };
 }
 
 export const SECTION_REGISTRY = Object.fromEntries(

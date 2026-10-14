@@ -14,6 +14,8 @@ import SettingsGroup from "./SettingsGroup";
 import SectionImageLayoutFields from "./SectionImageLayoutFields";
 import { BUTTON_SECTIONS, parseSectionStyle, type SectionStyle } from "@/lib/website/sections/section-style";
 import SectionButtonFields from "./SectionButtonFields";
+import ButtonLinkField from "./ButtonLinkField";
+import { LINKABLE_BUTTON_SECTIONS } from "@/lib/studio/button-link";
 import PageStyleSettings from "./PageStyleSettings";
 import { paletteOf } from "@/lib/website/sections/colour";
 import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
@@ -140,6 +142,14 @@ export default function StudioSettingsPanel() {
           <ProductDetailSettings
             props={selected.props as { showReviews: boolean; showBackLink: boolean }}
             setProp={setProp}
+          />
+        ) : null}
+        {LINKABLE_BUTTON_SECTIONS.has(selected.type) ? (
+          <ButtonLinkField
+            key={selected.id}
+            value={typeof selected.props.buttonLink === "string" ? selected.props.buttonLink : undefined}
+            defaultLabel={selected.type === "CraftImageTextSection" ? "no link" : "Shop"}
+            onChange={(v) => setProp("buttonLink", v)}
           />
         ) : null}
         <SectionImageLayoutFields

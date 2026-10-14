@@ -72,6 +72,7 @@ export default function StudioPublicSections({
           key={`${section.type}-${index}`}
           sectionStyle={parseSectionStyle(section.props.style)}
           palette={palette}
+          buttonLink={section.props.buttonLink}
         >
           <StudioSectionRender section={section} metadata={metadata} />
         </SectionStyleFrame>
@@ -195,6 +196,7 @@ function StudioSectionRender({
           body={String(p.body ?? "")}
           layout={(p.layout as "image-left") ?? "image-left"}
           ctaLabel={String(p.ctaLabel ?? "")}
+          metadata={metadata}
         />
       );
     case "CraftAboutSection":

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import SectionButtonLink from "@/components/studio/SectionButtonLink";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { shopPagePath } from "@/lib/storefront/paths";
 import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
@@ -66,9 +66,9 @@ export default function StudioFarmStandBlock({
             <p className="mt-2 text-sm text-[var(--muted)]">
               {meta.products.length} products listed this week
             </p>
-            <Link href={shopHref} className="studio-btn studio-btn--primary mt-4 text-sm">
+            <SectionButtonLink meta={meta} defaultHref={shopHref} className="studio-btn studio-btn--primary mt-4 text-sm">
               Browse produce
-            </Link>
+            </SectionButtonLink>
           </div>
         </div>
       </div>
