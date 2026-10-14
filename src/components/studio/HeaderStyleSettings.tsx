@@ -13,6 +13,7 @@ import {
 import LogoSizeField from "./LogoSizeField";
 import { useState } from "react";
 import HeaderMenuEditor from "./HeaderMenuEditor";
+import NavTextSizeField from "./NavTextSizeField";
 import AnnouncementBarSettings from "./AnnouncementBarSettings";
 import SettingsGroup from "./SettingsGroup";
 
@@ -99,6 +100,7 @@ export default function HeaderStyleSettings({ focus }: { focus: "header" | "anno
         ) : null}
         </SettingsGroup>
         <SettingsGroup title="Menu links" open={open.menu} onToggle={(v) => toggle("menu", v)}>
+          <NavTextSizeField />
           <HeaderMenuEditor />
         </SettingsGroup>
         <SettingsGroup title="Announcement bar" open={open.announcement} onToggle={(v) => toggle("announcement", v)}>

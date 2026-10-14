@@ -44,6 +44,7 @@ import { useAnnouncementBar } from "./useAnnouncementBar";
 import { useFooterSettings } from "./useFooterSettings";
 import { useSiteButtonColours } from "./useSiteButtonColours";
 import { useSiteLinkColour } from "./useSiteLinkColour";
+import { useNavTextSize } from "./useNavTextSize";
 import { siteButtonColoursOf } from "@/lib/storefront/site-buttons";
 import type { AutosaveTargetInput } from "@/app/dashboard/(gated)/website/autosave/actions";
 
@@ -137,6 +138,7 @@ export default function StudioEditorInner({
     runExclusive,
   });
   const siteLinkState = useSiteLinkColour({ initial: metadata.resolvedBranding.linkColour, revisionRef, runExclusive });
+  const navTextSizeState = useNavTextSize({ initial: metadata.resolvedBranding.navTextSize, revisionRef, runExclusive });
   const [chromeTarget, setChromeTarget] = useState<ChromeTarget>(null);
   const [headerLayout, setHeaderLayout] = useState<HeaderLayout>(
     metadata.resolvedBranding.headerLayout,
@@ -265,6 +267,7 @@ export default function StudioEditorInner({
       ...footerState,
       ...siteButtonState,
       ...siteLinkState,
+      ...navTextSizeState,
       pageOptions,
       currentPage,
     }),
@@ -303,6 +306,7 @@ export default function StudioEditorInner({
       footerState,
       siteButtonState,
       siteLinkState,
+      navTextSizeState,
     ],
   );
 

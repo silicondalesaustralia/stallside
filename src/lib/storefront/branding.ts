@@ -5,6 +5,7 @@ import { getFontPair } from "@/lib/website/brand-looks";
 import {
   LOGO_HEIGHT_DEFAULT,
   clampLogoHeight,
+  clampNavTextSize,
   defaultHeaderStyle,
   isBrandMarkMode,
   isHeaderLayout,
@@ -120,6 +121,7 @@ export function resolveStorefrontBranding(input: {
     buttonColour: isColourValue(overrides.buttonColour) ? overrides.buttonColour : null,
     buttonTextColour: isColourValue(overrides.buttonTextColour) ? overrides.buttonTextColour : null,
     linkColour: isColourValue(overrides.linkColour) ? overrides.linkColour : null,
+    navTextSize: clampNavTextSize(overrides.navTextSize) ?? null,
     regionLabel: regionParts.length > 0 ? regionParts.join(", ") : null,
     contactEmail: storefront.contactEmail?.trim() || input.owner.contactEmail,
     contactPhone: storefront.showPhone ? input.owner.contactPhone : null,
@@ -149,6 +151,7 @@ export function storefrontThemeStyle(
     style["--font-sans"] = fonts.bodyFamily;
   }
   if (branding.pageBackground) style.backgroundColor = colourCss(branding.pageBackground);
+  if (branding.navTextSize) style["--nav-link-size"] = `${branding.navTextSize}px`;
   Object.assign(
     style,
     siteButtonVars(siteButtonColoursOf(branding), paletteOf(branding)),

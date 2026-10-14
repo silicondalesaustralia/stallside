@@ -7,6 +7,7 @@ import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefro
 import { DRAFT_CONFLICT_MESSAGE, writeStorefrontDraft } from "@/lib/website/persistence/draft-store";
 import { parseStorefrontConfig } from "@/lib/storefront/config";
 import { isColourValue } from "@/lib/website/sections/section-style";
+import { clampNavTextSize } from "@/lib/storefront/header-style";
 
 type ThemeColourKey = "pageBackground" | "buttonColour" | "buttonTextColour" | "linkColour";
 type SaveResult = { ok: true; revision: number } | { ok: false; error: string };
@@ -17,10 +18,19 @@ async function saveThemeColours(
   expectedRevision: number,
   logLabel: string,
 ): Promise<SaveResult> {
-  const { owner } = await requireWebsiteOwner();
   if (Object.values(patch).some((v) => v !== null && v !== undefined && !isColourValue(v))) {
     return { ok: false, error: "Pick a theme colour or a #rrggbb colour." };
   }
+  return writeThemeOverrides(patch, expectedRevision, logLabel);
+}
+
+/** Writes already-validated theme override values to the draft; null removes the key. */
+async function writeThemeOverrides(
+  patch: Record<string, string | number | null | undefined>,
+  expectedRevision: number,
+  logLabel: string,
+): Promise<SaveResult> {
+  const { owner } = await requireWebsiteOwner();
   try {
     const storefront = await ensureStorefront(owner.id, owner.businessName);
     const raw =
@@ -31,7 +41,7 @@ async function saveThemeColours(
       ...parseStorefrontConfig(storefront.draftConfig).themeOverrides,
     };
     for (const [key, value] of Object.entries(patch)) {
-      if (value) themeOverrides[key] = value;
+      if (value !== null && value !== undefined && value !== "") themeOverrides[key] = value;
       else delete themeOverrides[key];
     }
     const saved = await writeStorefrontDraft({
@@ -75,4 +85,14 @@ export async function saveStorefrontLinkColour(input: {
   expectedRevision: number;
 }): Promise<SaveResult> {
   return saveThemeColours({ linkColour: input.linkColour }, input.expectedRevision, "link colour");
+}
+
+/** Sets (or clears, with null) the header menu link text size in px, in the draft. */
+export async function saveStorefrontNavTextSize(input: {
+  navTextSize: number | null;
+  expectedRevision: number;
+}): Promise<SaveResult> {
+  const size = input.navTextSize === null ? null : clampNavTextSize(input.navTextSize);
+  if (size === undefined) return { ok: false, error: "Pick a menu text size." };
+  return writeThemeOverrides({ navTextSize: size }, input.expectedRevision, "menu text size");
 }

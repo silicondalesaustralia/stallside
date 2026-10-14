@@ -41,6 +41,7 @@ export default function StudioEditorShell({
     footer,
     siteButtonColours,
     siteLinkColour,
+    navTextSize,
   } = useStudioEditorChrome();
   const liveBranding = {
     ...branding,
@@ -49,6 +50,7 @@ export default function StudioEditorShell({
       ? { buttonColour: siteButtonColours.background, buttonTextColour: siteButtonColours.text }
       : {}),
     ...(siteLinkColour === undefined ? {} : { linkColour: siteLinkColour }),
+    ...(navTextSize === undefined ? {} : { navTextSize }),
   };
   const { actions } = useEditor();
 

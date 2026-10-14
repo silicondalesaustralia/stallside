@@ -822,7 +822,7 @@
 }
 
 .studio-nav__link {
-  font-size: 0.875rem;
+  font-size: var(--nav-link-size, 0.875rem);
   font-weight: 600;
   color: var(--muted);
   text-decoration: none;

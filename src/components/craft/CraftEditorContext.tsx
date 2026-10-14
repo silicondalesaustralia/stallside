@@ -76,6 +76,11 @@ export type CraftEditorChrome = {
   setSiteLinkColour?: (colour: string | null) => void;
   siteLinkColourStatus?: "idle" | "saving" | "saved" | "error";
   siteLinkColourError?: string | null;
+  /** Header menu link text size in px; null = template default. */
+  navTextSize?: number | null;
+  setNavTextSize?: (size: number | null) => void;
+  navTextSizeStatus?: "idle" | "saving" | "saved" | "error";
+  navTextSizeError?: string | null;
   sitePageBackground?: string | null;
   setSitePageBackground?: (value: string | null) => void;
   sitePageBackgroundStatus?: "idle" | "saving" | "saved" | "error";

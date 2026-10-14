@@ -17,6 +17,16 @@ export function clampLogoHeight(value: unknown): number | undefined {
   return Math.round(Math.min(LOGO_HEIGHT_MAX, Math.max(LOGO_HEIGHT_MIN, value)));
 }
 
+/** Header menu link text size in CSS pixels; unset = template default (14px). */
+export const NAV_TEXT_SIZE_MIN = 12;
+export const NAV_TEXT_SIZE_MAX = 24;
+export const NAV_TEXT_SIZE_DEFAULT = 14;
+
+export function clampNavTextSize(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.round(Math.min(NAV_TEXT_SIZE_MAX, Math.max(NAV_TEXT_SIZE_MIN, value)));
+}
+
 export function isHeaderLayout(value: unknown): value is HeaderLayout {
   return typeof value === "string" && (HEADER_LAYOUTS as readonly string[]).includes(value);
 }

@@ -19,6 +19,9 @@ import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style"
 import StudioBrandMark from "./StudioBrandMark";
 import NavItemLink from "./NavItemLink";
 
+/** Phone menu links sit 2px above the chosen menu size (16px by default). */
+const MOBILE_TEXT = "text-[length:calc(var(--nav-link-size,0.875rem)+0.125rem)]";
+
 function NavDropdown({ item }: { item: StudioNavItem }) {
   if (!item.children?.length) {
     return (
@@ -37,7 +40,7 @@ function NavDropdown({ item }: { item: StudioNavItem }) {
         <ul role="menu" className="rounded-lg border border-[var(--line)] bg-[var(--panel)] py-1 shadow-md">
           {item.children.map((child) => (
             <li key={child.slug} role="none">
-              <NavItemLink role="menuitem" href={child.href} className="block px-3 py-2 text-sm text-[var(--field)] hover:bg-[var(--wash)]">
+              <NavItemLink role="menuitem" href={child.href} className="block px-3 py-2 text-[length:var(--nav-link-size,0.875rem)] text-[var(--field)] hover:bg-[var(--wash)]">
                 {child.label}
               </NavItemLink>
             </li>
@@ -71,7 +74,7 @@ function MobileNavList({
                   <li key={child.slug}>
                     <NavItemLink
                       href={child.href}
-                      className="block py-3 text-base font-semibold text-[var(--field)]"
+                      className={`block py-3 font-semibold text-[var(--field)] ${MOBILE_TEXT}`}
                       onClick={onNavigate}
                     >
                       {child.label}
@@ -83,7 +86,7 @@ function MobileNavList({
           ) : (
             <NavItemLink
               href={item.href}
-              className={`block py-3 text-base font-semibold text-[var(--field)] ${
+              className={`block py-3 font-semibold text-[var(--field)] ${MOBILE_TEXT} ${
                 activePage === item.slug ? "underline" : ""
               }`}
               onClick={onNavigate}

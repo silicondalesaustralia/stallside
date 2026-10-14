@@ -56,6 +56,8 @@ export type StorefrontThemeOverrides = {
   buttonTextColour?: string;
   /** Text links in page content (theme token or #rrggbb). */
   linkColour?: string;
+  /** Header menu link text size in px (clamped to NAV_TEXT_SIZE_MIN–MAX). */
+  navTextSize?: number;
 };
 
 /** Website-only identity. Lives in the draft and goes live on publish. */
@@ -100,6 +102,7 @@ export type ResolvedStorefrontBranding = {
   buttonColour: string | null;
   buttonTextColour: string | null;
   linkColour: string | null;
+  navTextSize: number | null;
   regionLabel: string | null;
   contactEmail: string;
   contactPhone: string | null;
