@@ -10,6 +10,7 @@ import type { StudioMetadata } from "@/lib/studio/types";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
 import { resolveHeaderMenu } from "@/lib/studio/header-menu";
 import { paletteOf } from "@/lib/website/sections/colour";
+import { siteFontHrefs, siteLayoutVars, siteStyleAttrs } from "@/lib/storefront/site-style";
 import AnnouncementBarView from "./AnnouncementBarView";
 import { useStudioEditorChrome } from "@/components/studio/StudioEditorContext";
 import StudioStorefrontNav from "./StudioStorefrontNav";
@@ -42,6 +43,7 @@ export default function StudioEditorShell({
     siteButtonColours,
     siteLinkColour,
     navTextSize,
+    siteStyle,
   } = useStudioEditorChrome();
   const liveBranding = {
     ...branding,
@@ -51,6 +53,7 @@ export default function StudioEditorShell({
       : {}),
     ...(siteLinkColour === undefined ? {} : { linkColour: siteLinkColour }),
     ...(navTextSize === undefined ? {} : { navTextSize }),
+    ...(siteStyle ? { siteStyle } : {}),
   };
   const { actions } = useEditor();
 
@@ -62,9 +65,10 @@ export default function StudioEditorShell({
   return (
     <div
       className={`storefront-cq min-h-full text-[var(--ink)] ${template.cssClass}`}
-      style={{ ...storefrontThemeStyle(liveBranding), ...template.style }}
+      style={{ ...storefrontThemeStyle(liveBranding), ...template.style, ...siteLayoutVars(liveBranding.siteStyle) }}
+      {...siteStyleAttrs(liveBranding.siteStyle)}
     >
-      <StorefrontFontLoader fontPairId={branding.fontPairId} />
+      <StorefrontFontLoader fontPairId={branding.fontPairId} extraHrefs={siteFontHrefs(liveBranding.siteStyle)} />
       <StorefrontLinkProvider slug={metadata.storefrontSlug} basePath={metadata.basePath} draft>
         <AnnouncementBarView
           bar={announcementBar ?? null}

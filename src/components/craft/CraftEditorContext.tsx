@@ -10,6 +10,7 @@ import type { HeaderMenu } from "@/lib/studio/header-menu";
 import type { AnnouncementBar } from "@/lib/studio/announcement-bar";
 import type { FooterSettings } from "@/lib/studio/footer-settings";
 import type { SiteButtonColours } from "@/lib/storefront/site-buttons";
+import type { SiteStyle } from "@/lib/storefront/site-style";
 
 export type ChromeTarget = "header" | "announcement" | "footer" | null;
 
@@ -81,6 +82,10 @@ export type CraftEditorChrome = {
   setNavTextSize?: (size: number | null) => void;
   navTextSizeStatus?: "idle" | "saving" | "saved" | "error";
   navTextSizeError?: string | null;
+  siteStyle?: SiteStyle;
+  setSiteStyleField?: <K extends keyof SiteStyle>(key: K, value: SiteStyle[K] | undefined) => void;
+  siteStyleStatus?: "idle" | "saving" | "saved" | "error";
+  siteStyleError?: string | null;
   sitePageBackground?: string | null;
   setSitePageBackground?: (value: string | null) => void;
   sitePageBackgroundStatus?: "idle" | "saving" | "saved" | "error";

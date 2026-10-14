@@ -9,6 +9,7 @@ import type { StorefrontPageId } from "@/lib/storefront/types";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
 import { resolveHeaderMenu } from "@/lib/studio/header-menu";
 import { paletteOf } from "@/lib/website/sections/colour";
+import { siteFontHrefs, siteLayoutVars, siteStyleAttrs } from "@/lib/storefront/site-style";
 import AnnouncementBarView from "./AnnouncementBarView";
 import StudioStorefrontNav from "./StudioStorefrontNav";
 import StudioStorefrontFooter from "./StudioStorefrontFooter";
@@ -30,9 +31,10 @@ export default function StudioPublicShell({
   return (
     <div
       className={`storefront-cq min-h-full text-[var(--ink)] ${template.cssClass}`}
-      style={{ ...storefrontThemeStyle(branding), ...template.style }}
+      style={{ ...storefrontThemeStyle(branding), ...template.style, ...siteLayoutVars(branding.siteStyle) }}
+      {...siteStyleAttrs(branding.siteStyle)}
     >
-      <StorefrontFontLoader fontPairId={branding.fontPairId} />
+      <StorefrontFontLoader fontPairId={branding.fontPairId} extraHrefs={siteFontHrefs(branding.siteStyle)} />
       <StorefrontLinkProvider slug={metadata.storefrontSlug} basePath={metadata.basePath} draft={draft}>
         <AnnouncementBarView
           bar={metadata.announcementBar}

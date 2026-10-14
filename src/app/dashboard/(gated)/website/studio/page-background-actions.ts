@@ -8,6 +8,7 @@ import { DRAFT_CONFLICT_MESSAGE, writeStorefrontDraft } from "@/lib/website/pers
 import { parseStorefrontConfig } from "@/lib/storefront/config";
 import { isColourValue } from "@/lib/website/sections/section-style";
 import { clampNavTextSize } from "@/lib/storefront/header-style";
+import { siteStyleSchema, type SiteStyle } from "@/lib/storefront/site-style";
 
 type ThemeColourKey = "pageBackground" | "buttonColour" | "buttonTextColour" | "linkColour";
 type SaveResult = { ok: true; revision: number } | { ok: false; error: string };
@@ -26,7 +27,7 @@ async function saveThemeColours(
 
 /** Writes already-validated theme override values to the draft; null removes the key. */
 async function writeThemeOverrides(
-  patch: Record<string, string | number | null | undefined>,
+  patch: Record<string, string | number | SiteStyle | null | undefined>,
   expectedRevision: number,
   logLabel: string,
 ): Promise<SaveResult> {
@@ -95,4 +96,15 @@ export async function saveStorefrontNavTextSize(input: {
   const size = input.navTextSize === null ? null : clampNavTextSize(input.navTextSize);
   if (size === undefined) return { ok: false, error: "Pick a menu text size." };
   return writeThemeOverrides({ navTextSize: size }, input.expectedRevision, "menu text size");
+}
+
+/** Sets the site-wide fonts, colours, sizes, width and spacing in the draft; empty = template defaults. */
+export async function saveStorefrontSiteStyle(input: {
+  siteStyle: SiteStyle;
+  expectedRevision: number;
+}): Promise<SaveResult> {
+  const parsed = siteStyleSchema.strict().safeParse(input.siteStyle);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Check the site-wide settings." };
+  const siteStyle = Object.keys(parsed.data).length ? parsed.data : null;
+  return writeThemeOverrides({ siteStyle }, input.expectedRevision, "site-wide style");
 }

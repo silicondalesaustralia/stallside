@@ -14,6 +14,7 @@ import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
 import { isColourValue } from "@/lib/website/sections/section-style";
 import { colourCss, paletteOf } from "@/lib/website/sections/colour";
 import { siteButtonColoursOf, siteButtonVars, siteLinkVars } from "@/lib/storefront/site-buttons";
+import { parseSiteStyle, siteThemeVars } from "@/lib/storefront/site-style";
 import type {
   ResolvedStorefrontBranding,
   StorefrontConfig,
@@ -122,6 +123,7 @@ export function resolveStorefrontBranding(input: {
     buttonTextColour: isColourValue(overrides.buttonTextColour) ? overrides.buttonTextColour : null,
     linkColour: isColourValue(overrides.linkColour) ? overrides.linkColour : null,
     navTextSize: clampNavTextSize(overrides.navTextSize) ?? null,
+    siteStyle: parseSiteStyle(overrides.siteStyle),
     regionLabel: regionParts.length > 0 ? regionParts.join(", ") : null,
     contactEmail: storefront.contactEmail?.trim() || input.owner.contactEmail,
     contactPhone: storefront.showPhone ? input.owner.contactPhone : null,
@@ -156,6 +158,7 @@ export function storefrontThemeStyle(
     style,
     siteButtonVars(siteButtonColoursOf(branding), paletteOf(branding)),
     siteLinkVars(branding.linkColour, paletteOf(branding)),
+    siteThemeVars(branding.siteStyle, paletteOf(branding)),
   );
   return style as CSSProperties;
 }

@@ -19,6 +19,8 @@ import { LINKABLE_BUTTON_SECTIONS } from "@/lib/studio/button-link";
 import PageStyleSettings from "./PageStyleSettings";
 import SiteButtonSettings from "./SiteButtonSettings";
 import SiteLinkSettings from "./SiteLinkSettings";
+import SiteTypographySettings from "./SiteTypographySettings";
+import SiteLayoutSettings from "./SiteLayoutSettings";
 import FooterSettingsPanel from "./FooterSettingsPanel";
 import { paletteOf } from "@/lib/website/sections/colour";
 import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
@@ -81,9 +83,10 @@ export default function StudioSettingsPanel() {
 
   if (!selected) {
     return (
-      <aside className="vendl-studio-settings vendl-studio-settings--empty">
-        <p className="text-sm text-[var(--muted)]">
-          Click the header, footer or a section to edit.
+      <aside className="vendl-studio-settings vendl-studio-settings--empty" aria-label="Site Wide Edits">
+        <h2 className="text-sm font-bold text-[var(--field)]">Site Wide Edits</h2>
+        <p className="mt-1 text-sm text-[var(--muted)]">
+          These apply to every page. Click the header, footer or a section to edit just that part.
         </p>
         <button
           type="button"
@@ -105,6 +108,8 @@ export default function StudioSettingsPanel() {
         >
           Edit footer
         </button>
+        <SiteTypographySettings />
+        <SiteLayoutSettings />
         <PageStyleSettings />
         <SiteButtonSettings />
         <SiteLinkSettings />
