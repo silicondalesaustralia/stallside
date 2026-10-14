@@ -137,7 +137,7 @@ export default function StudioHeroBlock({
   if (variant === "shop-first" || variant === "promo") {
     return (
       <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
-        <div className="mx-auto flex max-w-[var(--studio-content-max)] flex-col gap-6 px-4 py-10 sf-sm:flex-row sf-sm:items-center sf-sm:justify-between sf-sm:px-8 sf-sm:py-12">
+        <div className="mx-auto flex max-w-[var(--studio-content-max)] flex-col gap-6 py-10 sf-sm:flex-row sf-sm:items-center sf-sm:justify-between studio-gutter studio-gutter--wide sf-sm:py-12">
           <div className="max-w-xl">
             {variant === "promo" ? (
               <SectionCopy k="weekEyebrow" fallback="This week" as="p" className="studio-eyebrow text-[var(--leaf-dark)]" />
@@ -166,7 +166,7 @@ export default function StudioHeroBlock({
     const menu = meta.menus[0];
     return (
       <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--wash)]`}>
-        <div className="mx-auto max-w-[var(--studio-content-max)] px-4 py-10 sf-sm:px-8 sf-sm:py-12">
+        <div className="mx-auto max-w-[var(--studio-content-max)] py-10 studio-gutter studio-gutter--wide sf-sm:py-12">
           <SectionCopy k="menuEyebrow" fallback="Current menu" as="p" className="studio-eyebrow text-[var(--leaf-dark)]" />
           {editable ? (
             <>
@@ -206,7 +206,7 @@ export default function StudioHeroBlock({
     const collage = meta.products.slice(0, 4);
     return (
       <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
-        <div className="studio-split mx-auto grid max-w-[var(--studio-content-max)] gap-8 px-4 py-10 sf-lg:grid-cols-2 sf-lg:items-center sf-sm:px-8">
+        <div className="studio-split mx-auto grid max-w-[var(--studio-content-max)] gap-8 py-10 sf-lg:grid-cols-2 sf-lg:items-center studio-gutter studio-gutter--wide">
           <div>
             <HeroTitle
               editable={editable}
@@ -242,7 +242,7 @@ export default function StudioHeroBlock({
   if (variant === "stand-status") {
     return (
       <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--wash)]`}>
-        <div className="mx-auto max-w-[var(--studio-content-max)] px-4 py-12 sf-sm:px-8 sf-sm:py-16">
+        <div className="mx-auto max-w-[var(--studio-content-max)] py-12 studio-gutter studio-gutter--wide sf-sm:py-16">
           {meta.branding.regionLabel ? (
             <p className="studio-eyebrow text-[var(--site-accent,#a0522d)]">{meta.branding.regionLabel}</p>
           ) : null}
@@ -279,7 +279,7 @@ export default function StudioHeroBlock({
             ? "bg-gradient-to-t from-[#1f2e1f]/75 via-[#1f2e1f]/40 to-transparent"
             : "bg-gradient-to-t from-black/70 via-black/45 to-black/25"
         }`} />
-        <div className="relative mx-auto flex min-h-[inherit] max-w-[var(--studio-content-max)] items-end px-4 py-14 sf-sm:px-8 sf-sm:py-20">
+        <div className="relative mx-auto flex min-h-[inherit] max-w-[var(--studio-content-max)] items-end py-14 studio-gutter studio-gutter--wide sf-sm:py-20">
           <div className="max-w-xl text-white">
             {meta.branding.regionLabel ? (
               <p className="studio-eyebrow mb-3 text-white/80">{meta.branding.regionLabel}</p>
@@ -308,7 +308,7 @@ export default function StudioHeroBlock({
     return (
       <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
         <div className="studio-split mx-auto grid max-w-[var(--studio-content-max)] sf-lg:grid-cols-2">
-          <div className="flex flex-col justify-center px-4 py-12 sf-sm:px-8 sf-sm:py-16 sf-lg:py-20">
+          <div className="flex flex-col justify-center py-12 studio-gutter studio-gutter--wide sf-sm:py-16 sf-lg:py-20">
             {meta.branding.regionLabel ? (
               <p className="studio-eyebrow text-[var(--leaf-dark)]">{meta.branding.regionLabel}</p>
             ) : null}
@@ -344,7 +344,7 @@ export default function StudioHeroBlock({
   if (variant === "minimal" || !heroImage) {
     return (
       <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--wash)]`}>
-        <div className="mx-auto max-w-[var(--studio-prose-max)] px-4 py-16 text-center sf-sm:px-6 sf-sm:py-20">
+        <div className="mx-auto max-w-[var(--studio-prose-max)] py-16 text-center studio-gutter sf-sm:py-20">
           {meta.branding.regionLabel ? (
             <p className="studio-eyebrow text-[var(--leaf-dark)]">{meta.branding.regionLabel}</p>
           ) : null}
@@ -369,7 +369,7 @@ export default function StudioHeroBlock({
 
   return (
     <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
-      <div className="mx-auto max-w-[var(--studio-content-max)] px-4 py-10 sf-sm:px-8 sf-sm:py-14">
+      <div className="mx-auto max-w-[var(--studio-content-max)] py-10 studio-gutter studio-gutter--wide sf-sm:py-14">
         <div className="studio-section-image relative aspect-[16/9] overflow-hidden rounded-[var(--studio-card-radius)]">
           <Image src={heroImage} alt="" fill className="object-cover" sizes="100vw" priority />
         </div>

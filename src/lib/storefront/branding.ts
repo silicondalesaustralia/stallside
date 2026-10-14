@@ -14,7 +14,8 @@ import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
 import { isColourValue } from "@/lib/website/sections/section-style";
 import { colourCss, paletteOf } from "@/lib/website/sections/colour";
 import { siteButtonColoursOf, siteButtonVars, siteLinkVars } from "@/lib/storefront/site-buttons";
-import { parseSiteStyle, siteThemeVars } from "@/lib/storefront/site-style";
+import { parseSiteStyle } from "@/lib/storefront/site-style";
+import { siteThemeVars } from "@/lib/storefront/site-style-vars";
 import type {
   ResolvedStorefrontBranding,
   StorefrontConfig,
@@ -166,7 +167,7 @@ export function storefrontThemeStyle(
 export function storefrontButtonClass(branding: ResolvedStorefrontBranding): string {
   const radius =
     branding.buttonStyle === "rounded"
-      ? "rounded-xl"
-      : "rounded-[var(--radius-pill)]";
+      ? "rounded-[var(--site-btn-radius,0.75rem)]"
+      : "rounded-[var(--site-btn-radius,var(--radius-pill))]";
   return `${radius} bg-[var(--site-btn-bg,var(--leaf))] px-6 py-3 font-semibold text-[var(--site-btn-ink,#fff)] transition hover:brightness-95`;
 }

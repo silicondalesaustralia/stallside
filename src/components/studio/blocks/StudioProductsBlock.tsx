@@ -156,7 +156,7 @@ function ProductCard({
 
   return (
     <Link href={href} className={`group block ${cardClass}`}>
-      <div className={`relative overflow-hidden rounded-[var(--studio-card-radius)] bg-[var(--wash)] ${aspect}`}>
+      <div className={`studio-product-card__media relative overflow-hidden rounded-[var(--studio-card-radius)] bg-[var(--wash)] ${aspect}`}>
         {product.imageUrl ? (
           <Image
             src={product.imageUrl}

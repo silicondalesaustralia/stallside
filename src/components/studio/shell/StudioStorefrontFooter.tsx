@@ -89,7 +89,7 @@ export default function StudioStorefrontFooter({
           : undefined
       }
     >
-      <div className="mx-auto max-w-[var(--studio-content-max)] px-4 py-12 sf-sm:px-8 sf-sm:py-16">
+      <div className="mx-auto max-w-[var(--studio-content-max)] py-12 studio-gutter studio-gutter--wide sf-sm:py-16">
         <div className={`grid gap-10 sf-sm:grid-cols-2 ${gridCols}`}>
           <StudioFooterBrand branding={branding} footer={footer} />
           {columns.map((col) => (

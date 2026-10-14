@@ -31,7 +31,7 @@ export default function StudioImageTextBlock({
   const bodyClass = "mt-4 whitespace-pre-wrap text-lg text-[var(--muted)]";
 
   return (
-    <section className="studio-section mx-auto max-w-5xl px-4 py-[var(--studio-section-py,3rem)] sf-sm:px-6">
+    <section className="studio-section mx-auto max-w-5xl py-[var(--studio-section-py,3rem)] studio-gutter">
       <div
         className={`studio-split grid items-center gap-8 ${layout === "editorial" ? "sf-lg:grid-cols-1" : "sf-lg:grid-cols-2"} ${reverse ? "sf-lg:[direction:rtl]" : ""}`}
       >

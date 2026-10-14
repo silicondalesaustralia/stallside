@@ -3,89 +3,74 @@
 import { useStudioEditorChrome } from "./StudioEditorContext";
 import {
   CONTENT_WIDTHS,
+  CORNERS,
+  HEADER_SCROLLS,
+  SECTION_DIVIDERS,
   SECTION_SPACINGS,
-  type ContentWidth,
-  type SectionSpacing,
+  SIDE_MARGINS,
 } from "@/lib/storefront/site-style";
+import SiteChoice from "./SiteChoice";
+import SiteStyleSelect from "./SiteStyleSelect";
 
-const WIDTH_LABELS: Record<ContentWidth, string> = {
-  narrow: "Narrow",
-  standard: "Standard",
-  wide: "Wide",
-  full: "Full width",
-};
-const SPACING_LABELS: Record<SectionSpacing, string> = {
-  compact: "Compact",
-  standard: "Standard",
-  roomy: "Roomy",
-  spacious: "Spacious",
-};
+const WIDTHS = { narrow: "Narrow", standard: "Standard", wide: "Wide", full: "Full width" } as const;
+const SPACINGS = { compact: "Compact", standard: "Standard", roomy: "Roomy", spacious: "Spacious" } as const;
+const MARGINS = { tight: "Tight", standard: "Standard", wide: "Wide", extra: "Extra wide" } as const;
+const CORNER_LABELS = { square: "Square", soft: "Soft", rounded: "Rounded", round: "Very round" } as const;
+const HEADERS = { sticky: "Stays at the top", scroll: "Scrolls away" } as const;
+const DIVIDERS = { none: "None", line: "Thin lines", alternate: "Alternate backgrounds" } as const;
 
-function Choice<T extends string>({
-  label,
-  options,
-  labels,
-  value,
-  onChange,
-}: {
-  label: string;
-  options: readonly T[];
-  labels: Record<T, string>;
-  value: T;
-  onChange: (v: T) => void;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <p className="block text-xs font-semibold text-[var(--field)]">{label}</p>
-      <div className="grid grid-cols-2 gap-2">
-        {options.map((id) => (
-          <button
-            key={id}
-            type="button"
-            className={`rounded-lg border px-2 py-2 text-left text-xs font-semibold ${
-              value === id
-                ? "border-[var(--field)] bg-[var(--wash)] text-[var(--field)]"
-                : "border-[var(--line)] text-[var(--muted)]"
-            }`}
-            onClick={() => onChange(id)}
-          >
-            {labels[id]}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/** Site-wide content width and space between sections. "Standard" = the template's own. */
+/** Site-wide width, spacing, margins, corners, header behaviour and section dividers. */
 export default function SiteLayoutSettings() {
-  const { siteStyle = {}, setSiteStyleField, siteStyleStatus, siteStyleError } = useStudioEditorChrome();
+  const { siteStyle = {}, setSiteStyleField } = useStudioEditorChrome();
   const set = setSiteStyleField ?? (() => undefined);
 
   return (
     <div className="mt-6 space-y-4 border-t border-[var(--line)] pt-4">
       <p className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">Layout &amp; spacing</p>
-      <Choice
+      <SiteChoice
         label="Content width"
         options={CONTENT_WIDTHS}
-        labels={WIDTH_LABELS}
+        labels={WIDTHS}
         value={siteStyle.contentWidth ?? "standard"}
         onChange={(v) => set("contentWidth", v === "standard" ? undefined : v)}
       />
-      <Choice
+      <SiteChoice
         label="Space between sections"
         options={SECTION_SPACINGS}
-        labels={SPACING_LABELS}
+        labels={SPACINGS}
         value={siteStyle.sectionSpacing ?? "standard"}
         onChange={(v) => set("sectionSpacing", v === "standard" ? undefined : v)}
       />
-      {siteStyleStatus === "saving" ? <p className="text-xs text-[var(--muted)]">Saving…</p> : null}
-      {siteStyleStatus === "saved" ? (
-        <p className="text-xs text-[var(--muted)]">Saved to your draft. Goes live when you publish.</p>
-      ) : null}
-      {siteStyleStatus === "error" ? (
-        <p className="text-xs text-red-700">{siteStyleError ?? "Couldn't save. Try again."}</p>
-      ) : null}
+      <SiteChoice
+        label="Side margins"
+        options={SIDE_MARGINS}
+        labels={MARGINS}
+        value={siteStyle.sideMargins ?? "standard"}
+        onChange={(v) => set("sideMargins", v === "standard" ? undefined : v)}
+      />
+      <SiteStyleSelect
+        id="site-corners"
+        label="Corners (cards & images)"
+        options={CORNERS}
+        labels={CORNER_LABELS}
+        value={siteStyle.corners}
+        onChange={(v) => set("corners", v)}
+        defaultLabel="Template default"
+      />
+      <SiteChoice
+        label="Header"
+        options={HEADER_SCROLLS}
+        labels={HEADERS}
+        value={siteStyle.headerScroll ?? "sticky"}
+        onChange={(v) => set("headerScroll", v === "sticky" ? undefined : v)}
+      />
+      <SiteChoice
+        label="Between sections"
+        options={SECTION_DIVIDERS}
+        labels={DIVIDERS}
+        value={siteStyle.dividers ?? "none"}
+        onChange={(v) => set("dividers", v === "none" ? undefined : v)}
+      />
     </div>
   );
 }

@@ -22,7 +22,7 @@ export default function StudioTextBlock({
 
   if (editable) {
     return (
-      <section className="studio-section mx-auto max-w-3xl px-4 py-[var(--studio-section-py,3rem)] sf-sm:px-6">
+      <section className="studio-section mx-auto max-w-3xl py-[var(--studio-section-py,3rem)] studio-gutter">
         <InlineEditableText
           prop="heading"
           value={heading}
@@ -36,7 +36,7 @@ export default function StudioTextBlock({
   }
 
   return (
-    <section className="studio-section mx-auto max-w-3xl px-4 py-[var(--studio-section-py,3rem)] sf-sm:px-6">
+    <section className="studio-section mx-auto max-w-3xl py-[var(--studio-section-py,3rem)] studio-gutter">
       {heading ? <SectionHeadingTag className={headingClass}>{heading}</SectionHeadingTag> : null}
       {body ? <RichText value={body} className={bodyClass} /> : null}
     </section>

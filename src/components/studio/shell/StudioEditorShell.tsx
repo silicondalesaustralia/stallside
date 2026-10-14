@@ -10,7 +10,7 @@ import type { StudioMetadata } from "@/lib/studio/types";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
 import { resolveHeaderMenu } from "@/lib/studio/header-menu";
 import { paletteOf } from "@/lib/website/sections/colour";
-import { siteFontHrefs, siteLayoutVars, siteStyleAttrs } from "@/lib/storefront/site-style";
+import { siteFontHrefs, siteLayoutVars, siteStyleAttrs } from "@/lib/storefront/site-style-vars";
 import AnnouncementBarView from "./AnnouncementBarView";
 import { useStudioEditorChrome } from "@/components/studio/StudioEditorContext";
 import StudioStorefrontNav from "./StudioStorefrontNav";

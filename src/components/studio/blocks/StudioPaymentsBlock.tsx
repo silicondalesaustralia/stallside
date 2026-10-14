@@ -39,7 +39,7 @@ export default function StudioPaymentsBlock({
   const slide = layout === "slider" && brands.length > 3;
 
   return (
-    <section className="studio-section studio-payments mx-auto max-w-[var(--studio-content-max)] px-4 py-[var(--studio-section-py,2.5rem)] sf-sm:px-8">
+    <section className="studio-section studio-payments mx-auto max-w-[var(--studio-content-max)] py-[var(--studio-section-py,2.5rem)] studio-gutter studio-gutter--wide">
       {editable ? (
         <InlineEditableText prop="heading" value={heading} as="h2" className={`${HEADING} text-center`} placeholder="Add a heading (optional)" />
       ) : heading ? (

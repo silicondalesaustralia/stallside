@@ -2,10 +2,11 @@
 
 import { FOOTER_BRAND_MAX, FOOTER_TAGLINE_MAX, type FooterSettings } from "@/lib/studio/footer-settings";
 import { useStudioMetadata } from "./StudioEditorContext";
+import { footerSocialLinks } from "./shell/StudioFooterSocial";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
 
-type Toggle = "showTagline" | "showRegion" | "showEmail";
+type Toggle = "showTagline" | "showRegion" | "showEmail" | "showSocial";
 
 /** The footer's first column: name, tagline and which contact details show. */
 export default function FooterBrandFields({
@@ -21,6 +22,7 @@ export default function FooterBrandFields({
     { key: "showTagline", label: "Show tagline", available: true },
     { key: "showRegion", label: `Show location${branding.regionLabel ? ` (${branding.regionLabel})` : ""}`, available: Boolean(branding.regionLabel) },
     { key: "showEmail", label: `Show email (${branding.contactEmail})`, available: true },
+    { key: "showSocial", label: `Show social links (${footerSocialLinks(branding).map((l) => l.label).join(", ")})`, available: footerSocialLinks(branding).length > 0 },
   ];
 
   return (
@@ -67,7 +69,7 @@ export default function FooterBrandFields({
               Show phone ({branding.contactPhone})
             </label>
           ) : null}
-          <p className="text-xs text-[var(--muted)]">Change your email, phone and location in Business details.</p>
+          <p className="text-xs text-[var(--muted)]">Change your email, phone, location and social links in Business details.</p>
         </>
       ) : null}
     </div>

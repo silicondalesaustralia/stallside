@@ -214,7 +214,7 @@ export default function StudioStorefrontNav({
   let body: ReactNode;
   if (headerLayout === "centred") {
     body = (
-      <div className="mx-auto grid max-w-[var(--studio-content-max)] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-3 sf-sm:px-8 sf-sm:py-4">
+      <div className="mx-auto grid max-w-[var(--studio-content-max)] grid-cols-[1fr_auto_1fr] items-center gap-4 py-3 studio-gutter studio-gutter--wide sf-sm:py-4">
         <div className="hidden justify-self-start sf-md:block">{desktopNav}</div>
         <div className="col-start-2 justify-self-center">{brand}</div>
         <div className="justify-self-end">{actions}</div>
@@ -222,7 +222,7 @@ export default function StudioStorefrontNav({
     );
   } else if (headerLayout === "stacked") {
     body = (
-      <div className="mx-auto flex max-w-[var(--studio-content-max)] flex-col gap-2 px-4 py-3 sf-sm:px-8 sf-sm:py-4">
+      <div className="mx-auto flex max-w-[var(--studio-content-max)] flex-col gap-2 py-3 studio-gutter studio-gutter--wide sf-sm:py-4">
         <div className="flex items-center justify-between gap-4">
           {brand}
           {actions}
@@ -232,14 +232,14 @@ export default function StudioStorefrontNav({
     );
   } else if (headerLayout === "minimal") {
     body = (
-      <div className="mx-auto flex max-w-[var(--studio-content-max)] items-center justify-between gap-4 px-4 py-2.5 sf-sm:px-8">
+      <div className="mx-auto flex max-w-[var(--studio-content-max)] items-center justify-between gap-4 py-2.5 studio-gutter studio-gutter--wide">
         {brand}
         {actions}
       </div>
     );
   } else {
     body = (
-      <div className="mx-auto flex max-w-[var(--studio-content-max)] items-center justify-between gap-4 px-4 py-3 sf-sm:px-8 sf-sm:py-4">
+      <div className="mx-auto flex max-w-[var(--studio-content-max)] items-center justify-between gap-4 py-3 studio-gutter studio-gutter--wide sf-sm:py-4">
         {brand}
         {templateId === "farmhouse" && branding.regionLabel ? (
           <p className="hidden text-sm text-[var(--muted)] sf-lg:block">{branding.regionLabel}</p>
@@ -252,7 +252,7 @@ export default function StudioStorefrontNav({
 
   return (
     <header
-      className={`${navClass} sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--panel)]/95 backdrop-blur ${
+      className={`${navClass} ${branding.siteStyle.headerScroll === "scroll" ? "relative" : "sticky top-0"} z-30 border-b border-[var(--line)] bg-[var(--panel)]/95 backdrop-blur ${
         selected ? "ring-2 ring-inset ring-[var(--leaf)]" : ""
       } ${editable ? "cursor-pointer" : ""}`}
       onClick={

@@ -51,7 +51,7 @@ export default function StudioImageBlock({
   }
 
   return (
-    <section className="studio-section px-4 py-[var(--studio-section-py,3rem)] sf-sm:px-6">
+    <section className="studio-section py-[var(--studio-section-py,3rem)] studio-gutter">
       <figure className={`mx-auto ${widthClass}`}>
         {media}
         {caption ? (

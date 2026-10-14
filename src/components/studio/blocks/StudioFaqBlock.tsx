@@ -27,7 +27,7 @@ export default function StudioFaqBlock({
   if (!editable && !shown.length) return null;
 
   return (
-    <section className="studio-section mx-auto max-w-3xl px-4 py-[var(--studio-section-py,3rem)] sf-sm:px-6">
+    <section className="studio-section mx-auto max-w-3xl py-[var(--studio-section-py,3rem)] studio-gutter">
       {editable ? (
         <InlineEditableText prop="heading" value={heading} as="h2" className={HEADING} placeholder="Add a heading" />
       ) : heading ? (

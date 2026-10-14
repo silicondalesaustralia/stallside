@@ -1,14 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { SITE_FONTS, siteFont } from "@/lib/storefront/site-fonts";
-import {
-  parseSiteStyle,
-  siteFontHrefs,
-  siteLayoutVars,
-  siteStyleAttrs,
-  siteStyleSchema,
-  siteThemeVars,
-} from "@/lib/storefront/site-style";
+import { parseSiteStyle, siteStyleSchema } from "@/lib/storefront/site-style";
+import { siteFontHrefs, siteLayoutVars, siteStyleAttrs, siteThemeVars } from "@/lib/storefront/site-style-vars";
 import type { ThemePalette } from "@/lib/website/sections/colour";
 
 const palette = { accent: "#2f6f3e", secondary: "#c58b2b", dark: "#17361f", light: "#ffffff" } as unknown as ThemePalette;
@@ -59,9 +53,46 @@ describe("site style", () => {
     assert.equal(siteFontHrefs(style).length, 2);
   });
 
+  it("maps corners, buttons, headings, margins, cards and effects", () => {
+    const style = parseSiteStyle({
+      sideMargins: "wide",
+      corners: "square",
+      buttonShape: "pill",
+      buttonSize: "lg",
+      headingWeight: "800",
+      headingCase: "upper",
+      headingTracking: "wide",
+      productRatio: "portrait",
+      cardHover: "zoom",
+      animation: "fade",
+      dividers: "alternate",
+      headerScroll: "scroll",
+    });
+    assert.deepEqual(siteLayoutVars(style), {
+      "--gutter-scale": "1.75",
+      "--studio-card-radius": "0",
+      "--site-btn-radius": "9999px",
+      "--studio-btn-height": "3.375rem",
+      "--site-btn-px": "2rem",
+      "--site-btn-font": "1.0625rem",
+      "--studio-heading-weight": "800",
+      "--studio-heading-tracking": "0.06em",
+      "--site-heading-case": "uppercase",
+    });
+    assert.deepEqual(siteStyleAttrs(style), {
+      "data-site-heading-style": "",
+      "data-site-btn-shape": "pill",
+      "data-site-product-ratio": "portrait",
+      "data-site-card-hover": "zoom",
+      "data-site-animate": "fade",
+      "data-site-dividers": "alternate",
+    });
+    assert.equal(parseSiteStyle({ headingWeight: "900", corners: "blob" }).headingWeight, undefined);
+  });
+
   it("adds nothing when everything is the template default", () => {
     assert.deepEqual(siteThemeVars({}, palette), {});
-    assert.deepEqual(siteLayoutVars({ contentWidth: "standard", sectionSpacing: "standard" }), {});
-    assert.deepEqual(siteStyleAttrs({}), {});
+    assert.deepEqual(siteLayoutVars({ contentWidth: "standard", sectionSpacing: "standard", sideMargins: "standard" }), {});
+    assert.deepEqual(siteStyleAttrs({ animation: "none", dividers: "none" }), {});
   });
 });

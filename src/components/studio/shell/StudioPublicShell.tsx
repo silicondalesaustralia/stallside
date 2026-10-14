@@ -9,7 +9,7 @@ import type { StorefrontPageId } from "@/lib/storefront/types";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
 import { resolveHeaderMenu } from "@/lib/studio/header-menu";
 import { paletteOf } from "@/lib/website/sections/colour";
-import { siteFontHrefs, siteLayoutVars, siteStyleAttrs } from "@/lib/storefront/site-style";
+import { siteFontHrefs, siteLayoutVars, siteStyleAttrs } from "@/lib/storefront/site-style-vars";
 import AnnouncementBarView from "./AnnouncementBarView";
 import StudioStorefrontNav from "./StudioStorefrontNav";
 import StudioStorefrontFooter from "./StudioStorefrontFooter";

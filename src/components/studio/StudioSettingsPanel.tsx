@@ -21,6 +21,9 @@ import SiteButtonSettings from "./SiteButtonSettings";
 import SiteLinkSettings from "./SiteLinkSettings";
 import SiteTypographySettings from "./SiteTypographySettings";
 import SiteLayoutSettings from "./SiteLayoutSettings";
+import SiteCardsEffectsSettings from "./SiteCardsEffectsSettings";
+import SiteStyleSaveStatus from "./SiteStyleSaveStatus";
+import SiteSharingSettings from "./SiteSharingSettings";
 import FooterSettingsPanel from "./FooterSettingsPanel";
 import { paletteOf } from "@/lib/website/sections/colour";
 import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
@@ -110,9 +113,12 @@ export default function StudioSettingsPanel() {
         </button>
         <SiteTypographySettings />
         <SiteLayoutSettings />
+        <SiteCardsEffectsSettings />
+        <SiteStyleSaveStatus />
         <PageStyleSettings />
         <SiteButtonSettings />
         <SiteLinkSettings />
+        <SiteSharingSettings />
       </aside>
     );
   }

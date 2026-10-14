@@ -755,15 +755,76 @@
   line-height: 1.65;
 }
 
+/* Site Wide Edits: heading weight / case / letter spacing (site-style-vars.ts). */
+[data-site-heading-style] :is([data-section-heading], .studio-heading, .studio-display) {
+  font-weight: var(--studio-heading-weight, 700);
+  letter-spacing: var(--studio-heading-tracking, -0.02em);
+  text-transform: var(--site-heading-case, none);
+}
+
+/* Site Wide Edits: product card image shape and hover effect. */
+[data-site-product-ratio="square"] .studio-product-card__media { aspect-ratio: 1 / 1; }
+[data-site-product-ratio="portrait"] .studio-product-card__media { aspect-ratio: 4 / 5; }
+[data-site-product-ratio="landscape"] .studio-product-card__media { aspect-ratio: 4 / 3; }
+
+[data-site-card-hover] .studio-product-card,
+[data-site-card-hover] .studio-product-card__media img {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+[data-site-card-hover="none"] .studio-product-card__media img { transform: none !important; }
+[data-site-card-hover="lift"] .studio-product-card:hover { transform: translateY(-4px); }
+[data-site-card-hover="lift"] .studio-product-card:hover .studio-product-card__media { box-shadow: 0 10px 24px rgb(0 0 0 / 0.12); }
+[data-site-card-hover="zoom"] .studio-product-card:hover .studio-product-card__media img { transform: scale(1.07); }
+
+/* Site Wide Edits: section dividers. Each direct child of the page root is one section (editor and live site). */
+[data-site-dividers="line"] .studio-page-root > * + * {
+  border-top: 1px solid var(--line);
+}
+[data-site-dividers="alternate"] .studio-page-root > :nth-child(even) {
+  background-color: var(--wash);
+}
+
+/* Site Wide Edits: sections fade up as they scroll into view (live site only; browsers without scroll timelines show them as normal). */
+@keyframes site-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-site-animate="fade"] .studio-page-root > * {
+      animation: site-fade-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+.vendl-studio-editor [data-site-animate] .studio-page-root > * {
+  animation: none;
+}
+
+/* Site Wide Edits: button shape beats the templates' own button corners. */
+[data-site-btn-shape] .studio-btn.studio-btn {
+  border-radius: var(--site-btn-radius);
+}
+
+/* Side margins: section gutters scale with --gutter-scale (site-style-vars.ts). */
+.studio-gutter {
+  padding-inline: calc(1rem * var(--gutter-scale, 1));
+}
+@container storefront (min-width: 40rem) {
+  .studio-gutter { padding-inline: calc(1.5rem * var(--gutter-scale, 1)); }
+  .studio-gutter.studio-gutter--wide { padding-inline: calc(2rem * var(--gutter-scale, 1)); }
+}
+
 .studio-section__inner {
   margin-inline: auto;
   max-width: var(--studio-content-max, 64rem);
-  padding-inline: 1rem;
+  padding-inline: calc(1rem * var(--gutter-scale, 1));
 }
 
 @container storefront (min-width: 640px) {
   .studio-section__inner {
-    padding-inline: 2rem;
+    padding-inline: calc(2rem * var(--gutter-scale, 1));
   }
 }
 
@@ -810,9 +871,9 @@
   align-items: center;
   justify-content: center;
   min-height: var(--studio-btn-height);
-  padding-inline: 1.25rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
+  padding-inline: var(--site-btn-px, 1.25rem);
+  border-radius: var(--site-btn-radius, 9999px);
+  font-size: var(--site-btn-font, 0.875rem);
   font-weight: 600;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
@@ -1036,7 +1097,7 @@
 .studio-template-farmhouse .storefront-page-content,
 .studio-template-market .storefront-page-content {
   max-width: var(--studio-content-max, 64rem);
-  padding-inline: 1rem;
+  padding-inline: calc(1rem * var(--gutter-scale, 1));
   padding-block: var(--studio-section-py-mobile, 2rem);
 }
 
@@ -1044,7 +1105,7 @@
   .studio-template-artisan .storefront-page-content,
   .studio-template-farmhouse .storefront-page-content,
   .studio-template-market .storefront-page-content {
-    padding-inline: 2rem;
+    padding-inline: calc(2rem * var(--gutter-scale, 1));
     padding-block: var(--studio-section-py, 3rem);
   }
 }

@@ -46,6 +46,7 @@ export const footerSettingsSchema = z.object({
   showRegion: z.boolean().optional(),
   showEmail: z.boolean().optional(),
   showPhone: z.boolean().optional(),
+  showSocial: z.boolean().optional(),
   columns: z.array(footerColumn).max(FOOTER_MAX_COLUMNS).optional(),
   bottomText: z.string().max(FOOTER_BOTTOM_MAX).optional(),
   showHomeLink: z.boolean().optional(),
