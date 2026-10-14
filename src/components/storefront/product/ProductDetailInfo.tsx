@@ -4,6 +4,7 @@ import { formatMoney } from "@/lib/public-product";
 import type { ProductDetailView } from "@/lib/studio/product-detail-settings";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 import SectionCopy from "@/components/studio/SectionCopy";
+import SectionElement from "@/components/studio/SectionElement";
 import CartButtonLabels from "@/components/studio/CartButtonLabels";
 import RichText from "@/components/studio/RichText";
 import ProductBuyBox from "./ProductBuyBox";
@@ -28,19 +29,21 @@ export default function ProductDetailInfo({
 }) {
   return (
     <div className={className}>
-      <SectionHeadingTag defaultTag="h1" className="studio-display text-3xl font-bold tracking-tight text-[var(--field)]">
+      <SectionHeadingTag defaultTag="h1" el="name" className="studio-display text-3xl font-bold tracking-tight text-[var(--field)]">
         {product.name}
       </SectionHeadingTag>
       {product.isPreOrder ? (
-        <p className="mt-2 text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">
+        <SectionElement el="badge" className="mt-2 text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">
           <SectionCopy k="preOrderBadge" fallback="Pre-order" />
-        </p>
+        </SectionElement>
       ) : null}
-      <p className="mt-3 font-receipt text-2xl text-[var(--stand-secondary,var(--ok))]">
+      <SectionElement el="price" className="mt-3 font-receipt text-2xl text-[var(--stand-secondary,var(--ok))]">
         {formatMoney(product.priceCents, meta.currency)}
-      </p>
+      </SectionElement>
       {product.description ? (
-        <RichText value={product.description} className="mt-4 text-lg leading-relaxed text-[var(--muted)]" />
+        <SectionElement el="description" as="div" className="mt-4 text-lg leading-relaxed text-[var(--muted)]">
+          <RichText value={product.description} />
+        </SectionElement>
       ) : null}
       <CartButtonLabels />
       <ProductBuyBox

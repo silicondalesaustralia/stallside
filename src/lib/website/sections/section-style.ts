@@ -1,8 +1,8 @@
 import { z } from "zod";
+import { isColourValue } from "./colour-value";
+import { elementStyleSchema, parseElementStyles } from "./element-style";
 
-/** Theme colours a seller can pick; anything else must be a #rrggbb colour. */
-export const COLOUR_TOKENS = ["accent", "secondary", "wash", "panel", "dark", "light"] as const;
-export type ColourToken = (typeof COLOUR_TOKENS)[number];
+export { COLOUR_TOKENS, isColourValue, type ColourToken } from "./colour-value";
 
 export const HEADING_SIZES = ["sm", "md", "lg", "xl"] as const;
 export const BODY_SIZES = ["sm", "md", "lg"] as const;
@@ -32,22 +32,16 @@ export const IMAGE_RADIUS_SECTIONS = new Set(["CraftHeroSection", "CraftImageSec
 /** Sections with a side-by-side (image | text) layout that can be swapped. */
 export const SPLIT_SECTIONS = new Set(["CraftHeroSection", "CraftImageTextSection"]);
 
-const HEX = /^#[0-9a-f]{6}$/i;
-
-export function isColourValue(value: unknown): value is string {
-  return (
-    typeof value === "string" &&
-    ((COLOUR_TOKENS as readonly string[]).includes(value) || HEX.test(value))
-  );
-}
-
 export const colourValue = z
   .string()
   .refine(isColourValue, "Pick a theme colour or a #rrggbb colour.");
 
 export const sectionStyleSchema = z.object({
   background: colourValue.optional(),
+  headingColour: colourValue.optional(),
   textColour: colourValue.optional(),
+  /** Per-element looks (price, bullet points…) keyed by the ids in `section-elements.ts`. */
+  elements: z.record(z.string(), elementStyleSchema).optional(),
   headingSize: z.enum(HEADING_SIZES).optional(),
   bodySize: z.enum(BODY_SIZES).optional(),
   headingTag: z.enum(HEADING_TAGS).optional(),
@@ -68,7 +62,10 @@ export function parseSectionStyle(raw: unknown): SectionStyle {
   const out: SectionStyle = {};
   const obj = raw as Record<string, unknown>;
   if (isColourValue(obj.background)) out.background = obj.background;
+  if (isColourValue(obj.headingColour)) out.headingColour = obj.headingColour;
   if (isColourValue(obj.textColour)) out.textColour = obj.textColour;
+  const elements = parseElementStyles(obj.elements);
+  if (elements) out.elements = elements;
   if ((HEADING_SIZES as readonly unknown[]).includes(obj.headingSize)) {
     out.headingSize = obj.headingSize as HeadingSize;
   }

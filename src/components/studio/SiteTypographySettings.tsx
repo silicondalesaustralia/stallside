@@ -52,7 +52,7 @@ export default function SiteTypographySettings() {
       </div>
       <SiteStyleSelect id="site-heading-case" label="Heading capitals" options={HEADING_CASES} labels={CASES} value={siteStyle.headingCase} onChange={(v) => set("headingCase", v)} />
       <ColourField label="Heading colour" value={siteStyle.headingColour} onChange={(v) => set("headingColour", v)} palette={palette} noneLabel="Template default" />
-      <ColourField label="Text colour" value={siteStyle.textColour} onChange={(v) => set("textColour", v)} palette={palette} noneLabel="Template default" />
+      <ColourField label="Content text colour" value={siteStyle.textColour} onChange={(v) => set("textColour", v)} palette={palette} noneLabel="Template default" />
       <p className="text-xs text-[var(--muted)]">Applies to every page. A section&apos;s own colour or size settings still win.</p>
     </div>
   );

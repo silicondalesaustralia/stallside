@@ -1,4 +1,4 @@
-import { colourCss, colourHex, resolvedTextColour, type ThemePalette } from "./colour";
+import { colourCss, colourHex, resolvedHeadingColour, resolvedTextColour, type ThemePalette } from "./colour";
 import type { SectionStyle } from "./section-style";
 
 export type SectionStyleFrameAttrs = {
@@ -27,13 +27,14 @@ export function sectionStyleFrame(style: SectionStyle, palette: ThemePalette): S
     if (style.background !== "wash") vars["--wash"] = bg;
     classes.push("section-style--bg");
   }
+  // Hex for fixed tokens so `--field: var(--field)` can't become a cycle.
+  const heading = resolvedHeadingColour(style, palette);
+  if (heading) vars["--field"] = stableColour(heading, palette);
+  if (style.headingColour) classes.push("section-style--heading");
   const text = resolvedTextColour(style, palette);
   if (text) {
-    // Hex for fixed tokens so `--field: var(--field)` can't become a cycle.
-    const ink =
-      text === "accent" || text === "secondary" ? colourCss(text) : colourHex(text, palette);
+    const ink = stableColour(text, palette);
     vars["--section-ink"] = ink;
-    vars["--field"] = ink;
     vars["--ink"] = ink;
     vars["--muted"] = `color-mix(in srgb, ${ink} 78%, transparent)`;
     classes.push("section-style--ink");

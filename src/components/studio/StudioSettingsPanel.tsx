@@ -14,6 +14,8 @@ import SettingsGroup from "./SettingsGroup";
 import SectionImageLayoutFields from "./SectionImageLayoutFields";
 import { BUTTON_SECTIONS, parseSectionStyle, type SectionStyle } from "@/lib/website/sections/section-style";
 import SectionButtonFields from "./SectionButtonFields";
+import SectionElementStyles from "./SectionElementStyles";
+import { sectionElements } from "@/lib/website/sections/section-elements";
 import ButtonLinkField from "./ButtonLinkField";
 import { LINKABLE_BUTTON_SECTIONS } from "@/lib/studio/button-link";
 import PageStyleSettings from "./PageStyleSettings";
@@ -60,7 +62,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export default function StudioSettingsPanel() {
   const { chromeTarget, setChromeTarget } = useStudioEditorChrome();
   const metadata = useStudioMetadata();
-  const [openGroups, setOpenGroups] = useState({ content: true, button: false, style: false });
+  const [openGroups, setOpenGroups] = useState({ content: true, button: false, elements: false, style: false });
   const toggleGroup = (group: keyof typeof openGroups, open: boolean) =>
     setOpenGroups((prev) => ({ ...prev, [group]: open }));
   const { actions, selected } = useEditor((state, query) => {
@@ -211,6 +213,16 @@ export default function StudioSettingsPanel() {
               style={sectionStyle}
               palette={paletteOf(metadata.resolvedBranding)}
               setField={setStyleField}
+            />
+          </SettingsGroup>
+        ) : null}
+        {sectionElements(selected.type).length ? (
+          <SettingsGroup title="Text elements" open={openGroups.elements} onToggle={(o) => toggleGroup("elements", o)}>
+            <SectionElementStyles
+              elements={sectionElements(selected.type)}
+              value={sectionStyle.elements}
+              onChange={(v) => setStyleField("elements", v)}
+              palette={paletteOf(metadata.resolvedBranding)}
             />
           </SettingsGroup>
         ) : null}

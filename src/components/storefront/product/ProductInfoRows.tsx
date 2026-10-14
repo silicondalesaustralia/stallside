@@ -1,4 +1,5 @@
 import type { InfoRow, InfoRowIcon } from "@/lib/studio/product-detail-settings";
+import SectionElement from "@/components/studio/SectionElement";
 
 const PATHS: Record<InfoRowIcon, string> = {
   pickup: "M3 10l9-6 9 6v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",
@@ -13,15 +14,15 @@ const PATHS: Record<InfoRowIcon, string> = {
 export default function ProductInfoRows({ rows }: { rows: InfoRow[] }) {
   if (!rows.length) return null;
   return (
-    <ul className="mt-6 space-y-2.5 border-t border-[var(--line)] pt-5">
+    <SectionElement el="bullets" as="ul" className="mt-6 space-y-2.5 border-t border-[var(--line)] pt-5 text-sm text-[var(--ink)]">
       {rows.map((row) => (
-        <li key={row.id} className="flex items-start gap-3 text-sm text-[var(--ink)]">
+        <li key={row.id} className="flex items-start gap-3">
           <svg viewBox="0 0 24 24" aria-hidden className="mt-0.5 size-5 shrink-0 fill-none stroke-[var(--field)] stroke-[1.75] [stroke-linecap:round] [stroke-linejoin:round]">
             <path d={PATHS[row.icon]} />
           </svg>
           <span>{row.text}</span>
         </li>
       ))}
-    </ul>
+    </SectionElement>
   );
 }

@@ -68,6 +68,12 @@ export function resolvedTextColour(style: SectionStyle, palette: ThemePalette): 
   return contrastRatio(bg, TOKEN_HEX.light) >= contrastRatio(bg, TOKEN_HEX.dark) ? "light" : "dark";
 }
 
+/** Heading colour for a section: the seller's choice, or picked for the background. Text colour never changes it. */
+export function resolvedHeadingColour(style: SectionStyle, palette: ThemePalette): string | null {
+  if (style.headingColour) return style.headingColour;
+  return resolvedTextColour({ background: style.background }, palette);
+}
+
 /** Below WCAG AA for body text. */
 export function hasLowContrast(style: SectionStyle, palette: ThemePalette, pageBackground = "light"): boolean {
   const text = resolvedTextColour(style, palette);

@@ -695,6 +695,16 @@
   color: var(--section-ink);
 }
 
+.section-style--heading [data-section-heading] {
+  color: var(--field);
+}
+
+/* An element with its own size (SectionElement) keeps it on rich-text paragraphs too. */
+.section-style [data-el-sized] :is(p, li) {
+  font-size: inherit !important;
+  line-height: inherit;
+}
+
 /* Cards and white buttons keep dark ink on their own light surface. */
 .section-style--ink
   :is(.bg-white, .bg-\[var\(--panel\)\], .studio-product-card, .studio-btn--secondary):not(

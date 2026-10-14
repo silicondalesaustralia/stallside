@@ -72,6 +72,7 @@ export default function SectionStyleSettings({
   return (
     <div className="space-y-4">
       <ColourField label="Background" value={style.background} onChange={(v) => patch("background", v)} palette={palette} noneLabel="None (template default)" />
+      <ColourField label="Heading colour" value={style.headingColour} onChange={(v) => patch("headingColour", v)} palette={palette} noneLabel="Auto (readable on the background)" />
       <ColourField label="Text colour" value={style.textColour} onChange={(v) => patch("textColour", v)} palette={palette} noneLabel="Auto (readable on the background)" />
       {hasLowContrast(style, palette) ? (
         <p className="text-xs text-red-700">Text may be hard to read on this background. Try Auto text colour.</p>
