@@ -81,7 +81,7 @@ export default function DashboardMobileNav({
               {visibleNavGroups(showWebsite).map((group, index) => (
                 <div key={group.heading ?? `group-${index}`} className={index > 0 ? "mt-2" : undefined}>
                   {group.heading ? (
-                    <p className="px-2 pb-0.5 pt-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--ink-on-dark)]/45">
+                    <p className="px-2 pb-0.5 pt-1 text-[11px] font-bold uppercase tracking-wide text-[var(--marigold)]/85">
                       {group.heading}
                     </p>
                   ) : null}

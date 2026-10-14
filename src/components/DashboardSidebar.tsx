@@ -6,6 +6,7 @@ import BrandLockup from "@/components/BrandLockup";
 import BrandMark from "@/components/BrandMark";
 import DashNavIcon from "@/components/DashNavIcon";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
+import SidebarNavGroup from "@/components/SidebarNavGroup";
 import { activeNavHref, visibleNavGroups } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
@@ -107,27 +108,23 @@ export default function DashboardSidebar({
       </div>
       <nav className="flex-1 overflow-y-auto px-2 py-3">
         {groups.map((group, index) => (
-          <div key={group.heading ?? `group-${index}`} className={index > 0 ? "mt-3" : undefined}>
-            {group.heading && !collapsed ? (
-              <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--ink-on-dark)]/45">
-                {group.heading}
-              </p>
-            ) : index > 0 ? (
-              <div className="mx-2 mb-2 border-t border-white/10" />
-            ) : null}
-            <div className="space-y-0.5">
-              {group.links.map((link) => (
-                <NavItem
-                  key={link.href}
-                  href={link.href}
-                  label={link.label}
-                  collapsed={collapsed}
-                  active={link.href === activeHref}
-                  badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
-                />
-              ))}
-            </div>
-          </div>
+          <SidebarNavGroup
+            key={group.heading ?? `group-${index}`}
+            group={group}
+            first={index === 0}
+            collapsed={collapsed}
+            activeHref={activeHref}
+            renderLink={(link) => (
+              <NavItem
+                key={link.href}
+                href={link.href}
+                label={link.label}
+                collapsed={collapsed}
+                active={link.href === activeHref}
+                badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
+              />
+            )}
+          />
         ))}
       </nav>
       {collapsed ? null : (
