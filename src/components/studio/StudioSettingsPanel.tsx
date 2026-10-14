@@ -11,6 +11,8 @@ import PresetStyleField from "./PresetStyleField";
 import SectionImageField from "./SectionImageField";
 import SectionStyleSettings from "./SectionStyleSettings";
 import SettingsGroup from "./SettingsGroup";
+import SectionImageLayoutFields from "./SectionImageLayoutFields";
+import { parseSectionStyle, type SectionStyle } from "@/lib/website/sections/section-style";
 import PageStyleSettings from "./PageStyleSettings";
 import { paletteOf } from "@/lib/website/sections/colour";
 import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
@@ -92,6 +94,14 @@ export default function StudioSettingsPanel() {
     });
   }
 
+  const sectionStyle = parseSectionStyle(selected.props.style);
+  function setStyleField<K extends keyof SectionStyle>(key: K, value: SectionStyle[K] | undefined) {
+    const next: SectionStyle = { ...sectionStyle };
+    if (value === undefined) delete next[key];
+    else next[key] = value;
+    setProp("style", next);
+  }
+
   return (
     <aside className="vendl-studio-settings" role="complementary" aria-label="Section settings">
       <div className="vendl-studio-settings__head">
@@ -131,6 +141,13 @@ export default function StudioSettingsPanel() {
             setProp={setProp}
           />
         ) : null}
+        <SectionImageLayoutFields
+          craftName={selected.type}
+          imageRadius={sectionStyle.imageRadius}
+          swapSides={sectionStyle.swapSides}
+          onRadius={(v) => setStyleField("imageRadius", v)}
+          onSwap={(v) => setStyleField("swapSides", v || undefined)}
+        />
         </SettingsGroup>
         <SettingsGroup title="Style" open={openGroups.style} onToggle={(o) => toggleGroup("style", o)}>
           <SectionStyleSettings

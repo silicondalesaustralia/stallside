@@ -41,6 +41,11 @@ export default function SectionImageLayoutFields({
       {hasImage ? (
         <div className="space-y-1.5">
           <p className="block text-xs font-semibold text-[var(--field)]">Image corners</p>
+          {craftName === "CraftHeroSection" ? (
+            <p className="text-xs text-[var(--muted)]">
+              For Split, Produce split, collage and banner layouts. Full-background heroes have no corners.
+            </p>
+          ) : null}
           <div className="flex flex-wrap gap-1.5">
             <button
               type="button"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent, type DragEvent } from "react";
 import { uploadSectionImage } from "@/app/dashboard/(gated)/website/media/actions";
 import { prepareImageFile } from "@/lib/prepare-image-file";
 import { LOGO_IMAGE_MAX_BYTES } from "@/lib/image-upload-limits";
@@ -20,13 +20,39 @@ const BUTTON =
 export default function SectionImageField({ label, value, onChange, fallbackUrl, fallbackLabel }: Props) {
   const [status, setStatus] = useState<"idle" | "uploading">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
   const shown = value || fallbackUrl || "";
 
-  async function onFile(e: ChangeEvent<HTMLInputElement>) {
+  function onFile(e: ChangeEvent<HTMLInputElement>) {
     const input = e.currentTarget;
     const file = input.files?.[0];
     input.value = "";
+    if (file) void upload(file);
+  }
+
+  function onDrop(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragging(false);
+    if (status === "uploading") return;
+    const file = e.dataTransfer.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("That file isn't an image. Drop a JPG, PNG or WebP.");
+      return;
+    }
+    void upload(file);
+  }
+
+  function onDragOver(e: DragEvent<HTMLDivElement>) {
+    if (!Array.from(e.dataTransfer.types).includes("Files")) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = "copy";
+    if (!dragging) setDragging(true);
+  }
+
+  async function upload(file: File) {
     setStatus("uploading");
     setError(null);
     try {
@@ -47,14 +73,29 @@ export default function SectionImageField({ label, value, onChange, fallbackUrl,
   return (
     <div className="space-y-2">
       <p className="block text-xs font-semibold text-[var(--field)]">{label}</p>
-      {shown ? (
-        // eslint-disable-next-line @next/next/no-img-element -- seller-uploaded URL of unknown host
-        <img src={shown} alt="" className="aspect-video w-full rounded-lg border border-[var(--line)] object-cover" />
-      ) : (
-        <div className="flex aspect-video w-full items-center justify-center rounded-lg border border-dashed border-[var(--line)] text-xs text-[var(--muted)]">
-          No image yet
-        </div>
-      )}
+      <div
+        className={`relative rounded-lg ${dragging ? "ring-2 ring-[var(--leaf)] ring-offset-2" : ""}`}
+        onDragOver={onDragOver}
+        onDragLeave={(e) => {
+          if (!(e.relatedTarget instanceof Node && e.currentTarget.contains(e.relatedTarget))) setDragging(false);
+        }}
+        onDrop={onDrop}
+      >
+        {shown ? (
+          // eslint-disable-next-line @next/next/no-img-element -- seller-uploaded URL of unknown host
+          <img src={shown} alt="" className="aspect-video w-full rounded-lg border border-[var(--line)] object-cover" />
+        ) : (
+          <div className="flex aspect-video w-full items-center justify-center rounded-lg border border-dashed border-[var(--line)] px-3 text-center text-xs text-[var(--muted)]">
+            Drag an image here, or upload one
+          </div>
+        )}
+        {dragging || status === "uploading" ? (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-white/80 text-xs font-semibold text-[var(--field)]">
+            {status === "uploading" ? "Uploading…" : "Drop to use this image"}
+          </div>
+        ) : null}
+      </div>
+      <p className="text-xs text-[var(--muted)]">Tip: drag an image from your computer onto the picture above.</p>
       {!value && fallbackUrl ? (
         <p className="text-xs text-[var(--muted)]">{fallbackLabel ?? "Using your default image."}</p>
       ) : null}
