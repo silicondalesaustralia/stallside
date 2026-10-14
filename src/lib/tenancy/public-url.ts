@@ -120,10 +120,17 @@ export function storefrontPublicUrl(
     return `${storefrontSubdomainOrigin(cleanSlug)}${suffix}${draftQ}`;
   }
 
-  const apex = publicApexHost();
-  const base =
-    publicHostMode() === "staging" ? `https://${apex}` : appBaseUrl();
-  return `${base}${pathStyleRoot(cleanSlug)}${suffix}${draftQ}`;
+  return `${pathStyleOrigin()}${pathStyleRoot(cleanSlug)}${suffix}${draftQ}`;
+}
+
+/**
+ * Origin for `/shop/{slug}` links. Branch previews (`*.vercel.app`) link to themselves:
+ * staging.vendl.app serves the `staging` branch, which may not have the preview's code.
+ */
+function pathStyleOrigin(): string {
+  const base = appBaseUrl();
+  if (publicHostMode() !== "staging" || /^https:\/\/[^/]+\.vercel\.app$/i.test(base)) return base;
+  return `https://${publicApexHost()}`;
 }
 
 function normalizePublicPath(path?: string): string {

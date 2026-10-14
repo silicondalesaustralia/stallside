@@ -149,6 +149,11 @@ describe("public URL helpers", () => {
       delete process.env.NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY;
       assert.equal(storefrontSubdomainPrimaryEnabled(), false);
       assert.equal(storefrontPublicUrl("Jackos-Buns"), "https://staging.vendl.app/shop/jackos-buns");
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+      process.env.NEXT_PUBLIC_APP_URL = "https://stallside-git-feature-social-kit-x.vercel.app";
+      assert.equal(storefrontPublicUrl("jackos-buns"), "https://stallside-git-feature-social-kit-x.vercel.app/shop/jackos-buns");
+      if (appUrl === undefined) delete process.env.NEXT_PUBLIC_APP_URL;
+      else process.env.NEXT_PUBLIC_APP_URL = appUrl;
       process.env.NEXT_PUBLIC_STOREFRONT_SUBDOMAIN_PRIMARY = "1";
       assert.equal(storefrontPublicUrl("jackos-buns"), "https://jackos-buns.staging.vendl.app");
       process.env.VENDL_HOST_ENV = "production";
