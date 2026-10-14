@@ -4,6 +4,8 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/legal";
 import { standProductPath } from "@/lib/stand-seo";
+import { shopProductPath } from "@/lib/storefront/paths";
+import { publishedWebsiteForStand, standWebsiteUrl } from "@/lib/storefront/stand-website";
 import { productImageList } from "@/lib/product-images";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import ProductEditForm from "./ProductEditForm";
@@ -58,7 +60,10 @@ export default async function EditProductPage({
     select: { id: true, name: true, priceCents: true },
   });
 
-  const path = standProductPath(product.stand.slug, product.slug);
+  const website = await publishedWebsiteForStand(product.stand.slug);
+  const publicUrl = website
+    ? standWebsiteUrl(website, shopProductPath(website.storefrontSlug, product.slug, false, ""))
+    : `${SITE_URL}${standProductPath(product.stand.slug, product.slug)}`;
   const priceTiers = parsePriceTiers(product.priceTiers);
 
   return (
@@ -95,7 +100,7 @@ export default async function EditProductPage({
           standId: product.stand.id,
           standName: product.stand.name,
           standSlug: product.stand.slug,
-          publicUrl: `${SITE_URL}${path}`,
+          publicUrl,
           cardTier: true,
           preOrderEligible: product.preOrderEligible,
           freshnessNote: product.freshnessNote,

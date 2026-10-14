@@ -5,13 +5,9 @@ import { useState } from "react";
 
 export default function ProductPublicCard({
   publicUrl,
-  standSlug,
-  slug,
   onError,
 }: {
   publicUrl: string;
-  standSlug: string;
-  slug: string;
   onError: (msg: string) => void;
 }) {
   const [copied, setCopied] = useState(false);
@@ -36,7 +32,7 @@ export default function ProductPublicCard({
           {copied ? "Copied" : "Copy link"}
         </button>
         <Link
-          href={`/s/${standSlug}/${slug}`}
+          href={publicUrl}
           target="_blank"
           className="font-semibold text-[var(--leaf-dark)] underline"
         >
