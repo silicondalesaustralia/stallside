@@ -271,7 +271,7 @@ export default function CustomerChoiceCheckout({
             <button
               type="button"
               onClick={addAmount}
-              className="rounded-[var(--radius)] bg-[var(--leaf)] px-5 py-3 text-lg font-semibold text-white"
+              className="rounded-[var(--radius)] bg-[var(--site-btn-bg,var(--leaf))] px-5 py-3 text-lg font-semibold text-[var(--site-btn-ink,#fff)]"
             >
               Add
             </button>
@@ -304,7 +304,7 @@ export default function CustomerChoiceCheckout({
             type="button"
             disabled={totalCents < CUSTOMER_CHOICE_MIN_CENTS}
             onClick={goPay}
-            className="w-full rounded-[var(--radius)] bg-[var(--leaf)] px-5 py-4 text-xl font-semibold text-white disabled:opacity-50"
+            className="w-full rounded-[var(--radius)] bg-[var(--site-btn-bg,var(--leaf))] px-5 py-4 text-xl font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-50"
           >
             Continue to pay
           </button>

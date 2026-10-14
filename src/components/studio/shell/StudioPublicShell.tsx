@@ -55,12 +55,11 @@ export default function StudioPublicShell({
         <main>{children}</main>
         <StudioStorefrontFooter
           branding={branding}
-          storefrontSlug={metadata.storefrontSlug}
+          linkContext={{ ...metadata, draft }}
           enabledPages={metadata.enabledPages}
-          draft={draft}
-          basePath={metadata.basePath}
           templateId={metadata.templateId}
           customFooterPages={metadata.customFooterPages}
+          footer={metadata.footer}
         />
       </StorefrontLinkProvider>
     </div>

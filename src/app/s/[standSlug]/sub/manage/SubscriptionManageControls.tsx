@@ -106,7 +106,7 @@ export default function SubscriptionManageControls({
           type="button"
           disabled={wait}
           onClick={() => run("resume", resumeShopperSubscription)}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--site-btn-bg,var(--leaf))] px-4 py-2.5 text-sm font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-60"
         >
           {busy === "resume" ? <Spinner /> : null}
           {busy === "resume" ? "Resuming…" : "Resume subscription"}

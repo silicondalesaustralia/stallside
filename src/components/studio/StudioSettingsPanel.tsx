@@ -17,6 +17,8 @@ import SectionButtonFields from "./SectionButtonFields";
 import ButtonLinkField from "./ButtonLinkField";
 import { LINKABLE_BUTTON_SECTIONS } from "@/lib/studio/button-link";
 import PageStyleSettings from "./PageStyleSettings";
+import SiteButtonSettings from "./SiteButtonSettings";
+import FooterSettingsPanel from "./FooterSettingsPanel";
 import { paletteOf } from "@/lib/website/sections/colour";
 import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
 import type { CraftHeroProps } from "@/components/craft/sections/CraftHeroSection";
@@ -69,6 +71,7 @@ export default function StudioSettingsPanel() {
     }
   }, [selected, chromeTarget, setChromeTarget]);
 
+  if (chromeTarget === "footer") return <FooterSettingsPanel />;
   if (chromeTarget) {
     return <HeaderStyleSettings key={chromeTarget} focus={chromeTarget} />;
   }
@@ -89,7 +92,18 @@ export default function StudioSettingsPanel() {
         >
           Edit header, menu &amp; announcement bar
         </button>
+        <button
+          type="button"
+          className="mt-2 block text-sm font-semibold text-[var(--field)] underline"
+          onClick={() => {
+            actions.selectNode(undefined);
+            setChromeTarget?.("footer");
+          }}
+        >
+          Edit footer
+        </button>
         <PageStyleSettings />
+        <SiteButtonSettings />
       </aside>
     );
   }

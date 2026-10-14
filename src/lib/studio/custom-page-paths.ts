@@ -36,12 +36,13 @@ export function footerPagesFromCustomPages(
   storefrontSlug: string,
   draft?: boolean,
   basePath?: string,
-): { label: string; href: string; column: import("./custom-pages").FooterColumnId }[] {
+): { slug: string; label: string; href: string; column: import("./custom-pages").FooterColumnId }[] {
   const { resolveFooterColumn } = require("./custom-pages") as typeof import("./custom-pages");
   return pages
     .filter((p) => p.enabled && p.showInFooter)
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((p) => ({
+      slug: p.slug,
       label: p.navLabel || p.title,
       href: customPagePublicPath(storefrontSlug, p, draft, basePath),
       column: resolveFooterColumn(p),

@@ -29,7 +29,7 @@ export default function StandGoToCartBar({ standSlug }: { standSlug: string }) {
       <div className="mx-auto max-w-lg">
         <Link
           href={cartHref}
-          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-4 text-lg font-semibold text-white"
+          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-[var(--site-btn-bg,var(--leaf))] px-6 py-4 text-lg font-semibold text-[var(--site-btn-ink,#fff)]"
         >
           Go to cart
           <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-white/20 px-2 text-sm">

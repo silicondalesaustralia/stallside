@@ -99,7 +99,7 @@ export default function StorefrontNav({
         {cartCount > 0 ? (
           <Link
             href={shopCartPath(storefrontSlug, draft, basePath)}
-            className="shrink-0 rounded-full bg-[var(--leaf)] px-4 py-2 text-sm font-semibold text-white"
+            className="shrink-0 rounded-full bg-[var(--site-btn-bg,var(--leaf))] px-4 py-2 text-sm font-semibold text-[var(--site-btn-ink,#fff)]"
           >
             Cart ({cartCount})
           </Link>

@@ -51,6 +51,9 @@ export type StorefrontThemeOverrides = {
   logoHeight?: number;
   /** Colour behind the sections on every page (theme token or #rrggbb). */
   pageBackground?: string;
+  /** Every main button on the site, unless a section sets its own (theme token or #rrggbb). */
+  buttonColour?: string;
+  buttonTextColour?: string;
 };
 
 /** Website-only identity. Lives in the draft and goes live on publish. */
@@ -92,6 +95,8 @@ export type ResolvedStorefrontBranding = {
   brandMark: import("./header-style").BrandMarkMode;
   logoHeight: number;
   pageBackground: string | null;
+  buttonColour: string | null;
+  buttonTextColour: string | null;
   regionLabel: string | null;
   contactEmail: string;
   contactPhone: string | null;

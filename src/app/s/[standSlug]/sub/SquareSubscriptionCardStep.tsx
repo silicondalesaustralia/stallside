@@ -49,7 +49,7 @@ export default function SquareSubscriptionCardStep({
       <button
         type="button"
         disabled={pending || !card}
-        className="rounded-lg bg-[var(--leaf)] px-4 py-3 font-semibold text-white disabled:opacity-60"
+        className="rounded-lg bg-[var(--site-btn-bg,var(--leaf))] px-4 py-3 font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-60"
         onClick={() => {
           if (!card) return;
           setMessage(null);

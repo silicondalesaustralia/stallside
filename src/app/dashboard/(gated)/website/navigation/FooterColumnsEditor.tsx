@@ -65,7 +65,8 @@ export default function FooterColumnsEditor({
             Brand
           </p>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Business name, tagline, region and contact email — from Business details.
+            Business name, tagline, region and contact email — from Business details. Change the wording in
+            the website builder (click the footer).
           </p>
         </div>
 

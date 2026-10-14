@@ -8,8 +8,10 @@ import type { CommercePageKind } from "@/lib/studio/commerce-pages";
 import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style";
 import type { HeaderMenu } from "@/lib/studio/header-menu";
 import type { AnnouncementBar } from "@/lib/studio/announcement-bar";
+import type { FooterSettings } from "@/lib/studio/footer-settings";
+import type { SiteButtonColours } from "@/lib/storefront/site-buttons";
 
-export type ChromeTarget = "header" | "announcement" | null;
+export type ChromeTarget = "header" | "announcement" | "footer" | null;
 
 export type StudioSaveStatus = "idle" | "saving" | "saved" | "conflict" | "error";
 
@@ -61,6 +63,15 @@ export type CraftEditorChrome = {
   setAnnouncementBar?: (bar: AnnouncementBar) => void;
   announcementBarStatus?: "idle" | "saving" | "saved" | "error";
   announcementBarError?: string | null;
+  footer?: FooterSettings | null;
+  /** Shows the change at once and saves it to the draft; null = automatic footer. */
+  setFooter?: (footer: FooterSettings | null) => void;
+  footerStatus?: "idle" | "saving" | "saved" | "error";
+  footerError?: string | null;
+  siteButtonColours?: SiteButtonColours;
+  setSiteButtonColours?: (colours: SiteButtonColours) => void;
+  siteButtonColoursStatus?: "idle" | "saving" | "saved" | "error";
+  siteButtonColoursError?: string | null;
   sitePageBackground?: string | null;
   setSitePageBackground?: (value: string | null) => void;
   sitePageBackgroundStatus?: "idle" | "saving" | "saved" | "error";

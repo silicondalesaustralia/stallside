@@ -167,7 +167,7 @@ export default function CheckoutPayStep({
           type="button"
           disabled={pending}
           onClick={onCash}
-          className="flex items-center gap-4 rounded-[var(--radius)] bg-[var(--leaf)] px-5 py-5 text-left text-xl font-semibold text-white disabled:opacity-50"
+          className="flex items-center gap-4 rounded-[var(--radius)] bg-[var(--site-btn-bg,var(--leaf))] px-5 py-5 text-left text-xl font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-50"
         >
           <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white/15 text-white">
             <PaymentBrandIcon brand="cash" className="size-7" />

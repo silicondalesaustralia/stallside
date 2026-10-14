@@ -287,7 +287,7 @@ export default function ProductDetailActions({
             product.soldOut || (singleGroup ? multiPickCount < 1 : false)
           }
           onClick={() => addAndGo(true)}
-          className="w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-base font-semibold text-white disabled:opacity-40"
+          className="w-full rounded-[var(--radius-pill)] bg-[var(--site-btn-bg,var(--leaf))] px-5 py-3 text-base font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-40"
         >
           {checkoutLabel}
         </button>

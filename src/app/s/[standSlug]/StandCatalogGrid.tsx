@@ -131,7 +131,7 @@ export default function StandCatalogGrid({
                   type="button"
                   disabled={product.soldOut}
                   onClick={() => addOne(product)}
-                  className="mt-4 w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-3 py-2.5 text-sm font-semibold text-white disabled:opacity-40 sm:mt-auto sm:py-2"
+                  className="mt-4 w-full rounded-[var(--radius-pill)] bg-[var(--site-btn-bg,var(--leaf))] px-3 py-2.5 text-sm font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-40 sm:mt-auto sm:py-2"
                 >
                   {product.hasOptions ? "Choose options" : "Add"}
                 </button>

@@ -57,7 +57,7 @@ export default function ChannelInterestForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
+        className="rounded-[var(--radius-pill)] bg-[var(--site-btn-bg,var(--leaf))] px-5 py-3 text-sm font-semibold text-[var(--site-btn-ink,#fff)] hover:bg-[var(--leaf-dark)] disabled:opacity-50"
       >
         {pending ? "Sending…" : "Tell the stall owner"}
       </button>

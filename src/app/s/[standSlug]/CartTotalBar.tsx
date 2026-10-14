@@ -26,7 +26,7 @@ export default function CartTotalBar({
           type="button"
           disabled={disabled}
           onClick={onContinue}
-          className="w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-4 text-lg font-semibold text-white disabled:opacity-50"
+          className="w-full rounded-[var(--radius-pill)] bg-[var(--site-btn-bg,var(--leaf))] px-6 py-4 text-lg font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-50"
         >
           <SectionCopy k="continue" fallback="Continue to payment" />
         </button>

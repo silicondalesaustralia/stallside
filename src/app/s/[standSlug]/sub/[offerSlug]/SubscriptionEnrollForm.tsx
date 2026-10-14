@@ -154,7 +154,7 @@ export default function SubscriptionEnrollForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+        className="rounded-lg bg-[var(--site-btn-bg,var(--leaf))] px-4 py-3 text-sm font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-60"
       >
         {pending ? "Starting…" : "Continue to payment"}
       </button>

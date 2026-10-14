@@ -38,9 +38,16 @@ export default function StudioEditorShell({
     sitePageBackground,
     headerMenu,
     announcementBar,
+    footer,
+    siteButtonColours,
   } = useStudioEditorChrome();
-  const liveBranding =
-    sitePageBackground === undefined ? branding : { ...branding, pageBackground: sitePageBackground };
+  const liveBranding = {
+    ...branding,
+    ...(sitePageBackground === undefined ? {} : { pageBackground: sitePageBackground }),
+    ...(siteButtonColours
+      ? { buttonColour: siteButtonColours.background, buttonTextColour: siteButtonColours.text }
+      : {}),
+  };
   const { actions } = useEditor();
 
   function selectHeader() {
@@ -95,11 +102,17 @@ export default function StudioEditorShell({
         </main>
         <StudioStorefrontFooter
           branding={branding}
-          storefrontSlug={metadata.storefrontSlug}
+          linkContext={{ ...metadata, draft: true }}
           enabledPages={enabledPages}
-          draft
-          basePath={metadata.basePath}
           templateId={metadata.templateId}
+          customFooterPages={metadata.customFooterPages}
+          footer={footer ?? null}
+          editable
+          selected={chromeTarget === "footer"}
+          onSelect={() => {
+            actions.selectNode(undefined);
+            setChromeTarget?.("footer");
+          }}
         />
       </StorefrontLinkProvider>
     </div>

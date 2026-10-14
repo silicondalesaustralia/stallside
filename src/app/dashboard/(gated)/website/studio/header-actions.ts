@@ -5,6 +5,7 @@ import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import { writeDraftConfigKey, type DraftKeyResult } from "@/lib/website/persistence/draft-key";
 import { headerMenuProblem, headerMenuSchema, type HeaderMenu } from "@/lib/studio/header-menu";
 import { announcementBarProblem, announcementBarSchema, type AnnouncementBar } from "@/lib/studio/announcement-bar";
+import { footerSettingsProblem, footerSettingsSchema, type FooterSettings } from "@/lib/studio/footer-settings";
 
 /** Saves the seller's header menu to the draft, or clears it (null) to go back to automatic. */
 export async function saveStorefrontHeaderMenu(input: {
@@ -46,5 +47,25 @@ export async function saveStorefrontAnnouncementBar(input: {
   } catch (err) {
     console.error("[announcement bar save]", err);
     return { ok: false, error: err instanceof Error ? err.message : "Could not save the announcement bar." };
+  }
+}
+
+/** Saves the footer (wording, link columns, colours) to the draft, or clears it (null) for automatic. */
+export async function saveStorefrontFooter(input: {
+  footer: unknown;
+  expectedRevision: number;
+}): Promise<DraftKeyResult> {
+  const { owner } = await requireWebsiteOwner();
+  let footer: FooterSettings | null = null;
+  if (input.footer !== null) {
+    const parsed = footerSettingsSchema.safeParse(input.footer);
+    if (!parsed.success) return { ok: false, error: footerSettingsProblem(input.footer) ?? "Check the footer." };
+    footer = parsed.data;
+  }
+  try {
+    return await writeDraftConfigKey({ owner, key: "footer", value: footer, expectedRevision: input.expectedRevision });
+  } catch (err) {
+    console.error("[footer save]", err);
+    return { ok: false, error: err instanceof Error ? err.message : "Could not save the footer." };
   }
 }

@@ -15,10 +15,12 @@ export default function NavigationEditor({
   initialItems,
   hasMenus,
   customHeaderMenu,
+  customFooterColumns,
 }: {
   initialItems: NavEditorItem[];
   hasMenus: boolean;
   customHeaderMenu: boolean;
+  customFooterColumns: boolean;
 }) {
   const [items, setItems] = useState(initialItems);
   const [pending, startTransition] = useTransition();
@@ -32,7 +34,16 @@ export default function NavigationEditor({
           <p className="font-semibold">Your header uses a custom menu</p>
           <p className="mt-1 text-[var(--muted)]">
             It&apos;s built in the website builder (click the header, then Menu links). The header settings
-            below only apply if you reset it to automatic. Footer settings still apply.
+            below only apply if you reset it to automatic.
+          </p>
+        </section>
+      ) : null}
+      {customFooterColumns ? (
+        <section className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--field)]">
+          <p className="font-semibold">Your footer uses custom link columns</p>
+          <p className="mt-1 text-[var(--muted)]">
+            They&apos;re built in the website builder (click the footer, then Link columns). The footer settings
+            below only apply if you go back to automatic columns.
           </p>
         </section>
       ) : null}

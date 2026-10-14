@@ -40,7 +40,7 @@ export default function SectionButtonFields({
     <div className="space-y-4">
       <PillChoice label="Button size" options={BUTTON_SIZES} labels={SIZE_LABELS} value={style.buttonSize} onChange={(v) => setField("buttonSize", v)} />
       <PillChoice label="Button text size" options={BUTTON_SIZES} labels={SIZE_LABELS} value={style.buttonTextSize} onChange={(v) => setField("buttonTextSize", v)} />
-      <ColourField label="Button colour" value={style.buttonColour} onChange={(v) => setField("buttonColour", v)} palette={palette} noneLabel="Template default" />
+      <ColourField label="Button colour" value={style.buttonColour} onChange={(v) => setField("buttonColour", v)} palette={palette} noneLabel="Same as site buttons" />
       <ColourField label="Button text colour" value={style.buttonTextColour} onChange={(v) => setField("buttonTextColour", v)} palette={palette} noneLabel="Auto (readable on the button)" />
       {lowContrast ? (
         <p className="text-xs text-red-700">The button text may be hard to read. Try Auto text colour.</p>

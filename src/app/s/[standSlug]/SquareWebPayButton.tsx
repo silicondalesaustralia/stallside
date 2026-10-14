@@ -101,7 +101,7 @@ export default function SquareWebPayButton(props: Props) {
       <button
         type="button"
         disabled={disabled || pending || !payments}
-        className="w-full rounded-lg bg-[var(--leaf)] px-4 py-3 text-base font-semibold text-white disabled:opacity-50"
+        className="w-full rounded-lg bg-[var(--site-btn-bg,var(--leaf))] px-4 py-3 text-base font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-50"
         onClick={() => {
           start(async () => {
             try {

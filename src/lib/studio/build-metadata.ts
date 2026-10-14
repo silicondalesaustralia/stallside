@@ -5,6 +5,7 @@ import { ensureCustomPages } from "./custom-pages";
 import { customPagePublicPath, footerPagesFromCustomPages } from "./custom-page-paths";
 import { parseHeaderMenu } from "./header-menu";
 import { parseAnnouncementBar } from "./announcement-bar";
+import { parseFooterSettings } from "./footer-settings";
 import { standPaymentBrands, withSquarePaymentsReady } from "@/lib/stand-payment-brands";
 import type { PaymentBrand } from "@/lib/payment-brand-assets";
 import { ensureBlogSettings } from "./blog";
@@ -78,6 +79,7 @@ export async function buildStudioMetadata(
     headerMenu: parseHeaderMenu(configSource),
     paymentBrands,
     announcementBar: parseAnnouncementBar(configSource),
+    footer: parseFooterSettings(configSource),
     customFooterPages: footerPagesFromCustomPages(
       pagesForNav,
       ctx.storefront.slug,

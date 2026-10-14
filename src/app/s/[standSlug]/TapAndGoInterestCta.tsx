@@ -38,7 +38,7 @@ export default function TapAndGoInterestCta({ standSlug }: { standSlug: string }
             type="button"
             disabled={pending}
             onClick={onNotify}
-            className="mt-4 w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-4 text-lg font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
+            className="mt-4 w-full rounded-[var(--radius-pill)] bg-[var(--site-btn-bg,var(--leaf))] px-5 py-4 text-lg font-semibold text-[var(--site-btn-ink,#fff)] hover:bg-[var(--leaf-dark)] disabled:opacity-50"
           >
             {pending ? "Sending…" : "Notify Stall Owner"}
           </button>

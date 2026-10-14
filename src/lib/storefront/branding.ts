@@ -11,7 +11,8 @@ import {
 } from "@/lib/storefront/header-style";
 import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
 import { isColourValue } from "@/lib/website/sections/section-style";
-import { colourCss } from "@/lib/website/sections/colour";
+import { colourCss, paletteOf } from "@/lib/website/sections/colour";
+import { siteButtonColoursOf, siteButtonVars } from "@/lib/storefront/site-buttons";
 import type {
   ResolvedStorefrontBranding,
   StorefrontConfig,
@@ -116,6 +117,8 @@ export function resolveStorefrontBranding(input: {
       : headerDefaults.brandMark,
     logoHeight: clampLogoHeight(overrides.logoHeight) ?? LOGO_HEIGHT_DEFAULT,
     pageBackground: isColourValue(overrides.pageBackground) ? overrides.pageBackground : null,
+    buttonColour: isColourValue(overrides.buttonColour) ? overrides.buttonColour : null,
+    buttonTextColour: isColourValue(overrides.buttonTextColour) ? overrides.buttonTextColour : null,
     regionLabel: regionParts.length > 0 ? regionParts.join(", ") : null,
     contactEmail: storefront.contactEmail?.trim() || input.owner.contactEmail,
     contactPhone: storefront.showPhone ? input.owner.contactPhone : null,
@@ -145,6 +148,7 @@ export function storefrontThemeStyle(
     style["--font-sans"] = fonts.bodyFamily;
   }
   if (branding.pageBackground) style.backgroundColor = colourCss(branding.pageBackground);
+  Object.assign(style, siteButtonVars(siteButtonColoursOf(branding), paletteOf(branding)));
   return style as CSSProperties;
 }
 
@@ -153,5 +157,5 @@ export function storefrontButtonClass(branding: ResolvedStorefrontBranding): str
     branding.buttonStyle === "rounded"
       ? "rounded-xl"
       : "rounded-[var(--radius-pill)]";
-  return `${radius} bg-[var(--leaf)] px-6 py-3 font-semibold text-white transition hover:brightness-95`;
+  return `${radius} bg-[var(--site-btn-bg,var(--leaf))] px-6 py-3 font-semibold text-[var(--site-btn-ink,#fff)] transition hover:brightness-95`;
 }

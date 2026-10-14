@@ -6,6 +6,7 @@ import { ensureCustomPages } from "@/lib/studio/custom-pages";
 import { ensureBlogSettings } from "@/lib/studio/blog";
 import { buildNavEditorItems } from "@/lib/studio/navigation";
 import { parseHeaderMenu } from "@/lib/studio/header-menu";
+import { parseFooterSettings } from "@/lib/studio/footer-settings";
 import { syncBuiltinCustomPages } from "../pages/actions";
 import NavigationEditor from "./NavigationEditor";
 
@@ -48,6 +49,7 @@ export default async function WebsiteNavigationPage({
         initialItems={items}
         hasMenus={hasMenus}
         customHeaderMenu={parseHeaderMenu(storefront.draftConfig) !== null}
+        customFooterColumns={Boolean(parseFooterSettings(storefront.draftConfig)?.columns)}
       />
     </main>
   );

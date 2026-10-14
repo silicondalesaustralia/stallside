@@ -95,7 +95,7 @@ export default function SquareManageControls(props: {
         <button
           type="button"
           disabled={pending}
-          className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+          className="rounded-lg bg-[var(--site-btn-bg,var(--leaf))] px-4 py-2.5 text-sm font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-60"
           onClick={() => run(resumeSquareSubscription)}
         >
           Resume subscription

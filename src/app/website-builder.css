@@ -775,8 +775,8 @@
 }
 
 .studio-btn--primary {
-  background: var(--leaf-dark);
-  color: white;
+  background: var(--site-btn-bg, var(--leaf-dark));
+  color: var(--site-btn-ink, white);
 }
 
 .studio-btn--primary:hover {
@@ -825,8 +825,8 @@
 
 /* Section style: primary buttons. Doubled class beats template button rules. */
 .section-style.section-style--btn .studio-btn--primary {
-  background: var(--section-btn-bg, var(--leaf-dark));
-  color: var(--section-btn-ink, white);
+  background: var(--section-btn-bg, var(--site-btn-bg, var(--leaf-dark)));
+  color: var(--section-btn-ink, var(--site-btn-ink, white));
 }
 
 .section-style[data-button-size="sm"] .studio-btn--primary { min-height: 2.25rem; padding-inline: 1rem; }

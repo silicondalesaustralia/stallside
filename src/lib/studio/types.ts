@@ -32,9 +32,12 @@ export type StudioMetadata = PuckSpikeMetadata & {
   /** The seller's own header menu, or null for the automatic one. */
   headerMenu: import("./header-menu").HeaderMenu | null;
   announcementBar: import("./announcement-bar").AnnouncementBar | null;
+  /** The seller's footer wording, links and colours, or null for the automatic footer. */
+  footer: import("./footer-settings").FooterSettings | null;
   /** Payment methods customers can actually use right now (stand toggles + connected providers). */
   paymentBrands: import("@/lib/payment-brand-assets").PaymentBrand[];
   customFooterPages: {
+    slug: string;
     label: string;
     href: string;
     column: import("./custom-pages").FooterColumnId;

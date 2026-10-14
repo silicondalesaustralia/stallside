@@ -25,7 +25,7 @@ export default function CheckoutCashConfirm({
         type="button"
         disabled={pending}
         onClick={onConfirm}
-        className="w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-4 text-xl font-semibold text-white disabled:opacity-50"
+        className="w-full rounded-[var(--radius-pill)] bg-[var(--site-btn-bg,var(--leaf))] px-5 py-4 text-xl font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-50"
       >
         {pending ? "Logging…" : "I have paid cash"}
       </button>

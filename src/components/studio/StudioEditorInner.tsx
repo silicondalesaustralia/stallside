@@ -39,6 +39,9 @@ import { useLayoutAutosave } from "./useLayoutAutosave";
 import { useSitePageBackground } from "./useSitePageBackground";
 import { useHeaderMenu } from "./useHeaderMenu";
 import { useAnnouncementBar } from "./useAnnouncementBar";
+import { useFooterSettings } from "./useFooterSettings";
+import { useSiteButtonColours } from "./useSiteButtonColours";
+import { siteButtonColoursOf } from "@/lib/storefront/site-buttons";
 import type { AutosaveTargetInput } from "@/app/dashboard/(gated)/website/autosave/actions";
 
 export default function StudioEditorInner({
@@ -124,6 +127,12 @@ export default function StudioEditorInner({
   });
   const headerMenuState = useHeaderMenu({ initial: metadata.headerMenu, revisionRef, runExclusive });
   const announcementState = useAnnouncementBar({ initial: metadata.announcementBar, revisionRef, runExclusive });
+  const footerState = useFooterSettings({ initial: metadata.footer, revisionRef, runExclusive });
+  const siteButtonState = useSiteButtonColours({
+    initial: siteButtonColoursOf(metadata.resolvedBranding),
+    revisionRef,
+    runExclusive,
+  });
   const [chromeTarget, setChromeTarget] = useState<ChromeTarget>(null);
   const [headerLayout, setHeaderLayout] = useState<HeaderLayout>(
     metadata.resolvedBranding.headerLayout,
@@ -243,6 +252,8 @@ export default function StudioEditorInner({
       ...sitePageBackground,
       ...headerMenuState,
       ...announcementState,
+      ...footerState,
+      ...siteButtonState,
       pageOptions,
       currentPage,
     }),
@@ -278,6 +289,8 @@ export default function StudioEditorInner({
       sitePageBackground,
       headerMenuState,
       announcementState,
+      footerState,
+      siteButtonState,
     ],
   );
 
