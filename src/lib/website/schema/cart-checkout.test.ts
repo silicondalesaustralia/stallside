@@ -6,6 +6,8 @@ import { vendlTypeForCraftName } from "@/lib/website/sections/registry";
 import type { SectionInstance, WebsitePage } from "./definition";
 import { hasErrors } from "./diagnostics";
 import { validatePage } from "./validate";
+import { stripePublishableKeyFor } from "@/lib/stripe-publishable-key";
+import { checkoutUiParams } from "@/lib/stripe-embedded-checkout";
 
 function section(type: string, visibility: "public" | "hidden" = "public"): SectionInstance {
   return { id: `s-${type}`, type, schemaVersion: 1, variant: "default", visibility, content: {}, settings: {} };
@@ -46,5 +48,32 @@ describe("cart & order confirmation layouts", () => {
 
   it("keep the cart section off other pages", () => {
     assert.equal(hasErrors(validatePage(page("home", [section("cart")]), "p")), true);
+  });
+});
+
+describe("embedded Stripe checkout", () => {
+  it("only uses a browser key matching the secret key's mode", () => {
+    const saved = { ...process.env };
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_live_abc";
+    delete process.env.STRIPE_PUBLISHABLE_KEY_TEST;
+    delete process.env.STRIPE_EMBEDDED_CHECKOUT;
+    assert.equal(stripePublishableKeyFor("live"), "pk_live_abc");
+    assert.equal(stripePublishableKeyFor("test"), null);
+    process.env.STRIPE_PUBLISHABLE_KEY_TEST = "pk_test_xyz";
+    assert.equal(stripePublishableKeyFor("test"), "pk_test_xyz");
+    process.env.STRIPE_EMBEDDED_CHECKOUT = "off";
+    assert.equal(stripePublishableKeyFor("live"), null);
+    process.env = saved;
+  });
+
+  it("embeds with a return URL, else redirects with success and cancel URLs", () => {
+    assert.deepEqual(checkoutUiParams("pk_live_abc", "https://shop.example/checkout/success", "https://x/c"), {
+      ui_mode: "embedded_page",
+      return_url: "https://shop.example/checkout/success?session_id={CHECKOUT_SESSION_ID}",
+    });
+    assert.deepEqual(checkoutUiParams(null, "https://shop.example/checkout/success", "https://x/c"), {
+      success_url: "https://shop.example/checkout/success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://x/c",
+    });
   });
 });

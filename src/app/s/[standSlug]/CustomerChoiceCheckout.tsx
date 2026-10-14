@@ -9,6 +9,8 @@ import {
   confirmLocalTransferCheckout,
 } from "./actions";
 import { startCardCheckout } from "./digital-checkout-actions";
+import StripeEmbeddedCheckout from "@/components/checkout/StripeEmbeddedCheckout";
+import type { EmbeddedCheckoutInfo } from "@/lib/stripe-embedded-checkout";
 import { formatMoney } from "@/lib/public-product";
 import { dollarsToCents, stallsidePassOnFeeCents } from "@/lib/money";
 import {
@@ -66,6 +68,7 @@ export default function CustomerChoiceCheckout({
   const [amountInput, setAmountInput] = useState("");
   const [step, setStep] = useState<Step>("amount");
   const [error, setError] = useState<string | null>(null);
+  const [cardCheckout, setCardCheckout] = useState<EmbeddedCheckoutInfo | null>(null);
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
   const [paidTotalCents, setPaidTotalCents] = useState(0);
@@ -173,9 +176,15 @@ export default function CustomerChoiceCheckout({
         customerEmail: customerEmail.trim() || undefined,
         customerName: customerName.trim() || undefined,
         customerPhone: customerPhone.trim() || undefined,
+        embedded: true,
       });
       if ("error" in result && result.error) {
         setError(result.error);
+        return;
+      }
+      if ("embedded" in result) {
+        clearChoiceCart(standSlug);
+        setCardCheckout(result.embedded);
         return;
       }
       if ("url" in result && result.url) {
@@ -183,6 +192,18 @@ export default function CustomerChoiceCheckout({
         window.location.href = result.url;
       }
     });
+  }
+
+  if (cardCheckout) {
+    return (
+      <div className="mt-6">
+        <StripeEmbeddedCheckout
+          checkout={cardCheckout}
+          backLabel="Back"
+          onBack={() => setCardCheckout(null)}
+        />
+      </div>
+    );
   }
 
   if (done) {

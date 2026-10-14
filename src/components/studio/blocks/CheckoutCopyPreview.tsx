@@ -2,7 +2,7 @@ import SectionCopy from "@/components/studio/SectionCopy";
 import { CHECKOUT_COPY, type CheckoutCopyKey } from "@/lib/storefront/checkout-copy";
 
 const GROUPS: { title: string; keys: CheckoutCopyKey[] }[] = [
-  { title: "Choosing how to pay", keys: ["payHeading", "reserveHeading", "payCash", "cardButton", "noPayment", "backToCart"] },
+  { title: "Choosing how to pay", keys: ["payHeading", "reserveHeading", "payCash", "cardButton", "noPayment", "backToCart", "backFromCard"] },
   {
     title: "Pre-order contact & delivery details",
     keys: ["nameLabel", "emailLabel", "phoneLabel", "deliveryHeading", "streetLabel", "suburbLabel", "postcodeLabel", "deliveryNotesLabel"],

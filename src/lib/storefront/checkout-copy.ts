@@ -6,6 +6,7 @@ export const CHECKOUT_COPY = {
   cardButton: "Checkout via credit card or these options:",
   noPayment: "No payment methods are available at this stand right now.",
   backToCart: "Back to cart",
+  backFromCard: "Back to payment options",
   nameLabel: "Your name",
   emailLabel: "Email",
   phoneLabel: "Phone (optional)",

@@ -50,6 +50,8 @@ import { useShopHref } from "@/components/storefront/use-cart-href";
 import PreOrderDetails from "./PreOrderDetails";
 import CartUpsellOffer from "./CartUpsellOffer";
 import { startCardCheckout } from "./digital-checkout-actions";
+import StripeEmbeddedCheckout from "@/components/checkout/StripeEmbeddedCheckout";
+import type { EmbeddedCheckoutInfo } from "@/lib/stripe-embedded-checkout";
 
 type LocalTransferInfo = {
   methodId: string;
@@ -146,6 +148,7 @@ export default function StandCartCheckout({
   const [paidVia, setPaidVia] = useState<CartPaidVia | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cardTabHint, setCardTabHint] = useState(false);
+  const [cardCheckout, setCardCheckout] = useState<{ info: EmbeddedCheckoutInfo; lines: CartLine[] } | null>(null);
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
   const [customerName, setCustomerName] = useState("");
@@ -433,9 +436,15 @@ export default function StandCartCheckout({
         deliverySuburb: deliverOnly ? deliverySuburb.trim() : undefined,
         deliveryPostcode: deliverOnly ? deliveryPostcode.trim() : undefined,
         deliveryNotes: deliverOnly ? deliveryNotes.trim() : undefined,
+        embedded: !isEmbeddedCheckout(),
       });
       if ("error" in result && result.error) {
         setError(result.error);
+        return;
+      }
+      if ("embedded" in result) {
+        setCardCheckout({ info: result.embedded, lines: cartLines });
+        persist([]);
         return;
       }
       if ("url" in result && result.url) {
@@ -458,6 +467,20 @@ export default function StandCartCheckout({
 
   if (!hydrated) {
     return <p className="mt-8 text-[var(--muted)]">Loading cart…</p>;
+  }
+
+  if (cardCheckout) {
+    return (
+      <div className="mt-6">
+        <StripeEmbeddedCheckout
+          checkout={cardCheckout.info}
+          onBack={() => {
+            persist(cardCheckout.lines);
+            setCardCheckout(null);
+          }}
+        />
+      </div>
+    );
   }
 
   if (done) {

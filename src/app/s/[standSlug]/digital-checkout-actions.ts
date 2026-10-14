@@ -20,6 +20,9 @@ import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
 import { checkoutCancelledUrl } from "@/lib/order-access-token";
 import { checkoutSuccessUrl } from "@/lib/storefront/checkout-return-url";
+import { platformStripeMode, stripePublishableKeyFor } from "@/lib/stripe-publishable-key";
+import { checkoutUiParams, type EmbeddedCheckoutInfo } from "@/lib/stripe-embedded-checkout";
+import { ensurePaymentMethodDomain } from "@/lib/stripe-payment-domain";
 import { stripeLineItemsFromCart } from "@/lib/stripe-cart-lines";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
 import { proVolumeForFees } from "@/lib/pro-volume-fee";
@@ -41,7 +44,9 @@ export async function startCardCheckout(input: {
   deliverySuburb?: string;
   deliveryPostcode?: string;
   deliveryNotes?: string;
-}) {
+  /** Show Stripe Checkout inside the page when possible (else redirect). */
+  embedded?: boolean;
+}): Promise<{ error: string } | { url: string } | { embedded: EmbeddedCheckoutInfo }> {
   try {
     const customerName = (input.customerName ?? "").trim().slice(0, 120);
     const customerEmail = (input.customerEmail ?? "")
@@ -68,7 +73,7 @@ export async function startCardCheckout(input: {
             receiptEmail: customerEmail || null,
             claimFirstOrder: Boolean(customerEmail),
           });
-    if ("error" in loaded) return { error: loaded.error };
+    if ("error" in loaded) return { error: loaded.error ?? "Could not start card checkout." };
 
     const {
       stand,
@@ -253,11 +258,14 @@ export async function startCardCheckout(input: {
       });
     }
 
+    const publishableKey = input.embedded
+      ? stripePublishableKeyFor(demo ? "test" : platformStripeMode())
+      : null;
+    if (publishableKey) await ensurePaymentMethodDomain(stripe, stripeAccountId);
     const sessionParams = {
       mode: "payment" as const,
       line_items: lineItems.filter((l) => l.price_data.unit_amount > 0),
-      success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: checkoutCancelledUrl(order.id),
+      ...checkoutUiParams(publishableKey, successUrl, checkoutCancelledUrl(order.id)),
       ...(customerEmail ? { customer_email: customerEmail } : {}),
       metadata: {
         orderId: order.id,
@@ -306,6 +314,9 @@ export async function startCardCheckout(input: {
       data: { stripeCheckoutSessionId: session.id },
     });
 
+    if (publishableKey && session.client_secret) {
+      return { embedded: { clientSecret: session.client_secret, publishableKey, stripeAccountId } };
+    }
     if (!session.url) {
       return { error: "Could not start Stripe Checkout." };
     }
