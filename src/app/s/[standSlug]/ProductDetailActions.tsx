@@ -277,6 +277,7 @@ export default function ProductDetailActions({
             product.soldOut || (singleGroup ? multiPickCount < 1 : false)
           }
           onClick={() => addAndGo(false)}
+          data-product-add
           className="w-full rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-5 py-3 text-base font-semibold disabled:opacity-40"
         >
           {addLabel}

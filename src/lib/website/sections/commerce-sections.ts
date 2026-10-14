@@ -2,6 +2,13 @@ import { z } from "zod";
 import { WEBSITE_LIMITS as L } from "@/lib/website/schema/limits";
 import { ALL_PAGE_KINDS, count, entityId, heading } from "./fields";
 import type { SectionDefinition } from "./types";
+import {
+  PRODUCT_IMAGE_RATIOS,
+  PRODUCT_IMAGE_SIDES,
+  PRODUCT_LAYOUTS,
+  infoRowsSchema,
+  productTabsSchema,
+} from "@/lib/studio/product-detail-settings";
 import { CATEGORY_VARIANTS, NEXT_DROP_VARIANTS, PRODUCT_VARIANTS, DEFAULT_ONLY } from "./variants";
 
 export const productGrid: SectionDefinition = {
@@ -81,10 +88,18 @@ export const productDetail: SectionDefinition = {
   label: "Product detail",
   variants: DEFAULT_ONLY,
   defaultVariant: "default",
-  content: z.object({}),
+  content: z.object({
+    infoRows: infoRowsSchema.optional(),
+    tabs: productTabsSchema.optional(),
+  }),
   settings: z.object({
     showBackLink: z.boolean().optional(),
     showReviews: z.boolean().optional(),
+    layout: z.enum(PRODUCT_LAYOUTS).optional(),
+    imageRatio: z.enum(PRODUCT_IMAGE_RATIOS).optional(),
+    imageSide: z.enum(PRODUCT_IMAGE_SIDES).optional(),
+    enlarge: z.boolean().optional(),
+    stickyCart: z.boolean().optional(),
   }),
   pageKinds: ["product"],
   singleton: true,

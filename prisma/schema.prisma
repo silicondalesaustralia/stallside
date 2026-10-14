@@ -1287,6 +1287,10 @@ model Product {
   slug                        String
   description                 String?
   imageUrl                    String?
+  /**
+   * Extra product photos after imageUrl, in display order (max 7).
+   */
+  galleryImageUrls            String[]                   @default([])
   seoTitle                    String?
   seoDescription              String?
   priceCents                  Int

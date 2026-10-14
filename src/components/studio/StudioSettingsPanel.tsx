@@ -21,6 +21,8 @@ import SiteButtonSettings from "./SiteButtonSettings";
 import SiteLinkSettings from "./SiteLinkSettings";
 import SiteTypographySettings from "./SiteTypographySettings";
 import SiteLayoutSettings from "./SiteLayoutSettings";
+import ProductDetailSettings from "./ProductDetailSettings";
+import type { CraftProductDetailProps } from "@/components/studio/sections/CraftProductDetailSection";
 import SiteCardsEffectsSettings from "./SiteCardsEffectsSettings";
 import SiteStyleSaveStatus from "./SiteStyleSaveStatus";
 import SiteSharingSettings from "./SiteSharingSettings";
@@ -178,7 +180,7 @@ export default function StudioSettingsPanel() {
         ) : null}
         {selected.type === "CraftProductDetailSection" ? (
           <ProductDetailSettings
-            props={selected.props as { showReviews: boolean; showBackLink: boolean }}
+            props={selected.props as CraftProductDetailProps}
             setProp={setProp}
           />
         ) : null}
@@ -492,35 +494,6 @@ function AboutSettings({
           <option value="editorial">Editorial</option>
         </select>
       </Field>
-    </>
-  );
-}
-
-function ProductDetailSettings({
-  props,
-  setProp,
-}: {
-  props: { showReviews: boolean; showBackLink: boolean };
-  setProp: (k: string, v: unknown) => void;
-}) {
-  return (
-    <>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={props.showBackLink}
-          onChange={(e) => setProp("showBackLink", e.target.checked)}
-        />
-        Show back to shop link
-      </label>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={props.showReviews}
-          onChange={(e) => setProp("showReviews", e.target.checked)}
-        />
-        Show product reviews under detail
-      </label>
     </>
   );
 }

@@ -5,10 +5,25 @@ import CraftSectionChrome from "@/components/craft/CraftSectionChrome";
 import { useCraftMetadata } from "@/components/craft/CraftEditorContext";
 import StudioProductDetailBlock from "@/components/studio/blocks/StudioProductDetailBlock";
 import type { StudioMetadata } from "@/lib/studio/types";
+import {
+  productDetailView,
+  type InfoRow,
+  type ProductImageRatio,
+  type ProductLayout,
+  type ProductTab,
+} from "@/lib/studio/product-detail-settings";
 
 export type CraftProductDetailProps = {
   showReviews: boolean;
   showBackLink: boolean;
+  /** Missing on pages saved before layouts existed; those render as "simple". */
+  layout?: ProductLayout;
+  imageRatio?: ProductImageRatio;
+  imageSide?: "left" | "right";
+  enlarge?: boolean;
+  stickyCart?: boolean;
+  infoRows?: InfoRow[];
+  tabs?: ProductTab[];
 };
 
 function isStudioMetadata(meta: unknown): meta is StudioMetadata {
@@ -31,6 +46,7 @@ export default function CraftProductDetailSection(props: CraftProductDetailProps
         {isStudioMetadata(metadata) ? (
           <StudioProductDetailBlock
             showBackLink={props.showBackLink}
+            view={productDetailView(props)}
             metadata={metadata}
             isEditing
           />

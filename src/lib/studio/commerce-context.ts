@@ -60,7 +60,7 @@ export async function buildSampleCommerceContext(
   if (kind === "product") {
     return {
       ...base,
-      product: catalog[0],
+      product: catalog.find((p) => p.images.length > 1) ?? catalog[0],
       catalogProducts: catalog,
     };
   }

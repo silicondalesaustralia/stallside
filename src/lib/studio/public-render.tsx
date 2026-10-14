@@ -23,6 +23,7 @@ import StudioPickupBlock from "@/components/studio/blocks/StudioPickupBlock";
 import StudioSignupBlock from "@/components/studio/blocks/StudioSignupBlock";
 import StudioFarmStandBlock from "@/components/studio/blocks/StudioFarmStandBlock";
 import StudioProductDetailBlock from "@/components/studio/blocks/StudioProductDetailBlock";
+import { productDetailView } from "@/lib/studio/product-detail-settings";
 import StudioMenuDetailBlock from "@/components/studio/blocks/StudioMenuDetailBlock";
 import StudioCartBlock from "@/components/studio/blocks/StudioCartBlock";
 import StudioOrderConfirmationBlock from "@/components/studio/blocks/StudioOrderConfirmationBlock";
@@ -138,6 +139,7 @@ function StudioSectionRender({
         <>
           <StudioProductDetailBlock
             showBackLink={Boolean(p.showBackLink ?? true)}
+            view={productDetailView(p)}
             metadata={metadata}
           />
           {Boolean(p.showReviews) &&

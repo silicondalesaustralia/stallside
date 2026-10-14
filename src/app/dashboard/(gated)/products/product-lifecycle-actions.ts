@@ -69,6 +69,7 @@ export async function duplicateProduct(productId: string) {
       slug,
       description: source.description,
       imageUrl: source.imageUrl,
+      galleryImageUrls: source.galleryImageUrls,
       seoTitle: source.seoTitle,
       seoDescription: source.seoDescription,
       priceCents: source.priceCents,

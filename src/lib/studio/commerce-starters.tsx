@@ -10,6 +10,7 @@ import CraftTextSection from "@/components/studio/sections/CraftTextSection";
 import CraftReviewsSection from "@/components/studio/sections/CraftReviewsSection";
 import CraftPickupSection from "@/components/studio/sections/CraftPickupSection";
 import CraftProductDetailSection from "@/components/studio/sections/CraftProductDetailSection";
+import { DEFAULT_INFO_ROWS } from "@/lib/studio/product-detail-settings";
 import CraftMenuDetailSection from "@/components/studio/sections/CraftMenuDetailSection";
 import CraftCartSection from "@/components/studio/sections/CraftCartSection";
 import CraftOrderConfirmationSection from "@/components/studio/sections/CraftOrderConfirmationSection";
@@ -72,7 +73,7 @@ export function buildCommerceStarterTree(input: {
       break;
     case "product":
       sections.push(
-        <CraftProductDetailSection showReviews={false} showBackLink />,
+        <CraftProductDetailSection showReviews={false} showBackLink layout="classic" infoRows={DEFAULT_INFO_ROWS} />,
       );
       sections.push(
         <CraftReviewsSection

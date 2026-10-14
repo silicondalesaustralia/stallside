@@ -8,6 +8,7 @@ import ProductEditForm from "./ProductEditForm";
 import ProductLifecycleActions from "../ProductLifecycleActions";
 import ProductOptionsEditor from "./ProductOptionsEditor";
 import ProductStockCard from "./ProductStockCard";
+import ProductGalleryCard from "./ProductGalleryCard";
 import ProductCategoriesCard from "./ProductCategoriesCard";
 import { parsePriceTiers } from "@/lib/price-tiers";
 
@@ -122,6 +123,7 @@ export default async function EditProductPage({
         }}
         initialImageError={imageError ?? null}
       />
+      <ProductGalleryCard productId={product.id} gallery={product.galleryImageUrls} />
       <ProductStockCard
         productId={product.id}
         stockQuantity={product.stockQuantity}
