@@ -14,6 +14,7 @@ import LogoSizeField from "./LogoSizeField";
 import { useState } from "react";
 import HeaderMenuEditor from "./HeaderMenuEditor";
 import NavTextSizeField from "./NavTextSizeField";
+import BrandNameSizeField from "./BrandNameSizeField";
 import AnnouncementBarSettings from "./AnnouncementBarSettings";
 import SettingsGroup from "./SettingsGroup";
 
@@ -89,6 +90,7 @@ export default function HeaderStyleSettings({ focus }: { focus: "header" | "anno
           onPreview={(h) => previewLogoHeight?.(h)}
           onCommit={(h) => setHeaderStyle?.({ logoHeight: h })}
         />
+        <BrandNameSizeField disabled={brandMark === "logo-only" && hasLogo} />
         {headerStyleStatus === "saving" ? (
           <p className="text-xs text-[var(--muted)]">Saving…</p>
         ) : null}

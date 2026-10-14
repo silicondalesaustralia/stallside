@@ -7,7 +7,7 @@ import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefro
 import { DRAFT_CONFLICT_MESSAGE, writeStorefrontDraft } from "@/lib/website/persistence/draft-store";
 import { parseStorefrontConfig } from "@/lib/storefront/config";
 import { isColourValue } from "@/lib/website/sections/section-style";
-import { clampNavTextSize } from "@/lib/storefront/header-style";
+import { clampBrandNameSize, clampNavTextSize } from "@/lib/storefront/header-style";
 import { siteStyleSchema, type SiteStyle } from "@/lib/storefront/site-style";
 
 type ThemeColourKey = "pageBackground" | "buttonColour" | "buttonTextColour" | "linkColour";
@@ -96,6 +96,16 @@ export async function saveStorefrontNavTextSize(input: {
   const size = input.navTextSize === null ? null : clampNavTextSize(input.navTextSize);
   if (size === undefined) return { ok: false, error: "Pick a menu text size." };
   return writeThemeOverrides({ navTextSize: size }, input.expectedRevision, "menu text size");
+}
+
+/** Sets (or clears, with null) the header business name text size in px, in the draft. */
+export async function saveStorefrontBrandNameSize(input: {
+  brandNameSize: number | null;
+  expectedRevision: number;
+}): Promise<SaveResult> {
+  const size = input.brandNameSize === null ? null : clampBrandNameSize(input.brandNameSize);
+  if (size === undefined) return { ok: false, error: "Pick a name text size." };
+  return writeThemeOverrides({ brandNameSize: size }, input.expectedRevision, "name text size");
 }
 
 /** Sets the site-wide fonts, colours, sizes, width and spacing in the draft; empty = template defaults. */

@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  BRAND_NAME_SIZE_MAX,
+  BRAND_NAME_SIZE_MIN,
+  clampBrandNameSize,
   LOGO_HEIGHT_MAX,
   LOGO_HEIGHT_MIN,
   clampLogoHeight,
@@ -49,5 +52,12 @@ describe("header-style", () => {
     assert.equal(clampLogoHeight(999), LOGO_HEIGHT_MAX);
     assert.equal(clampLogoHeight("80"), undefined);
     assert.equal(clampLogoHeight(Number.NaN), undefined);
+  });
+
+  it("clamps business name size and rejects non-numbers", () => {
+    assert.equal(clampBrandNameSize(22.6), 23);
+    assert.equal(clampBrandNameSize(2), BRAND_NAME_SIZE_MIN);
+    assert.equal(clampBrandNameSize(200), BRAND_NAME_SIZE_MAX);
+    assert.equal(clampBrandNameSize("20"), undefined);
   });
 });

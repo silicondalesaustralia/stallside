@@ -895,7 +895,7 @@
 
 .studio-nav--artisan .studio-nav__brand {
   font-family: var(--font-display), serif;
-  font-size: 1.125rem;
+  --brand-name-default: 1.125rem;
   font-weight: 700;
   color: var(--field);
 }
@@ -1031,14 +1031,26 @@
 
 .studio-nav--farmhouse .studio-nav__brand {
   font-family: var(--font-display), serif;
-  font-size: 1.05rem;
+  --brand-name-default: 1.05rem;
   font-weight: 650;
 }
 
 .studio-nav--market .studio-nav__brand {
-  font-size: 1rem;
+  --brand-name-default: 1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+}
+
+/* Seller size (--brand-name-size, from branding) or the template default; phones use the capped size. */
+.studio-nav__brand {
+  font-size: var(--brand-name-size, var(--brand-name-default, 1rem));
+  line-height: 1.15;
+}
+
+@container storefront (max-width: 639px) {
+  .studio-nav__brand {
+    font-size: var(--brand-name-size-sm, var(--brand-name-default, 1rem));
+  }
 }
 
 .studio-nav--market .studio-btn--primary {

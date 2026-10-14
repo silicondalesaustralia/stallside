@@ -58,6 +58,8 @@ export type StorefrontThemeOverrides = {
   linkColour?: string;
   /** Header menu link text size in px (clamped to NAV_TEXT_SIZE_MIN–MAX). */
   navTextSize?: number;
+  /** Header business name text size in px (clamped to BRAND_NAME_SIZE_MIN–MAX). */
+  brandNameSize?: number;
   /** Site-wide fonts, colours, sizes, width and spacing (see `site-style.ts`). */
   siteStyle?: import("./site-style").SiteStyle;
 };
@@ -105,6 +107,7 @@ export type ResolvedStorefrontBranding = {
   buttonTextColour: string | null;
   linkColour: string | null;
   navTextSize: number | null;
+  brandNameSize: number | null;
   siteStyle: import("./site-style").SiteStyle;
   regionLabel: string | null;
   contactEmail: string;

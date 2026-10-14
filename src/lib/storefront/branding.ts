@@ -3,7 +3,9 @@ import { parseAccentColor, darkenHex } from "@/lib/stand-brand";
 import { STOREFRONT_THEMES, isStorefrontThemePreset } from "@/lib/storefront/themes";
 import { getFontPair } from "@/lib/website/brand-looks";
 import {
+  BRAND_NAME_SIZE_PHONE_MAX,
   LOGO_HEIGHT_DEFAULT,
+  clampBrandNameSize,
   clampLogoHeight,
   clampNavTextSize,
   defaultHeaderStyle,
@@ -124,6 +126,7 @@ export function resolveStorefrontBranding(input: {
     buttonTextColour: isColourValue(overrides.buttonTextColour) ? overrides.buttonTextColour : null,
     linkColour: isColourValue(overrides.linkColour) ? overrides.linkColour : null,
     navTextSize: clampNavTextSize(overrides.navTextSize) ?? null,
+    brandNameSize: clampBrandNameSize(overrides.brandNameSize) ?? null,
     siteStyle: parseSiteStyle(overrides.siteStyle),
     regionLabel: regionParts.length > 0 ? regionParts.join(", ") : null,
     contactEmail: storefront.contactEmail?.trim() || input.owner.contactEmail,
@@ -155,6 +158,10 @@ export function storefrontThemeStyle(
   }
   if (branding.pageBackground) style.backgroundColor = colourCss(branding.pageBackground);
   if (branding.navTextSize) style["--nav-link-size"] = `${branding.navTextSize}px`;
+  if (branding.brandNameSize) {
+    style["--brand-name-size"] = `${branding.brandNameSize}px`;
+    style["--brand-name-size-sm"] = `${Math.min(branding.brandNameSize, BRAND_NAME_SIZE_PHONE_MAX)}px`;
+  }
   Object.assign(
     style,
     siteButtonVars(siteButtonColoursOf(branding), paletteOf(branding)),

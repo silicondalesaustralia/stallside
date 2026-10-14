@@ -27,6 +27,17 @@ export function clampNavTextSize(value: unknown): number | undefined {
   return Math.round(Math.min(NAV_TEXT_SIZE_MAX, Math.max(NAV_TEXT_SIZE_MIN, value)));
 }
 
+/** Header business name text size in CSS pixels; unset = template default (16–18px). Phones cap it at 24px. */
+export const BRAND_NAME_SIZE_MIN = 12;
+export const BRAND_NAME_SIZE_MAX = 48;
+export const BRAND_NAME_SIZE_DEFAULT = 18;
+export const BRAND_NAME_SIZE_PHONE_MAX = 24;
+
+export function clampBrandNameSize(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.round(Math.min(BRAND_NAME_SIZE_MAX, Math.max(BRAND_NAME_SIZE_MIN, value)));
+}
+
 export function isHeaderLayout(value: unknown): value is HeaderLayout {
   return typeof value === "string" && (HEADER_LAYOUTS as readonly string[]).includes(value);
 }

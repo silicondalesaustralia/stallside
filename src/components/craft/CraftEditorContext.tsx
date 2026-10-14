@@ -84,6 +84,11 @@ export type CraftEditorChrome = {
   setNavTextSize?: (size: number | null) => void;
   navTextSizeStatus?: "idle" | "saving" | "saved" | "error";
   navTextSizeError?: string | null;
+  /** Header business name text size in px; null = template default. */
+  brandNameSize?: number | null;
+  setBrandNameSize?: (size: number | null) => void;
+  brandNameSizeStatus?: "idle" | "saving" | "saved" | "error";
+  brandNameSizeError?: string | null;
   siteStyle?: SiteStyle;
   setSiteStyleField?: <K extends keyof SiteStyle>(key: K, value: SiteStyle[K] | undefined) => void;
   siteStyleStatus?: "idle" | "saving" | "saved" | "error";
