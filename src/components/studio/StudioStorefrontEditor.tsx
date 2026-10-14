@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import type { StorefrontContext } from "@/lib/catalogue/storefront";
+import { storefrontFullUrl, type StorefrontContext } from "@/lib/catalogue/storefront";
 import { appBaseUrl } from "@/lib/app-url";
 import { buildStudioMetadata } from "@/lib/studio/build-metadata";
 import { parseEditorTarget, studioEditorPath } from "@/lib/studio/editor-target";
@@ -37,6 +37,7 @@ export default async function StudioStorefrontEditor({
       previewUrl={`${origin}${editPath}`}
       viewPreviewUrl={`${origin}${editorPage.viewPath}`}
       isPublished={ctx.storefront.isPublished}
+      liveUrl={storefrontFullUrl(ctx.storefront.slug)}
       starter={{
         headline: ctx.branding.headline,
         subheadline: ctx.branding.subheadline,

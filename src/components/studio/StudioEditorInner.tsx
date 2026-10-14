@@ -56,6 +56,7 @@ export default function StudioEditorInner({
   previewUrl,
   viewPreviewUrl,
   isPublished,
+  liveUrl,
   starter,
   pageId,
   pageTitle,
@@ -72,6 +73,7 @@ export default function StudioEditorInner({
   previewUrl: string;
   viewPreviewUrl?: string;
   isPublished: boolean;
+  liveUrl?: string;
   starter: {
     headline: string;
     subheadline: string | null;
@@ -240,6 +242,7 @@ export default function StudioEditorInner({
       previewUrl,
       viewPreviewUrl,
       isPublished,
+      liveUrl,
       dirty,
       saveStatus,
       saveError,
@@ -284,6 +287,7 @@ export default function StudioEditorInner({
       previewUrl,
       viewPreviewUrl,
       isPublished,
+      liveUrl,
       dirty,
       saveStatus,
       saveError,

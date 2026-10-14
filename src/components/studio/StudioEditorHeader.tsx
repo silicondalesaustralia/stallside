@@ -5,6 +5,7 @@ import { useEditor } from "@craftjs/core";
 import { STUDIO_TEMPLATES } from "@/lib/studio/templates";
 import { useStudioEditorChrome } from "./StudioEditorContext";
 import StudioPageSelector from "./StudioPageSelector";
+import StudioSiteStatus from "./StudioSiteStatus";
 import { useStickyToolbarHeight } from "./useStickyToolbarHeight";
 
 const VIEWPORTS = [
@@ -96,6 +97,7 @@ export default function StudioEditorHeader() {
         </button>
         {onStorefront ? (
           <>
+            <StudioSiteStatus />
             <Link
               href="/dashboard/website/web-studio?tab=details"
               className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-semibold"

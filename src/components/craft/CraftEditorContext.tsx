@@ -41,6 +41,8 @@ export type CraftEditorChrome = {
   commercePageKind?: CommercePageKind | null;
   surface?: "dashboard" | "storefront-preview";
   viewPreviewUrl?: string;
+  /** Public address of the published site. */
+  liveUrl?: string;
   chromeTarget?: ChromeTarget;
   setChromeTarget?: (t: ChromeTarget) => void;
   headerLayout?: HeaderLayout;

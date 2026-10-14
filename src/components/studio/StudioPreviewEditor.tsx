@@ -33,6 +33,7 @@ export default function StudioPreviewEditor({
   previewUrl,
   viewPreviewUrl,
   isPublished,
+  liveUrl,
   starter,
   returnTo,
   saved,
@@ -46,6 +47,7 @@ export default function StudioPreviewEditor({
   previewUrl: string;
   viewPreviewUrl: string;
   isPublished: boolean;
+  liveUrl: string;
   starter: {
     headline: string;
     subheadline: string | null;
@@ -81,6 +83,7 @@ export default function StudioPreviewEditor({
         previewUrl={previewUrl}
         viewPreviewUrl={viewPreviewUrl}
         isPublished={isPublished}
+        liveUrl={liveUrl}
         starter={starter}
         returnTo={returnTo}
         surface="storefront-preview"
