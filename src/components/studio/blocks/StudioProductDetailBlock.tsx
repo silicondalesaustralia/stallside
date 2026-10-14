@@ -6,6 +6,7 @@ import { shopPagePath } from "@/lib/storefront/paths";
 import ProductDetailActions from "@/app/s/[standSlug]/ProductDetailActions";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 import SectionCopy from "@/components/studio/SectionCopy";
+import CartButtonLabels from "@/components/studio/CartButtonLabels";
 
 export default function StudioProductDetailBlock({
   showBackLink,
@@ -69,7 +70,7 @@ export default function StudioProductDetailBlock({
       </SectionHeadingTag>
       {product.isPreOrder ? (
         <p className="mt-2 text-sm font-semibold uppercase tracking-wide text-[var(--leaf)]">
-          Pre-order
+          <SectionCopy k="preOrderBadge" fallback="Pre-order" />
         </p>
       ) : null}
       <p className="mt-3 font-receipt text-2xl text-[var(--stand-secondary,var(--ok))]">
@@ -80,6 +81,7 @@ export default function StudioProductDetailBlock({
           {product.description}
         </p>
       ) : null}
+      <CartButtonLabels />
       <div className="mt-8">
         <ProductDetailActions
           standSlug={meta.standSlug}

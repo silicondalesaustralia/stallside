@@ -123,9 +123,14 @@ export default function StudioHeroBlock({
   const templateClass = `studio-hero--${variant}`;
   const brandHeadline = meta.branding.headline || "Add a headline";
 
+  const defaultCta = meta.templateId === "market" ? "Shop now" : "Browse";
   const cta = showButton ? (
     <SectionButtonLink meta={meta} defaultHref={shopHref} className="studio-btn studio-btn--primary">
-      {ctaLabel || (meta.templateId === "market" ? "Shop now" : "Browse")}
+      {editable ? (
+        <InlineEditableText prop="ctaLabel" value={ctaLabel || defaultCta} as="span" placeholder={defaultCta} />
+      ) : (
+        ctaLabel || defaultCta
+      )}
     </SectionButtonLink>
   ) : null;
 

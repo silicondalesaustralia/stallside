@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useSectionText } from "@/components/studio/SectionStyleContext";
 import { useMemo, useState } from "react";
 import type { PublicProductCard } from "@/lib/public-product";
 import {
@@ -57,6 +58,8 @@ export default function MenuOrder({
   isPreOrderDrop: boolean;
 }) {
   const router = useRouter();
+  const addLabel = useSectionText("addToCart", "Add to cart");
+  const checkoutLabel = useSectionText("addAndCheckout", "Add & checkout");
   const [qtys, setQtys] = useState<Record<string, number>>(() => {
     const init: Record<string, number> = {};
     for (const p of products) init[p.id] = 0;
@@ -162,7 +165,7 @@ export default function MenuOrder({
           onClick={() => addSelected(false)}
           className="w-full rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-5 py-3 text-base font-semibold disabled:opacity-40"
         >
-          Add to cart
+          {addLabel}
         </button>
         <button
           type="button"
@@ -170,7 +173,7 @@ export default function MenuOrder({
           onClick={() => addSelected(true)}
           className="w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-base font-semibold text-white disabled:opacity-40"
         >
-          Add &amp; checkout
+          {checkoutLabel}
         </button>
       </div>
     </div>

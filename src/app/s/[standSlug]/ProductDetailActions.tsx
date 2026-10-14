@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useSectionText } from "@/components/studio/SectionStyleContext";
 import { useMemo, useState } from "react";
 import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/public-product";
@@ -60,6 +61,8 @@ export default function ProductDetailActions({
   catalogProducts: PublicProductCard[];
 }) {
   const router = useRouter();
+  const addLabel = useSectionText("addToCart", "Add to cart");
+  const checkoutLabel = useSectionText("addAndCheckout", "Add & checkout");
   const singleGroup =
     product.optionGroups.length === 1 ? product.optionGroups[0] : null;
   const [qty, setQty] = useState(1);
@@ -275,7 +278,7 @@ export default function ProductDetailActions({
           onClick={() => addAndGo(false)}
           className="w-full rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-5 py-3 text-base font-semibold disabled:opacity-40"
         >
-          Add to cart
+          {addLabel}
         </button>
         <button
           type="button"
@@ -285,7 +288,7 @@ export default function ProductDetailActions({
           onClick={() => addAndGo(true)}
           className="w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-base font-semibold text-white disabled:opacity-40"
         >
-          Add &amp; checkout
+          {checkoutLabel}
         </button>
       </div>
     </div>

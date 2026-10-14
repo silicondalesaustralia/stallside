@@ -4,6 +4,7 @@ import { shopMenusPath } from "@/lib/storefront/paths";
 import MenuOrder from "@/components/menu/MenuOrder";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 import SectionCopy from "@/components/studio/SectionCopy";
+import CartButtonLabels from "@/components/studio/CartButtonLabels";
 
 export default function StudioMenuDetailBlock({
   metadata: meta,
@@ -50,6 +51,7 @@ export default function StudioMenuDetailBlock({
       {menu.description ? (
         <p className="mt-3 text-lg text-[var(--muted)]">{menu.description}</p>
       ) : null}
+      {menu.products.length > 0 ? <CartButtonLabels /> : null}
       {menu.products.length > 0 ? (
         <MenuOrder
           standSlug={meta.standSlug}
