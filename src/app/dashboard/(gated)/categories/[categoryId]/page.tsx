@@ -10,6 +10,9 @@ import { setCategoryActive } from "../actions";
 import PublishStatusCard from "@/components/website/PublishStatusCard";
 import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
 import { entitySeoKey } from "@/lib/studio/seo-settings";
+import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
+import { ownerSiteUrl } from "@/lib/storefront/owner-site-url";
+import { shopCategoryPath } from "@/lib/storefront/paths";
 
 export default async function CategoryDetailPage({
   params,
@@ -43,6 +46,7 @@ export default async function CategoryDetailPage({
     }),
   ]);
   if (!category) notFound();
+  const viewUrl = await ownerSiteUrl(owner.id, (slug, draft, base) => shopCategoryPath(slug, category.slug, draft, base));
 
   const multiStand = new Set(products.map((p) => p.stand.name)).size > 1;
   const inCategory = new Set(category.products.map((l) => l.productId));
@@ -57,13 +61,16 @@ export default async function CategoryDetailPage({
 
   return (
     <main className="flex flex-col gap-6">
-      <div>
-        <Link href="/dashboard/categories" className="text-sm font-semibold text-[var(--leaf-dark)] underline">
-          ← Categories
-        </Link>
-        <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-          {category.title}
-        </h1>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <Link href="/dashboard/categories" className="text-sm font-semibold text-[var(--leaf-dark)] underline">
+            ← Categories
+          </Link>
+          <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+            {category.title}
+          </h1>
+        </div>
+        {viewUrl ? <ViewOnSiteLink href={viewUrl} /> : null}
       </div>
 
       {published ? <p className="text-sm font-medium text-[var(--ok)]">Category published.</p> : null}

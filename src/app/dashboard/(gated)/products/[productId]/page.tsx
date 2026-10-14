@@ -12,6 +12,7 @@ import { parsePriceTiers } from "@/lib/price-tiers";
 import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
 import { entitySeoKey } from "@/lib/studio/seo-settings";
 import ProductEditForm from "./ProductEditForm";
+import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 
 /** Auth-gated; never serve a cached anonymous RSC payload for Edit links. */
 export const dynamic = "force-dynamic";
@@ -71,15 +72,18 @@ export default async function EditProductPage({
 
   return (
     <main className="flex flex-col gap-6">
-      <div>
-        <p className="text-sm text-[var(--muted)]">
-          <Link href="/dashboard/products" className="underline">
-            Products
-          </Link>
-        </p>
-        <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-          {product.name}
-        </h1>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-sm text-[var(--muted)]">
+            <Link href="/dashboard/products" className="underline">
+              Products
+            </Link>
+          </p>
+          <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+            {product.name}
+          </h1>
+        </div>
+        <ViewOnSiteLink href={publicUrl} />
       </div>
       <ProductEditForm
         product={{

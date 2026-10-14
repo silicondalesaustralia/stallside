@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 
 export default function BusinessPageHeader({
   standId,
@@ -32,12 +33,15 @@ export default function BusinessPageHeader({
             </a>
           </p>
         </div>
-        <Link
-          href={`/dashboard/businesses/${standId}/qr`}
-          className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
-        >
-          QR &amp; print
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <ViewOnSiteLink href={checkoutUrl} />
+          <Link
+            href={`/dashboard/businesses/${standId}/qr`}
+            className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
+          >
+            QR &amp; print
+          </Link>
+        </div>
       </div>
     </div>
   );

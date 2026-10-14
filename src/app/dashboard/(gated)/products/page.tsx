@@ -13,6 +13,9 @@ import NoBusinessYet from "@/components/NoBusinessYet";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { loadProductStockSplits } from "@/lib/suppliers/stock-split";
+import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
+import { ownerSiteUrl } from "@/lib/storefront/owner-site-url";
+import { shopPagePath } from "@/lib/storefront/paths";
 
 export default async function ProductsPage({
   searchParams,
@@ -78,7 +81,10 @@ export default async function ProductsPage({
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     });
 
-  const stockSplits = await loadProductStockSplits(products);
+  const [stockSplits, shopUrl] = await Promise.all([
+    loadProductStockSplits(products),
+    ownerSiteUrl(owner.id, (slug, draft, base) => shopPagePath(slug, "shop", draft, base)),
+  ]);
 
   function listHref(nextView?: "archived", nextTab: ProductTabId = tab) {
     const params = new URLSearchParams();
@@ -103,21 +109,24 @@ export default async function ProductsPage({
             {q ? ` · “${q}”` : ""}
           </p>
         </div>
-        <DashPrimaryCta
-          href={
-            isSupplier
-              ? "/dashboard/suppliers"
+        <div className="flex flex-wrap items-center gap-2">
+          {shopUrl ? <ViewOnSiteLink href={shopUrl} label="View shop" /> : null}
+          <DashPrimaryCta
+            href={
+              isSupplier
+                ? "/dashboard/suppliers"
+                : isPreOrder
+                  ? "/dashboard/pre-order-pages/new"
+                  : `/dashboard/products/new?standId=${selected.id}`
+            }
+          >
+            {isSupplier
+              ? "Suppliers"
               : isPreOrder
-                ? "/dashboard/pre-order-pages/new"
-                : `/dashboard/products/new?standId=${selected.id}`
-          }
-        >
-          {isSupplier
-            ? "Suppliers"
-            : isPreOrder
-              ? "+ New pre-order page"
-              : "+ Add product"}
-        </DashPrimaryCta>
+                ? "+ New pre-order page"
+                : "+ Add product"}
+          </DashPrimaryCta>
+        </div>
       </div>
 
       <ProductsSearchForm q={q} tab={tab} view={view} />

@@ -19,6 +19,7 @@ import SubscriptionSubscribersList from "../SubscriptionSubscribersList";
 import SubscriptionLifecycleActions from "../SubscriptionLifecycleActions";
 import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
 import { entitySeoKey } from "@/lib/studio/seo-settings";
+import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 
 export default async function EditSubscriptionOfferPage({
   params,
@@ -109,9 +110,10 @@ export default async function EditSubscriptionOfferPage({
           {offer.stand.name}
           {isMembership ? " · Membership" : " · Box"}
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-          {offer.title}
-        </h1>
+        <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
+          <h1 className="text-3xl font-semibold tracking-tight">{offer.title}</h1>
+          <ViewOnSiteLink href={`${SITE_URL}${path}`} />
+        </div>
         <p className="mt-1 text-sm text-[var(--muted)]">
           {isMembership
             ? `${offer.termWeeks ?? "?"} weeks`

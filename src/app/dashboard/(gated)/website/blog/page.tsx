@@ -1,5 +1,6 @@
 import Link from "next/link";
 import WebsiteFormError from "@/components/website/WebsiteFormError";
+import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { appBaseUrl } from "@/lib/app-url";
@@ -50,9 +51,7 @@ export default async function WebsiteBlogPage({
           >
             New post
           </Link>
-          <a href={preview} target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-5 py-2.5 text-sm font-semibold">
-            Preview blog
-          </a>
+          <ViewOnSiteLink href={preview} label="View blog" />
         </div>
       </div>
 

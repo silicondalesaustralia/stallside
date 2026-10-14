@@ -1,6 +1,7 @@
 import Link from "next/link";
 import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
 import { studioEditorPath } from "@/lib/studio/editor-target";
+import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 
 /** Home page in the dashboard: search & social settings; content is edited on the site. */
 export default function HomePageSettings({
@@ -18,16 +19,19 @@ export default function HomePageSettings({
 }) {
   return (
     <main className="flex flex-col gap-6 pb-8">
-      <div>
-        <Link href="/dashboard/website/pages" className="text-sm font-semibold text-[var(--leaf-dark)] underline">
-          ← Pages
-        </Link>
-        <h1 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
-          Edit: Home
-        </h1>
-        <p className="mt-1 text-sm text-[var(--muted)]">
-          Your home page is always published while your website is live.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <Link href="/dashboard/website/pages" className="text-sm font-semibold text-[var(--leaf-dark)] underline">
+            ← Pages
+          </Link>
+          <h1 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
+            Edit: Home
+          </h1>
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            Your home page is always published while your website is live.
+          </p>
+        </div>
+        <ViewOnSiteLink href={previewUrl} />
       </div>
 
       <section className="rounded-2xl border border-[var(--line)] bg-white p-5">

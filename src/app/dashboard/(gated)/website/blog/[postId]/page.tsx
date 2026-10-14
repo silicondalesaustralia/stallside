@@ -1,4 +1,3 @@
-import Link from "next/link";
 import WebsiteFormError from "@/components/website/WebsiteFormError";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
@@ -10,6 +9,7 @@ import { extractBlogPosts, extractBlogTopics, findBlogPostById } from "@/lib/stu
 import { entitySeoKey } from "@/lib/studio/seo-settings";
 import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
 import BlogPostForm from "../BlogPostForm";
+import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 import {
   deleteBlogPost,
   publishBlogPost,
@@ -45,9 +45,7 @@ export default async function EditBlogPostPage({
             {post.status === "published" ? "Published" : "Draft"}
           </p>
         </div>
-        <a href={preview} target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-4 py-2 text-sm font-semibold">
-          Preview
-        </a>
+        <ViewOnSiteLink href={preview} />
       </div>
 
       {sp.saved ? <p className="text-sm font-medium text-[var(--ok)]">Post saved.</p> : null}

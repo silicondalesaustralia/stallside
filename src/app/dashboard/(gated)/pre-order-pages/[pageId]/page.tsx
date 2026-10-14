@@ -8,6 +8,7 @@ import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
 import { entitySeoKey } from "@/lib/studio/seo-settings";
 import PreOrderPageForm from "../PreOrderPageForm";
 import { deletePreOrderPage } from "../actions";
+import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 
 export default async function EditPreOrderPagePage({
   params,
@@ -63,15 +64,20 @@ export default async function EditPreOrderPagePage({
 
   return (
     <main className="flex flex-col gap-6">
-      <p className="text-sm text-[var(--muted)]">
-        <Link href="/dashboard/pre-order-pages" className="underline">
-          Pre-order pages
-        </Link>
-      </p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-        Edit pre-order page
-      </h1>
-      <p className="mt-1 text-sm text-[var(--muted)]">{page.stand.name}</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-sm text-[var(--muted)]">
+            <Link href="/dashboard/pre-order-pages" className="underline">
+              Pre-order pages
+            </Link>
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+            Edit pre-order page
+          </h1>
+          <p className="mt-1 text-sm text-[var(--muted)]">{page.stand.name}</p>
+        </div>
+        <ViewOnSiteLink href={publicUrl} />
+      </div>
       <div className="mt-4 rounded-lg border border-[var(--line)] bg-[var(--panel)] p-3 text-sm">
         <p className="font-medium">Public link</p>
         <p className="mt-1 break-all text-[var(--muted)]">{publicUrl}</p>

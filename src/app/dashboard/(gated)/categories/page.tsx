@@ -5,6 +5,9 @@ import SortableOrderList from "@/components/SortableOrderList";
 import ProductsTabs from "../products/ProductsTabs";
 import ShopLayoutForm from "./ShopLayoutForm";
 import { createCategory, saveCategoryOrder } from "./actions";
+import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
+import { ownerSiteUrl } from "@/lib/storefront/owner-site-url";
+import { shopPagePath } from "@/lib/storefront/paths";
 
 export default async function CategoriesPage({
   searchParams,
@@ -15,7 +18,7 @@ export default async function CategoriesPage({
   const { selected } = await resolveSelectedBusiness(owner.id);
   const { error, layout } = await searchParams;
 
-  const [categories, stand] = await Promise.all([
+  const [categories, stand, shopUrl] = await Promise.all([
     prisma.category.findMany({
       where: { ownerId: owner.id },
       orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
@@ -33,6 +36,7 @@ export default async function CategoriesPage({
           select: { id: true, name: true, shopLayout: true },
         })
       : Promise.resolve(null),
+    ownerSiteUrl(owner.id, (slug, draft, base) => shopPagePath(slug, "shop", draft, base)),
   ]);
 
   const items = categories.map((c) => ({
@@ -50,13 +54,16 @@ export default async function CategoriesPage({
 
   return (
     <main className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-          Categories
-        </h1>
-        <p className="mt-1 text-[var(--muted)]">
-          Group products for your shop. Categories with products show as links in your shop menu.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+            Categories
+          </h1>
+          <p className="mt-1 text-[var(--muted)]">
+            Group products for your shop. Categories with products show as links in your shop menu.
+          </p>
+        </div>
+        {shopUrl ? <ViewOnSiteLink href={shopUrl} label="View shop" /> : null}
       </div>
 
       <ProductsTabs active="categories" />

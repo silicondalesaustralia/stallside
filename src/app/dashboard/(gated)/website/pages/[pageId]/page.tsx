@@ -16,6 +16,7 @@ import BlogSettingsSection from "../../blog/BlogSettingsSection";
 import { setCustomPageEnabled } from "../publish-actions";
 import HomePageSettings from "./HomePageSettings";
 import PageSettingsForm from "./PageSettingsForm";
+import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 
 type SearchParams = {
   saved?: string;
@@ -57,13 +58,16 @@ export default async function EditWebsitePage({
 
   return (
     <main className="flex flex-col gap-6 pb-8">
-      <div>
-        <Link href="/dashboard/website/pages" className="text-sm font-semibold text-[var(--leaf-dark)] underline">
-          ← Pages
-        </Link>
-        <h1 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
-          Edit: {page.title}
-        </h1>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <Link href="/dashboard/website/pages" className="text-sm font-semibold text-[var(--leaf-dark)] underline">
+            ← Pages
+          </Link>
+          <h1 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
+            Edit: {page.title}
+          </h1>
+        </div>
+        {page.enabled ? <ViewOnSiteLink href={previewUrl} /> : null}
       </div>
 
       {sp.saved ? <p className="text-sm font-medium text-[var(--ok)]">Draft saved.</p> : null}
