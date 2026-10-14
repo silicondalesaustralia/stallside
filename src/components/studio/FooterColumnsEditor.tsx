@@ -17,28 +17,36 @@ export default function FooterColumnsEditor({
   const metadata = useStudioMetadata();
   const columns = footer.columns;
 
-  function customise() {
-    update({
-      columns: autoFooterColumns({
-        enabledPages: metadata.enabledPages,
-        footerPages: metadata.customFooterPages,
-        aboutLabel: metadata.templateId === "farmhouse" ? "Our farm" : "About",
-      }),
+  function customise(withContact = false) {
+    const seeded = autoFooterColumns({
+      enabledPages: metadata.enabledPages,
+      footerPages: metadata.customFooterPages,
+      aboutLabel: metadata.templateId === "farmhouse" ? "Our farm" : "About",
     });
+    const contactColumn: FooterColumn = { id: newMenuId(), heading: "Visit us", links: [], contact: {} };
+    update({ columns: withContact ? [...seeded, contactColumn].slice(-FOOTER_MAX_COLUMNS) : seeded });
   }
 
   if (!columns) {
     return (
       <div className="space-y-3">
         <p className="text-sm text-[var(--muted)]">
-          Columns are filled in automatically from pages marked &ldquo;Show in footer&rdquo;.
+          Columns are filled in automatically from pages marked &ldquo;Show in footer&rdquo;. Customise them to
+          rename, reorder or add your own links, or add a contact / address block to any column.
         </p>
         <button
           type="button"
           className="rounded-lg border border-[var(--line)] px-3 py-2 text-sm font-semibold text-[var(--field)]"
-          onClick={customise}
+          onClick={() => customise()}
         >
           Customise columns
+        </button>
+        <button
+          type="button"
+          className="block text-sm font-semibold text-[var(--field)] underline"
+          onClick={() => customise(true)}
+        >
+          Add a contact / address column
         </button>
       </div>
     );

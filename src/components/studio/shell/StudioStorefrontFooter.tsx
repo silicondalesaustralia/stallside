@@ -10,6 +10,7 @@ import { footerBottomLine, footerColours, type FooterSettings } from "@/lib/stud
 import { autoFooterColumns, resolveFooterColumns } from "@/lib/studio/footer-columns";
 import { paletteOf } from "@/lib/website/sections/colour";
 import StudioFooterBrand from "./StudioFooterBrand";
+import StudioFooterContact from "./StudioFooterContact";
 
 const GRID_COLS: Record<number, string> = {
   2: "sf-lg:grid-cols-2",
@@ -96,15 +97,18 @@ export default function StudioStorefrontFooter({
               {col.heading.trim() ? (
                 <p className="text-xs font-bold uppercase tracking-wide opacity-60">{col.heading}</p>
               ) : null}
-              <ul className="mt-3 space-y-2">
-                {col.links.map((l) => (
-                  <li key={l.id}>
-                    <Link href={l.href} className="text-sm font-medium hover:underline">
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              {col.contact ? <StudioFooterContact contact={col.contact} /> : null}
+              {col.links.length ? (
+                <ul className="mt-3 space-y-2">
+                  {col.links.map((l) => (
+                    <li key={l.id}>
+                      <Link href={l.href} className="text-sm font-medium hover:underline">
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
           ))}
         </div>

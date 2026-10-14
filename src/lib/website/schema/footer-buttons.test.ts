@@ -57,6 +57,21 @@ describe("footer settings", () => {
     assert.equal(resolved.length, 2);
     assert.equal(resolved[1]?.links[0]?.href, "/faq");
   });
+
+  it("keeps a column that only has a contact / address block", () => {
+    const resolved = resolveFooterColumns(
+      [
+        { id: "c", heading: "Visit us", links: [], contact: { address: "12 Example Rd\nMacclesfield SA" } },
+        { id: "e", heading: "Empty", links: [], contact: { address: "  " } },
+      ],
+      ctx,
+    );
+    assert.deepEqual(
+      resolved.map((c) => c.id),
+      ["c"],
+    );
+    assert.equal(resolved[0]?.contact?.address, "12 Example Rd\nMacclesfield SA");
+  });
 });
 
 describe("site button colours", () => {

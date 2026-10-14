@@ -1,12 +1,19 @@
 import type { StorefrontPageId } from "@/lib/storefront/types";
 import { resolveButtonLink, type LinkContext } from "./button-link";
 import { FOOTER_COLUMNS, type FooterColumnId } from "./custom-pages";
-import { FOOTER_LABEL_MAX, FOOTER_MAX_LINKS, type FooterColumn } from "./footer-settings";
+import {
+  FOOTER_LABEL_MAX,
+  FOOTER_MAX_LINKS,
+  hasFooterContact,
+  type FooterColumn,
+  type FooterContact,
+} from "./footer-settings";
 
 export type ResolvedFooterColumn = {
   id: string;
   heading: string;
   links: { id: string; label: string; href: string }[];
+  contact?: FooterContact;
 };
 
 type AutoLink = { label: string; link: string; column: FooterColumnId };
@@ -43,13 +50,15 @@ export function autoFooterColumns(input: {
   });
 }
 
-/** Columns ready to show. Links whose page no longer exists are dropped, then empty columns. */
+/** Columns ready to show. Links whose page no longer exists are dropped, then columns with nothing left. */
 export function resolveFooterColumns(columns: FooterColumn[], ctx: LinkContext): ResolvedFooterColumn[] {
   return columns.flatMap((col) => {
     const links = col.links.flatMap((l) => {
       const href = resolveButtonLink(l.link, ctx);
       return href ? [{ id: l.id, label: l.label, href }] : [];
     });
-    return links.length ? [{ id: col.id, heading: col.heading, links }] : [];
+    const contact = hasFooterContact(col.contact) ? col.contact : undefined;
+    if (!links.length && !contact) return [];
+    return [{ id: col.id, heading: col.heading, links, ...(contact ? { contact } : {}) }];
   });
 }

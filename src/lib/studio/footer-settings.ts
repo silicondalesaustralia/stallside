@@ -15,6 +15,7 @@ export const FOOTER_LABEL_MAX = 60;
 export const FOOTER_BRAND_MAX = 80;
 export const FOOTER_TAGLINE_MAX = 240;
 export const FOOTER_BOTTOM_MAX = 200;
+export const FOOTER_ADDRESS_MAX = 300;
 
 const id = z.string().min(1).max(40);
 const colour = z.string().refine(isColourValue);
@@ -23,10 +24,18 @@ const footerLink = z.object({
   label: z.string().trim().min(1, "Every link needs text.").max(FOOTER_LABEL_MAX),
   link: buttonLinkSchema,
 });
+/** Free-typed contact details shown in a column, above its links. */
+const footerContact = z.object({
+  address: z.string().max(FOOTER_ADDRESS_MAX).optional(),
+  phone: z.string().max(40).optional(),
+  email: z.string().max(120).optional(),
+  hours: z.string().max(FOOTER_ADDRESS_MAX).optional(),
+});
 const footerColumn = z.object({
   id,
   heading: z.string().max(FOOTER_HEADING_MAX),
   links: z.array(footerLink).max(FOOTER_MAX_LINKS),
+  contact: footerContact.optional(),
 });
 
 export const footerSettingsSchema = z.object({
@@ -47,6 +56,12 @@ export const footerSettingsSchema = z.object({
 export type FooterSettings = z.infer<typeof footerSettingsSchema>;
 export type FooterColumn = z.infer<typeof footerColumn>;
 export type FooterLink = z.infer<typeof footerLink>;
+export type FooterContact = z.infer<typeof footerContact>;
+
+/** Whether a contact block has anything to show. */
+export function hasFooterContact(contact: FooterContact | undefined): contact is FooterContact {
+  return Boolean(contact && Object.values(contact).some((v) => v?.trim()));
+}
 
 export function parseFooterSettings(config: unknown): FooterSettings | null {
   if (!config || typeof config !== "object" || Array.isArray(config)) return null;

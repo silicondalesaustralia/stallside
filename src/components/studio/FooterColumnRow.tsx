@@ -8,6 +8,7 @@ import {
 } from "@/lib/studio/footer-settings";
 import { newMenuId } from "@/lib/studio/header-menu";
 import FooterLinkRow from "./FooterLinkRow";
+import FooterContactFields from "./FooterContactFields";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
 const ICON_BTN = "rounded border border-[var(--line)] px-2 text-xs disabled:opacity-30";
@@ -67,6 +68,21 @@ export default function FooterColumnRow({
           Remove
         </button>
       </div>
+      {column.contact ? (
+        <FooterContactFields
+          contact={column.contact}
+          onChange={(contact) => onChange({ ...column, contact })}
+          onRemove={() => onChange({ id: column.id, heading: column.heading, links })}
+        />
+      ) : (
+        <button
+          type="button"
+          className="text-xs font-semibold text-[var(--field)] underline"
+          onClick={() => onChange({ ...column, contact: {} })}
+        >
+          Add contact / address
+        </button>
+      )}
       <ul className="space-y-2 border-l-2 border-[var(--line)] pl-3">
         {links.map((link, i) => (
           <FooterLinkRow
