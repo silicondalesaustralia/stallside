@@ -58,16 +58,18 @@ export default function StudioSectionPalette() {
 
   return (
     <aside className="vendl-studio-palette">
-      <div className="vendl-studio-palette__head">
-        <h2 className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
-          Add sections
-        </h2>
-        <p className="mt-1 text-[11px] leading-snug text-[var(--muted)]">
-          Drag onto your page or click to add.
-        </p>
+      <div className="vendl-studio-palette__head gap-3">
+        <div className="min-w-0">
+          <h2 className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
+            Add sections
+          </h2>
+          <p className="mt-1 text-[11px] leading-snug text-[var(--muted)]">
+            Drag onto your page or click to add.
+          </p>
+        </div>
         <button
           type="button"
-          className="text-xs font-semibold text-[var(--muted)]"
+          className="shrink-0 self-start text-xs font-semibold text-[var(--muted)]"
           onClick={() => setPaletteCollapsed?.(true)}
         >
           Hide
