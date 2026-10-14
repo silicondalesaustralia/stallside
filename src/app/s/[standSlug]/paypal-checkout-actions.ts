@@ -20,6 +20,8 @@ import {
   orderAccessToken,
 } from "@/lib/order-access-token";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
+import { loadedCartHandover } from "@/lib/fulfilment/cart-handover";
+import { DELIVERY_NEEDS_CARD } from "@/lib/fulfilment/handover-choice";
 
 export async function startPayPalCheckout(input: {
   standSlug: string;
@@ -58,6 +60,9 @@ export async function startPayPalCheckout(input: {
     if (preOrderCart) {
       return { error: "Pre-orders must be paid by card." };
     }
+    const handover = loadedCartHandover(loaded, input.items);
+    if ("error" in handover) return { error: handover.error };
+    if (handover.mode !== "COLLECT") return { error: DELIVERY_NEEDS_CARD };
     const owner = stand.owner;
 
     if (!stand.acceptPayPal) {

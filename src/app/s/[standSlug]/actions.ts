@@ -20,6 +20,8 @@ import { notifySale } from "@/lib/notify";
 import { notifyTapAndGoInterest } from "@/lib/notify-tap-and-go";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { syncSaleToSquare } from "@/lib/square/sync-stock";
+import { loadedCartHandover } from "@/lib/fulfilment/cart-handover";
+import { DELIVERY_NEEDS_CARD } from "@/lib/fulfilment/handover-choice";
 
 type CheckoutExtras = {
   receiptEmail?: string | null;
@@ -41,10 +43,15 @@ async function loadCheckoutCart(input: CheckoutPayload) {
     }
     return loadCustomerChoiceCheckout(input.standSlug, amount);
   }
-  return loadStandCart(input.standSlug, input.items ?? [], {
+  const loaded = await loadStandCart(input.standSlug, input.items ?? [], {
     receiptEmail: input.receiptEmail,
     claimFirstOrder: input.claimFirstOrder,
   });
+  if ("error" in loaded) return loaded;
+  const handover = loadedCartHandover(loaded, input.items);
+  if ("error" in handover) return { error: handover.error };
+  if (handover.mode !== "COLLECT") return { error: DELIVERY_NEEDS_CARD };
+  return loaded;
 }
 
 export async function confirmCashCheckout(input: CheckoutPayload) {

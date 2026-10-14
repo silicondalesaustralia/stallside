@@ -90,6 +90,11 @@ export default async function OrdersPage({
         receiptEmail: true,
         isPreOrder: true,
         shopperSubscriptionId: true,
+        handoverMode: true,
+        deliveryAddressLine1: true,
+        deliverySuburb: true,
+        deliveryPostcode: true,
+        deliveryNotes: true,
         stand: { select: { name: true } },
         items: {
           select: {

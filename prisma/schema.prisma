@@ -163,6 +163,15 @@ enum HandoverMode {
   DELIVER
 }
 
+/**
+ * Which handovers a product (or a stand by default) offers at checkout.
+ */
+enum FulfilmentChoice {
+  PICKUP
+  DELIVERY
+  BOTH
+}
+
 enum FulfilmentOptionKind {
   STAND_IMMEDIATE
   PICKUP
@@ -647,6 +656,8 @@ model Stand {
    * PRODUCT = catalog cart (default); CUSTOMER_CHOICE = open dollar amount.
    */
   cartMode                      CartMode                  @default(PRODUCT)
+  /** Site-wide pickup / delivery for take-now products; a product's own setting wins. */
+  fulfilmentDefault             FulfilmentChoice          @default(PICKUP)
   /**
    * Hidden sentinel product for Customer Choice checkout lines.
    */
@@ -1354,6 +1365,11 @@ model Product {
    */
   depositPercent              Int?
   handoverMode                HandoverMode               @default(COLLECT)
+  /**
+   * Take-now products: pickup, delivery or both. Null = the stand's fulfilmentDefault.
+   * Pre-order products follow handoverMode (set by their pre-order page).
+   */
+  fulfilment                  FulfilmentChoice?
   /**
    * Optional provenance line e.g. "Laid this morning".
    */

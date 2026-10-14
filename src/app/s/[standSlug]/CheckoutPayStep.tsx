@@ -10,6 +10,8 @@ import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import SquareWebPayButton from "./SquareWebPayButton";
 import PreOrderContactFields from "./PreOrderContactFields";
+import HandoverPicker from "./HandoverPicker";
+import type { HandoverValue } from "@/lib/fulfilment/handover-choice";
 import SectionCopy from "@/components/studio/SectionCopy";
 import { CHECKOUT_COPY } from "@/lib/storefront/checkout-copy";
 
@@ -46,7 +48,10 @@ type CheckoutPayStepProps = {
   showDemoCardHint?: boolean;
   /** Pre-order carts: card only + name/email/phone. */
   preOrderOnly?: boolean;
-  deliverOnly?: boolean;
+  /** Delivery orders: card only + contact and delivery address. */
+  deliver?: boolean;
+  /** Set when the cart allows both pickup and delivery. */
+  handoverChoice?: { value: HandoverValue; onChange: (value: HandoverValue) => void } | null;
   /** Offer first-order discount when email provided. */
   firstOrderHint?: string | null;
   customerName: string;
@@ -93,7 +98,8 @@ export default function CheckoutPayStep({
   pending,
   showDemoCardHint = false,
   preOrderOnly = false,
-  deliverOnly = false,
+  deliver = false,
+  handoverChoice = null,
   firstOrderHint = null,
   customerName,
   customerEmail,
@@ -117,10 +123,11 @@ export default function CheckoutPayStep({
   onBack,
   backLabel,
 }: CheckoutPayStepProps) {
-  const showCash = cashEnabled && !preOrderOnly;
-  const showLt = Boolean(localTransferLabel) && !preOrderOnly;
+  const cardOnly = preOrderOnly || deliver;
+  const showCash = cashEnabled && !cardOnly;
+  const showLt = Boolean(localTransferLabel) && !cardOnly;
   const showPayPal =
-    !preOrderOnly &&
+    !cardOnly &&
     paypalEnabled &&
     Boolean(paypalClientId && paypalMerchantId);
 
@@ -131,7 +138,10 @@ export default function CheckoutPayStep({
       ) : (
         <SectionCopy k="payHeading" fallback={CHECKOUT_COPY.payHeading} as="p" className="block text-xl font-semibold" />
       )}
-      {preOrderOnly ? (
+      {handoverChoice ? (
+        <HandoverPicker value={handoverChoice.value} onChange={handoverChoice.onChange} />
+      ) : null}
+      {cardOnly ? (
         <PreOrderContactFields
           customerName={customerName}
           customerEmail={customerEmail}
@@ -139,7 +149,7 @@ export default function CheckoutPayStep({
           onCustomerName={onCustomerName}
           onCustomerEmail={onCustomerEmail}
           onCustomerPhone={onCustomerPhone}
-          deliver={deliverOnly}
+          deliver={deliver}
           deliveryAddressLine1={deliveryAddressLine1}
           deliverySuburb={deliverySuburb}
           deliveryPostcode={deliveryPostcode}
@@ -202,10 +212,11 @@ export default function CheckoutPayStep({
           customerName={customerName}
           customerEmail={customerEmail}
           customerPhone={customerPhone}
-          deliveryAddressLine1={deliverOnly ? deliveryAddressLine1 : undefined}
-          deliverySuburb={deliverOnly ? deliverySuburb : undefined}
-          deliveryPostcode={deliverOnly ? deliveryPostcode : undefined}
-          deliveryNotes={deliverOnly ? deliveryNotes : undefined}
+          deliveryAddressLine1={deliver ? deliveryAddressLine1 : undefined}
+          deliverySuburb={deliver ? deliverySuburb : undefined}
+          deliveryPostcode={deliver ? deliveryPostcode : undefined}
+          deliveryNotes={deliver ? deliveryNotes : undefined}
+          handoverMode={deliver ? "DELIVER" : "COLLECT"}
           depositMode={Boolean(squareDeposit)}
           amountCents={
             squareDeposit?.amountCents ||
@@ -233,10 +244,10 @@ export default function CheckoutPayStep({
             type="button"
             disabled={
               pending ||
-              (preOrderOnly &&
+              (cardOnly &&
                 (!customerName.trim() ||
                   !customerEmail.trim() ||
-                  (deliverOnly &&
+                  (deliver &&
                     (!deliveryAddressLine1.trim() ||
                       !deliverySuburb.trim() ||
                       !deliveryPostcode.trim()))))
@@ -288,7 +299,7 @@ export default function CheckoutPayStep({
           <SectionCopy k="noPayment" fallback={CHECKOUT_COPY.noPayment} />
         </p>
       ) : null}
-      {!cardEnabled && !squareEnabled && !preOrderOnly ? (
+      {!cardEnabled && !squareEnabled && !cardOnly ? (
         <CardInterestButton
           standSlug={standSlug}
           subtotalCents={subtotalCents}

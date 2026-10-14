@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { shopButtonColour } from "@/lib/storefront/shop-button-colour";
 import CheckoutCashConfirm from "./CheckoutCashConfirm";
 import CheckoutLocalTransferConfirm from "./CheckoutLocalTransferConfirm";
 import CheckoutPayStep from "./CheckoutPayStep";
@@ -78,6 +79,7 @@ export default function CustomerChoiceCheckout({
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     return subscribeChoiceCart(() => setEpoch(getChoiceCartEpoch()));
@@ -176,6 +178,7 @@ export default function CustomerChoiceCheckout({
         customerEmail: customerEmail.trim() || undefined,
         customerName: customerName.trim() || undefined,
         customerPhone: customerPhone.trim() || undefined,
+        buttonColour: shopButtonColour(rootRef.current),
         embedded: true,
       });
       if ("error" in result && result.error) {
@@ -238,7 +241,7 @@ export default function CustomerChoiceCheckout({
   }
 
   return (
-    <div className="mt-6 flex flex-col gap-4">
+    <div ref={rootRef} className="mt-6 flex flex-col gap-4">
       {error ? (
         <p className="rounded-lg border border-[var(--gone)]/40 bg-[var(--panel)] px-3 py-2 text-sm text-[var(--gone)]">
           {error}

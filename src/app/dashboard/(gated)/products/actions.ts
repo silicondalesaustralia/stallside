@@ -27,6 +27,7 @@ import {
 } from "@/lib/preorder-upsell-addon";
 import { parseProductOwnerMeta } from "@/lib/product-owner-meta";
 import { PRODUCT_DESCRIPTION_MAX } from "@/lib/product-limits";
+import { parseFulfilmentChoice } from "@/lib/fulfilment/handover-choice";
 
 const productSchema = z.object({
   standId: z.string().min(1),
@@ -386,6 +387,9 @@ export async function updateProduct(productId: string, formData: FormData) {
         costCents: ownerMeta.data.costCents,
         lowStockThreshold: parsed.data.lowStockThreshold,
         freshnessNote: freshnessNote || null,
+        ...(formData.has("fulfilment")
+          ? { fulfilment: parseFulfilmentChoice(formData.get("fulfilment")) }
+          : {}),
         upsellProductId: preOrderEligible ? null : upsellProductId,
         upsellPriceCents: preOrderEligible ? null : upsellPriceCents,
         preOrderEligible,

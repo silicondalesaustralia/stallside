@@ -1,5 +1,6 @@
 import type { ProductSupplyStatus } from "@/generated/prisma/client";
 import type { PriceTier } from "@/lib/price-tiers";
+import type { FulfilmentChoiceValue } from "@/lib/fulfilment/handover-choice";
 import type { SavedOptionGroup } from "./ProductOptionsEditor";
 import type { CategoryChoice } from "./ProductOrganisationSection";
 
@@ -30,6 +31,9 @@ export type ProductFields = {
   cardTier: boolean;
   preOrderEligible: boolean;
   freshnessNote: string | null;
+  /** Null = the business's site-wide setting. */
+  fulfilment: FulfilmentChoiceValue | null;
+  standFulfilmentDefault: FulfilmentChoiceValue;
   priceTiers: PriceTier[];
   hasOptions: boolean;
   options: SavedOptionGroup[];

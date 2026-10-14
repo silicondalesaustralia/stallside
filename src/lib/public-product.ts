@@ -7,6 +7,7 @@ import { parsePriceTiers } from "@/lib/price-tiers";
 import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
 import { productImageList } from "@/lib/product-images";
 import { imageAltList, parseImageAlts } from "@/lib/product-image-alts";
+import { effectiveFulfilment, type FulfilmentChoiceValue } from "@/lib/fulfilment/handover-choice";
 
 export type PreOrderDetailsData = {
   ordersCloseLabel: string | null;
@@ -36,6 +37,8 @@ export type PublicProductCard = {
   freshnessNote: string | null;
   priceTiers: { qty: number; totalCents: number }[];
   handoverMode: "COLLECT" | "DELIVER";
+  /** Pickup / delivery this product allows at checkout (own setting, else the stand default). */
+  fulfilment: FulfilmentChoiceValue;
   paymentTiming: "PAY_NOW" | "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE";
   depositPercent: number | null;
   /** When this product is in the cart, offer this product as upsell. */
@@ -101,6 +104,7 @@ export function mapPublicProduct(
     paymentTiming?: "PAY_NOW" | "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE";
     depositPercent?: number | null;
     handoverMode?: "COLLECT" | "DELIVER";
+    fulfilment?: FulfilmentChoiceValue | null;
     upsellProductId?: string | null;
     upsellPriceCents?: number | null;
     preOrderUpsellName?: string | null;
@@ -119,6 +123,8 @@ export function mapPublicProduct(
     showPublicScarcity?: boolean;
     now?: number;
     timeZone?: string;
+    /** The stand's site-wide pickup / delivery setting. */
+    fulfilmentDefault?: FulfilmentChoiceValue;
   },
 ): PublicProductCard {
   const now = opts.now ?? Date.now();
@@ -195,6 +201,10 @@ export function mapPublicProduct(
     freshnessNote: p.freshnessNote?.trim() || null,
     priceTiers,
     handoverMode: p.handoverMode === "DELIVER" ? "DELIVER" : "COLLECT",
+    fulfilment: effectiveFulfilment(
+      { isPreOrder: Boolean(isPre), handoverMode: p.handoverMode ?? "COLLECT", fulfilment: p.fulfilment ?? null },
+      opts.fulfilmentDefault ?? "PICKUP",
+    ),
     paymentTiming,
     depositPercent:
       paymentTiming === "DEPOSIT_THEN_BALANCE"

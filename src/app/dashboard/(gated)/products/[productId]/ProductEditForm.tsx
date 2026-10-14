@@ -11,6 +11,7 @@ import ProductUpsellFields from "./ProductUpsellFields";
 import ProductSeoSection from "./ProductSeoSection";
 import ProductStatusSection from "./ProductStatusSection";
 import ProductInventorySection from "./ProductInventorySection";
+import ProductFulfilmentSection from "./ProductFulfilmentSection";
 import ProductOrganisationSection from "./ProductOrganisationSection";
 import ProductSaveBar, { type SaveNotice } from "./ProductSaveBar";
 import { saveProductForm } from "./save-product-form";
@@ -87,6 +88,11 @@ export default function ProductEditForm({
         <aside className="flex min-w-0 flex-col gap-5">
           <ProductStatusSection product={product} />
           <ProductInventorySection product={product} />
+          <ProductFulfilmentSection
+            value={product.fulfilment}
+            standDefault={product.standFulfilmentDefault}
+            preOrderEligible={preOrderEligible}
+          />
           <ProductOrganisationSection
             categories={product.categories}
             freshnessNote={product.freshnessNote}

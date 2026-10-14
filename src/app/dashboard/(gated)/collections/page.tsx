@@ -1,6 +1,7 @@
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import CollectionPageCard from "./CollectionPageCard";
+import FulfilmentDefaultCard from "./FulfilmentDefaultCard";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { groupCollectionPages } from "./group-collection-pages";
@@ -11,7 +12,12 @@ import {
 import { loadStandPreOrderPages } from "./load-preorder-pages";
 import { loadStandSubscriptionOffers } from "./load-subscription-offers";
 
-export default async function CollectionsPage() {
+export default async function CollectionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ fulfilment?: string }>;
+}) {
+  const { fulfilment: fulfilmentStatus } = await searchParams;
   const { owner } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
 
@@ -32,7 +38,7 @@ export default async function CollectionsPage() {
     loadStandSubscriptionOffers(owner.id, selected.id),
     prisma.stand.findFirst({
       where: { id: selected.id, ownerId: owner.id },
-      select: { name: true, logoUrl: true },
+      select: { name: true, logoUrl: true, fulfilmentDefault: true },
     }),
   ]);
   const orders = rawOrders.map(toCollectionOrderView);
@@ -53,6 +59,12 @@ export default async function CollectionsPage() {
           {selected.name}
         </p>
       </div>
+
+      <FulfilmentDefaultCard
+        standId={selected.id}
+        value={standBrand?.fulfilmentDefault ?? "PICKUP"}
+        status={fulfilmentStatus}
+      />
 
       {groups.length === 0 ? (
         <p className="collections-screen-only text-[var(--muted)]">

@@ -33,6 +33,8 @@ import {
   assertDepositLiabilityOk,
   splitDepositBalance,
 } from "@/lib/deposit-order";
+import { contactError, loadedCartHandover } from "@/lib/fulfilment/cart-handover";
+import { parseHandover, type HandoverValue } from "@/lib/fulfilment/handover-choice";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -45,6 +47,10 @@ export async function startCardCheckout(input: {
   deliverySuburb?: string;
   deliveryPostcode?: string;
   deliveryNotes?: string;
+  /** Shopper's pick when the cart allows both pickup and delivery. */
+  handoverMode?: HandoverValue;
+  /** The shop's button colour (#RRGGBB) for Stripe's Pay button. */
+  buttonColour?: string;
   /** Show Stripe Checkout inside the page when possible (else redirect). */
   embedded?: boolean;
 }): Promise<{ error: string } | { url: string } | { embedded: EmbeddedCheckoutInfo }> {
@@ -92,24 +98,19 @@ export async function startCardCheckout(input: {
       return { error: "Card is not enabled at this stand." };
     }
 
-    if (preOrderCart && !customerName) {
-      return {
-        error:
-          preOrderCart.handoverMode === HandoverMode.DELIVER
-            ? "Enter your name for delivery."
-            : "Enter your name for collection.",
-      };
-    }
-    if (preOrderCart) {
-      if (!customerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
-        return { error: "Enter a valid email for order details." };
-      }
-    }
-    if (preOrderCart?.handoverMode === HandoverMode.DELIVER) {
-      if (!deliveryAddressLine1 || !deliverySuburb || !deliveryPostcode) {
-        return { error: "Enter a delivery address." };
-      }
-    }
+    const handover = loadedCartHandover(loaded, input.items, parseHandover(input.handoverMode));
+    if ("error" in handover) return { error: handover.error };
+    const deliver = handover.mode === HandoverMode.DELIVER;
+    const delivery = { deliveryAddressLine1, deliverySuburb, deliveryPostcode, deliveryNotes };
+    const contactProblem = contactError({
+      needsContact: Boolean(preOrderCart) || deliver,
+      deliver,
+      customerName,
+      customerEmail,
+      delivery,
+    });
+    if (contactProblem) return { error: contactProblem };
+    const buttonColour = /^#[0-9a-f]{6}$/i.test(input.buttonColour ?? "") ? input.buttonColour : null;
 
     const depositMode =
       preOrderCart?.paymentTiming === PaymentTiming.DEPOSIT_THEN_BALANCE;
@@ -193,7 +194,6 @@ export async function startCardCheckout(input: {
               customerPhone,
               collectionStatus: CollectionStatus.ORDERED,
               paymentTiming: preOrderCart.paymentTiming,
-              handoverMode: preOrderCart.handoverMode,
               ...(depositMode
                 ? {
                     depositCents,
@@ -201,19 +201,10 @@ export async function startCardCheckout(input: {
                     balanceDueAt: preOrderCart.collectionAt,
                   }
                 : {}),
-              ...(preOrderCart.handoverMode === HandoverMode.DELIVER
-                ? {
-                    deliveryAddressLine1,
-                    deliverySuburb,
-                    deliveryPostcode,
-                    deliveryNotes,
-                  }
-                : {}),
             }
-          : {
-              paymentTiming: PaymentTiming.PAY_NOW,
-              handoverMode: HandoverMode.COLLECT,
-            }),
+          : { paymentTiming: PaymentTiming.PAY_NOW }),
+        handoverMode: handover.mode,
+        ...(deliver ? { customerName, customerPhone, ...delivery } : {}),
       },
     });
 
@@ -268,6 +259,8 @@ export async function startCardCheckout(input: {
       line_items: lineItems.filter((l) => l.price_data.unit_amount > 0),
       ...checkoutUiParams(publishableKey, successUrl, checkoutCancelledUrl(order.id)),
       ...(customerEmail ? { customer_email: customerEmail } : {}),
+      ...(deliver ? { billing_address_collection: "required" as const } : {}),
+      ...(buttonColour ? { branding_settings: { button_color: buttonColour } } : {}),
       metadata: {
         orderId: order.id,
         standId: stand.id,

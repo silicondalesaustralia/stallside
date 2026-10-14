@@ -65,6 +65,7 @@ export async function loadStandCartData(standSlug: string): Promise<StandCartDat
       showExactStock: stand.showExactStock,
       showPublicScarcity: stand.showPublicScarcity,
       timeZone: stand.timezone,
+      fulfilmentDefault: stand.fulfilmentDefault,
     }),
   );
   const branded = publicStandBranding(stand, stand.owner);

@@ -33,7 +33,7 @@ export async function notifyOrderCustomer(orderId: string) {
       : "";
   const address =
     order.handoverMode === HandoverMode.DELIVER && order.deliveryAddressLine1
-      ? `<p>${escapeHtml(order.deliveryAddressLine1)}, ${escapeHtml(order.deliverySuburb ?? "")} ${escapeHtml(order.deliveryPostcode ?? "")}</p>`
+      ? `<p><strong>Deliver to:</strong> ${escapeHtml(order.deliveryAddressLine1)}, ${escapeHtml(order.deliverySuburb ?? "")} ${escapeHtml(order.deliveryPostcode ?? "")}</p>`
       : "";
   const note = order.collectionNote
     ? `<p>${escapeHtml(order.collectionNote)}</p>`

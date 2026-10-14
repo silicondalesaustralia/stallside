@@ -25,6 +25,8 @@ import {
   squareRegionForBilling,
 } from "@/lib/commerce/payment-rail";
 import { cleanShopperDetails, planSquarePreOrder } from "@/lib/square/checkout-preorder";
+import { contactError, loadedCartHandover } from "@/lib/fulfilment/cart-handover";
+import { parseHandover, type HandoverValue } from "@/lib/fulfilment/handover-choice";
 export type SquareCheckoutCartInput = {
   standSlug: string;
   items?: CartItemInput[];
@@ -36,6 +38,7 @@ export type SquareCheckoutCartInput = {
   deliverySuburb?: string;
   deliveryPostcode?: string;
   deliveryNotes?: string;
+  handoverMode?: HandoverValue;
   couponCode?: string | null;
 };
 
@@ -92,6 +95,23 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
       })
     : null;
   if (plan && "error" in plan) return { error: plan.error };
+  const handover = loadedCartHandover(loaded, input.items, parseHandover(input.handoverMode));
+  if ("error" in handover) return { error: handover.error };
+  const deliver = handover.mode === HandoverMode.DELIVER;
+  const delivery = {
+    deliveryAddressLine1: shopper.deliveryAddressLine1,
+    deliverySuburb: shopper.deliverySuburb,
+    deliveryPostcode: shopper.deliveryPostcode,
+    deliveryNotes: shopper.deliveryNotes,
+  };
+  const contactProblem = contactError({
+    needsContact: deliver,
+    deliver,
+    customerName: shopper.customerName,
+    customerEmail: shopper.customerEmail,
+    delivery,
+  });
+  if (contactProblem) return { error: contactProblem };
 
   const { applicationFeeCents, chargeTotalCents, passedOn } = computeVendlCheckoutFees(
     plan?.chargeGoodsCents ?? totalCents,
@@ -127,9 +147,9 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
       collectionNote: preOrderCart?.collectionNote ?? null,
       collectionStatus: preOrderCart ? CollectionStatus.ORDERED : null,
       paymentTiming: preOrderCart?.paymentTiming ?? PaymentTiming.PAY_NOW,
-      handoverMode: preOrderCart?.handoverMode ?? HandoverMode.COLLECT,
+      handoverMode: handover.mode,
       ...(deposit ?? {}),
-      ...(plan?.delivery ?? {}),
+      ...(deliver ? delivery : {}),
       items: { create: orderItemCreates(lineData) },
     },
   });

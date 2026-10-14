@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import DemoCardHint from "@/components/DemoCardHint";
 import CheckoutCashConfirm from "./CheckoutCashConfirm";
 import CheckoutLocalTransferConfirm from "./CheckoutLocalTransferConfirm";
@@ -52,6 +52,12 @@ import CartUpsellOffer from "./CartUpsellOffer";
 import { startCardCheckout } from "./digital-checkout-actions";
 import StripeEmbeddedCheckout from "@/components/checkout/StripeEmbeddedCheckout";
 import type { EmbeddedCheckoutInfo } from "@/lib/stripe-embedded-checkout";
+import {
+  CART_MIX_HANDOVER,
+  cartHandoverOptions,
+  type HandoverValue,
+} from "@/lib/fulfilment/handover-choice";
+import { shopButtonColour } from "@/lib/storefront/shop-button-colour";
 
 type LocalTransferInfo = {
   methodId: string;
@@ -158,6 +164,8 @@ export default function StandCartCheckout({
   const [deliverySuburb, setDeliverySuburb] = useState("");
   const [deliveryPostcode, setDeliveryPostcode] = useState("");
   const [deliveryNotes, setDeliveryNotes] = useState("");
+  const [handoverPick, setHandoverPick] = useState<HandoverValue>("COLLECT");
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const productIds = products.map((p) => p.id).join(",");
 
@@ -311,8 +319,18 @@ export default function StandCartCheckout({
     : null;
   const preOrderOnly =
     lines.length > 0 && lines.every((l) => l.product.isPreOrder);
-  const deliverOnly =
-    preOrderOnly && lines.every((l) => l.product.handoverMode === "DELIVER");
+  const handoverOptions = cartHandoverOptions(
+    lines.filter((l) => !l.asUpsell).map((l) => l.product.fulfilment),
+  );
+  const handoverConflict = !handoverOptions.pickup && !handoverOptions.delivery;
+  const canChooseHandover = handoverOptions.pickup && handoverOptions.delivery;
+  const handover: HandoverValue = canChooseHandover
+    ? handoverPick
+    : handoverOptions.pickup
+      ? "COLLECT"
+      : "DELIVER";
+  const deliver = handover === "DELIVER";
+  const needsContact = preOrderOnly || deliver;
   const hasMixedCart =
     lines.some((l) => l.product.isPreOrder) &&
     lines.some((l) => !l.product.isPreOrder);
@@ -402,20 +420,20 @@ export default function StandCartCheckout({
   function payCard() {
     setError(null);
     setCardTabHint(false);
-    if (preOrderOnly && !customerName.trim()) {
+    if (needsContact && !customerName.trim()) {
       setError(
-        deliverOnly
+        deliver
           ? "Enter your name for delivery."
           : "Enter your name for collection.",
       );
       return;
     }
-    if (preOrderOnly && !customerEmail.trim()) {
+    if (needsContact && !customerEmail.trim()) {
       setError("Enter your email for order details.");
       return;
     }
     if (
-      deliverOnly &&
+      deliver &&
       (!deliveryAddressLine1.trim() ||
         !deliverySuburb.trim() ||
         !deliveryPostcode.trim())
@@ -427,15 +445,17 @@ export default function StandCartCheckout({
       const result = await startCardCheckout({
         standSlug,
         items: payload,
-        customerName: preOrderOnly ? customerName.trim() : undefined,
+        customerName: needsContact ? customerName.trim() : undefined,
         customerEmail: customerEmail.trim() || undefined,
-        customerPhone: preOrderOnly ? customerPhone.trim() : undefined,
-        deliveryAddressLine1: deliverOnly
+        customerPhone: needsContact ? customerPhone.trim() : undefined,
+        deliveryAddressLine1: deliver
           ? deliveryAddressLine1.trim()
           : undefined,
-        deliverySuburb: deliverOnly ? deliverySuburb.trim() : undefined,
-        deliveryPostcode: deliverOnly ? deliveryPostcode.trim() : undefined,
-        deliveryNotes: deliverOnly ? deliveryNotes.trim() : undefined,
+        deliverySuburb: deliver ? deliverySuburb.trim() : undefined,
+        deliveryPostcode: deliver ? deliveryPostcode.trim() : undefined,
+        deliveryNotes: deliver ? deliveryNotes.trim() : undefined,
+        handoverMode: handover,
+        buttonColour: shopButtonColour(rootRef.current),
         embedded: !isEmbeddedCheckout(),
       });
       if ("error" in result && result.error) {
@@ -498,7 +518,7 @@ export default function StandCartCheckout({
   if (lines.length === 0) return <CartEmptyView shopHref={backHref} />;
 
   return (
-    <div className="mt-6 flex flex-col gap-4 pb-40">
+    <div ref={rootRef} className="mt-6 flex flex-col gap-4 pb-40">
       <StandCartLineList
         lines={lines}
         currency={currency}
@@ -529,6 +549,8 @@ export default function StandCartCheckout({
 
       {hasMixedCart ? (
         <p className="text-lg text-[var(--gone)]">{CART_MIX_TAKE_NOW_PREORDER}</p>
+      ) : handoverConflict ? (
+        <p className="text-lg text-[var(--gone)]">{CART_MIX_HANDOVER}</p>
       ) : error ? (
         <p className="text-lg text-[var(--gone)]">{error}</p>
       ) : null}
@@ -560,7 +582,10 @@ export default function StandCartCheckout({
           pending={pending}
           showDemoCardHint={Boolean(demoProduct)}
           preOrderOnly={preOrderOnly}
-          deliverOnly={deliverOnly}
+          deliver={deliver}
+          handoverChoice={
+            canChooseHandover ? { value: handover, onChange: setHandoverPick } : null
+          }
           firstOrderHint={firstOrderHint}
           customerName={customerName}
           customerEmail={customerEmail}
@@ -615,6 +640,10 @@ export default function StandCartCheckout({
           onContinue={() => {
             if (hasMixedCart) {
               setError(CART_MIX_TAKE_NOW_PREORDER);
+              return;
+            }
+            if (handoverConflict) {
+              setError(CART_MIX_HANDOVER);
               return;
             }
             setError(null);

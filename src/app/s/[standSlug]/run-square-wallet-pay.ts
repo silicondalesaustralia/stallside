@@ -33,6 +33,7 @@ export async function runSquareWalletPay(
         deliverySuburb: props.deliverySuburb,
         deliveryPostcode: props.deliveryPostcode,
         deliveryNotes: props.deliveryNotes,
+        handoverMode: props.handoverMode,
         couponCode: props.couponCode,
         sourceId: token,
       });
