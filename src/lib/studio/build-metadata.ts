@@ -2,7 +2,8 @@ import type { StorefrontContext } from "@/lib/catalogue/storefront";
 import { buildPuckSpikeMetadata } from "@/lib/puck/build-metadata";
 import { loadStorefrontReviews } from "./load-reviews";
 import { ensureCustomPages } from "./custom-pages";
-import { footerPagesFromCustomPages } from "./custom-page-paths";
+import { customPagePublicPath, footerPagesFromCustomPages } from "./custom-page-paths";
+import { parseHeaderMenu } from "./header-menu";
 import { ensureBlogSettings } from "./blog";
 import { buildStudioHeaderNav } from "./navigation";
 import type { StudioMetadata, StudioTemplateId } from "./types";
@@ -53,6 +54,14 @@ export async function buildStudioMetadata(
       draft,
       base.basePath,
     ),
+    linkablePages: pagesForNav
+      .filter((p) => p.enabled)
+      .map((p) => ({
+        slug: p.slug,
+        label: p.navLabel || p.title,
+        href: customPagePublicPath(ctx.storefront.slug, p, draft, base.basePath),
+      })),
+    headerMenu: parseHeaderMenu(configSource),
     customFooterPages: footerPagesFromCustomPages(
       pagesForNav,
       ctx.storefront.slug,

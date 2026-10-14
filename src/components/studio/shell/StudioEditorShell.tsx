@@ -8,6 +8,7 @@ import { StorefrontLinkProvider } from "@/components/storefront/StorefrontLinkPr
 import StorefrontFontLoader from "@/components/storefront/StorefrontFontLoader";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
+import { resolveHeaderMenu } from "@/lib/studio/header-menu";
 import { useStudioEditorChrome } from "@/components/studio/StudioEditorContext";
 import StudioStorefrontNav from "./StudioStorefrontNav";
 import StudioStorefrontFooter from "./StudioStorefrontFooter";
@@ -33,6 +34,7 @@ export default function StudioEditorShell({
     previewLogoHeight,
     setHeaderStyle,
     sitePageBackground,
+    headerMenu,
   } = useStudioEditorChrome();
   const liveBranding =
     sitePageBackground === undefined ? branding : { ...branding, pageBackground: sitePageBackground };
@@ -60,6 +62,8 @@ export default function StudioEditorShell({
           basePath={metadata.basePath}
           templateId={metadata.templateId}
           hasMenus={metadata.menus.length > 0}
+          customNavPages={metadata.customNavPages}
+          menuItems={headerMenu ? resolveHeaderMenu(headerMenu, { ...metadata, draft: true }) : null}
           editable
           selected={chromeTarget === "header"}
           onSelect={selectHeader}

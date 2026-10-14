@@ -7,6 +7,7 @@ import StorefrontFontLoader from "@/components/storefront/StorefrontFontLoader";
 import type { StudioMetadata } from "@/lib/studio/types";
 import type { StorefrontPageId } from "@/lib/storefront/types";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
+import { resolveHeaderMenu } from "@/lib/studio/header-menu";
 import StudioStorefrontNav from "./StudioStorefrontNav";
 import StudioStorefrontFooter from "./StudioStorefrontFooter";
 
@@ -42,6 +43,7 @@ export default function StudioPublicShell({
           templateId={metadata.templateId}
           hasMenus={metadata.menus.length > 0}
           customNavPages={metadata.customNavPages}
+          menuItems={metadata.headerMenu ? resolveHeaderMenu(metadata.headerMenu, { ...metadata, draft }) : null}
         />
         <main>{children}</main>
         <StudioStorefrontFooter

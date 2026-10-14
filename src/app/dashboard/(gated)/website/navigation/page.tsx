@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ensureCustomPages } from "@/lib/studio/custom-pages";
 import { ensureBlogSettings } from "@/lib/studio/blog";
 import { buildNavEditorItems } from "@/lib/studio/navigation";
+import { parseHeaderMenu } from "@/lib/studio/header-menu";
 import { syncBuiltinCustomPages } from "../pages/actions";
 import NavigationEditor from "./NavigationEditor";
 
@@ -43,7 +44,11 @@ export default async function WebsiteNavigationPage({
       ) : null}
       <WebsiteFormError error={params.error} fallback="Could not save navigation." />
 
-      <NavigationEditor initialItems={items} hasMenus={hasMenus} />
+      <NavigationEditor
+        initialItems={items}
+        hasMenus={hasMenus}
+        customHeaderMenu={parseHeaderMenu(storefront.draftConfig) !== null}
+      />
     </main>
   );
 }

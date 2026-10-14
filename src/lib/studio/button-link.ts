@@ -23,10 +23,12 @@ export function isButtonLink(value: unknown): value is string {
 
 export const buttonLinkSchema = z.string().refine(isButtonLink, "Pick a page, product or a valid web address.");
 
-type LinkContext = {
+export type LinkContext = {
   storefrontSlug: string;
   draft?: boolean;
   basePath?: string;
+  /** Every enabled custom page, whether or not it's in the automatic menu. */
+  linkablePages?: { slug: string; href: string }[];
   customNavPages?: { slug: string; href: string; children?: { slug: string; href: string }[] }[];
 };
 
@@ -43,7 +45,10 @@ export function resolveButtonLink(link: unknown, ctx: LinkContext): string | nul
   if (link.startsWith("product:")) return shopProductPath(slug, link.slice(8), draft, basePath);
   if (link.startsWith("nav:")) {
     const target = link.slice(4);
-    const items = (ctx.customNavPages ?? []).flatMap((item) => [item, ...(item.children ?? [])]);
+    const items = [
+      ...(ctx.linkablePages ?? []),
+      ...(ctx.customNavPages ?? []).flatMap((item) => [item, ...(item.children ?? [])]),
+    ];
     return items.find((item) => item.slug === target)?.href ?? null;
   }
   return safeHref(link);

@@ -11,6 +11,7 @@ import {
   type HeaderLayout,
 } from "@/lib/storefront/header-style";
 import LogoSizeField from "./LogoSizeField";
+import HeaderMenuEditor from "./HeaderMenuEditor";
 
 export default function HeaderStyleSettings() {
   const {
@@ -81,6 +82,7 @@ export default function HeaderStyleSettings() {
           onPreview={(h) => previewLogoHeight?.(h)}
           onCommit={(h) => setHeaderStyle?.({ logoHeight: h })}
         />
+        <HeaderMenuEditor />
         {headerStyleStatus === "saving" ? (
           <p className="text-xs text-[var(--muted)]">Saving…</p>
         ) : null}

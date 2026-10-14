@@ -9,26 +9,22 @@ import {
   subscribeStandCart,
 } from "@/lib/stand-cart-storage";
 import { standCartPath } from "@/lib/stand-seo";
-import { shopHomePath, shopMenusPath, shopPagePath } from "@/lib/storefront/paths";
+import { shopHomePath } from "@/lib/storefront/paths";
 import type { StorefrontPageId, ResolvedStorefrontBranding } from "@/lib/storefront/types";
 import type { StudioTemplateId } from "@/lib/studio/types";
 import type { StudioNavItem } from "@/lib/studio/navigation";
+import { buildAutoNavItems } from "@/lib/studio/auto-header-nav";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
 import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style";
 import StudioBrandMark from "./StudioBrandMark";
-
-const SHOP_LABEL: Record<StudioTemplateId, string> = {
-  artisan: "Shop",
-  farmhouse: "What's available",
-  market: "Shop",
-};
+import NavItemLink from "./NavItemLink";
 
 function NavDropdown({ item }: { item: StudioNavItem }) {
   if (!item.children?.length) {
     return (
-      <Link href={item.href} className="studio-nav__link">
+      <NavItemLink href={item.href} className="studio-nav__link">
         {item.label}
-      </Link>
+      </NavItemLink>
     );
   }
   return (
@@ -41,61 +37,15 @@ function NavDropdown({ item }: { item: StudioNavItem }) {
         <ul role="menu" className="rounded-lg border border-[var(--line)] bg-[var(--panel)] py-1 shadow-md">
           {item.children.map((child) => (
             <li key={child.slug} role="none">
-              <Link role="menuitem" href={child.href} className="block px-3 py-2 text-sm text-[var(--field)] hover:bg-[var(--wash)]">
+              <NavItemLink role="menuitem" href={child.href} className="block px-3 py-2 text-sm text-[var(--field)] hover:bg-[var(--wash)]">
                 {child.label}
-              </Link>
+              </NavItemLink>
             </li>
           ))}
         </ul>
       </div>
     </div>
   );
-}
-
-function buildNavItems(input: {
-  enabledPages: StorefrontPageId[];
-  storefrontSlug: string;
-  draft?: boolean;
-  basePath?: string;
-  templateId: StudioTemplateId;
-  hasMenus?: boolean;
-  customNavPages: StudioNavItem[];
-}): StudioNavItem[] {
-  const items: StudioNavItem[] = [];
-  const { enabledPages, storefrontSlug, draft, basePath, templateId, hasMenus, customNavPages } =
-    input;
-  if (enabledPages.includes("home")) {
-    items.push({ slug: "home", label: "Home", href: shopHomePath(storefrontSlug, draft, basePath) });
-  }
-  if (enabledPages.includes("shop")) {
-    items.push({
-      slug: "shop",
-      label: SHOP_LABEL[templateId],
-      href: shopPagePath(storefrontSlug, "shop", draft, basePath),
-    });
-  }
-  if (hasMenus) {
-    items.push({ slug: "menu", label: "Menus", href: shopMenusPath(storefrontSlug, draft, basePath) });
-  }
-  if (customNavPages.length > 0) {
-    items.push(...customNavPages);
-  } else {
-    if (enabledPages.includes("about")) {
-      items.push({
-        slug: "about",
-        label: templateId === "farmhouse" ? "Our farm" : "About",
-        href: shopPagePath(storefrontSlug, "about", draft, basePath),
-      });
-    }
-    if (enabledPages.includes("contact")) {
-      items.push({
-        slug: "contact",
-        label: "Contact",
-        href: shopPagePath(storefrontSlug, "contact", draft, basePath),
-      });
-    }
-  }
-  return items;
 }
 
 function MobileNavList({
@@ -119,19 +69,19 @@ function MobileNavList({
               <ul className="mt-1 flex flex-col">
                 {item.children.map((child) => (
                   <li key={child.slug}>
-                    <Link
+                    <NavItemLink
                       href={child.href}
                       className="block py-3 text-base font-semibold text-[var(--field)]"
                       onClick={onNavigate}
                     >
                       {child.label}
-                    </Link>
+                    </NavItemLink>
                   </li>
                 ))}
               </ul>
             </div>
           ) : (
-            <Link
+            <NavItemLink
               href={item.href}
               className={`block py-3 text-base font-semibold text-[var(--field)] ${
                 activePage === item.slug ? "underline" : ""
@@ -139,7 +89,7 @@ function MobileNavList({
               onClick={onNavigate}
             >
               {item.label}
-            </Link>
+            </NavItemLink>
           )}
         </li>
       ))}
@@ -158,6 +108,7 @@ export default function StudioStorefrontNav({
   templateId,
   hasMenus,
   customNavPages = [],
+  menuItems,
   editable,
   selected,
   onSelect,
@@ -177,6 +128,8 @@ export default function StudioStorefrontNav({
   templateId: StudioTemplateId;
   hasMenus?: boolean;
   customNavPages?: StudioNavItem[];
+  /** The seller's own header menu, already resolved; replaces the automatic links. */
+  menuItems?: StudioNavItem[] | null;
   editable?: boolean;
   selected?: boolean;
   onSelect?: () => void;
@@ -200,15 +153,9 @@ export default function StudioStorefrontNav({
   }, [standSlug]);
   const cartCount = useSyncExternalStore(subscribe, getSnapshot, () => 0);
 
-  const navItems = buildNavItems({
-    enabledPages,
-    storefrontSlug,
-    draft,
-    basePath,
-    templateId,
-    hasMenus,
-    customNavPages,
-  });
+  const navItems =
+    menuItems ??
+    buildAutoNavItems({ enabledPages, storefrontSlug, draft, basePath, templateId, hasMenus, customNavPages });
 
   const navClass =
     template.headerVariant === "editorial"

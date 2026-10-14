@@ -14,9 +14,11 @@ import HeaderNavEditor from "./HeaderNavEditor";
 export default function NavigationEditor({
   initialItems,
   hasMenus,
+  customHeaderMenu,
 }: {
   initialItems: NavEditorItem[];
   hasMenus: boolean;
+  customHeaderMenu: boolean;
 }) {
   const [items, setItems] = useState(initialItems);
   const [pending, startTransition] = useTransition();
@@ -25,6 +27,15 @@ export default function NavigationEditor({
 
   return (
     <div className="flex flex-col gap-6">
+      {customHeaderMenu ? (
+        <section className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--field)]">
+          <p className="font-semibold">Your header uses a custom menu</p>
+          <p className="mt-1 text-[var(--muted)]">
+            It&apos;s built in the website builder (click the header, then Menu links). The header settings
+            below only apply if you reset it to automatic. Footer settings still apply.
+          </p>
+        </section>
+      ) : null}
       <section className="rounded-2xl border border-dashed border-[var(--line)] bg-[var(--panel)] p-4 text-sm text-[var(--muted)]">
         <p className="font-semibold text-[var(--field)]">Always shown first in the header</p>
         <p className="mt-1">

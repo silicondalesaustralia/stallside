@@ -27,6 +27,10 @@ export type StudioMetadata = PuckSpikeMetadata & {
   fulfilmentOptions: ShopFulfilmentOptionView[];
   standId: string;
   customNavPages: import("./navigation").StudioNavItem[];
+  /** Every enabled custom page (for link pickers), in or out of the automatic menu. */
+  linkablePages: { slug: string; label: string; href: string }[];
+  /** The seller's own header menu, or null for the automatic one. */
+  headerMenu: import("./header-menu").HeaderMenu | null;
   customFooterPages: {
     label: string;
     href: string;

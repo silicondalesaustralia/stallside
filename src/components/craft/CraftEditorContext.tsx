@@ -6,6 +6,7 @@ import type { BusinessMode } from "@/lib/business-mode";
 import type { StudioTemplateId } from "@/lib/studio/types";
 import type { CommercePageKind } from "@/lib/studio/commerce-pages";
 import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style";
+import type { HeaderMenu } from "@/lib/studio/header-menu";
 
 export type ChromeTarget = "header" | null;
 
@@ -50,6 +51,11 @@ export type CraftEditorChrome = {
   }) => void;
   headerStyleStatus?: "idle" | "saving" | "saved" | "error";
   headerStyleError?: string | null;
+  headerMenu?: HeaderMenu | null;
+  /** Shows the change at once and saves it to the draft; null = automatic menu. */
+  setHeaderMenu?: (menu: HeaderMenu | null) => void;
+  headerMenuStatus?: "idle" | "saving" | "saved" | "error";
+  headerMenuError?: string | null;
   sitePageBackground?: string | null;
   setSitePageBackground?: (value: string | null) => void;
   sitePageBackgroundStatus?: "idle" | "saving" | "saved" | "error";

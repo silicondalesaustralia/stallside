@@ -37,6 +37,7 @@ import StudioAddSectionModal from "./StudioAddSectionModal";
 import StudioPageAddFooter from "./StudioPageAddFooter";
 import { useLayoutAutosave } from "./useLayoutAutosave";
 import { useSitePageBackground } from "./useSitePageBackground";
+import { useHeaderMenu } from "./useHeaderMenu";
 import type { AutosaveTargetInput } from "@/app/dashboard/(gated)/website/autosave/actions";
 
 export default function StudioEditorInner({
@@ -120,6 +121,7 @@ export default function StudioEditorInner({
     revisionRef,
     runExclusive,
   });
+  const headerMenuState = useHeaderMenu({ initial: metadata.headerMenu, revisionRef, runExclusive });
   const [chromeTarget, setChromeTarget] = useState<ChromeTarget>(null);
   const [headerLayout, setHeaderLayout] = useState<HeaderLayout>(
     metadata.resolvedBranding.headerLayout,
@@ -237,6 +239,7 @@ export default function StudioEditorInner({
       headerStyleStatus,
       headerStyleError,
       ...sitePageBackground,
+      ...headerMenuState,
       pageOptions,
       currentPage,
     }),
@@ -270,6 +273,7 @@ export default function StudioEditorInner({
       headerStyleStatus,
       headerStyleError,
       sitePageBackground,
+      headerMenuState,
     ],
   );
 

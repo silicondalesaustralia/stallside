@@ -18,14 +18,17 @@ const PAGES = [
 
 const isToken = (v: string) => /^(page|nav|product):/.test(v);
 
-/** Where a section's button goes: a site page, custom page, product or any web address. */
+/** Where a button or menu link goes: a site page, custom page, product or any web address. */
 export default function ButtonLinkField({
   value,
+  label = "Button link",
   defaultLabel,
   onChange,
 }: {
   value: string | undefined;
-  defaultLabel: string;
+  label?: string;
+  /** Text for the "Default (…)" choice; null hides it and asks the seller to choose. */
+  defaultLabel: string | null;
   onChange: (value: string | undefined) => void;
 }) {
   const meta = useStudioMetadata();
@@ -33,7 +36,7 @@ export default function ButtonLinkField({
   const [urlMode, setUrlMode] = useState(Boolean(stored) && !isToken(stored));
   const [text, setText] = useState(stored && !isToken(stored) ? stored : "");
   const [error, setError] = useState<string | null>(null);
-  const navPages = meta.customNavPages.flatMap((item) => [item, ...(item.children ?? [])]);
+  const navPages = meta.linkablePages;
 
   function pick(next: string) {
     setError(null);
@@ -63,9 +66,11 @@ export default function ButtonLinkField({
 
   return (
     <div className="space-y-1.5">
-      <label className="block text-xs font-semibold text-[var(--field)]">Button link</label>
+      <label className="block text-xs font-semibold text-[var(--field)]">{label}</label>
       <select className={INPUT} value={urlMode ? URL_OPTION : stored} onChange={(e) => pick(e.target.value)}>
-        <option value="">Default ({defaultLabel})</option>
+        <option value="" disabled={defaultLabel === null}>
+          {defaultLabel === null ? "Choose where it goes…" : `Default (${defaultLabel})`}
+        </option>
         <optgroup label="Pages">
           {PAGES.map(([token, label]) => (
             <option key={token} value={token}>{label}</option>
