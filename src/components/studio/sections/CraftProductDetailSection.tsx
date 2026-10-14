@@ -24,6 +24,7 @@ export type CraftProductDetailProps = {
   imageSide?: "left" | "right";
   enlarge?: boolean;
   stickyCart?: boolean;
+  showPayments?: boolean;
   infoRows?: InfoRow[];
   tabs?: ProductTab[];
 };

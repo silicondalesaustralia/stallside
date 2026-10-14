@@ -50,6 +50,7 @@ export default function ProductDetailSettings({
       ) : null}
       <Toggle label="Click photos to enlarge" checked={view.enlarge} onChange={(v) => setProp("enlarge", v)} />
       <Toggle label="Sticky Add to cart bar on phones" checked={view.stickyCart} onChange={(v) => setProp("stickyCart", v)} />
+      <Toggle label="Show payment options under the buttons" checked={view.showPayments} onChange={(v) => setProp("showPayments", v)} />
       <Toggle label="Show breadcrumbs" checked={props.showBreadcrumbs !== false} onChange={(v) => setProp("showBreadcrumbs", v)} />
       <Toggle label="Show back to shop link" checked={props.showBackLink} onChange={(v) => setProp("showBackLink", v)} />
       <Toggle label="Show product reviews under detail" checked={props.showReviews} onChange={(v) => setProp("showReviews", v)} />

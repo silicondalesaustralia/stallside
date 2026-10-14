@@ -22,6 +22,11 @@ describe("footer settings", () => {
     });
   });
 
+  it("keeps a valid phone layout and rejects unknown ones", () => {
+    assert.equal(parseFooterSettings({ footer: { mobileLayout: "accordion" } })?.mobileLayout, "accordion");
+    assert.equal(parseFooterSettings({ footer: { mobileLayout: "hamburger" } }), null);
+  });
+
   it("explains invalid links in seller words", () => {
     const bad = { columns: [{ id: "a", heading: "Shop", links: [{ id: "l", label: "X", link: "javascript:alert(1)" }] }] };
     assert.match(footerSettingsProblem(bad) ?? "", /isn't a page/);

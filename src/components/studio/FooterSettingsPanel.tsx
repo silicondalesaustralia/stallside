@@ -1,17 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import type { FooterSettings } from "@/lib/studio/footer-settings";
+import { FOOTER_MOBILE_LAYOUTS, type FooterMobileLayout, type FooterSettings } from "@/lib/studio/footer-settings";
 import { useStudioEditorChrome } from "./StudioEditorContext";
 import SettingsGroup from "./SettingsGroup";
+import SiteChoice from "./SiteChoice";
 import FooterBrandFields from "./FooterBrandFields";
 import FooterColumnsEditor from "./FooterColumnsEditor";
 import FooterLookFields from "./FooterLookFields";
 
+const MOBILE_LABELS: Record<FooterMobileLayout, string> = { stacked: "Stacked", accordion: "Dropdowns", columns: "Two columns" };
+const MOBILE_HINTS: Record<FooterMobileLayout, string> = {
+  stacked: "Every column open, one under another.",
+  accordion: "Each column folds away behind its heading; tap + to open it.",
+  columns: "Link columns sit two across to save space.",
+};
+
 /** Everything in the site footer: business details, link columns, bottom line and colours. */
 export default function FooterSettingsPanel() {
   const { footer, setFooter, footerStatus, footerError, setChromeTarget } = useStudioEditorChrome();
-  const [open, setOpen] = useState({ brand: true, columns: false, look: false });
+  const [open, setOpen] = useState({ brand: true, columns: false, phone: false, look: false });
   const toggle = (group: keyof typeof open, value: boolean) => setOpen((prev) => ({ ...prev, [group]: value }));
   const settings: FooterSettings = footer ?? {};
   const update = (patch: Partial<FooterSettings>) => setFooter?.({ ...settings, ...patch });
@@ -30,6 +38,16 @@ export default function FooterSettingsPanel() {
         </SettingsGroup>
         <SettingsGroup title="Link columns" open={open.columns} onToggle={(v) => toggle("columns", v)}>
           <FooterColumnsEditor footer={settings} update={update} />
+        </SettingsGroup>
+        <SettingsGroup title="Phone layout" open={open.phone} onToggle={(v) => toggle("phone", v)}>
+          <SiteChoice
+            label="Link columns on phones"
+            options={FOOTER_MOBILE_LAYOUTS}
+            labels={MOBILE_LABELS}
+            value={settings.mobileLayout ?? "stacked"}
+            onChange={(mobileLayout) => update({ mobileLayout })}
+          />
+          <p className="text-xs text-[var(--muted)]">{MOBILE_HINTS[settings.mobileLayout ?? "stacked"]} Wider screens always show columns side by side.</p>
         </SettingsGroup>
         <SettingsGroup title="Bottom line & colours" open={open.look} onToggle={(v) => toggle("look", v)}>
           <FooterLookFields footer={settings} update={update} />

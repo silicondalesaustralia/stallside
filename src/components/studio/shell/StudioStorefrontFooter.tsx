@@ -6,11 +6,11 @@ import { resolveStudioTemplate } from "@/lib/studio/templates";
 import { isWebsiteDemoStorefrontSlug } from "@/lib/demo";
 import type { FooterColumnId } from "@/lib/studio/custom-pages";
 import type { LinkContext } from "@/lib/studio/button-link";
-import { footerBottomLine, footerColours, type FooterSettings } from "@/lib/studio/footer-settings";
+import { footerBottomLine, footerColours, type FooterMobileLayout, type FooterSettings } from "@/lib/studio/footer-settings";
 import { autoFooterColumns, resolveFooterColumns } from "@/lib/studio/footer-columns";
 import { paletteOf } from "@/lib/website/sections/colour";
 import StudioFooterBrand from "./StudioFooterBrand";
-import StudioFooterContact from "./StudioFooterContact";
+import StudioFooterColumn from "./StudioFooterColumn";
 import StudioFooterSocial from "./StudioFooterSocial";
 
 const GRID_COLS: Record<number, string> = {
@@ -18,6 +18,18 @@ const GRID_COLS: Record<number, string> = {
   3: "sf-lg:grid-cols-3",
   4: "sf-lg:grid-cols-4",
   5: "sf-lg:grid-cols-5",
+};
+
+/** Phone spacing per footer layout; from sf-sm up every layout uses the same grid. */
+const MOBILE_GRID: Record<FooterMobileLayout, string> = {
+  stacked: "gap-10",
+  accordion: "gap-0 sf-sm:gap-10",
+  columns: "grid-cols-2 gap-x-6 gap-y-8 sf-sm:gap-10",
+};
+const MOBILE_BRAND: Record<FooterMobileLayout, string | undefined> = {
+  stacked: undefined,
+  accordion: "mb-6 sf-sm:mb-0",
+  columns: "col-span-2 sf-sm:col-span-1",
 };
 
 export default function StudioStorefrontFooter({
@@ -54,6 +66,7 @@ export default function StudioStorefrontFooter({
     linkContext,
   );
   const brandShown = footer?.showBrand !== false;
+  const mobileLayout = footer?.mobileLayout ?? "stacked";
   const gridCols = GRID_COLS[columns.length + (brandShown ? 1 : 0)] ?? "";
 
   const footerClass =
@@ -91,26 +104,10 @@ export default function StudioStorefrontFooter({
       }
     >
       <div className="mx-auto max-w-[var(--studio-content-max)] py-12 studio-gutter studio-gutter--wide sf-sm:py-16">
-        <div className={`grid gap-10 sf-sm:grid-cols-2 ${gridCols}`}>
-          <StudioFooterBrand branding={branding} footer={footer} />
+        <div className={`grid sf-sm:grid-cols-2 ${MOBILE_GRID[mobileLayout]} ${gridCols}`}>
+          <StudioFooterBrand branding={branding} footer={footer} className={MOBILE_BRAND[mobileLayout]} />
           {columns.map((col) => (
-            <div key={col.id}>
-              {col.heading.trim() ? (
-                <p className="text-xs font-bold uppercase tracking-wide opacity-60">{col.heading}</p>
-              ) : null}
-              {col.contact ? <StudioFooterContact contact={col.contact} /> : null}
-              {col.links.length ? (
-                <ul className="mt-3 space-y-2">
-                  {col.links.map((l) => (
-                    <li key={l.id}>
-                      <Link href={l.href} className="text-sm font-medium hover:underline">
-                        {l.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
+            <StudioFooterColumn key={col.id} col={col} mobileLayout={mobileLayout} />
           ))}
         </div>
         <div className="mt-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-current/15 pt-6">

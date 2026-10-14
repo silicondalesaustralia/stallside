@@ -44,6 +44,8 @@ export type ProductDetailView = {
   imageOnRight: boolean;
   enlarge: boolean;
   stickyCart: boolean;
+  /** Payment marks under the cart buttons; off unless the seller turns it on. */
+  showPayments: boolean;
   infoRows: InfoRow[];
   tabs: ProductTab[];
 };
@@ -74,6 +76,7 @@ export function productDetailView(props: Record<string, unknown>): ProductDetail
     imageOnRight: props.imageSide === "right",
     enlarge: props.enlarge !== false,
     stickyCart: props.stickyCart !== false,
+    showPayments: props.showPayments === true,
     infoRows: parseInfoRows(props.infoRows).filter((r) => r.text.trim()),
     tabs: parseProductTabs(props.tabs).filter((t) => t.title.trim()),
   };

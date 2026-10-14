@@ -4,9 +4,11 @@ import type { FooterSettings } from "@/lib/studio/footer-settings";
 export default function StudioFooterBrand({
   branding,
   footer,
+  className,
 }: {
   branding: ResolvedStorefrontBranding;
   footer: FooterSettings | null;
+  className?: string;
 }) {
   if (footer?.showBrand === false) return null;
   const name = footer?.brandName?.trim() || branding.businessName;
@@ -16,7 +18,7 @@ export default function StudioFooterBrand({
   const phone = footer?.showPhone ? branding.contactPhone : null;
 
   return (
-    <div>
+    <div className={className}>
       <p className="studio-footer__brand">{name}</p>
       {tagline ? <p className="mt-2 max-w-xs text-sm leading-relaxed opacity-80">{tagline}</p> : null}
       {region ? <p className="mt-3 text-sm opacity-75">{region}</p> : null}

@@ -101,6 +101,7 @@ export const productDetail: SectionDefinition = {
     imageSide: z.enum(PRODUCT_IMAGE_SIDES).optional(),
     enlarge: z.boolean().optional(),
     stickyCart: z.boolean().optional(),
+    showPayments: z.boolean().optional(),
   }),
   pageKinds: ["product"],
   singleton: true,

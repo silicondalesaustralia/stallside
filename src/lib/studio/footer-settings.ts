@@ -16,6 +16,9 @@ export const FOOTER_BRAND_MAX = 80;
 export const FOOTER_TAGLINE_MAX = 240;
 export const FOOTER_BOTTOM_MAX = 200;
 export const FOOTER_ADDRESS_MAX = 300;
+/** How link columns sit on phones: one under another, collapsed behind their headings, or two across. */
+export const FOOTER_MOBILE_LAYOUTS = ["stacked", "accordion", "columns"] as const;
+export type FooterMobileLayout = (typeof FOOTER_MOBILE_LAYOUTS)[number];
 
 const id = z.string().min(1).max(40);
 const colour = z.string().refine(isColourValue);
@@ -50,6 +53,7 @@ export const footerSettingsSchema = z.object({
   columns: z.array(footerColumn).max(FOOTER_MAX_COLUMNS).optional(),
   bottomText: z.string().max(FOOTER_BOTTOM_MAX).optional(),
   showHomeLink: z.boolean().optional(),
+  mobileLayout: z.enum(FOOTER_MOBILE_LAYOUTS).optional(),
   background: colour.optional(),
   textColour: colour.optional(),
 });

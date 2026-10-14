@@ -67,7 +67,15 @@ describe("product detail section", () => {
     assert.equal(view.imageRatio, "square");
     assert.equal(view.enlarge, true);
     assert.equal(view.stickyCart, true);
+    assert.equal(view.showPayments, false);
     assert.deepEqual(view.infoRows, []);
+  });
+
+  it("shows payment options only when turned on", () => {
+    assert.equal(productDetailView({ showPayments: true }).showPayments, true);
+    const { section } = craftNodeToSection("pd1", detailNode({ showPayments: true }), "s");
+    assert.equal(section.settings.showPayments, true);
+    assert.deepEqual(validateSection(section, "product", "s"), []);
   });
 
   it("hides blank info lines and untitled tabs", () => {

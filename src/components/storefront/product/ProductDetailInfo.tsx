@@ -49,6 +49,7 @@ export default function ProductDetailInfo({
         product={product}
         catalogProducts={catalog}
         stickyCart={view.stickyCart && !isEditing}
+        paymentBrands={view.showPayments ? meta.paymentBrands : []}
       />
       <ProductInfoRows rows={view.infoRows} />
       <ProductInfoTabs tabs={view.tabs} />
