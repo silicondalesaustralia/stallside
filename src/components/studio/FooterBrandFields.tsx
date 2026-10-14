@@ -6,7 +6,7 @@ import { footerSocialLinks } from "./shell/StudioFooterSocial";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
 
-type Toggle = "showTagline" | "showRegion" | "showEmail" | "showSocial";
+type Toggle = "showTagline" | "showRegion" | "showEmail";
 
 /** The footer's first column: name, tagline and which contact details show. */
 export default function FooterBrandFields({
@@ -22,8 +22,8 @@ export default function FooterBrandFields({
     { key: "showTagline", label: "Show tagline", available: true },
     { key: "showRegion", label: `Show location${branding.regionLabel ? ` (${branding.regionLabel})` : ""}`, available: Boolean(branding.regionLabel) },
     { key: "showEmail", label: `Show email (${branding.contactEmail})`, available: true },
-    { key: "showSocial", label: `Show social links (${footerSocialLinks(branding).map((l) => l.label).join(", ")})`, available: footerSocialLinks(branding).length > 0 },
   ];
+  const social = footerSocialLinks(branding).map((l) => l.label);
 
   return (
     <div className="space-y-4">
@@ -71,6 +71,12 @@ export default function FooterBrandFields({
           ) : null}
           <p className="text-xs text-[var(--muted)]">Change your email, phone, location and social links in Business details.</p>
         </>
+      ) : null}
+      {social.length ? (
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={footer.showSocial !== false} onChange={(e) => update({ showSocial: e.target.checked })} />
+          Show social icons on the bottom line ({social.join(", ")})
+        </label>
       ) : null}
     </div>
   );

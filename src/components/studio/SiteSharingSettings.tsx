@@ -17,7 +17,7 @@ export default function SiteSharingSettings() {
       <Link href={`/dashboard/businesses/${standId}`} className={LINK}>
         Social profile links (Instagram, Facebook, TikTok, YouTube) →
       </Link>
-      <p className="text-xs text-[var(--muted)]">Social links show in your footer. Turn them off under Footer → Business details.</p>
+      <p className="text-xs text-[var(--muted)]">Social links show as icons on your footer&apos;s bottom line. Turn them off in the footer settings.</p>
     </div>
   );
 }

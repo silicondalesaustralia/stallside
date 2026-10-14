@@ -11,6 +11,7 @@ import { autoFooterColumns, resolveFooterColumns } from "@/lib/studio/footer-col
 import { paletteOf } from "@/lib/website/sections/colour";
 import StudioFooterBrand from "./StudioFooterBrand";
 import StudioFooterContact from "./StudioFooterContact";
+import StudioFooterSocial from "./StudioFooterSocial";
 
 const GRID_COLS: Record<number, string> = {
   2: "sf-lg:grid-cols-2",
@@ -112,20 +113,23 @@ export default function StudioStorefrontFooter({
             </div>
           ))}
         </div>
-        <p className="mt-10 border-t border-current/15 pt-6 text-xs opacity-70">
-          {footerBottomLine(footer, branding.businessName, new Date().getFullYear())}
-          {footer?.showHomeLink === false ? null : (
-            <>
-              {" · "}
-              <Link href={shopHomePath(storefrontSlug, draft, basePath)} className="hover:underline">
-                Home
-              </Link>
-            </>
-          )}
-          {isDemoStore
-            ? " — Green Valley Farm & Bakes is a fictional store created to demonstrate Vendl."
-            : null}
-        </p>
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-current/15 pt-6">
+          <p className="text-xs opacity-70">
+            {footerBottomLine(footer, branding.businessName, new Date().getFullYear())}
+            {footer?.showHomeLink === false ? null : (
+              <>
+                {" · "}
+                <Link href={shopHomePath(storefrontSlug, draft, basePath)} className="hover:underline">
+                  Home
+                </Link>
+              </>
+            )}
+            {isDemoStore
+              ? " — Green Valley Farm & Bakes is a fictional store created to demonstrate Vendl."
+              : null}
+          </p>
+          {footer?.showSocial === false ? null : <StudioFooterSocial branding={branding} />}
+        </div>
       </div>
     </footer>
   );

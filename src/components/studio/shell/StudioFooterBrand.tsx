@@ -1,7 +1,5 @@
 import type { ResolvedStorefrontBranding } from "@/lib/storefront/types";
 import type { FooterSettings } from "@/lib/studio/footer-settings";
-import StudioFooterSocial from "./StudioFooterSocial";
-
 /** The footer's first column: business name, tagline, region and contact details. */
 export default function StudioFooterBrand({
   branding,
@@ -36,7 +34,6 @@ export default function StudioFooterBrand({
           </a>
         </p>
       ) : null}
-      {footer?.showSocial === false ? null : <StudioFooterSocial branding={branding} />}
     </div>
   );
 }
