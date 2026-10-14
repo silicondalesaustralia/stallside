@@ -8,7 +8,7 @@ import {
   readStandCartLines,
   subscribeStandCart,
 } from "@/lib/stand-cart-storage";
-import { standCartPath } from "@/lib/stand-seo";
+import { useCartHref } from "@/components/storefront/use-cart-href";
 
 export default function StandCartLink({ standSlug }: { standSlug: string }) {
   const subscribe = useCallback(
@@ -21,10 +21,11 @@ export default function StandCartLink({ standSlug }: { standSlug: string }) {
   }, [standSlug]);
 
   const count = useSyncExternalStore(subscribe, getSnapshot, () => 0);
+  const cartHref = useCartHref(standSlug);
 
   return (
     <Link
-      href={standCartPath(standSlug)}
+      href={cartHref}
       className="relative shrink-0 rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-4 py-2 text-sm font-semibold"
     >
       Cart

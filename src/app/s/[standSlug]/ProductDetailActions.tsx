@@ -19,7 +19,7 @@ import {
   formatTierSaving,
   lineTotalWithTiers,
 } from "@/lib/price-tiers";
-import { standCartPath } from "@/lib/stand-seo";
+import { useCartHref } from "@/components/storefront/use-cart-href";
 import ProductMultiChoiceQty from "./ProductMultiChoiceQty";
 import PreOrderDetails from "./PreOrderDetails";
 import QtyStepper from "./QtyStepper";
@@ -61,6 +61,7 @@ export default function ProductDetailActions({
   catalogProducts: PublicProductCard[];
 }) {
   const router = useRouter();
+  const cartHref = useCartHref(standSlug);
   const addLabel = useSectionText("addToCart", "Add to cart");
   const checkoutLabel = useSectionText("addAndCheckout", "Add & checkout");
   const singleGroup =
@@ -181,7 +182,7 @@ export default function ProductDetailActions({
       );
     }
 
-    if (goCart) router.push(standCartPath(standSlug));
+    if (goCart) router.push(cartHref);
    
   }
 

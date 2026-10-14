@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import type { PublicProductCard } from "@/lib/public-product";
 import { lineTotalWithTiers } from "@/lib/price-tiers";
 import { readStandCartLines } from "@/lib/stand-cart-storage";
-import { standCartPath } from "@/lib/stand-seo";
+import { useCartHref } from "@/components/storefront/use-cart-href";
 import {
   addPreOrderSelections,
   remainingForProduct,
@@ -31,6 +31,7 @@ export default function PreOrderPageOrder({
   ordersOpen: boolean;
 }) {
   const router = useRouter();
+  const cartHref = useCartHref(standSlug);
   const [qtys, setQtys] = useState<Record<string, number>>(() => {
     const init: Record<string, number> = {};
     for (const p of products) init[p.id] = 0;
@@ -82,7 +83,7 @@ export default function PreOrderPageOrder({
         for (const p of picks) next[p.id] = 0;
         return next;
       });
-      if (goCart) router.push(standCartPath(standSlug));
+      if (goCart) router.push(cartHref);
     } finally {
       setBusy(false);
     }

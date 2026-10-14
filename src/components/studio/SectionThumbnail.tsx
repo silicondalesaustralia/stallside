@@ -24,6 +24,8 @@ const SHAPES: Record<StudioSectionType, Shape[]> = {
   CraftPaymentsSection: [[3, 10, 7, 8, 1], [12, 10, 7, 8, 0], [21, 10, 7, 8, 1], [30, 10, 7, 8, 0]],
   CraftProductDetailSection: [[3, 4, 18, 20, 0], [24, 5, 12, 3, 1], [24, 11, 10, 2, 0], [24, 18, 12, 4, 1]],
   CraftMenuDetailSection: [[5, 4, 30, 3, 1], [5, 10, 30, 3, 0], [5, 15, 30, 3, 0], [5, 20, 30, 3, 0]],
+  CraftCartSection: [[5, 4, 30, 4, 0], [5, 10, 30, 4, 0], [5, 19, 30, 5, 1]],
+  CraftOrderConfirmationSection: [[6, 4, 28, 16, 0], [10, 8, 6, 3, 1], [10, 13, 20, 2, 0], [6, 22, 28, 3, 1]],
 };
 
 export default function SectionThumbnail({ type }: { type: StudioSectionType }) {

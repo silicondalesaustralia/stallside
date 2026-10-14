@@ -14,7 +14,7 @@ import {
 } from "@/lib/checkout";
 import { isPayPalConfigured, isPayPalConnectAvailable } from "@/lib/paypal";
 import { createPayPalCheckoutOrder } from "@/lib/paypal-orders";
-import { appBaseUrl } from "@/lib/app-url";
+import { checkoutSuccessUrl } from "@/lib/storefront/checkout-return-url";
 import {
   checkoutCancelledUrl,
   orderAccessToken,
@@ -99,14 +99,14 @@ export async function startPayPalCheckout(input: {
       },
     });
 
-    const base = appBaseUrl();
+    const successUrl = await checkoutSuccessUrl(stand.slug, amount != null);
     const { paypalOrderId, approveUrl } = await createPayPalCheckoutOrder({
       merchantId: owner.paypalMerchantId,
       orderId: order.id,
       currency: stand.currency,
       totalCents,
       description: `${stand.name} · ${orderNumber}`,
-      successUrl: `${base}/checkout/success?order_id=${order.id}&paypal=1`,
+      successUrl: `${successUrl}?order_id=${order.id}&paypal=1`,
       cancelUrl: checkoutCancelledUrl(order.id),
     });
 

@@ -1,15 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import DemoCardHint from "@/components/DemoCardHint";
-import RestockOptIn from "@/components/RestockOptIn";
 import CheckoutCashConfirm from "./CheckoutCashConfirm";
 import CheckoutLocalTransferConfirm from "./CheckoutLocalTransferConfirm";
 import CheckoutPayStep from "./CheckoutPayStep";
 import StandCartLineList from "./StandCartLineList";
-import TapAndGoInterestCta from "./TapAndGoInterestCta";
+import CartDoneView, { type CartPaidVia } from "./CartDoneView";
+import CartEmptyView from "./CartEmptyView";
+import CartTotalBar from "./CartTotalBar";
 import {
   confirmCashCheckout,
   confirmLocalTransferCheckout,
@@ -46,7 +46,7 @@ import {
   formatTierSaving,
   lineTotalWithTiers,
 } from "@/lib/price-tiers";
-import { standCatalogPath } from "@/lib/stand-seo";
+import { useShopHref } from "@/components/storefront/use-cart-href";
 import PreOrderDetails from "./PreOrderDetails";
 import CartUpsellOffer from "./CartUpsellOffer";
 import { startCardCheckout } from "./digital-checkout-actions";
@@ -110,6 +110,7 @@ export default function StandCartCheckout({
   preOrderUpsell = null,
   pagePreOrderUpsells = [],
   firstOrder = null,
+  shopHref,
 }: {
   standSlug: string;
   currency: string;
@@ -132,13 +133,17 @@ export default function StandCartCheckout({
   preOrderUpsell?: CartUpsellConfig | null;
   pagePreOrderUpsells?: PagePreOrderUpsell[];
   firstOrder?: FirstOrderOffer | null;
+  /** Continue-shopping link; defaults to the website products page or the stand. */
+  shopHref?: string;
 }) {
+  const defaultShopHref = useShopHref(standSlug);
+  const backHref = shopHref ?? defaultShopHref;
   const [cartLines, setCartLines] = useState<CartLine[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [step, setStep] = useState<"cart" | "pay" | "cash-confirm" | "lt-confirm">(
     "cart",
   );
-  const [paidVia, setPaidVia] = useState<"cash" | "local_transfer" | "square" | null>(null);
+  const [paidVia, setPaidVia] = useState<CartPaidVia | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cardTabHint, setCardTabHint] = useState(false);
   const [done, setDone] = useState(false);
@@ -457,53 +462,17 @@ export default function StandCartCheckout({
 
   if (done) {
     return (
-      <div className="mt-10 flex flex-col gap-4">
-        <div className="relative overflow-hidden rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-8">
-          <div
-            aria-hidden
-            className="absolute left-4 top-4 size-8 border-l-[3px] border-t-[3px] border-[var(--leaf)]"
-            style={{ borderTopLeftRadius: 8 }}
-          />
-          <h2 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-            Thank you
-          </h2>
-          <p className="mt-3 text-xl text-[var(--muted)]">
-            {paidVia === "local_transfer"
-              ? "Marked as paid. The owner will see this in their account shortly."
-              : paidVia === "square"
-                ? "Card payment confirmed. You're all set."
-                : "Cash payment confirmed. You're all set."}
-          </p>
-          {restockStandId ? (
-            <RestockOptIn standId={restockStandId} inputId="restock-email-cash" />
-          ) : null}
-        </div>
-        {!cardEnabled && !squareEnabled && !paypalEnabled ? (
-          <TapAndGoInterestCta standSlug={standSlug} />
-        ) : null}
-        <Link
-          href={standCatalogPath(standSlug)}
-          className="text-center font-semibold text-[var(--leaf-dark)] underline"
-        >
-          Back to shop
-        </Link>
-      </div>
+      <CartDoneView
+        paidVia={paidVia ?? "cash"}
+        standSlug={standSlug}
+        shopHref={backHref}
+        restockStandId={restockStandId}
+        showTapAndGo={!cardEnabled && !squareEnabled && !paypalEnabled}
+      />
     );
   }
 
-  if (lines.length === 0) {
-    return (
-      <div className="mt-10 flex flex-col gap-4">
-        <p className="text-xl text-[var(--muted)]">Your cart is empty.</p>
-        <Link
-          href={standCatalogPath(standSlug)}
-          className="font-semibold text-[var(--leaf-dark)] underline"
-        >
-          Browse products
-        </Link>
-      </div>
-    );
-  }
+  if (lines.length === 0) return <CartEmptyView shopHref={backHref} />;
 
   return (
     <div className="mt-6 flex flex-col gap-4 pb-40">
@@ -617,31 +586,18 @@ export default function StandCartCheckout({
       ) : null}
 
       {step === "cart" ? (
-        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-[var(--panel)]/95 px-4 py-4 backdrop-blur pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <div className="mx-auto flex max-w-lg flex-col gap-3">
-            <div className="flex items-baseline justify-between gap-3">
-              <p className="text-base text-[var(--muted)]">Total</p>
-              <p className="font-receipt text-3xl font-semibold tabular-nums">
-                {formatMoney(total, currency)}
-              </p>
-            </div>
-            <button
-              type="button"
-              disabled={pending || total <= 0}
-              onClick={() => {
-                if (hasMixedCart) {
-                  setError(CART_MIX_TAKE_NOW_PREORDER);
-                  return;
-                }
-                setError(null);
-                setStep("pay");
-              }}
-              className="w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-4 text-lg font-semibold text-white disabled:opacity-50"
-            >
-              Continue to payment
-            </button>
-          </div>
-        </div>
+        <CartTotalBar
+          totalLabel={formatMoney(total, currency)}
+          disabled={pending || total <= 0}
+          onContinue={() => {
+            if (hasMixedCart) {
+              setError(CART_MIX_TAKE_NOW_PREORDER);
+              return;
+            }
+            setError(null);
+            setStep("pay");
+          }}
+        />
       ) : null}
     </div>
   );

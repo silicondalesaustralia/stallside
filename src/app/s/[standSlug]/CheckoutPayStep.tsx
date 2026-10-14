@@ -10,6 +10,8 @@ import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import SquareWebPayButton from "./SquareWebPayButton";
 import PreOrderContactFields from "./PreOrderContactFields";
+import SectionCopy from "@/components/studio/SectionCopy";
+import { CHECKOUT_COPY } from "@/lib/storefront/checkout-copy";
 
 type CartItem = {
   productId: string;
@@ -113,7 +115,7 @@ export default function CheckoutPayStep({
   onSquareSuccess,
   onPayPalError,
   onBack,
-  backLabel = "Back to cart",
+  backLabel,
 }: CheckoutPayStepProps) {
   const showCash = cashEnabled && !preOrderOnly;
   const showLt = Boolean(localTransferLabel) && !preOrderOnly;
@@ -124,9 +126,11 @@ export default function CheckoutPayStep({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xl font-semibold">
-        {preOrderOnly ? "Pay to reserve your order" : "How would you like to pay?"}
-      </p>
+      {preOrderOnly ? (
+        <SectionCopy k="reserveHeading" fallback={CHECKOUT_COPY.reserveHeading} as="p" className="block text-xl font-semibold" />
+      ) : (
+        <SectionCopy k="payHeading" fallback={CHECKOUT_COPY.payHeading} as="p" className="block text-xl font-semibold" />
+      )}
       {preOrderOnly ? (
         <PreOrderContactFields
           customerName={customerName}
@@ -168,7 +172,7 @@ export default function CheckoutPayStep({
           <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white/15 text-white">
             <PaymentBrandIcon brand="cash" className="size-7" />
           </span>
-          <span>Pay cash</span>
+          <SectionCopy k="payCash" fallback={CHECKOUT_COPY.payCash} />
         </button>
       ) : null}
       {showLt ? (
@@ -242,9 +246,7 @@ export default function CheckoutPayStep({
           >
             <span className="min-w-0">
               <span className="block text-xl font-semibold text-[var(--ink)]">
-                {pending
-                  ? "Opening checkout…"
-                  : "Checkout via credit card or these options:"}
+                {pending ? "Opening checkout…" : <SectionCopy k="cardButton" fallback={CHECKOUT_COPY.cardButton} />}
               </span>
               {!pending ? (
                 <span className="mt-0.5 block text-base font-normal text-[var(--muted)]">
@@ -283,7 +285,7 @@ export default function CheckoutPayStep({
       ) : null}
       {!showCash && !showLt && !cardEnabled && !squareEnabled && !showPayPal ? (
         <p className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-lg text-[var(--muted)]">
-          No payment methods are available at this stand right now.
+          <SectionCopy k="noPayment" fallback={CHECKOUT_COPY.noPayment} />
         </p>
       ) : null}
       {!cardEnabled && !squareEnabled && !preOrderOnly ? (
@@ -298,7 +300,7 @@ export default function CheckoutPayStep({
         onClick={onBack}
         className="mt-1 w-full rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-5 py-4 text-lg font-semibold text-[var(--ink)]"
       >
-        {backLabel}
+        {backLabel ?? <SectionCopy k="backToCart" fallback={CHECKOUT_COPY.backToCart} />}
       </button>
     </div>
   );

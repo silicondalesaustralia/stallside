@@ -14,7 +14,7 @@ import {
   CART_MIX_PREORDER_SETTINGS,
   CART_MIX_TAKE_NOW_PREORDER,
 } from "@/lib/pre-order";
-import { standCartPath } from "@/lib/stand-seo";
+import { useCartHref } from "@/components/storefront/use-cart-href";
 import PreOrderDetails from "@/app/s/[standSlug]/PreOrderDetails";
 import PreOrderPageProductRow from "@/app/s/[standSlug]/pre/[pageSlug]/PreOrderPageProductRow";
 
@@ -58,6 +58,7 @@ export default function MenuOrder({
   isPreOrderDrop: boolean;
 }) {
   const router = useRouter();
+  const cartHref = useCartHref(standSlug);
   const addLabel = useSectionText("addToCart", "Add to cart");
   const checkoutLabel = useSectionText("addAndCheckout", "Add & checkout");
   const [qtys, setQtys] = useState<Record<string, number>>(() => {
@@ -123,7 +124,7 @@ export default function MenuOrder({
       return next;
     });
 
-    if (goCart) router.push(standCartPath(standSlug));
+    if (goCart) router.push(cartHref);
   }
 
   const sampleDetails = products.find((p) => p.preOrderDetails)?.preOrderDetails;

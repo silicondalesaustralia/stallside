@@ -1,5 +1,6 @@
 import { demoProductForStandSlug, isDemoStandSlug, type DemoProduct } from "@/lib/demo";
 import type { RestockOptInProps } from "./restock-opt-in-gate";
+import { PAID_MESSAGE, PENDING_MESSAGE } from "./success-messages";
 
 export type PreOrderSuccessInfo = {
   collectionLabel: string;
@@ -19,7 +20,7 @@ export type SuccessPageState = {
 };
 
 export const emptySuccessState = (): SuccessPageState => ({
-  message: "Thanks - your payment is being confirmed.",
+  message: PENDING_MESSAGE,
   demoStandSlug: null,
   demoProduct: null,
   restock: null,
@@ -46,7 +47,7 @@ export function applyFulfillResult(
   result: { orderNumber?: string; error?: string },
 ): boolean {
   if ("orderNumber" in result && result.orderNumber) {
-    state.message = "Payment confirmed. You're all set.";
+    state.message = PAID_MESSAGE;
     return true;
   }
   if ("error" in result && result.error) {

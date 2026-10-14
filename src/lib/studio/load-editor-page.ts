@@ -33,6 +33,8 @@ function commerceViewPath(slug: string, kind: CommercePageKind, cc: StudioCommer
     if (!cc.menu?.slug) return `${base}/menus?draft=1`;
     return `${base}/${cc.menu.isPreOrderDrop ? "pre-orders" : "menus"}/${encodeURIComponent(cc.menu.slug)}?draft=1`;
   }
+  if (kind === "cart") return `${base}/cart?draft=1`;
+  if (kind === "success") return `${base}/checkout/success?draft=1`;
   return `${base}/shop?draft=1`;
 }
 

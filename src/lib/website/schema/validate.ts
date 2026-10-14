@@ -9,6 +9,8 @@ import { WEBSITE_LIMITS, WEBSITE_SCHEMA_VERSION } from "./limits";
 const REQUIRED_BY_KIND: Partial<Record<PageKind, string>> = {
   product: "productDetail",
   menu: "menuDetail",
+  cart: "cart",
+  success: "orderConfirmation",
 };
 
 export function validatePage(
@@ -36,7 +38,8 @@ export function validatePage(
   if (required && page.sections.length > 0) {
     const live = page.sections.some((s) => s.type === required && s.visibility === "public");
     if (!live) {
-      out.push(error(path, `This page needs a visible ${required === "productDetail" ? "product detail" : "menu"} section so customers can buy.`));
+      const label = isVendlSectionType(required) ? sectionDefinition(required).label.toLowerCase() : required;
+      out.push(error(path, `This page needs a visible ${label} section so customers can buy.`));
     }
   }
   return out;

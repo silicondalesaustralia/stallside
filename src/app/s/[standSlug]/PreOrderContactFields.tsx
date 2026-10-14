@@ -1,5 +1,8 @@
 "use client";
 
+import SectionCopy from "@/components/studio/SectionCopy";
+import { CHECKOUT_COPY } from "@/lib/storefront/checkout-copy";
+
 export default function PreOrderContactFields({
   customerName,
   customerEmail,
@@ -36,7 +39,7 @@ export default function PreOrderContactFields({
   return (
     <div className="flex flex-col gap-3 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-4">
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium">Your name</span>
+        <SectionCopy k="nameLabel" fallback={CHECKOUT_COPY.nameLabel} className="font-medium" />
         <input
           value={customerName}
           onChange={(e) => onCustomerName(e.target.value)}
@@ -46,7 +49,7 @@ export default function PreOrderContactFields({
         />
       </label>
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium">Email</span>
+        <SectionCopy k="emailLabel" fallback={CHECKOUT_COPY.emailLabel} className="font-medium" />
         <input
           value={customerEmail}
           onChange={(e) => onCustomerEmail(e.target.value)}
@@ -57,7 +60,7 @@ export default function PreOrderContactFields({
         />
       </label>
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium">Phone (optional)</span>
+        <SectionCopy k="phoneLabel" fallback={CHECKOUT_COPY.phoneLabel} className="font-medium" />
         <input
           value={customerPhone}
           onChange={(e) => onCustomerPhone(e.target.value)}
@@ -68,9 +71,9 @@ export default function PreOrderContactFields({
       </label>
       {deliver ? (
         <>
-          <p className="pt-1 text-sm font-medium">Delivery address</p>
+          <SectionCopy k="deliveryHeading" fallback={CHECKOUT_COPY.deliveryHeading} as="p" className="block pt-1 text-sm font-medium" />
           <label className="flex flex-col gap-1.5 text-sm">
-            <span className="font-medium">Street address</span>
+            <SectionCopy k="streetLabel" fallback={CHECKOUT_COPY.streetLabel} className="font-medium" />
             <input
               value={deliveryAddressLine1}
               onChange={(e) => onDeliveryAddressLine1?.(e.target.value)}
@@ -81,7 +84,7 @@ export default function PreOrderContactFields({
           </label>
           <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col gap-1.5 text-sm">
-              <span className="font-medium">Suburb</span>
+              <SectionCopy k="suburbLabel" fallback={CHECKOUT_COPY.suburbLabel} className="font-medium" />
               <input
                 value={deliverySuburb}
                 onChange={(e) => onDeliverySuburb?.(e.target.value)}
@@ -91,7 +94,7 @@ export default function PreOrderContactFields({
               />
             </label>
             <label className="flex flex-col gap-1.5 text-sm">
-              <span className="font-medium">Postcode</span>
+              <SectionCopy k="postcodeLabel" fallback={CHECKOUT_COPY.postcodeLabel} className="font-medium" />
               <input
                 value={deliveryPostcode}
                 onChange={(e) => onDeliveryPostcode?.(e.target.value)}
@@ -102,7 +105,7 @@ export default function PreOrderContactFields({
             </label>
           </div>
           <label className="flex flex-col gap-1.5 text-sm">
-            <span className="font-medium">Delivery notes (optional)</span>
+            <SectionCopy k="deliveryNotesLabel" fallback={CHECKOUT_COPY.deliveryNotesLabel} className="font-medium" />
             <input
               value={deliveryNotes}
               onChange={(e) => onDeliveryNotes?.(e.target.value)}

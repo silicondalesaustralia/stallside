@@ -16,6 +16,8 @@ import CraftFarmStandSection from "@/components/studio/sections/CraftFarmStandSe
 import CraftPaymentsSection from "@/components/studio/sections/CraftPaymentsSection";
 import CraftProductDetailSection from "@/components/studio/sections/CraftProductDetailSection";
 import CraftMenuDetailSection from "@/components/studio/sections/CraftMenuDetailSection";
+import CraftCartSection from "@/components/studio/sections/CraftCartSection";
+import CraftOrderConfirmationSection from "@/components/studio/sections/CraftOrderConfirmationSection";
 
 export function studioSectionElement(type: StudioSectionType): ReactElement {
   switch (type) {
@@ -36,6 +38,10 @@ export function studioSectionElement(type: StudioSectionType): ReactElement {
       );
     case "CraftMenuDetailSection":
       return <Element is={CraftMenuDetailSection} />;
+    case "CraftCartSection":
+      return <Element is={CraftCartSection} />;
+    case "CraftOrderConfirmationSection":
+      return <Element is={CraftOrderConfirmationSection} />;
     case "CraftProductGridSection":
       return (
         <Element

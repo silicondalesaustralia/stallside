@@ -33,6 +33,11 @@ function keepOnStallside(pathname: string): boolean {
   );
 }
 
+/** Card / PayPal returns to the website's own thank-you page (`/shop/{slug}/checkout/success`). */
+function isApexCheckoutPath(pathname: string): boolean {
+  return pathname.startsWith("/checkout/") && pathname !== "/checkout/success";
+}
+
 function tenantRewritePath(slug: string, pathname: string): string | null {
   if (
     pathname.startsWith("/_next") ||
@@ -51,7 +56,7 @@ function tenantRewritePath(slug: string, pathname: string): string | null {
 
   if (
     pathname.startsWith("/s/") ||
-    pathname.startsWith("/checkout/") ||
+    isApexCheckoutPath(pathname) ||
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/api/auth") ||
@@ -70,7 +75,7 @@ function tenantRewritePath(slug: string, pathname: string): string | null {
 function shouldRedirectTenantToApex(pathname: string): boolean {
   return (
     pathname.startsWith("/s/") ||
-    pathname.startsWith("/checkout/") ||
+    isApexCheckoutPath(pathname) ||
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/api/auth") ||

@@ -106,3 +106,33 @@ export const menuDetail: SectionDefinition = {
   required: true,
   emptyState: "render",
 };
+
+export const cart: SectionDefinition = {
+  type: "cart",
+  version: 1,
+  craftName: "CraftCartSection",
+  label: "Cart & checkout",
+  variants: DEFAULT_ONLY,
+  defaultVariant: "default",
+  content: z.object({}),
+  settings: z.object({}),
+  pageKinds: ["cart"],
+  singleton: true,
+  required: true,
+  emptyState: "render",
+};
+
+export const orderConfirmation: SectionDefinition = {
+  type: "orderConfirmation",
+  version: 1,
+  craftName: "CraftOrderConfirmationSection",
+  label: "Order confirmation",
+  variants: DEFAULT_ONLY,
+  defaultVariant: "default",
+  content: z.object({}),
+  settings: z.object({}),
+  pageKinds: ["success"],
+  singleton: true,
+  required: true,
+  emptyState: "render",
+};

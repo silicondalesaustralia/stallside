@@ -8,7 +8,7 @@ import {
   readStandCartLines,
   subscribeStandCart,
 } from "@/lib/stand-cart-storage";
-import { standCartPath } from "@/lib/stand-seo";
+import { useCartHref } from "@/components/storefront/use-cart-href";
 import { storefrontButtonClass } from "@/lib/storefront/branding";
 import type { ResolvedStorefrontBranding } from "@/lib/storefront/types";
 
@@ -29,6 +29,7 @@ export default function StorefrontGoToCartBar({
   }, [standSlug]);
 
   const count = useSyncExternalStore(subscribe, getSnapshot, () => 0);
+  const cartHref = useCartHref(standSlug);
   if (count <= 0) return null;
 
   const btnClass = storefrontButtonClass(branding);
@@ -37,7 +38,7 @@ export default function StorefrontGoToCartBar({
     <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-[var(--panel)]/95 px-4 py-4 backdrop-blur pb-[max(1rem,env(safe-area-inset-bottom))]">
       <div className="mx-auto max-w-5xl">
         <Link
-          href={standCartPath(standSlug)}
+          href={cartHref}
           className={`flex w-full items-center justify-center gap-2 py-4 text-lg ${btnClass}`}
         >
           View cart

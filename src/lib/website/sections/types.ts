@@ -18,7 +18,9 @@ export type VendlSectionType =
   | "farmStand"
   | "payments"
   | "productDetail"
-  | "menuDetail";
+  | "menuDetail"
+  | "cart"
+  | "orderConfirmation";
 
 /** What a section does when its data source is empty on the public site. */
 export type EmptyStatePolicy = "omit" | "render" | "blockPublish";

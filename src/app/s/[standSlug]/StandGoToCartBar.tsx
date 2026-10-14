@@ -8,7 +8,7 @@ import {
   readStandCartLines,
   subscribeStandCart,
 } from "@/lib/stand-cart-storage";
-import { standCartPath } from "@/lib/stand-seo";
+import { useCartHref } from "@/components/storefront/use-cart-href";
 
 export default function StandGoToCartBar({ standSlug }: { standSlug: string }) {
   const subscribe = useCallback(
@@ -21,13 +21,14 @@ export default function StandGoToCartBar({ standSlug }: { standSlug: string }) {
   }, [standSlug]);
 
   const count = useSyncExternalStore(subscribe, getSnapshot, () => 0);
+  const cartHref = useCartHref(standSlug);
   if (count <= 0) return null;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-[var(--panel)]/95 px-4 py-4 backdrop-blur pb-[max(1rem,env(safe-area-inset-bottom))]">
       <div className="mx-auto max-w-lg">
         <Link
-          href={standCartPath(standSlug)}
+          href={cartHref}
           className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-4 text-lg font-semibold text-white"
         >
           Go to cart

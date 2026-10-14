@@ -10,7 +10,7 @@ import {
   readStandCartLines,
   subscribeStandCart,
 } from "@/lib/stand-cart-storage";
-import { standCartPath } from "@/lib/stand-seo";
+import { shopCartPath } from "@/lib/storefront/cart-paths";
 import {
   shopHomePath,
   shopPagePath,
@@ -98,7 +98,7 @@ export default function StorefrontNav({
         </nav>
         {cartCount > 0 ? (
           <Link
-            href={standCartPath(standSlug)}
+            href={shopCartPath(storefrontSlug, draft, basePath)}
             className="shrink-0 rounded-full bg-[var(--leaf)] px-4 py-2 text-sm font-semibold text-white"
           >
             Cart ({cartCount})

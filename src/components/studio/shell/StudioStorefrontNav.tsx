@@ -8,7 +8,7 @@ import {
   readStandCartLines,
   subscribeStandCart,
 } from "@/lib/stand-cart-storage";
-import { standCartPath } from "@/lib/stand-seo";
+import { shopCartPath } from "@/lib/storefront/cart-paths";
 import { shopHomePath } from "@/lib/storefront/paths";
 import type { StorefrontPageId, ResolvedStorefrontBranding } from "@/lib/storefront/types";
 import type { StudioTemplateId } from "@/lib/studio/types";
@@ -189,7 +189,7 @@ export default function StudioStorefrontNav({
   const actions = (
     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
       {cartCount > 0 ? (
-        <Link href={standCartPath(standSlug)} className="studio-btn studio-btn--secondary text-sm">
+        <Link href={shopCartPath(storefrontSlug, draft, basePath)} className="studio-btn studio-btn--secondary text-sm">
           Cart ({cartCount})
         </Link>
       ) : null}

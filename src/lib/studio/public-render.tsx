@@ -22,6 +22,8 @@ import StudioSignupBlock from "@/components/studio/blocks/StudioSignupBlock";
 import StudioFarmStandBlock from "@/components/studio/blocks/StudioFarmStandBlock";
 import StudioProductDetailBlock from "@/components/studio/blocks/StudioProductDetailBlock";
 import StudioMenuDetailBlock from "@/components/studio/blocks/StudioMenuDetailBlock";
+import StudioCartBlock from "@/components/studio/blocks/StudioCartBlock";
+import StudioOrderConfirmationBlock from "@/components/studio/blocks/StudioOrderConfirmationBlock";
 import { ProductApprovedReviews } from "@/components/storefront/ProductApprovedReviews";
 import PuckAboutBlock from "@/components/puck/blocks/PuckAboutBlock";
 import type { HeroPreset, ProductPreset, NextDropPreset, CategoryPreset } from "./preset-registry";
@@ -150,6 +152,10 @@ function StudioSectionRender({
       );
     case "CraftMenuDetailSection":
       return <StudioMenuDetailBlock metadata={metadata} />;
+    case "CraftCartSection":
+      return <StudioCartBlock metadata={metadata} />;
+    case "CraftOrderConfirmationSection":
+      return <StudioOrderConfirmationBlock metadata={metadata} />;
     case "CraftCategoriesSection":
       return (
         <StudioCategoriesBlock

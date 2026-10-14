@@ -59,7 +59,9 @@ export type StudioSectionType =
   | "CraftFarmStandSection"
   | "CraftPaymentsSection"
   | "CraftProductDetailSection"
-  | "CraftMenuDetailSection";
+  | "CraftMenuDetailSection"
+  | "CraftCartSection"
+  | "CraftOrderConfirmationSection";
 
 export type StudioSectionCategory = "sell" | "content" | "trust" | "grow";
 

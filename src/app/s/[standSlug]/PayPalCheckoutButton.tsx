@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 import { startPayPalCheckout } from "./paypal-checkout-actions";
+import { useCheckoutSuccessPath } from "@/components/storefront/use-cart-href";
 
 type CartItem = {
   productId: string;
@@ -68,6 +69,8 @@ export default function PayPalCheckoutButton({
   const itemsRef = useRef(items);
   itemsRef.current = items;
   const amountRef = useRef(customerChoiceAmountCents);
+  const siteSuccessPath = useCheckoutSuccessPath();
+  const successPath = customerChoiceAmountCents != null ? "/checkout/success" : siteSuccessPath;
   amountRef.current = customerChoiceAmountCents;
   const onErrorRef = useRef(onError);
   onErrorRef.current = onError;
@@ -135,7 +138,7 @@ export default function PayPalCheckoutButton({
             onErrorRef.current("PayPal order missing after approval.");
             return;
           }
-          window.location.href = `/checkout/success?order_id=${encodeURIComponent(orderId)}&paypal=1&token=${encodeURIComponent(data.orderID)}`;
+          window.location.href = `${successPath}?order_id=${encodeURIComponent(orderId)}&paypal=1&token=${encodeURIComponent(data.orderID)}`;
         },
         onCancel: () => {
           const orderId = orderIdRef.current;
@@ -151,7 +154,7 @@ export default function PayPalCheckoutButton({
         setFallback(true);
         onErrorRef.current("Could not render PayPal - use Continue below.");
       });
-  }, [sdkReady, disabled, hostId, standSlug, sandbox]);
+  }, [sdkReady, disabled, hostId, standSlug, sandbox, successPath]);
 
   async function redirectCheckout() {
     setBusy(true);

@@ -1,6 +1,14 @@
 import type { StudioSectionType } from "@/lib/studio/types";
 import { about, hero, image, imageText, text } from "./content-sections";
-import { categories, menuDetail, nextDrop, productDetail, productGrid } from "./commerce-sections";
+import {
+  cart,
+  categories,
+  menuDetail,
+  nextDrop,
+  orderConfirmation,
+  productDetail,
+  productGrid,
+} from "./commerce-sections";
 import { farmStand, payments, pickup, reviews, signup } from "./trust-sections";
 import type { SectionDefinition, VendlSectionType } from "./types";
 import { sectionStyleSchema } from "./section-style";
@@ -27,6 +35,8 @@ const DEFINITIONS = {
   payments,
   productDetail,
   menuDetail,
+  cart,
+  orderConfirmation,
 } satisfies Record<VendlSectionType, SectionDefinition>;
 
 /** Every section shares the same optional colour/typography `style` setting. */
@@ -62,6 +72,8 @@ export const VENDL_TYPE_BY_CRAFT_NAME = {
   CraftPaymentsSection: "payments",
   CraftProductDetailSection: "productDetail",
   CraftMenuDetailSection: "menuDetail",
+  CraftCartSection: "cart",
+  CraftOrderConfirmationSection: "orderConfirmation",
 } as const satisfies Record<StudioSectionType, VendlSectionType>;
 
 export const VENDL_SECTION_TYPES = Object.keys(SECTION_REGISTRY) as VendlSectionType[];

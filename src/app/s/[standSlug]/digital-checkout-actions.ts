@@ -16,9 +16,10 @@ import {
   type CartItemInput,
 } from "@/lib/checkout";
 import { isDemoStandSlug } from "@/lib/demo";
-import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
+import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
 import { checkoutCancelledUrl } from "@/lib/order-access-token";
+import { checkoutSuccessUrl } from "@/lib/storefront/checkout-return-url";
 import { stripeLineItemsFromCart } from "@/lib/stripe-cart-lines";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
 import { proVolumeForFees } from "@/lib/pro-volume-fee";
@@ -210,7 +211,7 @@ export async function startCardCheckout(input: {
       },
     });
 
-    const base = appBaseUrl();
+    const successUrl = await checkoutSuccessUrl(stand.slug, amount != null);
     let lineItems = stripeLineItemsFromCart(lineData, stand.currency);
     if (discountCents > 0 && lineItems.length > 0) {
       let remaining = discountCents;
@@ -255,7 +256,7 @@ export async function startCardCheckout(input: {
     const sessionParams = {
       mode: "payment" as const,
       line_items: lineItems.filter((l) => l.price_data.unit_amount > 0),
-      success_url: `${base}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: checkoutCancelledUrl(order.id),
       ...(customerEmail ? { customer_email: customerEmail } : {}),
       metadata: {

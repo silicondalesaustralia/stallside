@@ -39,7 +39,7 @@ export async function buildSampleCommerceContext(
     catalogProducts: catalog,
   };
 
-  if (kind === "shop") return base;
+  if (kind === "shop" || kind === "cart" || kind === "success") return base;
 
   if (kind === "category") {
     const cat = ctx.categories[0];

@@ -5,9 +5,10 @@ import { CartMode, ProductChannelType } from "@/generated/prisma/client";
 import { businessPageProductWhere } from "@/lib/product-visibility";
 import { publishedWebsiteForStand, standWebsiteUrl, type StandWebsite } from "./stand-website";
 
-/** Where an old stand page lives on the website. Cart, pay, checkout and manage links never move. */
+/** Where an old stand page lives on the website. Pay (Customer Choice), checkout and manage links never move. */
 export type LegacyStandTarget =
   | { kind: "home" }
+  | { kind: "cart" }
   | { kind: "product"; productSlug: string }
   | { kind: "category"; categorySlug: string }
   | { kind: "preOrders" }
@@ -25,6 +26,8 @@ async function websitePath(site: StandWebsite, target: LegacyStandTarget): Promi
   switch (target.kind) {
     case "home":
       return "/";
+    case "cart":
+      return "/cart";
     case "category":
       return `/${seg(target.categorySlug)}`;
     case "preOrders":

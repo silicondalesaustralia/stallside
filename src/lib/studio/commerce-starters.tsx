@@ -11,6 +11,8 @@ import CraftReviewsSection from "@/components/studio/sections/CraftReviewsSectio
 import CraftPickupSection from "@/components/studio/sections/CraftPickupSection";
 import CraftProductDetailSection from "@/components/studio/sections/CraftProductDetailSection";
 import CraftMenuDetailSection from "@/components/studio/sections/CraftMenuDetailSection";
+import CraftCartSection from "@/components/studio/sections/CraftCartSection";
+import CraftOrderConfirmationSection from "@/components/studio/sections/CraftOrderConfirmationSection";
 
 export function buildCommerceStarterTree(input: {
   kind: CommercePageKind;
@@ -85,6 +87,12 @@ export function buildCommerceStarterTree(input: {
       sections.push(
         <CraftPickupSection preset="cards" heading="Pickup & delivery" />,
       );
+      break;
+    case "cart":
+      sections.push(<CraftCartSection />);
+      break;
+    case "success":
+      sections.push(<CraftOrderConfirmationSection />);
       break;
     default: {
       const _exhaustive: never = input.kind;
