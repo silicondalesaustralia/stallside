@@ -93,7 +93,7 @@ export default function ProductDetailActions({
   const displayPrice = useMemo(() => {
     if (product.priceTiers.length === 0) {
       return {
-        labelCents: unitCents,
+        labelCents: unitCents * qty,
         lineTotalCents: unitCents * qty,
         usedTier: false,
         saveCents: 0,
@@ -191,11 +191,11 @@ export default function ProductDetailActions({
       {product.preOrderDetails ? (
         <PreOrderDetails details={product.preOrderDetails} />
       ) : null}
-      {!singleGroup ? (
+      {!singleGroup && displayPrice.labelCents !== product.priceCents ? (
         <div>
           <p className="font-receipt text-2xl text-[var(--stand-secondary,var(--ok))]">
             {formatMoney(displayPrice.labelCents, currency)}
-            {product.priceTiers.length > 0 && qty > 1 ? (
+            {qty > 1 ? (
               <span className="ml-2 text-base text-[var(--muted)]">
                 for {qty}
               </span>

@@ -16,6 +16,8 @@ import {
 export type CraftProductDetailProps = {
   showReviews: boolean;
   showBackLink: boolean;
+  /** Missing on older pages, which show breadcrumbs. */
+  showBreadcrumbs?: boolean;
   /** Missing on pages saved before layouts existed; those render as "simple". */
   layout?: ProductLayout;
   imageRatio?: ProductImageRatio;
@@ -45,6 +47,7 @@ export default function CraftProductDetailSection(props: CraftProductDetailProps
       <CraftSectionChrome>
         {isStudioMetadata(metadata) ? (
           <StudioProductDetailBlock
+            showBreadcrumbs={props.showBreadcrumbs !== false}
             showBackLink={props.showBackLink}
             view={productDetailView(props)}
             metadata={metadata}

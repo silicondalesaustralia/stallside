@@ -4,9 +4,11 @@ import type { StorefrontBreadcrumbItem } from "@/lib/storefront/technical-seo/br
 export default function StorefrontBreadcrumbs({
   items,
   studioActive,
+  className,
 }: {
   items: StorefrontBreadcrumbItem[];
   studioActive?: boolean;
+  className?: string;
 }) {
   if (items.length < 2) return null;
 
@@ -14,9 +16,10 @@ export default function StorefrontBreadcrumbs({
     <nav
       aria-label="Breadcrumb"
       className={
-        studioActive
-          ? "storefront-page-content storefront-page-content--wide pb-0 pt-6"
-          : "mx-auto max-w-5xl px-4 pt-6 sf-sm:px-6"
+        className ??
+        (studioActive
+          ? "storefront-page-content storefront-page-content--wide storefront-breadcrumbs"
+          : "mx-auto max-w-5xl px-4 pt-6 sf-sm:px-6")
       }
     >
       <ol className="flex flex-wrap items-center gap-1 text-sm text-[var(--muted)]">

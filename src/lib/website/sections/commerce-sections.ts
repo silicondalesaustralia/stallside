@@ -94,6 +94,7 @@ export const productDetail: SectionDefinition = {
   }),
   settings: z.object({
     showBackLink: z.boolean().optional(),
+    showBreadcrumbs: z.boolean().optional(),
     showReviews: z.boolean().optional(),
     layout: z.enum(PRODUCT_LAYOUTS).optional(),
     imageRatio: z.enum(PRODUCT_IMAGE_RATIOS).optional(),

@@ -186,7 +186,7 @@ export default async function StorefrontProductPage({
       ctx={ctx}
       draft={draft}
       activePage="product"
-      breadcrumbs={breadcrumbs}
+      breadcrumbs={nodes && metadata ? undefined : breadcrumbs}
       schemaGraph={schemaGraph}
     >
       {nodes && metadata ? (

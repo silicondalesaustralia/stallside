@@ -34,6 +34,7 @@ describe("product detail section", () => {
       "pd1",
       detailNode({
         showBackLink: true,
+        showBreadcrumbs: false,
         showReviews: false,
         layout: "gallery",
         imageRatio: "portrait",
@@ -47,6 +48,7 @@ describe("product detail section", () => {
     );
     assert.equal(section.type, "productDetail");
     assert.equal(section.settings.layout, "gallery");
+    assert.equal(section.settings.showBreadcrumbs, false);
     assert.deepEqual(section.content.tabs, tabs);
     assert.equal(section.extras, undefined);
     assert.deepEqual(diagnostics, []);

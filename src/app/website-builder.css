@@ -1122,6 +1122,12 @@
   }
 }
 
+/* Breadcrumb bar above a page: keep the page width, drop the section padding. */
+.storefront-page-content.storefront-breadcrumbs {
+  padding-top: 1.5rem;
+  padding-bottom: 0;
+}
+
 .studio-template-artisan .storefront-page-content--narrow,
 .studio-template-farmhouse .storefront-page-content--narrow,
 .studio-template-market .storefront-page-content--narrow {
