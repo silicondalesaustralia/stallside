@@ -80,11 +80,11 @@ export default function StudioSettingsPanel() {
     return (
       <aside className="vendl-studio-settings vendl-studio-settings--empty">
         <p className="text-sm text-[var(--muted)]">
-          Click the header or a section to edit.
+          Click the header, footer or a section to edit.
         </p>
         <button
           type="button"
-          className="mt-3 text-sm font-semibold text-[var(--field)] underline"
+          className="mt-3 text-left text-sm font-semibold text-[var(--field)] underline"
           onClick={() => {
             actions.selectNode(undefined);
             setChromeTarget?.("header");
@@ -94,7 +94,7 @@ export default function StudioSettingsPanel() {
         </button>
         <button
           type="button"
-          className="mt-2 block text-sm font-semibold text-[var(--field)] underline"
+          className="mt-2 text-left text-sm font-semibold text-[var(--field)] underline"
           onClick={() => {
             actions.selectNode(undefined);
             setChromeTarget?.("footer");

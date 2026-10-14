@@ -65,7 +65,7 @@ export default function SiteButtonSettings() {
       {overrideIds.length > 0 ? (
         <button
           type="button"
-          className="text-xs font-semibold text-[var(--field)] underline"
+          className="text-left text-xs font-semibold text-[var(--field)] underline"
           onClick={clearSectionColours}
         >
           Clear button colours set on {overrideIds.length === 1 ? "1 section" : `${overrideIds.length} sections`} on
