@@ -3,6 +3,7 @@ import type { StudioMetadata } from "@/lib/studio/types";
 import { shopMenusPath } from "@/lib/storefront/paths";
 import MenuOrder from "@/components/menu/MenuOrder";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
+import SectionCopy from "@/components/studio/SectionCopy";
 
 export default function StudioMenuDetailBlock({
   metadata: meta,
@@ -31,14 +32,19 @@ export default function StudioMenuDetailBlock({
         href={shopMenusPath(meta.storefrontSlug, meta.draft, meta.basePath)}
         className="text-sm font-semibold text-[var(--leaf-dark)] underline"
       >
-        ← Menus
+        <SectionCopy k="backLink" fallback="← Menus" />
       </Link>
       <SectionHeadingTag defaultTag="h1" className="studio-display mt-4 text-3xl font-bold text-[var(--field)]">
         {menu.title}
       </SectionHeadingTag>
       {menu.scheduleLabel ? (
         <p className="mt-2 text-sm font-semibold uppercase tracking-wide text-[var(--leaf-dark)]">
-          {menu.isPreOrderDrop ? "Pre-order drop" : "Menu"} · {menu.scheduleLabel}
+          {menu.isPreOrderDrop ? (
+            <SectionCopy k="preOrderLabel" fallback="Pre-order drop" />
+          ) : (
+            <SectionCopy k="menuLabel" fallback="Menu" />
+          )}{" "}
+          · {menu.scheduleLabel}
         </p>
       ) : null}
       {menu.description ? (

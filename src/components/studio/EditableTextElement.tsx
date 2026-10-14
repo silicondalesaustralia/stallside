@@ -7,6 +7,7 @@ import {
   type MouseEvent,
 } from "react";
 import { useNode } from "@craftjs/core";
+import { withSectionText } from "@/lib/studio/section-texts";
 
 export type TextTag = "h1" | "h2" | "h3" | "h4" | "p" | "span" | "div";
 
@@ -18,6 +19,8 @@ type Props = {
   className: string;
   multiline: boolean;
   placeholder: string;
+  /** For `texts.<key>` props: the default copy, restored when the text is cleared. */
+  defaultValue?: string;
 };
 
 /** The contentEditable element behind `InlineEditableText`. */
@@ -29,6 +32,7 @@ export default function EditableTextElement({
   className,
   multiline,
   placeholder,
+  defaultValue = "",
 }: Props) {
   const {
     actions: { setProp },
@@ -50,8 +54,14 @@ export default function EditableTextElement({
       .replace(/\u00a0/g, " ")
       .replace(/\n+$/g, "")
       .trimEnd();
+    const isCopy = prop.startsWith("texts.");
+    if (isCopy && !next.trim()) el.innerText = defaultValue;
     setProp((props: Record<string, unknown>) => {
-      props[prop] = next;
+      if (isCopy) {
+        props.texts = withSectionText(props.texts, prop.slice(6), next, defaultValue);
+      } else {
+        props[prop] = next;
+      }
     });
   }
 
@@ -84,6 +94,7 @@ export default function EditableTextElement({
       onBlur={commit}
       onKeyDown={onKeyDown}
       onMouseDown={onMouseDown}
+      onClick={(e) => e.preventDefault()}
       role="textbox"
       aria-label={placeholder}
     />

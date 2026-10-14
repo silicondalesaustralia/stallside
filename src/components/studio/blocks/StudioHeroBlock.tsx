@@ -9,6 +9,7 @@ import InlineEditableText from "@/components/studio/InlineEditableText";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 import InlineRichText from "@/components/studio/InlineRichText";
 import RichText from "@/components/studio/RichText";
+import SectionCopy from "@/components/studio/SectionCopy";
 
 type Props = {
   headline: string;
@@ -134,7 +135,7 @@ export default function StudioHeroBlock({
         <div className="mx-auto flex max-w-[var(--studio-content-max)] flex-col gap-6 px-4 py-10 sf-sm:flex-row sf-sm:items-center sf-sm:justify-between sf-sm:px-8 sf-sm:py-12">
           <div className="max-w-xl">
             {variant === "promo" ? (
-              <p className="studio-eyebrow text-[var(--leaf-dark)]">This week</p>
+              <SectionCopy k="weekEyebrow" fallback="This week" as="p" className="studio-eyebrow text-[var(--leaf-dark)]" />
             ) : null}
             <HeroTitle
               editable={editable}
@@ -161,7 +162,7 @@ export default function StudioHeroBlock({
     return (
       <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--wash)]`}>
         <div className="mx-auto max-w-[var(--studio-content-max)] px-4 py-10 sf-sm:px-8 sf-sm:py-12">
-          <p className="studio-eyebrow text-[var(--leaf-dark)]">Current menu</p>
+          <SectionCopy k="menuEyebrow" fallback="Current menu" as="p" className="studio-eyebrow text-[var(--leaf-dark)]" />
           {editable ? (
             <>
               <HeroTitle
@@ -255,7 +256,7 @@ export default function StudioHeroBlock({
           />
           <div className="mt-6 inline-flex flex-wrap gap-3">
             <span className="rounded-md border border-[var(--line)] bg-[var(--panel)] px-3 py-1.5 text-sm font-semibold text-[var(--field)]">
-              Farm stand open
+              <SectionCopy k="standBadge" fallback="Farm stand open" />
             </span>
             {cta ? cta : null}
           </div>

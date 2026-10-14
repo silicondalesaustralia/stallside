@@ -20,11 +20,12 @@ export default function CraftSectionChrome({
   children: ReactNode;
   onAddBelow?: () => void;
 }) {
-  const { id, selected, hovered, rawStyle, buttonLink } = useNode((node) => ({
+  const { id, selected, hovered, rawStyle, buttonLink, texts } = useNode((node) => ({
     selected: node.events.selected,
     hovered: node.events.hovered,
     rawStyle: (node.data.props as Record<string, unknown>).style,
     buttonLink: (node.data.props as Record<string, unknown>).buttonLink,
+    texts: (node.data.props as Record<string, unknown>).texts,
   }));
   const { actions, query } = useEditor();
   const { setAddAtIndex, registryMode = "craft", metadata } = useCraftEditorChrome();
@@ -104,6 +105,8 @@ export default function CraftSectionChrome({
         sectionStyle={sectionStyle}
         palette={paletteOf(metadata.resolvedBranding)}
         buttonLink={buttonLink}
+        texts={texts}
+        editable
       >
         {children}
       </SectionStyleFrame>

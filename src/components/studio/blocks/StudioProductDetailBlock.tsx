@@ -5,6 +5,7 @@ import { formatMoney } from "@/lib/public-product";
 import { shopPagePath } from "@/lib/storefront/paths";
 import ProductDetailActions from "@/app/s/[standSlug]/ProductDetailActions";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
+import SectionCopy from "@/components/studio/SectionCopy";
 
 export default function StudioProductDetailBlock({
   showBackLink,
@@ -49,7 +50,7 @@ export default function StudioProductDetailBlock({
           href={backHref}
           className="text-sm font-semibold text-[var(--leaf-dark)] underline"
         >
-          {backLabel}
+          <SectionCopy k="backLink" fallback={backLabel} />
         </Link>
       ) : null}
       {product.imageUrl ? (

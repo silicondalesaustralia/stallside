@@ -2,6 +2,9 @@ import SectionButtonLink from "@/components/studio/SectionButtonLink";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { shopPagePath } from "@/lib/storefront/paths";
 import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
+import SectionCopy from "@/components/studio/SectionCopy";
+
+const LABEL = "text-xs font-bold uppercase tracking-wide text-[var(--muted)]";
 
 type Props = {
   heading: string;
@@ -37,10 +40,14 @@ export default function StudioFarmStandBlock({
         <div className="mt-8 grid gap-6 sf-lg:grid-cols-3">
           {showLocation ? (
             <div className="studio-farm-stand__card rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-[var(--panel)] p-6 shadow-[var(--shadow-card)]">
-              <p className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">Location</p>
-              <p className="mt-2 font-semibold text-[var(--field)]">
-                {region ?? meta.branding.businessName}
-              </p>
+              <SectionCopy k="locationLabel" fallback="Location" as="p" className={LABEL} />
+              <SectionCopy
+                k="location"
+                fallback={region ?? meta.branding.businessName}
+                as="p"
+                multiline
+                className="mt-2 whitespace-pre-line font-semibold text-[var(--field)]"
+              />
               {showDirections && region ? (
                 <a
                   href={`https://maps.google.com/?q=${encodeURIComponent(region)}`}
@@ -48,26 +55,35 @@ export default function StudioFarmStandBlock({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Get directions
+                  <SectionCopy k="directions" fallback="Get directions" />
                 </a>
               ) : null}
             </div>
           ) : null}
           {showHours ? (
             <div className="studio-farm-stand__card rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-[var(--panel)] p-6 shadow-[var(--shadow-card)]">
-              <p className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">Stand hours</p>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--field)]">
-                {fulfilment[0]?.label ?? "Open for pickup — check shop for current availability"}
-              </p>
+              <SectionCopy k="hoursLabel" fallback="Stand hours" as="p" className={LABEL} />
+              <SectionCopy
+                k="hours"
+                fallback={fulfilment[0]?.label ?? "Open for pickup — check shop for current availability"}
+                as="p"
+                multiline
+                className="mt-2 whitespace-pre-line text-sm leading-relaxed text-[var(--field)]"
+              />
             </div>
           ) : null}
           <div className="studio-farm-stand__card rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-[var(--panel)] p-6 shadow-[var(--shadow-card)]">
-            <p className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">What&apos;s available</p>
-            <p className="mt-2 text-sm text-[var(--muted)]">
-              {meta.products.length} products listed this week
-            </p>
+            <SectionCopy k="availableLabel" fallback="What's available" as="p" className={LABEL} />
+            <SectionCopy
+              k="available"
+              fallback="{count} products listed this week"
+              vars={{ count: meta.products.length }}
+              as="p"
+              multiline
+              className="mt-2 whitespace-pre-line text-sm text-[var(--muted)]"
+            />
             <SectionButtonLink meta={meta} defaultHref={shopHref} className="studio-btn studio-btn--primary mt-4 text-sm">
-              Browse produce
+              <SectionCopy k="browse" fallback="Browse produce" />
             </SectionButtonLink>
           </div>
         </div>

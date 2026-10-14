@@ -75,6 +75,7 @@ export default function StudioPublicSections({
           sectionStyle={parseSectionStyle(section.props.style)}
           palette={palette}
           buttonLink={section.props.buttonLink}
+          texts={section.props.texts}
         >
           <StudioSectionRender section={section} metadata={metadata} />
         </SectionStyleFrame>

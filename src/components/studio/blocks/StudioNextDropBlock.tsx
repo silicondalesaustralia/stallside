@@ -3,6 +3,7 @@ import type { StudioMetadata } from "@/lib/studio/types";
 import { shopMenuPath } from "@/lib/storefront/paths";
 import type { NextDropPreset } from "@/lib/studio/preset-registry";
 import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
+import SectionCopy from "@/components/studio/SectionCopy";
 
 type Props = {
   maxItems: number;
@@ -98,7 +99,7 @@ function FeaturedMenuCard({
       href={shopMenuPath(meta.storefrontSlug, menu.slug, meta.draft, meta.basePath)}
       className="mt-8 block overflow-hidden rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-6 sf-sm:p-8"
     >
-      <p className="studio-eyebrow text-[var(--leaf-dark)]">Order window open</p>
+      <SectionCopy k="eyebrow" fallback="Order window open" as="p" className="studio-eyebrow text-[var(--leaf-dark)]" />
       <h3 className="studio-heading mt-2 text-2xl sf-sm:text-3xl">{menu.title}</h3>
       {menu.description ? (
         <p className="mt-3 max-w-2xl text-[var(--muted)]">{menu.description}</p>
@@ -106,18 +107,24 @@ function FeaturedMenuCard({
       <dl className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
         {showClosingDate && menu.orderByLabel ? (
           <div>
-            <dt className="font-semibold text-[var(--field)]">Orders close</dt>
+            <dt className="font-semibold text-[var(--field)]">
+              <SectionCopy k="closesLabel" fallback="Orders close" />
+            </dt>
             <dd className="text-[var(--muted)]">{menu.orderByLabel}</dd>
           </div>
         ) : null}
         {showPickupDate && menu.collectionLabel ? (
           <div>
-            <dt className="font-semibold text-[var(--field)]">Pick up</dt>
+            <dt className="font-semibold text-[var(--field)]">
+              <SectionCopy k="pickupLabel" fallback="Pick up" />
+            </dt>
             <dd className="text-[var(--muted)]">{menu.collectionLabel}</dd>
           </div>
         ) : null}
       </dl>
-      <span className="studio-btn studio-btn--primary mt-6 inline-flex">View menu</span>
+      <span className="studio-btn studio-btn--primary mt-6 inline-flex">
+        <SectionCopy k="viewMenu" fallback="View menu" />
+      </span>
     </Link>
   );
 }
@@ -146,9 +153,13 @@ function MenuCard({
         <p className="mt-2 text-sm text-[var(--muted)]">{menu.description}</p>
       ) : null}
       <p className="mt-2 text-sm text-[var(--leaf-dark)]">
-        {showClosingDate && menu.orderByLabel ? `Orders close ${menu.orderByLabel}` : null}
+        {showClosingDate && menu.orderByLabel ? (
+          <SectionCopy k="closesLine" fallback="Orders close {date}" vars={{ date: menu.orderByLabel }} />
+        ) : null}
         {showClosingDate && menu.orderByLabel && showPickupDate && menu.collectionLabel ? " · " : null}
-        {showPickupDate && menu.collectionLabel ? `Pick up ${menu.collectionLabel}` : null}
+        {showPickupDate && menu.collectionLabel ? (
+          <SectionCopy k="pickupLine" fallback="Pick up {date}" vars={{ date: menu.collectionLabel }} />
+        ) : null}
       </p>
     </Link>
   );

@@ -6,6 +6,7 @@ import { shopProductPath } from "@/lib/storefront/paths";
 import type { ProductPreset as ExtendedProductPreset } from "@/lib/studio/preset-registry";
 import { mapProductPreset } from "@/lib/studio/preset-registry";
 import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
+import SectionCopy from "@/components/studio/SectionCopy";
 
 type Props = {
   source: "all" | "category" | "manual" | "activeCategory";
@@ -173,7 +174,7 @@ function ProductCard({
         )}
         {showAvailability && product.soldOut ? (
           <span className="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-[var(--gone)]">
-            Sold out
+            <SectionCopy k="soldOut" fallback="Sold out" />
           </span>
         ) : null}
       </div>
