@@ -15,7 +15,9 @@ export const productGrid: SectionDefinition = {
   content: z.object({ heading: heading.optional() }),
   settings: z.object({
     limit: count(1, L.productIdsPerSection).optional(),
-    columns: z.union([z.literal(2), z.literal(3), z.literal(4)]).optional(),
+    columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
+    /** Where a 1-column list sits. */
+    align: z.enum(["left", "centre"]).optional(),
     showPrice: z.boolean().optional(),
     showAvailability: z.boolean().optional(),
   }),

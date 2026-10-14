@@ -10,7 +10,7 @@ type FeaturedProductsProps = {
   productIds: string[];
   limit: number;
   layout: "grid" | "list";
-  columns: 2 | 3 | 4;
+  columns: 1 | 2 | 3 | 4;
   showPrice: boolean;
   showAvailability: boolean;
 };
@@ -41,7 +41,7 @@ export default function PuckFeaturedProductsBlock({
 
   const products = pool.slice(0, Math.max(1, Math.min(limit, 12)));
   const colClass =
-    layout === "list"
+    layout === "list" || columns === 1
       ? "grid-cols-1"
       : columns === 4
         ? "sf-sm:grid-cols-2 sf-lg:grid-cols-4"

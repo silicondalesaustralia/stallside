@@ -74,6 +74,21 @@ describe("section style values", () => {
   });
 });
 
+describe("product grid columns", () => {
+  it("accepts a centred single column and rejects bad values", () => {
+    const grid = (settings: Record<string, unknown>): SectionInstance => ({
+      ...hero({}),
+      type: "productGrid",
+      variant: "compact",
+      content: {},
+      settings,
+    });
+    assert.equal(hasErrors(validateSection(grid({ columns: 1, align: "centre" }), "home", "s")), false);
+    assert.ok(hasErrors(validateSection(grid({ columns: 5 }), "home", "s")));
+    assert.ok(hasErrors(validateSection(grid({ align: "middle" }), "home", "s")));
+  });
+});
+
 describe("section colours", () => {
   it("measures WCAG contrast", () => {
     assert.equal(Math.round(contrastRatio("#000000", "#ffffff")), 21);

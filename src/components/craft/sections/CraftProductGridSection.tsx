@@ -15,7 +15,9 @@ export type CraftProductGridProps = {
   limit: number;
   /** @deprecated Only read by the Puck prototype; Studio uses `preset`. */
   layout?: "grid" | "list";
-  columns: 2 | 3 | 4;
+  columns: 1 | 2 | 3 | 4;
+  /** Where a 1-column list sits. */
+  align?: "left" | "centre";
   preset: ProductPreset;
   heading: string;
   showPrice: boolean;
@@ -41,6 +43,7 @@ export default function CraftProductGridSection(props: CraftProductGridProps) {
             limit={props.limit}
             preset={props.preset}
             columns={props.columns}
+            align={props.align}
             heading={props.heading}
             showPrice={props.showPrice}
             showAvailability={props.showAvailability}

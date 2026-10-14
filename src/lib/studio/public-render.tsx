@@ -118,6 +118,7 @@ function StudioSectionRender({
           limit={Number(p.limit ?? 8)}
           preset={(p.preset as ProductPreset) ?? "classic"}
           columns={(p.columns as 3) ?? 3}
+          align={p.align === "centre" ? "centre" : "left"}
           heading={String(p.heading ?? "Products")}
           showPrice={Boolean(p.showPrice ?? true)}
           showAvailability={Boolean(p.showAvailability ?? true)}

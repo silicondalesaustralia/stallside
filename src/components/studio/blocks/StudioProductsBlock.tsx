@@ -13,7 +13,9 @@ type Props = {
   productIds: string[];
   limit: number;
   preset: ExtendedProductPreset | "editorial" | "classic" | "featured" | "compact";
-  columns: 2 | 3 | 4;
+  columns: 1 | 2 | 3 | 4;
+  /** Where a 1-column list sits. */
+  align?: "left" | "centre";
   heading: string;
   showPrice: boolean;
   showAvailability: boolean;
@@ -29,6 +31,7 @@ export default function StudioProductsBlock({
   limit,
   preset,
   columns,
+  align = "left",
   heading,
   showPrice,
   showAvailability,
@@ -86,8 +89,11 @@ export default function StudioProductsBlock({
     );
   }
 
-  const colClass =
-    mappedPreset === "compact" || isDense
+  const single = columns === 1;
+  const centred = single && align === "centre";
+  const colClass = single
+    ? `w-full max-w-md grid-cols-1 ${centred ? "mx-auto" : ""}`
+    : mappedPreset === "compact" || isDense
       ? "grid-cols-2 sf-sm:grid-cols-3 sf-lg:grid-cols-4 sf-xl:grid-cols-5"
       : mappedPreset === "featured"
         ? "grid-cols-1 sf-sm:grid-cols-2"
@@ -103,7 +109,7 @@ export default function StudioProductsBlock({
   return (
     <section className={sectionClass}>
       <div className="studio-section__inner">
-        {title}
+        {centred ? <div className="text-center">{title}</div> : title}
         <ul className={`mt-8 grid ${isDense ? "gap-3" : "gap-5"} ${colClass}`}>
           {products.map((product) => (
             <li key={product.id}>

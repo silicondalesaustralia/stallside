@@ -260,11 +260,29 @@ function ProductGridSettings({
       <PresetStyleField presetsBySkin={PRODUCT_PRESETS} value={props.preset} onChange={(v) => setProp("preset", v)} />
       <Field label="Columns">
         <select className={INPUT} value={props.columns} onChange={(e) => setProp("columns", Number(e.target.value))}>
+          <option value={1}>1 (single column, any style)</option>
           <option value={2}>2</option>
           <option value={3}>3</option>
           <option value={4}>4</option>
         </select>
       </Field>
+      {props.columns === 1 ? (
+        <Field label="Position">
+          <div className="flex gap-4">
+            {(["left", "centre"] as const).map((opt) => (
+              <label key={opt} className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="productAlign"
+                  checked={(props.align ?? "left") === opt}
+                  onChange={() => setProp("align", opt)}
+                />
+                {opt === "left" ? "Left" : "Centred"}
+              </label>
+            ))}
+          </div>
+        </Field>
+      ) : null}
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" checked={props.showPrice} onChange={(e) => setProp("showPrice", e.target.checked)} />
         Show prices
