@@ -3,6 +3,8 @@ export const FACT_RULES = `Rules you must always follow:
 - Use ONLY the facts supplied. If a fact is missing, leave it out; never guess.
 - Never invent prices, opening hours, addresses, phone numbers, delivery promises, reviews, ratings,
   awards, certifications (organic, free-range, etc.), years in business, people's names or history.
+- "searchProfile" facts (hours, location, awards, certifications, returns) are seller-confirmed: use them
+  exactly as given, without changing times, names or numbers.
 - Never write instructional placeholder text (e.g. "Tell customers…", "Add your story here", "Lorem ipsum").
 - Write natural, warm, concise customer-facing copy in the requested locale.
 - Never output HTML, Markdown, React, CSS, scripts or URLs.

@@ -3,6 +3,7 @@ import { extractWebsiteStudio } from "@/lib/studio/storage";
 import { loadStorefrontReviews } from "@/lib/studio/load-reviews";
 import { GREEN_VALLEY_DEMO_EMAIL } from "@/lib/demo/green-valley/constants";
 import { loadFeatureEntities, loadPaymentBrandIds } from "./features";
+import { searchProfileFacts } from "./search-profile";
 import type { AssistantContext } from "./types";
 
 type Ctx = NonNullable<StorefrontContext>;
@@ -73,5 +74,6 @@ export async function buildAssistantContext(ctx: Ctx): Promise<AssistantContext>
       samples: realReviews.slice(0, 3).map((r) => ({ rating: r.rating, body: r.body.slice(0, 300) })),
     },
     stand: { name: ctx.stand.name, locality: ctx.branding.regionLabel },
+    searchProfile: searchProfileFacts(ctx.storefront.businessProfile),
   };
 }

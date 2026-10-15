@@ -1,5 +1,6 @@
 import type { AssistantContext } from "./context/types";
 import { emptyBrief, type BriefData } from "./brief/schema";
+import { searchProfileFacts } from "./context/search-profile";
 
 /** Synthetic seller data for tests only. */
 export function fixtureContext(overrides: Partial<AssistantContext> = {}): AssistantContext {
@@ -45,6 +46,7 @@ export function fixtureContext(overrides: Partial<AssistantContext> = {}): Assis
     },
     reviews: { count: 0, samples: [] },
     stand: { name: "Hillside stand", locality: "Testville" },
+    searchProfile: searchProfileFacts({}),
     ...overrides,
   };
 }

@@ -4,11 +4,17 @@ import { PRIMARY_GOALS, type BriefData, type PrimaryGoal } from "@/lib/website-a
 import AssistantField from "./AssistantField";
 import FollowUpQuestions from "./FollowUpQuestions";
 import ImportSources from "./ImportSources";
+import SearchProfileNote from "./SearchProfileNote";
 import { GOAL_LABELS, inputClass, type BriefUpdater } from "./assistant-copy";
 
-type Props = { brief: BriefData; update: BriefUpdater; aiAvailable: boolean };
+type Props = {
+  brief: BriefData;
+  update: BriefUpdater;
+  aiAvailable: boolean;
+  searchProfile: { complete: boolean; summary: string[] };
+};
 
-export default function BusinessStep({ brief, update, aiAvailable }: Props) {
+export default function BusinessStep({ brief, update, aiAvailable, searchProfile }: Props) {
   const b = brief.business;
   const set = <K extends keyof BriefData["business"]>(key: K, value: BriefData["business"][K]) =>
     update((prev) => ({ ...prev, business: { ...prev.business, [key]: value } }));
@@ -18,6 +24,7 @@ export default function BusinessStep({ brief, update, aiAvailable }: Props) {
       <p className="text-sm text-[var(--muted)]">
         We&apos;ve filled in what Vendl already knows. Check it, then add anything customers should know.
       </p>
+      <SearchProfileNote complete={searchProfile.complete} summary={searchProfile.summary} />
       <AssistantField label="Business name" value={b.name} maxLength={120} onChange={(v) => set("name", v)} />
       <AssistantField
         label="What does your business do?"

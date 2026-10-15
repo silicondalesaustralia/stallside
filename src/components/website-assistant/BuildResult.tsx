@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { restorePreviousAction } from "@/app/dashboard/(gated)/website/assistant/build-actions";
 import type { JobStatusView } from "@/lib/website-ai/assistant/jobs/status";
 import PolicyReviewList from "./PolicyReviewList";
+import { SEARCH_PROFILE_HREF } from "./SearchProfileNote";
 import { primaryButton, secondaryButton } from "./assistant-copy";
 
 type Props = { status: JobStatusView; previewPath: string; editorHref: string; onRebuild: () => void };
@@ -51,6 +52,13 @@ export default function BuildResult({ status, previewPath, editorHref, onRebuild
         </Link>
       </div>
       <PolicyReviewList pageIds={status.reviewPageIds} />
+      <p className="text-sm text-[var(--muted)]">
+        Before publishing, check your{" "}
+        <Link href={SEARCH_PROFILE_HREF} className="underline">
+          Google &amp; search profile
+        </Link>{" "}
+        so your hours, address and business type show correctly in Google.
+      </p>
       {status.notes.length > 0 ? (
         <ul className="list-disc pl-5 text-xs text-[var(--muted)]">
           {status.notes.map((n) => (

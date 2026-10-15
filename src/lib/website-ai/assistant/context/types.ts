@@ -1,5 +1,6 @@
 import type { BusinessMode } from "@/lib/business-mode";
 import type { StudioTemplateId } from "@/lib/studio/types";
+import type { SearchProfileFacts } from "./search-profile";
 
 export type NamedEntity = { id: string; title: string; slug: string };
 
@@ -43,4 +44,6 @@ export type AssistantContext = {
   };
   reviews: { count: number; samples: { rating: number; body: string }[] };
   stand: { name: string; locality: string | null };
+  /** From Details & publish → Google & search profile. Never written by the assistant. */
+  searchProfile: SearchProfileFacts;
 };

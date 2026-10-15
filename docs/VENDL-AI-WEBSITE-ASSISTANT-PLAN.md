@@ -288,5 +288,9 @@ Code lives in `src/lib/website-ai/assistant/` (server), `src/components/website-
 - **Env var names:** `AI_WEBSITE_BUILDER_*` (enable + allowlist), `WEBSITE_AI_MODEL`,
   `WEBSITE_AI_REASONING_EFFORT`, `OPENAI_API_KEY`, `WEBSITE_AI_IMAGE_MODEL`, `WEBSITE_AI_IMAGE_QUALITY`,
   `BLOB_READ_WRITE_TOKEN`, `CRON_SECRET`.
+- **Google & search profile:** `storefront.businessProfile` (structured data) stays the source of truth
+  and is edited only in Web Studio → Details & publish. The assistant reads it (`context/search-profile.ts`)
+  into AI facts (hours, location, awards etc. used verbatim) and the brief prefill; step 1 shows what it
+  uses or prompts to set it up, and the result screen links to it. The assistant never writes it.
 - **Known gaps:** contact forms in the draft preview still send (existing behaviour); imported photos
   unused; no per-owner build quota (usage is recorded on the job).

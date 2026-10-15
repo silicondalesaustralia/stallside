@@ -6,6 +6,7 @@ import { studioEditorPath } from "@/lib/studio/editor-target";
 import { extractWebsiteAiScaffold } from "@/lib/website-ai/scaffold-storage";
 import { assistantEnabledFor } from "./access";
 import { buildAssistantContext } from "./context/build";
+import { searchProfileSummary } from "./context/search-profile";
 import { loadBrief } from "./brief/store";
 import { prefillBrief } from "./brief/prefill";
 import type { BriefData } from "./brief/schema";
@@ -32,6 +33,7 @@ export type WizardData = {
   lastJobId: string | null;
   previewPath: string;
   editorHref: string;
+  searchProfile: { complete: boolean; summary: string[] };
 };
 
 export async function loadWizardData(): Promise<WizardData> {
@@ -61,5 +63,9 @@ export async function loadWizardData(): Promise<WizardData> {
     lastJobId: last?.id ?? null,
     previewPath: `${storefrontPublicPath(storefront.slug)}/studio-preview?draft=1`,
     editorHref: studioEditorPath(storefront.slug),
+    searchProfile: {
+      complete: assistant.searchProfile.complete,
+      summary: searchProfileSummary(assistant.searchProfile),
+    },
   };
 }

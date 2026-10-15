@@ -40,10 +40,19 @@ export function prefillBrief(ctx: AssistantContext, v1?: WebsiteGenerationIntent
   brief.business.name = clip(ctx.businessName, 120);
   brief.business.description = clip(ctx.existing.subheadline || ctx.existing.headline, 600);
   brief.business.story = about;
-  brief.business.serviceArea = clip(ctx.existing.regionLabel, 200);
+  const sp = ctx.searchProfile;
+  brief.business.serviceArea = clip(
+    sp.areaServed.join(", ") || ctx.existing.regionLabel || sp.location,
+    200,
+  );
+  if (!brief.business.description && sp.description) brief.business.description = clip(sp.description, 600);
   if (ctx.catalogue.categories.length > 0) {
     brief.business.offering = clip(ctx.catalogue.categories.map((c) => c.title).join(", "), 600);
+  } else if (sp.knownFor.length > 0) {
+    brief.business.offering = clip(sp.knownFor.join(", "), 600);
   }
+  const credentials = [...sp.awards, ...sp.certifications];
+  if (credentials.length > 0) brief.business.differentiators = clip(credentials.join("; "), 600);
   brief.business.primaryGoal = guessGoal(ctx);
 
   brief.branding.logoUrl = ctx.existing.logoUrl;

@@ -46,6 +46,26 @@ export function factsForPrompt(ctx: AssistantContext, brief: BriefData) {
       approvedReviewCount: ctx.reviews.count,
       locality: ctx.existing.regionLabel,
     },
+    searchProfile: searchProfileForPrompt(ctx),
+  };
+}
+
+/** Seller-confirmed Google & search profile facts (hours, location, awards…). */
+function searchProfileForPrompt(ctx: AssistantContext) {
+  const p = ctx.searchProfile;
+  return {
+    businessType: p.businessType,
+    location: p.location,
+    areaServed: p.areaServed,
+    openingHours: p.hours,
+    knownFor: p.knownFor,
+    awards: p.awards,
+    certifications: p.certifications,
+    memberOf: p.memberOf,
+    founded: p.founded,
+    paymentAccepted: p.paymentAccepted,
+    returns: p.returns,
+    profileDescription: p.description,
   };
 }
 
