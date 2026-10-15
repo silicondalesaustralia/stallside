@@ -1076,7 +1076,7 @@
 
 .studio-template-farmhouse .studio-btn--primary {
   border-radius: var(--radius-button, 0.5rem);
-  background: var(--site-accent, #a0522d);
+  background: var(--site-btn-bg, var(--site-accent, #a0522d));
 }
 
 .studio-template-market .studio-heading {
