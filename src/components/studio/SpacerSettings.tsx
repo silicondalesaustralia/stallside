@@ -52,7 +52,14 @@ export default function SpacerSettings({ props, setProp }: { props: CraftSpacerP
       {ownMobile ? (
         <HeightField id="spacer-mobile-height" label="Height on phones" value={view.mobileHeight} onChange={(v) => setProp("mobileHeight", v)} />
       ) : null}
-      <p className="text-xs text-[var(--muted)]">Give it a background colour under Style to use it as a coloured band.</p>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={view.hideLines} onChange={(e) => setProp("hideLines", e.target.checked || undefined)} />
+        Remove lines above and below
+      </label>
+      <p className="text-xs text-[var(--muted)]">
+        Hides the divider lines so the space blends into the sections around it. Give it a background colour under Style
+        to use it as a coloured band.
+      </p>
     </>
   );
 }

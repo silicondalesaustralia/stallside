@@ -6,7 +6,7 @@ import CraftSectionChrome from "@/components/craft/CraftSectionChrome";
 import StudioSpacerBlock from "@/components/studio/blocks/StudioSpacerBlock";
 import { spacerHeightOf, spacerView } from "@/lib/studio/spacer-settings";
 
-export type CraftSpacerProps = { height?: number; mobileHeight?: number };
+export type CraftSpacerProps = { height?: number; mobileHeight?: number; hideLines?: boolean };
 
 /** Blank space between sections; drag the bottom handle to change the height. */
 export default function CraftSpacerSection(props: CraftSpacerProps) {
@@ -41,7 +41,7 @@ export default function CraftSpacerSection(props: CraftSpacerProps) {
     <div ref={(dom) => { if (dom) connect(drag(dom)); }}>
       <CraftSectionChrome>
         <div className="relative outline-1 -outline-offset-1 outline-dashed outline-[var(--line)]">
-          <StudioSpacerBlock height={view.height} mobileHeight={view.mobileHeight} />
+          <StudioSpacerBlock {...view} />
           <span className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[11px] font-semibold text-[var(--muted)]">
             Spacer · {view.height}px
           </span>

@@ -143,6 +143,7 @@ export const spacer: SectionDefinition = {
   settings: z.object({
     height: z.number().int().min(SPACER_MIN).max(SPACER_MAX).optional(),
     mobileHeight: z.number().int().min(SPACER_MIN).max(SPACER_MAX).optional(),
+    hideLines: z.boolean().optional(),
   }),
   pageKinds: ALL_PAGE_KINDS,
   singleton: false,

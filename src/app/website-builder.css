@@ -796,6 +796,17 @@ header.studio-nav[data-header-colours] .studio-btn--secondary {
 [data-site-dividers="line"] .studio-page-root > * + * {
   border-top: 1px solid var(--line);
 }
+/* A spacer set to "Remove lines": no divider above, below, or on the neighbouring sections' edges. */
+[data-site-dividers] .studio-page-root > :has([data-spacer-no-lines]),
+[data-site-dividers] .studio-page-root > :has([data-spacer-no-lines]) + * {
+  border-top-color: transparent;
+}
+.studio-page-root > :has(+ :has([data-spacer-no-lines])) :is(.studio-section, .studio-hero) {
+  border-bottom-color: transparent;
+}
+.studio-page-root > :has([data-spacer-no-lines]) + * :is(.studio-section, .studio-hero) {
+  border-top-color: transparent;
+}
 [data-site-dividers="alternate"] .studio-page-root > :nth-child(even) {
   background-color: var(--wash);
 }
