@@ -12,6 +12,7 @@ import {
   type ProductLayout,
   type ProductTab,
 } from "@/lib/studio/product-detail-settings";
+import type { ProductBlockLayout } from "@/lib/studio/product-blocks";
 
 export type CraftProductDetailProps = {
   showReviews: boolean;
@@ -23,6 +24,7 @@ export type CraftProductDetailProps = {
   imageRatio?: ProductImageRatio;
   imageSide?: "left" | "right";
   imageSize?: number;
+  blockLayout?: ProductBlockLayout;
   enlarge?: boolean;
   stickyCart?: boolean;
   showPayments?: boolean;
@@ -37,6 +39,7 @@ function isStudioMetadata(meta: unknown): meta is StudioMetadata {
 export default function CraftProductDetailSection(props: CraftProductDetailProps) {
   const {
     connectors: { connect, drag },
+    actions: { setProp },
   } = useNode();
   const metadata = useCraftMetadata();
 
@@ -54,6 +57,11 @@ export default function CraftProductDetailSection(props: CraftProductDetailProps
             view={productDetailView(props)}
             metadata={metadata}
             isEditing
+            onBlockLayoutChange={(next) =>
+              setProp((p: CraftProductDetailProps) => {
+                p.blockLayout = next;
+              })
+            }
           />
         ) : (
           <p className="p-6 text-sm text-[var(--muted)]">Product detail</p>

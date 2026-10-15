@@ -11,6 +11,7 @@ import {
 import SiteChoice from "./SiteChoice";
 import ProductInfoRowsEditor from "./ProductInfoRowsEditor";
 import ProductTabsEditor from "./ProductTabsEditor";
+import ProductBlockLayoutEditor from "./ProductBlockLayoutEditor";
 
 const LAYOUTS = { featured: "Featured", classic: "Classic", gallery: "Gallery", simple: "Simple" } as const;
 const LAYOUT_HINTS = {
@@ -79,6 +80,7 @@ export default function ProductDetailSettings({
       <Toggle label="Show breadcrumbs" checked={props.showBreadcrumbs !== false} onChange={(v) => setProp("showBreadcrumbs", v)} />
       <Toggle label="Show back to shop link" checked={props.showBackLink !== false} onChange={(v) => setProp("showBackLink", v)} />
       <Toggle label="Show product reviews under detail" checked={props.showReviews} onChange={(v) => setProp("showReviews", v)} />
+      <ProductBlockLayoutEditor layout={view.blocks} onChange={(next) => setProp("blockLayout", next)} />
       <ProductInfoRowsEditor value={props.infoRows} onChange={(rows) => setProp("infoRows", rows)} />
       <ProductTabsEditor value={props.tabs} onChange={(tabs) => setProp("tabs", tabs)} />
     </>

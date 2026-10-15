@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { WEBSITE_LIMITS as L } from "@/lib/website/schema/limits";
+import { parseBlockLayout, type ProductBlockLayout } from "./product-blocks";
 
 export const PRODUCT_LAYOUTS = ["featured", "classic", "gallery", "simple"] as const;
 /** Featured layout: share of the row the main photo takes on wider screens (percent). */
@@ -54,6 +55,8 @@ export type ProductDetailView = {
   showPayments: boolean;
   infoRows: InfoRow[];
   tabs: ProductTab[];
+  /** Which zone each block sits in, in order. */
+  blocks: ProductBlockLayout;
 };
 
 /** Saved rows for editing, including blank ones; none when malformed. */
@@ -91,6 +94,7 @@ export function productDetailView(props: Record<string, unknown>): ProductDetail
     showPayments: props.showPayments === true,
     infoRows: parseInfoRows(props.infoRows).filter((r) => r.text.trim()),
     tabs: parseProductTabs(props.tabs).filter((t) => t.title.trim()),
+    blocks: parseBlockLayout(props.blockLayout),
   };
 }
 

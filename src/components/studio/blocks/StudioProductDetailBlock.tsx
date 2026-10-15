@@ -6,7 +6,9 @@ import StorefrontBreadcrumbs from "@/components/storefront/StorefrontBreadcrumbs
 import SectionCopy from "@/components/studio/SectionCopy";
 import ProductGallery from "@/components/storefront/product/ProductGallery";
 import ProductPhotoGrid from "@/components/storefront/product/ProductPhotoGrid";
-import ProductDetailInfo from "@/components/storefront/product/ProductDetailInfo";
+import ProductZone from "@/components/storefront/product/ProductZone";
+import ProductBlockDragProvider from "@/components/storefront/product/ProductBlockDrag";
+import type { ProductBlockLayout, ProductZone as ProductZoneId } from "@/lib/studio/product-blocks";
 import type { CSSProperties } from "react";
 
 /** Featured layout columns: the main photo takes `imageSize` percent of the row. */
@@ -23,12 +25,15 @@ export default function StudioProductDetailBlock({
   view,
   metadata: meta,
   isEditing,
+  onBlockLayoutChange,
 }: {
   showBreadcrumbs: boolean;
   showBackLink: boolean;
   view: ProductDetailView;
   metadata: StudioMetadata;
   isEditing?: boolean;
+  /** Editor only: saves a block dragged to a new place. */
+  onBlockLayoutChange?: (next: ProductBlockLayout) => void;
 }) {
   const product = meta.commerceContext?.product;
   if (!product) {
@@ -55,8 +60,11 @@ export default function StudioProductDetailBlock({
   const featured = view.layout === "featured";
   const info = { product, catalog, meta, view, isEditing };
   const top = showBreadcrumbs || showBackLink ? "mt-6" : "";
+  const zone = (z: ProductZoneId, className: string) => (
+    <ProductZone zone={z} blocks={view.blocks[z]} info={info} className={className} />
+  );
 
-  return (
+  const page = (
     <article className={`storefront-page-content ${simple ? "storefront-page-content--narrow" : "storefront-page-content--wide"}`}>
       {showBreadcrumbs ? <StorefrontBreadcrumbs items={crumbs} className="mb-3" /> : null}
       {showBackLink ? (
@@ -69,7 +77,8 @@ export default function StudioProductDetailBlock({
           <div className={top}>
             <ProductGallery images={product.images.slice(0, 1)} alts={product.imageAlts} name={product.name} ratio={view.imageRatio} enlarge={enlarge} variant="classic" />
           </div>
-          <ProductDetailInfo {...info} className="mt-6" />
+          {zone("photo", "mt-6")}
+          {zone("details", "mt-6")}
           <ProductPhotoGrid images={product.images} alts={product.imageAlts} name={product.name} ratio={view.imageRatio} enlarge={enlarge} />
         </>
       ) : (
@@ -86,10 +95,22 @@ export default function StudioProductDetailBlock({
               enlarge={enlarge}
               variant={view.layout === "gallery" ? "stacked" : "classic"}
             />
+            {zone("photo", "mt-8 hidden sf-md:block")}
           </div>
-          <ProductDetailInfo {...info} className={view.layout === "gallery" ? "sf-md:sticky sf-md:top-24 sf-md:self-start" : ""} />
+          <div className={view.layout === "gallery" ? "sf-md:sticky sf-md:top-24 sf-md:self-start" : ""}>
+            {zone("details", "")}
+            {/* On phones, blocks placed under the photos follow the details so the buy box stays near the top. */}
+            {zone("photo", "mt-6 sf-md:hidden")}
+          </div>
         </div>
       )}
+      {zone("below", "mt-10")}
     </article>
+  );
+  if (!isEditing || !onBlockLayoutChange) return page;
+  return (
+    <ProductBlockDragProvider layout={view.blocks} onChange={onBlockLayoutChange}>
+      {page}
+    </ProductBlockDragProvider>
   );
 }

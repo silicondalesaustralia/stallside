@@ -11,6 +11,7 @@ import {
   infoRowsSchema,
   productTabsSchema,
 } from "@/lib/studio/product-detail-settings";
+import { blockLayoutSchema } from "@/lib/studio/product-blocks";
 import { CATEGORY_VARIANTS, NEXT_DROP_VARIANTS, PRODUCT_VARIANTS, DEFAULT_ONLY } from "./variants";
 
 export const productGrid: SectionDefinition = {
@@ -102,6 +103,7 @@ export const productDetail: SectionDefinition = {
     imageRatio: z.enum(PRODUCT_IMAGE_RATIOS).optional(),
     imageSide: z.enum(PRODUCT_IMAGE_SIDES).optional(),
     imageSize: z.number().int().min(IMAGE_SIZE_MIN).max(IMAGE_SIZE_MAX).optional(),
+    blockLayout: blockLayoutSchema.optional(),
     enlarge: z.boolean().optional(),
     stickyCart: z.boolean().optional(),
     showPayments: z.boolean().optional(),
