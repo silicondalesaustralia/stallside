@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { WEBSITE_LIMITS as L } from "@/lib/website/schema/limits";
-import { ALL_PAGE_KINDS, count, entityId, heading } from "./fields";
+import { ALL_PAGE_KINDS, count, entityId, heading, shortText } from "./fields";
 import type { SectionDefinition } from "./types";
 import {
   PRODUCT_IMAGE_RATIOS,
@@ -53,8 +53,11 @@ export const categories: SectionDefinition = {
   legacyVariantProp: "layout",
   variants: CATEGORY_VARIANTS,
   defaultVariant: "tiles",
-  content: z.object({ heading: heading.optional() }),
-  settings: z.object({}),
+  content: z.object({ heading: heading.optional(), intro: shortText.optional() }),
+  settings: z.object({
+    showDescriptions: z.boolean().optional(),
+    showRatings: z.boolean().optional(),
+  }),
   binding: z.object({
     source: z.enum(["all", "selected"]).optional(),
     categoryIds: z.array(entityId).max(L.productIdsPerSection).optional(),

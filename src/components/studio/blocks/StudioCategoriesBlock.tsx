@@ -1,24 +1,32 @@
-import Image from "next/image";
-import Link from "next/link";
 import type { PuckSpikeMetadata } from "@/lib/puck/types";
 import { shopCategoryPath } from "@/lib/storefront/paths";
-import type { CategoryPreset } from "@/lib/studio/preset-registry";
-import { mapCategoryPreset } from "@/lib/studio/preset-registry";
+import { categoryGridClassFor, categoryLookOf, categoryLookIsSlim } from "@/lib/studio/category-looks";
 import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
+import InlineEditableText from "@/components/studio/InlineEditableText";
+import SectionElement from "@/components/studio/SectionElement";
+import StudioCategoryTile from "./StudioCategoryTile";
+
+const INTRO = "mt-3 max-w-2xl text-lg leading-relaxed text-[var(--muted)]";
 
 export default function StudioCategoriesBlock({
   source,
   categoryIds,
   preset,
   heading,
+  intro = "",
+  showDescriptions = false,
+  showRatings = false,
   metadata,
   isEditing,
   editable = false,
 }: {
   source: "all" | "selected";
   categoryIds: string[];
-  preset: CategoryPreset;
+  preset: string | undefined;
   heading: string;
+  intro?: string;
+  showDescriptions?: boolean;
+  showRatings?: boolean;
   metadata: PuckSpikeMetadata;
   isEditing?: boolean;
   editable?: boolean;
@@ -27,14 +35,26 @@ export default function StudioCategoriesBlock({
   if (source === "selected" && categoryIds.length > 0) {
     categories = categories.filter((c) => categoryIds.includes(c.id));
   }
+  const look = categoryLookOf(preset);
 
-  const title = (
-    <StudioSectionHeading
-      editable={editable}
-      value={heading}
-      fallback="Browse categories"
-      placeholder="Categories heading"
-    />
+  const top = (
+    <>
+      <StudioSectionHeading
+        editable={editable}
+        value={heading}
+        fallback="Browse categories"
+        placeholder="Categories heading"
+      />
+      {editable ? (
+        <SectionElement el="intro" as="div">
+          <InlineEditableText prop="intro" value={intro} className={INTRO} multiline placeholder="Add a description (optional)" />
+        </SectionElement>
+      ) : intro.trim() ? (
+        <SectionElement el="intro" className={`${INTRO} whitespace-pre-line`}>
+          {intro}
+        </SectionElement>
+      ) : null}
+    </>
   );
 
   if (categories.length === 0) {
@@ -42,88 +62,36 @@ export default function StudioCategoriesBlock({
     return (
       <section className="studio-section">
         <div className="studio-section__inner">
-          {title}
+          {top}
           <p className="mt-3 text-sm text-[var(--muted)]">Add categories to show them here.</p>
         </div>
       </section>
     );
   }
 
-  const mappedPreset = mapCategoryPreset(
-    "templateId" in metadata ? (metadata as import("@/lib/studio/types").StudioMetadata).templateId : "artisan",
-    preset,
-  );
-
-  const gridClass =
-    mappedPreset === "compact" || mappedPreset === "minimal"
-      ? "flex flex-wrap gap-2"
-      : mappedPreset === "cards"
-        ? "grid grid-cols-1 gap-4 sf-sm:grid-cols-2 sf-lg:grid-cols-3"
-        : "grid grid-cols-2 gap-4 sf-sm:grid-cols-3";
+  const options = {
+    showDescriptions: showDescriptions && !categoryLookIsSlim(look),
+    showRatings,
+    isEditing,
+  };
 
   return (
     <section className="studio-section">
       <div className="studio-section__inner">
-        {title}
-        <ul className={`mt-8 ${gridClass}`}>
+        {top}
+        <ul className={`mt-8 ${categoryGridClassFor(look)}`}>
           {categories.map((cat) => (
             <li key={cat.id}>
-              <CategoryTile cat={cat} preset={mappedPreset} metadata={metadata} />
+              <StudioCategoryTile
+                cat={cat}
+                href={shopCategoryPath(metadata.storefrontSlug, cat.slug, metadata.draft, metadata.basePath)}
+                look={look}
+                options={options}
+              />
             </li>
           ))}
         </ul>
       </div>
     </section>
-  );
-}
-
-function CategoryTile({
-  cat,
-  preset,
-  metadata,
-}: {
-  cat: PuckSpikeMetadata["categories"][number];
-  preset: "tiles" | "cards" | "compact" | "minimal";
-  metadata: PuckSpikeMetadata;
-}) {
-  const href = shopCategoryPath(
-    metadata.storefrontSlug,
-    cat.slug,
-    metadata.draft,
-    metadata.basePath,
-  );
-  const imageUrl = cat.imageUrl;
-
-  if (preset === "compact" || preset === "minimal") {
-    return (
-      <Link
-        href={href}
-        className="inline-flex rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold text-[var(--field)] hover:border-[var(--leaf-dark)]"
-      >
-        {cat.title}
-      </Link>
-    );
-  }
-
-  return (
-    <Link
-      href={href}
-      className="group block overflow-hidden rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white"
-    >
-      <div className="relative aspect-[4/3] bg-[var(--wash)]">
-        {imageUrl ? (
-          <Image src={imageUrl} alt="" fill className="object-cover" sizes="33vw" />
-        ) : (
-          <div className="flex h-full items-end p-4">
-            <span className="text-sm font-medium text-[var(--muted)]">{cat.title}</span>
-          </div>
-        )}
-      </div>
-      {imageUrl ? (
-        <p className="p-3 font-semibold text-[var(--field)] group-hover:text-[var(--leaf-dark)]">
-          {cat.title}
-        </p>
-      ) : null}
-    </Link>
   );
 }

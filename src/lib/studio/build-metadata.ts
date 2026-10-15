@@ -1,6 +1,7 @@
 import type { StorefrontContext } from "@/lib/catalogue/storefront";
 import { buildPuckSpikeMetadata } from "@/lib/puck/build-metadata";
 import { loadStorefrontReviews } from "./load-reviews";
+import { loadCategoryRatings } from "./load-category-ratings";
 import { ensureCustomPages } from "./custom-pages";
 import { customPagePublicPath, footerPagesFromCustomPages } from "./custom-page-paths";
 import { parseHeaderMenu } from "./header-menu";
@@ -28,19 +29,21 @@ export async function buildStudioMetadata(
   draft?: boolean,
 ): Promise<StudioMetadata> {
   const base = await buildPuckSpikeMetadata(ctx, draft);
-  const [reviews, paymentBrands] = await Promise.all([
+  const shown = ctx.categories.filter((c) => c.showOnWebsite !== false);
+  const [reviews, paymentBrands, ratings] = await Promise.all([
     loadStorefrontReviews(ctx.owner.id, 6),
     loadPaymentBrands(ctx),
+    loadCategoryRatings(ctx.owner.id, shown.map((c) => c.id)),
   ]);
 
-  const categories = ctx.categories
-    .filter((c) => c.showOnWebsite !== false)
-    .map((c) => ({
-      id: c.id,
-      slug: c.slug,
-      title: c.title,
-      imageUrl: c.imageUrl,
-    }));
+  const categories = shown.map((c) => ({
+    id: c.id,
+    slug: c.slug,
+    title: c.title,
+    imageUrl: c.imageUrl,
+    description: c.description,
+    rating: ratings.get(c.id) ?? null,
+  }));
 
   const fulfilmentOptions = ctx.fulfilmentOptions;
   const customPages = ensureCustomPages(ctx.storefront.draftConfig);

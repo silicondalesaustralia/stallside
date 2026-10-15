@@ -32,7 +32,11 @@ export type CategoryPreset =
   | "minimal"
   | "produce-tiles"
   | "shop-cards"
-  | "horizontal";
+  | "horizontal"
+  | "overlay"
+  | "circles"
+  | "list"
+  | "banner";
 
 export type NextDropPreset =
   | "featured"
@@ -92,22 +96,38 @@ export const PRODUCT_PRESETS: Record<StudioTemplateId, PresetOption<ProductPrese
   ],
 };
 
+/** Category looks every skin offers after its own. */
+const SHARED_CATEGORY_PRESETS: PresetOption<CategoryPreset>[] = [
+  { value: "overlay", label: "Name on photo" },
+  { value: "circles", label: "Round photos" },
+  { value: "list", label: "List with photos" },
+  { value: "banner", label: "Wide banners" },
+  { value: "horizontal", label: "Horizontal scroll" },
+  { value: "minimal", label: "Text links" },
+  { value: "compact", label: "Pills" },
+];
+
+function withSharedCategoryPresets(own: PresetOption<CategoryPreset>[]): PresetOption<CategoryPreset>[] {
+  const taken = new Set(own.map((o) => o.value));
+  return [...own, ...SHARED_CATEGORY_PRESETS.filter((o) => !taken.has(o.value))];
+}
+
 export const CATEGORY_PRESETS: Record<StudioTemplateId, PresetOption<CategoryPreset>[]> = {
-  artisan: [
+  artisan: withSharedCategoryPresets([
     { value: "tiles", label: "Editorial tiles" },
     { value: "cards", label: "Image cards" },
     { value: "minimal", label: "Minimal links" },
-  ],
-  farmhouse: [
+  ]),
+  farmhouse: withSharedCategoryPresets([
     { value: "produce-tiles", label: "Produce tiles" },
     { value: "cards", label: "Farm cards" },
     { value: "compact", label: "Simple" },
-  ],
-  market: [
+  ]),
+  market: withSharedCategoryPresets([
     { value: "shop-cards", label: "Shop cards" },
     { value: "horizontal", label: "Horizontal scroll" },
     { value: "compact", label: "Compact tiles" },
-  ],
+  ]),
 };
 
 export const NEXT_DROP_PRESETS: Record<StudioTemplateId, PresetOption<NextDropPreset>[]> = {
@@ -155,14 +175,11 @@ export function mapProductPreset(
   return defaultProductPreset(templateId) === "editorial" ? "editorial" : "classic";
 }
 
-export function mapCategoryPreset(
-  templateId: StudioTemplateId,
-  preset: CategoryPreset,
-): "tiles" | "cards" | "compact" | "minimal" {
-  if (preset === "produce-tiles" || preset === "shop-cards" || preset === "horizontal") return "tiles";
-  if (preset === "cards") return "cards";
-  if (preset === "compact") return "compact";
-  return "minimal";
+export type CategoryLook = Exclude<CategoryPreset, "produce-tiles" | "shop-cards">;
+
+export function mapCategoryPreset(templateId: StudioTemplateId, preset: CategoryPreset): CategoryLook {
+  if (preset === "produce-tiles" || preset === "shop-cards") return "tiles";
+  return preset;
 }
 
 export function isValidHeroPreset(templateId: StudioTemplateId, preset: string): preset is HeroPreset {

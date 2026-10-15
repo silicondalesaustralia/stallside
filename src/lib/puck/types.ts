@@ -46,6 +46,9 @@ export type PuckSpikeMetadata = {
     slug: string;
     title: string;
     imageUrl?: string | null;
+    description?: string | null;
+    /** Approved reviews of the category's products. */
+    rating?: { average: number; count: number } | null;
   }>;
   businessMode: "FOOD_BUSINESS" | "FARM_STAND" | "BOTH";
   currency: string;

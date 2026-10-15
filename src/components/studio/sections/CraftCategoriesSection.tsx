@@ -11,6 +11,11 @@ export type CraftCategoriesProps = {
   categoryIds: string[];
   preset: CategoryPreset;
   heading: string;
+  /** Shown under the heading. */
+  intro?: string;
+  showDescriptions?: boolean;
+  /** Each category's average star rating from approved product reviews. */
+  showRatings?: boolean;
   /** @deprecated use preset */
   layout?: CategoryPreset;
 };
@@ -28,6 +33,9 @@ export default function CraftCategoriesSection(props: CraftCategoriesProps) {
           categoryIds={props.categoryIds}
           preset={preset}
           heading={props.heading}
+          intro={props.intro ?? ""}
+          showDescriptions={props.showDescriptions === true}
+          showRatings={props.showRatings === true}
           metadata={metadata}
           isEditing
           editable
@@ -44,6 +52,9 @@ CraftCategoriesSection.craft = {
     categoryIds: [] as string[],
     preset: "tiles",
     heading: "Browse categories",
+    intro: "",
+    showDescriptions: false,
+    showRatings: true,
   },
   rules: { canDrag: () => true, canMoveIn: () => false },
 };

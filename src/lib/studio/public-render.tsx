@@ -35,8 +35,7 @@ import StudioCartBlock from "@/components/studio/blocks/StudioCartBlock";
 import StudioOrderConfirmationBlock from "@/components/studio/blocks/StudioOrderConfirmationBlock";
 import { ProductApprovedReviews } from "@/components/storefront/ProductApprovedReviews";
 import PuckAboutBlock from "@/components/puck/blocks/PuckAboutBlock";
-import type { HeroPreset, ProductPreset, NextDropPreset, CategoryPreset } from "./preset-registry";
-import { mapCategoryPreset } from "./preset-registry";
+import type { HeroPreset, ProductPreset, NextDropPreset } from "./preset-registry";
 
 type SectionNode = {
   type: StudioSectionType;
@@ -178,11 +177,11 @@ function StudioSectionRender({
         <StudioCategoriesBlock
           source={(p.source as "all") ?? "all"}
           categoryIds={(p.categoryIds as string[]) ?? []}
-          preset={mapCategoryPreset(
-            metadata.templateId,
-            (p.preset as CategoryPreset) ?? (p.layout as CategoryPreset) ?? "tiles",
-          )}
+          preset={String(p.preset ?? p.layout ?? "tiles")}
           heading={String(p.heading ?? "Categories")}
+          intro={typeof p.intro === "string" ? p.intro : ""}
+          showDescriptions={p.showDescriptions === true}
+          showRatings={p.showRatings === true}
           metadata={metadata}
         />
       );

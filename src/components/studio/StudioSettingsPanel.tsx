@@ -36,7 +36,8 @@ import SiteStyleSaveStatus from "./SiteStyleSaveStatus";
 import SiteSharingSettings from "./SiteSharingSettings";
 import FooterSettingsPanel from "./FooterSettingsPanel";
 import { paletteOf } from "@/lib/website/sections/colour";
-import { CATEGORY_PRESETS, NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
+import { NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
+import CategoriesSettings from "./CategoriesSettings";
 import type { CraftHeroProps } from "@/components/craft/sections/CraftHeroSection";
 import type { CraftProductGridProps } from "@/components/craft/sections/CraftProductGridSection";
 import type { CraftNextDropProps } from "@/components/craft/sections/CraftNextDropSection";
@@ -373,59 +374,6 @@ function ProductGridSettings({
         <input type="checkbox" checked={props.showAvailability} onChange={(e) => setProp("showAvailability", e.target.checked)} />
         Show availability
       </label>
-    </>
-  );
-}
-
-function CategoriesSettings({
-  props,
-  setProp,
-}: {
-  props: CraftCategoriesProps;
-  setProp: (k: string, v: unknown) => void;
-}) {
-  const metadata = useStudioMetadata();
-  return (
-    <>
-      <p className="text-xs text-[var(--muted)]">
-        Edit the heading directly on the page.
-      </p>
-      <PresetStyleField
-        presetsBySkin={CATEGORY_PRESETS}
-        value={props.preset ?? props.layout}
-        onChange={(v) => setProp("preset", v)}
-      />
-      <Field label="Show">
-        <label className="flex items-center gap-2 text-sm">
-          <input type="radio" checked={props.source === "all"} onChange={() => setProp("source", "all")} />
-          All categories
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="radio" checked={props.source === "selected"} onChange={() => setProp("source", "selected")} />
-          Choose categories
-        </label>
-      </Field>
-      {props.source === "selected" ? (
-        <Field label="Categories">
-          <div className="max-h-40 space-y-1 overflow-y-auto rounded-lg border border-[var(--line)] p-2">
-            {metadata.categories.map((cat) => (
-              <label key={cat.id} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={props.categoryIds.includes(cat.id)}
-                  onChange={(e) => {
-                    const next = e.target.checked
-                      ? [...props.categoryIds, cat.id]
-                      : props.categoryIds.filter((id) => id !== cat.id);
-                    setProp("categoryIds", next);
-                  }}
-                />
-                {cat.title}
-              </label>
-            ))}
-          </div>
-        </Field>
-      ) : null}
     </>
   );
 }
