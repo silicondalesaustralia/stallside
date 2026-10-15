@@ -58,6 +58,14 @@ export function createNamecheapRegistrar(): DomainRegistrarProvider {
       if (input.nameservers?.length) {
         params.Nameservers = input.nameservers.join(",");
       }
+      const auAttrs = namecheapAuExtendedAttrs(tld, input.au);
+      if (Object.keys(auAttrs).length) {
+        console.info("[namecheap create] .au attributes sent", {
+          domain,
+          keys: Object.keys(auAttrs),
+          eligibility_type: auAttrs.eligibility_type,
+        });
+      }
       const xml = await namecheapCall("namecheap.domains.create", params);
       const created = allTagAttrs(xml, "DomainCreateResult")[0];
       const id =

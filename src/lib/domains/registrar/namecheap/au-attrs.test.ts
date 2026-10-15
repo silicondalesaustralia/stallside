@@ -12,18 +12,15 @@ describe("namecheapAuExtendedAttrs", () => {
       eligibilityName: "Alexa's Eggs",
     });
     assert.deepEqual(out, {
-      COMAURegistrantId: "51824753556",
-      COMAURegistrantIdType: "ABN",
-      eligibility_id: "51824753556",
       eligibility_type: "ABN",
+      eligibility_id: "51824753556",
       eligibility_name: "Alexa's Eggs",
-      eligibility_entity_type: "Sole Trader",
     });
   });
 
-  it("uses the NETAU prefix and skips other TLDs", () => {
+  it("applies to .net.au and skips other TLDs", () => {
     const au = { eligibilityType: "Company", eligibilityId: "123456789", eligibilityIdType: "ACN" };
-    assert.equal(namecheapAuExtendedAttrs("net.au", au).NETAURegistrantIdType, "ACN");
+    assert.equal(namecheapAuExtendedAttrs("net.au", au).eligibility_type, "ACN");
     assert.deepEqual(namecheapAuExtendedAttrs("com", au), {});
   });
 });

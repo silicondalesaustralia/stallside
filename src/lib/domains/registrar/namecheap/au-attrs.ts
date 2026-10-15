@@ -10,23 +10,13 @@ export function namecheapAuExtendedAttrs(
   if (!au) return {};
   if (t !== "com.au" && t !== "net.au" && t !== "org.au") return {};
 
-  const prefix = t.replace(/\./g, "").toUpperCase(); // COMAU / NETAU / ORGAU
   const id = au.eligibilityId?.replace(/[\s-]/g, "");
-  const idType = au.eligibilityIdType;
   const name = au.eligibilityName?.trim();
-  // Namecheap (per support): eligibility_type is the ID type (ABN/ACN/TM);
-  // the legal form goes in eligibility_entity_type.
-  const out: Record<string, string> = {
-    eligibility_entity_type: au.eligibilityType,
-  };
-  if (id) {
-    out[`${prefix}RegistrantId`] = id;
-    out.eligibility_id = id;
-  }
-  if (idType) {
-    out[`${prefix}RegistrantIdType`] = idType;
-    out.eligibility_type = idType;
-  }
+  // Namecheap support: only these three; the documented COMAURegistrantId/IdType
+  // must not be sent alongside them. eligibility_type is the ID type, not the legal form.
+  const out: Record<string, string> = {};
+  if (au.eligibilityIdType) out.eligibility_type = au.eligibilityIdType;
+  if (id) out.eligibility_id = id;
   if (name) out.eligibility_name = name;
   return out;
 }
