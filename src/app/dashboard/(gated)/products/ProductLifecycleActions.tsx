@@ -1,30 +1,31 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import {
-  archiveProduct,
-  duplicateProduct,
-  restoreProduct,
-  setProductHidden,
-} from "./product-lifecycle-actions";
+import { archiveProduct, duplicateProduct, restoreProduct } from "./product-lifecycle-actions";
+import { deleteProductForever } from "./product-delete-action";
 
+const LINK = "font-semibold text-[var(--leaf-dark)] underline disabled:opacity-60";
+
+/** Duplicate, Publish/Unpublish (unpublished products are drafts) and Delete. */
 export default function ProductLifecycleActions({
   productId,
   productName,
-  isHidden,
   isArchived,
+  isSupplier = false,
 }: {
   productId: string;
   productName: string;
-  isHidden: boolean;
   isArchived: boolean;
+  /** Supplier products are deleted from Suppliers, not here. */
+  isSupplier?: boolean;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  function run(action: () => Promise<{ error?: string } | void>) {
+  function run(action: () => Promise<{ error?: string } | { ok: true } | void>) {
     setError(null);
     startTransition(async () => {
       try {
@@ -55,53 +56,35 @@ export default function ProductLifecycleActions({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap gap-3 text-sm">
-        {!isArchived ? (
-          <>
-            <button
-              type="button"
-              disabled={pending}
-              className="font-semibold text-[var(--leaf-dark)] underline disabled:opacity-60"
-              onClick={() => run(() => duplicateProduct(productId))}
-            >
-              Duplicate
-            </button>
-            <button
-              type="button"
-              disabled={pending}
-              className="font-semibold text-[var(--leaf-dark)] underline disabled:opacity-60"
-              onClick={() => run(() => setProductHidden(productId, !isHidden))}
-            >
-              {isHidden ? "Show on stand" : "Hide on stand"}
-            </button>
-            <button
-              type="button"
-              disabled={pending}
-              className="rounded-full bg-[var(--gone)]/10 px-3 py-1.5 text-sm font-semibold text-[var(--gone)] disabled:opacity-60"
-              onClick={() => {
-                if (
-                  !window.confirm(
-                    `Archive “${productName}”? It leaves the stand but you can restore it anytime.`,
-                  )
-                ) {
-                  return;
-                }
-                run(() => archiveProduct(productId));
-              }}
-            >
-              Archive
-            </button>
-          </>
-        ) : (
+      <div className="flex flex-wrap items-center gap-3 text-sm">
+        <button type="button" disabled={pending} className={LINK} onClick={() => run(() => duplicateProduct(productId))}>
+          Duplicate
+        </button>
+        <button
+          type="button"
+          disabled={pending}
+          className={LINK}
+          onClick={() => run(() => (isArchived ? restoreProduct(productId) : archiveProduct(productId)))}
+        >
+          {isArchived ? "Publish" : "Unpublish"}
+        </button>
+        {!isSupplier ? (
           <button
             type="button"
             disabled={pending}
-            className="font-semibold text-[var(--leaf-dark)] underline disabled:opacity-60"
-            onClick={() => run(() => restoreProduct(productId))}
+            className="rounded-full bg-[var(--gone)]/10 px-3 py-1.5 text-sm font-semibold text-[var(--gone)] disabled:opacity-60"
+            onClick={() => {
+              if (!window.confirm(`Delete “${productName}” for good? This can't be undone.`)) return;
+              run(async () => {
+                const result = await deleteProductForever(productId);
+                if ("ok" in result && pathname !== "/dashboard/products") router.push("/dashboard/products");
+                return result;
+              });
+            }}
           >
-            Restore
+            Delete
           </button>
-        )}
+        ) : null}
       </div>
       {error ? <p className="text-xs text-[var(--gone)]">{error}</p> : null}
     </div>

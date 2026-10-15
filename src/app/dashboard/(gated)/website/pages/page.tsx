@@ -10,6 +10,8 @@ import { shopHomePath } from "@/lib/storefront/paths";
 import { syncBuiltinCustomPages } from "./actions";
 import PageGroup from "./PageGroup";
 import PageRow from "./PageRow";
+import { setCustomPageEnabled } from "./publish-actions";
+import { customPageStatus, liveCustomPageIds } from "./page-status";
 
 const POLICY_KEYS = ["privacy", "terms", "returns", "shipping"];
 
@@ -17,7 +19,6 @@ function pageDetail(page: StorefrontCustomPage): string {
   return [
     `/${page.slug}`,
     page.routeKind === "builtin" ? "Built-in" : null,
-    page.enabled ? null : "Unpublished",
     page.showInFooter && !page.showInNav ? "Footer" : null,
   ]
     .filter(Boolean)
@@ -27,7 +28,7 @@ function pageDetail(page: StorefrontCustomPage): string {
 export default async function WebsitePagesListPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; deleted?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; deleted?: string; published?: string; unpublished?: string; error?: string }>;
 }) {
   const { owner } = await requireOwner();
   await syncBuiltinCustomPages();
@@ -35,6 +36,7 @@ export default async function WebsitePagesListPage({
   const pages = ensureCustomPages(storefront.draftConfig);
   const params = await searchParams;
   const base = appBaseUrl();
+  const liveIds = liveCustomPageIds(storefront.isPublished, storefront.publishedConfig);
 
   const policyPages = pages.filter((p) => p.builtinKey && POLICY_KEYS.includes(p.builtinKey));
   const contentPages = pages
@@ -46,8 +48,10 @@ export default async function WebsitePagesListPage({
       key={page.id}
       label={page.title}
       detail={pageDetail(page)}
+      status={customPageStatus(page, liveIds)}
       previewUrl={`${base}${customPagePublicPath(storefront.slug, page, true)}`}
       editHref={`/dashboard/website/pages/${page.id}`}
+      toggleAction={setCustomPageEnabled.bind(null, page.id, !page.enabled, "list")}
     />
   );
 
@@ -73,6 +77,8 @@ export default async function WebsitePagesListPage({
 
       {params.saved ? <p className="text-sm font-medium text-[var(--ok)]">Page saved.</p> : null}
       {params.deleted ? <p className="text-sm font-medium text-[var(--ok)]">Page deleted.</p> : null}
+      {params.published ? <p className="text-sm font-medium text-[var(--ok)]">Page published.</p> : null}
+      {params.unpublished ? <p className="text-sm font-medium text-[var(--ok)]">Page unpublished.</p> : null}
       <WebsiteFormError error={params.error} fallback="Something went wrong." />
       <SiteSlugClashNotice ownerId={owner.id} configRaw={storefront.draftConfig} />
 
@@ -80,6 +86,7 @@ export default async function WebsitePagesListPage({
         <PageRow
           label="Home"
           detail="/"
+          status={storefront.isPublished ? "live" : "off"}
           previewUrl={`${base}${shopHomePath(storefront.slug, true)}`}
           editHref="/dashboard/website/pages/home"
         />

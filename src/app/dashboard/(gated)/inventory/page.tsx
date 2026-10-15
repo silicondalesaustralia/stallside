@@ -7,7 +7,6 @@ import {
   loadInventoryReport,
 } from "@/lib/inventory/load-inventory-report";
 import { INVENTORY_FILTERS } from "@/lib/inventory/inventory-status";
-import ProductsTabs from "../products/ProductsTabs";
 import InventorySummaryTiles from "./InventorySummaryTiles";
 import InventoryReportTable from "./InventoryReportTable";
 import InventoryCountForm from "./InventoryCountForm";
@@ -69,8 +68,6 @@ export default async function InventoryPage({
           </Link>
         </div>
       </div>
-
-      <ProductsTabs active="inventory" />
 
       {isImport ? <InventoryImportPanel /> : null}
 

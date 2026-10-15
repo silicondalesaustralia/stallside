@@ -166,7 +166,7 @@ export async function restoreProduct(productId: string) {
 
   await prisma.product.update({
     where: { id: product.id },
-    data: { isArchived: false, isActive: true },
+    data: { isArchived: false, isActive: true, isHidden: false },
   });
 
   revalidateProductPaths({

@@ -2,10 +2,7 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { productDashboardWhere } from "@/lib/product-visibility";
-import ProductsTabs, {
-  isProductTabId,
-  type ProductTabId,
-} from "./ProductsTabs";
+import ProductsTabs, { productTabFrom } from "./ProductsTabs";
 import ProductListRow from "./ProductListRow";
 import ProductsSearchForm from "./ProductsSearchForm";
 import ProductShopOrder from "./ProductShopOrder";
@@ -26,11 +23,12 @@ export default async function ProductsPage({
   const { selected } = await resolveSelectedBusiness(owner.id);
   const { view, tab: tabParam, q: qParam, arrange: arrangeParam } = await searchParams;
   const q = (qParam ?? "").trim();
-  const showArchived = view === "archived";
-  const tab: ProductTabId = isProductTabId(tabParam) ? tabParam : "standard";
+  const tab = productTabFrom(tabParam, view);
   const isPreOrder = tab === "preorder";
   const isSupplier = tab === "supplier";
-  const arrange = arrangeParam === "1" && tab === "standard" && !showArchived;
+  const isDraft = tab === "draft";
+  const arrange = arrangeParam === "1" && tab === "standard";
+  const kind = isSupplier ? "supplier" : isPreOrder ? "pre-order" : isDraft ? "draft" : "standard";
 
   if (!selected) {
     return (
@@ -49,12 +47,9 @@ export default async function ProductsPage({
         standId: selected.id,
         ...(isSupplier
           ? { memberId: { not: null } }
-          : {
-              memberId: null,
-              preOrderEligible: isPreOrder,
-              isHidden: false,
-            }),
-        ...(showArchived ? { isArchived: true } : productDashboardWhere),
+          : isDraft
+            ? { memberId: null, isHidden: false, isArchived: true }
+            : { memberId: null, preOrderEligible: isPreOrder, isHidden: false, ...productDashboardWhere }),
         ...(q
           ? {
               OR: [
@@ -86,14 +81,6 @@ export default async function ProductsPage({
     ownerSiteUrl(owner.id, (slug, draft, base) => shopPagePath(slug, "shop", draft, base)),
   ]);
 
-  function listHref(nextView?: "archived", nextTab: ProductTabId = tab) {
-    const params = new URLSearchParams();
-    if (nextTab !== "standard") params.set("tab", nextTab);
-    if (nextView === "archived") params.set("view", "archived");
-    const qs = params.toString();
-    return qs ? `/dashboard/products?${qs}` : "/dashboard/products";
-  }
-
   return (
     <main className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -102,10 +89,8 @@ export default async function ProductsPage({
             Products
           </h1>
           <p className="mt-1 text-[var(--muted)]">
-            {products.length}{" "}
-            {isSupplier ? "supplier" : isPreOrder ? "pre-order" : ""} product
-            {products.length === 1 ? "" : "s"}
-            {showArchived ? " archived" : " in progress"} · {selected.name}
+            {products.length} {kind === "standard" ? "" : `${kind} `}product
+            {products.length === 1 ? "" : "s"} · {selected.name}
             {q ? ` · “${q}”` : ""}
           </p>
         </div>
@@ -129,41 +114,11 @@ export default async function ProductsPage({
         </div>
       </div>
 
-      <ProductsSearchForm q={q} tab={tab} view={view} />
+      <ProductsSearchForm q={q} tab={tab} />
 
       <div className="flex flex-wrap items-center gap-2">
-        <ProductsTabs active={tab} view={view} />
-        <Link
-          href={listHref()}
-          className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
-            !showArchived
-              ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
-              : "bg-white text-[var(--ink)] outline outline-[var(--line)]"
-          }`}
-        >
-          Active
-        </Link>
-        <Link
-          href={listHref("archived")}
-          className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
-            showArchived
-              ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
-              : "bg-white text-[var(--ink)] outline outline-[var(--line)]"
-          }`}
-        >
-          Archived
-        </Link>
-        <Link
-          href={listHref(showArchived ? "archived" : undefined, "supplier")}
-          className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
-            isSupplier
-              ? "bg-[var(--field)] text-[var(--ink-on-dark)]"
-              : "bg-white text-[var(--ink)] outline outline-[var(--line)]"
-          }`}
-        >
-          Supplier
-        </Link>
-        {tab === "standard" && !showArchived && !arrange ? (
+        <ProductsTabs active={tab} />
+        {tab === "standard" && !arrange ? (
           <Link
             href="/dashboard/products?arrange=1"
             className="ml-auto text-sm font-semibold text-[var(--leaf-dark)] underline"
@@ -173,22 +128,27 @@ export default async function ProductsPage({
         ) : null}
       </div>
 
-      {isSupplier && !showArchived ? (
+      {isDraft ? (
         <p className="text-sm text-[var(--muted)]">
-          These are products a supplier added. Hide on stand takes them off the
-          stall and your website. They stay in this list so you can show them
-          again. Set the price and publish from{" "}
+          Drafts aren&apos;t in your shop. Publish one to put it back on sale.
+        </p>
+      ) : null}
+
+      {isSupplier ? (
+        <p className="text-sm text-[var(--muted)]">
+          These are products a supplier added. Unpublish takes them off the
+          stall and your website; they stay here as drafts. Set the price and publish from{" "}
           <Link
             href="/dashboard/suppliers"
             className="font-medium text-[var(--leaf-dark)] underline"
           >
             Suppliers
           </Link>{" "}
-          before they can be sold. Unpublished ones are under Archived.
+          before they can be sold.
         </p>
       ) : null}
 
-      {isPreOrder && !showArchived ? (
+      {isPreOrder ? (
         <p className="text-sm text-[var(--muted)]">
           Group several products on one shareable{" "}
           <Link
@@ -204,11 +164,7 @@ export default async function ProductsPage({
       {arrange ? (
         <ProductShopOrder ownerId={owner.id} standId={selected.id} />
       ) : products.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">
-          {showArchived
-            ? `No archived ${isSupplier ? "supplier" : isPreOrder ? "pre-order" : "standard"} products.`
-            : `No ${isSupplier ? "supplier" : isPreOrder ? "pre-order" : "standard"} products yet.`}
-        </p>
+        <p className="text-sm text-[var(--muted)]">{isDraft ? "No drafts." : `No ${kind} products yet.`}</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {products.map((product) => {

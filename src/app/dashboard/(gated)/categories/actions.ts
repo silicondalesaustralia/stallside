@@ -72,8 +72,8 @@ export async function updateCategory(categoryId: string, formData: FormData) {
   redirect(`/dashboard/categories/${categoryId}?saved=1`);
 }
 
-/** Publish or unpublish a category everywhere it shows (shop, website, QR codes). */
-export async function setCategoryActive(categoryId: string, isActive: boolean) {
+/** Publish or unpublish a category everywhere it shows (shop, website, QR codes). `back: "list"` returns to the Categories list. */
+export async function setCategoryActive(categoryId: string, isActive: boolean, back: "page" | "list" = "page") {
   const { owner } = await requireOwnerWrite();
   const updated = await prisma.category.updateMany({
     where: { id: categoryId, ownerId: owner.id },
@@ -81,14 +81,15 @@ export async function setCategoryActive(categoryId: string, isActive: boolean) {
   });
   if (updated.count === 0) redirect("/dashboard/categories");
   await revalidateOwnerStores(owner.id);
-  redirect(`/dashboard/categories/${categoryId}?${isActive ? "published" : "unpublished"}=1`);
+  const done = `${isActive ? "published" : "unpublished"}=1`;
+  redirect(back === "list" ? `/dashboard/categories?${done}` : `/dashboard/categories/${categoryId}?${done}`);
 }
 
 export async function deleteCategory(categoryId: string) {
   const { owner } = await requireOwnerWrite();
   await prisma.category.deleteMany({ where: { id: categoryId, ownerId: owner.id } });
   await revalidateOwnerStores(owner.id);
-  redirect("/dashboard/categories");
+  redirect("/dashboard/categories?deleted=1");
 }
 
 export async function saveCategoryOrder(raw: string[]): Promise<OrderActionResult> {
@@ -110,15 +111,4 @@ export async function saveCategoryOrder(raw: string[]): Promise<OrderActionResul
     console.error("saveCategoryOrder failed", error);
     return { error: "Could not save order." };
   }
-}
-
-export async function setShopLayout(standId: string, formData: FormData) {
-  const { owner } = await requireOwnerWrite();
-  const layout = formData.get("shopLayout") === "CATEGORIES" ? "CATEGORIES" : "ALL_PRODUCTS";
-  await prisma.stand.updateMany({
-    where: { id: standId, ownerId: owner.id },
-    data: { shopLayout: layout },
-  });
-  await revalidateOwnerStores(owner.id);
-  redirect("/dashboard/categories?layout=saved");
 }

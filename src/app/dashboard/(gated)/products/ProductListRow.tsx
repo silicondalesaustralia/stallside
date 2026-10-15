@@ -39,9 +39,15 @@ export default function ProductListRow({
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
                 {product.sku ? `SKU ${product.sku}` : "Product"}
-                {product.isArchived ? " · Archived" : null}
                 {product.isHidden && !product.isArchived ? " · Hidden" : null}
               </p>
+              <span
+                className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                  product.isArchived ? "bg-[var(--wash)] text-[var(--muted)]" : "bg-[var(--ok)]/15 text-[var(--ok)]"
+                }`}
+              >
+                {product.isArchived ? "Draft" : "Published"}
+              </span>
               {product.supplierName != null ? (
                 <span className="rounded-full bg-[var(--leaf)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--leaf-dark)]">
                   Supplier
@@ -76,8 +82,8 @@ export default function ProductListRow({
             <ProductLifecycleActions
               productId={product.id}
               productName={product.name}
-              isHidden={product.isHidden}
               isArchived={product.isArchived}
+              isSupplier={product.supplierName != null}
             />
           </div>
         </div>

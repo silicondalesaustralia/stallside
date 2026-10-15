@@ -2,9 +2,18 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState, useTransition, type ReactNode } from "react";
 
-export type SortableItem = { id: string; label: string; detail?: string; href?: string };
+export type SortableItem = {
+  id: string;
+  label: string;
+  detail?: string;
+  href?: string;
+  /** Shown beside the label, e.g. a status. */
+  badge?: ReactNode;
+  /** Buttons shown before the move arrows. */
+  actions?: ReactNode;
+};
 
 type SaveResult = { ok: true } | { error: string };
 
@@ -78,17 +87,21 @@ export default function SortableOrderList({
               className="w-14 rounded-lg border border-[var(--line)] px-2 py-1 text-center text-sm tabular-nums"
             />
             <div className="min-w-0 flex-1">
-              {item.href ? (
-                <Link href={item.href} className="block truncate font-semibold hover:underline">
-                  {item.label}
-                </Link>
-              ) : (
-                <p className="truncate font-semibold">{item.label}</p>
-              )}
+              <div className="flex min-w-0 items-center gap-2">
+                {item.href ? (
+                  <Link href={item.href} className="block truncate font-semibold hover:underline">
+                    {item.label}
+                  </Link>
+                ) : (
+                  <p className="truncate font-semibold">{item.label}</p>
+                )}
+                {item.badge}
+              </div>
               {item.detail ? (
                 <p className="truncate text-xs text-[var(--muted)]">{item.detail}</p>
               ) : null}
             </div>
+            {item.actions}
             <button
               type="button"
               aria-label={`Move ${item.label} up`}

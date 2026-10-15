@@ -1,10 +1,8 @@
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { resolveSelectedBusiness } from "@/lib/selected-business";
 import SortableOrderList from "@/components/SortableOrderList";
-import ProductsTabs from "../products/ProductsTabs";
-import ShopLayoutForm from "./ShopLayoutForm";
-import { createCategory, saveCategoryOrder } from "./actions";
+import CategoryRowActions from "./CategoryRowActions";
+import { createCategory, deleteCategory, saveCategoryOrder, setCategoryActive } from "./actions";
 import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 import { ownerSiteUrl } from "@/lib/storefront/owner-site-url";
 import { shopPagePath } from "@/lib/storefront/paths";
@@ -13,13 +11,12 @@ import SiteSlugClashNotice from "@/components/website/SiteSlugClashNotice";
 export default async function CategoriesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; layout?: string }>;
+  searchParams: Promise<{ error?: string; published?: string; unpublished?: string; deleted?: string }>;
 }) {
   const { owner } = await requireOwner();
-  const { selected } = await resolveSelectedBusiness(owner.id);
-  const { error, layout } = await searchParams;
+  const { error, published, unpublished, deleted } = await searchParams;
 
-  const [categories, stand, shopUrl, storefront] = await Promise.all([
+  const [categories, shopUrl, storefront] = await Promise.all([
     prisma.category.findMany({
       where: { ownerId: owner.id },
       orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
@@ -31,12 +28,6 @@ export default async function CategoriesPage({
         _count: { select: { products: true } },
       },
     }),
-    selected
-      ? prisma.stand.findUnique({
-          where: { id: selected.id },
-          select: { id: true, name: true, shopLayout: true },
-        })
-      : Promise.resolve(null),
     ownerSiteUrl(owner.id, (slug, draft, base) => shopPagePath(slug, "shop", draft, base)),
     prisma.storefront.findFirst({ where: { ownerId: owner.id }, select: { draftConfig: true } }),
   ]);
@@ -47,11 +38,27 @@ export default async function CategoriesPage({
     href: `/dashboard/categories/${c.id}`,
     detail: [
       `${c._count.products} product${c._count.products === 1 ? "" : "s"}`,
-      !c.isActive ? "Inactive" : null,
       c.isActive && !c.showOnWebsite ? "Hidden from shop menu" : null,
     ]
       .filter(Boolean)
       .join(" · "),
+    badge: (
+      <span
+        className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
+          c.isActive ? "bg-[var(--ok)]/15 text-[var(--ok)]" : "bg-[var(--wash)] text-[var(--muted)]"
+        }`}
+      >
+        {c.isActive ? "Published" : "Unpublished"}
+      </span>
+    ),
+    actions: (
+      <CategoryRowActions
+        title={c.title}
+        isActive={c.isActive}
+        toggleAction={setCategoryActive.bind(null, c.id, !c.isActive, "list")}
+        deleteAction={deleteCategory.bind(null, c.id)}
+      />
+    ),
   }));
 
   return (
@@ -68,18 +75,11 @@ export default async function CategoriesPage({
         {shopUrl ? <ViewOnSiteLink href={shopUrl} label="View shop" /> : null}
       </div>
 
-      <ProductsTabs active="categories" />
-
       {storefront ? <SiteSlugClashNotice ownerId={owner.id} configRaw={storefront.draftConfig} /> : null}
 
-      {stand ? (
-        <ShopLayoutForm
-          standId={stand.id}
-          standName={stand.name}
-          value={stand.shopLayout}
-          saved={layout === "saved"}
-        />
-      ) : null}
+      {published ? <p className="text-sm font-medium text-[var(--ok)]">Category published.</p> : null}
+      {unpublished ? <p className="text-sm font-medium text-[var(--ok)]">Category unpublished.</p> : null}
+      {deleted ? <p className="text-sm font-medium text-[var(--ok)]">Category deleted.</p> : null}
 
       <form action={createCategory} className="flex flex-wrap items-end gap-2 rounded-xl border border-[var(--line)] bg-white p-4">
         <label className="flex min-w-[12rem] flex-1 flex-col gap-1 text-sm">

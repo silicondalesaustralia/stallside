@@ -16,8 +16,9 @@ import {
 /**
  * Publishes or unpublishes one page. The draft is updated, and if the page is
  * already on the live site the change applies there straight away.
+ * `back: "list"` returns to the Pages list instead of the page's settings.
  */
-export async function setCustomPageEnabled(pageId: string, enabled: boolean) {
+export async function setCustomPageEnabled(pageId: string, enabled: boolean, back: "page" | "list" = "page") {
   const { owner } = await requireWebsiteOwner();
   const path = `/dashboard/website/pages/${pageId}`;
   const storefront = await ensureStorefront(owner.id, owner.businessName);
@@ -42,5 +43,6 @@ export async function setCustomPageEnabled(pageId: string, enabled: boolean) {
   revalidatePath("/dashboard/website/pages");
   revalidatePath(path);
   revalidatePath(storefrontPublicPath(storefront.slug));
-  redirect(`${path}?${enabled ? "published" : "unpublished"}=1`);
+  const done = `${enabled ? "published" : "unpublished"}=1`;
+  redirect(back === "list" ? `/dashboard/website/pages?${done}` : `${path}?${done}`);
 }
