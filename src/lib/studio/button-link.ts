@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { safeHref } from "@/lib/website/rich-text/parse";
-import { shopHomePath, shopMenusPath, shopPagePath, shopProductPath } from "@/lib/storefront/paths";
+import { shopCategoryPath, shopHomePath, shopMenusPath, shopPagePath, shopProductPath } from "@/lib/storefront/paths";
 
 /**
  * Where a section's button goes. Stored as a token so it resolves to the right URL in the
  * editor (draft) and on the live site:
- *   page:<home|shop|about|contact|menu|blog>  nav:<custom page slug>  product:<slug>
+ *   page:<home|shop|about|contact|menu|blog>  nav:<custom page slug>  product:<slug>  category:<slug>
  *   or a web address, email (mailto:) or phone (tel:) accepted by `safeHref`.
  * Empty / missing means the section's default (usually the shop).
  */
@@ -15,7 +15,7 @@ export type ButtonPage = (typeof BUTTON_PAGES)[number];
 /** Sections whose main button is a link the seller can change. */
 export const LINKABLE_BUTTON_SECTIONS = new Set(["CraftHeroSection", "CraftImageTextSection", "CraftFarmStandSection"]);
 
-const TOKEN = /^(page:(home|shop|about|contact|menu|blog)|nav:[\w-]{1,120}|product:[\w-]{1,160})$/;
+const TOKEN = /^(page:(home|shop|about|contact|menu|blog)|nav:[\w-]{1,120}|product:[\w-]{1,160}|category:[\w-]{1,160})$/;
 
 export function isButtonLink(value: unknown): value is string {
   return typeof value === "string" && value.length <= 500 && (TOKEN.test(value) || safeHref(value) !== null);
@@ -43,6 +43,7 @@ export function resolveButtonLink(link: unknown, ctx: LinkContext): string | nul
     return shopPagePath(slug, page, draft, basePath);
   }
   if (link.startsWith("product:")) return shopProductPath(slug, link.slice(8), draft, basePath);
+  if (link.startsWith("category:")) return shopCategoryPath(slug, link.slice(9), draft, basePath);
   if (link.startsWith("nav:")) {
     const target = link.slice(4);
     const items = [

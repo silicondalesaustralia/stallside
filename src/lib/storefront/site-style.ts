@@ -43,6 +43,9 @@ export const siteStyleSchema = z.object({
   buttonShape: z.enum(BUTTON_SHAPES).optional(),
   buttonSize: z.enum(SITE_BUTTON_SIZES).optional(),
   headerScroll: z.enum(HEADER_SCROLLS).optional(),
+  /** Header bar colours; text is picked for the background when only that is set. */
+  headerBackground: colourValue.optional(),
+  headerText: colourValue.optional(),
   productRatio: z.enum(PRODUCT_RATIOS).optional(),
   cardHover: z.enum(CARD_HOVERS).optional(),
   animation: z.enum(SECTION_ANIMATIONS).optional(),

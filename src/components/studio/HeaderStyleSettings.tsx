@@ -17,6 +17,7 @@ import NavTextSizeField from "./NavTextSizeField";
 import BrandNameSizeField from "./BrandNameSizeField";
 import AnnouncementBarSettings from "./AnnouncementBarSettings";
 import SettingsGroup from "./SettingsGroup";
+import HeaderColourFields from "./HeaderColourFields";
 
 export default function HeaderStyleSettings({ focus }: { focus: "header" | "announcement" }) {
   const {
@@ -91,6 +92,7 @@ export default function HeaderStyleSettings({ focus }: { focus: "header" | "anno
           onCommit={(h) => setHeaderStyle?.({ logoHeight: h })}
         />
         <BrandNameSizeField disabled={brandMark === "logo-only" && hasLogo} />
+        <HeaderColourFields />
         {headerStyleStatus === "saving" ? (
           <p className="text-xs text-[var(--muted)]">Saving…</p>
         ) : null}

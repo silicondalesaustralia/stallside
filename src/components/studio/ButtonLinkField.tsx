@@ -16,9 +16,9 @@ const PAGES = [
   ["page:blog", "Blog"],
 ] as const;
 
-const isToken = (v: string) => /^(page|nav|product):/.test(v);
+const isToken = (v: string) => /^(page|nav|product|category):/.test(v);
 
-/** Where a button or menu link goes: a site page, custom page, product or any web address. */
+/** Where a button or menu link goes: a site page, custom page, category, product or any web address. */
 export default function ButtonLinkField({
   value,
   label = "Button link",
@@ -84,6 +84,13 @@ export default function ButtonLinkField({
               <option key={p.slug} value={`nav:${p.slug}`}>{p.label}</option>
             ))}
         </optgroup>
+        {meta.categories.length ? (
+          <optgroup label="Categories">
+            {meta.categories.filter((c) => isButtonLink(`category:${c.slug}`)).map((c) => (
+              <option key={c.slug} value={`category:${c.slug}`}>{c.title}</option>
+            ))}
+          </optgroup>
+        ) : null}
         {meta.products.length ? (
           <optgroup label="Products">
             {meta.products.filter((p) => isButtonLink(`product:${p.slug}`)).map((p) => (
@@ -91,13 +98,13 @@ export default function ButtonLinkField({
             ))}
           </optgroup>
         ) : null}
-        <option value={URL_OPTION}>Web address, email or phone…</option>
+        <option value={URL_OPTION}>Custom link (web address, email or phone)…</option>
       </select>
       {urlMode ? (
         <input
           className={INPUT}
           value={text}
-          placeholder="example.com, hello@farm.com or tel:0400 000 000"
+          placeholder="example.com, /shop/eggs, hello@farm.com or tel:0400 000 000"
           onChange={(e) => setText(e.target.value)}
           onBlur={commitUrl}
           onKeyDown={(e) => {

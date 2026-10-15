@@ -85,7 +85,7 @@ export default function StudioEditorShell({
         <StudioStorefrontNav
           storefrontSlug={metadata.storefrontSlug}
           standSlug={metadata.standSlug}
-          branding={branding}
+          branding={liveBranding}
           activePage="home"
           enabledPages={enabledPages}
           draft

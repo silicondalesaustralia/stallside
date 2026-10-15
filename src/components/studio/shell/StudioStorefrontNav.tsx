@@ -16,6 +16,8 @@ import type { StudioNavItem } from "@/lib/studio/navigation";
 import { buildAutoNavItems } from "@/lib/studio/auto-header-nav";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
 import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style";
+import { siteHeaderVars } from "@/lib/storefront/site-header-colours";
+import { paletteOf } from "@/lib/website/sections/colour";
 import StudioBrandMark from "./StudioBrandMark";
 import NavItemLink from "./NavItemLink";
 
@@ -146,6 +148,7 @@ export default function StudioStorefrontNav({
   const template = resolveStudioTemplate(templateId, "FOOD_BUSINESS");
   const headerLayout = layoutOverride ?? branding.headerLayout;
   const brandMark = markOverride ?? branding.brandMark;
+  const headerColours = siteHeaderVars(branding.siteStyle, paletteOf(branding));
   const subscribe = useCallback(
     (onStoreChange: () => void) => subscribeStandCart(onStoreChange),
     [],
@@ -255,6 +258,8 @@ export default function StudioStorefrontNav({
       className={`${navClass} ${branding.siteStyle.headerScroll === "scroll" ? "relative" : "sticky top-0"} z-30 border-b border-[var(--line)] bg-[var(--panel)]/95 backdrop-blur ${
         selected ? "ring-2 ring-inset ring-[var(--leaf)]" : ""
       } ${editable ? "cursor-pointer" : ""}`}
+      style={headerColours}
+      {...(Object.keys(headerColours).length ? { "data-header-colours": "" } : {})}
       onClick={
         editable
           ? (e) => {

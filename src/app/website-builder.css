@@ -530,6 +530,12 @@
   z-index: 50;
 }
 
+/* Seller header colours: the white cart button keeps dark ink on its own surface. */
+header.studio-nav[data-header-colours] .studio-btn--secondary {
+  --field: #17361f;
+  border-color: transparent;
+}
+
 /* The storefront header would stick under the toolbar; in the editor it scrolls with the page. */
 .vendl-studio-editor header.studio-nav {
   position: relative;
