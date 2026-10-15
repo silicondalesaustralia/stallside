@@ -8,6 +8,7 @@ import { createCategory, saveCategoryOrder } from "./actions";
 import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 import { ownerSiteUrl } from "@/lib/storefront/owner-site-url";
 import { shopPagePath } from "@/lib/storefront/paths";
+import SiteSlugClashNotice from "@/components/website/SiteSlugClashNotice";
 
 export default async function CategoriesPage({
   searchParams,
@@ -18,7 +19,7 @@ export default async function CategoriesPage({
   const { selected } = await resolveSelectedBusiness(owner.id);
   const { error, layout } = await searchParams;
 
-  const [categories, stand, shopUrl] = await Promise.all([
+  const [categories, stand, shopUrl, storefront] = await Promise.all([
     prisma.category.findMany({
       where: { ownerId: owner.id },
       orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
@@ -37,6 +38,7 @@ export default async function CategoriesPage({
         })
       : Promise.resolve(null),
     ownerSiteUrl(owner.id, (slug, draft, base) => shopPagePath(slug, "shop", draft, base)),
+    prisma.storefront.findFirst({ where: { ownerId: owner.id }, select: { draftConfig: true } }),
   ]);
 
   const items = categories.map((c) => ({
@@ -67,6 +69,8 @@ export default async function CategoriesPage({
       </div>
 
       <ProductsTabs active="categories" />
+
+      {storefront ? <SiteSlugClashNotice ownerId={owner.id} configRaw={storefront.draftConfig} /> : null}
 
       {stand ? (
         <ShopLayoutForm

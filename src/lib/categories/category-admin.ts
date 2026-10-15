@@ -2,25 +2,38 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { isReservedSiteSlug } from "@/lib/storefront/site-slugs";
+import { siteSlugOwnersFromConfig } from "@/lib/storefront/resolve-site-slug";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
 
 export type OrderActionResult = { ok: true } | { error: string };
 
+/** Slugs of the site's custom pages and blog categories, which share `/{slug}` with categories. */
+async function pageAndTopicSlugs(ownerId: string): Promise<string[]> {
+  const storefront = await prisma.storefront.findFirst({ where: { ownerId }, select: { draftConfig: true } });
+  if (!storefront) return [];
+  const owners = await siteSlugOwnersFromConfig(ownerId, storefront.draftConfig);
+  return owners.filter((o) => o.kind !== "category").map((o) => o.slug);
+}
+
+/** A category slug no other category, custom page or blog category on the site uses. */
 export async function uniqueCategorySlug(
   ownerId: string,
   base: string,
   excludeId?: string,
 ): Promise<string> {
   const root = slugify(base) || "category";
-  const taken = await prisma.category.findMany({
-    where: {
-      ownerId,
-      slug: { startsWith: root },
-      ...(excludeId ? { NOT: { id: excludeId } } : {}),
-    },
-    select: { slug: true },
-  });
-  const used = new Set(taken.map((c) => c.slug));
+  const [taken, siteSlugs] = await Promise.all([
+    prisma.category.findMany({
+      where: {
+        ownerId,
+        slug: { startsWith: root },
+        ...(excludeId ? { NOT: { id: excludeId } } : {}),
+      },
+      select: { slug: true },
+    }),
+    pageAndTopicSlugs(ownerId),
+  ]);
+  const used = new Set([...taken.map((c) => c.slug), ...siteSlugs]);
   if (!used.has(root) && !isReservedSiteSlug(root)) return root;
   for (let i = 2; i < 1000; i += 1) {
     if (!used.has(`${root}-${i}`)) return `${root}-${i}`;
