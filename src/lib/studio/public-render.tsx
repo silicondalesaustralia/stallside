@@ -156,6 +156,8 @@ function StudioSectionRender({
               <ProductApprovedReviews
                 ownerId={metadata.commerceContext.ownerId}
                 productId={metadata.commerceContext.product.id}
+                storefrontSlug={metadata.storefrontSlug}
+                showForm={p.showReviewForm !== false}
               />
             </div>
           ) : null}
@@ -262,6 +264,7 @@ function StudioSectionRender({
           preset={(p.preset as "cards") ?? "cards"}
           heading={String(p.heading ?? "What customers say")}
           maxItems={Number(p.maxItems ?? 4)}
+          showForm={p.showForm !== false}
           metadata={metadata}
         />
       );

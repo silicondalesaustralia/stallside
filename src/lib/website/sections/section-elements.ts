@@ -11,6 +11,17 @@ export const SECTION_ELEMENTS: Record<string, SectionElementDef[]> = {
     { id: "bullets", label: "Info lines under the buttons" },
     { id: "tabTitle", label: "Info tab titles" },
     { id: "tabBody", label: "Info tab text" },
+    { id: "stars", label: "Review stars" },
+    { id: "reviewBody", label: "Review text" },
+    { id: "reviewName", label: "Reviewer names" },
+    { id: "reviewReply", label: "Your review replies" },
+  ],
+  CraftReviewsSection: [
+    { id: "stars", label: "Stars" },
+    { id: "reviewTitle", label: "Review titles" },
+    { id: "reviewBody", label: "Review text" },
+    { id: "reviewName", label: "Reviewer names" },
+    { id: "reviewReply", label: "Your replies" },
   ],
   CraftCategoryDetailSection: [
     { id: "title", label: "Category name" },

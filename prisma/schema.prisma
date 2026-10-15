@@ -2643,21 +2643,30 @@ model Review {
   owner       Owner        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   customerId  String?
   customer    Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  orderId     String
+  /** Set for reviews linked to an order; reviews from the website form have none. */
+  orderId     String?
   orderItemId String?
+  /** Null for a review of the business as a whole. */
   productId   String?
   rating      Int
   title       String?
   body        String
   status      ReviewStatus @default(PENDING)
-  token       String       @unique
+  token       String?      @unique
+  /** Name and email the reviewer typed on the website form. */
+  authorName  String?
+  authorEmail String?
+  /** The email matched a customer with a past order. */
+  verified    Boolean      @default(false)
   sellerReply String?
+  repliedAt   DateTime?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
   @@unique([orderId, productId])
   @@index([ownerId, status])
   @@index([productId, status])
+  @@index([ownerId, createdAt])
 }
 
 model GiftCard {

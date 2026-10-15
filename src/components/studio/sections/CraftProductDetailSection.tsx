@@ -14,9 +14,12 @@ import {
 } from "@/lib/studio/product-detail-settings";
 import type { ProductBlockLayout } from "@/lib/studio/product-blocks";
 import type { ProductButtons } from "@/lib/studio/product-buttons";
+import ProductReviewsPreview from "@/components/storefront/reviews/ProductReviewsPreview";
 
 export type CraftProductDetailProps = {
   showReviews: boolean;
+  /** With reviews on: the "Leave a review" form under them; on unless switched off. */
+  showReviewForm?: boolean;
   showBackLink: boolean;
   /** Missing on older pages, which show breadcrumbs. */
   showBreadcrumbs?: boolean;
@@ -69,6 +72,9 @@ export default function CraftProductDetailSection(props: CraftProductDetailProps
         ) : (
           <p className="p-6 text-sm text-[var(--muted)]">Product detail</p>
         )}
+        {props.showReviews && isStudioMetadata(metadata) ? (
+          <ProductReviewsPreview reviews={metadata.reviews} storefrontSlug={metadata.storefrontSlug} showForm={props.showReviewForm !== false} />
+        ) : null}
       </CraftSectionChrome>
     </div>
   );

@@ -1,28 +1,26 @@
 import type { StudioMetadata } from "@/lib/studio/types";
 import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
+import SectionElement from "@/components/studio/SectionElement";
+import ReviewCard from "@/components/storefront/reviews/ReviewCard";
+import ReviewForm from "@/components/storefront/reviews/ReviewForm";
+import ReviewStars from "@/components/storefront/reviews/ReviewStars";
 
 type Props = {
   preset: "cards" | "quote" | "featured";
   heading: string;
   maxItems: number;
+  /** "Leave a review" form under the reviews; on unless switched off. */
+  showForm?: boolean;
   metadata: StudioMetadata;
   isEditing?: boolean;
   editable?: boolean;
 };
 
-function Stars({ rating }: { rating: number }) {
-  return (
-    <span className="studio-stars" aria-label={`${rating} out of 5 stars`}>
-      {"★".repeat(rating)}
-      <span className="text-[var(--line)]">{"★".repeat(5 - rating)}</span>
-    </span>
-  );
-}
-
 export default function StudioReviewsBlock({
   preset,
   heading,
   maxItems,
+  showForm = true,
   metadata: meta,
   isEditing,
   editable = false,
@@ -36,16 +34,24 @@ export default function StudioReviewsBlock({
       placeholder="Reviews heading"
     />
   );
+  const form = showForm ? (
+    <div className="mx-auto mt-8 max-w-xl">
+      <ReviewForm storefrontSlug={meta.storefrontSlug} />
+    </div>
+  ) : null;
 
   if (reviews.length === 0) {
-    if (!isEditing) return null;
+    if (!isEditing && !form) return null;
     return (
       <section className="studio-section">
         <div className="studio-section__inner">
           {title}
-          <p className="mt-3 rounded-xl border border-dashed border-[var(--line)] bg-[var(--wash)] p-6 text-sm text-[var(--muted)]">
-            No reviews yet. Approved customer reviews will appear here.
-          </p>
+          {isEditing ? (
+            <p className="mt-3 rounded-xl border border-dashed border-[var(--line)] bg-[var(--wash)] p-6 text-sm text-[var(--muted)]">
+              No reviews yet. Reviews you approve under Marketing → Reviews appear here.
+            </p>
+          ) : null}
+          {form}
         </div>
       </section>
     );
@@ -58,12 +64,15 @@ export default function StudioReviewsBlock({
         <div className="studio-section__inner mx-auto max-w-[var(--studio-prose-max)] text-center">
           {title}
           <blockquote className="mt-8">
-            <Stars rating={r.rating} />
-            <p className="mt-4 text-xl leading-relaxed text-[var(--field)] sf-sm:text-2xl">
+            <ReviewStars rating={r.rating} />
+            <SectionElement el="reviewBody" className="mt-4 text-xl leading-relaxed text-[var(--field)] sf-sm:text-2xl">
               &ldquo;{r.body}&rdquo;
-            </p>
-            <footer className="mt-4 text-sm text-[var(--muted)]">— {r.customerName}</footer>
+            </SectionElement>
+            <SectionElement el="reviewName" className="mt-4 text-sm text-[var(--muted)]">
+              — {r.customerName}
+            </SectionElement>
           </blockquote>
+          <div className="text-left">{form}</div>
         </div>
       </section>
     );
@@ -75,17 +84,10 @@ export default function StudioReviewsBlock({
         {title}
         <ul className={`mt-8 grid gap-4 ${preset === "quote" ? "grid-cols-1" : "sf-sm:grid-cols-2"}`}>
           {reviews.map((r) => (
-            <li
-              key={r.id}
-              className="rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-5"
-            >
-              <Stars rating={r.rating} />
-              {r.title ? <p className="mt-2 font-semibold text-[var(--field)]">{r.title}</p> : null}
-              <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{r.body}</p>
-              <p className="mt-3 text-xs font-medium text-[var(--field)]">{r.customerName}</p>
-            </li>
+            <ReviewCard key={r.id} review={r} />
           ))}
         </ul>
+        {form}
       </div>
     </section>
   );

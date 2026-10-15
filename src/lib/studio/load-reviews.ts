@@ -8,6 +8,10 @@ export type StorefrontReviewView = {
   title: string | null;
   body: string;
   customerName: string;
+  /** The reviewer's email matched a past order. */
+  verified?: boolean;
+  /** The seller's public reply. */
+  reply?: string | null;
 };
 
 /** Approved owner-level reviews for homepage trust sections */
@@ -42,6 +46,9 @@ export async function loadStorefrontReviews(
       rating: true,
       title: true,
       body: true,
+      authorName: true,
+      verified: true,
+      sellerReply: true,
       customer: { select: { name: true } },
     },
   });
@@ -51,6 +58,8 @@ export async function loadStorefrontReviews(
     rating: r.rating,
     title: r.title,
     body: r.body,
-    customerName: r.customer?.name?.trim() || "Customer",
+    customerName: r.authorName?.trim() || r.customer?.name?.trim() || "Customer",
+    verified: r.verified,
+    reply: r.sellerReply,
   }));
 }

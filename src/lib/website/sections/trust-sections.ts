@@ -14,7 +14,7 @@ export const reviews: SectionDefinition = {
   variants: REVIEWS_VARIANTS,
   defaultVariant: "cards",
   content: z.object({ heading: heading.optional() }),
-  settings: z.object({ maxItems: count(1, 12).optional() }),
+  settings: z.object({ maxItems: count(1, 12).optional(), showForm: z.boolean().optional() }),
   pageKinds: CONTENT_PAGES,
   singleton: true,
   required: false,

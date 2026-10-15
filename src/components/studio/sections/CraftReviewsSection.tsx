@@ -11,6 +11,7 @@ export type CraftReviewsProps = {
   preset: "cards" | "quote" | "featured";
   heading: string;
   maxItems: number;
+  showForm?: boolean;
 };
 
 export default function CraftReviewsSection(props: CraftReviewsProps) {
@@ -20,7 +21,7 @@ export default function CraftReviewsSection(props: CraftReviewsProps) {
   return (
     <div ref={(dom) => { if (dom) connect(drag(dom)); }}>
       <CraftSectionChrome>
-        <StudioReviewsBlock {...props} metadata={metadata} isEditing editable />
+        <StudioReviewsBlock {...props} showForm={props.showForm !== false} metadata={metadata} isEditing editable />
       </CraftSectionChrome>
     </div>
   );

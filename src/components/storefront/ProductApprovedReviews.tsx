@@ -1,12 +1,19 @@
 import { prisma } from "@/lib/prisma";
+import ReviewCard from "@/components/storefront/reviews/ReviewCard";
+import ReviewForm from "@/components/storefront/reviews/ReviewForm";
+import SectionCopy from "@/components/studio/SectionCopy";
 
-/** Approved reviews only — never show PENDING/REJECTED publicly. */
+/** Approved reviews only — never show PENDING/REJECTED publicly. Optional "Leave a review" form below. */
 export async function ProductApprovedReviews({
   ownerId,
   productId,
+  storefrontSlug,
+  showForm = false,
 }: {
   ownerId: string;
   productId: string;
+  storefrontSlug?: string;
+  showForm?: boolean;
 }) {
   const reviews = await prisma.review.findMany({
     where: {
@@ -22,36 +29,40 @@ export async function ProductApprovedReviews({
       rating: true,
       title: true,
       body: true,
-      createdAt: true,
+      authorName: true,
+      verified: true,
+      sellerReply: true,
       customer: { select: { name: true } },
     },
   });
 
-  if (reviews.length === 0) return null;
+  const form = showForm && storefrontSlug ? <ReviewForm storefrontSlug={storefrontSlug} productId={productId} /> : null;
+  if (reviews.length === 0 && !form) return null;
 
   return (
     <section className="mt-10 border-t border-[var(--line)] pt-8">
-      <h2 className="font-[family-name:var(--font-display)] text-xl font-bold tracking-tight">
-        Customer reviews
+      <h2 className="studio-heading text-xl">
+        <SectionCopy k="reviewsHeading" fallback="Customer reviews" />
       </h2>
-      <ul className="mt-4 flex flex-col gap-4">
-        {reviews.map((r) => (
-          <li key={r.id} className="text-sm">
-            <p className="font-semibold">
-              {"★".repeat(r.rating)}
-              {"☆".repeat(5 - r.rating)}
-              {r.title ? (
-                <span className="ml-2 text-[var(--field)]">{r.title}</span>
-              ) : null}
-            </p>
-            <p className="mt-1 leading-relaxed text-[var(--muted)]">{r.body}</p>
-            <p className="mt-1 text-xs text-[var(--muted)]">
-              {r.customer?.name?.trim() || "Customer"} ·{" "}
-              {r.createdAt.toLocaleDateString()}
-            </p>
-          </li>
-        ))}
-      </ul>
+      {reviews.length > 0 ? (
+        <ul className="mt-4 flex flex-col gap-4">
+          {reviews.map((r) => (
+            <ReviewCard
+              key={r.id}
+              review={{
+                id: r.id,
+                rating: r.rating,
+                title: r.title,
+                body: r.body,
+                customerName: r.authorName?.trim() || r.customer?.name?.trim() || "Customer",
+                verified: r.verified,
+                reply: r.sellerReply,
+              }}
+            />
+          ))}
+        </ul>
+      ) : null}
+      {form ? <div className="mt-6">{form}</div> : null}
     </section>
   );
 }
