@@ -11,16 +11,14 @@ describe("namecheapAuExtendedAttrs", () => {
       eligibilityIdType: "ABN",
       eligibilityName: "Alexa's Eggs",
     });
-    assert.equal(out.COMAUEligibilityType, "Sole Trader");
-    assert.equal(out.COMAURegistrantId, "51824753556");
-    assert.equal(out.COMAUEligibilityId, "51824753556");
-    assert.equal(out.COMAURegistrantIdType, "ABN");
-    assert.equal(out.COMAUEligibilityName, "Alexa's Eggs");
-    assert.equal(out.COMAURegistrantName, "Alexa's Eggs");
-    assert.equal(out.COMAUPolicyReason, "2");
-    assert.equal(out.eligibility_type, "Sole Trader");
-    assert.equal(out.eligibility_name, "Alexa's Eggs");
-    assert.equal(out.policy_reason, "2");
+    assert.deepEqual(out, {
+      COMAURegistrantId: "51824753556",
+      COMAURegistrantIdType: "ABN",
+      eligibility_id: "51824753556",
+      eligibility_type: "ABN",
+      eligibility_name: "Alexa's Eggs",
+      eligibility_entity_type: "Sole Trader",
+    });
   });
 
   it("uses the NETAU prefix and skips other TLDs", () => {

@@ -62,8 +62,9 @@ export default function BuyDomainForm({
         <fieldset className="flex flex-col gap-3">
           <legend className="text-sm font-semibold">.{tld} eligibility</legend>
           <p className="text-xs text-[var(--muted)]">
-            Confirm you are entitled to hold this domain. Vendl does not verify
-            ABN/ACN against government registers.
+            Confirm you are entitled to hold this domain. Organisation above must be the exact name
+            registered to this ABN, ACN or trademark. Vendl does not verify it against government
+            registers.
           </p>
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-medium">ID type</span>
@@ -74,7 +75,6 @@ export default function BuyDomainForm({
             >
               <option value="ABN">ABN</option>
               <option value="ACN">ACN</option>
-              <option value="RBN">RBN</option>
               <option value="TM">Trademark</option>
             </select>
           </label>

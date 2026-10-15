@@ -14,32 +14,20 @@ export function namecheapAuExtendedAttrs(
   const id = au.eligibilityId?.replace(/[\s-]/g, "");
   const idType = au.eligibilityIdType;
   const name = au.eligibilityName?.trim();
+  // Namecheap (per support): eligibility_type is the ID type (ABN/ACN/TM);
+  // the legal form goes in eligibility_entity_type.
   const out: Record<string, string> = {
-    [`${prefix}EligibilityType`]: au.eligibilityType,
-    // auDA policy reason: 1 = exact match of a trademark/name, 2 = close and substantial connection.
-    [`${prefix}PolicyReason`]: idType === "TM" ? "1" : "2",
+    eligibility_entity_type: au.eligibilityType,
   };
   if (id) {
     out[`${prefix}RegistrantId`] = id;
-    out[`${prefix}EligibilityId`] = id;
+    out.eligibility_id = id;
   }
   if (idType) {
     out[`${prefix}RegistrantIdType`] = idType;
-    out[`${prefix}EligibilityIdType`] = idType;
+    out.eligibility_type = idType;
   }
-  if (name) {
-    out[`${prefix}RegistrantName`] = name;
-    out[`${prefix}EligibilityName`] = name;
-  }
-  // Namecheap's errors name the upstream registry fields verbatim; it ignores keys it doesn't know.
-  out.eligibility_type = au.eligibilityType;
-  out.policy_reason = out[`${prefix}PolicyReason`];
-  if (id) out.eligibility_id = id;
-  if (idType) out.eligibility_id_type = idType;
-  if (name) {
-    out.eligibility_name = name;
-    out.registrant_name = name;
-  }
+  if (name) out.eligibility_name = name;
   return out;
 }
 

@@ -51,7 +51,8 @@ export async function startDomainCheckoutAction(formData: FormData) {
 
   let au: AuEligibility | undefined;
   if (tld === "com.au" || tld === "net.au") {
-    const idType = field(formData, "eligibilityIdType") || "ABN";
+    const rawIdType = field(formData, "eligibilityIdType");
+    const idType = ["ABN", "ACN", "TM"].includes(rawIdType) ? rawIdType : "ABN";
     au = {
       eligibilityType: auEntityTypeFor(idType, field(formData, "eligibilityType")),
       eligibilityId: field(formData, "eligibilityId"),
