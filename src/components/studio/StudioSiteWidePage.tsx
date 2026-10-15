@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useEditor } from "@craftjs/core";
 import { useStudioEditorChrome } from "./StudioEditorContext";
 import SiteTypographySettings from "./SiteTypographySettings";
@@ -12,18 +12,11 @@ import SiteButtonSettings from "./SiteButtonSettings";
 import SiteLinkSettings from "./SiteLinkSettings";
 import SiteSharingSettings from "./SiteSharingSettings";
 import SiteWideChromeLinks from "./SiteWideChromeLinks";
+import ShopBrowseSettings from "./ShopBrowseSettings";
+import SaleBadgeSettings from "./SaleBadgeSettings";
+import { SITE_WIDE_TABS as TABS, type SiteWideTabId } from "@/lib/studio/site-wide-tabs";
 
-const TABS = [
-  { id: "text", label: "Fonts & text", hint: "Heading and body fonts, colours and sizes." },
-  { id: "layout", label: "Layout & spacing", hint: "Page width, section spacing, margins and corners." },
-  { id: "colours", label: "Colours", hint: "Page background, buttons and links on every page." },
-  { id: "cards", label: "Buttons, cards & effects", hint: "Button shape and size, product cards, animation." },
-  { id: "chrome", label: "Header & footer", hint: "Menu links, logo, announcement bar and footer." },
-  { id: "sharing", label: "Search & social", hint: "How your site looks in Google and when shared." },
-] as const;
-type TabId = (typeof TABS)[number]["id"];
-
-const CONTENT: Record<TabId, ReactNode> = {
+const CONTENT: Record<SiteWideTabId, ReactNode> = {
   text: <SiteTypographySettings />,
   layout: <SiteLayoutSettings />,
   colours: (
@@ -36,14 +29,40 @@ const CONTENT: Record<TabId, ReactNode> = {
   cards: <SiteCardsEffectsSettings />,
   chrome: <SiteWideChromeLinks />,
   sharing: <SiteSharingSettings />,
+  shop: (
+    <>
+      <ShopBrowseSettings />
+      <SaleBadgeSettings />
+    </>
+  ),
 };
 
 /** Site Wide Edits as a page over the canvas, opened from the toolbar at any time. */
 export default function StudioSiteWidePage() {
-  const { siteWideOpen, setSiteWideOpen } = useStudioEditorChrome();
+  const { siteWideOpen, setSiteWideOpen, siteWideTab: tab = "text", setSiteWideTab: setTab = () => {} } =
+    useStudioEditorChrome();
   const { actions } = useEditor();
-  const [tab, setTab] = useState<TabId>("text");
+  const pageRef = useRef<HTMLDivElement>(null);
   const close = () => setSiteWideOpen?.(false);
+
+  useEffect(() => {
+    const page = pageRef.current;
+    const toolbar = document.querySelector<HTMLElement>(".vendl-studio-editor__toolbar");
+    if (!siteWideOpen || !page || !toolbar) return;
+    const place = () => {
+      page.style.top = `${Math.max(0, toolbar.getBoundingClientRect().bottom)}px`;
+    };
+    place();
+    const observer = new ResizeObserver(place);
+    observer.observe(toolbar);
+    window.addEventListener("scroll", place, { passive: true });
+    window.addEventListener("resize", place);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", place);
+      window.removeEventListener("resize", place);
+    };
+  }, [siteWideOpen]);
 
   useEffect(() => {
     if (!siteWideOpen) return;
@@ -60,6 +79,7 @@ export default function StudioSiteWidePage() {
 
   return (
     <div
+      ref={pageRef}
       className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto bg-[#f5f5f4] px-4 py-6 sm:px-8"
       style={{ top: "var(--studio-toolbar-h, 0px)" }}
       role="dialog"

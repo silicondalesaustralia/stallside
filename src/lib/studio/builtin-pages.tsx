@@ -18,6 +18,7 @@ import { StorefrontSocialLinks } from "@/components/storefront/StorefrontSection
 import type { BuiltinPageKey } from "@/lib/studio/custom-pages";
 import { POLICY_STATIC_FALLBACK } from "@/lib/studio/policy-content";
 import StudioContactFormBlock from "@/components/studio/blocks/StudioContactFormBlock";
+import { simplePageSeo } from "@/lib/seo/simple-page-seo";
 
 type StorefrontCtx = Awaited<ReturnType<typeof loadStorefrontPage>>;
 
@@ -228,7 +229,7 @@ async function builtinPageShell(
   if (!page?.enabled) notFound();
 
   return (
-    <StorefrontPageShell ctx={ctx} draft={draft} activePage={pageSlug}>
+    <StorefrontPageShell ctx={ctx} draft={draft} activePage={pageSlug} seo={simplePageSeo(ctx, `/${pageSlug}`, page.title)}>
       {content}
       <StorefrontGoToCartBar standSlug={ctx.stand.slug} branding={ctx.branding} />
     </StorefrontPageShell>
@@ -239,7 +240,12 @@ export async function BuiltinAboutPage({ slug, draft }: { slug: string; draft: b
   const ctx = await loadStorefrontPage(slug, draft);
   if (!ctx.config.pages.about?.enabled) notFound();
   return (
-    <StorefrontPageShell ctx={ctx} draft={draft} activePage="about">
+    <StorefrontPageShell
+      ctx={ctx}
+      draft={draft}
+      activePage="about"
+      seo={simplePageSeo(ctx, "/about", `About ${ctx.branding.businessName}`, { type: "AboutPage", imageUrl: ctx.branding.heroImageUrl })}
+    >
       {await renderBuiltinAbout(ctx, draft)}
       <StorefrontGoToCartBar standSlug={ctx.stand.slug} branding={ctx.branding} />
     </StorefrontPageShell>
@@ -250,7 +256,12 @@ export async function BuiltinContactPage({ slug, draft }: { slug: string; draft:
   const ctx = await loadStorefrontPage(slug, draft);
   if (!ctx.config.pages.contact?.enabled) notFound();
   return (
-    <StorefrontPageShell ctx={ctx} draft={draft} activePage="contact">
+    <StorefrontPageShell
+      ctx={ctx}
+      draft={draft}
+      activePage="contact"
+      seo={simplePageSeo(ctx, "/contact", `Contact ${ctx.branding.businessName}`, { type: "ContactPage" })}
+    >
       {await renderBuiltinContact(ctx, draft)}
       <StorefrontGoToCartBar standSlug={ctx.stand.slug} branding={ctx.branding} />
     </StorefrontPageShell>

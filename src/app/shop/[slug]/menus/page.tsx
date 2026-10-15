@@ -8,6 +8,7 @@ import { shopHomePath, shopMenuPath } from "@/lib/menu";
 import { currentStorefrontBasePath } from "@/lib/tenancy/request-base-path";
 import StorefrontPageShell from "@/components/storefront/StorefrontPageShell";
 import { resolveStudioPublicContext } from "@/lib/studio/public-context";
+import { simplePageSeo } from "@/lib/seo/simple-page-seo";
 
 export async function generateMetadata({
   params,
@@ -64,7 +65,12 @@ export default async function ShopMenusIndexPage({
   );
 
   return (
-    <StorefrontPageShell ctx={ctx} draft={draft} activePage="menu">
+    <StorefrontPageShell
+      ctx={ctx}
+      draft={draft}
+      activePage="menu"
+      seo={simplePageSeo(ctx, "/menus", "Menus", { type: "CollectionPage" })}
+    >
       <div className="storefront-page-content storefront-page-content--narrow">
         <Link
           href={shopHomePath(ctx.storefront.slug, draft, basePath)}

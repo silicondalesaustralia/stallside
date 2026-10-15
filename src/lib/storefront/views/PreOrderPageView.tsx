@@ -8,6 +8,7 @@ import { buildStorefrontPageMetadata, seoConfigSource } from "@/lib/studio/resol
 import StorefrontPageShell from "@/components/storefront/StorefrontPageShell";
 import StorefrontGoToCartBar from "@/components/storefront/StorefrontGoToCartBar";
 import PreOrderPageContent from "@/app/s/[standSlug]/pre/[pageSlug]/PreOrderPageContent";
+import { menuPageSeo } from "@/lib/seo/menu-page-seo";
 
 type ViewProps = { slug: string; pageSlug: string; draft: boolean };
 
@@ -69,7 +70,19 @@ export default async function PreOrderPageView(props: ViewProps) {
   if (pageProducts.length === 0) notFound();
 
   return (
-    <StorefrontPageShell ctx={ctx} draft={props.draft} activePage="menu">
+    <StorefrontPageShell
+      ctx={ctx}
+      draft={props.draft}
+      activePage="menu"
+      seo={menuPageSeo(ctx, {
+        path: `/pre-orders/${encodeURIComponent(page.slug)}`,
+        name: page.title,
+        description: page.description,
+        imageUrl: page.imageUrl,
+        products: pageProducts,
+        isPreOrder: true,
+      })}
+    >
       <div className="storefront-page-content storefront-page-content--narrow">
         <PreOrderPageContent
           standSlug={ctx.stand.slug}

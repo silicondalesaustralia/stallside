@@ -28,6 +28,7 @@ import StudioProductDetailBlock from "@/components/studio/blocks/StudioProductDe
 import { productDetailView } from "@/lib/studio/product-detail-settings";
 import StudioCategoryDetailBlock from "@/components/studio/blocks/StudioCategoryDetailBlock";
 import { categoryDetailView } from "@/lib/studio/category-detail-settings";
+import { parseCategoryCardBackground } from "@/lib/studio/category-looks";
 import StudioSpacerBlock from "@/components/studio/blocks/StudioSpacerBlock";
 import { spacerView } from "@/lib/studio/spacer-settings";
 import StudioMenuDetailBlock from "@/components/studio/blocks/StudioMenuDetailBlock";
@@ -185,6 +186,7 @@ function StudioSectionRender({
           intro={typeof p.intro === "string" ? p.intro : ""}
           showDescriptions={p.showDescriptions === true}
           showRatings={p.showRatings === true}
+          cardBackground={parseCategoryCardBackground(p.cardBackground)}
           metadata={metadata}
         />
       );

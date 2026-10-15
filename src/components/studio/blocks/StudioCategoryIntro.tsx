@@ -18,7 +18,7 @@ export default function StudioCategoryIntro({
 }) {
   const description = category?.description?.trim();
   return (
-    <div className={centred ? "text-center" : undefined}>
+    <div className={centred ? "text-center" : undefined} data-edit-category={isEditing ? category?.id : undefined}>
       <SectionHeadingTag defaultTag="h1" el="title" className="studio-heading">
         {category?.title || "Category name"}
       </SectionHeadingTag>

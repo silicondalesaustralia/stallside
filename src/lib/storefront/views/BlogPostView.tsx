@@ -15,13 +15,10 @@ import {
   loadBlogSettingsFromContext,
   loadBlogTopicsFromContext,
 } from "@/lib/studio/load-blog";
-import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 import { buildStorefrontBreadcrumbs } from "@/lib/storefront/technical-seo/breadcrumbs";
-import {
-  articleSchemaNode,
-  storefrontSchemaGraph,
-} from "@/lib/storefront/technical-seo/schema";
 import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
+import type { PageSeo } from "@/lib/seo/graph/page-graph";
+import { blogPostingNode } from "@/lib/seo/graph/content";
 import { blogPostRelativePath, mainBlogTopic } from "@/lib/studio/blog-topics";
 import { redirectWithinStorefront } from "@/lib/storefront/clean-redirect";
 
@@ -77,10 +74,6 @@ export default async function BlogPostView({ slug, topicSlug, postSlug, draft }:
     draft || post.status !== "published"
       ? null
       : await loadPrimaryCustomHostname(ctx.storefront.id);
-  const pageUrl = storefrontPublicUrl(ctx.storefront.slug, {
-    path: canonicalPath,
-    primaryCustomHostname,
-  });
   const breadcrumbSegments = [
     { label: ctx.branding.headline, path: "/" },
     { label: settings.indexTitle, path: "/blog" },
@@ -92,23 +85,31 @@ export default async function BlogPostView({ slug, topicSlug, postSlug, draft }:
     breadcrumbSegments,
     primaryCustomHostname,
   );
-  const schemaGraph =
+  const seo: PageSeo | undefined =
     draft || post.status !== "published"
       ? undefined
-      : storefrontSchemaGraph({
-          slug: ctx.storefront.slug,
-          branding: ctx.branding,
-          pageUrl,
-          breadcrumbSegments,
-          primaryCustomHostname,
-          extra: [
-            articleSchemaNode({
-              post,
-              pageUrl,
-              branding: ctx.branding,
-            }),
+      : {
+          path: canonicalPath,
+          name: post.title,
+          description: post.excerpt,
+          imageUrl: post.featuredImageUrl,
+          breadcrumb: breadcrumbSegments,
+          nodes: [
+            ({ facts, pageUrl, language }) =>
+              blogPostingNode({
+                pageUrl,
+                homeUrl: facts.homeUrl,
+                title: post.title,
+                description: post.excerpt,
+                imageUrl: post.featuredImageUrl,
+                publishedAt: post.publishedAt,
+                updatedAt: post.updatedAt,
+                section: mainTopic.name,
+                hasFounder: !!facts.profile.founder,
+                language,
+              }),
           ],
-        });
+        };
 
   return (
     <StorefrontPageShell
@@ -116,7 +117,7 @@ export default async function BlogPostView({ slug, topicSlug, postSlug, draft }:
       draft={draft}
       activePage="blog"
       breadcrumbs={breadcrumbs}
-      schemaGraph={schemaGraph}
+      seo={seo}
     >
       <BlogPostArticle
         post={post}

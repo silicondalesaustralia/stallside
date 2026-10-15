@@ -49,9 +49,11 @@ export default function StudioProductBrowser({
       <div>
         <div className="shop-browse__toolbar">
           <p className="text-sm text-[var(--muted)]" aria-live="polite">
-            {shown.length} {shown.length === 1 ? "product" : "products"}
+            <span data-shop-part="count" className="mr-3">
+              {shown.length} {shown.length === 1 ? "product" : "products"}
+            </span>
             {active > 0 ? (
-              <button type="button" className="ml-3 font-semibold underline" onClick={() => setFilters(NO_FILTERS)}>
+              <button type="button" className="font-semibold underline" onClick={() => setFilters(NO_FILTERS)}>
                 Clear filters
               </button>
             ) : null}

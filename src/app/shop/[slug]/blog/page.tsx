@@ -18,6 +18,8 @@ import {
   loadBlogSettingsFromContext,
   loadBlogTopicsFromContext,
 } from "@/lib/studio/load-blog";
+import { blogListSeo } from "@/lib/seo/blog-list-seo";
+import { faqItemsFromNodes } from "@/lib/seo/faq-from-nodes";
 
 export async function generateMetadata({
   params,
@@ -80,7 +82,18 @@ export default async function StorefrontBlogIndexPage({
   const basePath = studioCtx.active ? studioCtx.metadata.basePath : undefined;
 
   return (
-    <StorefrontPageShell ctx={ctx} draft={draft} activePage="blog">
+    <StorefrontPageShell
+      ctx={ctx}
+      draft={draft}
+      activePage="blog"
+      seo={blogListSeo(ctx, {
+        path: "/blog",
+        name: settings.indexTitle,
+        posts,
+        topics,
+        faq: faqItemsFromNodes(nodes),
+      })}
+    >
       {nodes && studioCtx.active ? (
         <StudioPublicSections nodes={nodes} metadata={studioCtx.metadata} />
       ) : null}

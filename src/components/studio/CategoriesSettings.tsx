@@ -3,7 +3,7 @@
 import type { CraftCategoriesProps } from "@/components/studio/sections/CraftCategoriesSection";
 import { useStudioMetadata } from "@/components/studio/StudioEditorContext";
 import { CATEGORY_PRESETS } from "@/lib/studio/preset-registry";
-import { categoryLookIsSlim, categoryLookOf } from "@/lib/studio/category-looks";
+import { categoryLookHasCard, categoryLookIsSlim, categoryLookOf } from "@/lib/studio/category-looks";
 import PresetStyleField from "./PresetStyleField";
 
 const LABEL = "block text-xs font-semibold text-[var(--field)]";
@@ -24,6 +24,19 @@ export default function CategoriesSettings({
     <>
       <p className="text-xs text-[var(--muted)]">Edit the heading and description directly on the page.</p>
       <PresetStyleField presetsBySkin={CATEGORY_PRESETS} value={preset} onChange={(v) => setProp("preset", v)} />
+      {categoryLookHasCard(categoryLookOf(preset)) ? (
+        <div className="space-y-1.5">
+          <span className={LABEL}>Card background</span>
+          <label className={CHECK}>
+            <input type="radio" checked={props.cardBackground !== "none"} onChange={() => setProp("cardBackground", "white")} />
+            White card
+          </label>
+          <label className={CHECK}>
+            <input type="radio" checked={props.cardBackground === "none"} onChange={() => setProp("cardBackground", "none")} />
+            No background (sits on the section colour)
+          </label>
+        </div>
+      ) : null}
       <div className="space-y-1.5">
         <span className={LABEL}>On each category</span>
         <label className={CHECK}>

@@ -17,6 +17,8 @@ export const CARD_HOVERS = ["none", "lift", "zoom"] as const;
 export const SECTION_ANIMATIONS = ["none", "fade"] as const;
 export const SECTION_DIVIDERS = ["none", "line", "alternate"] as const;
 export const CART_BUTTON_STYLES = ["outline", "filled", "text"] as const;
+export const SHOP_PARTS = ["count", "category", "price", "stock", "sale", "rating"] as const;
+export type ShopPart = (typeof SHOP_PARTS)[number];
 
 /** Badge text is rendered through CSS `content`, so quotes and backslashes are not allowed. */
 const SALE_BADGE_TEXT = /^[\p{L}\p{N} !%&+\-.,:/$€£¥]+$/u;
@@ -66,6 +68,8 @@ export const siteStyleSchema = z.object({
   /** Sort menu and filter sidebar on shop and category pages; shown unless set to false. */
   shopSort: z.boolean().optional(),
   shopFilters: z.boolean().optional(),
+  /** Individual parts of the shop / category browser that are switched off. */
+  shopHidden: z.array(z.enum(SHOP_PARTS)).max(SHOP_PARTS.length).optional(),
   /** Header cart button; unset = the template's outlined button reading "Cart (n)". */
   cartButtonStyle: z.enum(CART_BUTTON_STYLES).optional(),
   cartButtonLabel: z.string().trim().min(1).max(20).optional(),

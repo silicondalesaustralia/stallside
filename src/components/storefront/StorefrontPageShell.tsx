@@ -6,26 +6,29 @@ import StudioPublicShell from "@/components/studio/shell/StudioPublicShell";
 import StorefrontShell from "./StorefrontShell";
 import StorefrontOriginTracker from "./StorefrontOriginTracker";
 import StorefrontBreadcrumbs from "./StorefrontBreadcrumbs";
-import JsonLd from "@/components/JsonLd";
+import StorefrontJsonLd from "./StorefrontJsonLd";
 import type { StorefrontBreadcrumbItem } from "@/lib/storefront/technical-seo/breadcrumbs";
 import type { StorefrontPageId } from "@/lib/storefront/types";
 import { greenValleyDemoOverride } from "@/lib/demo/green-valley/runtime-override";
+import type { PageSeo } from "@/lib/seo/graph/page-graph";
 
 export default async function StorefrontPageShell({
   ctx,
   draft,
   activePage,
   breadcrumbs,
-  schemaGraph,
+  seo,
   children,
 }: {
   ctx: NonNullable<StorefrontContext>;
   draft?: boolean;
   activePage: StorefrontPageId | "product" | "menu" | string;
   breadcrumbs?: StorefrontBreadcrumbItem[];
-  schemaGraph?: Record<string, unknown>;
+  /** Structured data for this page; without it only the business and website are described. */
+  seo?: PageSeo;
   children: ReactNode;
 }) {
+  const schemaGraph = <StorefrontJsonLd ctx={ctx} draft={draft} seo={seo} />;
   const override = draft
     ? undefined
     : await greenValleyDemoOverride(ctx, { homeNodes: false });
@@ -41,7 +44,7 @@ export default async function StorefrontPageShell({
   if (studioCtx.active) {
     return (
       <>
-        {schemaGraph ? <JsonLd data={schemaGraph} /> : null}
+        {schemaGraph}
         {!draft ? (
           <StorefrontOriginTracker storefrontSlug={ctx.storefront.slug} />
         ) : null}
@@ -76,7 +79,7 @@ export default async function StorefrontPageShell({
       fulfilmentOptions={ctx.fulfilmentOptions}
       currency={ctx.stand.currency}
     >
-      {schemaGraph ? <JsonLd data={schemaGraph} /> : null}
+      {schemaGraph}
       {breadcrumbs?.length ? (
         <StorefrontBreadcrumbs items={breadcrumbs} />
       ) : null}

@@ -2,7 +2,23 @@ import type { PuckSpikeMetadata } from "@/lib/puck/types";
 import { mapCategoryPreset, type CategoryLook, type CategoryPreset } from "./preset-registry";
 
 export type CategoryTileData = PuckSpikeMetadata["categories"][number];
-export type CategoryTileOptions = { showDescriptions: boolean; showRatings: boolean; isEditing?: boolean };
+export type CategoryCardBackground = "white" | "none";
+export type CategoryTileOptions = {
+  showDescriptions: boolean;
+  showRatings: boolean;
+  isEditing?: boolean;
+  /** "none" drops the white fill and border so cards sit on the section background. */
+  cardBackground?: CategoryCardBackground;
+};
+
+export function parseCategoryCardBackground(value: unknown): CategoryCardBackground {
+  return value === "none" ? "none" : "white";
+}
+
+/** Looks drawn as a filled box, which can drop their white background. */
+export function categoryLookHasCard(look: CategoryLook): boolean {
+  return look === "cards" || look === "list" || look === "compact";
+}
 
 const LOOKS: readonly CategoryPreset[] = [
   "tiles",

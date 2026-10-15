@@ -30,6 +30,10 @@ import WebStudioLayoutPanel from "@/components/website/WebStudioLayoutPanel";
 import WebsiteReadinessChecklist from "@/components/website/WebsiteReadinessChecklist";
 import { websiteReadiness } from "@/lib/website/readiness";
 import { findPublishBlockers } from "@/lib/website/persistence/publish-checks";
+import BusinessProfileCard from "@/components/website/search-profile/BusinessProfileCard";
+import { loadSearchProfileView } from "@/lib/seo/load-search-profile";
+import { hasUsefulSearchProfile } from "@/lib/seo/search-profile-status";
+import { parseBusinessProfile } from "@/lib/seo/business-profile";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +58,8 @@ export default async function WebStudioPage({
     error?: string;
     template?: string;
     stand_saved?: string;
+    profile_saved?: string;
+    profile_error?: string;
   }>;
 }) {
   const { owner } = await requireOwner();
@@ -92,7 +98,9 @@ export default async function WebStudioPage({
   }
 
   const previewPath = `${storefrontPublicPath(storefront.slug)}/studio-preview?draft=1`;
+  const searchProfile = await loadSearchProfileView(ctx);
   const readiness = websiteReadiness({
+    hasSearchProfile: hasUsefulSearchProfile(parseBusinessProfile(storefront.businessProfile)),
     hasHeadline: Boolean(draft.headline?.trim()),
     hasLayout: Boolean(websiteStudio?.nodes),
     productCount: metadata.products.length,
@@ -126,6 +134,13 @@ export default async function WebStudioPage({
               error: initialTab === "details" ? sp.error : undefined,
             }}
             history={<WebsitePublishHistory {...history} />}
+            searchProfile={
+              <BusinessProfileCard
+                {...searchProfile}
+                isPublished={storefront.isPublished}
+                flash={{ saved: sp.profile_saved === "1", error: sp.profile_error }}
+              />
+            }
             standPicker={
               <WebsiteStandPicker
                 ownerId={owner.id}

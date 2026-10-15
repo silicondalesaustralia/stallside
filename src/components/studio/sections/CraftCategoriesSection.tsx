@@ -5,6 +5,7 @@ import CraftSectionChrome from "@/components/craft/CraftSectionChrome";
 import StudioCategoriesBlock from "@/components/studio/blocks/StudioCategoriesBlock";
 import { useStudioMetadata } from "@/components/studio/StudioEditorContext";
 import type { CategoryPreset } from "@/lib/studio/preset-registry";
+import { parseCategoryCardBackground, type CategoryCardBackground } from "@/lib/studio/category-looks";
 
 export type CraftCategoriesProps = {
   source: "all" | "selected";
@@ -16,6 +17,8 @@ export type CraftCategoriesProps = {
   showDescriptions?: boolean;
   /** Each category's average star rating from approved product reviews. */
   showRatings?: boolean;
+  /** "none" removes the white card fill on boxed styles. */
+  cardBackground?: CategoryCardBackground;
   /** @deprecated use preset */
   layout?: CategoryPreset;
 };
@@ -36,6 +39,7 @@ export default function CraftCategoriesSection(props: CraftCategoriesProps) {
           intro={props.intro ?? ""}
           showDescriptions={props.showDescriptions === true}
           showRatings={props.showRatings === true}
+          cardBackground={parseCategoryCardBackground(props.cardBackground)}
           metadata={metadata}
           isEditing
           editable

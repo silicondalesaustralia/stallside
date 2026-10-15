@@ -66,6 +66,15 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+[data-site-shop-hide~="count"] [data-shop-part="count"],
+[data-site-shop-hide~="category"] [data-shop-part="category"],
+[data-site-shop-hide~="price"] [data-shop-part="price"],
+[data-site-shop-hide~="stock"] [data-shop-part="stock"],
+[data-site-shop-hide~="sale"] [data-shop-part="sale"],
+[data-site-shop-hide~="rating"] [data-shop-part="rating"] {
+  display: none !important;
+}
+
 .shop-browse__toolbar {
   display: flex;
   flex-wrap: wrap;

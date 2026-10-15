@@ -3,6 +3,8 @@ import PublicSubscriptionOfferPage from "@/app/s/[standSlug]/sub/[offerSlug]/pag
 import { loadStorefrontPage } from "@/lib/storefront/page-loader";
 import { prisma } from "@/lib/prisma";
 import { buildStorefrontPageMetadata, seoConfigSource } from "@/lib/studio/resolve-seo-metadata";
+import StorefrontJsonLd from "@/components/storefront/StorefrontJsonLd";
+import { subscriptionPageSeo } from "@/lib/seo/subscription-page-seo";
 
 type Props = {
   params: Promise<{ slug: string; offer: string }>;
@@ -38,11 +40,19 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 /** A subscription offer on the website (`/subscriptions/{offer}`); sign-up and payment work as on the stand page. */
 export default async function StorefrontSubscriptionOfferPage({ params, searchParams }: Props) {
   const { slug, offer } = await params;
-  const ctx = await loadStorefrontPage(slug, (await searchParams).draft === "1");
+  const draft = (await searchParams).draft === "1";
+  const ctx = await loadStorefrontPage(slug, draft);
+  const row = await prisma.subscriptionOffer.findFirst({
+    where: { standId: ctx.stand.id, slug: decodeURIComponent(offer).trim().toLowerCase(), isActive: true },
+    select: { slug: true, title: true, description: true, imageUrl: true, priceCents: true, interval: true },
+  });
   return (
-    <PublicSubscriptionOfferPage
-      params={Promise.resolve({ standSlug: ctx.stand.slug, offerSlug: offer })}
-      searchParams={searchParams}
-    />
+    <>
+      {row ? <StorefrontJsonLd ctx={ctx} draft={draft} seo={subscriptionPageSeo(ctx, row)} /> : null}
+      <PublicSubscriptionOfferPage
+        params={Promise.resolve({ standSlug: ctx.stand.slug, offerSlug: offer })}
+        searchParams={searchParams}
+      />
+    </>
   );
 }

@@ -15,6 +15,7 @@ import { studioPageNodes } from "@/lib/studio/storage";
 import StudioPublicSections from "@/lib/studio/public-render";
 import { currentStorefrontBasePath } from "@/lib/tenancy/request-base-path";
 import { shopCategoryPath } from "@/lib/storefront/paths";
+import { collectionPageSeo } from "@/lib/seo/collection-page-seo";
 
 export async function generateMetadata({
   params,
@@ -81,7 +82,12 @@ export default async function StorefrontShopPage({
   const navCategories = ctx.categories.filter((c) => c.showOnWebsite !== false);
 
   return (
-    <StorefrontPageShell ctx={ctx} draft={draft} activePage="shop">
+    <StorefrontPageShell
+      ctx={ctx}
+      draft={draft}
+      activePage="shop"
+      seo={collectionPageSeo(ctx, { path: "/shop", name: title, products: ctx.products.filter((p) => !p.isHidden) })}
+    >
       {nodes && metadata ? (
         <StudioPublicSections nodes={nodes} metadata={metadata} />
       ) : (

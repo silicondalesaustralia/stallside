@@ -12,6 +12,7 @@ import {
   loadBlogTopicsFromContext,
 } from "@/lib/studio/load-blog";
 import { postsInBlogTopic } from "@/lib/studio/blog-topics";
+import { blogListSeo } from "@/lib/seo/blog-list-seo";
 
 type ViewProps = { slug: string; topicSlug: string; draft: boolean };
 
@@ -51,7 +52,18 @@ export default async function BlogTopicView(props: ViewProps) {
   const posts = postsInBlogTopic(loadBlogPostsFromContext(ctx, props.draft), topic, topics);
   const basePath = await currentStorefrontBasePath(ctx.storefront.slug);
   return (
-    <StorefrontPageShell ctx={ctx} draft={props.draft} activePage="blog">
+    <StorefrontPageShell
+      ctx={ctx}
+      draft={props.draft}
+      activePage="blog"
+      seo={blogListSeo(ctx, {
+        path: `/${encodeURIComponent(topic.slug)}`,
+        name: topic.name,
+        trail: [{ label: settings.indexTitle, path: "/blog" }],
+        posts,
+        topics,
+      })}
+    >
       <BlogPostIndex
         posts={posts}
         topics={topics}

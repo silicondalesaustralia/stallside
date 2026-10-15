@@ -1,6 +1,11 @@
 import type { PuckSpikeMetadata } from "@/lib/puck/types";
 import { shopCategoryPath } from "@/lib/storefront/paths";
-import { categoryGridClassFor, categoryLookOf, categoryLookIsSlim } from "@/lib/studio/category-looks";
+import {
+  categoryGridClassFor,
+  categoryLookOf,
+  categoryLookIsSlim,
+  type CategoryCardBackground,
+} from "@/lib/studio/category-looks";
 import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
 import InlineEditableText from "@/components/studio/InlineEditableText";
 import SectionElement from "@/components/studio/SectionElement";
@@ -16,6 +21,7 @@ export default function StudioCategoriesBlock({
   intro = "",
   showDescriptions = false,
   showRatings = false,
+  cardBackground = "white",
   metadata,
   isEditing,
   editable = false,
@@ -27,6 +33,7 @@ export default function StudioCategoriesBlock({
   intro?: string;
   showDescriptions?: boolean;
   showRatings?: boolean;
+  cardBackground?: CategoryCardBackground;
   metadata: PuckSpikeMetadata;
   isEditing?: boolean;
   editable?: boolean;
@@ -73,6 +80,7 @@ export default function StudioCategoriesBlock({
     showDescriptions: showDescriptions && !categoryLookIsSlim(look),
     showRatings,
     isEditing,
+    cardBackground,
   };
 
   return (
@@ -81,7 +89,7 @@ export default function StudioCategoriesBlock({
         {top}
         <ul className={`mt-8 ${categoryGridClassFor(look)}`}>
           {categories.map((cat) => (
-            <li key={cat.id}>
+            <li key={cat.id} data-edit-category={isEditing ? cat.id : undefined}>
               <StudioCategoryTile
                 cat={cat}
                 href={shopCategoryPath(metadata.storefrontSlug, cat.slug, metadata.draft, metadata.basePath)}

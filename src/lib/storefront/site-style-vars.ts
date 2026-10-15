@@ -93,6 +93,7 @@ export function siteStyleAttrs(style: SiteStyle): Record<string, string> {
     ...(style.dividers && style.dividers !== "none" ? { "data-site-dividers": style.dividers } : {}),
     ...(style.shopSort === false ? { "data-site-shop-sort": "off" } : {}),
     ...(style.shopFilters === false ? { "data-site-shop-filters": "off" } : {}),
+    ...(style.shopHidden?.length ? { "data-site-shop-hide": style.shopHidden.join(" ") } : {}),
   };
 }
 

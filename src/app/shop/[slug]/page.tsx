@@ -12,9 +12,7 @@ import StudioPublicSections from "@/lib/studio/public-render";
 import StorefrontPageShell from "@/components/storefront/StorefrontPageShell";
 import StorefrontHomeContent from "@/components/storefront/StorefrontHomeContent";
 import StorefrontGoToCartBar from "@/components/storefront/StorefrontGoToCartBar";
-import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
-import { storefrontSchemaGraph } from "@/lib/storefront/technical-seo/schema";
-import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
+import { faqItemsFromNodes } from "@/lib/seo/faq-from-nodes";
 
 export async function generateMetadata({
   params,
@@ -64,27 +62,19 @@ export default async function PublicStorefrontHomePage({
     draft,
     draft ? undefined : await greenValleyDemoOverride(ctx, { homeNodes: true }),
   );
-  const primaryCustomHostname = draft
-    ? null
-    : await loadPrimaryCustomHostname(ctx.storefront.id);
-  const pageUrl = storefrontPublicUrl(ctx.storefront.slug, {
-    primaryCustomHostname,
-  });
-  const schemaGraph = draft
-    ? undefined
-    : storefrontSchemaGraph({
-        slug: ctx.storefront.slug,
-        branding: ctx.branding,
-        pageUrl,
-        primaryCustomHostname,
-      });
+  const homeNodes = studioCtx.active ? studioCtx.studio.nodes : null;
 
   return (
     <StorefrontPageShell
       ctx={ctx}
       draft={draft}
       activePage="home"
-      schemaGraph={schemaGraph}
+      seo={{
+        name: ctx.branding.headline,
+        description: ctx.branding.subheadline,
+        imageUrl: ctx.branding.heroImageUrl,
+        faq: homeNodes ? faqItemsFromNodes(homeNodes) : undefined,
+      }}
     >
       {studioCtx.active && studioCtx.studio.nodes ? (
         <StudioPublicSections nodes={studioCtx.studio.nodes} metadata={studioCtx.metadata} />

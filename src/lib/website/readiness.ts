@@ -5,10 +5,12 @@ export type ReadinessInput = {
   canTakeCardPayments: boolean;
   publishBlockers: string[];
   isPublished: boolean;
+  /** Business type plus a Google Business Profile link or address saved for search. */
+  hasSearchProfile?: boolean;
 };
 
 export type ReadinessItem = {
-  id: "details" | "layout" | "products" | "payments" | "example-text" | "publish";
+  id: "details" | "layout" | "products" | "payments" | "search-profile" | "example-text" | "publish";
   label: string;
   hint?: string;
   href: string;
@@ -52,6 +54,14 @@ export function websiteReadiness(input: ReadinessInput): {
       hint: "Without this, customers pay when they collect.",
       href: "/dashboard/settings/stripe",
       done: input.canTakeCardPayments,
+      optional: true,
+    },
+    {
+      id: "search-profile",
+      label: "Set up your Google & search profile",
+      hint: "Add your Google Business Profile, address and hours so you show up in local search.",
+      href: "/dashboard/website/web-studio?tab=details#search-profile",
+      done: Boolean(input.hasSearchProfile),
       optional: true,
     },
     {

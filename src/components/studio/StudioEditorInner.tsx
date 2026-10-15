@@ -30,6 +30,8 @@ import type { ChromeTarget, StudioSaveStatus } from "@/components/craft/CraftEdi
 import type { EditorSaveResult } from "@/lib/website/persistence/editor-result";
 import StudioEditorShell from "@/components/studio/shell/StudioEditorShell";
 import StudioSiteWidePage from "@/components/studio/StudioSiteWidePage";
+import StudioEditSourcePopover from "@/components/studio/StudioEditSourcePopover";
+import type { SiteWideTabId } from "@/lib/studio/site-wide-tabs";
 import { StudioEditorProvider } from "./StudioEditorContext";
 import StudioEditorHeader from "./StudioEditorHeader";
 import StudioSaveNotice from "./StudioSaveNotice";
@@ -148,6 +150,7 @@ export default function StudioEditorInner({
   const siteStyleState = useSiteStyle({ initial: metadata.resolvedBranding.siteStyle, revisionRef, runExclusive });
   const [chromeTarget, setChromeTarget] = useState<ChromeTarget>(null);
   const [siteWideOpen, setSiteWideOpen] = useState(false);
+  const [siteWideTab, setSiteWideTab] = useState<SiteWideTabId>("text");
   const [headerLayout, setHeaderLayout] = useState<HeaderLayout>(
     metadata.resolvedBranding.headerLayout,
   );
@@ -265,6 +268,8 @@ export default function StudioEditorInner({
       setChromeTarget,
       siteWideOpen,
       setSiteWideOpen,
+      siteWideTab,
+      setSiteWideTab,
       headerLayout,
       brandMark,
       logoHeight,
@@ -309,6 +314,7 @@ export default function StudioEditorInner({
       surface,
       chromeTarget,
       siteWideOpen,
+      siteWideTab,
       headerLayout,
       brandMark,
       logoHeight,
@@ -392,6 +398,7 @@ export default function StudioEditorInner({
           </div>
           <StudioAddSectionModal />
           <StudioSiteWidePage />
+          <StudioEditSourcePopover />
         </Editor>
       </div>
     </StudioEditorProvider>

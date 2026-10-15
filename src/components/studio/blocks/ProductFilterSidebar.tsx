@@ -3,13 +3,14 @@
 import { useId, type ReactNode } from "react";
 import { isOnSale } from "@/lib/product-sale-price";
 import { type BrowseFilters, type BrowseProduct } from "@/lib/studio/product-browse";
+import type { ShopPart } from "@/lib/storefront/site-style";
 import PriceRangeSlider from "./PriceRangeSlider";
 
 const RATINGS = [4, 3, 2] as const;
 
-function Group({ title, children }: { title: string; children: ReactNode }) {
+function Group({ part, title, children }: { part: ShopPart; title: string; children: ReactNode }) {
   return (
-    <div className="shop-browse__group" role="group" aria-label={title}>
+    <div className="shop-browse__group" data-shop-part={part} role="group" aria-label={title}>
       <p className="shop-browse__group-title">{title}</p>
       {children}
     </div>
@@ -60,14 +61,14 @@ export default function ProductFilterSidebar({
   return (
     <div>
       {usedCategories.length > 1 ? (
-        <Group title="Category">
+        <Group part="category" title="Category">
           {usedCategories.map((c) => (
             <Check key={c.id} label={c.title} count={c.count} checked={filters.categoryIds.includes(c.id)} onChange={(v) => toggleCategory(c.id, v)} />
           ))}
         </Group>
       ) : null}
       {bounds.max > bounds.min ? (
-        <Group title="Price">
+        <Group part="price" title="Price">
           <PriceRangeSlider
             min={bounds.min}
             max={bounds.max}
@@ -81,17 +82,17 @@ export default function ProductFilterSidebar({
         </Group>
       ) : null}
       {inStockCount < products.length ? (
-        <Group title="Availability">
+        <Group part="stock" title="Availability">
           <Check label="In stock only" count={inStockCount} checked={filters.inStock} onChange={(v) => set({ inStock: v })} />
         </Group>
       ) : null}
       {saleCount > 0 ? (
-        <Group title="Offers">
+        <Group part="sale" title="Offers">
           <Check label="On sale" count={saleCount} checked={filters.onSale} onChange={(v) => set({ onSale: v })} />
         </Group>
       ) : null}
       {rated ? (
-        <Group title="Customer rating">
+        <Group part="rating" title="Customer rating">
           {RATINGS.map((stars) => (
             <label key={stars} className="shop-browse__option">
               <input type="radio" name={ratingName} checked={filters.minRating === stars} onChange={() => set({ minRating: stars })} />

@@ -954,6 +954,11 @@ model Storefront {
   contactEmail        String?
   showPhone           Boolean                 @default(false)
   /**
+   * Business facts for search engines (schema.org): type, address, hours, profiles, expertise.
+   * Saved live, not with the draft; see src/lib/seo/business-profile.ts.
+   */
+  businessProfile     Json?
+  /**
    * Legacy single field; prefer StorefrontDomain rows (Phase 9).
    */
   customDomain        String?

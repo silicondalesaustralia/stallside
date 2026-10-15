@@ -21,12 +21,8 @@ import StorefrontGoToCartBar from "@/components/storefront/StorefrontGoToCartBar
 import ProductDetailActions from "@/app/s/[standSlug]/ProductDetailActions";
 import { ProductApprovedReviews } from "@/components/storefront/ProductApprovedReviews";
 import { resolveStudioPublicContext } from "@/lib/studio/public-context";
-import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 import { buildStorefrontBreadcrumbs } from "@/lib/storefront/technical-seo/breadcrumbs";
-import {
-  productSchemaNode,
-  storefrontSchemaGraph,
-} from "@/lib/storefront/technical-seo/schema";
+import { productPageSeo } from "@/lib/seo/product-page-seo";
 import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
 import { COMMERCE_PRODUCT_KEY } from "@/lib/studio/commerce-pages";
 import { withCommerceContext } from "@/lib/studio/commerce-context";
@@ -135,10 +131,6 @@ export default async function StorefrontProductPage({
   const primaryCustomHostname = draft
     ? null
     : await loadPrimaryCustomHostname(ctx.storefront.id);
-  const pageUrl = storefrontPublicUrl(ctx.storefront.slug, {
-    path: `/products/${product.slug}`,
-    primaryCustomHostname,
-  });
   const breadcrumbSegments = [
     { label: ctx.branding.headline, path: "/" },
     { label: "Shop", path: "/shop" },
@@ -149,23 +141,11 @@ export default async function StorefrontProductPage({
     breadcrumbSegments,
     primaryCustomHostname,
   );
-  const schemaGraph = draft
+  const seo = draft
     ? undefined
-    : storefrontSchemaGraph({
-        slug: ctx.storefront.slug,
-        branding: ctx.branding,
-        pageUrl,
-        breadcrumbSegments,
-        primaryCustomHostname,
-        extra: [
-          productSchemaNode({
-            slug: ctx.storefront.slug,
-            product,
-            currency: ctx.stand.currency,
-            pageUrl,
-            branding: ctx.branding,
-          }),
-        ],
+    : await productPageSeo(ctx, product, `/products/${product.slug}`, {
+        sku: productRow.sku,
+        barcode: productRow.upc,
       });
 
   const nodes =
@@ -188,7 +168,7 @@ export default async function StorefrontProductPage({
       draft={draft}
       activePage="product"
       breadcrumbs={nodes && metadata ? undefined : breadcrumbs}
-      schemaGraph={schemaGraph}
+      seo={seo}
     >
       {nodes && metadata ? (
         <StudioPublicSections nodes={nodes} metadata={metadata} />

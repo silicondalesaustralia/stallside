@@ -11,6 +11,7 @@ import type { AnnouncementBar } from "@/lib/studio/announcement-bar";
 import type { FooterSettings } from "@/lib/studio/footer-settings";
 import type { SiteButtonColours } from "@/lib/storefront/site-buttons";
 import type { SiteStyle } from "@/lib/storefront/site-style";
+import type { SiteWideTabId } from "@/lib/studio/site-wide-tabs";
 
 export type ChromeTarget = "header" | "announcement" | "footer" | null;
 
@@ -48,6 +49,8 @@ export type CraftEditorChrome = {
   /** The Site Wide Edits page shown over the canvas. */
   siteWideOpen?: boolean;
   setSiteWideOpen?: (open: boolean) => void;
+  siteWideTab?: SiteWideTabId;
+  setSiteWideTab?: (tab: SiteWideTabId) => void;
   headerLayout?: HeaderLayout;
   brandMark?: BrandMarkMode;
   logoHeight?: number;

@@ -65,7 +65,10 @@ export default function StudioProductDetailBlock({
   );
 
   const page = (
-    <article className={`storefront-page-content storefront-page-content--product ${simple ? "storefront-page-content--narrow" : "storefront-page-content--wide"}`}>
+    <article
+      className={`storefront-page-content storefront-page-content--product ${simple ? "storefront-page-content--narrow" : "storefront-page-content--wide"}`}
+      data-edit-detail={isEditing ? product.id : undefined}
+    >
       {showBreadcrumbs ? <StorefrontBreadcrumbs items={crumbs} className="mb-3" /> : null}
       {showBackLink ? (
         <Link href={backHref} className="text-sm font-semibold text-[var(--site-link,var(--leaf-dark))] underline">
@@ -74,7 +77,7 @@ export default function StudioProductDetailBlock({
       ) : null}
       {simple ? (
         <>
-          <div className={top}>
+          <div className={top} data-edit-field="photos">
             <ProductGallery images={product.images.slice(0, 1)} alts={product.imageAlts} name={product.name} ratio={view.imageRatio} enlarge={enlarge} variant="classic" />
           </div>
           {zone("photo", "mt-6")}
@@ -87,14 +90,16 @@ export default function StudioProductDetailBlock({
           style={featured ? ({ "--pd-cols": featuredColumns(view) } as CSSProperties) : undefined}
         >
           <div className={view.imageOnRight ? "sf-md:order-2" : ""}>
-            <ProductGallery
-              images={product.images}
-              alts={product.imageAlts}
-              name={product.name}
-              ratio={view.imageRatio}
-              enlarge={enlarge}
-              variant={view.layout === "gallery" ? "stacked" : "classic"}
-            />
+            <div data-edit-field="photos">
+              <ProductGallery
+                images={product.images}
+                alts={product.imageAlts}
+                name={product.name}
+                ratio={view.imageRatio}
+                enlarge={enlarge}
+                variant={view.layout === "gallery" ? "stacked" : "classic"}
+              />
+            </div>
             {zone("photo", "mt-8 hidden sf-md:block")}
           </div>
           <div className={view.layout === "gallery" ? "sf-md:sticky sf-md:top-24 sf-md:self-start" : ""}>

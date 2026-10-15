@@ -13,6 +13,7 @@ import { withCommerceContext } from "@/lib/studio/commerce-context";
 import { studioPageNodes } from "@/lib/studio/storage";
 import StudioPublicSections from "@/lib/studio/public-render";
 import { currentStorefrontBasePath } from "@/lib/tenancy/request-base-path";
+import { collectionPageSeo } from "@/lib/seo/collection-page-seo";
 
 type ViewProps = { slug: string; categorySlug: string; draft: boolean };
 
@@ -83,7 +84,19 @@ export default async function CategoryView({ slug, categorySlug, draft }: ViewPr
   const navCategories = ctx.categories.filter((c) => c.showOnWebsite !== false);
 
   return (
-    <StorefrontPageShell ctx={ctx} draft={draft} activePage="shop">
+    <StorefrontPageShell
+      ctx={ctx}
+      draft={draft}
+      activePage="shop"
+      seo={collectionPageSeo(ctx, {
+        path: `/${encodeURIComponent(activeCategory.slug)}`,
+        name: activeCategory.title,
+        description: activeCategory.description,
+        imageUrl: activeCategory.imageUrl,
+        trail: [{ label: title, path: "/shop" }],
+        products: ctx.products.filter((p) => ids.has(p.id) && !p.isHidden),
+      })}
+    >
       {nodes && metadata ? (
         <StudioPublicSections nodes={nodes} metadata={metadata} />
       ) : (

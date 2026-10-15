@@ -4,7 +4,8 @@ import type { CategoryTileData, CategoryTileOptions } from "@/lib/studio/categor
 import CategoryPhoto from "./CategoryPhoto";
 import CategoryTileText from "./CategoryTileText";
 
-const CARD = "group block overflow-hidden rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white";
+const CARD_BASE = "group block overflow-hidden rounded-[var(--studio-card-radius)]";
+const WHITE = "border border-[var(--line)] bg-white";
 const ON_PHOTO = "absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent";
 
 /** One category link, drawn in the section's chosen look. */
@@ -19,11 +20,15 @@ export default function StudioCategoryTile({
   look: CategoryLook;
   options: CategoryTileOptions;
 }) {
+  const bare = options.cardBackground === "none";
+  const CARD = bare ? CARD_BASE : `${CARD_BASE} ${WHITE}`;
   if (look === "compact") {
     return (
       <Link
         href={href}
-        className="inline-flex rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold text-[var(--field)] hover:border-[var(--leaf-dark)]"
+        className={`inline-flex rounded-full border px-4 py-2 text-sm font-semibold text-[var(--field)] hover:border-[var(--leaf-dark)] ${
+          bare ? "border-current/30 bg-transparent" : "border-[var(--line)] bg-white"
+        }`}
       >
         <CategoryTileText cat={cat} options={{ ...options, showDescriptions: false, showRatings: false }} nameClass="" />
       </Link>
@@ -53,7 +58,7 @@ export default function StudioCategoryTile({
 
   if (look === "list") {
     return (
-      <Link href={href} className={`${CARD} flex items-center gap-4 p-3`}>
+      <Link href={href} className={`${CARD} flex items-center gap-4 ${bare ? "py-2" : "p-3"}`}>
         <CategoryPhoto imageUrl={cat.imageUrl} title={cat.title} className="size-20 shrink-0 rounded-[var(--studio-card-radius)]" sizes="80px" />
         <CategoryTileText cat={cat} options={options} className="min-w-0 flex-1" />
         <span aria-hidden className="pr-1 text-xl text-[var(--muted)] group-hover:text-[var(--leaf-dark)]">→</span>
@@ -81,8 +86,12 @@ export default function StudioCategoryTile({
   if (look === "cards") {
     return (
       <Link href={href} className={`${CARD} h-full`}>
-        <CategoryPhoto imageUrl={cat.imageUrl} title={cat.title} className="aspect-[4/3]" />
-        <CategoryTileText cat={cat} options={options} className="p-4" />
+        <CategoryPhoto
+          imageUrl={cat.imageUrl}
+          title={cat.title}
+          className={bare ? "aspect-[4/3] rounded-[var(--studio-card-radius)]" : "aspect-[4/3]"}
+        />
+        <CategoryTileText cat={cat} options={options} className={bare ? "pt-3" : "p-4"} />
       </Link>
     );
   }

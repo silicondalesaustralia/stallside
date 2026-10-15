@@ -22,6 +22,7 @@ type Props = {
   flash?: WebStudioDetailsFlashState;
   history?: ReactNode;
   standPicker?: ReactNode;
+  searchProfile?: ReactNode;
 };
 
 export default function WebStudioDetailsPanel({
@@ -36,6 +37,7 @@ export default function WebStudioDetailsPanel({
   flash,
   history,
   standPicker,
+  searchProfile,
 }: Props) {
   return (
     <>
@@ -93,6 +95,8 @@ export default function WebStudioDetailsPanel({
         contactEmail={contactEmail}
         showPhone={showPhone}
       />
+
+      {searchProfile}
 
       {standPicker}
 

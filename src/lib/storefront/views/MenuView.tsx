@@ -19,6 +19,7 @@ import { studioPageNodes } from "@/lib/studio/storage";
 import StudioPublicSections from "@/lib/studio/public-render";
 import { redirectWithinStorefront } from "@/lib/storefront/clean-redirect";
 import { loadMenuViewProducts } from "./menu-view-products";
+import { menuPageSeo } from "@/lib/seo/menu-page-seo";
 
 type ViewProps = { slug: string; menuSlug: string; draft: boolean; preOrderRoute: boolean };
 
@@ -88,7 +89,18 @@ export default async function MenuView({ slug, menuSlug, draft, preOrderRoute }:
       : undefined;
 
   return (
-    <StorefrontPageShell ctx={ctx} draft={draft} activePage="menu">
+    <StorefrontPageShell
+      ctx={ctx}
+      draft={draft}
+      activePage="menu"
+      seo={menuPageSeo(ctx, {
+        path: `/${isDrop ? "pre-orders" : "menus"}/${encodeURIComponent(menu.slug)}`,
+        name: menu.title,
+        description: menu.description,
+        products: menuProducts,
+        isPreOrder: isDrop,
+      })}
+    >
       {nodes && metadata ? (
         <StudioPublicSections nodes={nodes} metadata={metadata} />
       ) : (

@@ -11,6 +11,8 @@ import StudioPublicSections from "@/lib/studio/public-render";
 import { resolveStudioPublicContext } from "@/lib/studio/public-context";
 import { loadCustomPageFromContext } from "@/lib/studio/load-custom-page";
 import { studioPageNodes } from "@/lib/studio/storage";
+import { simplePageSeo } from "@/lib/seo/simple-page-seo";
+import { faqItemsFromNodes } from "@/lib/seo/faq-from-nodes";
 
 type ViewProps = { slug: string; pageSlug: string; draft: boolean };
 
@@ -51,7 +53,12 @@ export default async function CustomPageView({ slug, pageSlug, draft }: ViewProp
     studioCtx.active ? studioPageNodes(studioCtx.studio, page.id) : undefined;
 
   return (
-    <StorefrontPageShell ctx={ctx} draft={draft} activePage={page.slug}>
+    <StorefrontPageShell
+      ctx={ctx}
+      draft={draft}
+      activePage={page.slug}
+      seo={simplePageSeo(ctx, `/${page.slug}`, page.title, { faq: faqItemsFromNodes(nodes) })}
+    >
       {nodes && studioCtx.active ? (
         <StudioPublicSections nodes={nodes} metadata={studioCtx.metadata} />
       ) : (

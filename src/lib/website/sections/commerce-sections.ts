@@ -59,6 +59,7 @@ export const categories: SectionDefinition = {
   settings: z.object({
     showDescriptions: z.boolean().optional(),
     showRatings: z.boolean().optional(),
+    cardBackground: z.enum(["white", "none"]).optional(),
   }),
   binding: z.object({
     source: z.enum(["all", "selected"]).optional(),
