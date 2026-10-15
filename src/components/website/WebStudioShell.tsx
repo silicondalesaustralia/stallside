@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import {
+  WEB_STUDIO_ASSISTANT_TABS,
   WEB_STUDIO_TABS,
   type WebStudioTabId,
   webStudioPath,
@@ -13,6 +14,8 @@ type Props = {
   branding: ReactNode;
   ai: ReactNode;
   studio: ReactNode;
+  /** Guided AI assistant owners: create-with-AI first. */
+  useAssistant?: boolean;
 };
 
 /** Client tabs so Web Studio steps switch without a full navigation. */
@@ -22,7 +25,9 @@ export default function WebStudioShell({
   branding,
   ai,
   studio,
+  useAssistant = false,
 }: Props) {
+  const tabs = useAssistant ? WEB_STUDIO_ASSISTANT_TABS : WEB_STUDIO_TABS;
   const [tab, setTab] = useState<WebStudioTabId>(initialTab);
   const [visited, setVisited] = useState<Set<WebStudioTabId>>(
     () => new Set([initialTab]),
@@ -64,15 +69,15 @@ export default function WebStudioShell({
           Web Studio
         </p>
         <p className="max-w-2xl text-sm leading-relaxed text-[var(--muted)]">
-          First add your business details, then your branding. Our AI builder uses
-          those to draft your site — then preview, edit the layout, and publish when
-          you&apos;re ready.
+          {useAssistant
+            ? "Answer a few questions and Vendl builds a draft website from your real details. Then preview, edit the layout, and publish when you're ready."
+            : "First add your business details, then your branding. Our AI builder uses those to draft your site — then preview, edit the layout, and publish when you're ready."}
         </p>
         <nav
           aria-label="Web Studio steps"
           className="flex gap-1 overflow-x-auto border-b border-[var(--line)] pb-px"
         >
-          {WEB_STUDIO_TABS.map((item) => {
+          {tabs.map((item) => {
             const active = tab === item.id;
             return (
               <button
@@ -93,7 +98,7 @@ export default function WebStudioShell({
         </nav>
       </div>
 
-      {WEB_STUDIO_TABS.map((item) => {
+      {tabs.map((item) => {
         if (!visited.has(item.id)) return null;
         return (
           <div

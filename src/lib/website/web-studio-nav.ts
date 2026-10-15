@@ -10,6 +10,17 @@ export const WEB_STUDIO_TABS: {
   { id: "studio", label: "4 · Edit layout" },
 ];
 
+/** Tab order for owners on the guided AI assistant: create first, then details/publish, branding, editor. */
+export const WEB_STUDIO_ASSISTANT_TABS: {
+  id: WebStudioTabId;
+  label: string;
+}[] = [
+  { id: "ai", label: "1 · Create with AI" },
+  { id: "details", label: "2 · Details & publish" },
+  { id: "branding", label: "3 · Branding" },
+  { id: "studio", label: "4 · Edit layout" },
+];
+
 /** Ordered create-flow steps inside Web Studio (URL targets for deep links). */
 export const WEB_STUDIO_STEPS: { href: string; label: string }[] = WEB_STUDIO_TABS.map((tab) => ({
   href: `/dashboard/website/web-studio?tab=${tab.id}`,

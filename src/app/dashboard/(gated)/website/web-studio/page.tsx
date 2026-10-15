@@ -68,7 +68,8 @@ export default async function WebStudioPage({
 }) {
   const { owner } = await requireOwner();
   const sp = await searchParams;
-  const initialTab: WebStudioTabId = parseWebStudioTab(sp.tab);
+  const useAssistant = assistantEnabledFor(owner.id);
+  const initialTab: WebStudioTabId = !sp.tab && useAssistant ? "ai" : parseWebStudioTab(sp.tab);
   const storefront = await ensureStorefront(owner.id, owner.businessName);
 
   const ctx = await loadStorefrontContext(storefront.slug, {
@@ -94,7 +95,6 @@ export default async function WebStudioPage({
 
   const aiEnabled = aiWebsiteBuilderEnabled();
   const aiAllowed = canUseAiWebsiteBuilder(owner.id);
-  const useAssistant = assistantEnabledFor(owner.id);
   let assessment: ReturnType<typeof assessWebsiteContext> | undefined;
   let scaffoldLooks: BrandLookCombo[] = [];
   if (aiEnabled && aiAllowed && !useAssistant) {
@@ -124,6 +124,7 @@ export default async function WebStudioPage({
       )}
       <WebStudioShell
         initialTab={initialTab}
+        useAssistant={useAssistant}
         details={
           <WebStudioDetailsPanel
             headline={draft.headline}
