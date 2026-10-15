@@ -1,6 +1,6 @@
 "use client";
 
-import { announcementColours, isAnnouncementVisible, type AnnouncementBar } from "@/lib/studio/announcement-bar";
+import { announcementColours, isAnnouncementVisible, type AnnouncementBar } from "@/lib/studio/announcement-bar-view";
 import { resolveButtonLink, type LinkContext } from "@/lib/studio/button-link";
 import type { ThemePalette } from "@/lib/website/sections/colour";
 import NavItemLink from "./NavItemLink";

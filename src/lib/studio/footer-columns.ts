@@ -7,7 +7,7 @@ import {
   hasFooterContact,
   type FooterColumn,
   type FooterContact,
-} from "./footer-settings";
+} from "./footer-view";
 
 export type ResolvedFooterColumn = {
   id: string;

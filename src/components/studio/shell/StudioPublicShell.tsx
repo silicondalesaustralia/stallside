@@ -1,13 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { storefrontThemeStyle } from "@/lib/storefront/branding";
+import { storefrontThemeStyle } from "@/lib/storefront/branding-style";
 import { StorefrontLinkProvider } from "@/components/storefront/StorefrontLinkProvider";
 import StorefrontFontLoader from "@/components/storefront/StorefrontFontLoader";
 import type { StudioMetadata } from "@/lib/studio/types";
 import type { StorefrontPageId } from "@/lib/storefront/types";
 import { resolveStudioTemplate } from "@/lib/studio/templates";
-import { resolveHeaderMenu } from "@/lib/studio/header-menu";
+import { resolveHeaderMenu } from "@/lib/studio/header-menu-view";
 import { paletteOf } from "@/lib/website/sections/colour";
 import { siteFontHrefs, siteLayoutVars, siteStyleAttrs } from "@/lib/storefront/site-style-vars";
 import AnnouncementBarView from "./AnnouncementBarView";

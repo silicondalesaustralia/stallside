@@ -1,23 +1,23 @@
-import { z } from "zod";
-
 /**
  * Seller overrides for a section's fixed wording (labels, badges, small print), stored as
  * `props.texts[key]`. A missing or blank key shows the default copy. `{name}` placeholders
  * are filled from data at render time (e.g. `{count} products listed this week`).
  */
 export const SECTION_TEXT_MAX = 300;
-const MAX_KEYS = 40;
-const KEY = /^[a-zA-Z0-9_]{1,40}$/;
-
-export const sectionTextsSchema = z
-  .record(z.string().regex(KEY), z.string().max(SECTION_TEXT_MAX))
-  .refine((v) => Object.keys(v).length <= MAX_KEYS, "Too many text overrides.");
+export const SECTION_TEXT_MAX_KEYS = 40;
+export const SECTION_TEXT_KEY = /^[a-zA-Z0-9_]{1,40}$/;
 
 export type SectionTexts = Record<string, string>;
 
+/** Saved overrides, or none when any entry breaks the rules in `sectionTextsSchema`. */
 export function parseSectionTexts(raw: unknown): SectionTexts {
-  const parsed = sectionTextsSchema.safeParse(raw);
-  return parsed.success ? parsed.data : {};
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  const entries = Object.entries(raw);
+  if (entries.length > SECTION_TEXT_MAX_KEYS) return {};
+  const valid = entries.every(
+    ([key, value]) => SECTION_TEXT_KEY.test(key) && typeof value === "string" && value.length <= SECTION_TEXT_MAX,
+  );
+  return valid ? (Object.fromEntries(entries) as SectionTexts) : {};
 }
 
 export function sectionText(texts: SectionTexts | undefined, key: string, fallback: string): string {

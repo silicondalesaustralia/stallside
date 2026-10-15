@@ -9,7 +9,7 @@ import {
   subscribeStandCart,
 } from "@/lib/stand-cart-storage";
 import { useCartHref } from "@/components/storefront/use-cart-href";
-import { storefrontButtonClass } from "@/lib/storefront/branding";
+import { storefrontButtonClass } from "@/lib/storefront/branding-style";
 import type { ResolvedStorefrontBranding } from "@/lib/storefront/types";
 
 export default function StorefrontGoToCartBar({

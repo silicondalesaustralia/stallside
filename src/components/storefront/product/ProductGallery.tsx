@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { RATIO_CLASS, type ProductImageRatio } from "@/lib/studio/product-detail-settings";
+import { RATIO_CLASS, type ProductImageRatio } from "@/lib/studio/product-image-ratio";
 import { photoAlt } from "@/lib/product-image-alts";
 import ProductImageTrack from "./ProductImageTrack";
 import ProductThumbnails from "./ProductThumbnails";

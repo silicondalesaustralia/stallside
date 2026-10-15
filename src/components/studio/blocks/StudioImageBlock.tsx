@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { GalleryImage, ImageAspect, ImageDisplay } from "@/lib/studio/gallery-images";
+import type { GalleryImage, ImageAspect, ImageDisplay } from "@/lib/studio/gallery-view";
 import StudioImageGallery from "./StudioImageGallery";
 import StudioImageSlider from "./StudioImageSlider";
 

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { ASPECT_CLASS, type GalleryImage, type ImageAspect } from "@/lib/studio/gallery-images";
+import { ASPECT_CLASS, type GalleryImage, type ImageAspect } from "@/lib/studio/gallery-view";
 
 const AUTOPLAY_MS = 5000;
 const ARROW =

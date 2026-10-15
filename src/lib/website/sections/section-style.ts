@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { isColourValue } from "./colour-value";
-import { elementStyleSchema, parseElementStyles } from "./element-style";
+import { elementStyleSchema, parseElementStyles } from "./element-style-schema";
 
 export { COLOUR_TOKENS, isColourValue, type ColourToken } from "./colour-value";
 

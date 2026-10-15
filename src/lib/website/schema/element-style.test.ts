@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { elementCss, parseElementStyles } from "@/lib/website/sections/element-style";
+import { elementCss } from "@/lib/website/sections/element-style";
+import { parseElementStyles } from "@/lib/website/sections/element-style-schema";
 import { sectionStyleFrame } from "@/lib/website/sections/section-style-frame";
 import { parseSectionStyle } from "@/lib/website/sections/section-style";
 

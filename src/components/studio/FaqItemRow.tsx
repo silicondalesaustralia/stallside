@@ -1,7 +1,7 @@
 "use client";
 
 import { WEBSITE_LIMITS } from "@/lib/website/schema/limits";
-import { FAQ_QUESTION_MAX, type FaqItem } from "@/lib/studio/faq-items";
+import { FAQ_QUESTION_MAX, type FaqItem } from "@/lib/studio/faq-view";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
 const ICON_BTN = "rounded border border-[var(--line)] px-2 text-xs disabled:opacity-30";

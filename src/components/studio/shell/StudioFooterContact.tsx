@@ -1,4 +1,4 @@
-import type { FooterContact } from "@/lib/studio/footer-settings";
+import type { FooterContact } from "@/lib/studio/footer-view";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE = /^\+?[\d\s()-]{6,}$/;

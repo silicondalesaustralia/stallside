@@ -1,10 +1,7 @@
 import { z } from "zod";
+import { REVIEW_BODY_MAX, REVIEW_BODY_MIN, REVIEW_NAME_MAX, REVIEW_TITLE_MAX } from "./review-limits";
 
-export const REVIEW_TITLE_MAX = 120;
-export const REVIEW_BODY_MIN = 10;
-export const REVIEW_BODY_MAX = 2000;
-export const REVIEW_NAME_MAX = 80;
-export const REVIEW_REPLY_MAX = 2000;
+export * from "./review-limits";
 
 /** What a shopper sends from the review form on the website. */
 export const reviewSubmissionSchema = z.object({

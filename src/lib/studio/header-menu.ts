@@ -1,6 +1,9 @@
 import { z } from "zod";
-import { buttonLinkSchema, resolveButtonLink, type LinkContext } from "./button-link";
+import { buttonLinkSchema } from "./button-link-schema";
 import type { StudioNavItem } from "./navigation";
+import type { HeaderMenu } from "./header-menu-view";
+
+export * from "./header-menu-view";
 
 /**
  * The seller's own header menu, stored as `draftConfig.headerMenu`. Missing = the automatic
@@ -20,29 +23,14 @@ const item = z.object({
   link: buttonLinkSchema.optional(),
   children: z.array(child).max(HEADER_MENU_MAX_CHILDREN).optional(),
 });
-export const headerMenuSchema = z.object({ items: z.array(item).max(HEADER_MENU_MAX_ITEMS) });
-
-export type HeaderMenu = z.infer<typeof headerMenuSchema>;
-export type HeaderMenuItem = z.infer<typeof item>;
-export type HeaderMenuChild = z.infer<typeof child>;
+export const headerMenuSchema = z.object({
+  items: z.array(item).max(HEADER_MENU_MAX_ITEMS),
+}) satisfies z.ZodType<HeaderMenu>;
 
 export function parseHeaderMenu(config: unknown): HeaderMenu | null {
   if (!config || typeof config !== "object" || Array.isArray(config)) return null;
   const parsed = headerMenuSchema.safeParse((config as Record<string, unknown>).headerMenu);
   return parsed.success ? parsed.data : null;
-}
-
-/** Header links for display. Links whose page no longer exists are dropped. */
-export function resolveHeaderMenu(menu: HeaderMenu, ctx: LinkContext): StudioNavItem[] {
-  return menu.items.flatMap((entry) => {
-    const children = (entry.children ?? []).flatMap((c) => {
-      const href = resolveButtonLink(c.link, ctx);
-      return href ? [{ slug: c.id, label: c.label, href }] : [];
-    });
-    const href = resolveButtonLink(entry.link, ctx) ?? children[0]?.href;
-    if (!href) return [];
-    return [{ slug: entry.id, label: entry.label, href, ...(children.length ? { children } : {}) }];
-  });
 }
 
 const PAGE_TOKENS: Record<string, string> = {

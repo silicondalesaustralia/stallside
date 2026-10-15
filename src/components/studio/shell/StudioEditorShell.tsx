@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useEditor } from "@craftjs/core";
-import { storefrontThemeStyle } from "@/lib/storefront/branding";
+import { storefrontThemeStyle } from "@/lib/storefront/branding-style";
 import type { StorefrontPageId } from "@/lib/storefront/types";
 import { StorefrontLinkProvider } from "@/components/storefront/StorefrontLinkProvider";
 import StorefrontFontLoader from "@/components/storefront/StorefrontFontLoader";

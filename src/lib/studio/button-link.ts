@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { safeHref } from "@/lib/website/rich-text/parse";
 import { shopCategoryPath, shopHomePath, shopMenusPath, shopPagePath, shopProductPath } from "@/lib/storefront/paths";
 
@@ -20,8 +19,6 @@ const TOKEN = /^(page:(home|shop|about|contact|menu|blog)|nav:[\w-]{1,120}|produ
 export function isButtonLink(value: unknown): value is string {
   return typeof value === "string" && value.length <= 500 && (TOKEN.test(value) || safeHref(value) !== null);
 }
-
-export const buttonLinkSchema = z.string().refine(isButtonLink, "Pick a page, product or a valid web address.");
 
 export type LinkContext = {
   storefrontSlug: string;

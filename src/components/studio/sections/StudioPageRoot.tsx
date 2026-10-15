@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useNode } from "@craftjs/core";
 import { STUDIO_RESOLVER_NAMES } from "@/lib/studio/section-registry";
-import { isColourValue } from "@/lib/website/sections/section-style";
+import { isColourValue } from "@/lib/website/sections/colour-value";
 import { colourCss } from "@/lib/website/sections/colour";
 
 const ALLOWED = STUDIO_RESOLVER_NAMES.filter((n) => n !== "CraftPageRoot");

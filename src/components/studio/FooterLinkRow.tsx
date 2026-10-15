@@ -1,6 +1,6 @@
 "use client";
 
-import { FOOTER_LABEL_MAX, type FooterLink } from "@/lib/studio/footer-settings";
+import { FOOTER_LABEL_MAX, type FooterLink } from "@/lib/studio/footer-view";
 import ButtonLinkField from "./ButtonLinkField";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";

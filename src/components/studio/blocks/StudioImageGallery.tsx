@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ASPECT_CLASS, type GalleryImage, type ImageAspect } from "@/lib/studio/gallery-images";
+import { ASPECT_CLASS, type GalleryImage, type ImageAspect } from "@/lib/studio/gallery-view";
 
 const COLUMNS: Record<2 | 3 | 4, string> = {
   2: "grid-cols-2",

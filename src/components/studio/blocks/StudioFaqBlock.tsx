@@ -3,7 +3,7 @@
 import InlineEditableText from "@/components/studio/InlineEditableText";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 import RichText from "@/components/studio/RichText";
-import { visibleFaqItems, type FaqItem } from "@/lib/studio/faq-items";
+import { visibleFaqItems, type FaqItem } from "@/lib/studio/faq-view";
 
 const HEADING =
   "font-[family-name:var(--font-display)] text-2xl font-bold tracking-[var(--studio-heading-tracking)] text-[var(--field)]";

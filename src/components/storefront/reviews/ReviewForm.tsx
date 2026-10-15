@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import SectionCopy from "@/components/studio/SectionCopy";
 import { useSectionCopyContext } from "@/components/studio/SectionStyleContext";
 import { submitReview } from "@/lib/reviews/submit-review-action";
-import { REVIEW_BODY_MAX, REVIEW_NAME_MAX, REVIEW_TITLE_MAX } from "@/lib/reviews/review-fields";
+import { REVIEW_BODY_MAX, REVIEW_NAME_MAX, REVIEW_TITLE_MAX } from "@/lib/reviews/review-limits";
 import ReviewStarPicker from "./ReviewStarPicker";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm text-[var(--ink)]";

@@ -1,25 +1,26 @@
 import { z } from "zod";
-import { buttonLinkSchema } from "./button-link";
+import { buttonLinkSchema } from "./button-link-schema";
 import { isColourValue } from "@/lib/website/sections/section-style";
-import { colourCss, resolvedTextColour, type ThemePalette } from "@/lib/website/sections/colour";
+import {
+  FOOTER_ADDRESS_MAX,
+  FOOTER_BOTTOM_MAX,
+  FOOTER_BRAND_MAX,
+  FOOTER_HEADING_MAX,
+  FOOTER_LABEL_MAX,
+  FOOTER_MAX_COLUMNS,
+  FOOTER_MAX_LINKS,
+  FOOTER_MOBILE_LAYOUTS,
+  FOOTER_TAGLINE_MAX,
+  type FooterSettings,
+} from "./footer-view";
+
+export * from "./footer-view";
 
 /**
  * The seller's footer, stored as `draftConfig.footer`. Missing = the automatic footer.
  * Missing `columns` = automatic link columns (Shop / Visit & Learn / Policies from page settings).
  * `bottomText` replaces "© {year} {business}"; `{year}` is filled in when shown.
  */
-export const FOOTER_MAX_COLUMNS = 4;
-export const FOOTER_MAX_LINKS = 10;
-export const FOOTER_HEADING_MAX = 40;
-export const FOOTER_LABEL_MAX = 60;
-export const FOOTER_BRAND_MAX = 80;
-export const FOOTER_TAGLINE_MAX = 240;
-export const FOOTER_BOTTOM_MAX = 200;
-export const FOOTER_ADDRESS_MAX = 300;
-/** How link columns sit on phones: one under another, collapsed behind their headings, or two across. */
-export const FOOTER_MOBILE_LAYOUTS = ["stacked", "accordion", "columns"] as const;
-export type FooterMobileLayout = (typeof FOOTER_MOBILE_LAYOUTS)[number];
-
 const id = z.string().min(1).max(40);
 const colour = z.string().refine(isColourValue);
 const footerLink = z.object({
@@ -27,7 +28,6 @@ const footerLink = z.object({
   label: z.string().trim().min(1, "Every link needs text.").max(FOOTER_LABEL_MAX),
   link: buttonLinkSchema,
 });
-/** Free-typed contact details shown in a column, above its links. */
 const footerContact = z.object({
   address: z.string().max(FOOTER_ADDRESS_MAX).optional(),
   phone: z.string().max(40).optional(),
@@ -56,17 +56,7 @@ export const footerSettingsSchema = z.object({
   mobileLayout: z.enum(FOOTER_MOBILE_LAYOUTS).optional(),
   background: colour.optional(),
   textColour: colour.optional(),
-});
-
-export type FooterSettings = z.infer<typeof footerSettingsSchema>;
-export type FooterColumn = z.infer<typeof footerColumn>;
-export type FooterLink = z.infer<typeof footerLink>;
-export type FooterContact = z.infer<typeof footerContact>;
-
-/** Whether a contact block has anything to show. */
-export function hasFooterContact(contact: FooterContact | undefined): contact is FooterContact {
-  return Boolean(contact && Object.values(contact).some((v) => v?.trim()));
-}
+}) satisfies z.ZodType<FooterSettings>;
 
 export function parseFooterSettings(config: unknown): FooterSettings | null {
   if (!config || typeof config !== "object" || Array.isArray(config)) return null;
@@ -83,25 +73,4 @@ export function footerSettingsProblem(footer: unknown): string | null {
   if (issue?.path.includes("link")) return "One of the footer links isn't a page, product or valid web address.";
   if (issue?.path.includes("heading")) return `Column headings can be up to ${FOOTER_HEADING_MAX} characters.`;
   return "The footer couldn't be saved. Check the text and links.";
-}
-
-/** The line at the bottom of the footer, without the Home link. */
-export function footerBottomLine(footer: FooterSettings | null, businessName: string, year: number): string {
-  const custom = footer?.bottomText?.trim();
-  if (custom) return custom.replaceAll("{year}", String(year));
-  return `© ${year} ${businessName}`;
-}
-
-/** Inline colours when the seller picked them; otherwise the template's footer colours apply. */
-export function footerColours(
-  footer: FooterSettings | null,
-  palette: ThemePalette,
-): { background?: string; color?: string } | undefined {
-  if (!footer?.background && !footer?.textColour) return undefined;
-  const text =
-    footer.textColour ?? (footer.background ? resolvedTextColour({ background: footer.background }, palette) : null);
-  return {
-    ...(footer.background ? { background: colourCss(footer.background) } : {}),
-    ...(text ? { color: colourCss(text) } : {}),
-  };
 }

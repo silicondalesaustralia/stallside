@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { FooterMobileLayout } from "@/lib/studio/footer-settings";
+import type { FooterMobileLayout } from "@/lib/studio/footer-view";
 import type { ResolvedFooterColumn } from "@/lib/studio/footer-columns";
 import StudioFooterContact from "./StudioFooterContact";
 

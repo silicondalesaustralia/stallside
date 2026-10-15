@@ -14,8 +14,8 @@ import { farmStand, payments, pickup, reviews, signup } from "./trust-sections";
 import { contactForm } from "./contact-sections";
 import type { SectionDefinition, VendlSectionType } from "./types";
 import { sectionStyleSchema } from "./section-style";
-import { buttonLinkSchema } from "@/lib/studio/button-link";
-import { sectionTextsSchema } from "@/lib/studio/section-texts";
+import { buttonLinkSchema } from "@/lib/studio/button-link-schema";
+import { sectionTextsSchema } from "@/lib/studio/section-texts-schema";
 
 /**
  * The one list of supported website sections. Keyed by stable Vendl type;

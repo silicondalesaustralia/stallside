@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import StorefrontNav from "@/components/storefront/StorefrontNav";
 import StorefrontFontLoader from "@/components/storefront/StorefrontFontLoader";
-import { storefrontThemeStyle } from "@/lib/storefront/branding";
+import { storefrontThemeStyle } from "@/lib/storefront/branding-style";
 import type { ResolvedStorefrontBranding } from "@/lib/storefront/types";
 import type { StorefrontPageId } from "@/lib/storefront/types";
 import { StorefrontLinkProvider } from "@/components/storefront/StorefrontLinkProvider";

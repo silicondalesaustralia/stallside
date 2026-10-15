@@ -2,18 +2,19 @@ import { z } from "zod";
 import { WEBSITE_LIMITS as L } from "@/lib/website/schema/limits";
 import { parseBlockLayout, type ProductBlockLayout } from "./product-blocks";
 import { buttonWidthOf, productButtonsOf, type ProductButtons } from "./product-buttons";
+import { PRODUCT_IMAGE_RATIOS, type ProductImageRatio } from "./product-image-ratio";
+
+export { PRODUCT_IMAGE_RATIOS, RATIO_CLASS, type ProductImageRatio } from "./product-image-ratio";
 
 export const PRODUCT_LAYOUTS = ["featured", "classic", "gallery", "simple"] as const;
 /** Featured layout: share of the row the main photo takes on wider screens (percent). */
 export const IMAGE_SIZE_MIN = 35;
 export const IMAGE_SIZE_MAX = 75;
 export const IMAGE_SIZE_DEFAULT = 60;
-export const PRODUCT_IMAGE_RATIOS = ["square", "portrait", "landscape"] as const;
 export const PRODUCT_IMAGE_SIDES = ["left", "right"] as const;
 export const INFO_ROW_ICONS = ["pickup", "delivery", "secure", "fresh", "local", "info"] as const;
 
 export type ProductLayout = (typeof PRODUCT_LAYOUTS)[number];
-export type ProductImageRatio = (typeof PRODUCT_IMAGE_RATIOS)[number];
 export type InfoRowIcon = (typeof INFO_ROW_ICONS)[number];
 
 export const INFO_ROWS_MAX = 6;
@@ -103,9 +104,3 @@ export function productDetailView(props: Record<string, unknown>): ProductDetail
     blocks: parseBlockLayout(props.blockLayout),
   };
 }
-
-export const RATIO_CLASS: Record<ProductImageRatio, string> = {
-  square: "aspect-square",
-  portrait: "aspect-[4/5]",
-  landscape: "aspect-[4/3]",
-};

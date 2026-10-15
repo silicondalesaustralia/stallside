@@ -11,7 +11,7 @@ import {
   infoRowsSchema,
   productTabsSchema,
 } from "@/lib/studio/product-detail-settings";
-import { blockLayoutSchema } from "@/lib/studio/product-blocks";
+import { blockLayoutSchema } from "@/lib/studio/product-blocks-schema";
 import { BUTTON_WIDTH_MAX, BUTTON_WIDTH_MIN, PRODUCT_BUTTONS } from "@/lib/studio/product-buttons";
 import { CATEGORY_ALIGNS } from "@/lib/studio/category-detail-settings";
 import { CATEGORY_VARIANTS, NEXT_DROP_VARIANTS, PRODUCT_VARIANTS, DEFAULT_ONLY } from "./variants";

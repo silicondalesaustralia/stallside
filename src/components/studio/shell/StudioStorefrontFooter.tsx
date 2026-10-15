@@ -6,7 +6,7 @@ import { resolveStudioTemplate } from "@/lib/studio/templates";
 import { isWebsiteDemoStorefrontSlug } from "@/lib/demo";
 import type { FooterColumnId } from "@/lib/studio/custom-pages";
 import type { LinkContext } from "@/lib/studio/button-link";
-import { footerBottomLine, footerColours, type FooterMobileLayout, type FooterSettings } from "@/lib/studio/footer-settings";
+import { footerBottomLine, footerColours, type FooterMobileLayout, type FooterSettings } from "@/lib/studio/footer-view";
 import { autoFooterColumns, resolveFooterColumns } from "@/lib/studio/footer-columns";
 import { paletteOf } from "@/lib/website/sections/colour";
 import StudioFooterBrand from "./StudioFooterBrand";

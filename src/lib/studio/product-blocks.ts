@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 /** Parts of the product page a seller can move between zones. */
 export const PRODUCT_BLOCKS = ["name", "price", "description", "buy", "infoRows", "tabs"] as const;
 export type ProductBlockId = (typeof PRODUCT_BLOCKS)[number];
@@ -30,9 +28,6 @@ export const DEFAULT_BLOCK_LAYOUT: ProductBlockLayout = {
   details: [...PRODUCT_BLOCKS],
   below: [],
 };
-
-const zoneList = z.array(z.enum(PRODUCT_BLOCKS)).max(PRODUCT_BLOCKS.length);
-export const blockLayoutSchema = z.object({ photo: zoneList, details: zoneList, below: zoneList });
 
 /** Saved layout with every block exactly once; blocks it doesn't mention go to the end of the details column. */
 export function parseBlockLayout(raw: unknown): ProductBlockLayout {

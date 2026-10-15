@@ -16,7 +16,7 @@ import {
 } from "@/lib/pre-order";
 import { shopProductPath } from "@/lib/storefront/paths";
 import { writeShopOrigin } from "@/lib/storefront/shop-origin";
-import { storefrontButtonClass } from "@/lib/storefront/branding";
+import { storefrontButtonClass } from "@/lib/storefront/branding-style";
 import type { ResolvedStorefrontBranding } from "@/lib/storefront/types";
 import { useStorefrontLinkBase } from "./StorefrontLinkProvider";
 
