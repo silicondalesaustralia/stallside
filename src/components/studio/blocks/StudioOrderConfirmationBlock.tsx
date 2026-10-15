@@ -38,6 +38,7 @@ export default function StudioOrderConfirmationBlock({
       <OrderConfirmationCard
         state={state}
         preview={!live}
+        siteButtons
         backHref={shopHomePath(meta.storefrontSlug, meta.draft, meta.basePath)}
         backLabel="Back to shop"
       />

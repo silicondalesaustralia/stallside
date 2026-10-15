@@ -11,7 +11,13 @@ type Props = {
   backLabel: string;
   /** Builder sample: the restock form is shown but can't be submitted. */
   preview?: boolean;
+  /** Website: buttons follow the site and section button styles. */
+  siteButtons?: boolean;
 };
+
+const STAND_BACK =
+  "mt-8 inline-flex w-full items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-6 py-4 text-lg font-semibold text-[var(--ink)]";
+const SITE_BACK = "studio-btn studio-btn--secondary mt-8 w-full";
 
 function StateMessage({ message }: { message: string }) {
   const className = "mt-3 block text-xl text-[var(--muted)]";
@@ -23,7 +29,7 @@ function StateMessage({ message }: { message: string }) {
 }
 
 /** "Thank you" card shown after card / PayPal checkout; wording is editable in the builder. */
-export default function OrderConfirmationCard({ state, backHref, backLabel, preview = false }: Props) {
+export default function OrderConfirmationCard({ state, backHref, backLabel, preview = false, siteButtons = false }: Props) {
   const { preOrder, demoStandSlug, demoProduct, restock } = state;
   return (
     <>
@@ -73,14 +79,11 @@ export default function OrderConfirmationCard({ state, backHref, backLabel, prev
           />
         ) : null}
         {restock && !demoStandSlug ? (
-          <RestockOptIn standId={restock.standId} prefillEmail={restock.prefillEmail} preview={preview} />
+          <RestockOptIn standId={restock.standId} prefillEmail={restock.prefillEmail} preview={preview} siteButtons={siteButtons} />
         ) : null}
       </div>
       {demoStandSlug && demoProduct ? null : (
-        <Link
-          href={backHref}
-          className="mt-8 inline-flex w-full items-center justify-center rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-6 py-4 text-lg font-semibold text-[var(--ink)]"
-        >
+        <Link href={backHref} className={siteButtons ? SITE_BACK : STAND_BACK}>
           <SectionCopy k="back" fallback={backLabel} />
         </Link>
       )}

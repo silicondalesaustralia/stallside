@@ -10,22 +10,27 @@ import {
 
 const initial: RestockSubscribeState = { ok: false };
 
-const BUTTON =
+const STAND_BUTTON =
   "rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60";
+const SITE_BUTTON = "studio-btn studio-btn--primary w-full disabled:opacity-60";
 
 export default function RestockOptIn({
   standId,
   prefillEmail,
   inputId = "restock-email",
   preview = false,
+  siteButtons = false,
 }: {
   standId: string;
   prefillEmail?: string;
   inputId?: string;
   /** Builder sample: wording is editable, the form can't be sent. */
   preview?: boolean;
+  /** Website: the button follows the site and section button styles. */
+  siteButtons?: boolean;
 }) {
   const [state, action, pending] = useActionState(subscribeRestockAlert, initial);
+  const BUTTON = siteButtons ? SITE_BUTTON : STAND_BUTTON;
 
   if (state.ok) {
     return (

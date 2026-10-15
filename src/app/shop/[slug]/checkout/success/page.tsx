@@ -48,6 +48,7 @@ export default async function StorefrontCheckoutSuccessPage({ params, searchPara
             state={state}
             backHref={shopHomePath(ctx.storefront.slug, draft, basePath)}
             backLabel="Back to shop"
+            siteButtons
           />
         </div>
       }
