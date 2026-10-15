@@ -12,6 +12,7 @@ import SiteChoice from "./SiteChoice";
 import ProductInfoRowsEditor from "./ProductInfoRowsEditor";
 import ProductTabsEditor from "./ProductTabsEditor";
 import ProductBlockLayoutEditor from "./ProductBlockLayoutEditor";
+import CartBarSettings from "./CartBarSettings";
 
 const LAYOUTS = { featured: "Featured", classic: "Classic", gallery: "Gallery", simple: "Simple" } as const;
 const LAYOUT_HINTS = {
@@ -75,7 +76,8 @@ export default function ProductDetailSettings({
         />
       ) : null}
       <Toggle label="Click photos to enlarge" checked={view.enlarge} onChange={(v) => setProp("enlarge", v)} />
-      <Toggle label="Sticky Add to cart bar on phones" checked={view.stickyCart} onChange={(v) => setProp("stickyCart", v)} />
+      <Toggle label="Sticky Add to cart bar on phones (product pages)" checked={view.stickyCart} onChange={(v) => setProp("stickyCart", v)} />
+      <CartBarSettings />
       <Toggle label="Show payment options under the buttons" checked={view.showPayments} onChange={(v) => setProp("showPayments", v)} />
       <Toggle label="Show breadcrumbs" checked={props.showBreadcrumbs !== false} onChange={(v) => setProp("showBreadcrumbs", v)} />
       <Toggle label="Show back to shop link" checked={props.showBackLink !== false} onChange={(v) => setProp("showBackLink", v)} />
