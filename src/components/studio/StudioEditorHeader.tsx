@@ -7,6 +7,7 @@ import { useStudioEditorChrome } from "./StudioEditorContext";
 import StudioPageSelector from "./StudioPageSelector";
 import StudioSiteStatus from "./StudioSiteStatus";
 import { useStickyToolbarHeight } from "./useStickyToolbarHeight";
+import { editorPageUrl } from "@/lib/studio/editor-page-url";
 
 const VIEWPORTS = [
   { label: "Desktop", width: 1280 },
@@ -21,6 +22,7 @@ export default function StudioEditorHeader() {
     previewUrl,
     viewPreviewUrl,
     isPublished,
+    liveUrl,
     dirty,
     saveStatus,
     onSave,
@@ -39,6 +41,7 @@ export default function StudioEditorHeader() {
   const templateLabel = templateId ? STUDIO_TEMPLATES[templateId].label : "Template";
   const onStorefront = surface === "storefront-preview";
   const viewHref = viewPreviewUrl ?? previewUrl;
+  const pageUrl = onStorefront ? editorPageUrl({ isPublished, liveUrl, viewPreviewUrl: viewHref }) : previewUrl;
 
   return (
     <header
@@ -111,11 +114,7 @@ export default function StudioEditorHeader() {
               Done
             </Link>
           </>
-        ) : (
-          <a href={previewUrl} target="_blank" rel="noreferrer" className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-semibold">
-            Preview
-          </a>
-        )}
+        ) : null}
         <button
           type="button"
           disabled={pending}
@@ -132,6 +131,15 @@ export default function StudioEditorHeader() {
         <button type="button" disabled={pending} onClick={onPublish} className="rounded-lg bg-[var(--field)] px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-60">
           {isPublished ? "Update published" : "Publish"}
         </button>
+        <a
+          href={pageUrl}
+          target="_blank"
+          rel="noreferrer"
+          title={isPublished ? "Open the live version of this page in a new tab" : "Open the draft of this page in a new tab"}
+          className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-semibold text-[var(--field)]"
+        >
+          Open page ↗
+        </a>
       </div>
     </header>
   );
