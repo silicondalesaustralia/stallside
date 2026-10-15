@@ -176,7 +176,7 @@ function StudioSectionRender({
     case "CraftCartSection":
       return <StudioCartBlock metadata={metadata} />;
     case "CraftOrderConfirmationSection":
-      return <StudioOrderConfirmationBlock metadata={metadata} />;
+      return <StudioOrderConfirmationBlock metadata={metadata} showRestock={p.showRestock !== false} />;
     case "CraftCategoriesSection":
       return (
         <StudioCategoriesBlock

@@ -192,7 +192,7 @@ export const orderConfirmation: SectionDefinition = {
   variants: DEFAULT_ONLY,
   defaultVariant: "default",
   content: z.object({}),
-  settings: z.object({}),
+  settings: z.object({ showRestock: z.boolean().optional() }),
   pageKinds: ["success"],
   singleton: true,
   required: true,

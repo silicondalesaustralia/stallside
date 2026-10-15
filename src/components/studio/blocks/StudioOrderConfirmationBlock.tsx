@@ -4,13 +4,13 @@ import { PAID_MESSAGE } from "@/app/checkout/success/success-messages";
 import { shopHomePath } from "@/lib/storefront/paths";
 import OrderConfirmationCard from "@/components/checkout/OrderConfirmationCard";
 
-function sampleState(meta: StudioMetadata): SuccessPageState {
+function sampleState(meta: StudioMetadata, showRestock: boolean): SuccessPageState {
   const items = (meta.commerceContext?.catalogProducts ?? []).slice(0, 2);
   return {
     message: PAID_MESSAGE,
     demoStandSlug: null,
     demoProduct: null,
-    restock: null,
+    restock: showRestock ? { standId: meta.standId } : null,
     preOrder: {
       collectionLabel: "Saturday, 9:00 am",
       collectionNote: null,
@@ -23,17 +23,21 @@ function sampleState(meta: StudioMetadata): SuccessPageState {
 /** Thank-you page after card / PayPal checkout returns to the website. */
 export default function StudioOrderConfirmationBlock({
   metadata: meta,
+  showRestock = true,
   isEditing,
 }: {
   metadata: StudioMetadata;
+  showRestock?: boolean;
   isEditing?: boolean;
 }) {
   const live = meta.commerceContext?.success;
   if (!live && !isEditing) return null;
+  const state = live ? { ...live, restock: showRestock ? live.restock : null } : sampleState(meta, showRestock);
   return (
     <div className="storefront-page-content storefront-page-content--narrow py-8">
       <OrderConfirmationCard
-        state={live ?? sampleState(meta)}
+        state={state}
+        preview={!live}
         backHref={shopHomePath(meta.storefrontSlug, meta.draft, meta.basePath)}
         backLabel="Back to shop"
       />

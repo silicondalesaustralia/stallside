@@ -6,11 +6,15 @@ import { useCraftMetadata } from "@/components/craft/CraftEditorContext";
 import StudioOrderConfirmationBlock from "@/components/studio/blocks/StudioOrderConfirmationBlock";
 import type { StudioMetadata } from "@/lib/studio/types";
 
+export type CraftOrderConfirmationProps = {
+  showRestock?: boolean;
+};
+
 function isStudioMetadata(meta: unknown): meta is StudioMetadata {
   return Boolean(meta && typeof meta === "object" && "templateId" in meta);
 }
 
-export default function CraftOrderConfirmationSection() {
+export default function CraftOrderConfirmationSection(props: CraftOrderConfirmationProps) {
   const {
     connectors: { connect, drag },
   } = useNode();
@@ -24,7 +28,7 @@ export default function CraftOrderConfirmationSection() {
     >
       <CraftSectionChrome>
         {isStudioMetadata(metadata) ? (
-          <StudioOrderConfirmationBlock metadata={metadata} isEditing />
+          <StudioOrderConfirmationBlock metadata={metadata} showRestock={props.showRestock !== false} isEditing />
         ) : (
           <p className="p-6 text-sm text-[var(--muted)]">Order confirmation</p>
         )}
@@ -35,7 +39,7 @@ export default function CraftOrderConfirmationSection() {
 
 CraftOrderConfirmationSection.craft = {
   displayName: "CraftOrderConfirmationSection",
-  props: {},
+  props: { showRestock: true },
   rules: {
     canDrag: () => true,
     canMoveIn: () => false,

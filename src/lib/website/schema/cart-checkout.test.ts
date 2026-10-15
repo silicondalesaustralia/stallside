@@ -46,6 +46,11 @@ describe("cart & order confirmation layouts", () => {
     assert.equal(hasErrors(validatePage(page("success", [section("orderConfirmation")]), "p")), false);
   });
 
+  it("accept turning the restock sign-up off", () => {
+    const confirmation = { ...section("orderConfirmation"), settings: { showRestock: false } };
+    assert.equal(hasErrors(validatePage(page("success", [confirmation]), "p")), false);
+  });
+
   it("keep the cart section off other pages", () => {
     assert.equal(hasErrors(validatePage(page("home", [section("cart")]), "p")), true);
   });

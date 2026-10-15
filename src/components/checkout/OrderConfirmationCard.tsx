@@ -9,6 +9,8 @@ type Props = {
   state: SuccessPageState;
   backHref: string;
   backLabel: string;
+  /** Builder sample: the restock form is shown but can't be submitted. */
+  preview?: boolean;
 };
 
 function StateMessage({ message }: { message: string }) {
@@ -21,7 +23,7 @@ function StateMessage({ message }: { message: string }) {
 }
 
 /** "Thank you" card shown after card / PayPal checkout; wording is editable in the builder. */
-export default function OrderConfirmationCard({ state, backHref, backLabel }: Props) {
+export default function OrderConfirmationCard({ state, backHref, backLabel, preview = false }: Props) {
   const { preOrder, demoStandSlug, demoProduct, restock } = state;
   return (
     <>
@@ -71,7 +73,7 @@ export default function OrderConfirmationCard({ state, backHref, backLabel }: Pr
           />
         ) : null}
         {restock && !demoStandSlug ? (
-          <RestockOptIn standId={restock.standId} prefillEmail={restock.prefillEmail} />
+          <RestockOptIn standId={restock.standId} prefillEmail={restock.prefillEmail} preview={preview} />
         ) : null}
       </div>
       {demoStandSlug && demoProduct ? null : (

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import SectionCopy from "@/components/studio/SectionCopy";
 import {
   subscribeRestockAlert,
   type RestockSubscribeState,
@@ -9,14 +10,20 @@ import {
 
 const initial: RestockSubscribeState = { ok: false };
 
+const BUTTON =
+  "rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60";
+
 export default function RestockOptIn({
   standId,
   prefillEmail,
   inputId = "restock-email",
+  preview = false,
 }: {
   standId: string;
   prefillEmail?: string;
   inputId?: string;
+  /** Builder sample: wording is editable, the form can't be sent. */
+  preview?: boolean;
 }) {
   const [state, action, pending] = useActionState(subscribeRestockAlert, initial);
 
@@ -30,12 +37,18 @@ export default function RestockOptIn({
 
   return (
     <div className="mt-8 border-t border-[var(--line)] pt-6">
-      <p className="text-base font-medium text-[var(--ink)]">
-        Sold out fast last time - get notified when we&apos;re back
-      </p>
-      <p className="mt-1 text-sm text-[var(--muted)]">
-        We&apos;ll email you when this stand restocks - nothing else.
-      </p>
+      <SectionCopy
+        k="restockHeading"
+        fallback="Sold out fast last time - get notified when we're back"
+        as="p"
+        className="text-base font-medium text-[var(--ink)]"
+      />
+      <SectionCopy
+        k="restockBody"
+        fallback="We'll email you when this stand restocks - nothing else."
+        as="p"
+        className="mt-1 text-sm text-[var(--muted)]"
+      />
       <form action={action} className="mt-4 flex flex-col gap-3">
         <input type="hidden" name="standId" value={standId} />
         <label className="sr-only" htmlFor={inputId}>
@@ -48,16 +61,19 @@ export default function RestockOptIn({
           required
           autoComplete="email"
           defaultValue={prefillEmail ?? ""}
+          disabled={preview}
           placeholder="you@example.com"
           className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-3 py-2.5 text-base text-[var(--ink)]"
         />
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60"
-        >
-          {pending ? "Saving…" : "Yes, email me"}
-        </button>
+        {preview ? (
+          <span className={`${BUTTON} text-center`}>
+            <SectionCopy k="restockButton" fallback="Yes, email me" />
+          </span>
+        ) : (
+          <button type="submit" disabled={pending} className={BUTTON}>
+            {pending ? "Saving…" : <SectionCopy k="restockButton" fallback="Yes, email me" />}
+          </button>
+        )}
         {state.error ? (
           <p className="text-sm text-red-700" role="alert">
             {state.error}

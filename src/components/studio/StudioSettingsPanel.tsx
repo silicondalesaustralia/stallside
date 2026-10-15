@@ -55,6 +55,8 @@ import ImageSectionSettings from "./ImageSectionSettings";
 import FaqSettings from "./FaqSettings";
 import type { CraftFaqProps } from "@/components/studio/sections/CraftFaqSection";
 import ContactFormSettings from "./ContactFormSettings";
+import OrderConfirmationSettings from "./OrderConfirmationSettings";
+import type { CraftOrderConfirmationProps } from "./sections/CraftOrderConfirmationSection";
 import type { CraftContactFormProps } from "@/components/studio/sections/CraftContactFormSection";
 
 const INPUT =
@@ -185,6 +187,9 @@ export default function StudioSettingsPanel() {
         ) : null}
         {selected.type === "CraftContactFormSection" ? (
           <ContactFormSettings props={selected.props as CraftContactFormProps} setProp={setProp} />
+        ) : null}
+        {selected.type === "CraftOrderConfirmationSection" ? (
+          <OrderConfirmationSettings props={selected.props as CraftOrderConfirmationProps} setProp={setProp} />
         ) : null}
         {selected.type === "CraftImageSection" ? (
           <ImageSectionSettings props={selected.props as CraftImageProps} setProp={setProp} />
