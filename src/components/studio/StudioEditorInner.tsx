@@ -29,6 +29,7 @@ import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style"
 import type { ChromeTarget, StudioSaveStatus } from "@/components/craft/CraftEditorContext";
 import type { EditorSaveResult } from "@/lib/website/persistence/editor-result";
 import StudioEditorShell from "@/components/studio/shell/StudioEditorShell";
+import StudioSiteWidePage from "@/components/studio/StudioSiteWidePage";
 import { StudioEditorProvider } from "./StudioEditorContext";
 import StudioEditorHeader from "./StudioEditorHeader";
 import StudioSaveNotice from "./StudioSaveNotice";
@@ -146,6 +147,7 @@ export default function StudioEditorInner({
   const brandNameSizeState = useBrandNameSize({ initial: metadata.resolvedBranding.brandNameSize, revisionRef, runExclusive });
   const siteStyleState = useSiteStyle({ initial: metadata.resolvedBranding.siteStyle, revisionRef, runExclusive });
   const [chromeTarget, setChromeTarget] = useState<ChromeTarget>(null);
+  const [siteWideOpen, setSiteWideOpen] = useState(false);
   const [headerLayout, setHeaderLayout] = useState<HeaderLayout>(
     metadata.resolvedBranding.headerLayout,
   );
@@ -261,6 +263,8 @@ export default function StudioEditorInner({
       surface,
       chromeTarget,
       setChromeTarget,
+      siteWideOpen,
+      setSiteWideOpen,
       headerLayout,
       brandMark,
       logoHeight,
@@ -304,6 +308,7 @@ export default function StudioEditorInner({
       commercePageKind,
       surface,
       chromeTarget,
+      siteWideOpen,
       headerLayout,
       brandMark,
       logoHeight,
@@ -386,6 +391,7 @@ export default function StudioEditorInner({
             </StudioSettingsColumn>
           </div>
           <StudioAddSectionModal />
+          <StudioSiteWidePage />
         </Editor>
       </div>
     </StudioEditorProvider>

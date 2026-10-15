@@ -45,6 +45,9 @@ export type CraftEditorChrome = {
   liveUrl?: string;
   chromeTarget?: ChromeTarget;
   setChromeTarget?: (t: ChromeTarget) => void;
+  /** The Site Wide Edits page shown over the canvas. */
+  siteWideOpen?: boolean;
+  setSiteWideOpen?: (open: boolean) => void;
   headerLayout?: HeaderLayout;
   brandMark?: BrandMarkMode;
   logoHeight?: number;

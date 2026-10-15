@@ -6,6 +6,7 @@ import { STUDIO_TEMPLATES } from "@/lib/studio/templates";
 import { useStudioEditorChrome } from "./StudioEditorContext";
 import StudioPageSelector from "./StudioPageSelector";
 import StudioSiteStatus from "./StudioSiteStatus";
+import SiteWideEditsButton from "./SiteWideEditsButton";
 import { useStickyToolbarHeight } from "./useStickyToolbarHeight";
 import { editorPageUrl } from "@/lib/studio/editor-page-url";
 
@@ -65,6 +66,7 @@ export default function StudioEditorHeader() {
         >
           {templateLabel}
         </Link>
+        <SiteWideEditsButton />
         <div className="flex rounded-lg border border-[var(--line)] bg-[#fafaf9] p-0.5">
           {VIEWPORTS.map((vp) => (
             <button
