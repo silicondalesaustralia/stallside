@@ -34,6 +34,8 @@ import BusinessProfileCard from "@/components/website/search-profile/BusinessPro
 import { loadSearchProfileView } from "@/lib/seo/load-search-profile";
 import { hasUsefulSearchProfile } from "@/lib/seo/search-profile-status";
 import { parseBusinessProfile } from "@/lib/seo/business-profile";
+import { parseStorefrontConfig } from "@/lib/storefront/config";
+import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
 
 export const dynamic = "force-dynamic";
 
@@ -82,6 +84,8 @@ export default async function WebStudioPage({
   const metadata = await buildStudioMetadata(ctx, templateId, true);
 
   const draft = ctx.branding;
+  const siteContactEmail =
+    overlayStorefrontIdentity(storefront, parseStorefrontConfig(storefront.draftConfig).identity).contactEmail?.trim() ?? "";
   const { logoUrl, accentColor, secondaryColor } = draft;
   const overrides = ctx.config.themeOverrides;
   const history = await listStorefrontPublications(owner.id);
@@ -122,7 +126,8 @@ export default async function WebStudioPage({
             subheadline={draft.subheadline ?? ""}
             about={draft.about ?? ""}
             slug={storefront.slug}
-            contactEmail={draft.contactEmail}
+            contactEmail={siteContactEmail}
+            businessEmail={owner.contactEmail}
             showPhone={draft.showPhone}
             isPublished={storefront.isPublished}
             liveUrl={storefrontFullUrl(storefront.slug)}

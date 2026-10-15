@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { sendOwnerEmail } from "@/lib/notify-email";
+import { parseStorefrontConfig } from "@/lib/storefront/config";
 import { RateLimitError, assertRateLimit, clientIpFromHeaders } from "@/lib/rate-limit";
 import { contactEnquiryEmail, looksLikeBot, parseContactEnquiry, type ContactFormState } from "./contact-form";
 
@@ -20,14 +21,17 @@ async function recipientFor(standId: string) {
           businessName: true,
           contactEmail: true,
           user: { select: { email: true } },
-          storefront: { select: { contactEmail: true, headline: true } },
+          storefront: { select: { contactEmail: true, headline: true, draftConfig: true } },
         },
       },
     },
   });
   if (!stand?.isActive || stand.owner.deletedAt) return null;
   const { owner } = stand;
-  const email = owner.storefront?.contactEmail?.trim() || owner.contactEmail?.trim() || owner.user.email;
+  // Where messages go isn't a design change, so the latest saved address applies before publishing.
+  const savedEmail = owner.storefront ? parseStorefrontConfig(owner.storefront.draftConfig).identity?.contactEmail : undefined;
+  const siteEmail = savedEmail !== undefined ? savedEmail : owner.storefront?.contactEmail;
+  const email = siteEmail?.trim() || owner.contactEmail?.trim() || owner.user.email;
   if (!email) return null;
   return { email, shopName: owner.storefront?.headline?.trim() || owner.businessName || stand.name };
 }

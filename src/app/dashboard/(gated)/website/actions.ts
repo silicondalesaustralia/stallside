@@ -41,8 +41,10 @@ export async function saveStorefrontDetails(formData: FormData) {
   const slugInput = slugifyStorefrontInput(
     String(formData.get("slug") ?? "").trim(),
   );
+  const typedEmail = String(formData.get("contactEmail") ?? "").trim().slice(0, 200);
+  // Blank or the Business details email means "follow Business details", so later changes there apply.
   const contactEmail =
-    String(formData.get("contactEmail") ?? "").trim().slice(0, 200) || null;
+    typedEmail && typedEmail.toLowerCase() !== owner.contactEmail.trim().toLowerCase() ? typedEmail : null;
   const showPhone = formData.get("showPhone") === "on";
 
   if (!headline) redirect(webStudioPath("details", { error: "headline" }));

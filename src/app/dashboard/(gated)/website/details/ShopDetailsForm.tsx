@@ -10,7 +10,9 @@ type Props = {
   subheadline: string;
   about: string;
   slug: string;
+  /** Website-only override; blank follows Business details. */
   contactEmail: string;
+  businessEmail: string;
   showPhone: boolean;
 };
 
@@ -20,6 +22,7 @@ export default function ShopDetailsForm({
   about,
   slug,
   contactEmail,
+  businessEmail,
   showPhone,
 }: Props) {
   const publicHost = storefrontSubdomainHost(slug || "your-shop");
@@ -68,8 +71,13 @@ export default function ShopDetailsForm({
           name="contactEmail"
           type="email"
           defaultValue={contactEmail}
+          placeholder={businessEmail}
           className={inputClass}
         />
+        <span className="mt-1 block text-xs text-[var(--muted)]">
+          Shown on your site and where contact form messages go. Leave blank to use your Business details email
+          ({businessEmail}).
+        </span>
       </label>
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" name="showPhone" defaultChecked={showPhone} />

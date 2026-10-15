@@ -15,7 +15,9 @@ type Props = {
   subheadline: string;
   about: string;
   slug: string;
+  /** Website-only override; blank follows the account's business email. */
   contactEmail: string;
+  businessEmail: string;
   showPhone: boolean;
   isPublished: boolean;
   liveUrl: string;
@@ -31,6 +33,7 @@ export default function WebStudioDetailsPanel({
   about,
   slug,
   contactEmail,
+  businessEmail,
   showPhone,
   isPublished,
   liveUrl,
@@ -93,6 +96,7 @@ export default function WebStudioDetailsPanel({
         about={about}
         slug={slug}
         contactEmail={contactEmail}
+        businessEmail={businessEmail}
         showPhone={showPhone}
       />
 
