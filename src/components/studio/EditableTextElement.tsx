@@ -1,102 +1,25 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  type KeyboardEvent,
-  type MouseEvent,
-} from "react";
-import { useNode } from "@craftjs/core";
-import { withSectionText } from "@/lib/studio/section-texts";
+import { lazy, Suspense, createElement, type ComponentProps } from "react";
+import type EditableTextElementCraft from "./EditableTextElementCraft";
 
-export type TextTag = "h1" | "h2" | "h3" | "h4" | "p" | "span" | "div";
+export type { TextTag } from "./EditableTextElementCraft";
 
-type Props = {
-  prop: string;
-  value: string;
-  as: TextTag;
-  sectionHeading: boolean;
-  className: string;
-  multiline: boolean;
-  placeholder: string;
-  /** For `texts.<key>` props: the default copy, restored when the text is cleared. */
-  defaultValue?: string;
-};
+type Props = ComponentProps<typeof EditableTextElementCraft>;
 
-/** The contentEditable element behind `InlineEditableText`. */
-export default function EditableTextElement({
-  prop,
-  value,
-  as: Tag,
-  sectionHeading,
-  className,
-  multiline,
-  placeholder,
-  defaultValue = "",
-}: Props) {
-  const {
-    actions: { setProp },
-  } = useNode();
-  const elRef = useRef<HTMLElement | null>(null);
+/** Loaded on demand so Craft.js stays out of the public storefront bundle. */
+const LazyEditableText = lazy(() => import("./EditableTextElementCraft"));
 
-  useEffect(() => {
-    const el = elRef.current;
-    if (!el) return;
-    if (document.activeElement === el) return;
-    const next = value || "";
-    if (el.innerText !== next) el.innerText = next;
-  }, [value]);
-
-  function commit() {
-    const el = elRef.current;
-    if (!el) return;
-    const next = (multiline ? el.innerText : el.textContent ?? "")
-      .replace(/\u00a0/g, " ")
-      .replace(/\n+$/g, "")
-      .trimEnd();
-    const isCopy = prop.startsWith("texts.");
-    if (isCopy && !next.trim()) el.innerText = defaultValue;
-    setProp((props: Record<string, unknown>) => {
-      if (isCopy) {
-        props.texts = withSectionText(props.texts, prop.slice(6), next, defaultValue);
-      } else {
-        props[prop] = next;
-      }
-    });
-  }
-
-  function onKeyDown(e: KeyboardEvent<HTMLElement>) {
-    e.stopPropagation();
-    if (!multiline && e.key === "Enter") {
-      e.preventDefault();
-      e.currentTarget.blur();
-    }
-    if (e.key === "Escape") {
-      if (elRef.current) elRef.current.innerText = value || "";
-      e.currentTarget.blur();
-    }
-  }
-
-  function onMouseDown(e: MouseEvent) {
-    e.stopPropagation();
-  }
-
+/** The contentEditable element behind `InlineEditableText`; shows plain text while loading. */
+export default function EditableTextElement(props: Props) {
+  const fallback = createElement(
+    props.as,
+    { className: `inline-editable ${props.className}`.trim() },
+    props.value,
+  );
   return (
-    <Tag
-      ref={(node) => {
-        elRef.current = node;
-      }}
-      className={`inline-editable ${className}`.trim()}
-      contentEditable
-      suppressContentEditableWarning
-      data-placeholder={placeholder}
-      data-section-heading={sectionHeading ? "" : undefined}
-      onBlur={commit}
-      onKeyDown={onKeyDown}
-      onMouseDown={onMouseDown}
-      onClick={(e) => e.preventDefault()}
-      role="textbox"
-      aria-label={placeholder}
-    />
+    <Suspense fallback={fallback}>
+      <LazyEditableText {...props} />
+    </Suspense>
   );
 }
