@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { StudioMetadata } from "@/lib/studio/types";
 import type { ProductDetailView } from "@/lib/studio/product-detail-settings";
-import { shopHomePath, shopPagePath } from "@/lib/storefront/paths";
+import { shopCategoryPath, shopHomePath, shopPagePath } from "@/lib/storefront/paths";
 import StorefrontBreadcrumbs from "@/components/storefront/StorefrontBreadcrumbs";
 import SectionCopy from "@/components/studio/SectionCopy";
 import ProductGallery from "@/components/storefront/product/ProductGallery";
@@ -50,9 +50,12 @@ export default function StudioProductDetailBlock({
   const catalog = meta.commerceContext?.catalogProducts ?? [product];
   const backHref = shopPagePath(meta.storefrontSlug, "shop", meta.draft, meta.basePath);
   const backLabel = meta.templateId === "farmhouse" ? "← Back to what's available" : "← Back to shop";
+  const category = meta.commerceContext?.category;
   const crumbs = [
     { label: meta.branding.headline, href: shopHomePath(meta.storefrontSlug, meta.draft, meta.basePath) },
-    { label: "Shop", href: backHref },
+    category
+      ? { label: category.title, href: shopCategoryPath(meta.storefrontSlug, category.slug, meta.draft, meta.basePath) }
+      : { label: "Shop", href: backHref },
     { label: product.name },
   ];
   const enlarge = view.enlarge && !isEditing;

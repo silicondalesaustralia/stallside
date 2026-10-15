@@ -28,6 +28,7 @@ import { COMMERCE_PRODUCT_KEY } from "@/lib/studio/commerce-pages";
 import { withCommerceContext } from "@/lib/studio/commerce-context";
 import { studioPageNodes } from "@/lib/studio/storage";
 import StudioPublicSections from "@/lib/studio/public-render";
+import { productMainCategory } from "@/lib/studio/product-main-category";
 
 export async function generateMetadata({
   params,
@@ -131,9 +132,12 @@ export default async function StorefrontProductPage({
   const primaryCustomHostname = draft
     ? null
     : await loadPrimaryCustomHostname(ctx.storefront.id);
+  const mainCategory = await productMainCategory(ctx, productRow.id);
   const breadcrumbSegments = [
     { label: ctx.branding.headline, path: "/" },
-    { label: "Shop", path: "/shop" },
+    mainCategory
+      ? { label: mainCategory.title, path: `/${encodeURIComponent(mainCategory.slug)}` }
+      : { label: "Shop", path: "/shop" },
     { label: product.name },
   ];
   const breadcrumbs = buildStorefrontBreadcrumbs(
@@ -146,7 +150,7 @@ export default async function StorefrontProductPage({
     : await productPageSeo(ctx, product, `/products/${product.slug}`, {
         sku: productRow.sku,
         barcode: productRow.upc,
-      });
+      }, mainCategory);
 
   const nodes =
     studioCtx.active
@@ -157,6 +161,7 @@ export default async function StorefrontProductPage({
       ? withCommerceContext(studioCtx.metadata, {
           kind: "product",
           product,
+          category: mainCategory,
           catalogProducts,
           ownerId: ctx.owner.id,
         })

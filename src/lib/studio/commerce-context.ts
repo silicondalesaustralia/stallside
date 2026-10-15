@@ -9,6 +9,7 @@ import type {
   StudioCommerceContext,
 } from "./commerce-pages";
 import type { StudioMetadata } from "./types";
+import { productMainCategory } from "./product-main-category";
 
 function mapStandProducts(ctx: NonNullable<StorefrontContext>) {
   return ctx.products.map((p) =>
@@ -59,9 +60,11 @@ export async function buildSampleCommerceContext(
   }
 
   if (kind === "product") {
+    const product = catalog.find((p) => p.images.length > 1) ?? catalog[0];
     return {
       ...base,
-      product: catalog.find((p) => p.images.length > 1) ?? catalog[0],
+      product,
+      category: product ? await productMainCategory(ctx, product.id) : undefined,
       catalogProducts: catalog,
     };
   }

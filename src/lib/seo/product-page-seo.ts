@@ -27,6 +27,7 @@ export async function productPageSeo(
   product: PublicProductCard,
   path: string,
   identifiers?: { sku?: string | null; barcode?: string | null },
+  category?: { slug: string; title: string },
 ): Promise<PageSeo> {
   const profile = parseBusinessProfile(ctx.storefront.businessProfile);
   const country = profile.address?.country ?? countryFor(ctx.stand.currency);
@@ -38,7 +39,9 @@ export async function productPageSeo(
     imageUrl: product.imageUrl,
     breadcrumb: [
       { label: ctx.branding.headline, path: "/" },
-      { label: "Shop", path: "/shop" },
+      category
+        ? { label: category.title, path: `/${encodeURIComponent(category.slug)}` }
+        : { label: "Shop", path: "/shop" },
       { label: product.name },
     ],
     nodes: [
