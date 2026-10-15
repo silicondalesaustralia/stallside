@@ -89,6 +89,17 @@ export default async function WebsiteDomainsPage({
     },
   });
 
+  const boughtDomains = await prisma.domainPurchase.findMany({
+    where: {
+      storefrontId: storefront.id,
+      status: { in: ["REGISTERED", "CONNECTING", "ACTIVE"] },
+    },
+    select: { hostname: true },
+  });
+  const managedHosts = new Set(
+    boughtDomains.flatMap((p) => [p.hostname, `www.${p.hostname}`]),
+  );
+
   const preferred = await loadPreferredOriginInput(storefront);
   const liveUrl = getStorefrontUrl(preferred);
   const isStaging = publicHostMode() === "staging";
@@ -169,6 +180,7 @@ export default async function WebsiteDomainsPage({
           {domains.map((d) => (
             <CustomDomainCard
               key={d.id}
+              managed={managedHosts.has(d.hostname)}
               domain={{
                 id: d.id,
                 hostname: d.hostname,

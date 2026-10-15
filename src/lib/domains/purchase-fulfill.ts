@@ -1,11 +1,9 @@
-/** Fulfill DomainPurchase after Stripe payment (register → DNS → Cloudflare). */
+/** Fulfill DomainPurchase after Stripe payment (register → Cloudflare → DNS). */
 
 import { prisma } from "@/lib/prisma";
 import { DomainPurchaseStatus } from "@/generated/prisma/client";
-import { cloudflareSaasCnameTarget } from "@/lib/domains/config";
-import { connectCustomDomain } from "@/lib/domains/lifecycle";
 import { createNamecheapRegistrar } from "@/lib/domains/registrar/namecheap/provider";
-import { namecheapSetWwwCname } from "@/lib/domains/registrar/namecheap/dns";
+import { connectPurchasedDomain } from "@/lib/domains/purchase-connect";
 import { refundDomainPurchase } from "@/lib/domains/purchase-refund";
 import type { AuEligibility, RegistrantContact } from "@/lib/domains/registrar/types";
 
@@ -77,55 +75,6 @@ export async function fulfillDomainPurchase(purchaseId: string): Promise<void> {
   }
 
   await connectPurchasedDomain(purchase.id);
-}
-
-async function connectPurchasedDomain(purchaseId: string) {
-  const purchase = await prisma.domainPurchase.findUniqueOrThrow({
-    where: { id: purchaseId },
-    include: {
-      owner: { include: { user: { select: { email: true, role: true } } } },
-    },
-  });
-
-  await prisma.domainPurchase.update({
-    where: { id: purchase.id },
-    data: { status: DomainPurchaseStatus.CONNECTING },
-  });
-
-  try {
-    await namecheapSetWwwCname(purchase.hostname, cloudflareSaasCnameTarget());
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "failed";
-    await prisma.domainPurchase.update({
-      where: { id: purchase.id },
-      data: { lastError: `DNS: ${msg}`.slice(0, 500) },
-    });
-  }
-
-  try {
-    const row = await connectCustomDomain({
-      storefrontId: purchase.storefrontId,
-      owner: purchase.owner,
-      hostname: `www.${purchase.hostname}`,
-    });
-    await prisma.domainPurchase.update({
-      where: { id: purchase.id },
-      data: {
-        status: DomainPurchaseStatus.ACTIVE,
-        storefrontDomainId: row.id,
-        lastError: null,
-      },
-    });
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "failed";
-    await prisma.domainPurchase.update({
-      where: { id: purchase.id },
-      data: {
-        status: DomainPurchaseStatus.REGISTERED,
-        lastError: `Connect: ${msg}`.slice(0, 500),
-      },
-    });
-  }
 }
 
 export async function markDomainPurchasePaid(

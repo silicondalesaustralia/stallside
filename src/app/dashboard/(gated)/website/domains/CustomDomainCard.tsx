@@ -9,6 +9,7 @@ import { isLikelyApexHostname } from "@/lib/domains/normalize";
 import { defaultCnameInstructions } from "@/lib/domains/provider/cloudflare";
 import CloudflareTrustBadge from "./CloudflareTrustBadge";
 import DnsRecordsList, { type DnsRecord } from "./DnsRecordsList";
+import ManagedDnsNote from "./ManagedDnsNote";
 
 function sellerStatus(
   status: StorefrontDomainStatus,
@@ -86,11 +87,18 @@ function buildDnsRecords(domain: CustomDomainRow): DnsRecord[] {
   return records;
 }
 
-export default function CustomDomainCard({ domain }: { domain: CustomDomainRow }) {
+export default function CustomDomainCard({
+  domain,
+  managed = false,
+}: {
+  domain: CustomDomainRow;
+  /** Bought through Vendl: we manage its DNS, so bare domains are fine. */
+  managed?: boolean;
+}) {
   const records = buildDnsRecords(domain);
   const waiting =
     domain.status !== "ACTIVE" && domain.status !== "DISCONNECTED";
-  const apex = isLikelyApexHostname(domain.hostname);
+  const apex = !managed && isLikelyApexHostname(domain.hostname);
   const wwwHost = suggestedWww(domain.hostname);
 
   return (
@@ -132,7 +140,9 @@ export default function CustomDomainCard({ domain }: { domain: CustomDomainRow }
         </div>
       ) : null}
 
-      {waiting && !apex ? (
+      {waiting && managed ? <ManagedDnsNote lastCheckedAt={domain.lastCheckedAt} /> : null}
+
+      {waiting && !apex && !managed ? (
         <div className="flex flex-col gap-4 rounded-xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
           <div>
             <p className="font-semibold text-[var(--field)]">

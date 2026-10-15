@@ -13,25 +13,33 @@ export default function DomainPrimaryPrompts({ domains }: { domains: Row[] }) {
   const primary = active.find((d) => d.isPrimary);
   const candidate = primary ?? active.find((d) => d.hostname.startsWith("www.")) ?? active[0];
   const apex = candidate.hostname.startsWith("www.") ? candidate.hostname.slice(4) : null;
+  const apexConnected = apex ? domains.some((d) => d.hostname === apex) : false;
+  const choices = active.length > 1 ? active : [candidate];
 
   return (
     <section className="dash-card flex flex-col gap-4 p-5">
       {!primary ? (
         <div className="flex flex-col gap-2">
-          <p className="font-semibold">Make {candidate.hostname} your main address</p>
-          <p className="text-sm text-[var(--muted)]">
-            Your domain is connected. Make it primary and your Vendl address, old stand links and printed QR
-            codes will all forward to it.
+          <p className="font-semibold">
+            {choices.length > 1 ? "Choose your main address" : `Make ${candidate.hostname} your main address`}
           </p>
-          <form action={makePrimaryDomainAction}>
-            <input type="hidden" name="domainId" value={candidate.id} />
-            <button type="submit" className={dashCtaClass}>
-              Make primary
-            </button>
-          </form>
+          <p className="text-sm text-[var(--muted)]">
+            Your domain is connected. Your Vendl address, old stand links, printed QR codes
+            {choices.length > 1 ? " and the other address" : ""} will all forward to the one you make primary.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {choices.map((d) => (
+              <form key={d.id} action={makePrimaryDomainAction}>
+                <input type="hidden" name="domainId" value={d.id} />
+                <button type="submit" className={dashCtaClass}>
+                  {choices.length > 1 ? `Use ${d.hostname}` : "Make primary"}
+                </button>
+              </form>
+            ))}
+          </div>
         </div>
       ) : null}
-      {apex ? (
+      {apex && !apexConnected ? (
         <div className="flex flex-col gap-1">
           <p className="font-semibold">Forward {apex} to www</p>
           <p className="text-sm text-[var(--muted)]">

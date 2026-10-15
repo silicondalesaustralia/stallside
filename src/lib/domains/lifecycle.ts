@@ -52,6 +52,8 @@ export async function connectCustomDomain(input: {
   storefrontId: string;
   owner: OwnerEntitlement;
   hostname: string;
+  /** Bare domains only work when Vendl controls the DNS (bought through Vendl). */
+  allowApex?: boolean;
 }) {
   if (!customDomainsFeatureEnabled()) {
     throw new DomainActionFailure(
@@ -79,7 +81,7 @@ export async function connectCustomDomain(input: {
       "Enter a hostname such as www.yourdomain.com.",
     );
   }
-  if (isLikelyApexHostname(hostname)) {
+  if (!input.allowApex && isLikelyApexHostname(hostname)) {
     throw new DomainActionFailure(
       "apex_use_www",
       "Connect www.yourdomain.com for now (not the bare domain).",
