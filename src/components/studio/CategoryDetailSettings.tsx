@@ -3,18 +3,18 @@
 import type { CraftCategoryDetailProps } from "@/components/studio/sections/CraftCategoryDetailSection";
 import {
   CATEGORY_ALIGNS,
-  CATEGORY_CARD_STYLES,
   categoryDetailView,
   type CategoryColumns,
   type CategoryMobileColumns,
 } from "@/lib/studio/category-detail-settings";
 import SiteChoice from "./SiteChoice";
+import PresetStyleField from "./PresetStyleField";
+import { PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
 import CartBarSettings from "./CartBarSettings";
 
 const COLUMNS = ["2", "3", "4"] as const;
 const MOBILE_COLUMNS = ["1", "2"] as const;
 const ALIGNS = { left: "Left", centre: "Centred" } as const;
-const CARDS = { classic: "Square photos", editorial: "Tall photos" } as const;
 
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -66,9 +66,9 @@ export default function CategoryDetailSettings({
         value={String(view.mobileColumns) as (typeof MOBILE_COLUMNS)[number]}
         onChange={(v) => setProp("mobileColumns", Number(v) as CategoryMobileColumns)}
       />
-      <SiteChoice label="Product photos" options={CATEGORY_CARD_STYLES} labels={CARDS} value={view.cardStyle} onChange={(v) => setProp("cardStyle", v)} />
+      <PresetStyleField presetsBySkin={PRODUCT_PRESETS} value={view.preset ?? undefined} onChange={(v) => setProp("preset", v)} />
       <Toggle label="Show prices" checked={view.showPrice} onChange={(v) => setProp("showPrice", v)} />
-      <Toggle label="Show sold-out labels" checked={view.showAvailability} onChange={(v) => setProp("showAvailability", v)} />
+      <Toggle label="Show availability" checked={view.showAvailability} onChange={(v) => setProp("showAvailability", v)} />
       <CartBarSettings />
       <p className="text-xs text-[var(--muted)]">Style the name and descriptions under Text elements below.</p>
     </>

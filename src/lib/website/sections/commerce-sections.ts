@@ -13,7 +13,7 @@ import {
 } from "@/lib/studio/product-detail-settings";
 import { blockLayoutSchema } from "@/lib/studio/product-blocks";
 import { BUTTON_WIDTH_MAX, BUTTON_WIDTH_MIN, PRODUCT_BUTTONS } from "@/lib/studio/product-buttons";
-import { CATEGORY_ALIGNS, CATEGORY_CARD_STYLES } from "@/lib/studio/category-detail-settings";
+import { CATEGORY_ALIGNS } from "@/lib/studio/category-detail-settings";
 import { CATEGORY_VARIANTS, NEXT_DROP_VARIANTS, PRODUCT_VARIANTS, DEFAULT_ONLY } from "./variants";
 
 export const productGrid: SectionDefinition = {
@@ -123,8 +123,9 @@ export const categoryDetail: SectionDefinition = {
   version: 1,
   craftName: "CraftCategoryDetailSection",
   label: "Category page",
-  variants: DEFAULT_ONLY,
-  defaultVariant: "default",
+  variantProp: "preset",
+  variants: PRODUCT_VARIANTS,
+  defaultVariant: "classic",
   content: z.object({}),
   settings: z.object({
     showTitle: z.boolean().optional(),
@@ -133,7 +134,6 @@ export const categoryDetail: SectionDefinition = {
     align: z.enum(CATEGORY_ALIGNS).optional(),
     columns: z.union([z.literal(2), z.literal(3), z.literal(4)]).optional(),
     mobileColumns: z.union([z.literal(1), z.literal(2)]).optional(),
-    cardStyle: z.enum(CATEGORY_CARD_STYLES).optional(),
     showPrice: z.boolean().optional(),
     showAvailability: z.boolean().optional(),
   }),

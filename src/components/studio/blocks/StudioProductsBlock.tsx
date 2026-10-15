@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { StudioMetadata } from "@/lib/studio/types";
 import type { ProductPreset as ExtendedProductPreset } from "@/lib/studio/preset-registry";
-import { mapProductPreset } from "@/lib/studio/preset-registry";
+import { productGridLook } from "@/lib/studio/product-grid-look";
 import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
 import StudioProductCard from "@/components/studio/blocks/StudioProductCard";
 
@@ -37,9 +37,9 @@ export default function StudioProductsBlock({
   isEditing,
   editable = false,
 }: Props) {
-  const mappedPreset = mapProductPreset(meta.templateId, preset);
-  const isDense = meta.templateId === "market" || preset === "dense" || preset === "list";
-  const isFarm = meta.templateId === "farmhouse" || preset === "farm-grid" || preset === "availability";
+  const look = productGridLook(meta.templateId, preset);
+  const isDense = look.dense;
+  const isFarm = look.farm;
 
   let pool = meta.products;
   if (source === "manual" && productIds.length > 0) {
@@ -91,18 +91,15 @@ export default function StudioProductsBlock({
   const centred = single && align === "centre";
   const colClass = single
     ? `w-full max-w-md grid-cols-1 ${centred ? "mx-auto" : ""}`
-    : mappedPreset === "compact" || isDense
-      ? "grid-cols-2 sf-sm:grid-cols-3 sf-lg:grid-cols-4 sf-xl:grid-cols-5"
-      : mappedPreset === "featured"
-        ? "grid-cols-1 sf-sm:grid-cols-2"
-        : columns === 4 || isDense
-          ? "grid-cols-2 sf-lg:grid-cols-4"
-          : columns === 3
-            ? "grid-cols-2 sf-lg:grid-cols-3"
-            : "grid-cols-2";
+    : look.presetGrid ??
+      (columns === 4
+        ? "grid-cols-2 sf-lg:grid-cols-4"
+        : columns === 3
+          ? "grid-cols-2 sf-lg:grid-cols-3"
+          : "grid-cols-2");
 
   const sectionClass = isFarm ? "studio-section studio-section--wash" : "studio-section";
-  const cardPreset = mappedPreset;
+  const cardPreset = look.card;
 
   return (
     <section className={sectionClass}>

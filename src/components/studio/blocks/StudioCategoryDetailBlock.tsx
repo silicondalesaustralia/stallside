@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import type { StudioMetadata } from "@/lib/studio/types";
+import { defaultProductPreset } from "@/lib/studio/preset-registry";
+import { productGridLook } from "@/lib/studio/product-grid-look";
 import { categoryGridClass, type CategoryDetailView } from "@/lib/studio/category-detail-settings";
 import RichText from "@/components/studio/RichText";
 import SectionElement from "@/components/studio/SectionElement";
@@ -39,8 +41,9 @@ export default function StudioCategoryDetailBlock({
   const products = category ? meta.products.filter((p) => p.categoryIds.includes(category.id)) : meta.products;
   const centred = view.align === "centre";
   const textAlign = centred ? "mx-auto text-center" : "";
+  const look = productGridLook(meta.templateId, view.preset ?? defaultProductPreset(meta.templateId));
   return (
-    <section className="studio-section">
+    <section className={look.farm ? "studio-section studio-section--wash" : "studio-section"}>
       <div className="studio-section__inner">
         {view.showTitle ? (
           <SectionHeadingTag defaultTag="h1" el="title" className={`studio-heading ${centred ? "text-center" : ""}`}>
@@ -57,13 +60,14 @@ export default function StudioCategoryDetailBlock({
           />
         ) : null}
         {products.length > 0 ? (
-          <ul className={`mt-8 grid gap-5 ${categoryGridClass(view)}`}>
+          <ul className={`mt-8 grid ${look.dense ? "gap-3" : "gap-5"} ${look.presetGrid ?? categoryGridClass(view)}`}>
             {products.map((product) => (
               <li key={product.id}>
                 <StudioProductCard
                   product={product}
                   meta={meta}
-                  preset={view.cardStyle}
+                  preset={look.card}
+                  isFarm={look.farm}
                   showPrice={view.showPrice}
                   showAvailability={view.showAvailability}
                 />
