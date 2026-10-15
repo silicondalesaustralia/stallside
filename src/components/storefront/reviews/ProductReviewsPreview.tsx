@@ -17,8 +17,8 @@ export default function ProductReviewsPreview({
 }) {
   const sample = reviews.slice(0, 2);
   return (
-    <div className="storefront-page-content storefront-page-content--narrow">
-      <section className="mt-10 border-t border-[var(--line)] pt-8">
+    <div className="storefront-page-content storefront-page-content--narrow storefront-page-content--after-product">
+      <section className="border-t border-[var(--line)] pt-8">
         <h2 className="studio-heading text-xl">
           <SectionCopy k="reviewsHeading" fallback="Customer reviews" />
         </h2>

@@ -136,6 +136,7 @@ function StudioSectionRender({
           heading={String(p.heading ?? "Products")}
           showPrice={Boolean(p.showPrice ?? true)}
           showAvailability={Boolean(p.showAvailability ?? true)}
+          showRatings={p.showRatings === true}
           metadata={metadata}
         />
       );
@@ -151,12 +152,13 @@ function StudioSectionRender({
           {Boolean(p.showReviews) &&
           metadata.commerceContext?.ownerId &&
           metadata.commerceContext.product ? (
-            <div className="storefront-page-content storefront-page-content--narrow">
+            <div className="storefront-page-content storefront-page-content--narrow storefront-page-content--after-product">
               <ProductApprovedReviews
                 ownerId={metadata.commerceContext.ownerId}
                 productId={metadata.commerceContext.product.id}
                 storefrontSlug={metadata.storefrontSlug}
                 showForm={p.showReviewForm !== false}
+                className=""
               />
             </div>
           ) : null}

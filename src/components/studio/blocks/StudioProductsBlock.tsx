@@ -17,6 +17,7 @@ type Props = {
   heading: string;
   showPrice: boolean;
   showAvailability: boolean;
+  showRatings?: boolean;
   metadata: StudioMetadata;
   isEditing?: boolean;
   editable?: boolean;
@@ -33,6 +34,7 @@ export default function StudioProductsBlock({
   heading,
   showPrice,
   showAvailability,
+  showRatings = false,
   metadata: meta,
   isEditing,
   editable = false,
@@ -114,6 +116,7 @@ export default function StudioProductsBlock({
                 preset={cardPreset}
                 showPrice={showPrice}
                 showAvailability={showAvailability}
+                showRating={showRatings}
                 isFarm={isFarm}
               />
             </li>

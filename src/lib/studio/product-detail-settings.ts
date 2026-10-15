@@ -58,6 +58,8 @@ export type ProductDetailView = {
   buttonWidth: number | null;
   /** Payment marks under the cart buttons; off unless the seller turns it on. */
   showPayments: boolean;
+  /** Stars and rating block; shown when the product has approved reviews unless switched off. */
+  showRating: boolean;
   infoRows: InfoRow[];
   tabs: ProductTab[];
   /** Which zone each block sits in, in order. */
@@ -99,6 +101,7 @@ export function productDetailView(props: Record<string, unknown>): ProductDetail
     buttons: productButtonsOf(props.buttons),
     buttonWidth: buttonWidthOf(props.buttonWidth),
     showPayments: props.showPayments === true,
+    showRating: props.showRating !== false,
     infoRows: parseInfoRows(props.infoRows).filter((r) => r.text.trim()),
     tabs: parseProductTabs(props.tabs).filter((t) => t.title.trim()),
     blocks: parseBlockLayout(props.blockLayout),

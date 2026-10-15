@@ -1,5 +1,5 @@
 import SectionElement from "@/components/studio/SectionElement";
-import CategoryRating from "./CategoryRating";
+import RatingSummary from "./RatingSummary";
 import type { CategoryTileData, CategoryTileOptions } from "@/lib/studio/category-looks";
 
 /** A category's name, then its description and star rating when the seller turned them on. */
@@ -28,7 +28,7 @@ export default function CategoryTileText({
         </SectionElement>
       ) : null}
       {options.showRatings ? (
-        <CategoryRating rating={cat.rating} isEditing={options.isEditing} onDark={onDark} className="mt-1.5" />
+        <RatingSummary rating={cat.rating} isEditing={options.isEditing} onDark={onDark} className="mt-1.5" />
       ) : null}
     </div>
   );

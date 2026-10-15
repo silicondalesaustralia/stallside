@@ -10,6 +10,7 @@ import ProductDescription from "./ProductDescription";
 import ProductBuyBox from "./ProductBuyBox";
 import ProductInfoRows from "./ProductInfoRows";
 import ProductInfoTabs from "./ProductInfoTabs";
+import ProductRatingLink from "./ProductRatingLink";
 
 export type ProductBlockInfo = {
   product: PublicProductCard;
@@ -36,6 +37,8 @@ export default function ProductBlock({ id, info }: { id: ProductBlockId; info: P
           ) : null}
         </div>
       );
+    case "rating":
+      return view.showRating ? <ProductRatingLink productId={product.id} meta={meta} isEditing={isEditing} /> : null;
     case "price":
       return (
         <SectionElement el="price" className="mt-3 font-receipt text-2xl text-[var(--stand-secondary,var(--ok))]">

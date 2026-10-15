@@ -32,6 +32,7 @@ export const productGrid: SectionDefinition = {
     align: z.enum(["left", "centre"]).optional(),
     showPrice: z.boolean().optional(),
     showAvailability: z.boolean().optional(),
+    showRatings: z.boolean().optional(),
   }),
   binding: z.object({
     source: z.enum(["all", "category", "manual", "activeCategory"]).optional(),
@@ -105,6 +106,7 @@ export const productDetail: SectionDefinition = {
     showBreadcrumbs: z.boolean().optional(),
     showReviews: z.boolean().optional(),
     showReviewForm: z.boolean().optional(),
+    showRating: z.boolean().optional(),
     layout: z.enum(PRODUCT_LAYOUTS).optional(),
     imageRatio: z.enum(PRODUCT_IMAGE_RATIOS).optional(),
     imageSide: z.enum(PRODUCT_IMAGE_SIDES).optional(),

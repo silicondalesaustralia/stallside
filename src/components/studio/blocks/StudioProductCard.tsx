@@ -5,6 +5,7 @@ import { formatMoney } from "@/lib/public-product";
 import { shopProductPath } from "@/lib/storefront/paths";
 import SectionCopy from "@/components/studio/SectionCopy";
 import SectionElement from "@/components/studio/SectionElement";
+import RatingSummary from "@/components/studio/blocks/RatingSummary";
 
 export type StudioCardPreset = "editorial" | "classic" | "featured" | "compact";
 
@@ -15,6 +16,7 @@ export default function StudioProductCard({
   preset,
   showPrice,
   showAvailability,
+  showRating = false,
   isFarm,
 }: {
   product: StudioMetadata["products"][number];
@@ -22,6 +24,7 @@ export default function StudioProductCard({
   preset: StudioCardPreset;
   showPrice: boolean;
   showAvailability: boolean;
+  showRating?: boolean;
   isFarm?: boolean;
 }) {
   const href = shopProductPath(meta.storefrontSlug, product.slug, meta.draft, meta.basePath);
@@ -66,6 +69,7 @@ export default function StudioProductCard({
             {formatMoney(product.priceCents, meta.currency)}
           </SectionElement>
         ) : null}
+        {showRating ? <RatingSummary rating={product.rating} className="mt-1" /> : null}
         {showAvailability && product.soldOut && product.label ? (
           <p className="mt-1 text-xs text-[var(--muted)]">{product.label}</p>
         ) : null}

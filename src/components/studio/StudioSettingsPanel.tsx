@@ -374,6 +374,10 @@ function ProductGridSettings({
         <input type="checkbox" checked={props.showAvailability} onChange={(e) => setProp("showAvailability", e.target.checked)} />
         Show availability
       </label>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={props.showRatings === true} onChange={(e) => setProp("showRatings", e.target.checked)} />
+        Show review stars
+      </label>
     </>
   );
 }

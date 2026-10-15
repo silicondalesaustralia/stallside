@@ -5,6 +5,7 @@ import type { PuckSpikeMetadata } from "@/lib/puck/types";
 import { storefrontEnabledPages } from "@/lib/storefront/page-loader";
 import { currentStorefrontBasePath } from "@/lib/tenancy/request-base-path";
 import { prisma } from "@/lib/prisma";
+import { loadProductRatings } from "@/lib/studio/load-product-ratings";
 
 export async function buildPuckSpikeMetadata(
   ctx: NonNullable<StorefrontContext>,
@@ -12,13 +13,20 @@ export async function buildPuckSpikeMetadata(
 ): Promise<PuckSpikeMetadata> {
   const basePath = await currentStorefrontBasePath(ctx.storefront.slug);
   const productIds = ctx.products.map((p) => p.id);
-  const categoryLinks =
+  const [categoryLinks, ratings, menus] = await Promise.all([
     productIds.length > 0
-      ? await prisma.productCategory.findMany({
+      ? prisma.productCategory.findMany({
           where: { productId: { in: productIds } },
           select: { productId: true, categoryId: true },
         })
-      : [];
+      : [],
+    loadProductRatings(ctx.owner.id, productIds),
+    loadUpcomingMenusForStorefront({
+      ownerId: ctx.owner.id,
+      standId: ctx.stand.id,
+      timeZone: ctx.stand.timezone,
+    }),
+  ]);
   const categoriesByProduct = new Map<string, string[]>();
   for (const link of categoryLinks) {
     const list = categoriesByProduct.get(link.productId) ?? [];
@@ -41,13 +49,8 @@ export async function buildPuckSpikeMetadata(
       soldOut: card.soldOut,
       label: card.label,
       categoryIds: categoriesByProduct.get(card.id) ?? [],
+      rating: ratings.get(card.id) ?? null,
     };
-  });
-
-  const menus = await loadUpcomingMenusForStorefront({
-    ownerId: ctx.owner.id,
-    standId: ctx.stand.id,
-    timeZone: ctx.stand.timezone,
   });
 
   return {

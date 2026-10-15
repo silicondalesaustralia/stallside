@@ -83,6 +83,7 @@ export default function ProductDetailSettings({
       <Toggle label="Show payment options under the buttons" checked={view.showPayments} onChange={(v) => setProp("showPayments", v)} />
       <Toggle label="Show breadcrumbs" checked={props.showBreadcrumbs !== false} onChange={(v) => setProp("showBreadcrumbs", v)} />
       <Toggle label="Show back to shop link" checked={props.showBackLink !== false} onChange={(v) => setProp("showBackLink", v)} />
+      <Toggle label="Show review stars & rating" checked={view.showRating} onChange={(v) => setProp("showRating", v)} />
       <Toggle label="Show product reviews" checked={props.showReviews} onChange={(v) => setProp("showReviews", v)} />
       {props.showReviews ? (
         <Toggle label="Let customers leave a review" checked={props.showReviewForm !== false} onChange={(v) => setProp("showReviewForm", v)} />

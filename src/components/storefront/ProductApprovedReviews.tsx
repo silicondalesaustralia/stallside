@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import ReviewCard from "@/components/storefront/reviews/ReviewCard";
 import ReviewForm from "@/components/storefront/reviews/ReviewForm";
 import SectionCopy from "@/components/studio/SectionCopy";
+import { PRODUCT_REVIEWS_ANCHOR } from "@/components/storefront/product/ProductRatingLink";
 
 /** Approved reviews only — never show PENDING/REJECTED publicly. Optional "Leave a review" form below. */
 export async function ProductApprovedReviews({
@@ -9,11 +10,14 @@ export async function ProductApprovedReviews({
   productId,
   storefrontSlug,
   showForm = false,
+  className = "mt-10",
 }: {
   ownerId: string;
   productId: string;
   storefrontSlug?: string;
   showForm?: boolean;
+  /** Space above the divider line. */
+  className?: string;
 }) {
   const reviews = await prisma.review.findMany({
     where: {
@@ -40,7 +44,7 @@ export async function ProductApprovedReviews({
   if (reviews.length === 0 && !form) return null;
 
   return (
-    <section className="mt-10 border-t border-[var(--line)] pt-8">
+    <section id={PRODUCT_REVIEWS_ANCHOR} className={`scroll-mt-24 border-t border-[var(--line)] pt-8 ${className}`.trim()}>
       <h2 className="studio-heading text-xl">
         <SectionCopy k="reviewsHeading" fallback="Customer reviews" />
       </h2>

@@ -65,7 +65,7 @@ export default function StudioProductDetailBlock({
   );
 
   const page = (
-    <article className={`storefront-page-content ${simple ? "storefront-page-content--narrow" : "storefront-page-content--wide"}`}>
+    <article className={`storefront-page-content storefront-page-content--product ${simple ? "storefront-page-content--narrow" : "storefront-page-content--wide"}`}>
       {showBreadcrumbs ? <StorefrontBreadcrumbs items={crumbs} className="mb-3" /> : null}
       {showBackLink ? (
         <Link href={backHref} className="text-sm font-semibold text-[var(--site-link,var(--leaf-dark))] underline">

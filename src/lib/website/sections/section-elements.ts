@@ -12,9 +12,16 @@ export const SECTION_ELEMENTS: Record<string, SectionElementDef[]> = {
     { id: "tabTitle", label: "Info tab titles" },
     { id: "tabBody", label: "Info tab text" },
     { id: "stars", label: "Review stars" },
+    { id: "ratingCount", label: "Rating numbers" },
     { id: "reviewBody", label: "Review text" },
     { id: "reviewName", label: "Reviewer names" },
     { id: "reviewReply", label: "Your review replies" },
+  ],
+  CraftProductGridSection: [
+    { id: "productName", label: "Product names" },
+    { id: "productPrice", label: "Prices" },
+    { id: "stars", label: "Stars" },
+    { id: "ratingCount", label: "Rating numbers" },
   ],
   CraftReviewsSection: [
     { id: "stars", label: "Stars" },

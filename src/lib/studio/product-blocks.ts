@@ -1,5 +1,5 @@
 /** Parts of the product page a seller can move between zones. */
-export const PRODUCT_BLOCKS = ["name", "price", "description", "buy", "infoRows", "tabs"] as const;
+export const PRODUCT_BLOCKS = ["name", "rating", "price", "description", "buy", "infoRows", "tabs"] as const;
 export type ProductBlockId = (typeof PRODUCT_BLOCKS)[number];
 
 /** Under the photos, the details column beside them, and full width below both. */
@@ -10,6 +10,7 @@ export type ProductBlockLayout = Record<ProductZone, ProductBlockId[]>;
 
 export const PRODUCT_BLOCK_LABELS: Record<ProductBlockId, string> = {
   name: "Name & pre-order label",
+  rating: "Review stars & rating",
   price: "Price",
   description: "Description",
   buy: "Quantity & cart buttons",
@@ -29,7 +30,10 @@ export const DEFAULT_BLOCK_LAYOUT: ProductBlockLayout = {
   below: [],
 };
 
-/** Saved layout with every block exactly once; blocks it doesn't mention go to the end of the details column. */
+/**
+ * Saved layout with every block exactly once; blocks it doesn't mention go to the end of the details
+ * column, except the rating, which goes straight after the name (layouts saved before it existed).
+ */
 export function parseBlockLayout(raw: unknown): ProductBlockLayout {
   const out: ProductBlockLayout = { photo: [], details: [], below: [] };
   const seen = new Set<ProductBlockId>();
@@ -44,7 +48,13 @@ export function parseBlockLayout(raw: unknown): ProductBlockLayout {
       out[zone].push(block);
     }
   }
-  for (const block of PRODUCT_BLOCKS) if (!seen.has(block)) out.details.push(block);
+  for (const block of PRODUCT_BLOCKS) {
+    if (seen.has(block)) continue;
+    seen.add(block);
+    const nameZone = block === "rating" ? PRODUCT_ZONES.find((zone) => out[zone].includes("name")) : undefined;
+    if (nameZone) out[nameZone].splice(out[nameZone].indexOf("name") + 1, 0, block);
+    else out.details.push(block);
+  }
   return out;
 }
 

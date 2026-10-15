@@ -30,6 +30,8 @@ export type PuckSpikeMetadata = {
     soldOut: boolean;
     label: string;
     categoryIds: string[];
+    /** Approved reviews of this product. */
+    rating?: { average: number; count: number } | null;
   }>;
   menus: Array<{
     slug: string;

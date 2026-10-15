@@ -1149,6 +1149,15 @@ header.studio-nav[data-header-colours] .studio-btn--secondary {
   }
 }
 
+/* Product page: whatever follows (its reviews, the next section) sits close; sellers add a Spacer for more room. */
+.storefront-page-content.storefront-page-content--product {
+  padding-bottom: 1rem;
+}
+
+.storefront-page-content.storefront-page-content--after-product {
+  padding-top: 0;
+}
+
 /* Breadcrumb bar above a page: keep the page width, drop the section padding. */
 .storefront-page-content.storefront-breadcrumbs {
   padding-top: 1.5rem;

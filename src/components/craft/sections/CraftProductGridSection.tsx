@@ -22,6 +22,8 @@ export type CraftProductGridProps = {
   heading: string;
   showPrice: boolean;
   showAvailability: boolean;
+  /** Review stars on each card; off for sections saved before the option existed. */
+  showRatings?: boolean;
 };
 
 function isStudioMetadata(meta: unknown): meta is StudioMetadata {
@@ -47,6 +49,7 @@ export default function CraftProductGridSection(props: CraftProductGridProps) {
             heading={props.heading}
             showPrice={props.showPrice}
             showAvailability={props.showAvailability}
+            showRatings={props.showRatings === true}
             metadata={metadata}
             isEditing
             editable
@@ -81,6 +84,7 @@ CraftProductGridSection.craft = {
     heading: "Our bakes",
     showPrice: true,
     showAvailability: true,
+    showRatings: true,
   },
   rules: { canDrag: () => true, canMoveIn: () => false },
 };

@@ -1,8 +1,8 @@
 import ReviewStars from "@/components/storefront/reviews/ReviewStars";
 import SectionElement from "@/components/studio/SectionElement";
 
-/** A category's average star rating and review count; a placeholder in the builder when it has none. */
-export default function CategoryRating({
+/** Average star rating and review count (a category's or a product's); a placeholder in the builder when it has none. */
+export default function RatingSummary({
   rating,
   isEditing,
   className = "",
