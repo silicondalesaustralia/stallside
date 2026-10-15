@@ -10,8 +10,13 @@ export default async function ShopSlugLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  await redirectStorefrontSlugAlias(slug);
-  await applyPreferredOriginRedirect(slug);
-  await applyStorefrontRedirects(slug);
+  const checks = await Promise.allSettled([
+    redirectStorefrontSlugAlias(slug),
+    applyPreferredOriginRedirect(slug),
+    applyStorefrontRedirects(slug),
+  ]);
+  for (const check of checks) {
+    if (check.status === "rejected") throw check.reason;
+  }
   return <div className="storefront-cq">{children}</div>;
 }

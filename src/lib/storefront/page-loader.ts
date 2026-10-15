@@ -1,10 +1,12 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { getAuthSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { loadStorefrontContext } from "@/lib/catalogue/storefront";
 import { STOREFRONT_PAGE_IDS, type StorefrontPageId } from "@/lib/storefront/types";
 
-export async function loadStorefrontPage(
+/** Deduped per request: `generateMetadata` and the page share one load. */
+export const loadStorefrontPage = cache(async function loadStorefrontPage(
   slug: string,
   draft: boolean,
 ) {
@@ -23,7 +25,7 @@ export async function loadStorefrontPage(
   const ctx = await loadStorefrontContext(slug, { draft, ownerId });
   if (!ctx) notFound();
   return ctx;
-}
+});
 
 export function storefrontEnabledPages(
   config: { pages: Record<StorefrontPageId, { enabled: boolean }> },

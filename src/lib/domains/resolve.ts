@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import { normalizeDomainHostname } from "./normalize";
 import { StorefrontDomainStatus } from "@/generated/prisma/client";
@@ -43,7 +44,7 @@ export async function resolveActiveCustomHostname(
   };
 }
 
-export async function loadPrimaryCustomHostname(
+export const loadPrimaryCustomHostname = cache(async function loadPrimaryCustomHostname(
   storefrontId: string,
 ): Promise<string | null> {
   const row = await prisma.storefrontDomain.findFirst({
@@ -56,7 +57,7 @@ export async function loadPrimaryCustomHostname(
     select: { hostname: true },
   });
   return row?.hostname ?? null;
-}
+});
 
 export async function loadPreferredOriginInput(storefront: {
   id: string;
