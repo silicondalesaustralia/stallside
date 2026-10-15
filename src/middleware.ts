@@ -39,7 +39,10 @@ function isApexCheckoutPath(pathname: string): boolean {
   return pathname.startsWith("/checkout/") && pathname !== "/checkout/success";
 }
 
+const TENANT_SEO_FILES = new Set(["/sitemap.xml", "/robots.txt"]);
+
 function tenantRewritePath(slug: string, pathname: string): string | null {
+  if (TENANT_SEO_FILES.has(pathname)) return `/shop/${slug}${pathname}`;
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
