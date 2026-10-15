@@ -15,6 +15,12 @@ async function pageAndTopicSlugs(ownerId: string): Promise<string[]> {
   return owners.filter((o) => o.kind !== "category").map((o) => o.slug);
 }
 
+/** Whether `slug` is the one generated from `title` (`{title}` or `{title}-N`), not one the owner chose. */
+export function isAutoCategorySlug(slug: string, title: string): boolean {
+  const root = slugify(title) || "category";
+  return slug === root || new RegExp(`^${root}-\\d+$`).test(slug);
+}
+
 /** A category slug no other category, custom page or blog category on the site uses. */
 export async function uniqueCategorySlug(
   ownerId: string,

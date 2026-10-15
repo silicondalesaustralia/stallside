@@ -20,6 +20,7 @@ export async function resolveDbEntityContext(
     return {
       label: product.name,
       pathLabel: `/products/${product.slug}`,
+      url: { prefix: "/products/", slug: product.slug },
       defaults: {
         title: product.seoTitle ?? product.name,
         description: product.seoDescription ?? product.description ?? product.name,
@@ -38,6 +39,7 @@ export async function resolveDbEntityContext(
     return {
       label: cat.title,
       pathLabel: `/${cat.slug}`,
+      url: { prefix: "/", slug: cat.slug },
       defaults: {
         title: cat.title,
         description: cat.description ?? `${cat.title} at ${siteName}`,
@@ -56,6 +58,7 @@ export async function resolveDbEntityContext(
       return {
         label: preOrder.title,
         pathLabel: `/pre-orders/${preOrder.slug}`,
+        url: { prefix: "/pre-orders/", slug: preOrder.slug },
         defaults: {
           title: preOrder.title,
           description: preOrder.description ?? preOrder.title,
@@ -69,9 +72,11 @@ export async function resolveDbEntityContext(
       select: { title: true, slug: true, description: true, kind: true },
     });
     if (!menu) return null;
+    const prefix = `/${menu.kind === "PREORDER_DROP" ? "pre-orders" : "menus"}/`;
     return {
       label: menu.title,
-      pathLabel: `/${menu.kind === "PREORDER_DROP" ? "pre-orders" : "menus"}/${menu.slug}`,
+      pathLabel: `${prefix}${menu.slug}`,
+      url: { prefix, slug: menu.slug },
       defaults: { title: menu.title, description: menu.description ?? menu.title },
       settings: stored,
     };
@@ -86,6 +91,7 @@ export async function resolveDbEntityContext(
     return {
       label: offer.title,
       pathLabel: `/subscriptions/${offer.slug}`,
+      url: { prefix: "/subscriptions/", slug: offer.slug },
       defaults: {
         title: offer.title,
         description: offer.description?.trim() || `${offer.title} from ${siteName}`,

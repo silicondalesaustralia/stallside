@@ -5,6 +5,7 @@ import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { addSiteRenameRedirect, clearSiteRedirectFrom } from "@/lib/website/persistence/site-redirect-patch";
 import {
+  isAutoCategorySlug,
   revalidateOwnerStores,
   uniqueCategorySlug,
   validOrderedIds,
@@ -53,7 +54,7 @@ export async function updateCategory(categoryId: string, formData: FormData) {
       imageUrl,
       showOnWebsite: formData.get("showOnWebsite") === "on",
       slug:
-        title === existing.title
+        title === existing.title || !isAutoCategorySlug(existing.slug, existing.title)
           ? existing.slug
           : await uniqueCategorySlug(owner.id, title, categoryId),
     },

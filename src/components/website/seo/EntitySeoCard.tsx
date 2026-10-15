@@ -3,7 +3,10 @@ import { websiteSectionEnabledFor } from "@/lib/website/access";
 import { resolveSeoFields } from "@/lib/studio/seo-settings";
 import { resolveEntitySeoContext } from "@/lib/website/seo/entity-context";
 import { saveEntitySeo, type SeoFieldsVariant } from "@/lib/website/seo/save-entity-seo";
+import { saveEntityUrl } from "@/lib/website/seo/save-entity-url";
+import { URL_ERROR_PREFIX } from "@/lib/website/seo/entity-context-types";
 import SeoSettingsForm from "./SeoSettingsForm";
+import EntityUrlForm from "./EntityUrlForm";
 
 /**
  * Website "Search & social" settings for one page, product, category, post or offer.
@@ -55,6 +58,14 @@ export default async function EntitySeoCard({
       {status === "conflict" ? (
         <p className="mt-3 text-sm font-medium text-[var(--gone)]">{DRAFT_CONFLICT_MESSAGE}</p>
       ) : null}
+      {status === "url-saved" ? (
+        <p className="mt-3 text-sm font-medium text-[var(--ok)]">URL changed to {ctx.pathLabel}.</p>
+      ) : null}
+      {status?.startsWith(URL_ERROR_PREFIX) ? (
+        <p role="alert" className="mt-3 text-sm font-medium text-[var(--gone)]">
+          URL not changed: {status.slice(URL_ERROR_PREFIX.length)}
+        </p>
+      ) : null}
 
       <div className="mt-4 rounded-xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
         <p className="truncate text-xs text-[#4d5156]">{ctx.pathLabel}</p>
@@ -62,10 +73,15 @@ export default async function EntitySeoCard({
         <p className="mt-1 line-clamp-2 text-[#4d5156]">{preview.description}</p>
       </div>
 
-      <details className="mt-4">
+      <details className="mt-4" open={status?.startsWith(URL_ERROR_PREFIX)}>
         <summary className="cursor-pointer text-sm font-semibold text-[var(--leaf-dark)] underline">
           Edit search &amp; social
         </summary>
+        {ctx.url ? (
+          <div className="mt-4">
+            <EntityUrlForm action={saveEntityUrl.bind(null, entityKey, returnTo)} url={ctx.url} />
+          </div>
+        ) : null}
         <div className="mt-4">
           <SeoSettingsForm
             action={saveEntitySeo.bind(null, entityKey, returnTo, variant)}

@@ -2,7 +2,7 @@ import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { prisma } from "@/lib/prisma";
 import { ensureCustomPages, findCustomPageById } from "@/lib/studio/custom-pages";
 import { extractBlogPosts, extractBlogTopics, findBlogPostById } from "@/lib/studio/blog";
-import { blogPostRelativePath, withDefaultBlogTopic } from "@/lib/studio/blog-topics";
+import { blogPostRelativePath, mainBlogTopic, withDefaultBlogTopic } from "@/lib/studio/blog-topics";
 import { extractStorefrontSeo, readEntitySeo } from "@/lib/studio/seo-settings";
 import { homeSeoDefaults } from "@/lib/studio/resolve-seo-metadata";
 import { resolveStorefrontBranding } from "@/lib/storefront/branding";
@@ -44,6 +44,7 @@ export async function resolveEntitySeoContext(
     return {
       label: topic.name,
       pathLabel: `/${topic.slug}`,
+      url: { prefix: "/", slug: topic.slug },
       defaults: { title: topic.name, description: `${topic.name} from ${branding.headline}` },
       settings: stored,
     };
@@ -55,6 +56,7 @@ export async function resolveEntitySeoContext(
     return {
       label: page.title,
       pathLabel: `/${page.slug}`,
+      url: page.routeKind === "custom" ? { prefix: "/", slug: page.slug } : undefined,
       defaults: { title: page.title, description: page.navLabel || page.title },
       settings: stored,
     };
@@ -63,9 +65,11 @@ export async function resolveEntitySeoContext(
   if (entityKey.startsWith("blog:")) {
     const post = findBlogPostById(extractBlogPosts(storefront.draftConfig), entityKey.slice(5));
     if (!post) return null;
+    const topics = extractBlogTopics(storefront.draftConfig);
     return {
       label: post.title,
-      pathLabel: blogPostRelativePath(post, extractBlogTopics(storefront.draftConfig)),
+      pathLabel: blogPostRelativePath(post, topics),
+      url: { prefix: `/${mainBlogTopic(post, topics).slug}/`, slug: post.slug },
       defaults: {
         title: post.title,
         description: post.excerpt || post.title,
