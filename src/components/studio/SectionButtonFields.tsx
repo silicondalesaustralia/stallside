@@ -7,8 +7,9 @@ import {
   type ButtonSize,
   type SectionStyle,
 } from "@/lib/website/sections/section-style";
-import { hasLowContrast, type ThemePalette } from "@/lib/website/sections/colour";
+import { colourHex, hasLowContrast, type ThemePalette } from "@/lib/website/sections/colour";
 import ColourField from "./ColourField";
+import { useStudioEditorChrome } from "./StudioEditorContext";
 import PillChoice from "./PillChoice";
 
 const SIZE_LABELS: Record<ButtonSize, string> = { sm: "S", md: "M", lg: "L" };
@@ -29,10 +30,11 @@ export default function SectionButtonFields({
   palette: ThemePalette;
   setField: <K extends keyof SectionStyle>(key: K, value: SectionStyle[K] | undefined) => void;
 }) {
+  const site = useStudioEditorChrome().siteButtonColours ?? { background: null, text: null };
   const lowContrast =
     Boolean(style.buttonColour || style.buttonTextColour) &&
     hasLowContrast(
-      { background: style.buttonColour ?? "accent", textColour: style.buttonTextColour },
+      { background: style.buttonColour ?? site.background ?? "accent", textColour: style.buttonTextColour },
       palette,
     );
 
@@ -40,8 +42,22 @@ export default function SectionButtonFields({
     <div className="space-y-4">
       <PillChoice label="Button size" options={BUTTON_SIZES} labels={SIZE_LABELS} value={style.buttonSize} onChange={(v) => setField("buttonSize", v)} />
       <PillChoice label="Button text size" options={BUTTON_SIZES} labels={SIZE_LABELS} value={style.buttonTextSize} onChange={(v) => setField("buttonTextSize", v)} />
-      <ColourField label="Button colour" value={style.buttonColour} onChange={(v) => setField("buttonColour", v)} palette={palette} noneLabel="Same as site buttons" />
-      <ColourField label="Button text colour" value={style.buttonTextColour} onChange={(v) => setField("buttonTextColour", v)} palette={palette} noneLabel="Auto (readable on the button)" />
+      <ColourField
+        label="Button colour"
+        value={style.buttonColour}
+        onChange={(v) => setField("buttonColour", v)}
+        palette={palette}
+        noneLabel={site.background ? "Site default: the button colour set in Site Wide Edits" : "Site default: the template's button colour"}
+        noneChip={{ text: "Site default", colour: site.background ? colourHex(site.background, palette) : null }}
+      />
+      <ColourField
+        label="Button text colour"
+        value={style.buttonTextColour}
+        onChange={(v) => setField("buttonTextColour", v)}
+        palette={palette}
+        noneLabel={site.text ? "Site default: the button text colour set in Site Wide Edits" : "Auto (readable on the button)"}
+        noneChip={{ text: site.text ? "Site default" : "Auto", colour: site.text ? colourHex(site.text, palette) : null }}
+      />
       {lowContrast ? (
         <p className="text-xs text-red-700">The button text may be hard to read. Try Auto text colour.</p>
       ) : null}
