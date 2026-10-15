@@ -20,6 +20,7 @@ import CraftPaymentsSection from "@/components/studio/sections/CraftPaymentsSect
 import CraftProductDetailSection from "@/components/studio/sections/CraftProductDetailSection";
 import { DEFAULT_INFO_ROWS } from "@/lib/studio/product-detail-settings";
 import CraftCategoryDetailSection from "@/components/studio/sections/CraftCategoryDetailSection";
+import CraftSpacerSection from "@/components/studio/sections/CraftSpacerSection";
 import CraftMenuDetailSection from "@/components/studio/sections/CraftMenuDetailSection";
 import CraftCartSection from "@/components/studio/sections/CraftCartSection";
 import CraftOrderConfirmationSection from "@/components/studio/sections/CraftOrderConfirmationSection";
@@ -43,6 +44,8 @@ export function studioSectionElement(type: StudioSectionType): ReactElement {
       );
     case "CraftCategoryDetailSection":
       return <Element is={CraftCategoryDetailSection} showTitle showTopDescription showBottomDescription columns={3} />;
+    case "CraftSpacerSection":
+      return <Element is={CraftSpacerSection} height={48} />;
     case "CraftMenuDetailSection":
       return <Element is={CraftMenuDetailSection} />;
     case "CraftCartSection":

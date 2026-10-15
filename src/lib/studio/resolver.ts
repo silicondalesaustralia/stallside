@@ -17,6 +17,7 @@ import CraftFarmStandSection from "@/components/studio/sections/CraftFarmStandSe
 import CraftPaymentsSection from "@/components/studio/sections/CraftPaymentsSection";
 import CraftProductDetailSection from "@/components/studio/sections/CraftProductDetailSection";
 import CraftCategoryDetailSection from "@/components/studio/sections/CraftCategoryDetailSection";
+import CraftSpacerSection from "@/components/studio/sections/CraftSpacerSection";
 import CraftMenuDetailSection from "@/components/studio/sections/CraftMenuDetailSection";
 import CraftCartSection from "@/components/studio/sections/CraftCartSection";
 import CraftOrderConfirmationSection from "@/components/studio/sections/CraftOrderConfirmationSection";
@@ -43,6 +44,7 @@ export const studioResolver = {
   CraftPaymentsSection,
   CraftProductDetailSection,
   CraftCategoryDetailSection,
+  CraftSpacerSection,
   CraftMenuDetailSection,
   CraftCartSection,
   CraftOrderConfirmationSection,

@@ -1,5 +1,5 @@
 import type { StudioSectionType } from "@/lib/studio/types";
-import { about, faq, hero, image, imageText, text } from "./content-sections";
+import { about, faq, hero, image, imageText, spacer, text } from "./content-sections";
 import {
   cart,
   categories,
@@ -39,6 +39,7 @@ const DEFINITIONS = {
   payments,
   productDetail,
   categoryDetail,
+  spacer,
   menuDetail,
   cart,
   orderConfirmation,
@@ -79,6 +80,7 @@ export const VENDL_TYPE_BY_CRAFT_NAME = {
   CraftPaymentsSection: "payments",
   CraftProductDetailSection: "productDetail",
   CraftCategoryDetailSection: "categoryDetail",
+  CraftSpacerSection: "spacer",
   CraftMenuDetailSection: "menuDetail",
   CraftCartSection: "cart",
   CraftOrderConfirmationSection: "orderConfirmation",

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { ALL_PAGE_KINDS, body, heading, label, mediaUrl, shortText } from "./fields";
 import type { SectionDefinition } from "./types";
+import { SPACER_MAX, SPACER_MIN } from "@/lib/studio/spacer-settings";
 import { IMAGE_ASPECTS, IMAGE_DISPLAYS, galleryImagesSchema } from "@/lib/studio/gallery-images";
 import { faqItemsSchema } from "@/lib/studio/faq-items";
 import {
@@ -129,4 +130,22 @@ export const about: SectionDefinition = {
   singleton: true,
   required: false,
   emptyState: "omit",
+};
+
+export const spacer: SectionDefinition = {
+  type: "spacer",
+  version: 1,
+  craftName: "CraftSpacerSection",
+  label: "Spacer",
+  variants: DEFAULT_ONLY,
+  defaultVariant: "default",
+  content: z.object({}),
+  settings: z.object({
+    height: z.number().int().min(SPACER_MIN).max(SPACER_MAX).optional(),
+    mobileHeight: z.number().int().min(SPACER_MIN).max(SPACER_MAX).optional(),
+  }),
+  pageKinds: ALL_PAGE_KINDS,
+  singleton: false,
+  required: false,
+  emptyState: "render",
 };

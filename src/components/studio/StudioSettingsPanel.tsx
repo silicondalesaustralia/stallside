@@ -27,6 +27,8 @@ import ProductDetailSettings from "./ProductDetailSettings";
 import type { CraftProductDetailProps } from "@/components/studio/sections/CraftProductDetailSection";
 import type { CraftCategoryDetailProps } from "@/components/studio/sections/CraftCategoryDetailSection";
 import CategoryDetailSettings from "@/components/studio/CategoryDetailSettings";
+import type { CraftSpacerProps } from "@/components/studio/sections/CraftSpacerSection";
+import SpacerSettings from "@/components/studio/SpacerSettings";
 import SiteCardsEffectsSettings from "./SiteCardsEffectsSettings";
 import SiteStyleSaveStatus from "./SiteStyleSaveStatus";
 import SiteSharingSettings from "./SiteSharingSettings";
@@ -192,6 +194,9 @@ export default function StudioSettingsPanel() {
             props={selected.props as CraftProductDetailProps}
             setProp={setProp}
           />
+        ) : null}
+        {selected.type === "CraftSpacerSection" ? (
+          <SpacerSettings props={selected.props as CraftSpacerProps} setProp={setProp} />
         ) : null}
         {selected.type === "CraftCategoryDetailSection" ? (
           <CategoryDetailSettings props={selected.props as CraftCategoryDetailProps} setProp={setProp} />

@@ -21,6 +21,7 @@ export type VendlSectionType =
   | "payments"
   | "productDetail"
   | "categoryDetail"
+  | "spacer"
   | "menuDetail"
   | "cart"
   | "orderConfirmation";

@@ -150,6 +150,15 @@ export const STUDIO_SECTION_RULES: StudioSectionRule[] = [
     deletable: true,
   },
   {
+    type: "CraftSpacerSection",
+    label: "Spacer",
+    description: "Blank space between sections; drag to set the height",
+    category: "content",
+    paletteOrder: 8,
+    duplicable: true,
+    deletable: true,
+  },
+  {
     type: "CraftAboutSection",
     label: "About",
     description: "Introduce your business",
