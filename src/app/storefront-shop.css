@@ -1,0 +1,172 @@
+/* Sale prices: values come from the site-wide style (siteThemeVars), so the editor previews changes live. */
+.sale-price {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.4rem;
+}
+
+.sale-price__was {
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+.sale-badge {
+  display: var(--sale-badge-display, inline-block);
+  align-self: center;
+  border-radius: var(--sale-badge-radius, 9999px);
+  background: var(--sale-badge-bg, var(--gone, #8a2e2e));
+  color: var(--sale-badge-fg, #fff);
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sale-badge::before {
+  content: var(--sale-badge-text, "Sale");
+}
+
+/* Shop / category browsing: sort menu and filter sidebar. */
+.shop-browse {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* Container queries (storefront width), so the editor's phone preview matches real devices. */
+@container storefront (min-width: 64rem) {
+  .shop-browse--filters {
+    grid-template-columns: 15rem minmax(0, 1fr);
+    align-items: start;
+  }
+  .shop-browse__toggle {
+    display: none;
+  }
+}
+
+@container storefront (max-width: 63.99rem) {
+  .shop-browse__sidebar:not([data-open]) {
+    display: none;
+  }
+}
+
+/* Site Wide Edits can switch the sort menu and filter sidebar off (siteStyleAttrs). */
+[data-site-shop-sort="off"] .shop-browse__sort,
+[data-site-shop-filters="off"] .shop-browse__sidebar,
+[data-site-shop-filters="off"] .shop-browse__toggle,
+[data-site-shop-sort="off"][data-site-shop-filters="off"] .shop-browse__toolbar {
+  display: none !important;
+}
+
+[data-site-shop-filters="off"] .shop-browse.shop-browse--filters {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.shop-browse__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.shop-browse__select,
+.shop-browse__toggle {
+  border: 1px solid var(--line, #ddd);
+  border-radius: 0.5rem;
+  background: #fff;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--ink, #222);
+}
+
+.shop-browse__group + .shop-browse__group {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--line, #ddd);
+  padding-top: 1.25rem;
+}
+
+.shop-browse__group-title {
+  margin-bottom: 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--field, #222);
+}
+
+.shop-browse__option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
+  font-size: 0.9rem;
+  color: var(--ink, #222);
+  cursor: pointer;
+}
+
+.shop-browse__count {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--muted, #666);
+}
+
+/* Two-thumb price slider: two range inputs stacked on one track. */
+.price-slider {
+  position: relative;
+  height: 1.5rem;
+}
+
+.price-slider__track {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 0.25rem;
+  transform: translateY(-50%);
+  border-radius: 9999px;
+  background: var(--line, #ddd);
+}
+
+.price-slider__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 9999px;
+  background: var(--leaf, #2e7d3f);
+}
+
+.price-slider input[type="range"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  appearance: none;
+}
+
+.price-slider input[type="range"]::-webkit-slider-thumb {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid var(--leaf, #2e7d3f);
+  border-radius: 9999px;
+  background: #fff;
+  cursor: pointer;
+  pointer-events: auto;
+  appearance: none;
+}
+
+.price-slider input[type="range"]::-moz-range-thumb {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--leaf, #2e7d3f);
+  border-radius: 9999px;
+  background: #fff;
+  cursor: pointer;
+  pointer-events: auto;
+}

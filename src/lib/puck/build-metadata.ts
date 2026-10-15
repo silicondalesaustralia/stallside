@@ -45,6 +45,8 @@ export async function buildPuckSpikeMetadata(
       slug: card.slug,
       name: card.name,
       priceCents: card.priceCents,
+      compareAtPriceCents: card.compareAtPriceCents ?? null,
+      createdAtMs: p.createdAt.getTime(),
       imageUrl: card.imageUrl,
       soldOut: card.soldOut,
       label: card.label,

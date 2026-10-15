@@ -3,7 +3,8 @@
 import { useRef } from "react";
 import ProductDetailActions from "@/app/s/[standSlug]/ProductDetailActions";
 import { useSectionText } from "@/components/studio/SectionStyleContext";
-import { formatMoney, type PublicProductCard } from "@/lib/public-product";
+import type { PublicProductCard } from "@/lib/public-product";
+import SalePrice from "@/components/storefront/SalePrice";
 import type { PaymentBrand } from "@/lib/payment-brand-assets";
 import ProductStickyCart from "./ProductStickyCart";
 import ProductPaymentStrip from "./ProductPaymentStrip";
@@ -50,7 +51,7 @@ export default function ProductBuyBox({
         <ProductStickyCart
           actionsRef={actionsRef}
           name={product.name}
-          price={formatMoney(product.priceCents, currency)}
+          price={<SalePrice priceCents={product.priceCents} compareAtPriceCents={product.compareAtPriceCents} currency={currency} />}
           hasOptions={product.hasOptions}
           soldOut={product.soldOut}
           addLabel={addLabel}

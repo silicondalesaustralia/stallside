@@ -16,6 +16,7 @@ export type ProductFields = {
   seoTitle: string | null;
   seoDescription: string | null;
   priceCents: number;
+  compareAtPriceCents: number | null;
   costCents: number | null;
   sku: string | null;
   upc: string | null;

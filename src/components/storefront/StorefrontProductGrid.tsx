@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { PublicProductCard } from "@/lib/public-product";
-import { formatMoney } from "@/lib/public-product";
+import SalePrice from "@/components/storefront/SalePrice";
 import {
   addToStandCart,
   readStandCart,
@@ -152,7 +152,7 @@ export default function StorefrontProductGrid({
                   {product.name}
                 </Link>
                 <p className="font-receipt text-lg text-[var(--stand-secondary,var(--ok))]">
-                  {formatMoney(product.priceCents, currency)}
+                  <SalePrice priceCents={product.priceCents} compareAtPriceCents={product.compareAtPriceCents} currency={currency} />
                 </p>
                 <p className={`text-xs font-medium ${stockTone(product.label)}`}>
                   {product.label}

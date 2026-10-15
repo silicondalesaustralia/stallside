@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useState, type ReactNode, type RefObject } from "react";
 
 /**
  * Phone-only bar that appears once the main Add to cart buttons scroll out of view.
@@ -16,7 +16,7 @@ export default function ProductStickyCart({
 }: {
   actionsRef: RefObject<HTMLDivElement | null>;
   name: string;
-  price: string;
+  price: ReactNode;
   hasOptions: boolean;
   soldOut: boolean;
   addLabel: string;

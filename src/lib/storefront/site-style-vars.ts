@@ -39,6 +39,17 @@ export function siteThemeVars(style: SiteStyle, palette: ThemePalette): Record<s
     vars["--ink"] = text;
     vars["--muted"] = `color-mix(in srgb, ${text} 78%, transparent)`;
   }
+  return { ...vars, ...saleBadgeVars(style, palette) };
+}
+
+/** The "Sale" badge next to on-sale prices; CSS reads these so the editor previews changes live. */
+function saleBadgeVars(style: SiteStyle, palette: ThemePalette): Record<string, string> {
+  const vars: Record<string, string> = {};
+  if (style.saleBadge === false) vars["--sale-badge-display"] = "none";
+  if (style.saleBadgeText) vars["--sale-badge-text"] = `"${style.saleBadgeText}"`;
+  if (style.saleBadgeBackground) vars["--sale-badge-bg"] = ink(style.saleBadgeBackground, palette);
+  if (style.saleBadgeColour) vars["--sale-badge-fg"] = ink(style.saleBadgeColour, palette);
+  if (style.saleBadgeShape) vars["--sale-badge-radius"] = BUTTON_RADIUS[style.saleBadgeShape];
   return vars;
 }
 
@@ -80,6 +91,8 @@ export function siteStyleAttrs(style: SiteStyle): Record<string, string> {
     ...(style.cardHover ? { "data-site-card-hover": style.cardHover } : {}),
     ...(style.animation && style.animation !== "none" ? { "data-site-animate": style.animation } : {}),
     ...(style.dividers && style.dividers !== "none" ? { "data-site-dividers": style.dividers } : {}),
+    ...(style.shopSort === false ? { "data-site-shop-sort": "off" } : {}),
+    ...(style.shopFilters === false ? { "data-site-shop-filters": "off" } : {}),
   };
 }
 

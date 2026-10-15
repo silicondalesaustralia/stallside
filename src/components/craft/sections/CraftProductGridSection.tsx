@@ -24,6 +24,8 @@ export type CraftProductGridProps = {
   showAvailability: boolean;
   /** Review stars on each card; off for sections saved before the option existed. */
   showRatings?: boolean;
+  /** Category pages only: the category's name and description above the grid. */
+  showCategoryIntro?: boolean;
 };
 
 function isStudioMetadata(meta: unknown): meta is StudioMetadata {
@@ -50,6 +52,7 @@ export default function CraftProductGridSection(props: CraftProductGridProps) {
             showPrice={props.showPrice}
             showAvailability={props.showAvailability}
             showRatings={props.showRatings === true}
+            showCategoryIntro={props.showCategoryIntro !== false}
             metadata={metadata}
             isEditing
             editable

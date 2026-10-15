@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { PuckSpikeMetadata } from "@/lib/puck/types";
-import { formatMoney } from "@/lib/public-product";
+import SalePrice from "@/components/storefront/SalePrice";
 import { shopProductPath } from "@/lib/storefront/paths";
 
 type FeaturedProductsProps = {
@@ -108,7 +108,7 @@ export default function PuckFeaturedProductsBlock({
               <p className="font-semibold text-[var(--field)]">{product.name}</p>
               {showPrice ? (
                 <p className="mt-1 text-sm text-[var(--muted)]">
-                  {formatMoney(product.priceCents, meta.currency)}
+                  <SalePrice priceCents={product.priceCents} compareAtPriceCents={product.compareAtPriceCents} currency={meta.currency} />
                 </p>
               ) : null}
               {showAvailability && product.soldOut ? (

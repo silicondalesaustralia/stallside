@@ -96,6 +96,7 @@ export default async function EditProductPage({
           seoTitle: product.seoTitle,
           seoDescription: product.seoDescription,
           priceCents: product.priceCents,
+          compareAtPriceCents: product.compareAtPriceCents,
           costCents: product.costCents,
           sku: product.sku,
           upc: product.upc,

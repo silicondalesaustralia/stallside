@@ -20,6 +20,7 @@ export type CategoryDetailProps = {
   preset?: ProductPreset;
   showPrice?: boolean;
   showAvailability?: boolean;
+  showRatings?: boolean;
 };
 
 export type CategoryDetailView = Required<Omit<CategoryDetailProps, "preset">> & { preset: ProductPreset | null };
@@ -44,6 +45,7 @@ export function categoryDetailView(p: Record<string, unknown>): CategoryDetailVi
           : null,
     showPrice: p.showPrice !== false,
     showAvailability: p.showAvailability !== false,
+    showRatings: p.showRatings === true,
   };
 }
 

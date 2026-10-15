@@ -1,6 +1,6 @@
 import type { StudioMetadata } from "@/lib/studio/types";
 import type { PublicProductCard } from "@/lib/public-product";
-import { formatMoney } from "@/lib/public-product";
+import SalePrice from "@/components/storefront/SalePrice";
 import type { ProductDetailView } from "@/lib/studio/product-detail-settings";
 import type { ProductBlockId } from "@/lib/studio/product-blocks";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
@@ -42,7 +42,7 @@ export default function ProductBlock({ id, info }: { id: ProductBlockId; info: P
     case "price":
       return (
         <SectionElement el="price" className="mt-3 font-receipt text-2xl text-[var(--stand-secondary,var(--ok))]">
-          {formatMoney(product.priceCents, meta.currency)}
+          <SalePrice priceCents={product.priceCents} compareAtPriceCents={product.compareAtPriceCents} currency={meta.currency} />
         </SectionElement>
       );
     case "description":

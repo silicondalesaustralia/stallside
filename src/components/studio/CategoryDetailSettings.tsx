@@ -69,6 +69,8 @@ export default function CategoryDetailSettings({
       <PresetStyleField presetsBySkin={PRODUCT_PRESETS} value={view.preset ?? undefined} onChange={(v) => setProp("preset", v)} />
       <Toggle label="Show prices" checked={view.showPrice} onChange={(v) => setProp("showPrice", v)} />
       <Toggle label="Show availability" checked={view.showAvailability} onChange={(v) => setProp("showAvailability", v)} />
+      <Toggle label="Show review stars" checked={view.showRatings} onChange={(v) => setProp("showRatings", v)} />
+      <p className="text-xs text-[var(--muted)]">Turn sorting and filters on or off under Site Wide Edits.</p>
       <CartBarSettings />
       <p className="text-xs text-[var(--muted)]">Style the name and descriptions under Text elements below.</p>
     </>

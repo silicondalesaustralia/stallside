@@ -18,6 +18,8 @@ export const SECTION_ELEMENTS: Record<string, SectionElementDef[]> = {
     { id: "reviewReply", label: "Your review replies" },
   ],
   CraftProductGridSection: [
+    { id: "title", label: "Category name (category pages)" },
+    { id: "topDescription", label: "Category description (category pages)" },
     { id: "productName", label: "Product names" },
     { id: "productPrice", label: "Prices" },
     { id: "stars", label: "Stars" },

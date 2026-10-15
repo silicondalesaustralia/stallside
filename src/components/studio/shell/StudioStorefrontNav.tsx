@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useSyncExternalStore, useCallback, type ReactNode } from "react";
 import {
   cartItemCount,
@@ -18,7 +17,9 @@ import { resolveStudioTemplate } from "@/lib/studio/templates";
 import type { BrandMarkMode, HeaderLayout } from "@/lib/storefront/header-style";
 import { siteHeaderVars } from "@/lib/storefront/site-header-colours";
 import { paletteOf } from "@/lib/website/sections/colour";
+import { headerCartButton } from "@/lib/storefront/header-cart-button";
 import StudioBrandMark from "./StudioBrandMark";
+import HeaderCartLink from "./HeaderCartLink";
 import NavItemLink from "./NavItemLink";
 
 /** Phone menu links sit 2px above the chosen menu size (16px by default). */
@@ -194,11 +195,12 @@ export default function StudioStorefrontNav({
     );
   const actions = (
     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-      {cartCount > 0 ? (
-        <Link href={shopCartPath(storefrontSlug, draft, basePath)} className="studio-btn studio-btn--secondary text-sm">
-          Cart ({cartCount})
-        </Link>
-      ) : null}
+      <HeaderCartLink
+        href={shopCartPath(storefrontSlug, draft, basePath)}
+        count={cartCount}
+        button={headerCartButton(branding.siteStyle, paletteOf(branding))}
+        preview={editable}
+      />
       <button
         type="button"
         className="studio-nav__menu-btn inline-flex size-10 items-center justify-center sf-md:hidden"

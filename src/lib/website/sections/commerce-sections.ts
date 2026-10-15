@@ -33,6 +33,7 @@ export const productGrid: SectionDefinition = {
     showPrice: z.boolean().optional(),
     showAvailability: z.boolean().optional(),
     showRatings: z.boolean().optional(),
+    showCategoryIntro: z.boolean().optional(),
   }),
   binding: z.object({
     source: z.enum(["all", "category", "manual", "activeCategory"]).optional(),
@@ -142,6 +143,7 @@ export const categoryDetail: SectionDefinition = {
     mobileColumns: z.union([z.literal(1), z.literal(2)]).optional(),
     showPrice: z.boolean().optional(),
     showAvailability: z.boolean().optional(),
+    showRatings: z.boolean().optional(),
   }),
   pageKinds: ["category"],
   singleton: true,

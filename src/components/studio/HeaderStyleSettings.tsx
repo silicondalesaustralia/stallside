@@ -18,6 +18,7 @@ import BrandNameSizeField from "./BrandNameSizeField";
 import AnnouncementBarSettings from "./AnnouncementBarSettings";
 import SettingsGroup from "./SettingsGroup";
 import HeaderColourFields from "./HeaderColourFields";
+import CartButtonSettings from "./CartButtonSettings";
 
 export default function HeaderStyleSettings({ focus }: { focus: "header" | "announcement" }) {
   const {
@@ -93,6 +94,7 @@ export default function HeaderStyleSettings({ focus }: { focus: "header" | "anno
         />
         <BrandNameSizeField disabled={brandMark === "logo-only" && hasLogo} />
         <HeaderColourFields />
+        <CartButtonSettings />
         {headerStyleStatus === "saving" ? (
           <p className="text-xs text-[var(--muted)]">Saving…</p>
         ) : null}

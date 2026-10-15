@@ -1,13 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { StudioMetadata } from "@/lib/studio/types";
-import { formatMoney } from "@/lib/public-product";
+import SalePrice from "@/components/storefront/SalePrice";
 import { shopProductPath } from "@/lib/storefront/paths";
 import SectionCopy from "@/components/studio/SectionCopy";
 import SectionElement from "@/components/studio/SectionElement";
 import RatingSummary from "@/components/studio/blocks/RatingSummary";
 
 export type StudioCardPreset = "editorial" | "classic" | "featured" | "compact";
+
+/** The bits of the site metadata a card needs; small enough to hand to client components. */
+export type ProductCardMeta = Pick<StudioMetadata, "storefrontSlug" | "draft" | "basePath" | "currency">;
 
 /** One product tile; name and price take the section's "Product name" / "Price" styles where it has them. */
 export default function StudioProductCard({
@@ -20,7 +23,7 @@ export default function StudioProductCard({
   isFarm,
 }: {
   product: StudioMetadata["products"][number];
-  meta: StudioMetadata;
+  meta: ProductCardMeta;
   preset: StudioCardPreset;
   showPrice: boolean;
   showAvailability: boolean;
@@ -66,7 +69,7 @@ export default function StudioProductCard({
         </SectionElement>
         {showPrice ? (
           <SectionElement el="productPrice" className="mt-1 text-sm text-[var(--muted)] sf-sm:mt-0">
-            {formatMoney(product.priceCents, meta.currency)}
+            <SalePrice priceCents={product.priceCents} compareAtPriceCents={product.compareAtPriceCents} currency={meta.currency} />
           </SectionElement>
         ) : null}
         {showRating ? <RatingSummary rating={product.rating} className="mt-1" /> : null}

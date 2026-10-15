@@ -137,6 +137,7 @@ function StudioSectionRender({
           showPrice={Boolean(p.showPrice ?? true)}
           showAvailability={Boolean(p.showAvailability ?? true)}
           showRatings={p.showRatings === true}
+          showCategoryIntro={p.showCategoryIntro !== false}
           metadata={metadata}
         />
       );

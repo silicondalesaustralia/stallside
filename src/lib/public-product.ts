@@ -8,6 +8,7 @@ import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
 import { productImageList } from "@/lib/product-images";
 import { imageAltList, parseImageAlts } from "@/lib/product-image-alts";
 import { effectiveFulfilment, type FulfilmentChoiceValue } from "@/lib/fulfilment/handover-choice";
+import { isOnSale } from "@/lib/product-sale-price";
 
 export type PreOrderDetailsData = {
   ordersCloseLabel: string | null;
@@ -26,6 +27,8 @@ export type PublicProductCard = {
   /** Seller's alt text per photo, same order as `images`; blank uses the product name. */
   imageAlts: string[];
   priceCents: number;
+  /** Struck-through "was" price; set only while the product is on sale. */
+  compareAtPriceCents?: number | null;
   stockQuantity: number;
   label: string;
   soldOut: boolean;
@@ -94,6 +97,7 @@ export function mapPublicProduct(
     galleryImageUrls?: string[] | null;
     imageAlts?: unknown;
     priceCents: number;
+    compareAtPriceCents?: number | null;
     stockQuantity: number;
     lowStockThreshold: number;
     isPreOrder: boolean;
@@ -193,6 +197,7 @@ export function mapPublicProduct(
     images,
     imageAlts: imageAltList(images, parseImageAlts(p.imageAlts)),
     priceCents: p.priceCents,
+    compareAtPriceCents: isOnSale(p.priceCents, p.compareAtPriceCents) ? p.compareAtPriceCents : null,
     stockQuantity: closed ? 0 : p.stockQuantity,
     label,
     soldOut,

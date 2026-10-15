@@ -16,6 +16,10 @@ export const PRODUCT_RATIOS = ["square", "portrait", "landscape"] as const;
 export const CARD_HOVERS = ["none", "lift", "zoom"] as const;
 export const SECTION_ANIMATIONS = ["none", "fade"] as const;
 export const SECTION_DIVIDERS = ["none", "line", "alternate"] as const;
+export const CART_BUTTON_STYLES = ["outline", "filled", "text"] as const;
+
+/** Badge text is rendered through CSS `content`, so quotes and backslashes are not allowed. */
+const SALE_BADGE_TEXT = /^[\p{L}\p{N} !%&+\-.,:/$€£¥]+$/u;
 
 export type ContentWidth = (typeof CONTENT_WIDTHS)[number];
 export type SectionSpacing = (typeof SECTION_SPACINGS)[number];
@@ -53,6 +57,26 @@ export const siteStyleSchema = z.object({
   /** The large "View cart" bar at the bottom of shop pages; shown unless set to false. */
   cartBarDesktop: z.boolean().optional(),
   cartBarMobile: z.boolean().optional(),
+  /** "Sale" badge next to prices of on-sale products; shown unless set to false. */
+  saleBadge: z.boolean().optional(),
+  saleBadgeText: z.string().trim().min(1).max(16).regex(SALE_BADGE_TEXT, "Letters, numbers and simple punctuation only.").optional(),
+  saleBadgeBackground: colourValue.optional(),
+  saleBadgeColour: colourValue.optional(),
+  saleBadgeShape: z.enum(BUTTON_SHAPES).optional(),
+  /** Sort menu and filter sidebar on shop and category pages; shown unless set to false. */
+  shopSort: z.boolean().optional(),
+  shopFilters: z.boolean().optional(),
+  /** Header cart button; unset = the template's outlined button reading "Cart (n)". */
+  cartButtonStyle: z.enum(CART_BUTTON_STYLES).optional(),
+  cartButtonLabel: z.string().trim().min(1).max(20).optional(),
+  cartButtonIcon: z.boolean().optional(),
+  /** Item count after the label; shown unless set to false. */
+  cartButtonCount: z.boolean().optional(),
+  /** Show the button even while the cart is empty. */
+  cartButtonAlways: z.boolean().optional(),
+  cartButtonBackground: colourValue.optional(),
+  cartButtonColour: colourValue.optional(),
+  cartButtonShape: z.enum(BUTTON_SHAPES).optional(),
 });
 
 export type SiteStyle = z.infer<typeof siteStyleSchema>;

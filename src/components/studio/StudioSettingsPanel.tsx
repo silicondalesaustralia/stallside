@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { useEditor } from "@craftjs/core";
 import { studioSectionLabel } from "@/lib/studio/section-registry";
-import ProductPickerField from "@/components/puck/editor/fields/ProductPickerField";
-import CategoryPickerField from "@/components/puck/editor/fields/CategoryPickerField";
+import ProductGridSourceField from "./ProductGridSourceField";
 import { useStudioMetadata, useStudioEditorChrome } from "./StudioEditorContext";
 import HeaderStyleSettings from "./HeaderStyleSettings";
 import PresetStyleField from "./PresetStyleField";
@@ -32,6 +31,9 @@ import SpacerSettings from "@/components/studio/SpacerSettings";
 import ReviewsSettings from "@/components/studio/ReviewsSettings";
 import type { CraftReviewsProps } from "@/components/studio/sections/CraftReviewsSection";
 import SiteCardsEffectsSettings from "./SiteCardsEffectsSettings";
+import SaleBadgeSettings from "./SaleBadgeSettings";
+import ShopBrowseSettings from "./ShopBrowseSettings";
+import CartButtonSettings from "./CartButtonSettings";
 import SiteStyleSaveStatus from "./SiteStyleSaveStatus";
 import SiteSharingSettings from "./SiteSharingSettings";
 import FooterSettingsPanel from "./FooterSettingsPanel";
@@ -127,6 +129,9 @@ export default function StudioSettingsPanel() {
         <SiteTypographySettings />
         <SiteLayoutSettings />
         <SiteCardsEffectsSettings />
+        <CartButtonSettings />
+        <ShopBrowseSettings />
+        <SaleBadgeSettings />
         <SiteStyleSaveStatus />
         <PageStyleSettings />
         <SiteButtonSettings />
@@ -310,36 +315,9 @@ function ProductGridSettings({
   props: CraftProductGridProps;
   setProp: (k: string, v: unknown) => void;
 }) {
-  const metadata = useStudioMetadata();
   return (
     <>
-      <p className="text-xs text-[var(--muted)]">
-        Edit the heading directly on the page.
-      </p>
-      <Field label="Show">
-        {(["all", "category", "manual", "activeCategory"] as const).map((opt) => (
-          <label key={opt} className="flex items-center gap-2 text-sm">
-            <input type="radio" name="source" checked={props.source === opt} onChange={() => setProp("source", opt)} />
-            {opt === "all"
-              ? "All products"
-              : opt === "category"
-                ? "A category"
-                : opt === "manual"
-                  ? "Choose products"
-                  : "Current category page"}
-          </label>
-        ))}
-      </Field>
-      {props.source === "category" ? (
-        <Field label="Category">
-          <CategoryPickerField value={props.categoryId} onChange={(v) => setProp("categoryId", v)} categories={metadata.categories} />
-        </Field>
-      ) : null}
-      {props.source === "manual" ? (
-        <Field label="Products">
-          <ProductPickerField value={props.productIds} onChange={(v) => setProp("productIds", v)} products={metadata.products} />
-        </Field>
-      ) : null}
+      <ProductGridSourceField props={props} setProp={setProp} />
       <PresetStyleField presetsBySkin={PRODUCT_PRESETS} value={props.preset} onChange={(v) => setProp("preset", v)} />
       <Field label="Columns">
         <select className={INPUT} value={props.columns} onChange={(e) => setProp("columns", Number(e.target.value))}>

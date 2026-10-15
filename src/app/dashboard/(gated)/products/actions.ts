@@ -26,6 +26,7 @@ import {
   upsertPreOrderAddonProduct,
 } from "@/lib/preorder-upsell-addon";
 import { parseProductOwnerMeta } from "@/lib/product-owner-meta";
+import { parseCompareAtPrice } from "@/lib/product-sale-price";
 import { PRODUCT_DESCRIPTION_MAX } from "@/lib/product-limits";
 import { parseFulfilmentChoice } from "@/lib/fulfilment/handover-choice";
 
@@ -346,6 +347,10 @@ export async function updateProduct(productId: string, formData: FormData) {
 
     const ownerMeta = parseProductOwnerMeta(formData);
     if (!ownerMeta.ok) return { error: ownerMeta.error };
+    const compareAt = formData.has("compareAtPrice")
+      ? parseCompareAtPrice(formData, priceCents)
+      : undefined;
+    if (compareAt && !compareAt.ok) return { error: compareAt.error };
 
     let shippingCents: number | null | undefined;
     if (formData.has("shippingCost")) {
@@ -393,6 +398,7 @@ export async function updateProduct(productId: string, formData: FormData) {
         seoDescription: parsed.data.seoDescription || null,
         imageUrl,
         priceCents,
+        ...(compareAt?.ok ? { compareAtPriceCents: compareAt.cents } : {}),
         sku: ownerMeta.data.sku,
         upc: ownerMeta.data.upc,
         costCents: ownerMeta.data.costCents,

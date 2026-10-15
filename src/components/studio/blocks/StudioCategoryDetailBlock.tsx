@@ -6,7 +6,8 @@ import { categoryGridClass, type CategoryDetailView } from "@/lib/studio/categor
 import RichText from "@/components/studio/RichText";
 import SectionElement from "@/components/studio/SectionElement";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
-import StudioProductCard from "@/components/studio/blocks/StudioProductCard";
+import type { ProductGridDisplay } from "@/components/studio/blocks/StudioProductGridList";
+import StudioProductBrowser from "@/components/studio/blocks/StudioProductBrowser";
 
 const HINT = "rounded-lg border border-dashed border-[var(--line)] px-3 py-2 text-sm text-[var(--muted)]";
 
@@ -38,10 +39,19 @@ export default function StudioCategoryDetailBlock({
   isEditing?: boolean;
 }) {
   const category = meta.commerceContext?.category;
-  const products = category ? meta.products.filter((p) => p.categoryIds.includes(category.id)) : meta.products;
+  const products = category ? meta.products.filter((p) => p.categoryIds.includes(category.id)) : [];
   const centred = view.align === "centre";
   const textAlign = centred ? "mx-auto text-center" : "";
   const look = productGridLook(meta.templateId, view.preset ?? defaultProductPreset(meta.templateId));
+  const display: ProductGridDisplay = {
+    cardMeta: { storefrontSlug: meta.storefrontSlug, draft: meta.draft, basePath: meta.basePath, currency: meta.currency },
+    cardPreset: look.card,
+    isFarm: look.farm,
+    gridClass: `${look.dense ? "gap-3" : "gap-5"} ${look.presetGrid ?? categoryGridClass(view)}`,
+    showPrice: view.showPrice,
+    showAvailability: view.showAvailability,
+    showRating: view.showRatings,
+  };
   return (
     <section className={look.farm ? "studio-section studio-section--wash" : "studio-section"}>
       <div className="studio-section__inner">
@@ -60,20 +70,9 @@ export default function StudioCategoryDetailBlock({
           />
         ) : null}
         {products.length > 0 ? (
-          <ul className={`mt-8 grid ${look.dense ? "gap-3" : "gap-5"} ${look.presetGrid ?? categoryGridClass(view)}`}>
-            {products.map((product) => (
-              <li key={product.id}>
-                <StudioProductCard
-                  product={product}
-                  meta={meta}
-                  preset={look.card}
-                  isFarm={look.farm}
-                  showPrice={view.showPrice}
-                  showAvailability={view.showAvailability}
-                />
-              </li>
-            ))}
-          </ul>
+          <div className="mt-8">
+            <StudioProductBrowser products={products} categories={[]} display={display} />
+          </div>
         ) : (
           <p className="mt-8 text-[var(--muted)]">No products in this category yet.</p>
         )}

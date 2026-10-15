@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { PublicProductCard } from "@/lib/public-product";
-import { formatMoney } from "@/lib/public-product";
+import SalePrice from "@/components/storefront/SalePrice";
 import { addToStandCart, readStandCart } from "@/lib/stand-cart-storage";
 import {
   CART_MIX_COLLECTION_DAYS,
@@ -120,7 +120,7 @@ export default function StandCatalogGrid({
                   Pre-order
                 </p>
                 <p className="font-receipt text-lg text-[var(--stand-secondary,var(--ok))] sm:text-base">
-                  {formatMoney(product.priceCents, currency)}
+                  <SalePrice priceCents={product.priceCents} compareAtPriceCents={product.compareAtPriceCents} currency={currency} />
                 </p>
                 <p
                   className={`font-receipt text-sm sm:text-xs ${stockTone(product.label)}`}

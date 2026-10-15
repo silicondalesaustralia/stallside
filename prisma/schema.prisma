@@ -1326,6 +1326,11 @@ model Product {
   seoDescription              String?
   priceCents                  Int
   /**
+   * "Was" price shown struck through; the product is on sale when this is above priceCents.
+   * Display only: checkout always charges priceCents.
+   */
+  compareAtPriceCents         Int?
+  /**
    * Owner-only unit cost; profit = priceCents - costCents when set.
    */
   costCents                   Int?

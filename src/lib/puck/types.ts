@@ -26,6 +26,10 @@ export type PuckSpikeMetadata = {
     slug: string;
     name: string;
     priceCents: number;
+    /** Struck-through "was" price; set only while on sale. */
+    compareAtPriceCents?: number | null;
+    /** For "Newest" sorting. */
+    createdAtMs?: number;
     imageUrl: string | null;
     soldOut: boolean;
     label: string;

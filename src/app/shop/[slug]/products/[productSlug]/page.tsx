@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { resolveProductForStand } from "@/lib/catalogue/channels";
 import { isReservedProductSlug } from "@/lib/slug";
 import { formatMoney, mapPublicProduct } from "@/lib/public-product";
+import SalePrice from "@/components/storefront/SalePrice";
 import { productLiveWhere } from "@/lib/product-visibility";
 import { ProductChannelType } from "@/generated/prisma/client";
 import { loadStorefrontPage } from "@/lib/storefront/page-loader";
@@ -221,7 +222,7 @@ export default async function StorefrontProductPage({
             </p>
           ) : null}
           <p className="mt-3 font-receipt text-2xl text-[var(--stand-secondary,var(--ok))]">
-            {formatMoney(product.priceCents, ctx.stand.currency)}
+            <SalePrice priceCents={product.priceCents} compareAtPriceCents={product.compareAtPriceCents} currency={ctx.stand.currency} />
           </p>
           {product.description ? (
             <p className="mt-4 text-lg leading-relaxed text-[var(--muted)]">
