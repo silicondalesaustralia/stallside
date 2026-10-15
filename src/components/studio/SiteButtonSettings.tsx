@@ -47,7 +47,8 @@ export default function SiteButtonSettings() {
         value={colours.background ?? undefined}
         onChange={(background) => setSiteButtonColours?.({ ...colours, background: background ?? null })}
         palette={palette}
-        noneLabel="Template default"
+        noneLabel="Template default: the colour your template uses for buttons"
+        noneChip={{ text: "Template default" }}
       />
       <ColourField
         label="Button text colour"
@@ -55,6 +56,7 @@ export default function SiteButtonSettings() {
         onChange={(text) => setSiteButtonColours?.({ ...colours, text: text ?? null })}
         palette={palette}
         noneLabel="Auto (readable on the button)"
+        noneChip={{ text: "Auto" }}
       />
       {lowContrast ? (
         <p className="text-xs text-red-700">The button text may be hard to read. Try Auto text colour.</p>
