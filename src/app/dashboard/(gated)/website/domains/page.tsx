@@ -4,7 +4,11 @@ import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { prisma } from "@/lib/prisma";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { APP_DOMAIN } from "@/lib/constants";
-import { storefrontSubdomainHost } from "@/lib/tenancy/public-url";
+import {
+  storefrontPublicUrl,
+  storefrontSubdomainHost,
+  storefrontSubdomainPrimaryEnabled,
+} from "@/lib/tenancy/public-url";
 import DomainPrimaryPrompts from "./DomainPrimaryPrompts";
 import CustomDomainCard from "./CustomDomainCard";
 import BuyDomainSearch from "./BuyDomainSearch";
@@ -132,7 +136,11 @@ export default async function WebsiteDomainsPage({
       ) : null}
 
       <VendlAddressCard
-        vendlHost={storefrontSubdomainHost(storefront.slug)}
+        vendlHost={
+          storefrontSubdomainPrimaryEnabled()
+            ? storefrontSubdomainHost(storefront.slug)
+            : storefrontPublicUrl(storefront.slug, { forcePath: true }).replace(/^https?:\/\//, "")
+        }
         liveUrl={liveUrl}
         customHostname={primaryCustom?.hostname}
       />
