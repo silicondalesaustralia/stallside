@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useSectionText } from "@/components/studio/SectionStyleContext";
 import { useMemo, useState } from "react";
 import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/public-product";
@@ -23,6 +22,8 @@ import { useCartHref } from "@/components/storefront/use-cart-href";
 import ProductMultiChoiceQty from "./ProductMultiChoiceQty";
 import PreOrderDetails from "./PreOrderDetails";
 import QtyStepper from "./QtyStepper";
+import ProductActionButtons from "@/components/storefront/product/ProductActionButtons";
+import type { ProductButtons } from "@/lib/studio/product-buttons";
 
 function stockTone(label: string) {
   if (label.startsWith("Sold out") || label.startsWith("Orders closed")) {
@@ -54,16 +55,18 @@ export default function ProductDetailActions({
   currency,
   product,
   catalogProducts,
+  buttons,
+  buttonWidth,
 }: {
   standSlug: string;
   currency: string;
   product: PublicProductCard;
   catalogProducts: PublicProductCard[];
+  buttons?: ProductButtons;
+  buttonWidth?: number | null;
 }) {
   const router = useRouter();
   const cartHref = useCartHref(standSlug);
-  const addLabel = useSectionText("addToCart", "Add to cart");
-  const checkoutLabel = useSectionText("addAndCheckout", "Add & checkout");
   const singleGroup =
     product.optionGroups.length === 1 ? product.optionGroups[0] : null;
   const [qty, setQty] = useState(1);
@@ -270,29 +273,12 @@ export default function ProductDetailActions({
       {error ? (
         <p className="text-center text-sm text-[var(--gone)]">{error}</p>
       ) : null}
-      <div className="mx-auto flex w-full max-w-xs flex-col items-stretch gap-2">
-        <button
-          type="button"
-          disabled={
-            product.soldOut || (singleGroup ? multiPickCount < 1 : false)
-          }
-          onClick={() => addAndGo(false)}
-          data-product-add
-          className="w-full rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-5 py-3 text-base font-semibold disabled:opacity-40"
-        >
-          {addLabel}
-        </button>
-        <button
-          type="button"
-          disabled={
-            product.soldOut || (singleGroup ? multiPickCount < 1 : false)
-          }
-          onClick={() => addAndGo(true)}
-          className="w-full rounded-[var(--radius-pill)] bg-[var(--site-btn-bg,var(--leaf))] px-5 py-3 text-base font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-40"
-        >
-          {checkoutLabel}
-        </button>
-      </div>
+      <ProductActionButtons
+        buttons={buttons}
+        width={buttonWidth}
+        disabled={product.soldOut || (singleGroup ? multiPickCount < 1 : false)}
+        onAdd={addAndGo}
+      />
     </div>
   );
 }

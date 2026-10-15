@@ -48,7 +48,7 @@ export default function ProductBlock({ id, info }: { id: ProductBlockId; info: P
     case "buy":
       return (
         <div>
-          <CartButtonLabels />
+          <CartButtonLabels buttons={view.buttons} />
           <ProductBuyBox
             standSlug={meta.standSlug}
             currency={meta.currency}
@@ -56,6 +56,8 @@ export default function ProductBlock({ id, info }: { id: ProductBlockId; info: P
             catalogProducts={catalog}
             stickyCart={view.stickyCart && !isEditing}
             paymentBrands={view.showPayments ? meta.paymentBrands : []}
+            buttons={view.buttons}
+            buttonWidth={view.buttonWidth}
           />
         </div>
       );

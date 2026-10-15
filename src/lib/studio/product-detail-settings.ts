@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { WEBSITE_LIMITS as L } from "@/lib/website/schema/limits";
 import { parseBlockLayout, type ProductBlockLayout } from "./product-blocks";
+import { buttonWidthOf, productButtonsOf, type ProductButtons } from "./product-buttons";
 
 export const PRODUCT_LAYOUTS = ["featured", "classic", "gallery", "simple"] as const;
 /** Featured layout: share of the row the main photo takes on wider screens (percent). */
@@ -51,6 +52,9 @@ export type ProductDetailView = {
   imageSize: number;
   enlarge: boolean;
   stickyCart: boolean;
+  buttons: ProductButtons;
+  /** Percent of the details column; null is the standard width. */
+  buttonWidth: number | null;
   /** Payment marks under the cart buttons; off unless the seller turns it on. */
   showPayments: boolean;
   infoRows: InfoRow[];
@@ -91,6 +95,8 @@ export function productDetailView(props: Record<string, unknown>): ProductDetail
     imageSize: imageSizeOf(props.imageSize),
     enlarge: props.enlarge !== false,
     stickyCart: props.stickyCart !== false,
+    buttons: productButtonsOf(props.buttons),
+    buttonWidth: buttonWidthOf(props.buttonWidth),
     showPayments: props.showPayments === true,
     infoRows: parseInfoRows(props.infoRows).filter((r) => r.text.trim()),
     tabs: parseProductTabs(props.tabs).filter((t) => t.title.trim()),

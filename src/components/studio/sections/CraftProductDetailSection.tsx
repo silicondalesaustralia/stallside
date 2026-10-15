@@ -13,6 +13,7 @@ import {
   type ProductTab,
 } from "@/lib/studio/product-detail-settings";
 import type { ProductBlockLayout } from "@/lib/studio/product-blocks";
+import type { ProductButtons } from "@/lib/studio/product-buttons";
 
 export type CraftProductDetailProps = {
   showReviews: boolean;
@@ -27,6 +28,8 @@ export type CraftProductDetailProps = {
   blockLayout?: ProductBlockLayout;
   enlarge?: boolean;
   stickyCart?: boolean;
+  buttons?: ProductButtons;
+  buttonWidth?: number;
   showPayments?: boolean;
   infoRows?: InfoRow[];
   tabs?: ProductTab[];
