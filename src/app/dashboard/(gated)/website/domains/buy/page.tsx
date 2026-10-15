@@ -19,6 +19,7 @@ const ERRORS: Record<string, string> = {
   config: "Purchase infrastructure is not configured.",
   stripe: "Could not start payment.",
   invalid: "Check the domain and eligibility details.",
+  phone: "Check the phone number - include the area or mobile prefix, e.g. 0412 345 678 or +61 412 345 678.",
 };
 
 export default async function BuyDomainPage({

@@ -10,6 +10,7 @@ import {
 import type { AuEligibility, RegistrantContact } from "@/lib/domains/registrar/types";
 import { domainTld } from "@/lib/domains/registrar/namecheap/au-attrs";
 import { parseDomainRetailCurrency } from "@/lib/domains/registrar/retail-pricing";
+import { registrarPhone } from "@/lib/domains/registrar/phone";
 
 function field(formData: FormData, name: string): string {
   return String(formData.get(name) ?? "").trim();
@@ -25,18 +26,26 @@ export async function startDomainCheckoutAction(formData: FormData) {
     parseDomainRetailCurrency(owner.billingCurrency, "AUD"),
   );
 
+  const country = (field(formData, "country") || "AU").toUpperCase();
+  const phone = registrarPhone(field(formData, "phone"), country);
+  if (!phone) {
+    redirect(
+      `/dashboard/website/domains/buy?domain=${encodeURIComponent(domain)}&currency=${encodeURIComponent(retailCurrency)}&error=phone`,
+    );
+  }
+
   const registrant: RegistrantContact = {
     firstName: field(formData, "firstName"),
     lastName: field(formData, "lastName"),
     organization: field(formData, "organization") || undefined,
     email: field(formData, "email"),
-    phone: field(formData, "phone"),
+    phone,
     address1: field(formData, "address1"),
     address2: field(formData, "address2") || undefined,
     city: field(formData, "city"),
     state: field(formData, "state") || undefined,
     postalCode: field(formData, "postalCode"),
-    country: field(formData, "country") || "AU",
+    country,
   };
 
   let au: AuEligibility | undefined;

@@ -42,10 +42,10 @@ export default function BuyDomainForm({
         />
         <Field
           name="phone"
-          label="Phone (+61.…)"
+          label="Phone"
+          type="tel"
           required
-          defaultValue="+61."
-          placeholder="+61.412345678"
+          placeholder="0412 345 678"
         />
         <Field name="address1" label="Address" required />
         <Field name="address2" label="Address line 2" />
