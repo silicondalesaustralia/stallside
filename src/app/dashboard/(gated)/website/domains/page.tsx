@@ -202,7 +202,7 @@ export default async function WebsiteDomainsPage({
           ))}
 
           {domains.length === 0 && !path && !purchaseConnecting ? (
-            <DomainPathCards searchEnabled={searchOn} />
+            <DomainPathCards />
           ) : null}
 
           {path === "buy" && searchOn ? (
