@@ -6,7 +6,6 @@ import type { ProductBlockId } from "@/lib/studio/product-blocks";
 import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
 import SectionCopy from "@/components/studio/SectionCopy";
 import SectionElement from "@/components/studio/SectionElement";
-import CartButtonLabels from "@/components/studio/CartButtonLabels";
 import ProductDescription from "./ProductDescription";
 import ProductBuyBox from "./ProductBuyBox";
 import ProductInfoRows from "./ProductInfoRows";
@@ -48,7 +47,6 @@ export default function ProductBlock({ id, info }: { id: ProductBlockId; info: P
     case "buy":
       return (
         <div>
-          <CartButtonLabels buttons={view.buttons} />
           <ProductBuyBox
             standSlug={meta.standSlug}
             currency={meta.currency}

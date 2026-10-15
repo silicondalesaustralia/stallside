@@ -1,13 +1,16 @@
 "use client";
 
-import { useSectionText } from "@/components/studio/SectionStyleContext";
+import SectionCopy from "@/components/studio/SectionCopy";
+import { useSectionCopyContext, useSectionText } from "@/components/studio/SectionStyleContext";
 import type { ProductButtons } from "@/lib/studio/product-buttons";
 
-const BASE = "w-full rounded-[var(--radius-pill)] px-5 py-3 text-base font-semibold disabled:opacity-40";
+const BASE = "w-full rounded-[var(--radius-pill)] px-5 py-3 text-center text-base font-semibold";
+const CART = `${BASE} border border-[var(--line)] bg-[var(--panel)]`;
+const CHECKOUT = `${BASE} bg-[var(--site-btn-bg,var(--leaf))] text-[var(--site-btn-ink,#fff)]`;
 
 /**
  * Add to cart and/or Add & checkout. `data-product-add` marks the first visible one so the
- * phone sticky bar presses the right button.
+ * phone sticky bar presses the right button. In the builder the labels are edited in place.
  */
 export default function ProductActionButtons({
   buttons = "both",
@@ -21,6 +24,7 @@ export default function ProductActionButtons({
   disabled: boolean;
   onAdd: (goCart: boolean) => void;
 }) {
+  const { editable } = useSectionCopyContext();
   const addLabel = useSectionText("addToCart", "Add to cart");
   const checkoutLabel = useSectionText("addAndCheckout", "Add & checkout");
   const showCart = buttons !== "checkout";
@@ -31,28 +35,39 @@ export default function ProductActionButtons({
       className={`mx-auto flex flex-col items-stretch gap-2 ${width == null ? "w-full max-w-xs" : "min-w-[min(100%,12rem)]"}`}
       style={width == null ? undefined : { width: `${width}%` }}
     >
-      {showCart ? (
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => onAdd(false)}
-          data-product-add
-          className={`${BASE} border border-[var(--line)] bg-[var(--panel)]`}
-        >
-          {addLabel}
-        </button>
-      ) : null}
-      {showCheckout ? (
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => onAdd(true)}
-          {...(showCart ? {} : { "data-product-add": "" })}
-          className={`${BASE} bg-[var(--site-btn-bg,var(--leaf))] text-[var(--site-btn-ink,#fff)]`}
-        >
-          {checkoutLabel}
-        </button>
-      ) : null}
+      {editable ? (
+        <>
+          {showCart ? (
+            <div className={CART}>
+              <SectionCopy k="addToCart" fallback="Add to cart" />
+            </div>
+          ) : null}
+          {showCheckout ? (
+            <div className={CHECKOUT}>
+              <SectionCopy k="addAndCheckout" fallback="Add & checkout" />
+            </div>
+          ) : null}
+        </>
+      ) : (
+        <>
+          {showCart ? (
+            <button type="button" disabled={disabled} onClick={() => onAdd(false)} data-product-add className={`${CART} disabled:opacity-40`}>
+              {addLabel}
+            </button>
+          ) : null}
+          {showCheckout ? (
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => onAdd(true)}
+              {...(showCart ? {} : { "data-product-add": "" })}
+              className={`${CHECKOUT} disabled:opacity-40`}
+            >
+              {checkoutLabel}
+            </button>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
