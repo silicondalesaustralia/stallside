@@ -7,15 +7,23 @@ import {
   toggleProductButton,
   type ProductButtons,
 } from "@/lib/studio/product-buttons";
+import { SECTION_TEXT_MAX, withSectionText } from "@/lib/studio/section-texts";
 
-/** Which buy buttons show (at least one) and how wide they are. */
+const LABELS = [
+  { key: "addToCart", fallback: "Add to cart", which: "cart" },
+  { key: "addAndCheckout", fallback: "Add & checkout", which: "checkout" },
+] as const;
+
+/** Which buy buttons show (at least one), their wording and how wide they are. */
 export default function ProductButtonSettings({
   buttons,
   width,
+  texts,
   setProp,
 }: {
   buttons: ProductButtons;
   width: number | null;
+  texts?: Record<string, string>;
   setProp: (k: string, v: unknown) => void;
 }) {
   const cart = buttons !== "checkout";
@@ -39,6 +47,22 @@ export default function ProductButtonSettings({
       {box("Show Add to cart", "cart", cart, checkout)}
       {box("Show Add & checkout", "checkout", checkout, cart)}
       <p className="text-xs text-[var(--muted)]">At least one button always shows.</p>
+      {LABELS.filter((l) => (l.which === "cart" ? cart : checkout)).map((l) => (
+        <div key={l.key} className="space-y-1">
+          <label htmlFor={`product-label-${l.key}`} className="block text-xs font-semibold text-[var(--field)]">
+            {l.fallback} button text
+          </label>
+          <input
+            id={`product-label-${l.key}`}
+            className="w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm"
+            value={texts?.[l.key] ?? ""}
+            placeholder={l.fallback}
+            maxLength={SECTION_TEXT_MAX}
+            onChange={(e) => setProp("texts", withSectionText(texts, l.key, e.target.value, l.fallback))}
+          />
+        </div>
+      ))}
+      <p className="text-xs text-[var(--muted)]">Leave blank for the default. You can also click a button on the page to rename it.</p>
       <div className="space-y-1.5 pt-1">
         <label htmlFor="product-button-width" className="flex justify-between text-xs font-semibold text-[var(--field)]">
           Button width

@@ -17,6 +17,8 @@ import type { ProductButtons } from "@/lib/studio/product-buttons";
 import ProductReviewsPreview from "@/components/storefront/reviews/ProductReviewsPreview";
 
 export type CraftProductDetailProps = {
+  /** Seller wording for labels such as the buy buttons. */
+  texts?: Record<string, string>;
   showReviews: boolean;
   /** With reviews on: the "Leave a review" form under them; on unless switched off. */
   showReviewForm?: boolean;

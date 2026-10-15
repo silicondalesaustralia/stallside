@@ -77,7 +77,7 @@ export default function ProductDetailSettings({
         />
       ) : null}
       <Toggle label="Click photos to enlarge" checked={view.enlarge} onChange={(v) => setProp("enlarge", v)} />
-      <ProductButtonSettings buttons={view.buttons} width={view.buttonWidth} setProp={setProp} />
+      <ProductButtonSettings buttons={view.buttons} width={view.buttonWidth} texts={props.texts} setProp={setProp} />
       <Toggle label="Sticky Add to cart bar on phones (product pages)" checked={view.stickyCart} onChange={(v) => setProp("stickyCart", v)} />
       <CartBarSettings />
       <Toggle label="Show payment options under the buttons" checked={view.showPayments} onChange={(v) => setProp("showPayments", v)} />
