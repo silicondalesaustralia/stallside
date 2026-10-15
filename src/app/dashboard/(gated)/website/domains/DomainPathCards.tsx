@@ -16,8 +16,9 @@ export default function DomainPathCards() {
         </div>
         <p className="text-sm text-[var(--muted)]">
           Soon you&apos;ll be able to buy .com.au, .com and .net.au domains right here.
-          For now, buy one from any domain registrar and connect it below — it only
-          takes a few minutes.
+          For now, buy one from any domain registrar and connect it — Australian, US
+          and other domains from around the world all work. It only takes a few
+          minutes.
         </p>
         <span
           aria-disabled="true"

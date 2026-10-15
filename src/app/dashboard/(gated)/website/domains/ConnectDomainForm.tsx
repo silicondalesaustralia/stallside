@@ -29,7 +29,9 @@ export default function ConnectDomainForm() {
                 {i < REGISTRARS.length - 2 ? ", " : i === REGISTRARS.length - 2 ? " or " : ""}
               </span>
             ))}
-            . For a .com.au or .net.au you&apos;ll need your ABN at checkout.
+            . Any domain works — Australian (.com.au, .net.au), US and international
+            (.com, .net, .us) or other regions around the world (.co.nz, .co.uk, .ca
+            and more). For a .com.au or .net.au you&apos;ll need your ABN at checkout.
           </p>
         </div>
         <div>
