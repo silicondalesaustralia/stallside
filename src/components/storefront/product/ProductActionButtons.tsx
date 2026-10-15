@@ -4,9 +4,10 @@ import SectionCopy from "@/components/studio/SectionCopy";
 import { useSectionCopyContext, useSectionText } from "@/components/studio/SectionStyleContext";
 import type { ProductButtons } from "@/lib/studio/product-buttons";
 
-const BASE = "w-full rounded-[var(--radius-pill)] px-5 py-3 text-center text-base font-semibold";
-const CART = `${BASE} border border-[var(--line)] bg-[var(--panel)]`;
-const CHECKOUT = `${BASE} bg-[var(--site-btn-bg,var(--leaf))] text-[var(--site-btn-ink,#fff)]`;
+/** Site-wide button shape, size and text size apply; the section's Button settings override them. */
+const BASE = "studio-btn w-full py-2 text-center";
+const CART = `${BASE} studio-btn--secondary`;
+const CHECKOUT = `${BASE} studio-btn--primary`;
 
 /**
  * Add to cart and/or Add & checkout. `data-product-add` marks the first visible one so the

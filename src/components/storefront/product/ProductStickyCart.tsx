@@ -54,7 +54,7 @@ export default function ProductStickyCart({
       <button
         type="button"
         onClick={onAdd}
-        className="shrink-0 rounded-[var(--site-btn-radius,var(--radius-pill))] bg-[var(--site-btn-bg,var(--leaf))] px-5 py-2.5 text-sm font-semibold text-[var(--site-btn-ink,#fff)]"
+        className="studio-btn studio-btn--primary shrink-0 py-2"
       >
         {hasOptions ? "Choose options" : addLabel}
       </button>
