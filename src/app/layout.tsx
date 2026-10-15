@@ -31,7 +31,7 @@ const body = DM_Sans({
 const mono = Spline_Sans_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  // Variable font: per-weight gstatic files intermittently fail Turbopack builds (see display above).
 });
 
 export const metadata: Metadata = {
