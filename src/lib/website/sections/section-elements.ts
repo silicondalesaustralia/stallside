@@ -12,6 +12,13 @@ export const SECTION_ELEMENTS: Record<string, SectionElementDef[]> = {
     { id: "tabTitle", label: "Info tab titles" },
     { id: "tabBody", label: "Info tab text" },
   ],
+  CraftCategoryDetailSection: [
+    { id: "title", label: "Category name" },
+    { id: "topDescription", label: "Top description" },
+    { id: "bottomDescription", label: "Bottom description" },
+    { id: "productName", label: "Product names" },
+    { id: "productPrice", label: "Prices" },
+  ],
 };
 
 export function sectionElements(craftName: string): SectionElementDef[] {

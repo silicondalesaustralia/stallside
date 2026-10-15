@@ -11,6 +11,8 @@ import {
 } from "./types";
 import type { BusinessMode } from "@/lib/business-mode";
 import { STUDIO_HOME_PAGE_KEY, type StudioPageNodesMap } from "./custom-pages";
+import { COMMERCE_CATEGORY_KEY } from "./commerce-pages";
+import { upgradeCategoryPageNodes } from "./category-page-upgrade";
 
 export type StorefrontConfigWithStudio = StorefrontConfig & {
   websiteStudio?: StudioPayload;
@@ -94,7 +96,8 @@ export function studioPageNodes(
   pageKey: string,
 ): SerializedNodes | undefined {
   if (pageKey === STUDIO_HOME_PAGE_KEY) return studio.nodes;
-  return studio.pageNodes?.[pageKey];
+  const nodes = studio.pageNodes?.[pageKey];
+  return nodes && pageKey === COMMERCE_CATEGORY_KEY ? upgradeCategoryPageNodes(nodes) : nodes;
 }
 
 function mergeRawBase(existingRaw: unknown): Record<string, unknown> {

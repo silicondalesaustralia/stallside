@@ -822,6 +822,8 @@ model Category {
   title         String
   slug          String
   description   String?
+  /** Shown under the product grid on the category page. */
+  bottomDescription String?
   imageUrl      String?
   sortOrder     Int               @default(0)
   isActive      Boolean           @default(true)

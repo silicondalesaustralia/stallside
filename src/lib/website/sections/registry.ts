@@ -8,6 +8,7 @@ import {
   orderConfirmation,
   productDetail,
   productGrid,
+  categoryDetail,
 } from "./commerce-sections";
 import { farmStand, payments, pickup, reviews, signup } from "./trust-sections";
 import { contactForm } from "./contact-sections";
@@ -37,6 +38,7 @@ const DEFINITIONS = {
   farmStand,
   payments,
   productDetail,
+  categoryDetail,
   menuDetail,
   cart,
   orderConfirmation,
@@ -76,6 +78,7 @@ export const VENDL_TYPE_BY_CRAFT_NAME = {
   CraftFarmStandSection: "farmStand",
   CraftPaymentsSection: "payments",
   CraftProductDetailSection: "productDetail",
+  CraftCategoryDetailSection: "categoryDetail",
   CraftMenuDetailSection: "menuDetail",
   CraftCartSection: "cart",
   CraftOrderConfirmationSection: "orderConfirmation",

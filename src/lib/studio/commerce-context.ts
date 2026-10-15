@@ -51,6 +51,7 @@ export async function buildSampleCommerceContext(
             slug: cat.slug,
             title: cat.title,
             description: cat.description,
+            bottomDescription: cat.bottomDescription,
             imageUrl: cat.imageUrl,
           }
         : undefined,

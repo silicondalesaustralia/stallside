@@ -28,6 +28,17 @@ export const STUDIO_SECTION_RULES: StudioSectionRule[] = [
     commerceKinds: ["product"],
   },
   {
+    type: "CraftCategoryDetailSection",
+    label: "Category page",
+    description: "Current category name, descriptions and products",
+    category: "sell",
+    paletteOrder: 0,
+    singleton: true,
+    duplicable: false,
+    deletable: true,
+    commerceKinds: ["category"],
+  },
+  {
     type: "CraftMenuDetailSection",
     label: "Menu detail",
     description: "Current menu title and order list",

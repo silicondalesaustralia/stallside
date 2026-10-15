@@ -85,6 +85,7 @@ export type StudioCommerceCategory = {
   slug: string;
   title: string;
   description?: string | null;
+  bottomDescription?: string | null;
   imageUrl?: string | null;
 };
 

@@ -20,6 +20,7 @@ export type VendlSectionType =
   | "farmStand"
   | "payments"
   | "productDetail"
+  | "categoryDetail"
   | "menuDetail"
   | "cart"
   | "orderConfirmation";

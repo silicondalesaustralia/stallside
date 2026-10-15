@@ -64,6 +64,7 @@ export type StudioSectionType =
   | "CraftFarmStandSection"
   | "CraftPaymentsSection"
   | "CraftProductDetailSection"
+  | "CraftCategoryDetailSection"
   | "CraftMenuDetailSection"
   | "CraftCartSection"
   | "CraftOrderConfirmationSection";

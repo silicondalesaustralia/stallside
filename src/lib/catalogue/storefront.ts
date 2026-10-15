@@ -168,6 +168,7 @@ export async function loadStorefrontContext(
         slug: true,
         title: true,
         description: true,
+        bottomDescription: true,
         imageUrl: true,
         showOnWebsite: true,
       },

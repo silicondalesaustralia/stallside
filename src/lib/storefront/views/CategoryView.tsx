@@ -42,6 +42,7 @@ export default async function CategoryView({ slug, categorySlug, draft }: ViewPr
           slug: true,
           title: true,
           description: true,
+          bottomDescription: true,
           imageUrl: true,
           showOnWebsite: true,
         },
@@ -73,6 +74,7 @@ export default async function CategoryView({ slug, categorySlug, draft }: ViewPr
             slug: activeCategory.slug,
             title: activeCategory.title,
             description: activeCategory.description,
+            bottomDescription: activeCategory.bottomDescription,
             imageUrl: activeCategory.imageUrl,
           },
         })

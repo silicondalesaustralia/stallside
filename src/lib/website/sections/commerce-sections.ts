@@ -12,6 +12,7 @@ import {
   productTabsSchema,
 } from "@/lib/studio/product-detail-settings";
 import { blockLayoutSchema } from "@/lib/studio/product-blocks";
+import { CATEGORY_ALIGNS, CATEGORY_CARD_STYLES } from "@/lib/studio/category-detail-settings";
 import { CATEGORY_VARIANTS, NEXT_DROP_VARIANTS, PRODUCT_VARIANTS, DEFAULT_ONLY } from "./variants";
 
 export const productGrid: SectionDefinition = {
@@ -111,6 +112,31 @@ export const productDetail: SectionDefinition = {
   pageKinds: ["product"],
   singleton: true,
   required: true,
+  emptyState: "render",
+};
+
+export const categoryDetail: SectionDefinition = {
+  type: "categoryDetail",
+  version: 1,
+  craftName: "CraftCategoryDetailSection",
+  label: "Category page",
+  variants: DEFAULT_ONLY,
+  defaultVariant: "default",
+  content: z.object({}),
+  settings: z.object({
+    showTitle: z.boolean().optional(),
+    showTopDescription: z.boolean().optional(),
+    showBottomDescription: z.boolean().optional(),
+    align: z.enum(CATEGORY_ALIGNS).optional(),
+    columns: z.union([z.literal(2), z.literal(3), z.literal(4)]).optional(),
+    mobileColumns: z.union([z.literal(1), z.literal(2)]).optional(),
+    cardStyle: z.enum(CATEGORY_CARD_STYLES).optional(),
+    showPrice: z.boolean().optional(),
+    showAvailability: z.boolean().optional(),
+  }),
+  pageKinds: ["category"],
+  singleton: true,
+  required: false,
   emptyState: "render",
 };
 

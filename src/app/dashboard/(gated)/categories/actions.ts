@@ -10,17 +10,11 @@ import {
   validOrderedIds,
   type OrderActionResult,
 } from "@/lib/categories/category-admin";
-
-function readFields(formData: FormData) {
-  return {
-    title: String(formData.get("title") ?? "").trim().slice(0, 80),
-    description: String(formData.get("description") ?? "").trim().slice(0, 300) || null,
-  };
-}
+import { readCategoryFields } from "@/lib/categories/category-fields";
 
 export async function createCategory(formData: FormData) {
   const { owner } = await requireOwnerWrite();
-  const { title, description } = readFields(formData);
+  const { title, description } = readCategoryFields(formData);
   if (!title) redirect("/dashboard/categories?error=name");
   const last = await prisma.category.findFirst({
     where: { ownerId: owner.id },
@@ -47,7 +41,7 @@ export async function updateCategory(categoryId: string, formData: FormData) {
     where: { id: categoryId, ownerId: owner.id },
   });
   if (!existing) redirect("/dashboard/categories");
-  const { title, description } = readFields(formData);
+  const { title, description, bottomDescription, imageUrl } = readCategoryFields(formData);
   if (!title) redirect(`/dashboard/categories/${categoryId}?error=name`);
 
   const updated = await prisma.category.update({
@@ -55,6 +49,8 @@ export async function updateCategory(categoryId: string, formData: FormData) {
     data: {
       title,
       description,
+      bottomDescription,
+      imageUrl,
       showOnWebsite: formData.get("showOnWebsite") === "on",
       slug:
         title === existing.title

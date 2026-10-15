@@ -87,7 +87,7 @@ export function parseSectionStyle(raw: unknown): SectionStyle {
 }
 
 /** Sections whose main heading is the page title (h1) unless the seller changes it. */
-const H1_SECTIONS = new Set(["CraftHeroSection", "CraftProductDetailSection", "CraftMenuDetailSection"]);
+const H1_SECTIONS = new Set(["CraftHeroSection", "CraftProductDetailSection", "CraftCategoryDetailSection", "CraftMenuDetailSection"]);
 
 export function defaultHeadingTag(craftName: string): HeadingTag {
   return H1_SECTIONS.has(craftName) ? "h1" : "h2";

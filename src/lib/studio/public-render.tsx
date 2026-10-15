@@ -26,6 +26,8 @@ import StudioSignupBlock from "@/components/studio/blocks/StudioSignupBlock";
 import StudioFarmStandBlock from "@/components/studio/blocks/StudioFarmStandBlock";
 import StudioProductDetailBlock from "@/components/studio/blocks/StudioProductDetailBlock";
 import { productDetailView } from "@/lib/studio/product-detail-settings";
+import StudioCategoryDetailBlock from "@/components/studio/blocks/StudioCategoryDetailBlock";
+import { categoryDetailView } from "@/lib/studio/category-detail-settings";
 import StudioMenuDetailBlock from "@/components/studio/blocks/StudioMenuDetailBlock";
 import StudioCartBlock from "@/components/studio/blocks/StudioCartBlock";
 import StudioOrderConfirmationBlock from "@/components/studio/blocks/StudioOrderConfirmationBlock";
@@ -157,6 +159,8 @@ function StudioSectionRender({
           ) : null}
         </>
       );
+    case "CraftCategoryDetailSection":
+      return <StudioCategoryDetailBlock view={categoryDetailView(p)} metadata={metadata} />;
     case "CraftMenuDetailSection":
       return <StudioMenuDetailBlock metadata={metadata} />;
     case "CraftCartSection":

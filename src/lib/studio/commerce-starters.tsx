@@ -6,11 +6,11 @@ import { defaultProductPreset } from "./preset-registry";
 import StudioPageRoot from "@/components/studio/sections/StudioPageRoot";
 import CraftProductGridSection from "@/components/craft/sections/CraftProductGridSection";
 import CraftCategoriesSection from "@/components/studio/sections/CraftCategoriesSection";
-import CraftTextSection from "@/components/studio/sections/CraftTextSection";
 import CraftReviewsSection from "@/components/studio/sections/CraftReviewsSection";
 import CraftPickupSection from "@/components/studio/sections/CraftPickupSection";
 import CraftProductDetailSection from "@/components/studio/sections/CraftProductDetailSection";
 import { DEFAULT_INFO_ROWS } from "@/lib/studio/product-detail-settings";
+import CraftCategoryDetailSection from "@/components/studio/sections/CraftCategoryDetailSection";
 import CraftMenuDetailSection from "@/components/studio/sections/CraftMenuDetailSection";
 import CraftCartSection from "@/components/studio/sections/CraftCartSection";
 import CraftOrderConfirmationSection from "@/components/studio/sections/CraftOrderConfirmationSection";
@@ -50,26 +50,7 @@ export function buildCommerceStarterTree(input: {
       );
       break;
     case "category":
-      sections.push(
-        <CraftTextSection
-          heading="Category"
-          body="Products in this category appear below. The heading updates from the live category name when published."
-          alignment="left"
-        />,
-      );
-      sections.push(
-        <CraftProductGridSection
-          source="activeCategory"
-          categoryId=""
-          productIds={[]}
-          limit={12}
-          columns={3}
-          preset={productPreset}
-          heading="In this category"
-          showPrice
-          showAvailability
-        />,
-      );
+      sections.push(<CraftCategoryDetailSection showTitle showTopDescription showBottomDescription columns={3} />);
       break;
     case "product":
       sections.push(
