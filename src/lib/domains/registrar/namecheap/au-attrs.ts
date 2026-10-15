@@ -31,6 +31,15 @@ export function namecheapAuExtendedAttrs(
     out[`${prefix}RegistrantName`] = name;
     out[`${prefix}EligibilityName`] = name;
   }
+  // Namecheap's errors name the upstream registry fields verbatim; it ignores keys it doesn't know.
+  out.eligibility_type = au.eligibilityType;
+  out.policy_reason = out[`${prefix}PolicyReason`];
+  if (id) out.eligibility_id = id;
+  if (idType) out.eligibility_id_type = idType;
+  if (name) {
+    out.eligibility_name = name;
+    out.registrant_name = name;
+  }
   return out;
 }
 

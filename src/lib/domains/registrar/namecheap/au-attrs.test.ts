@@ -18,6 +18,9 @@ describe("namecheapAuExtendedAttrs", () => {
     assert.equal(out.COMAUEligibilityName, "Alexa's Eggs");
     assert.equal(out.COMAURegistrantName, "Alexa's Eggs");
     assert.equal(out.COMAUPolicyReason, "2");
+    assert.equal(out.eligibility_type, "Sole Trader");
+    assert.equal(out.eligibility_name, "Alexa's Eggs");
+    assert.equal(out.policy_reason, "2");
   });
 
   it("uses the NETAU prefix and skips other TLDs", () => {
