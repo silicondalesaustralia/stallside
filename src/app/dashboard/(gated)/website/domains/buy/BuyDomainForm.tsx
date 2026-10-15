@@ -1,6 +1,7 @@
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import Link from "next/link";
 import { startDomainCheckoutAction } from "../purchase-actions";
+import { AU_ENTITY_TYPES } from "@/lib/domains/registrar/au-entity-types";
 
 export default function BuyDomainForm({
   domain,
@@ -77,8 +78,24 @@ export default function BuyDomainForm({
               <option value="TM">Trademark</option>
             </select>
           </label>
-          <Field name="eligibilityId" label="Identifier" required />
-          <input type="hidden" name="eligibilityType" value="Company" />
+          <Field name="eligibilityId" label="Number (e.g. 11-digit ABN)" required />
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Business type</span>
+            <select
+              name="eligibilityType"
+              className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+              defaultValue="Sole Trader"
+            >
+              {AU_ENTITY_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+            <span className="text-xs text-[var(--muted)]">
+              Must match how your ABN or ACN is registered. ACN holders choose Company.
+            </span>
+          </label>
         </fieldset>
       ) : null}
 

@@ -11,6 +11,7 @@ import type { AuEligibility, RegistrantContact } from "@/lib/domains/registrar/t
 import { domainTld } from "@/lib/domains/registrar/namecheap/au-attrs";
 import { parseDomainRetailCurrency } from "@/lib/domains/registrar/retail-pricing";
 import { registrarPhone } from "@/lib/domains/registrar/phone";
+import { auEntityTypeFor } from "@/lib/domains/registrar/au-entity-types";
 
 function field(formData: FormData, name: string): string {
   return String(formData.get(name) ?? "").trim();
@@ -50,10 +51,11 @@ export async function startDomainCheckoutAction(formData: FormData) {
 
   let au: AuEligibility | undefined;
   if (tld === "com.au" || tld === "net.au") {
+    const idType = field(formData, "eligibilityIdType") || "ABN";
     au = {
-      eligibilityType: field(formData, "eligibilityType") || "Company",
+      eligibilityType: auEntityTypeFor(idType, field(formData, "eligibilityType")),
       eligibilityId: field(formData, "eligibilityId"),
-      eligibilityIdType: field(formData, "eligibilityIdType") || "ABN",
+      eligibilityIdType: idType,
       eligibilityName: field(formData, "organization") || undefined,
     };
   }

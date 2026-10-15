@@ -108,9 +108,12 @@ export default async function WebsiteDomainsPage({
     ["PAID", "REGISTERING", "REGISTERED", "CONNECTING"].includes(
       latestPurchase.status,
     );
+  const purchaseFailed =
+    latestPurchase?.status === "FAILED" || latestPurchase?.status === "REFUNDED";
   const showStagingConnectedPreview =
     isStaging &&
     latestPurchase &&
+    !purchaseFailed &&
     (purchaseConnecting || params.purchased) &&
     domains.length === 0;
   const primaryCustom =
@@ -130,7 +133,7 @@ export default async function WebsiteDomainsPage({
       </div>
 
       <DomainsFlash
-        purchased={params.purchased}
+        purchased={purchaseFailed ? undefined : params.purchased}
         connected={params.connected}
         checked={params.checked}
         primary={params.primary}

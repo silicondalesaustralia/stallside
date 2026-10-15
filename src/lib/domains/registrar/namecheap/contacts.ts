@@ -16,7 +16,11 @@ function roleParams(role: Role, c: RegistrantContact): Record<string, string> {
     [`${role}Phone`]: c.phone,
     [`${role}EmailAddress`]: c.email,
   };
-  if (c.organization) out[`${role}OrganizationName`] = c.organization;
+  if (c.organization) {
+    out[`${role}OrganizationName`] = c.organization;
+    // .au and .ca registries reject company contacts without a job title.
+    out[`${role}JobTitle`] = "Owner";
+  }
   if (c.address2) out[`${role}Address2`] = c.address2;
   return out;
 }
