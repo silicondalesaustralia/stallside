@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { addSiteRenameRedirect } from "@/lib/website/persistence/site-redirect-patch";
+import { addSiteRenameRedirect, retargetSiteLinks } from "@/lib/website/persistence/site-redirect-patch";
 import { dollarsToCents } from "@/lib/money";
 import { InventorySource } from "@/generated/prisma/client";
 import { notifyLowStockForProducts } from "@/lib/notify";
@@ -430,6 +430,7 @@ export async function updateProduct(productId: string, formData: FormData) {
     if (product.slug !== slug) {
       try {
         await addSiteRenameRedirect(owner.id, `/products/${product.slug}`, `/products/${slug}`);
+        await retargetSiteLinks(owner.id, "product", "/products/", slug, [product.slug]);
       } catch (err) {
         console.error("updateProduct: rename redirect not saved", err);
       }

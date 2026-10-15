@@ -3,7 +3,11 @@
 import { redirect } from "next/navigation";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { addSiteRenameRedirect, clearSiteRedirectFrom } from "@/lib/website/persistence/site-redirect-patch";
+import {
+  addSiteRenameRedirect,
+  clearSiteRedirectFrom,
+  retargetSiteLinks,
+} from "@/lib/website/persistence/site-redirect-patch";
 import {
   isAutoCategorySlug,
   revalidateOwnerStores,
@@ -62,6 +66,7 @@ export async function updateCategory(categoryId: string, formData: FormData) {
   });
   if (updated.slug !== existing.slug) {
     await addSiteRenameRedirect(owner.id, `/${existing.slug}`, `/${updated.slug}`);
+    await retargetSiteLinks(owner.id, "category", "/", updated.slug, [existing.slug]);
   }
   await revalidateOwnerStores(owner.id);
   redirect(`/dashboard/categories/${categoryId}?saved=1`);

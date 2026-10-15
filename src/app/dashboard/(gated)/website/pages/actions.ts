@@ -3,6 +3,7 @@
 import { siteSlugOwnersFromConfig } from "@/lib/storefront/resolve-site-slug";
 import { siteSlugProblem } from "@/lib/storefront/site-slugs";
 import { withRenameRedirect, withoutRedirectFrom } from "@/lib/studio/rename-redirects";
+import { withLinksRetargeted } from "@/lib/studio/retarget-links";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
@@ -167,7 +168,10 @@ export async function updateCustomPageMeta(pageId: string, formData: FormData) {
     ownerId: owner.id,
     expectedRevision: storefront.draftRevision,
     draftConfig: (slugInput !== page.slug
-      ? withRenameRedirect(mergeCustomPagesIntoRaw(storefront.draftConfig, next), `/${page.slug}`, `/${slugInput}`)
+      ? withLinksRetargeted(
+          withRenameRedirect(mergeCustomPagesIntoRaw(storefront.draftConfig, next), `/${page.slug}`, `/${slugInput}`),
+          "nav", "/", slugInput, [page.slug],
+        )
       : mergeCustomPagesIntoRaw(storefront.draftConfig, next)) as Prisma.InputJsonValue,
     conflictPath: `/dashboard/website/pages/${pageId}`,
   });

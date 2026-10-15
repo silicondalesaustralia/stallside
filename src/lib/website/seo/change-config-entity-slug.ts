@@ -11,6 +11,7 @@ import {
 } from "@/lib/studio/blog";
 import { blogPostRelativePath, withDefaultBlogTopic } from "@/lib/studio/blog-topics";
 import { withRenameRedirect, withoutRedirectFrom } from "@/lib/studio/rename-redirects";
+import { withLinksRetargeted } from "@/lib/studio/retarget-links";
 import { siteSlugProblem, type SiteSlugKind } from "@/lib/storefront/site-slugs";
 import { siteSlugOwnersFromConfig } from "@/lib/storefront/resolve-site-slug";
 import { DRAFT_CONFLICT_MESSAGE, writeStorefrontDraft } from "@/lib/website/persistence/draft-store";
@@ -54,7 +55,10 @@ async function planChange(ownerId: string, raw: unknown, entityKey: string, slug
     const page = findCustomPageById(pages, id);
     if (!page || page.routeKind !== "custom") return { error: "This page's address can't be changed." };
     const plan = await sitePlan(ownerId, raw, { kind: "page", id }, slug, () =>
-      mergeCustomPagesIntoRaw(raw, pages.map((p) => (p.id === id ? { ...p, slug } : p))),
+      withLinksRetargeted(
+        mergeCustomPagesIntoRaw(raw, pages.map((p) => (p.id === id ? { ...p, slug } : p))),
+        "nav", "/", slug, [page.slug],
+      ),
     );
     return "error" in plan ? plan : { ...plan, from: `/${page.slug}` };
   }

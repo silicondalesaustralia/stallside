@@ -3,7 +3,12 @@ import { isReservedProductSlug } from "@/lib/slug";
 import { siteSlugProblem } from "@/lib/storefront/site-slugs";
 import { siteSlugOwnersFromConfig } from "@/lib/storefront/resolve-site-slug";
 import { revalidateOwnerStores } from "@/lib/categories/category-admin";
-import { addSiteRenameRedirect, clearSiteRedirectFrom } from "@/lib/website/persistence/site-redirect-patch";
+import {
+  addSiteRenameRedirect,
+  clearSiteRedirectFrom,
+  retargetSiteLinks,
+} from "@/lib/website/persistence/site-redirect-patch";
+import type { SlugLinkKind } from "@/lib/studio/retarget-links";
 import type { SlugChangeResult } from "./entity-context-types";
 
 const GONE: SlugChangeResult = { ok: false, message: "This item no longer exists." };
@@ -16,7 +21,14 @@ function isUniqueViolation(e: unknown): boolean {
   return typeof e === "object" && e !== null && "code" in e && e.code === "P2002";
 }
 
-/** Writes the new slug, then points the old address at it (or frees the new one of redirects). */
+/** Points menu, footer and button links at the item's current slug (draft and live). */
+async function relink(ownerId: string, kind: SlugLinkKind, prefix: string, slug: string, oldSlugs: string[] = []) {
+  await retargetSiteLinks(ownerId, kind, prefix, slug, oldSlugs);
+  await revalidateOwnerStores(ownerId);
+  return { ok: true } as const;
+}
+
+/** Writes the new slug, then points the old address and links at it (or frees the new address of redirects). */
 async function commit(
   ownerId: string,
   prefix: string,
@@ -24,6 +36,7 @@ async function commit(
   to: string,
   redirectOld: boolean,
   update: () => Promise<unknown>,
+  linkKind?: SlugLinkKind,
 ): Promise<SlugChangeResult> {
   try {
     await update();
@@ -33,6 +46,7 @@ async function commit(
   }
   if (redirectOld) await addSiteRenameRedirect(ownerId, `${prefix}${from}`, `${prefix}${to}`);
   else await clearSiteRedirectFrom(ownerId, `${prefix}${to}`);
+  if (linkKind) return relink(ownerId, linkKind, prefix, to, [from]);
   await revalidateOwnerStores(ownerId);
   return { ok: true };
 }
@@ -40,30 +54,34 @@ async function commit(
 async function changeCategorySlug(ownerId: string, id: string, slug: string, redirectOld: boolean) {
   const cat = await prisma.category.findFirst({ where: { id, ownerId }, select: { slug: true } });
   if (!cat) return GONE;
-  if (cat.slug === slug) return { ok: true } as const;
+  if (cat.slug === slug) return relink(ownerId, "category", "/", slug);
   const storefront = await prisma.storefront.findFirst({ where: { ownerId }, select: { draftConfig: true } });
   const owners = await siteSlugOwnersFromConfig(ownerId, storefront?.draftConfig ?? null);
   const problem = siteSlugProblem(slug, owners, { kind: "category", id });
   if (problem) return { ok: false, message: problem } as const;
   const clash = await prisma.category.findFirst({ where: { ownerId, slug, NOT: { id } }, select: { title: true } });
   if (clash) return taken(`/${slug}`, clash.title);
-  return commit(ownerId, "/", cat.slug, slug, redirectOld, () =>
-    prisma.category.update({ where: { id }, data: { slug } }),
+  return commit(
+    ownerId, "/", cat.slug, slug, redirectOld,
+    () => prisma.category.update({ where: { id }, data: { slug } }),
+    "category",
   );
 }
 
 async function changeProductSlug(ownerId: string, id: string, slug: string, redirectOld: boolean) {
   const product = await prisma.product.findFirst({ where: { id, ownerId }, select: { slug: true, standId: true } });
   if (!product) return GONE;
-  if (product.slug === slug) return { ok: true } as const;
+  if (product.slug === slug) return relink(ownerId, "product", "/products/", slug);
   if (isReservedProductSlug(slug)) return { ok: false, message: `"${slug}" is reserved. Choose another.` } as const;
   const clash = await prisma.product.findFirst({
     where: { standId: product.standId, slug, NOT: { id } },
     select: { name: true },
   });
   if (clash) return taken(`/products/${slug}`, clash.name);
-  return commit(ownerId, "/products/", product.slug, slug, redirectOld, () =>
-    prisma.product.update({ where: { id }, data: { slug } }),
+  return commit(
+    ownerId, "/products/", product.slug, slug, redirectOld,
+    () => prisma.product.update({ where: { id }, data: { slug } }),
+    "product",
   );
 }
 
