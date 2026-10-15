@@ -11,7 +11,11 @@ type MenuForProducts = {
 };
 
 /** Live products on a menu, in menu order, mapped for the public storefront. */
-export async function loadMenuViewProducts(stand: MenuStand, menu: MenuForProducts) {
+export async function loadMenuViewProducts(
+  stand: MenuStand,
+  menu: MenuForProducts,
+  categorySlugs?: ReadonlyMap<string, string | null>,
+) {
   const products = await prisma.product.findMany({
     where: {
       id: { in: menu.items.map((i) => i.productId) },
@@ -27,7 +31,7 @@ export async function loadMenuViewProducts(stand: MenuStand, menu: MenuForProduc
   const byId = new Map(
     products.map((p) => [
       p.id,
-      mapPublicProduct(p, {
+      mapPublicProduct({ ...p, mainCategorySlug: categorySlugs?.get(p.id) ?? null }, {
         showExactStock: stand.showExactStock || (menu.kind === MenuKind.PREORDER_DROP && menu.showExactStock),
         showPublicScarcity: stand.showPublicScarcity,
         timeZone: stand.timezone,

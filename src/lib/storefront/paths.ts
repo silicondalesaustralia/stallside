@@ -1,6 +1,7 @@
 import { appBaseUrl } from "@/lib/app-url";
 import type { StorefrontBlogPost, StorefrontBlogTopic } from "@/lib/studio/blog";
 import { blogPostRelativePath } from "@/lib/studio/blog-topics";
+import { productRelativePath } from "@/lib/catalogue/main-category";
 
 function rootFor(
   storefrontSlug: string,
@@ -52,16 +53,17 @@ export function shopCategoryPath(
   return draft ? `${base}?draft=1` : base;
 }
 
+/** `/{main-category}/{product}`; a bare slug or uncategorised product uses `/products/{product}`. */
 export function shopProductPath(
   storefrontSlug: string,
-  productSlug: string,
+  product: string | { slug: string; categorySlug?: string | null },
   draft = false,
   basePath?: string,
 ): string {
-  const base = joinRoot(
-    rootFor(storefrontSlug, basePath),
-    `/products/${encodeURIComponent(productSlug)}`,
-  );
+  const rel = typeof product === "string"
+    ? productRelativePath(product)
+    : productRelativePath(product.slug, product.categorySlug);
+  const base = joinRoot(rootFor(storefrontSlug, basePath), rel);
   return draft ? `${base}?draft=1` : base;
 }
 

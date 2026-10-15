@@ -98,6 +98,7 @@ export default function ProductEditForm({
           />
           <ProductOrganisationSection
             categories={product.categories}
+            primaryCategoryId={product.primaryCategoryId}
             freshnessNote={product.freshnessNote}
             showPreOrder={product.cardTier}
             preOrderEligible={preOrderEligible}

@@ -1,17 +1,20 @@
 import Link from "next/link";
 import DashFormSection from "@/components/DashFormSection";
+import ProductCategoryPicker from "./ProductCategoryPicker";
 
 export type CategoryChoice = { id: string; title: string; checked: boolean };
 
 /** Shop categories, the freshness note on cards, and pre-order availability. */
 export default function ProductOrganisationSection({
   categories,
+  primaryCategoryId,
   freshnessNote,
   showPreOrder,
   preOrderEligible,
   onPreOrderChange,
 }: {
   categories: CategoryChoice[];
+  primaryCategoryId: string | null;
   freshnessNote: string | null;
   showPreOrder: boolean;
   preOrderEligible: boolean;
@@ -29,18 +32,7 @@ export default function ProductOrganisationSection({
             </Link>
           </p>
         ) : (
-          <div className="flex flex-wrap gap-2">
-            <input type="hidden" name="categoriesShown" value="1" />
-            {categories.map((c) => (
-              <label
-                key={c.id}
-                className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--line)] bg-white px-3 py-1.5 has-[:checked]:border-[var(--leaf)] has-[:checked]:bg-[var(--wash)]"
-              >
-                <input type="checkbox" name="categoryId" value={c.id} defaultChecked={c.checked} />
-                {c.title}
-              </label>
-            ))}
-          </div>
+          <ProductCategoryPicker categories={categories} primaryCategoryId={primaryCategoryId} />
         )}
       </div>
       <label className="flex flex-col gap-1 text-sm">

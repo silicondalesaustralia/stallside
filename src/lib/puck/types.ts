@@ -24,6 +24,8 @@ export type PuckSpikeMetadata = {
   products: Array<{
     id: string;
     slug: string;
+    /** Main category; the product URL is `/{categorySlug}/{slug}`. */
+    categorySlug?: string | null;
     name: string;
     priceCents: number;
     /** Struck-through "was" price; set only while on sale. */

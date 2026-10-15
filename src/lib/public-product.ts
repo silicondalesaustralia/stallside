@@ -54,6 +54,8 @@ export type PublicProductCard = {
   preOrderUpsellDiscountKind: string | null;
   preOrderUpsellDiscountValue: number | null;
   preOrderUpsellProductId: string | null;
+  /** Main category slug; product URL is `/{categorySlug}/{slug}`, else `/products/{slug}`. */
+  categorySlug?: string | null;
 };
 
 function stockLabel(
@@ -119,6 +121,7 @@ export function mapPublicProduct(
     preOrderUpsellDiscountKind?: string | null;
     preOrderUpsellDiscountValue?: number | null;
     preOrderUpsellProductId?: string | null;
+    mainCategorySlug?: string | null;
     optionGroups?: {
       id: string;
       name: string;
@@ -226,6 +229,7 @@ export function mapPublicProduct(
     preOrderUpsellDiscountKind: p.preOrderUpsellDiscountKind ?? null,
     preOrderUpsellDiscountValue: p.preOrderUpsellDiscountValue ?? null,
     preOrderUpsellProductId: p.preOrderUpsellProductId ?? null,
+    categorySlug: p.mainCategorySlug ?? null,
   };
 }
 

@@ -99,8 +99,11 @@ export async function setProductCategories(
       select: { id: true, products: { select: { sortOrder: true }, orderBy: { sortOrder: "desc" }, take: 1 } },
     });
     const keep = categories.map((c) => c.id);
+    const chosen = String(formData.get("primaryCategoryId") ?? "");
+    const primaryCategoryId = keep.includes(chosen) ? chosen : (keep[0] ?? null);
 
     await prisma.$transaction([
+      prisma.product.update({ where: { id: productId }, data: { primaryCategoryId } }),
       prisma.productCategory.deleteMany({
         where: { productId, categoryId: { notIn: keep } },
       }),

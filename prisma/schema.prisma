@@ -832,6 +832,7 @@ model Category {
    */
   showOnWebsite Boolean           @default(true)
   products      ProductCategory[]
+  primaryForProducts Product[]    @relation("ProductPrimaryCategory")
   qrStands      Stand[]           @relation("StandQrCategory")
   qrCodes       QrCode[]
   createdAt     DateTime          @default(now())
@@ -1424,6 +1425,12 @@ model Product {
   priceTiers                  Json?
   optionGroups                ProductOptionGroup[]
   categoryLinks               ProductCategory[]
+  /**
+   * Main category when the product is in more than one: sets the URL (/{category}/{product}),
+   * breadcrumbs and schema. Null or unlinked falls back to the first linked category in site order.
+   */
+  primaryCategoryId           String?
+  primaryCategory             Category?                  @relation("ProductPrimaryCategory", fields: [primaryCategoryId], references: [id], onDelete: SetNull)
   channels                    ProductChannel[]
   preOrderPageItems           PreOrderPageProduct[]
   menuItems                   MenuProduct[]

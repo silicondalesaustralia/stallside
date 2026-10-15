@@ -19,6 +19,7 @@ import { studioPageNodes } from "@/lib/studio/storage";
 import StudioPublicSections from "@/lib/studio/public-render";
 import { redirectWithinStorefront } from "@/lib/storefront/clean-redirect";
 import { loadMenuViewProducts } from "./menu-view-products";
+import { categorySlugsById } from "@/lib/catalogue/main-category";
 import { menuPageSeo } from "@/lib/seo/menu-page-seo";
 
 type ViewProps = { slug: string; menuSlug: string; draft: boolean; preOrderRoute: boolean };
@@ -58,7 +59,7 @@ export default async function MenuView({ slug, menuSlug, draft, preOrderRoute }:
     notFound();
   }
 
-  const menuProducts = await loadMenuViewProducts(ctx.stand, menu);
+  const menuProducts = await loadMenuViewProducts(ctx.stand, menu, categorySlugsById(ctx.products));
   if (menuProducts.length === 0) notFound();
 
   const schedule = menuScheduleLabel({

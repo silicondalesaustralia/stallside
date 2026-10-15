@@ -43,6 +43,7 @@ export async function buildPuckSpikeMetadata(
     return {
       id: card.id,
       slug: card.slug,
+      categorySlug: card.categorySlug ?? null,
       name: card.name,
       priceCents: card.priceCents,
       compareAtPriceCents: card.compareAtPriceCents ?? null,

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/legal";
 import { standProductPath } from "@/lib/stand-seo";
 import { shopProductPath } from "@/lib/storefront/paths";
+import { pickMainCategory } from "@/lib/catalogue/main-category";
 import { publishedWebsiteForStand, standWebsiteUrl } from "@/lib/storefront/stand-website";
 import { productImageList } from "@/lib/product-images";
 import { parseImageAlts } from "@/lib/product-image-alts";
@@ -48,9 +49,10 @@ export default async function EditProductPage({
   const categories = await prisma.category.findMany({
     where: { ownerId: owner.id, isActive: true },
     orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
-    select: { id: true, title: true },
+    select: { id: true, title: true, slug: true, showOnWebsite: true },
   });
   const productCategoryIds = new Set(product.categoryLinks.map((l) => l.categoryId));
+  const mainCategory = pickMainCategory(product.primaryCategoryId, productCategoryIds, categories);
 
   const siblingProducts = await prisma.product.findMany({
     where: {
@@ -66,7 +68,7 @@ export default async function EditProductPage({
 
   const website = await publishedWebsiteForStand(product.stand.slug);
   const publicUrl = website
-    ? standWebsiteUrl(website, shopProductPath(website.storefrontSlug, product.slug, false, ""))
+    ? standWebsiteUrl(website, shopProductPath(website.storefrontSlug, { slug: product.slug, categorySlug: mainCategory?.slug }, false, ""))
     : `${SITE_URL}${standProductPath(product.stand.slug, product.slug)}`;
   const priceTiers = parsePriceTiers(product.priceTiers);
 
@@ -123,7 +125,8 @@ export default async function EditProductPage({
             name: g.name,
             choices: g.choices.map((c) => ({ name: c.name, priceDeltaCents: c.priceDeltaCents })),
           })),
-          categories: categories.map((c) => ({ ...c, checked: productCategoryIds.has(c.id) })),
+          categories: categories.map((c) => ({ id: c.id, title: c.title, checked: productCategoryIds.has(c.id) })),
+          primaryCategoryId: product.primaryCategoryId,
           upsellProductId: product.upsellProductId,
           upsellPriceCents: product.upsellPriceCents,
           siblingProducts,

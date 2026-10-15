@@ -42,6 +42,7 @@ export type ProductFields = {
   hasOptions: boolean;
   options: SavedOptionGroup[];
   categories: CategoryChoice[];
+  primaryCategoryId: string | null;
   upsellProductId: string | null;
   upsellPriceCents: number | null;
   siblingProducts: { id: string; name: string; priceCents: number }[];

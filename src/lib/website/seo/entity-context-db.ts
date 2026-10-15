@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { EntitySeoSettings } from "@/lib/studio/seo-settings";
 import type { EntitySeoContext } from "./entity-context-types";
+import { pickMainCategory } from "@/lib/catalogue/main-category";
 
 /** SEO context for entities stored in their own tables (products, categories, menus, offers). */
 export async function resolveDbEntityContext(
@@ -14,13 +15,25 @@ export async function resolveDbEntityContext(
   if (type === "product") {
     const product = await prisma.product.findFirst({
       where: { id, ownerId },
-      select: { name: true, slug: true, description: true, seoTitle: true, seoDescription: true, imageUrl: true },
+      select: {
+        name: true, slug: true, description: true, seoTitle: true, seoDescription: true, imageUrl: true,
+        primaryCategoryId: true,
+        categoryLinks: {
+          where: { category: { isActive: true } },
+          select: { category: { select: { id: true, slug: true, showOnWebsite: true, sortOrder: true, title: true } } },
+        },
+      },
     });
     if (!product) return null;
+    const linked = product.categoryLinks
+      .map((l) => l.category)
+      .sort((a, b) => a.sortOrder - b.sortOrder || a.title.localeCompare(b.title));
+    const main = pickMainCategory(product.primaryCategoryId, new Set(linked.map((c) => c.id)), linked);
+    const prefix = main ? `/${main.slug}/` : "/products/";
     return {
       label: product.name,
-      pathLabel: `/products/${product.slug}`,
-      url: { prefix: "/products/", slug: product.slug },
+      pathLabel: `${prefix}${product.slug}`,
+      url: { prefix, slug: product.slug },
       defaults: {
         title: product.seoTitle ?? product.name,
         description: product.seoDescription ?? product.description ?? product.name,

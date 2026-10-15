@@ -10,6 +10,7 @@ import type {
 } from "./commerce-pages";
 import type { StudioMetadata } from "./types";
 import { productMainCategory } from "./product-main-category";
+import { categorySlugsById } from "@/lib/catalogue/main-category";
 
 function mapStandProducts(ctx: NonNullable<StorefrontContext>) {
   return ctx.products.map((p) =>
@@ -100,10 +101,11 @@ export async function buildSampleCommerceContext(
       },
     },
   });
+  const categorySlugs = categorySlugsById(ctx.products);
   const byId = new Map(
     products.map((p) => [
       p.id,
-      mapPublicProduct(p, {
+      mapPublicProduct({ ...p, mainCategorySlug: categorySlugs.get(p.id) ?? null }, {
         showExactStock:
           ctx.stand.showExactStock ||
           (menu.kind === MenuKind.PREORDER_DROP && menu.showExactStock),

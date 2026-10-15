@@ -4,6 +4,7 @@ import { storefrontPublicPath } from "@/lib/catalogue/storefront";
 import { buildSampleCommerceContext, withCommerceContext } from "./commerce-context";
 import { COMMERCE_PAGES, commerceKeyForKind, type CommercePageKind, type StudioCommerceContext } from "./commerce-pages";
 import { customPagePublicPath } from "./custom-page-paths";
+import { productRelativePath } from "@/lib/catalogue/main-category";
 import { ensureCustomPages, findCustomPageById, type CustomPageTemplateId } from "./custom-pages";
 import { editorTargetParam, studioEditorPath, type EditorTarget } from "./editor-target";
 import { studioPreviewViewPath } from "./return-to";
@@ -28,7 +29,9 @@ export type EditorPage = {
 function commerceViewPath(slug: string, kind: CommercePageKind, cc: StudioCommerceContext): string {
   const base = storefrontPublicPath(slug);
   if (kind === "category" && cc.category?.slug) return `${base}/${encodeURIComponent(cc.category.slug)}?draft=1`;
-  if (kind === "product" && cc.product?.slug) return `${base}/products/${encodeURIComponent(cc.product.slug)}?draft=1`;
+  if (kind === "product" && cc.product?.slug) {
+    return `${base}${productRelativePath(cc.product.slug, cc.category?.slug)}?draft=1`;
+  }
   if (kind === "menu") {
     if (!cc.menu?.slug) return `${base}/menus?draft=1`;
     return `${base}/${cc.menu.isPreOrderDrop ? "pre-orders" : "menus"}/${encodeURIComponent(cc.menu.slug)}?draft=1`;

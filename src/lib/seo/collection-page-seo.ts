@@ -1,10 +1,17 @@
 import type { StorefrontContext } from "@/lib/catalogue/storefront";
 import { richTextToPlainOrNull } from "@/lib/website/rich-text/plain";
 import { itemListNode } from "./graph/content";
+import { productRelativePath } from "@/lib/catalogue/main-category";
 import { siteUrl, type PageSeo } from "./graph/page-graph";
 
 type Ctx = NonNullable<StorefrontContext>;
-type Linkable = { slug: string; name: string };
+type Linkable = {
+  slug: string;
+  name: string;
+  /** Main category: storefront rows carry `mainCategorySlug`, product cards `categorySlug`. */
+  mainCategorySlug?: string | null;
+  categorySlug?: string | null;
+};
 
 /** CollectionPage listing products (and optionally categories) as an ItemList. */
 export function collectionPageSeo(
@@ -35,7 +42,7 @@ export function collectionPageSeo(
           page.pageUrl,
           input.products.slice(0, 100).map((p) => ({
             name: p.name,
-            url: siteUrl(page, `/products/${encodeURIComponent(p.slug)}`),
+            url: siteUrl(page, productRelativePath(p.slug, p.categorySlug ?? p.mainCategorySlug)),
           })),
         ),
     ],

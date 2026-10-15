@@ -12,6 +12,7 @@ import { pickWebsiteStand } from "@/lib/storefront/website-stand";
 import { resolveStorefrontBranding } from "@/lib/storefront/branding";
 import { loadOnlineFulfilmentOptions } from "@/lib/fulfilment/load-options";
 import { toShopFulfilmentOptionView } from "@/lib/fulfilment/shop-types";
+import { withMainCategorySlugs } from "@/lib/studio/product-main-category";
 import { ProductChannelType, Prisma } from "@/generated/prisma/client";
 import {
   SEED_OWNER_SELECT,
@@ -137,7 +138,7 @@ export async function loadStorefrontContext(
     config,
   });
 
-  const [products, categories, onlineCount, fulfilmentOptions] = await Promise.all([
+  const [shopProducts, categories, onlineCount, fulfilmentOptions] = await Promise.all([
     listProductsForOnlineShop(
       storefront.ownerId,
       stand.id,
@@ -185,6 +186,7 @@ export async function loadStorefrontContext(
       rows.map(toShopFulfilmentOptionView),
     ),
   ]);
+  const products = await withMainCategorySlugs(shopProducts, categories);
 
   return {
     storefront,

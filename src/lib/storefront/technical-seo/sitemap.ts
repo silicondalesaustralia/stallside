@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { MenuKind } from "@/generated/prisma/client";
 import type { StorefrontContext } from "@/lib/catalogue/storefront";
 import { isReservedProductSlug } from "@/lib/slug";
+import { productRelativePath } from "@/lib/catalogue/main-category";
 import { ensureCustomPages } from "@/lib/studio/custom-pages";
 import {
   ensureBlogSettings,
@@ -112,7 +113,7 @@ export async function buildStorefrontSitemap(
     entries.push(
       entry(
         slug,
-        `/products/${product.slug}`,
+        productRelativePath(product.slug, product.mainCategorySlug),
         product.updatedAt,
         0.8,
         primaryCustomHostname,

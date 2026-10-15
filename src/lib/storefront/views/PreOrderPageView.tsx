@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { categorySlugsById } from "@/lib/catalogue/main-category";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { mapPublicProduct } from "@/lib/public-product";
@@ -54,10 +55,11 @@ export default async function PreOrderPageView(props: ViewProps) {
       },
     },
   });
+  const categorySlugs = categorySlugsById(ctx.products);
   const byId = new Map(
     products.map((p) => [
       p.id,
-      mapPublicProduct(p, {
+      mapPublicProduct({ ...p, mainCategorySlug: categorySlugs.get(p.id) ?? null }, {
         showExactStock: ctx.stand.showExactStock || page.showExactStock,
         showPublicScarcity: ctx.stand.showPublicScarcity,
         timeZone: ctx.stand.timezone,

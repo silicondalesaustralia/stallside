@@ -30,7 +30,7 @@ export default function StudioProductCard({
   showRating?: boolean;
   isFarm?: boolean;
 }) {
-  const href = shopProductPath(meta.storefrontSlug, product.slug, meta.draft, meta.basePath);
+  const href = shopProductPath(meta.storefrontSlug, product, meta.draft, meta.basePath);
   const aspect = preset === "editorial" || preset === "featured" ? "aspect-[4/5]" : "aspect-square";
   const cardClass =
     preset === "editorial"

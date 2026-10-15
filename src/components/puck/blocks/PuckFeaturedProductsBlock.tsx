@@ -81,7 +81,7 @@ export default function PuckFeaturedProductsBlock({
             key={product.id}
             href={shopProductPath(
               meta.storefrontSlug,
-              product.slug,
+              product,
               meta.draft,
               meta.basePath,
             )}

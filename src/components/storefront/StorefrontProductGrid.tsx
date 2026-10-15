@@ -76,7 +76,7 @@ export default function StorefrontProductGrid({
     if (product.soldOut) return;
     if (product.hasOptions) {
       router.push(
-        shopProductPath(storefrontSlug, product.slug, draft, basePath),
+        shopProductPath(storefrontSlug, product, draft, basePath),
       );
       return;
     }
@@ -118,7 +118,7 @@ export default function StorefrontProductGrid({
         {products.map((product) => {
           const href = shopProductPath(
             storefrontSlug,
-            product.slug,
+            product,
             draft,
             basePath,
           );
