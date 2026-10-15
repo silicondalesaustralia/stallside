@@ -7,7 +7,11 @@ export type ReadinessInput = {
   isPublished: boolean;
   /** Business type plus a Google Business Profile link or address saved for search. */
   hasSearchProfile?: boolean;
+  /** Owner uses the guided AI assistant instead of templates. */
+  useAssistant?: boolean;
 };
+
+export const ASSISTANT_PATH = "/dashboard/website/assistant";
 
 export type ReadinessItem = {
   id: "details" | "layout" | "products" | "payments" | "search-profile" | "example-text" | "publish";
@@ -35,8 +39,8 @@ export function websiteReadiness(input: ReadinessInput): {
     },
     {
       id: "layout",
-      label: "Choose a starting layout",
-      href: "/dashboard/website/studio/templates",
+      label: input.useAssistant ? "Create your website with AI" : "Choose a starting layout",
+      href: input.useAssistant ? ASSISTANT_PATH : "/dashboard/website/studio/templates",
       done: input.hasLayout,
       optional: false,
     },

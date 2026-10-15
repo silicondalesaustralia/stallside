@@ -27,6 +27,8 @@ import WebsiteStandPicker from "@/components/website/WebsiteStandPicker";
 import WebStudioBrandingPanel from "@/components/website/WebStudioBrandingPanel";
 import WebStudioAiPanel from "@/components/website/WebStudioAiPanel";
 import WebStudioLayoutPanel from "@/components/website/WebStudioLayoutPanel";
+import AssistantEntryCard from "@/components/website-assistant/AssistantEntryCard";
+import { assistantEnabledFor } from "@/lib/website-ai/assistant/access";
 import WebsiteReadinessChecklist from "@/components/website/WebsiteReadinessChecklist";
 import { websiteReadiness } from "@/lib/website/readiness";
 import { findPublishBlockers } from "@/lib/website/persistence/publish-checks";
@@ -92,9 +94,10 @@ export default async function WebStudioPage({
 
   const aiEnabled = aiWebsiteBuilderEnabled();
   const aiAllowed = canUseAiWebsiteBuilder(owner.id);
+  const useAssistant = assistantEnabledFor(owner.id);
   let assessment: ReturnType<typeof assessWebsiteContext> | undefined;
   let scaffoldLooks: BrandLookCombo[] = [];
-  if (aiEnabled && aiAllowed) {
+  if (aiEnabled && aiAllowed && !useAssistant) {
     const businessContext = await buildWebsiteBusinessContext(ctx);
     const scaffold = extractWebsiteAiScaffold(storefront.draftConfig);
     assessment = withSavedSelections(assessWebsiteContext(businessContext), scaffold?.intent);
@@ -111,6 +114,7 @@ export default async function WebStudioPage({
     canTakeCardPayments: owner.stripeChargesEnabled || owner.paypalOnboardingComplete,
     publishBlockers: findPublishBlockers(storefront.draftConfig),
     isPublished: storefront.isPublished,
+    useAssistant,
   });
 
   return (
@@ -170,6 +174,9 @@ export default async function WebStudioPage({
           />
         }
         ai={
+          useAssistant ? (
+            <AssistantEntryCard hasSite={Boolean(websiteStudio?.nodes)} />
+          ) : (
           <WebStudioAiPanel
             enabled={aiEnabled}
             allowed={aiAllowed}
@@ -182,10 +189,12 @@ export default async function WebStudioPage({
             businessName={owner.businessName}
             logoUrl={logoUrl}
           />
+          )
         }
         studio={
           <WebStudioLayoutPanel
             editorHref={studioEditorPath(storefront.slug)}
+            useAssistant={useAssistant}
             flash={{ published: sp.published === "1" && initialTab === "studio" }}
           />
         }

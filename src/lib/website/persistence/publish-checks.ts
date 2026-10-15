@@ -1,6 +1,7 @@
 import { extractWebsiteStudio } from "@/lib/studio/storage";
-import { STUDIO_HOME_PAGE_KEY } from "@/lib/studio/custom-pages";
+import { ensureCustomPages, STUDIO_HOME_PAGE_KEY } from "@/lib/studio/custom-pages";
 import { hasInstructionalCopy, isPublicStudioNode } from "@/lib/studio/node-visibility";
+import { reviewRequiredBlockers } from "@/lib/website-ai/assistant/review-markers";
 
 /** Seller-facing reasons the draft can't go live. Empty means OK to publish. */
 export function findPublishBlockers(draftRaw: unknown): string[] {
@@ -20,5 +21,6 @@ export function findPublishBlockers(draftRaw: unknown): string[] {
       blockers.push(`Replace the "Tell customers…" example text on ${page}.`);
     }
   }
+  blockers.push(...reviewRequiredBlockers(pages, ensureCustomPages(draftRaw)));
   return [...new Set(blockers)];
 }

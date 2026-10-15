@@ -582,6 +582,9 @@ model Owner {
   defaultTimezone               String                       @default("Australia/Adelaide")
   createdAt                     DateTime                     @default(now())
   updatedAt                     DateTime                     @updatedAt
+  websiteBrief                  WebsiteBusinessBrief?
+  websiteGenerationJobs         WebsiteGenerationJob[]
+  websiteAssets                 WebsiteAsset[]
 
   @@index([deletedAt])
 }
@@ -3035,4 +3038,98 @@ model CalendarExportLink {
 
   @@unique([connectionId, vendlEventId])
   @@index([connectionId, startsAt])
+}
+
+enum WebsiteGenerationStatus {
+  QUEUED
+  RUNNING
+  RETRY_WAIT
+  READY
+  NEEDS_CONFIRMATION
+  APPLIED
+  FAILED
+  CANCELLED
+}
+
+/// AI website assistant: the seller's business brief (one per owner). Own revision so wizard
+/// autosaves never invalidate website draft saves.
+model WebsiteBusinessBrief {
+  id            String   @id @default(cuid())
+  ownerId       String   @unique
+  owner         Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  storefrontId  String   @unique
+  schemaVersion Int      @default(1)
+  revision      Int      @default(0)
+  data          Json     @default("{}")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+/// AI website assistant build. Steps are checkpointed in `state`; workers hold a fenced lease.
+model WebsiteGenerationJob {
+  id                String                  @id @default(cuid())
+  ownerId           String
+  owner             Owner                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  storefrontId      String
+  idempotencyKey    String
+  /// Equals storefrontId while the job is QUEUED/RUNNING/RETRY_WAIT: one active build per storefront.
+  activeLock        String?                 @unique
+  status            WebsiteGenerationStatus @default(QUEUED)
+  stage             String                  @default("prepare")
+  mode              String                  @default("ai")
+  attempts          Int                     @default(0)
+  briefRevision     Int
+  briefSnapshot     Json
+  baseDraftRevision Int
+  basePublicationId String?
+  state             Json                    @default("{}")
+  candidate         Json?
+  restoreDraft      Json?
+  appliedRevision   Int?
+  appliedAt         DateTime?
+  restoredAt        DateTime?
+  modelRequested    String?
+  modelUsed         String?
+  inputTokens       Int                     @default(0)
+  outputTokens      Int                     @default(0)
+  reasoningTokens   Int                     @default(0)
+  usageUnknownCalls Int                     @default(0)
+  imageCount        Int                     @default(0)
+  leaseToken        String?
+  leaseExpiresAt    DateTime?
+  nextAttemptAt     DateTime                @default(now())
+  cancelRequestedAt DateTime?
+  errorCode         String?
+  errorMessage      String?
+  finishedAt        DateTime?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  @@unique([ownerId, idempotencyKey])
+  @@index([status, nextAttemptAt])
+  @@index([storefrontId, createdAt])
+}
+
+/// Images created or confirmed through the AI website assistant, with provenance.
+model WebsiteAsset {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  url       String
+  mimeType  String?
+  bytes     Int?
+  width     Int?
+  height    Int?
+  /// seller_upload | catalogue_reference | imported_confirmed | ai_decorative | neutral_placeholder
+  source    String
+  role      String?
+  alt       String?
+  sourceRef String?
+  jobId     String?
+  /// Stable per-job slot ("hero", "story") so retries never upload duplicates.
+  slotKey   String?
+  createdAt DateTime @default(now())
+
+  @@unique([jobId, slotKey])
+  @@index([ownerId, createdAt])
 }

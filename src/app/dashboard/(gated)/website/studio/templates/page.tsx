@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
+import { assistantEnabledFor } from "@/lib/website-ai/assistant/access";
+import { ASSISTANT_PATH } from "@/lib/website/readiness";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { extractWebsiteStudio, defaultTemplateId } from "@/lib/studio/storage";
 import { STUDIO_TEMPLATE_LIST } from "@/lib/studio/templates";
@@ -20,6 +23,7 @@ export default async function WebsiteStudioTemplatesPage({
 }) {
   const sp = await searchParams;
   const { owner } = await requireOwner();
+  if (assistantEnabledFor(owner.id)) redirect(ASSISTANT_PATH);
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const studio = extractWebsiteStudio(storefront.draftConfig);
   const mode = normalizeBusinessMode(owner.businessMode);
