@@ -9,7 +9,8 @@ are seller shops. Checkout and login redirects stay on the stagingv2 host.
 
 ## 1. Database (Neon)
 
-- Create a Neon **branch** from the staging database (`ep-autumn-brook`). Do not start from an empty
+- Create a Neon **branch** from the staging/preview database (`ep-aged-cell`). Not `ep-autumn-brook`:
+  that is production (and the database in the main repo `.env`). Do not start from an empty
   database: the website tables (`Storefront`, `StorefrontDomain`, `DomainPurchase`, `QrCode`) only
   exist in staging's migration history.
 - Run `npx prisma migrate deploy` against the new branch.
