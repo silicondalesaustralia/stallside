@@ -4,6 +4,7 @@ import Image from "next/image";
 import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/money";
 import { productQtyInCart, type CartLine } from "@/lib/stand-cart-storage";
+import { FULFILMENT_CHOICE_LABELS } from "@/lib/fulfilment/handover-choice";
 import PreOrderDetails from "./PreOrderDetails";
 
 export type StandCartLineView = {
@@ -72,6 +73,11 @@ export default function StandCartLineList({
               ) : null}
               {line.product.preOrderDetails ? (
                 <PreOrderDetails details={line.product.preOrderDetails} />
+              ) : null}
+              {!line.product.isPreOrder ? (
+                <p className="mt-1 text-sm font-medium text-[var(--field)]">
+                  {FULFILMENT_CHOICE_LABELS[line.product.fulfilment]}
+                </p>
               ) : null}
               {line.product.freshnessNote ? (
                 <p className="mt-1 text-sm text-[var(--muted)]">

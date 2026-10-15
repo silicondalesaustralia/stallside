@@ -37,6 +37,14 @@ export function cartHandoverOptions(choices: FulfilmentChoiceValue[]): CartHando
   };
 }
 
+/** Tells the shopper how this cart will be handed over; null when the items can't go in one order. */
+export function cartHandoverNote(options: CartHandoverOptions): string | null {
+  if (options.pickup && options.delivery) return "You can choose pickup or shipping at checkout.";
+  if (options.pickup) return "This order is pickup only. You'll collect it from the seller.";
+  if (options.delivery) return "This order is shipping only. You'll enter a delivery address at checkout.";
+  return null;
+}
+
 /** The handover for a cart: the shopper's pick when allowed, else the only option (pickup first). */
 export function resolveCartHandover(
   choices: FulfilmentChoiceValue[],

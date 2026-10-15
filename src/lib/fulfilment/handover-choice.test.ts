@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   CART_MIX_HANDOVER,
+  cartHandoverNote,
   cartHandoverOptions,
   effectiveFulfilment,
   resolveCartHandover,
@@ -39,5 +40,14 @@ describe("resolveCartHandover", () => {
   it("blocks pickup-only mixed with delivery-only", () => {
     assert.deepEqual(cartHandoverOptions(["PICKUP", "DELIVERY"]), { pickup: false, delivery: false });
     assert.deepEqual(resolveCartHandover(["PICKUP", "DELIVERY"]), { error: CART_MIX_HANDOVER });
+  });
+});
+
+describe("cartHandoverNote", () => {
+  it("names the one handover a cart allows, or the choice", () => {
+    assert.match(cartHandoverNote(cartHandoverOptions(["PICKUP", "BOTH"])) ?? "", /pickup only/);
+    assert.match(cartHandoverNote(cartHandoverOptions(["DELIVERY"])) ?? "", /shipping only/);
+    assert.match(cartHandoverNote(cartHandoverOptions(["BOTH", "BOTH"])) ?? "", /choose pickup or shipping/);
+    assert.equal(cartHandoverNote(cartHandoverOptions(["PICKUP", "DELIVERY"])), null);
   });
 });

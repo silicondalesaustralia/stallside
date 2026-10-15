@@ -54,6 +54,7 @@ import StripeEmbeddedCheckout from "@/components/checkout/StripeEmbeddedCheckout
 import type { EmbeddedCheckoutInfo } from "@/lib/stripe-embedded-checkout";
 import {
   CART_MIX_HANDOVER,
+  cartHandoverNote,
   cartHandoverOptions,
   type HandoverValue,
 } from "@/lib/fulfilment/handover-choice";
@@ -284,6 +285,7 @@ export default function StandCartCheckout({
   );
   const handoverConflict = !handoverOptions.pickup && !handoverOptions.delivery;
   const canChooseHandover = handoverOptions.pickup && handoverOptions.delivery;
+  const handoverNote = cartHandoverNote(handoverOptions);
   const handover: HandoverValue = canChooseHandover
     ? handoverPick
     : handoverOptions.pickup
@@ -560,6 +562,11 @@ export default function StandCartCheckout({
         />
       ) : null}
 
+      {handoverNote && !preOrderOnly && !hasMixedCart && (step === "cart" || (step === "pay" && !canChooseHandover)) ? (
+        <p className="rounded-lg border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-base font-medium">
+          {handoverNote}
+        </p>
+      ) : null}
       {hasMixedCart ? (
         <p className="text-lg text-[var(--gone)]">{CART_MIX_TAKE_NOW_PREORDER}</p>
       ) : handoverConflict ? (
