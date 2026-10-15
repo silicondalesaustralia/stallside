@@ -4,7 +4,7 @@ import {
   isSellerStorefrontHost,
   resolveHostname,
 } from "@/lib/tenancy/hostname";
-import { publicApexHost, publicHostMode } from "@/lib/tenancy/host-mode";
+import { publicApexHost, publicHostMode, stagingRootHost } from "@/lib/tenancy/host-mode";
 
 function pathStyleRoot(slug: string): string {
   return `/shop/${encodeURIComponent(slug.trim().toLowerCase())}`;
@@ -22,11 +22,11 @@ export function storefrontSubdomainPrimaryEnabled(): boolean {
   return publicHostMode() !== "staging";
 }
 
-/** Seller host: {slug}.vendl.app or {slug}.staging.vendl.app */
+/** Seller host: {slug}.vendl.app or {slug}.<staging host> */
 export function storefrontSubdomainHost(slug: string): string {
   const clean = slug.trim().toLowerCase();
   if (publicHostMode() === "staging") {
-    return `${clean}.staging.${APP_DOMAIN}`;
+    return `${clean}.${stagingRootHost()}`;
   }
   return `${clean}.${APP_DOMAIN}`;
 }
@@ -103,7 +103,7 @@ export function storefrontPublicUrl(
       return `http://${cleanSlug}.localhost:3000${suffix}${draftQ}`;
     }
     if (resolution.type === "STAGING_SUBDOMAIN") {
-      return `https://${cleanSlug}.staging.${APP_DOMAIN}${suffix}${draftQ}`;
+      return `https://${cleanSlug}.${stagingRootHost()}${suffix}${draftQ}`;
     }
     return `${storefrontSubdomainOrigin(cleanSlug)}${suffix}${draftQ}`;
   }

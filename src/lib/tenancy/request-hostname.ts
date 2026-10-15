@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { APP_DOMAIN } from "@/lib/constants";
 import { normalizeHostname } from "@/lib/tenancy/hostname";
+import { stagingRootHost } from "@/lib/tenancy/host-mode";
 
 /**
  * Infra hosts that may appear as the HTTP Host after Cloudflare rewrites
@@ -13,6 +14,8 @@ export function isVendlInfraHostname(hostname: string): boolean {
   const apex = APP_DOMAIN.toLowerCase();
   if (host === apex || host === `www.${apex}`) return true;
   if (host === `staging.${apex}` || host === `www.staging.${apex}`) return true;
+  const stagingRoot = stagingRootHost();
+  if (host === stagingRoot || host === `www.${stagingRoot}`) return true;
   if (host === `fallback.${apex}`) return true;
   if (host === `customers.${apex}`) return true;
   if (host === `saas-origin.${apex}`) return true;

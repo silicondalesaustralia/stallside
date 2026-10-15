@@ -6,17 +6,18 @@ import {
   requestIsSecure,
   sessionCookieName,
 } from "@/lib/auth-session";
-import { APP_DOMAIN } from "@/lib/constants";
 import { resolveHostname } from "@/lib/tenancy/hostname";
+import { publicApexHost } from "@/lib/tenancy/host-mode";
 import { requestPublicHostname } from "@/lib/tenancy/request-hostname";
 import { legacyStorefrontRedirect } from "@/lib/tenancy/legacy-redirects";
 import { resolveCustomDomainSlug } from "@/lib/domains/middleware-lookup";
 
 const STALLSIDE_HOSTS = new Set(["stallside.app", "www.stallside.app"]);
 
+/** This environment's app host (vendl.app, or the staging host on staging), so checkout and login stay on it. */
 function apexOrigin(request: NextRequest): string {
   const proto = requestIsSecure(request) ? "https" : "http";
-  return `${proto}://${APP_DOMAIN}`;
+  return `${proto}://${publicApexHost()}`;
 }
 
 function keepOnStallside(pathname: string): boolean {

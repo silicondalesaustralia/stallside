@@ -1,5 +1,6 @@
 import { APP_DOMAIN } from "@/lib/constants";
 import { isReservedVendlSubdomain } from "@/lib/tenancy/reserved-subdomains";
+import { stagingRootHost } from "@/lib/tenancy/host-mode";
 
 export type HostResolution =
   | { type: "APP" }
@@ -42,7 +43,7 @@ export function resolveHostname(
   }
 
   const apex = apexDomain.toLowerCase();
-  const stagingRoot = `staging.${apex}`;
+  const stagingRoot = stagingRootHost(apex);
 
   if (host === stagingRoot || host === `www.${stagingRoot}`) {
     return { type: "APP" };

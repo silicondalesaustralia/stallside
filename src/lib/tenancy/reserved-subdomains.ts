@@ -24,6 +24,7 @@ export const RESERVED_VENDL_SUBDOMAINS = new Set([
   "docs",
   "dev",
   "staging",
+  "stagingv2",
   "preview",
   "beta",
   "account",
