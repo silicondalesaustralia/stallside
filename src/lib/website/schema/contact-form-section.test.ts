@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import type { SerializedNodes } from "@craftjs/core";
 import { craftNodeToSection } from "@/lib/website/adapter/from-craft";
 import { validateSection } from "@/lib/website/sections/validate-section";
-import { CONTACT_MIN_FILL_MS, contactEnquiryEmail, looksLikeBot, parseContactEnquiry } from "@/lib/studio/contact-form";
+import { CONTACT_MIN_FILL_MS, CONTACT_TRAP_FIELD, contactEnquiryEmail, looksLikeBot, parseContactEnquiry } from "@/lib/studio/contact-form";
 
 function node(props: Record<string, unknown>): SerializedNodes[string] {
   return {
@@ -49,7 +49,8 @@ describe("contact form section", () => {
     const now = 1_000_000;
     const human = { startedAt: String(now - CONTACT_MIN_FILL_MS - 1) };
     assert.equal(looksLikeBot(form(human), now), false);
-    assert.equal(looksLikeBot(form({ ...human, company: "Spam Inc" }), now), true);
+    assert.equal(looksLikeBot(form({ ...human, [CONTACT_TRAP_FIELD]: "Spam Inc" }), now), true);
+    assert.equal(looksLikeBot(form({ ...human, company: "Autofilled Pty Ltd" }), now), false, "autofill doesn't trip the trap");
     assert.equal(looksLikeBot(form({ startedAt: String(now - 100) }), now), true);
     assert.equal(looksLikeBot(form({ startedAt: "garbage" }), now), true);
     assert.equal(looksLikeBot(form({}), now), false, "no-JS submits still go through");

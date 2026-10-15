@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef } from "react";
 import SectionCopy from "@/components/studio/SectionCopy";
 import { useSectionText } from "@/components/studio/SectionStyleContext";
-import { CONTACT_LIMITS } from "@/lib/studio/contact-form";
+import { CONTACT_LIMITS, CONTACT_TRAP_FIELD } from "@/lib/studio/contact-form";
 
 const INPUT =
   "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 text-base text-[var(--ink,#182c1b)] disabled:opacity-70";
@@ -24,8 +24,8 @@ export default function ContactFormFields({ standId, showPhone, disabled }: { st
       <input type="hidden" name="standId" value={standId} />
       <input ref={startedRef} type="hidden" name="startedAt" defaultValue="" />
       <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
-        <label htmlFor={`${id}-company`}>Company</label>
-        <input id={`${id}-company`} name="company" tabIndex={-1} autoComplete="off" />
+        <label htmlFor={`${id}-hp`}>Leave this empty</label>
+        <input id={`${id}-hp`} name={CONTACT_TRAP_FIELD} tabIndex={-1} autoComplete="off" />
       </div>
       <div className="grid gap-4 sf-sm:grid-cols-2">
         <div>

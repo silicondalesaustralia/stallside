@@ -39,7 +39,10 @@ async function recipientFor(standId: string) {
 /** Website contact form: emails the shop owner with Reply-To set to the customer. */
 export async function sendContactEnquiry(_prev: ContactFormState, formData: FormData): Promise<ContactFormState> {
   // Bots get the same "sent" answer so they don't learn to dodge the checks.
-  if (looksLikeBot(formData)) return SENT;
+  if (looksLikeBot(formData)) {
+    console.warn("[contact form] treated as bot, not sent", { standId: String(formData.get("standId") ?? "") });
+    return SENT;
+  }
   const parsed = parseContactEnquiry(formData);
   if (!parsed.ok) return { ok: false, error: parsed.error };
 

@@ -6,6 +6,8 @@ export type ContactFormLayout = (typeof CONTACT_FORM_LAYOUTS)[number];
 export const CONTACT_LIMITS = { name: 100, email: 200, phone: 40, message: 4000 } as const;
 /** Real people take a few seconds to fill the form; bots post instantly. */
 export const CONTACT_MIN_FILL_MS = 2500;
+/** Honeypot field name. Must not look like anything browser autofill knows (company, website, address…). */
+export const CONTACT_TRAP_FIELD = "hp_leave_empty";
 
 export type ContactEnquiry = { name: string; email: string; phone: string; message: string };
 export type ContactFormState = { ok: boolean; error?: string };
@@ -38,7 +40,7 @@ export function parseContactEnquiry(formData: FormData): { ok: true; enquiry: Co
  * No timestamp means the page ran without JavaScript, so only the honeypot applies.
  */
 export function looksLikeBot(formData: FormData, now = Date.now()): boolean {
-  const trap = formData.get("company");
+  const trap = formData.get(CONTACT_TRAP_FIELD);
   if (typeof trap === "string" && trap.trim()) return true;
   const raw = formData.get("startedAt");
   if (typeof raw !== "string" || !raw.trim()) return false;

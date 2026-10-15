@@ -61,7 +61,10 @@ export async function sendOwnerEmail(
     options?.kind === "otp"
       ? requested
       : await filterEmailsForActiveOwners(requested);
-  if (!recipients.length) return;
+  if (!recipients.length) {
+    console.warn(`[${APP_NAME}] email skipped: every recipient belongs to a closed account`, { kind: options?.kind, subject });
+    return;
+  }
 
   const apiKey = cleanEnvSecret(process.env.RESEND_API_KEY);
   if (!apiKey) {
