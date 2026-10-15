@@ -11,6 +11,7 @@ import SiteChoice from "./SiteChoice";
 import PresetStyleField from "./PresetStyleField";
 import { PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
 import CartBarSettings from "./CartBarSettings";
+import CardBackgroundField from "./CardBackgroundField";
 
 const COLUMNS = ["2", "3", "4"] as const;
 const MOBILE_COLUMNS = ["1", "2"] as const;
@@ -67,6 +68,7 @@ export default function CategoryDetailSettings({
         onChange={(v) => setProp("mobileColumns", Number(v) as CategoryMobileColumns)}
       />
       <PresetStyleField presetsBySkin={PRODUCT_PRESETS} value={view.preset ?? undefined} onChange={(v) => setProp("preset", v)} />
+      <CardBackgroundField value={view.cardBackground} onChange={(v) => setProp("cardBackground", v)} />
       <Toggle label="Show prices" checked={view.showPrice} onChange={(v) => setProp("showPrice", v)} />
       <Toggle label="Show availability" checked={view.showAvailability} onChange={(v) => setProp("showAvailability", v)} />
       <Toggle label="Show review stars" checked={view.showRatings} onChange={(v) => setProp("showRatings", v)} />

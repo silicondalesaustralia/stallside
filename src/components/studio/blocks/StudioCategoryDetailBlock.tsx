@@ -53,7 +53,10 @@ export default function StudioCategoryDetailBlock({
     showRating: view.showRatings,
   };
   return (
-    <section className={look.farm ? "studio-section studio-section--wash" : "studio-section"}>
+    <section
+      className={look.farm ? "studio-section studio-section--wash" : "studio-section"}
+      data-card-background={view.cardBackground === "none" ? "none" : undefined}
+    >
       <div className="studio-section__inner">
         {view.showTitle ? (
           <SectionHeadingTag defaultTag="h1" el="title" className={`studio-heading ${centred ? "text-center" : ""}`}>

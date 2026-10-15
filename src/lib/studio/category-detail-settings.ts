@@ -21,6 +21,7 @@ export type CategoryDetailProps = {
   showPrice?: boolean;
   showAvailability?: boolean;
   showRatings?: boolean;
+  cardBackground?: "white" | "none";
 };
 
 export type CategoryDetailView = Required<Omit<CategoryDetailProps, "preset">> & { preset: ProductPreset | null };
@@ -46,6 +47,7 @@ export function categoryDetailView(p: Record<string, unknown>): CategoryDetailVi
     showPrice: p.showPrice !== false,
     showAvailability: p.showAvailability !== false,
     showRatings: p.showRatings === true,
+    cardBackground: p.cardBackground === "none" ? "none" : "white",
   };
 }
 

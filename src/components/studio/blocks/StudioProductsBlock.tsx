@@ -23,6 +23,8 @@ type Props = {
   showRatings?: boolean;
   /** Category pages only: the category's name and description above the grid. */
   showCategoryIntro?: boolean;
+  /** "none" drops the card fill and border so products sit on the section background. */
+  cardBackground?: "white" | "none";
   metadata: StudioMetadata;
   isEditing?: boolean;
   editable?: boolean;
@@ -41,6 +43,7 @@ export default function StudioProductsBlock({
   showAvailability,
   showRatings = false,
   showCategoryIntro = true,
+  cardBackground = "white",
   metadata: meta,
   isEditing,
   editable = false,
@@ -117,7 +120,7 @@ export default function StudioProductsBlock({
   const browse = isBrowsePage(meta);
 
   return (
-    <section className={sectionClass}>
+    <section className={sectionClass} data-card-background={cardBackground === "none" ? "none" : undefined}>
       <div className="studio-section__inner">
         {centred && !onCategoryPage ? <div className="text-center">{title}</div> : title}
         {browse ? (

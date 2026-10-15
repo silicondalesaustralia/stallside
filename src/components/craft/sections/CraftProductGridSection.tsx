@@ -7,6 +7,7 @@ import CraftSectionChrome from "../CraftSectionChrome";
 import { useCraftMetadata } from "../CraftEditorContext";
 import type { StudioMetadata } from "@/lib/studio/types";
 import type { ProductPreset } from "@/lib/studio/preset-registry";
+import { parseCategoryCardBackground, type CategoryCardBackground } from "@/lib/studio/category-looks";
 
 export type CraftProductGridProps = {
   source: "all" | "category" | "manual" | "activeCategory";
@@ -26,6 +27,7 @@ export type CraftProductGridProps = {
   showRatings?: boolean;
   /** Category pages only: the category's name and description above the grid. */
   showCategoryIntro?: boolean;
+  cardBackground?: CategoryCardBackground;
 };
 
 function isStudioMetadata(meta: unknown): meta is StudioMetadata {
@@ -53,6 +55,7 @@ export default function CraftProductGridSection(props: CraftProductGridProps) {
             showAvailability={props.showAvailability}
             showRatings={props.showRatings === true}
             showCategoryIntro={props.showCategoryIntro !== false}
+            cardBackground={parseCategoryCardBackground(props.cardBackground)}
             metadata={metadata}
             isEditing
             editable

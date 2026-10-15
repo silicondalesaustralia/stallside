@@ -7,6 +7,7 @@ import ProductGridSourceField from "./ProductGridSourceField";
 import { useStudioMetadata, useStudioEditorChrome } from "./StudioEditorContext";
 import HeaderStyleSettings from "./HeaderStyleSettings";
 import PresetStyleField from "./PresetStyleField";
+import CardBackgroundField from "./CardBackgroundField";
 import SectionImageField from "./SectionImageField";
 import SectionStyleSettings from "./SectionStyleSettings";
 import SettingsGroup from "./SettingsGroup";
@@ -319,6 +320,7 @@ function ProductGridSettings({
     <>
       <ProductGridSourceField props={props} setProp={setProp} />
       <PresetStyleField presetsBySkin={PRODUCT_PRESETS} value={props.preset} onChange={(v) => setProp("preset", v)} />
+      <CardBackgroundField value={props.cardBackground} onChange={(v) => setProp("cardBackground", v)} />
       <Field label="Columns">
         <select className={INPUT} value={props.columns} onChange={(e) => setProp("columns", Number(e.target.value))}>
           <option value={1}>1 (single column, any style)</option>

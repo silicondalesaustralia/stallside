@@ -139,6 +139,7 @@ function StudioSectionRender({
           showAvailability={Boolean(p.showAvailability ?? true)}
           showRatings={p.showRatings === true}
           showCategoryIntro={p.showCategoryIntro !== false}
+          cardBackground={parseCategoryCardBackground(p.cardBackground)}
           metadata={metadata}
         />
       );

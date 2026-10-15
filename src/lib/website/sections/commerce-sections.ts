@@ -34,6 +34,7 @@ export const productGrid: SectionDefinition = {
     showAvailability: z.boolean().optional(),
     showRatings: z.boolean().optional(),
     showCategoryIntro: z.boolean().optional(),
+    cardBackground: z.enum(["white", "none"]).optional(),
   }),
   binding: z.object({
     source: z.enum(["all", "category", "manual", "activeCategory"]).optional(),
@@ -145,6 +146,7 @@ export const categoryDetail: SectionDefinition = {
     showPrice: z.boolean().optional(),
     showAvailability: z.boolean().optional(),
     showRatings: z.boolean().optional(),
+    cardBackground: z.enum(["white", "none"]).optional(),
   }),
   pageKinds: ["category"],
   singleton: true,
