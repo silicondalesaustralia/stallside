@@ -19,6 +19,7 @@ import DomainsFlash from "./DomainsFlash";
 import DomainPurchaseBanner from "./DomainPurchaseBanner";
 import StagingConnectedPreview from "./StagingConnectedPreview";
 import { ownerCanUseCustomDomains } from "@/lib/domains/entitlements";
+import { ensureActivePrimaryDomain } from "@/lib/domains/lifecycle";
 import {
   customDomainsFeatureEnabled,
   domainPurchaseEnabled,
@@ -64,6 +65,11 @@ export default async function WebsiteDomainsPage({
   const path =
     params.path === "buy" || params.path === "connect" ? params.path : null;
 
+  try {
+    await ensureActivePrimaryDomain(storefront.id);
+  } catch (e) {
+    console.error("[domains] could not set primary domain", e);
+  }
   const domains = await prisma.storefrontDomain.findMany({
     where: {
       storefrontId: storefront.id,

@@ -249,22 +249,29 @@ export async function verifyCustomDomain(input: {
     },
   });
 
-  if (updated.status === StorefrontDomainStatus.ACTIVE && !updated.isPrimary) {
-    const existingPrimary = await prisma.storefrontDomain.findFirst({
-      where: {
-        storefrontId: input.storefrontId,
-        type: StorefrontDomainType.CUSTOM,
-        status: StorefrontDomainStatus.ACTIVE,
-        isPrimary: true,
-      },
-      select: { id: true },
-    });
-    if (!existingPrimary) {
-      await setPrimaryCustomDomain({ storefrontId: input.storefrontId, domainId: updated.id });
-      return { ...updated, isPrimary: true };
-    }
+  if (updated.status === StorefrontDomainStatus.ACTIVE) {
+    await ensureActivePrimaryDomain(input.storefrontId);
   }
   return updated;
+}
+
+/**
+ * Connected domains are the main address by default: if no active custom domain is
+ * primary, promote one (www first, then the oldest).
+ */
+export async function ensureActivePrimaryDomain(storefrontId: string): Promise<void> {
+  const active = await prisma.storefrontDomain.findMany({
+    where: {
+      storefrontId,
+      type: StorefrontDomainType.CUSTOM,
+      status: StorefrontDomainStatus.ACTIVE,
+    },
+    select: { id: true, hostname: true, isPrimary: true },
+    orderBy: { createdAt: "asc" },
+  });
+  if (active.length === 0 || active.some((d) => d.isPrimary)) return;
+  const pick = active.find((d) => d.hostname.startsWith("www.")) ?? active[0];
+  await setPrimaryCustomDomain({ storefrontId, domainId: pick.id });
 }
 
 export async function setPrimaryCustomDomain(input: {
