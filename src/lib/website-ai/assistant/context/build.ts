@@ -5,12 +5,19 @@ import { GREEN_VALLEY_DEMO_EMAIL } from "@/lib/demo/green-valley/constants";
 import { loadFeatureEntities, loadPaymentBrandIds } from "./features";
 import { searchProfileFacts } from "./search-profile";
 import type { AssistantContext } from "./types";
+import type { FulfilmentChoiceValue } from "@/lib/fulfilment/handover-choice";
 
 type Ctx = NonNullable<StorefrontContext>;
 
 function isDeliveryKind(kind: string): boolean {
   const k = kind.toLowerCase();
   return k.includes("deliver") || k.includes("ship");
+}
+
+function byFrequency(values: string[]): string[] {
+  const counts = new Map<string, number>();
+  for (const v of values) if (v) counts.set(v, (counts.get(v) ?? 0) + 1);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([v]) => v);
 }
 
 /** One context builder shared by page recommendations, prompts and the compiler. */
@@ -59,6 +66,14 @@ export async function buildAssistantContext(ctx: Ctx): Promise<AssistantContext>
       })),
       categories: visibleCategories.slice(0, 16).map((c) => ({ id: c.id, title: c.title, slug: c.slug })),
       productPhotoCount: ctx.products.filter((p) => Boolean(p.imageUrl)).length,
+      freshnessNotes: byFrequency(ctx.products.map((p) => p.freshnessNote?.trim() ?? "")).slice(0, 3),
+      fulfilments: [
+        ...new Set(
+          ctx.products
+            .map((p) => p.fulfilment ?? ctx.stand.fulfilmentDefault)
+            .filter((f): f is FulfilmentChoiceValue => Boolean(f)),
+        ),
+      ],
     },
     features: {
       ...features,

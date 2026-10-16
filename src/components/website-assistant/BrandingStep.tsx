@@ -4,6 +4,7 @@ import type { BriefData } from "@/lib/website-ai/assistant/brief/schema";
 import ImageUploadButton from "./ImageUploadButton";
 import PhotoList from "./PhotoList";
 import ColourInput from "./ColourInput";
+import LogoCard from "./LogoCard";
 import type { BriefUpdater } from "./assistant-copy";
 
 type Props = { brief: BriefData; update: BriefUpdater };
@@ -15,16 +16,7 @@ export default function BrandingStep({ brief, update }: Props) {
 
   return (
     <div className="flex flex-col gap-5">
-      <section className="flex flex-col gap-2">
-        <h3 className="text-sm font-medium text-[var(--field)]">Logo</h3>
-        {br.logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={br.logoUrl} alt="Your logo" className="h-16 w-auto max-w-48 object-contain" />
-        ) : (
-          <p className="text-xs text-[var(--muted)]">No logo yet — your business name will be used.</p>
-        )}
-        <ImageUploadButton label={br.logoUrl ? "Replace logo" : "Upload logo"} onUploaded={(url) => set("logoUrl", url)} />
-      </section>
+      <LogoCard logoUrl={br.logoUrl} onChange={(url) => set("logoUrl", url)} />
 
       <section className="flex flex-col gap-2">
         <h3 className="text-sm font-medium text-[var(--field)]">Colours</h3>

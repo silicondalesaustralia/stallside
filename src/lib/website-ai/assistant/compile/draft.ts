@@ -11,6 +11,7 @@ import type { DesignChoice } from "./design";
 import type { CompiledPage } from "./page";
 import { allocatePages } from "./allocate";
 import { applyPageSeo } from "./seo";
+import { compileCommercePages, replaceableCommercePage } from "./commerce";
 
 export type CandidateInput = {
   baseDraft: unknown;
@@ -41,7 +42,7 @@ function asRecord(raw: unknown): Record<string, unknown> {
 
 /**
  * Builds the full replacement draft: layouts, theme, pages and navigation are replaced; blog posts,
- * existing policy text, commerce layouts, domains and operational settings are left alone.
+ * existing policy text, hand-made commerce layouts, domains and operational settings are left alone.
  */
 export function assembleCandidate(input: CandidateInput): Candidate {
   const { ctx, brief, design, plan, compiled } = input;
@@ -64,6 +65,10 @@ export function assembleCandidate(input: CandidateInput): Candidate {
     if (alloc.pageId === "home") home = result.nodes;
     else pageNodes[alloc.pageId] = result.nodes;
     if (page.target.kind === "policy") reviewPageIds.push(alloc.pageId);
+  }
+  const commerce = compileCommercePages(ctx, design, shopSelected(ctx, brief));
+  for (const [key, nodes] of Object.entries(commerce.pages)) {
+    if (nodes && replaceableCommercePage(existingStudio?.pageNodes?.[key])) pageNodes[key] = nodes;
   }
 
   let draft = asRecord(mergeCustomPagesIntoRaw(base, pages));
@@ -94,6 +99,7 @@ export function assembleCandidate(input: CandidateInput): Candidate {
       identity: {
         ...config.identity,
         ...(brief.branding.logoUrl ? { logoUrl: brief.branding.logoUrl } : {}),
+        ...(brief.branding.logoUrl && !config.identity?.faviconUrl ? { faviconUrl: brief.branding.logoUrl } : {}),
         ...(input.heroImageUrl ? { heroImageUrl: input.heroImageUrl } : {}),
         ...(story.length > 40 ? { about: story.slice(0, 2000) } : {}),
         showPhone: brief.business.showPhone,

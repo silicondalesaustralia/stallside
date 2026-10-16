@@ -1,5 +1,6 @@
 import type { BusinessMode } from "@/lib/business-mode";
 import type { StudioTemplateId } from "@/lib/studio/types";
+import type { FulfilmentChoiceValue } from "@/lib/fulfilment/handover-choice";
 import type { SearchProfileFacts } from "./search-profile";
 
 export type NamedEntity = { id: string; title: string; slug: string };
@@ -30,6 +31,10 @@ export type AssistantContext = {
     products: { id: string; title: string; slug: string; imageUrl: string | null; categorySlug: string | null }[];
     categories: NamedEntity[];
     productPhotoCount: number;
+    /** Distinct freshness notes sellers wrote on products, most used first. */
+    freshnessNotes: string[];
+    /** How products are handed over, across the catalogue. */
+    fulfilments: FulfilmentChoiceValue[];
   };
   features: {
     menus: NamedEntity[];

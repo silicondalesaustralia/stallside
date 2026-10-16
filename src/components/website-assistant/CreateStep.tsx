@@ -44,6 +44,11 @@ export default function CreateStep({ brief, hasExistingSite, isPublished, aiAvai
           Still needed: {missing.join(", ")}.
         </div>
       ) : null}
+      {!brief.branding.logoUrl ? (
+        <p className="text-xs text-[var(--muted)]">
+          No logo added — your business name will show as text in the header. You can add one in step 2.
+        </p>
+      ) : null}
       {hasExistingSite ? (
         <ReplaceWarning isPublished={isPublished} understood={understood} onChange={setUnderstood} />
       ) : null}

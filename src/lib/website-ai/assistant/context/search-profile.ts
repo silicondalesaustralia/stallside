@@ -7,6 +7,8 @@ export type SearchProfileFacts = {
   complete: boolean;
   businessType: string | null;
   location: string | null;
+  /** Suburb or town only. */
+  locality: string | null;
   areaServed: string[];
   hours: string[];
   knownFor: string[];
@@ -42,6 +44,7 @@ export function searchProfileFacts(raw: unknown): SearchProfileFacts {
     complete: hasUsefulSearchProfile(p),
     businessType: p.businessType ? BUSINESS_TYPES[p.businessType].label : null,
     location,
+    locality: a?.locality ?? null,
     areaServed: p.areaServed ?? [],
     hours,
     knownFor: p.knowsAbout ?? [],

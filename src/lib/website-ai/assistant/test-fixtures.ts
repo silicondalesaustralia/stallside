@@ -32,6 +32,8 @@ export function fixtureContext(overrides: Partial<AssistantContext> = {}): Assis
       ],
       categories: [],
       productPhotoCount: 0,
+      freshnessNotes: ["Laid this morning"],
+      fulfilments: ["PICKUP"],
     },
     features: {
       menus: [],
