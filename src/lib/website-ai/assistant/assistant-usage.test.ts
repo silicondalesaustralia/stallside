@@ -36,6 +36,12 @@ test("text cost charges cached input at its own rate and reasoning only once", (
   assert.equal(textCost("gpt-test", usage).usdMicros, 34_000);
 });
 
+test("gpt-6-astra is priced from OpenAI's published rates without any settings", () => {
+  // 6,000 × $10 + 4,000 × $1 + 2,000 × $50 per 1M = $0.164
+  assert.equal(textCost("gpt-6-astra", usage).usdMicros, 164_000);
+  assert.equal(textCost("gpt-6-astra-2026-09-01", usage).usdMicros, 164_000);
+});
+
 test("cached input falls back to the input rate", () => {
   process.env.WEBSITE_AI_INPUT_USD_PER_1M = "2";
   process.env.WEBSITE_AI_OUTPUT_USD_PER_1M = "10";
