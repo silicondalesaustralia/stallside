@@ -6,12 +6,13 @@ import {
   type PresetOption,
 } from "@/lib/studio/preset-registry";
 import type { StudioTemplateId } from "@/lib/studio/types";
+import { HERO_STYLE_VALUES } from "@/lib/studio/hero-styles";
 
 function allValues<T extends string>(bySkin: Record<StudioTemplateId, PresetOption<T>[]>): T[] {
   return [...new Set(Object.values(bySkin).flatMap((list) => list.map((o) => o.value)))];
 }
 
-export const HERO_VARIANTS = allValues(HERO_PRESETS);
+export const HERO_VARIANTS = [...new Set([...allValues(HERO_PRESETS), ...HERO_STYLE_VALUES])];
 /** "classic"/"editorial" etc. are also accepted by the shared product renderer. */
 export const PRODUCT_VARIANTS = [
   ...new Set([...allValues(PRODUCT_PRESETS), "editorial", "classic", "featured", "compact"]),

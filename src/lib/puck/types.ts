@@ -45,6 +45,8 @@ export type PuckSpikeMetadata = {
     description: string | null;
     isPreOrderDrop: boolean;
     orderByLabel: string | null;
+    /** ISO time orders close, for live countdowns. */
+    orderByAt?: string | null;
     collectionLabel: string | null;
   }>;
   storefrontSlug: string;

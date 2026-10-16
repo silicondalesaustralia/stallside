@@ -120,6 +120,7 @@ function StudioSectionRender({
                 ? String(p.imageUrl)
                 : null
           }
+          look={p}
           metadata={metadata}
         />
         </StudioHeroFrame>

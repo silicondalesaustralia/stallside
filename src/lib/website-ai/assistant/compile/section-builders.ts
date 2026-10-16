@@ -2,7 +2,8 @@ import type { SectionInstance } from "@/lib/website/schema/definition";
 import { sectionDefinition } from "@/lib/website/sections/registry";
 import type { VendlSectionType } from "@/lib/website/sections/types";
 import { WEBSITE_LIMITS as L } from "@/lib/website/schema/limits";
-import { defaultHeroPreset, isValidHeroPreset } from "@/lib/studio/preset-registry";
+import { defaultHeroPreset } from "@/lib/studio/preset-registry";
+import { HERO_STYLE_VALUES } from "@/lib/studio/hero-styles";
 import type { StudioTemplateId } from "@/lib/studio/types";
 import type { ModelSectionType, SectionCopy } from "../ai/schemas";
 
@@ -23,7 +24,7 @@ const t = (v: string | null | undefined, max: number) => (v ?? "").trim().slice(
 
 function variant(type: VendlSectionType, preferred: string | undefined, templateId: StudioTemplateId): string {
   if (type === "hero") {
-    return preferred && isValidHeroPreset(templateId, preferred) ? preferred : defaultHeroPreset(templateId);
+    return preferred && (HERO_STYLE_VALUES as string[]).includes(preferred) ? preferred : defaultHeroPreset(templateId);
   }
   const def = sectionDefinition(type);
   return preferred && def.variants.includes(preferred) ? preferred : def.defaultVariant;

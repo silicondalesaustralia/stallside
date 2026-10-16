@@ -12,10 +12,15 @@ export type ImagePool = {
   story: string[];
 };
 
+/** The seller's own hero photo (never an AI decorative one). */
+export function sellerHeroUrl(ctx: AssistantContext, brief: BriefData): string | null {
+  const heroPhoto = brief.branding.photos.find((p) => p.purpose === "hero")?.url ?? null;
+  return brief.branding.heroImageUrl ?? heroPhoto ?? ctx.existing.heroImageUrl;
+}
+
 export function buildImagePool(ctx: AssistantContext, brief: BriefData, decorative: DecorativeSet): ImagePool {
   const photos = brief.branding.photos;
-  const heroPhoto = photos.find((p) => p.purpose === "hero")?.url ?? null;
-  const sellerHero = brief.branding.heroImageUrl ?? heroPhoto ?? ctx.existing.heroImageUrl;
+  const sellerHero = sellerHeroUrl(ctx, brief);
   const story = photos
     .filter((p) => p.purpose === "team" || p.purpose === "general" || p.purpose === "product")
     .map((p) => p.url)

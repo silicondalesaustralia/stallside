@@ -7,11 +7,16 @@ import type { StudioTemplateId } from "@/lib/studio/types";
 import type { AssistantContext } from "../context/types";
 import type { BriefData } from "../brief/schema";
 import type { ModelSectionType } from "../ai/schemas";
+import { sellerHeroUrl } from "./images";
+import { chooseContentHero, chooseHomeHero } from "./hero-choice";
 
 export type DesignChoice = {
   blueprintId: WebsiteBlueprintId;
   templateId: StudioTemplateId;
+  /** Home page presets; `hero` is the home hero. */
   presets: Partial<Record<ModelSectionType, string>>;
+  /** Hero style for inner pages (About, Contact…). */
+  contentHero: string;
   theme: StorefrontThemeOverrides;
 };
 
@@ -67,7 +72,9 @@ export function chooseDesign(ctx: AssistantContext, brief: BriefData): DesignCho
   const goal = brief.business.primaryGoal ? GOAL_TO_LEGACY[brief.business.primaryGoal] : undefined;
   const rec = recommendWebsiteBlueprint(legacyContext(ctx, brief), brief.pages.selected, { primaryGoal: goal });
   const bp = getWebsiteBlueprint(rec.recommendedBlueprintId);
-  const presets: DesignChoice["presets"] = { hero: heroPresetFromBlueprintHero(bp.layout.hero) };
+  const blueprintHero = heroPresetFromBlueprintHero(bp.layout.hero);
+  const sellerPhoto = Boolean(sellerHeroUrl(ctx, brief));
+  const presets: DesignChoice["presets"] = { hero: chooseHomeHero(ctx, brief, blueprintHero, sellerPhoto) };
   for (const [legacy, preset] of Object.entries(bp.preferredPresets)) {
     const key = LEGACY_PRESET_KEYS[legacy];
     if (key && preset) presets[key] = preset;
@@ -79,5 +86,11 @@ export function chooseDesign(ctx: AssistantContext, brief: BriefData): DesignCho
     delete theme.paletteId;
   }
   if (b.useExisting && ctx.existing.fontPairId) theme = { ...theme, fontPairId: ctx.existing.fontPairId };
-  return { blueprintId: bp.id, templateId: bp.designSystem, presets, theme };
+  return {
+    blueprintId: bp.id,
+    templateId: bp.designSystem,
+    presets,
+    contentHero: chooseContentHero(blueprintHero, sellerPhoto),
+    theme,
+  };
 }

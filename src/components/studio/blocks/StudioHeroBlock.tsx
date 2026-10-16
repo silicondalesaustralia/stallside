@@ -1,20 +1,29 @@
 "use client";
 
-import SectionButtonLink from "@/components/studio/SectionButtonLink";
-import Image from "next/image";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { shopPagePath } from "@/lib/storefront/paths";
 import type { HeroPreset } from "@/lib/studio/preset-registry";
-import InlineEditableText from "@/components/studio/InlineEditableText";
-import SectionHeadingTag from "@/components/studio/SectionHeadingTag";
-import InlineRichText from "@/components/studio/InlineRichText";
-import RichText from "@/components/studio/RichText";
-import SectionCopy from "@/components/studio/SectionCopy";
+import { resolveHeroStyle } from "@/lib/studio/hero-styles";
+import { heroHeightStyle, parseHeroLook } from "@/lib/studio/hero-look";
+import HeroButtons, { heroHasButtons } from "@/components/studio/hero/HeroButtons";
+import HeroBand from "@/components/studio/hero/HeroBand";
+import HeroMenu from "@/components/studio/hero/HeroMenu";
+import HeroCollage from "@/components/studio/hero/HeroCollage";
+import HeroMosaic from "@/components/studio/hero/HeroMosaic";
+import HeroFeaturedProduct from "@/components/studio/hero/HeroFeaturedProduct";
+import HeroVisitUs from "@/components/studio/hero/HeroVisitUs";
+import HeroCountdown, { countdownMenu } from "@/components/studio/hero/HeroCountdown";
+import HeroStandStatus from "@/components/studio/hero/HeroStandStatus";
+import HeroOverlay from "@/components/studio/hero/HeroOverlay";
+import HeroSplit from "@/components/studio/hero/HeroSplit";
+import HeroCentred from "@/components/studio/hero/HeroCentred";
+import HeroStacked from "@/components/studio/hero/HeroStacked";
+import type { HeroView } from "@/components/studio/hero/types";
 
 type Props = {
   headline: string;
   supportingText: string;
-  layout: HeroPreset | "simple" | "split" | "spotlight" | "background" | "editorial" | "minimal";
+  layout: HeroPreset | "spotlight";
   ctaLabel: string;
   showCta: boolean;
   metadata: StudioMetadata;
@@ -22,87 +31,9 @@ type Props = {
   editable?: boolean;
   /** Optional section-level image (e.g. AI decorative placeholder). */
   backgroundImageUrl?: string | null;
+  /** Look settings (height, alignment, fade, image side, second button). */
+  look?: Record<string, unknown>;
 };
-
-type ResolvedVariant =
-  | "editorial"
-  | "split"
-  | "background"
-  | "minimal"
-  | "farm-landscape"
-  | "stand-status"
-  | "produce-split"
-  | "shop-first"
-  | "current-menu"
-  | "product-collage"
-  | "promo";
-
-function resolveVariant(templateId: StudioMetadata["templateId"], layout: Props["layout"]): ResolvedVariant {
-  if (layout === "farm-landscape" || layout === "stand-status" || layout === "produce-split") return layout;
-  if (layout === "shop-first" || layout === "current-menu" || layout === "product-collage" || layout === "promo") {
-    return layout;
-  }
-  if (layout === "simple" || layout === "spotlight") {
-    return templateId === "market" ? "shop-first" : templateId === "farmhouse" ? "stand-status" : "editorial";
-  }
-  if (layout === "split" || layout === "background" || layout === "minimal" || layout === "editorial") {
-    return layout;
-  }
-  if (templateId === "farmhouse") return "farm-landscape";
-  if (templateId === "market") return "shop-first";
-  return "background";
-}
-
-function HeroTitle({
-  editable,
-  value,
-  display,
-  className,
-  placeholder,
-}: {
-  editable?: boolean;
-  value: string;
-  display: string;
-  className: string;
-  placeholder?: string;
-}) {
-  if (editable) {
-    return (
-      <InlineEditableText
-        prop="headline"
-        value={value}
-        as="h1"
-        className={className}
-        placeholder={placeholder || "Add a headline"}
-      />
-    );
-  }
-  return (
-    <SectionHeadingTag defaultTag="h1" className={className}>
-      {display}
-    </SectionHeadingTag>
-  );
-}
-
-function HeroSubtitle({
-  editable,
-  value,
-  display,
-  className,
-}: {
-  editable?: boolean;
-  value: string;
-  display: string;
-  className: string;
-}) {
-  if (editable) {
-    return (
-      <InlineRichText prop="supportingText" value={value} className={className} placeholder="Add supporting text" />
-    );
-  }
-  if (!display) return null;
-  return <RichText value={display} className={className} />;
-}
 
 export default function StudioHeroBlock({
   headline,
@@ -113,286 +44,51 @@ export default function StudioHeroBlock({
   metadata: meta,
   backgroundImageUrl,
   editable = false,
+  look: rawLook,
 }: Props) {
-  const variant = resolveVariant(meta.templateId, layout);
-  const title = headline.trim() || meta.branding.headline;
-  const subtitle = supportingText.trim() || meta.branding.subheadline || "";
+  const variant = resolveHeroStyle(meta.templateId, layout);
+  const look = parseHeroLook(rawLook ?? {});
   const heroImage = backgroundImageUrl || meta.branding.heroImageUrl;
-  const shopHref = shopPagePath(meta.storefrontSlug, "shop", meta.draft, meta.basePath);
-  const showButton = showCta && meta.products.length > 0;
-  const templateClass = `studio-hero--${variant}`;
-  const brandHeadline = meta.branding.headline || "Add a headline";
+  const showPrimary = showCta && meta.products.length > 0;
+  const view: HeroView = {
+    meta,
+    editable,
+    headline,
+    supportingText,
+    ctaLabel,
+    showCta,
+    title: headline.trim() || meta.branding.headline,
+    subtitle: supportingText.trim() || meta.branding.subheadline || "",
+    brandHeadline: meta.branding.headline || "Add a headline",
+    heroImage,
+    look,
+    buttons: heroHasButtons(showPrimary, look, meta) ? (
+      <HeroButtons
+        meta={meta}
+        editable={editable}
+        showPrimary={showPrimary}
+        label={ctaLabel}
+        defaultLabel={meta.templateId === "market" ? "Shop now" : "Browse"}
+        defaultHref={shopPagePath(meta.storefrontSlug, "shop", meta.draft, meta.basePath)}
+        look={look}
+      />
+    ) : null,
+    sectionClass: `studio-hero studio-hero--${variant}`,
+    style: heroHeightStyle(look),
+  };
 
-  const defaultCta = meta.templateId === "market" ? "Shop now" : "Browse";
-  const cta = showButton ? (
-    <SectionButtonLink meta={meta} defaultHref={shopHref} className="studio-btn studio-btn--primary">
-      {editable ? (
-        <InlineEditableText prop="ctaLabel" value={ctaLabel || defaultCta} as="span" placeholder={defaultCta} />
-      ) : (
-        ctaLabel || defaultCta
-      )}
-    </SectionButtonLink>
-  ) : null;
-
-  if (variant === "shop-first" || variant === "promo") {
-    return (
-      <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
-        <div className="mx-auto flex max-w-[var(--studio-content-max)] flex-col gap-6 py-10 sf-sm:flex-row sf-sm:items-center sf-sm:justify-between studio-gutter studio-gutter--wide sf-sm:py-12">
-          <div className="max-w-xl">
-            {variant === "promo" ? (
-              <SectionCopy k="weekEyebrow" fallback="This week" as="p" className="studio-eyebrow text-[var(--leaf-dark)]" />
-            ) : null}
-            <HeroTitle
-              editable={editable}
-              value={headline}
-              display={title}
-              className="studio-display text-3xl text-[var(--field)] sf-sm:text-4xl"
-              placeholder={brandHeadline}
-            />
-            <HeroSubtitle
-              editable={editable}
-              value={supportingText}
-              display={subtitle}
-              className="mt-3 text-base text-[var(--muted)] sf-sm:text-lg"
-            />
-          </div>
-          {cta ? <div className="shrink-0">{cta}</div> : null}
-        </div>
-      </section>
-    );
-  }
-
-  if (variant === "current-menu") {
-    const menu = meta.menus[0];
-    return (
-      <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--wash)]`}>
-        <div className="mx-auto max-w-[var(--studio-content-max)] py-10 studio-gutter studio-gutter--wide sf-sm:py-12">
-          <SectionCopy k="menuEyebrow" fallback="Current menu" as="p" className="studio-eyebrow text-[var(--leaf-dark)]" />
-          {editable ? (
-            <>
-              <HeroTitle
-                editable
-                value={headline}
-                display={title}
-                className="studio-display mt-2 text-3xl text-[var(--field)] sf-sm:text-4xl"
-                placeholder={menu?.title || brandHeadline}
-              />
-              <HeroSubtitle
-                editable
-                value={supportingText}
-                display={subtitle}
-                className="mt-3 max-w-2xl text-[var(--muted)]"
-              />
-            </>
-          ) : (
-            <>
-              <SectionHeadingTag defaultTag="h1" className="studio-display mt-2 text-3xl text-[var(--field)] sf-sm:text-4xl">
-                {menu?.title ?? title}
-              </SectionHeadingTag>
-              {menu?.description ? (
-                <p className="mt-3 max-w-2xl text-[var(--muted)]">{menu.description}</p>
-              ) : subtitle ? (
-                <p className="mt-3 max-w-2xl text-[var(--muted)]">{subtitle}</p>
-              ) : null}
-            </>
-          )}
-          {cta ? <div className="mt-6">{cta}</div> : null}
-        </div>
-      </section>
-    );
-  }
-
-  if (variant === "product-collage" && meta.products.length > 0) {
-    const collage = meta.products.slice(0, 4);
-    return (
-      <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
-        <div className="studio-split mx-auto grid max-w-[var(--studio-content-max)] gap-8 py-10 sf-lg:grid-cols-2 sf-lg:items-center studio-gutter studio-gutter--wide">
-          <div>
-            <HeroTitle
-              editable={editable}
-              value={headline}
-              display={title}
-              className="studio-display text-3xl text-[var(--field)] sf-sm:text-4xl"
-              placeholder={brandHeadline}
-            />
-            <HeroSubtitle
-              editable={editable}
-              value={supportingText}
-              display={subtitle}
-              className="mt-3 text-[var(--muted)]"
-            />
-            {cta ? <div className="mt-6">{cta}</div> : null}
-          </div>
-          <ul className="grid grid-cols-2 gap-3">
-            {collage.map((p) => (
-              <li key={p.id} className="studio-section-image relative aspect-square overflow-hidden rounded-[var(--studio-card-radius)] bg-[var(--wash)]">
-                {p.imageUrl ? (
-                  <Image src={p.imageUrl} alt={p.name} fill className="object-cover" sizes="25vw" />
-                ) : (
-                  <span className="flex h-full items-end p-3 text-sm font-medium text-[var(--muted)]">{p.name}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-    );
-  }
-
-  if (variant === "stand-status") {
-    return (
-      <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--wash)]`}>
-        <div className="mx-auto max-w-[var(--studio-content-max)] py-12 studio-gutter studio-gutter--wide sf-sm:py-16">
-          {meta.branding.regionLabel ? (
-            <p className="studio-eyebrow text-[var(--site-accent,#a0522d)]">{meta.branding.regionLabel}</p>
-          ) : null}
-          <HeroTitle
-            editable={editable}
-            value={headline}
-            display={title}
-            className="studio-display mt-2 text-4xl text-[var(--field)] sf-sm:text-5xl"
-            placeholder={brandHeadline}
-          />
-          <HeroSubtitle
-            editable={editable}
-            value={supportingText}
-            display={subtitle}
-            className="mt-4 max-w-2xl text-lg text-[var(--muted)]"
-          />
-          <div className="mt-6 inline-flex flex-wrap gap-3">
-            <span className="rounded-md border border-[var(--line)] bg-[var(--panel)] px-3 py-1.5 text-sm font-semibold text-[var(--field)]">
-              <SectionCopy k="standBadge" fallback="Farm stand open" />
-            </span>
-            {cta ? cta : null}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
+  if (variant === "shop-first" || variant === "promo") return <HeroBand view={view} promo={variant === "promo"} />;
+  if (variant === "current-menu") return <HeroMenu view={view} />;
+  if (variant === "product-collage" && meta.products.length > 0) return <HeroCollage view={view} />;
+  if (variant === "category-mosaic" && meta.categories.length >= 2) return <HeroMosaic view={view} />;
+  if (variant === "featured-product" && meta.products.length > 0) return <HeroFeaturedProduct view={view} />;
+  if (variant === "visit-us") return <HeroVisitUs view={view} />;
+  if (variant === "countdown" && countdownMenu(meta)) return <HeroCountdown view={view} />;
+  if (variant === "stand-status") return <HeroStandStatus view={view} />;
   if ((variant === "background" || variant === "farm-landscape") && heroImage) {
-    return (
-      <section className={`studio-hero ${templateClass} relative min-h-[var(--studio-hero-min-height-mobile)] overflow-hidden sf-sm:min-h-[var(--studio-hero-min-height)]`}>
-        <Image src={heroImage} alt="" fill priority className="object-cover" sizes="100vw" />
-        <div className={`studio-hero__overlay absolute inset-0 ${
-          variant === "farm-landscape"
-            ? "bg-gradient-to-t from-[#1f2e1f]/75 via-[#1f2e1f]/40 to-transparent"
-            : "bg-gradient-to-t from-black/70 via-black/45 to-black/25"
-        }`} />
-        <div className="relative mx-auto flex min-h-[inherit] max-w-[var(--studio-content-max)] items-end py-14 studio-gutter studio-gutter--wide sf-sm:py-20">
-          <div className="max-w-xl text-white">
-            {meta.branding.regionLabel ? (
-              <p className="studio-eyebrow mb-3 text-white/80">{meta.branding.regionLabel}</p>
-            ) : null}
-            <HeroTitle
-              editable={editable}
-              value={headline}
-              display={title}
-              className="studio-display text-4xl sf-sm:text-5xl sf-lg:text-6xl"
-              placeholder={brandHeadline}
-            />
-            <HeroSubtitle
-              editable={editable}
-              value={supportingText}
-              display={subtitle}
-              className="mt-4 text-lg leading-relaxed text-white/90 sf-sm:text-xl"
-            />
-            {cta ? <div className="mt-8">{cta}</div> : null}
-          </div>
-        </div>
-      </section>
-    );
+    return <HeroOverlay view={view} farm={variant === "farm-landscape"} />;
   }
-
-  if (variant === "split" || variant === "produce-split") {
-    return (
-      <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
-        <div className="studio-split mx-auto grid max-w-[var(--studio-content-max)] sf-lg:grid-cols-2">
-          <div className="flex flex-col justify-center py-12 studio-gutter studio-gutter--wide sf-sm:py-16 sf-lg:py-20">
-            {meta.branding.regionLabel ? (
-              <p className="studio-eyebrow text-[var(--leaf-dark)]">{meta.branding.regionLabel}</p>
-            ) : null}
-            <HeroTitle
-              editable={editable}
-              value={headline}
-              display={title}
-              className="studio-display mt-2 text-4xl text-[var(--field)] sf-sm:text-5xl"
-              placeholder={brandHeadline}
-            />
-            <HeroSubtitle
-              editable={editable}
-              value={supportingText}
-              display={subtitle}
-              className="mt-4 text-lg leading-relaxed text-[var(--muted)]"
-            />
-            {cta ? <div className="mt-8">{cta}</div> : null}
-          </div>
-          <div className="studio-section-image studio-hero__split-image relative aspect-[4/3] overflow-hidden bg-[var(--wash)] sf-lg:aspect-auto sf-lg:min-h-[28rem]">
-            {heroImage ? (
-              <Image src={heroImage} alt="" fill className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" priority />
-            ) : (
-              <div className="flex h-full items-center justify-center p-8 text-center text-sm text-[var(--muted)]">
-                Add a hero image in branding settings
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (variant === "minimal" || !heroImage) {
-    return (
-      <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--wash)]`}>
-        <div className="mx-auto max-w-[var(--studio-prose-max)] py-16 text-center studio-gutter sf-sm:py-20">
-          {meta.branding.regionLabel ? (
-            <p className="studio-eyebrow text-[var(--leaf-dark)]">{meta.branding.regionLabel}</p>
-          ) : null}
-          <HeroTitle
-            editable={editable}
-            value={headline}
-            display={title}
-            className="studio-display mt-2 text-4xl text-[var(--field)] sf-sm:text-5xl"
-            placeholder={brandHeadline}
-          />
-          <HeroSubtitle
-            editable={editable}
-            value={supportingText}
-            display={subtitle}
-            className="mt-5 text-lg leading-relaxed text-[var(--muted)]"
-          />
-          {cta ? <div className="mt-8 flex justify-center">{cta}</div> : null}
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section className={`studio-hero ${templateClass} border-b border-[var(--line)] bg-[var(--panel)]`}>
-      <div className="mx-auto max-w-[var(--studio-content-max)] py-10 studio-gutter studio-gutter--wide sf-sm:py-14">
-        <div className="studio-section-image relative aspect-[16/9] overflow-hidden rounded-[var(--studio-card-radius)]">
-          <Image src={heroImage} alt="" fill className="object-cover" sizes="100vw" priority />
-        </div>
-        <div className="mx-auto mt-10 max-w-[var(--studio-prose-max)] text-center">
-          {meta.branding.regionLabel ? (
-            <p className="studio-eyebrow text-[var(--leaf-dark)]">{meta.branding.regionLabel}</p>
-          ) : null}
-          <HeroTitle
-            editable={editable}
-            value={headline}
-            display={title}
-            className="studio-display mt-2 text-4xl text-[var(--field)] sf-sm:text-5xl"
-            placeholder={brandHeadline}
-          />
-          <HeroSubtitle
-            editable={editable}
-            value={supportingText}
-            display={subtitle}
-            className="mt-4 text-lg leading-relaxed text-[var(--muted)]"
-          />
-          {cta ? <div className="mt-8 flex justify-center">{cta}</div> : null}
-        </div>
-      </div>
-    </section>
-  );
+  if (variant === "split" || variant === "produce-split") return <HeroSplit view={view} />;
+  if (variant === "minimal" || !heroImage) return <HeroCentred view={view} />;
+  return <HeroStacked view={view} />;
 }

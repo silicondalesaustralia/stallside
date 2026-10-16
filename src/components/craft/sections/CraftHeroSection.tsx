@@ -17,6 +17,13 @@ export type CraftHeroProps = {
   decorativeImageUrl?: string;
   imageUrl?: string;
   width?: HeroWidth;
+  height?: string;
+  align?: string;
+  overlay?: string;
+  imageSide?: string;
+  mobileTextBelow?: boolean;
+  secondaryLabel?: string;
+  secondaryLink?: string;
 };
 
 function isStudioMetadata(meta: unknown): meta is StudioMetadata {
@@ -40,6 +47,7 @@ export default function CraftHeroSection(props: CraftHeroProps) {
             ctaLabel={props.ctaLabel}
             showCta={props.showCta}
             backgroundImageUrl={backgroundImageUrl}
+            look={props}
             metadata={metadata}
             isEditing
             editable

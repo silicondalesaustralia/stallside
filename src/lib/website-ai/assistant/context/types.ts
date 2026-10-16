@@ -40,6 +40,8 @@ export type AssistantContext = {
     menus: NamedEntity[];
     preOrders: NamedEntity[];
     subscriptions: NamedEntity[];
+    /** A pre-order drop with a closing time still ahead. */
+    upcomingDrop: boolean;
     pickup: boolean;
     delivery: boolean;
     pickupLabels: string[];

@@ -11,6 +11,8 @@ import {
   IMAGE_TEXT_VARIANTS,
   IMAGE_VARIANTS,
 } from "./variants";
+import { HERO_ALIGNS, HERO_HEIGHTS, HERO_IMAGE_SIDES, HERO_OVERLAYS } from "@/lib/studio/hero-look";
+import { isButtonLink } from "@/lib/studio/button-link";
 
 const CONTENT_PAGES = ALL_PAGE_KINDS;
 
@@ -28,10 +30,17 @@ export const hero: SectionDefinition = {
     ctaLabel: label.optional(),
     imageUrl: mediaUrl.optional(),
     decorativeImageUrl: mediaUrl.optional(),
+    secondaryLabel: label.optional(),
   }),
   settings: z.object({
     showCta: z.boolean().optional(),
     width: z.enum(["full", "contained"]).optional(),
+    height: z.enum(HERO_HEIGHTS).optional(),
+    align: z.enum(HERO_ALIGNS).optional(),
+    overlay: z.enum(HERO_OVERLAYS).optional(),
+    imageSide: z.enum(HERO_IMAGE_SIDES).optional(),
+    mobileTextBelow: z.boolean().optional(),
+    secondaryLink: z.string().refine(isButtonLink, "Choose a page or enter a web address").optional(),
   }),
   pageKinds: ["home", "content"],
   singleton: true,

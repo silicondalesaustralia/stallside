@@ -47,7 +47,7 @@ export function compilePage(input: PageCompileInput): CompiledPage {
       type: planned.type,
       copy: copyByIndex.get(index) ?? null,
       templateId: design.templateId,
-      preset: design.presets[planned.type],
+      preset: planned.type === "hero" && page.target.kind !== "home" ? design.contentHero : design.presets[planned.type],
       imageUrl: input.images[index],
       buttonLink: LINKABLE_BUTTON_SECTIONS.has(craftName) ? input.primaryLink : undefined,
       productIds: planned.type === "productGrid" ? input.productIds : undefined,

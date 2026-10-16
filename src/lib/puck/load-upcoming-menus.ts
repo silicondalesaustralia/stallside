@@ -8,6 +8,8 @@ export type UpcomingMenuView = {
   description: string | null;
   isPreOrderDrop: boolean;
   orderByLabel: string | null;
+  /** ISO time orders close, for live countdowns. */
+  orderByAt: string | null;
   collectionLabel: string | null;
 };
 
@@ -52,6 +54,7 @@ export async function loadUpcomingMenusForStorefront(input: {
         m.orderByAt && m.kind !== MenuKind.ALWAYS_AVAILABLE
           ? formatOrderByLabel(m.orderByAt, input.timeZone)
           : null,
+      orderByAt: m.orderByAt && m.kind !== MenuKind.ALWAYS_AVAILABLE ? m.orderByAt.toISOString() : null,
       collectionLabel:
         m.collectionAt && m.kind !== MenuKind.ALWAYS_AVAILABLE
           ? formatCollectionLabel(m.collectionAt, input.timeZone)

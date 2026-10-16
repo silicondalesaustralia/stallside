@@ -43,6 +43,12 @@ export type StudioMetadata = PuckSpikeMetadata & {
     column: import("./custom-pages").FooterColumnId;
   }[];
   commerceContext?: StudioCommerceContext;
+  /** Opening hours from the search profile, for live open/closed wording. */
+  standHours?: { hours: import("./open-status").StandHours; timeZone: string } | null;
+  /** Map link for "Get directions": the seller's map link, else a search for their suburb. */
+  directionsUrl?: string | null;
+  /** Suburb or town for "visit us" wording. */
+  locality?: string | null;
   /** Draft revision the editor loaded; sent back on save to detect conflicts. */
   draftRevision: number;
 };

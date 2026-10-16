@@ -12,7 +12,11 @@ export type HeroPreset =
   | "shop-first"
   | "current-menu"
   | "product-collage"
-  | "promo";
+  | "promo"
+  | "category-mosaic"
+  | "featured-product"
+  | "visit-us"
+  | "countdown";
 
 export type ProductPreset =
   | "editorial"

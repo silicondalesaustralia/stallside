@@ -11,6 +11,7 @@ import { standPaymentBrands, withSquarePaymentsReady } from "@/lib/stand-payment
 import type { PaymentBrand } from "@/lib/payment-brand-assets";
 import { ensureBlogSettings } from "./blog";
 import { buildStudioHeaderNav } from "./navigation";
+import { visitFacts } from "./visit-facts";
 import type { StudioMetadata, StudioTemplateId } from "./types";
 
 async function loadPaymentBrands(ctx: NonNullable<StorefrontContext>): Promise<PaymentBrand[]> {
@@ -81,6 +82,7 @@ export async function buildStudioMetadata(
       })),
     headerMenu: parseHeaderMenu(configSource),
     paymentBrands,
+    ...visitFacts(ctx.storefront.businessProfile, ctx.stand.timezone, base.branding.regionLabel),
     announcementBar: parseAnnouncementBar(configSource),
     footer: parseFooterSettings(configSource),
     customFooterPages: footerPagesFromCustomPages(

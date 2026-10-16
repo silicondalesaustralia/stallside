@@ -39,6 +39,7 @@ export function fixtureContext(overrides: Partial<AssistantContext> = {}): Assis
       menus: [],
       preOrders: [],
       subscriptions: [],
+      upcomingDrop: false,
       pickup: true,
       delivery: false,
       pickupLabels: ["Farm gate"],

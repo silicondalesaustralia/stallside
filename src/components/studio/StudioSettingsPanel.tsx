@@ -42,6 +42,7 @@ import { paletteOf } from "@/lib/website/sections/colour";
 import { NEXT_DROP_PRESETS, PRODUCT_PRESETS } from "@/lib/studio/preset-registry";
 import CategoriesSettings from "./CategoriesSettings";
 import type { CraftHeroProps } from "@/components/craft/sections/CraftHeroSection";
+import HeroSettings from "./hero/HeroSettings";
 import type { CraftProductGridProps } from "@/components/craft/sections/CraftProductGridSection";
 import type { CraftNextDropProps } from "@/components/craft/sections/CraftNextDropSection";
 import type { CraftAboutProps } from "@/components/craft/sections/CraftAboutSection";
@@ -263,54 +264,6 @@ export default function StudioSettingsPanel() {
         </SettingsGroup>
       </div>
     </aside>
-  );
-}
-
-function HeroSettings({
-  props,
-  setProp,
-}: {
-  props: CraftHeroProps;
-  setProp: (k: string, v: unknown) => void;
-}) {
-  const brandingHero = useStudioMetadata().branding.heroImageUrl;
-  return (
-    <>
-      <p className="text-xs text-[var(--muted)]">
-        Edit the headline and text directly on the page.
-      </p>
-      <SectionImageField
-        label="Image"
-        value={props.decorativeImageUrl || props.imageUrl || ""}
-        onChange={(url) => {
-          setProp("imageUrl", url);
-          setProp("decorativeImageUrl", "");
-        }}
-        fallbackUrl={brandingHero}
-        fallbackLabel="Using the hero image from Branding."
-      />
-      <Field label="Button">
-        <input className={INPUT} value={props.ctaLabel} onChange={(e) => setProp("ctaLabel", e.target.value)} />
-      </Field>
-      <Field label="Layout">
-        <select className={INPUT} value={props.layout} onChange={(e) => setProp("layout", e.target.value)}>
-          <option value="simple">Simple</option>
-          <option value="split">Split</option>
-          <option value="spotlight">Spotlight</option>
-          <option value="background">Background</option>
-        </select>
-      </Field>
-      <Field label="Width">
-        <select className={INPUT} value={props.width ?? "full"} onChange={(e) => setProp("width", e.target.value)}>
-          <option value="full">Full width</option>
-          <option value="contained">Contained</option>
-        </select>
-      </Field>
-      <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" checked={props.showCta} onChange={(e) => setProp("showCta", e.target.checked)} />
-        Show shop button
-      </label>
-    </>
   );
 }
 
