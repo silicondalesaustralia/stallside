@@ -90,10 +90,13 @@ function buildDnsRecords(domain: CustomDomainRow): DnsRecord[] {
 export default function CustomDomainCard({
   domain,
   managed = false,
+  canSwitchPrimary = false,
 }: {
   domain: CustomDomainRow;
   /** Bought through Vendl: we manage its DNS, so bare domains are fine. */
   managed?: boolean;
+  /** Another domain is already primary; otherwise DomainPrimaryPrompts owns the choice. */
+  canSwitchPrimary?: boolean;
 }) {
   const records = buildDnsRecords(domain);
   const waiting =
@@ -187,7 +190,7 @@ export default function CustomDomainCard({
             </button>
           </form>
         ) : null}
-        {domain.status === "ACTIVE" && !domain.isPrimary ? (
+        {canSwitchPrimary && domain.status === "ACTIVE" && !domain.isPrimary ? (
           <form action={makePrimaryDomainAction}>
             <input type="hidden" name="domainId" value={domain.id} />
             <button type="submit" className={dashCtaClass}>

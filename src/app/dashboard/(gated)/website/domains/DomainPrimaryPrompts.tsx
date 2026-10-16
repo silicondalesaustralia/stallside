@@ -1,5 +1,6 @@
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { makePrimaryDomainAction } from "./actions";
+import ApexForwardSteps from "./ApexForwardSteps";
 
 type Row = { id: string; hostname: string; status: string; isPrimary: boolean };
 
@@ -40,13 +41,14 @@ export default function DomainPrimaryPrompts({ domains }: { domains: Row[] }) {
         </div>
       ) : null}
       {apex && !apexConnected ? (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-2">
           <p className="font-semibold">Forward {apex} to www</p>
           <p className="text-sm text-[var(--muted)]">
-            Some visitors type {apex} without the www. At your domain registrar, add a forward (301 redirect)
-            from <strong>{apex}</strong> to <strong>https://{candidate.hostname}</strong> so they reach your
-            site too.
+            Some visitors type {apex} without the www. Where your domain&apos;s DNS is managed, add a
+            permanent (301) redirect from <strong>{apex}</strong> to{" "}
+            <strong>https://{candidate.hostname}</strong> so they reach your site too. Pick your provider:
           </p>
+          <ApexForwardSteps apex={apex} target={candidate.hostname} />
         </div>
       ) : null}
     </section>

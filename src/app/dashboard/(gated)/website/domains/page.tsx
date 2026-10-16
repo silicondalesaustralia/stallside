@@ -116,6 +116,7 @@ export default async function WebsiteDomainsPage({
     !purchaseFailed &&
     (purchaseConnecting || params.purchased) &&
     domains.length === 0;
+  const hasActivePrimary = domains.some((d) => d.isPrimary && d.status === "ACTIVE");
   const primaryCustom =
     domains.find((d) => d.isPrimary && d.status === "ACTIVE") ??
     domains.find((d) => d.status === "ACTIVE") ??
@@ -184,6 +185,7 @@ export default async function WebsiteDomainsPage({
             <CustomDomainCard
               key={d.id}
               managed={managedHosts.has(d.hostname)}
+              canSwitchPrimary={hasActivePrimary}
               domain={{
                 id: d.id,
                 hostname: d.hostname,
