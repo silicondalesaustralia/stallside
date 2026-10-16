@@ -1,6 +1,13 @@
 import OpenAI from "openai";
 
-export type AiUsage = { inputTokens: number; outputTokens: number; reasoningTokens: number; known: boolean };
+/** Cached tokens are a subset of input; reasoning tokens are a subset of output. */
+export type AiUsage = {
+  inputTokens: number;
+  cachedInputTokens: number;
+  outputTokens: number;
+  reasoningTokens: number;
+  known: boolean;
+};
 
 export type AiErrorCode =
   | "not_configured"
@@ -29,7 +36,7 @@ export type AiCallResult<T> =
       issues?: string[];
     };
 
-export const NO_USAGE: AiUsage = { inputTokens: 0, outputTokens: 0, reasoningTokens: 0, known: false };
+export const NO_USAGE: AiUsage = { inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, reasoningTokens: 0, known: false };
 
 function retryAfterMs(headers: Headers | undefined): number | undefined {
   const raw = headers?.get("retry-after");
@@ -62,6 +69,7 @@ export function classifyAiError<T>(err: unknown): AiCallResult<T> {
 
 type UsageLike = {
   input_tokens?: number;
+  input_tokens_details?: { cached_tokens?: number } | null;
   output_tokens?: number;
   output_tokens_details?: { reasoning_tokens?: number } | null;
 } | null | undefined;
@@ -70,6 +78,7 @@ export function usageFrom(raw: UsageLike): AiUsage {
   if (!raw) return NO_USAGE;
   return {
     inputTokens: raw.input_tokens ?? 0,
+    cachedInputTokens: raw.input_tokens_details?.cached_tokens ?? 0,
     outputTokens: raw.output_tokens ?? 0,
     reasoningTokens: raw.output_tokens_details?.reasoning_tokens ?? 0,
     known: true,

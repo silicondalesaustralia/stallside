@@ -2,12 +2,16 @@ import { put } from "@vercel/blob";
 import { cleanEnvSecret } from "@/lib/env";
 import { openaiApiKey, openaiApiKeyLooksInvalid } from "./config";
 import type { WebsiteBusinessContext } from "./types";
+import { sumImageUsage, type ImageApiUsage, type RawImageUsage } from "./image-usage";
 
 export type DecorativeImageAssets = {
   heroUrl: string;
   storyUrl: string;
   heroAlt: string;
   storyAlt: string;
+  model?: string;
+  /** Combined usage of both image calls; null when the API did not report it. */
+  usage?: ImageApiUsage | null;
 };
 
 function imageModel(): string {
@@ -47,7 +51,7 @@ async function generateOneImage(
   key: string,
   kind: "hero" | "story",
   prompt: string,
-): Promise<{ bytes: Buffer; contentType: string }> {
+): Promise<{ bytes: Buffer; contentType: string; usage: RawImageUsage }> {
   const res = await fetch("https://api.openai.com/v1/images/generations", {
     method: "POST",
     headers: {
@@ -68,17 +72,18 @@ async function generateOneImage(
   }
   const data = (await res.json()) as {
     data?: Array<{ b64_json?: string; url?: string }>;
+    usage?: RawImageUsage;
   };
   const b64 = data.data?.[0]?.b64_json;
   if (b64) {
-    return { bytes: Buffer.from(b64, "base64"), contentType: "image/png" };
+    return { bytes: Buffer.from(b64, "base64"), contentType: "image/png", usage: data.usage };
   }
   const url = data.data?.[0]?.url;
   if (!url) throw new Error("Image API returned no image");
   const imgRes = await fetch(url);
   if (!imgRes.ok) throw new Error(`Failed to download generated image (${imgRes.status})`);
   const bytes = Buffer.from(await imgRes.arrayBuffer());
-  return { bytes, contentType: imgRes.headers.get("content-type") || "image/png" };
+  return { bytes, contentType: imgRes.headers.get("content-type") || "image/png", usage: data.usage };
 }
 
 async function uploadBytes(
@@ -125,6 +130,8 @@ export async function generateDecorativePlaceholders(
       storyUrl,
       heroAlt: heroSpec.alt,
       storyAlt: storySpec.alt,
+      model: imageModel(),
+      usage: sumImageUsage([heroImg.usage, storyImg.usage]),
     };
   } catch (err) {
     console.error(

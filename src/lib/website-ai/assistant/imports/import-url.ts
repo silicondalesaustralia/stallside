@@ -1,6 +1,7 @@
 import type { BriefImportSource } from "../brief/schema";
 import { callStructured } from "../ai/client";
 import { importRequest } from "../ai/requests";
+import { recordCallResult, type UsageOwner } from "../usage/record";
 import { extractPage, isSocialHost } from "./extract";
 import { fetchPublicPage } from "./safe-fetch";
 
@@ -10,7 +11,7 @@ const SOCIAL_FALLBACK =
   "Social pages usually hide their details from other websites. Paste your bio or a few posts into the box below instead.";
 
 /** Reads one public page and proposes facts. Nothing is used until the seller accepts it. */
-export async function importFromUrl(raw: string): Promise<ImportOutcome> {
+export async function importFromUrl(raw: string, usageOwner: UsageOwner): Promise<ImportOutcome> {
   const importedAt = new Date().toISOString();
   const base = { url: raw.trim().slice(0, 2048), facts: [], photoUrls: [], importedAt };
   const page = await fetchPublicPage(raw);
@@ -29,6 +30,7 @@ export async function importFromUrl(raw: string): Promise<ImportOutcome> {
     };
   }
   const result = await callStructured(importRequest(page.finalUrl, extracted.text));
+  await recordCallResult(usageOwner, "website_import", result);
   if (result.status !== "completed") {
     if (result.status === "error") console.error("[website-ai] import facts failed", result.code, result.message);
     return {

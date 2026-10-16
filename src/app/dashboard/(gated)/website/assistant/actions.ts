@@ -10,6 +10,7 @@ import { followUpRequest } from "@/lib/website-ai/assistant/ai/requests";
 import { callStructured } from "@/lib/website-ai/assistant/ai/client";
 import { pageOptions, type PageOption } from "@/lib/website-ai/assistant/pages/catalogue";
 import { importFromUrl, type ImportOutcome } from "@/lib/website-ai/assistant/imports/import-url";
+import { recordCallResult } from "@/lib/website-ai/assistant/usage/record";
 
 export type SaveBriefResult =
   | { ok: true; revision: number; pageOptions: PageOption[] }
@@ -42,9 +43,9 @@ export type ImportResult = { ok: true; outcome: ImportOutcome } | { ok: false; e
 /** Reads a public website or social page; facts stay proposals until the seller accepts them. */
 export async function importUrlAction(url: string): Promise<ImportResult> {
   try {
-    await requireAssistantOwner();
+    const { owner, storefront } = await requireAssistantOwner();
     if (!url.trim()) return { ok: false, error: "Enter a web address." };
-    return { ok: true, outcome: await importFromUrl(url) };
+    return { ok: true, outcome: await importFromUrl(url, { ownerId: owner.id, storefrontId: storefront.id }) };
   } catch (err) {
     console.error("[website-ai] import failed", err instanceof Error ? err.message : err);
     return { ok: false, error: "Could not read that page. Please try again." };
@@ -63,11 +64,11 @@ export async function followUpsAction(data: BriefData): Promise<FollowUpResult> 
     if (!parsed.success) return { ok: false, error: "Check your details first." };
     const ctx = await assistantContextFor(owner.id, storefront.slug);
     const result = await callStructured(followUpRequest(factsForPrompt(ctx, parsed.data)));
+    await recordCallResult({ ownerId: owner.id, storefrontId: storefront.id }, "website_followups", result);
     if (result.status !== "completed") {
       if (result.status === "error") console.error("[website-ai] follow-ups failed", result.code, result.message);
       return { ok: true, questions: [] };
     }
-    console.info("[website-ai] follow-ups usage", owner.id, result.usage);
     const questions = result.data.questions
       .slice(0, 3)
       .map((q) => ({ id: q.id.slice(0, 40), question: q.question.slice(0, 160) }))

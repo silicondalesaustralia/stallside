@@ -585,6 +585,7 @@ model Owner {
   websiteBrief                  WebsiteBusinessBrief?
   websiteGenerationJobs         WebsiteGenerationJob[]
   websiteAssets                 WebsiteAsset[]
+  aiUsageEvents                 AiUsageEvent[]
 
   @@index([deletedAt])
 }
@@ -3095,6 +3096,8 @@ model WebsiteGenerationJob {
   reasoningTokens   Int                     @default(0)
   usageUnknownCalls Int                     @default(0)
   imageCount        Int                     @default(0)
+  /// Estimated provider cost in millionths of a US dollar; calls with unknown prices add nothing.
+  costUsdMicros     Int                     @default(0)
   leaseToken        String?
   leaseExpiresAt    DateTime?
   nextAttemptAt     DateTime                @default(now())
@@ -3108,6 +3111,36 @@ model WebsiteGenerationJob {
   @@unique([ownerId, idempotencyKey])
   @@index([status, nextAttemptAt])
   @@index([storefrontId, createdAt])
+}
+
+/// One provider AI call, costed at call time. Never stores prompts, outputs or personal data.
+model AiUsageEvent {
+  id                String   @id @default(cuid())
+  ownerId           String
+  owner             Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  storefrontId      String?
+  /// website_build | website_followups | website_import | website_image
+  feature           String
+  jobId             String?
+  provider          String   @default("openai")
+  model             String
+  inputTokens       Int      @default(0)
+  cachedInputTokens Int      @default(0)
+  outputTokens      Int      @default(0)
+  reasoningTokens   Int      @default(0)
+  images            Int      @default(0)
+  /// Null when the model has no configured price.
+  costUsdMicros     Int?
+  /// estimated | unknown
+  costQuality       String
+  pricingVersion    String
+  /// success | failed
+  status            String
+  createdAt         DateTime @default(now())
+
+  @@index([ownerId, createdAt])
+  @@index([createdAt])
+  @@index([jobId])
 }
 
 /// Images created or confirmed through the AI website assistant, with provenance.

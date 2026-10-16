@@ -8,6 +8,7 @@ import { claimJob, MAX_ATTEMPTS, releaseLease, retryDelayMs, usageData, writeLea
 import type { StepOutcome } from "./outcome";
 import { isJobStage, parseJobState, stateJson } from "./state";
 import { runStage } from "./steps";
+import { recordStepUsage } from "../usage/job";
 
 const MIN_STEP_MS = 10_000;
 const AI_MARGIN_MS = 5_000;
@@ -19,14 +20,14 @@ function later(ms: number): Date {
   return new Date(Date.now() + ms);
 }
 
-async function finish(lease: Lease, attempts: number, outcome: StepOutcome): Promise<boolean> {
+async function finish(lease: Lease, attempts: number, outcome: StepOutcome, costMicros = 0): Promise<boolean> {
   switch (outcome.kind) {
     case "next":
       await writeLeased(lease, {
         stage: outcome.stage,
         state: stateJson(outcome.state),
         attempts: 0,
-        ...usageData(outcome.usage),
+        ...usageData(outcome.usage, costMicros),
         ...(outcome.model ? { modelUsed: outcome.model } : {}),
         ...(outcome.images ? { imageCount: { increment: outcome.images } } : {}),
       });
@@ -42,7 +43,7 @@ async function finish(lease: Lease, attempts: number, outcome: StepOutcome): Pro
         nextAttemptAt: later(retryDelayMs(attempts + 1, outcome.retryAfterMs)),
         errorCode: outcome.code,
         errorMessage: outcome.message.slice(0, 500),
-        ...usageData(outcome.usage),
+        ...usageData(outcome.usage, costMicros),
       });
       return false;
     case "confirm":
@@ -117,7 +118,7 @@ export async function processJob(jobId: string, budgetMs: number): Promise<void>
         }
         return;
       }
-      if (!(await finish(lease, attempts, outcome))) return;
+      if (!(await finish(lease, attempts, outcome, await recordStepUsage(job, outcome)))) return;
     }
   } catch (err) {
     console.error("[website-ai] job step crashed", jobId, err instanceof Error ? err.message : err);

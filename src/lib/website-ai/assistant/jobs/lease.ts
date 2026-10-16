@@ -41,10 +41,12 @@ export async function releaseLease(lease: Lease, data: Prisma.WebsiteGenerationJ
   return res.count === 1;
 }
 
-export function usageData(usage: AiUsage | undefined): Prisma.WebsiteGenerationJobUpdateManyMutationInput {
-  if (!usage) return {};
-  if (!usage.known) return { usageUnknownCalls: { increment: 1 } };
+export function usageData(usage: AiUsage | undefined, costMicros = 0): Prisma.WebsiteGenerationJobUpdateManyMutationInput {
+  const cost = costMicros > 0 ? { costUsdMicros: { increment: costMicros } } : {};
+  if (!usage) return cost;
+  if (!usage.known) return { ...cost, usageUnknownCalls: { increment: 1 } };
   return {
+    ...cost,
     inputTokens: { increment: usage.inputTokens },
     outputTokens: { increment: usage.outputTokens },
     reasoningTokens: { increment: usage.reasoningTokens },

@@ -12,6 +12,7 @@ import { salesByOwner } from "@/lib/admin-sales";
 import AdminDeleteOwnerButton from "./AdminDeleteOwnerButton";
 import AdminOwnerTools from "./AdminOwnerTools";
 import OwnerPaymentLedger from "./OwnerPaymentLedger";
+import OwnerAiUsageCard from "./OwnerAiUsageCard";
 
 export default async function AdminOwnerDetailPage({
   params,
@@ -130,6 +131,7 @@ export default async function AdminOwnerDetailPage({
         stripeCustomerId={owner.stripeCustomerId}
         stripeAccountId={owner.stripeAccountId}
       />
+      <OwnerAiUsageCard ownerId={owner.id} audPerUsd={fx.USD} />
       <AdminOwnerTools ownerId={owner.id} />
       <AdminDeleteOwnerButton
         ownerId={owner.id}

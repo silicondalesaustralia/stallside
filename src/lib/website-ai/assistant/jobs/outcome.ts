@@ -1,4 +1,5 @@
 import type { AiUsage } from "../ai/result";
+import type { ImageApiUsage } from "@/lib/website-ai/image-usage";
 import type { BriefData } from "../brief/schema";
 import type { JobContext } from "./context";
 import type { JobStage, JobState } from "./state";
@@ -19,7 +20,16 @@ export type StepInput = {
 };
 
 export type StepOutcome =
-  | { kind: "next"; stage: JobStage; state: JobState; usage?: AiUsage; model?: string; images?: number }
+  | {
+      kind: "next";
+      stage: JobStage;
+      state: JobState;
+      usage?: AiUsage;
+      model?: string;
+      images?: number;
+      imageModel?: string;
+      imageUsage?: ImageApiUsage | null;
+    }
   | { kind: "wait"; state: JobState }
   | { kind: "retry"; state: JobState; code: string; message: string; retryAfterMs?: number; usage?: AiUsage }
   | { kind: "confirm"; state: JobState; candidate: Record<string, unknown> }

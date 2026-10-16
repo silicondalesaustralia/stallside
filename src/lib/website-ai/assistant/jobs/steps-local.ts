@@ -40,6 +40,8 @@ export async function imagesStep(input: StepInput): Promise<StepOutcome> {
     stage: "pages",
     state: { ...state, decorative: { heroUrl: assets.heroUrl, storyUrl: assets.storyUrl } },
     images: 2,
+    imageModel: assets.model,
+    imageUsage: assets.usage ?? null,
   };
 }
 
