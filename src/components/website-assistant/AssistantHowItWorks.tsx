@@ -3,6 +3,7 @@ import Link from "next/link";
 const STEPS = [
   "Tell us about your business. We fill in what Vendl already knows — your products, categories, stall and online shop details, and search profile.",
   "Add your logo, colours and photos.",
+  "Pick a style, how much goes on your homepage, your product page layout and which sections to show.",
   "Choose the pages you want, like About, FAQ, Visit us or Shop.",
   "Vendl plans and writes each page from your real details and builds a draft. This takes a minute or two.",
 ];

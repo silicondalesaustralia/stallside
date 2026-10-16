@@ -3,6 +3,7 @@ import type { BriefData, PolicyPageId } from "../brief/schema";
 import type { ModelSectionType } from "../ai/schemas";
 import { isAssistantPageId, pageOptions, POLICY_LABELS } from "../pages/catalogue";
 import { availableSections } from "./section-rules";
+import { homeTargetWithLook } from "./look-targets";
 
 export type PageTargetKind = "home" | "about" | "contact" | "faq" | "visit" | "reviews" | "blog" | "custom" | "policy";
 
@@ -71,7 +72,7 @@ export function pageTargets(ctx: AssistantContext, brief: BriefData): PageTarget
   for (const id of selected) {
     if (!isAssistantPageId(id) || !usable.has(id) || id === "SHOP") continue;
     const spec = SPECS[id];
-    if (spec) targets.push(build(id, spec, available));
+    if (spec) targets.push(homeTargetWithLook(build(id, spec, available), brief.look, available));
   }
   for (const page of brief.pages.custom) {
     if (!page.title.trim()) continue;

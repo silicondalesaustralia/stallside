@@ -15,7 +15,8 @@ ${FACT_RULES}
 Planning rules:
 - Return one entry in "pages" for every page key supplied, using exactly those keys. Do not add other keys.
 - For each page choose sections only from that page's allowedSections, in a sensible order.
-- HOME must start with "hero". Prefer 4-8 useful HOME sections; fewer is fine when facts are sparse.
+- HOME must start with "hero". The seller chose how full the homepage should be: aim close to HOME's
+  maxSections, but use fewer when facts are sparse.
 - Don't add commerce, reviews or signup sections where they don't serve the page purpose.
 - Respect requiredSections for each page.
 - Put anything the seller asked for that these pages and sections can't deliver into "unsupported" with a short reason.

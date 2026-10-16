@@ -15,6 +15,8 @@ import { prefillBrief } from "./brief/prefill";
 import type { BriefData } from "./brief/schema";
 import { featureNotes, pageOptions, type PageOption } from "./pages/catalogue";
 import { aiConfigured } from "./ai/client";
+import { lookSectionOptions, type LookSection } from "./brief/look";
+import { availableSections } from "./plan/section-rules";
 
 /** Session for assistant server actions: website allowlist + AI builder allowlist. */
 export async function requireAssistantOwner() {
@@ -39,6 +41,8 @@ export type WizardData = {
   searchProfile: { complete: boolean; summary: string[] };
   profileForm: { profile: BusinessProfile; defaultType: BusinessTypeId };
   productCount: number;
+  /** Look & features section choices this business has the data for. */
+  lookSections: LookSection[];
 };
 
 export async function loadWizardData(): Promise<WizardData> {
@@ -75,5 +79,6 @@ export async function loadWizardData(): Promise<WizardData> {
     },
     profileForm: { profile: profileView.profile, defaultType: profileView.defaultType },
     productCount: assistant.catalogue.productCount,
+    lookSections: lookSectionOptions(availableSections(assistant)),
   };
 }

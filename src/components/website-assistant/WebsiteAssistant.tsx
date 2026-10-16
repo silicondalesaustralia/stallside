@@ -7,6 +7,7 @@ import type { WizardData } from "@/lib/website-ai/assistant/load-wizard";
 import AssistantStepper from "./AssistantStepper";
 import BusinessStep from "./BusinessStep";
 import BrandingStep from "./BrandingStep";
+import LookStep from "./LookStep";
 import PagesStep from "./PagesStep";
 import CreateStep from "./CreateStep";
 import BuildProgress from "./BuildProgress";
@@ -19,7 +20,7 @@ export default function WebsiteAssistant({ data }: Props) {
   const [brief, setBrief] = useState<BriefData>(data.brief);
   const [revision, setRevision] = useState(data.briefRevision);
   const [options, setOptions] = useState(data.pageOptions);
-  const [step, setStep] = useState(data.activeJobId ? 4 : data.brief.step);
+  const [step, setStep] = useState(data.activeJobId ? 5 : data.brief.step);
   const [jobId, setJobId] = useState<string | null>(data.activeJobId);
   const [error, setError] = useState<string | null>(null);
   const [saving, start] = useTransition();
@@ -65,14 +66,15 @@ export default function WebsiteAssistant({ data }: Props) {
         <>
           {step === 1 ? <BusinessStep brief={brief} update={update} aiAvailable={data.aiAvailable} searchProfile={data.searchProfile} profileForm={data.profileForm} /> : null}
           {step === 2 ? <BrandingStep brief={brief} update={update} /> : null}
-          {step === 3 ? <PagesStep brief={brief} update={update} options={options} notes={data.featureNotes} /> : null}
-          {step === 4 ? (
+          {step === 3 ? <LookStep brief={brief} update={update} sections={data.lookSections} /> : null}
+          {step === 4 ? <PagesStep brief={brief} update={update} options={options} notes={data.featureNotes} /> : null}
+          {step === 5 ? (
             <CreateStep
               brief={brief}
               hasExistingSite={data.hasExistingSite}
               isPublished={data.isPublished}
               aiAvailable={data.aiAvailable}
-              saveNow={() => saveNow(4)}
+              saveNow={() => saveNow(5)}
               onStarted={setJobId}
             />
           ) : null}
@@ -82,7 +84,7 @@ export default function WebsiteAssistant({ data }: Props) {
                 Back
               </button>
             ) : null}
-            {step < 4 ? (
+            {step < 5 ? (
               <button type="button" className={primaryButton} disabled={saving} onClick={() => goTo(step + 1)}>
                 {saving ? "Saving…" : "Next"}
               </button>

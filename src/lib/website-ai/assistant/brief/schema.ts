@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { defaultLook, lookSchema } from "./look";
 
 export const BRIEF_SCHEMA_VERSION = 1 as const;
 
@@ -77,6 +78,8 @@ export const briefDataSchema = z.object({
     photos: z.array(photoSchema).max(20),
     decorativeImages: z.boolean(),
   }),
+  /** Look & features answers; briefs saved before this step get "choose for me". */
+  look: lookSchema.default(defaultLook),
   pages: z.object({
     selected: z.array(text(40)).max(16),
     custom: z.array(customPageSchema).max(3),
@@ -84,7 +87,7 @@ export const briefDataSchema = z.object({
   }),
   /** Unsupported requests the seller made, with why. Never silently dropped. */
   unsupported: z.array(z.object({ request: text(200), reason: text(300) })).max(10),
-  step: z.number().int().min(1).max(4),
+  step: z.number().int().min(1).max(5),
   prefilledAt: z.string().max(40).nullable(),
 });
 
@@ -120,6 +123,7 @@ export function emptyBrief(): BriefData {
       photos: [],
       decorativeImages: false,
     },
+    look: defaultLook(),
     pages: { selected: ["HOME"], custom: [], policies: [] },
     unsupported: [],
     step: 1,

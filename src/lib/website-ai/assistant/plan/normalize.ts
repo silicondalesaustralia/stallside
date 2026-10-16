@@ -36,7 +36,8 @@ function fixSections(page: PlannedPage | undefined, target: PageTarget, notes: s
   const allowed = new Set(target.allowedSections);
   const seen = new Set<ModelSectionType>();
   const out: PlannedSection[] = [];
-  for (const s of page?.sections ?? []) {
+  const source = page?.sections ?? target.defaultSections.map((type) => ({ type, purpose: "" }));
+  for (const s of source) {
     if (!allowed.has(s.type)) {
       notes.push(`${target.key}: removed unavailable section ${s.type}`);
       continue;

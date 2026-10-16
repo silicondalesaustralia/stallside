@@ -14,7 +14,7 @@ import {
 } from "@/lib/studio/commerce-pages";
 import type { AssistantContext } from "../context/types";
 import type { DesignChoice } from "./design";
-import { productInfoRows, productLayoutFor } from "./product-info";
+import { productInfoRows } from "./product-info";
 
 export const ASSISTANT_SOURCE = "website-ai-assistant";
 
@@ -42,9 +42,9 @@ function section(
   };
 }
 
-function productPage(ctx: AssistantContext): Built {
+function productPage(ctx: AssistantContext, design: DesignChoice): Built {
   const hasReviews = ctx.reviews.count > 0;
-  const layout = productLayoutFor(ctx);
+  const layout = design.productLayout;
   return {
     key: COMMERCE_PRODUCT_KEY,
     kind: "product",
@@ -106,7 +106,7 @@ export type CommerceCompile = { pages: Partial<Record<CommercePageKey, Serialize
 /** Product, shop and category page layouts from real catalogue facts. Pages that fail validation are skipped. */
 export function compileCommercePages(ctx: AssistantContext, design: DesignChoice, shop: boolean): CommerceCompile {
   if (ctx.catalogue.productCount === 0) return { pages: {}, errors: [] };
-  const built: Built[] = [productPage(ctx)];
+  const built: Built[] = [productPage(ctx, design)];
   if (shop) built.push(shopPage(ctx, design));
   if (ctx.catalogue.categories.length > 0) built.push(categoryPage(design));
   const out: CommerceCompile = { pages: {}, errors: [] };

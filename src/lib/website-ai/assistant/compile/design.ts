@@ -9,6 +9,9 @@ import type { BriefData } from "../brief/schema";
 import type { ModelSectionType } from "../ai/schemas";
 import { sellerHeroUrl } from "./images";
 import { chooseContentHero, chooseHomeHero } from "./hero-choice";
+import { productLayoutFor } from "./product-info";
+import type { ProductLayout } from "@/lib/studio/product-detail-settings";
+import { LOOK_PRODUCT_LAYOUTS, LOOK_STYLE_HINTS } from "../brief/look";
 
 export type DesignChoice = {
   blueprintId: WebsiteBlueprintId;
@@ -17,6 +20,8 @@ export type DesignChoice = {
   presets: Partial<Record<ModelSectionType, string>>;
   /** Hero style for inner pages (About, Contact…). */
   contentHero: string;
+  /** Product page layout: the seller's choice, else decided from photo coverage. */
+  productLayout: ProductLayout;
   theme: StorefrontThemeOverrides;
 };
 
@@ -70,7 +75,11 @@ const GOAL_TO_LEGACY: Record<string, string> = {
  */
 export function chooseDesign(ctx: AssistantContext, brief: BriefData): DesignChoice {
   const goal = brief.business.primaryGoal ? GOAL_TO_LEGACY[brief.business.primaryGoal] : undefined;
-  const rec = recommendWebsiteBlueprint(legacyContext(ctx, brief), brief.pages.selected, { primaryGoal: goal });
+  const style = brief.look.style === "auto" ? undefined : LOOK_STYLE_HINTS[brief.look.style];
+  const rec = recommendWebsiteBlueprint(legacyContext(ctx, brief), brief.pages.selected, {
+    primaryGoal: goal,
+    stylePreference: style,
+  });
   const bp = getWebsiteBlueprint(rec.recommendedBlueprintId);
   const blueprintHero = heroPresetFromBlueprintHero(bp.layout.hero);
   const sellerPhoto = Boolean(sellerHeroUrl(ctx, brief));
@@ -91,6 +100,7 @@ export function chooseDesign(ctx: AssistantContext, brief: BriefData): DesignCho
     templateId: bp.designSystem,
     presets,
     contentHero: chooseContentHero(blueprintHero, sellerPhoto),
+    productLayout: LOOK_PRODUCT_LAYOUTS[brief.look.productPage] ?? productLayoutFor(ctx),
     theme,
   };
 }
