@@ -176,7 +176,7 @@ export default async function WebStudioPage({
         }
         ai={
           useAssistant ? (
-            <AssistantEntryCard hasSite={Boolean(websiteStudio?.nodes)} />
+            <AssistantEntryCard hasSite={Boolean(websiteStudio?.nodes)} productCount={metadata.products.length} />
           ) : (
           <WebStudioAiPanel
             enabled={aiEnabled}

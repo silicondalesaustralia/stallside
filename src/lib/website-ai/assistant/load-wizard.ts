@@ -34,6 +34,7 @@ export type WizardData = {
   previewPath: string;
   editorHref: string;
   searchProfile: { complete: boolean; summary: string[] };
+  productCount: number;
 };
 
 export async function loadWizardData(): Promise<WizardData> {
@@ -67,5 +68,6 @@ export async function loadWizardData(): Promise<WizardData> {
       complete: assistant.searchProfile.complete,
       summary: searchProfileSummary(assistant.searchProfile),
     },
+    productCount: assistant.catalogue.productCount,
   };
 }

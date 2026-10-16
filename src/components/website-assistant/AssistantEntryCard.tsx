@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { ASSISTANT_PATH } from "@/lib/website/readiness";
+import NoProductsWarning from "./NoProductsWarning";
 
-type Props = { hasSite: boolean };
+type Props = { hasSite: boolean; productCount: number };
 
 /** Replaces the template/look-based AI builder for owners on the guided assistant. */
-export default function AssistantEntryCard({ hasSite }: Props) {
+export default function AssistantEntryCard({ hasSite, productCount }: Props) {
   return (
     <>
       <div>
@@ -16,6 +17,7 @@ export default function AssistantEntryCard({ hasSite }: Props) {
           builds a draft you can preview and edit. Nothing goes live until you publish.
         </p>
       </div>
+      {productCount === 0 ? <NoProductsWarning /> : null}
       {hasSite ? (
         <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
           You already have a website draft. Running the assistant again replaces its layouts and design — you&apos;ll be

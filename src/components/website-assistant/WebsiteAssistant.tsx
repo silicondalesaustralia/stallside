@@ -10,6 +10,7 @@ import BrandingStep from "./BrandingStep";
 import PagesStep from "./PagesStep";
 import CreateStep from "./CreateStep";
 import BuildProgress from "./BuildProgress";
+import NoProductsWarning from "./NoProductsWarning";
 import { primaryButton, secondaryButton, type BriefUpdater } from "./assistant-copy";
 
 type Props = { data: Omit<WizardData, "lastJobId"> };
@@ -48,6 +49,7 @@ export default function WebsiteAssistant({ data }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {data.productCount === 0 && !jobId ? <NoProductsWarning /> : null}
       <AssistantStepper step={step} onStep={goTo} disabled={saving || Boolean(jobId)} />
       {jobId ? (
         <BuildProgress
