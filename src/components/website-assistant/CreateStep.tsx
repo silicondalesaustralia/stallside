@@ -47,15 +47,32 @@ export default function CreateStep({ brief, hasExistingSite, isPublished, aiAvai
       {hasExistingSite ? (
         <ReplaceWarning isPublished={isPublished} understood={understood} onChange={setUnderstood} />
       ) : null}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         {aiAvailable ? (
-          <button type="button" className={primaryButton} disabled={blocked} onClick={() => begin("ai")}>
-            {pending ? "Starting…" : "Create my website"}
-          </button>
+          <div className="flex flex-col gap-2 rounded-md border border-[var(--border)] p-4">
+            <button type="button" className={primaryButton} disabled={blocked} onClick={() => begin("ai")}>
+              {pending ? "Starting…" : "Create my website with AI"}
+            </button>
+            <p className="text-xs text-[var(--muted)]">
+              Recommended. AI writes every page from your details — headings, intros, About, FAQ and draft policies —
+              and builds the full site. Takes 1–3 minutes.
+            </p>
+          </div>
         ) : null}
-        <button type="button" className={aiAvailable ? secondaryButton : primaryButton} disabled={blocked} onClick={() => begin("basic")}>
-          Use a basic starter{aiAvailable ? " instead" : ""}
-        </button>
+        <div className="flex flex-col gap-2 rounded-md border border-[var(--border)] p-4">
+          <button
+            type="button"
+            className={aiAvailable ? secondaryButton : primaryButton}
+            disabled={blocked}
+            onClick={() => begin("basic")}
+          >
+            Build from my own words (no AI)
+          </button>
+          <p className="text-xs text-[var(--muted)]">
+            Uses only what you&apos;ve entered, with no AI writing. Your products and details still show, but FAQ and
+            policy pages are left for you to fill in. Quick and predictable.
+          </p>
+        </div>
       </div>
       {!aiAvailable ? (
         <p className="text-xs text-[var(--muted)]">AI writing isn&apos;t available right now, so we&apos;ll build a starter from your own words.</p>
