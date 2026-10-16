@@ -25,7 +25,7 @@ export default async function StorefrontCartPage({ params, searchParams }: Props
   const { slug } = await params;
   const draft = (await searchParams).draft === "1";
   const ctx = await loadStorefrontPage(slug, draft);
-  const data = await loadStandCartData(ctx.stand.slug);
+  const data = await loadStandCartData(ctx.stand.slug, "website");
   if (!data) notFound();
   if (data.stand.cartMode === "CUSTOMER_CHOICE") {
     redirect(`${appBaseUrl()}${standCatalogPath(data.stand.slug)}/pay`);

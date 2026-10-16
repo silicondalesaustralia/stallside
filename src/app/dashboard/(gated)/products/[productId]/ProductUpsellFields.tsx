@@ -8,11 +8,13 @@ export default function ProductUpsellFields({
   products,
   upsellProductId,
   upsellPriceCents,
+  productId,
 }: {
   currency: string;
   products: ProductOpt[];
   upsellProductId: string | null;
   upsellPriceCents: number | null;
+  productId: string;
 }) {
   const priceDefault =
     upsellPriceCents != null ? (upsellPriceCents / 100).toFixed(2) : "";
@@ -59,6 +61,9 @@ export default function ProductUpsellFields({
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
+      <Link href={`/dashboard/upsells/new?product=${productId}`} className="text-sm text-[var(--leaf-dark)] underline">
+        Create a reusable upsell for this product
+      </Link>
     </div>
   );
 }

@@ -21,6 +21,7 @@ import {
   standPagePreOrderUpsells,
   standPreOrderUpsell,
 } from "./cart-upsell-offers";
+import { loadUpsellRules, type UpsellChannel } from "@/lib/upsells/load-rules";
 
 export type StandCartCheckoutProps = Omit<ComponentProps<typeof StandCartCheckout>, "shopHref">;
 
@@ -56,7 +57,10 @@ function localTransferFor(stand: {
 }
 
 /** Everything the cart & checkout needs for an active stand; null when missing or inactive. */
-export async function loadStandCartData(standSlug: string): Promise<StandCartData | null> {
+export async function loadStandCartData(
+  standSlug: string,
+  channel: UpsellChannel = "stall",
+): Promise<StandCartData | null> {
   const stand = await loadPublicStandCatalog(standSlug, "cart");
   if (!stand || !stand.isActive) return null;
 
@@ -113,6 +117,7 @@ export async function loadStandCartData(standSlug: string): Promise<StandCartDat
       upsell: standCartUpsell(stand),
       preOrderUpsell: standPreOrderUpsell(stand),
       pagePreOrderUpsells: await standPagePreOrderUpsells(stand),
+      upsellRules: await loadUpsellRules(stand.id, channel),
       firstOrder: stand.firstOrderDiscountEnabled
         ? {
             enabled: true,

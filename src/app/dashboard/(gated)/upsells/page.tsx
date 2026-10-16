@@ -4,6 +4,8 @@ import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import StandUpsellsForm from "@/app/dashboard/(gated)/businesses/[standId]/StandUpsellsForm";
 import UpsellOverridesList from "./UpsellOverridesList";
+import UpsellList from "./UpsellList";
+import { loadUpsellRows } from "./load-upsell-rows";
 
 export default async function UpsellsPage() {
   const { owner } = await requireOwner();
@@ -21,7 +23,8 @@ export default async function UpsellsPage() {
     );
   }
 
-  const [products, productOverrides, preOrderPages] = await Promise.all([
+  const [upsellRows, products, productOverrides, preOrderPages] = await Promise.all([
+    loadUpsellRows(stand.id),
     prisma.product.findMany({
       where: { standId: stand.id, isArchived: false, isHidden: false },
       orderBy: { sortOrder: "asc" },
@@ -49,6 +52,14 @@ export default async function UpsellsPage() {
         </p>
       </div>
 
+      <UpsellList upsells={upsellRows} />
+
+      <div className="border-t border-[var(--line)] pt-6">
+        <h2 className="text-base font-semibold">Business default and offers</h2>
+        <p className="mt-1 text-sm text-[var(--muted)]">
+          The default upsell below is used when no upsell above fits the cart.
+        </p>
+      </div>
       <StandUpsellsForm
         standId={stand.id}
         currency={stand.currency}

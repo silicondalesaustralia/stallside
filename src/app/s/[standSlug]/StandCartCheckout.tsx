@@ -22,9 +22,13 @@ import {
 import type { DemoProduct } from "@/lib/demo";
 import {
   resolveCartUpsell,
+  ruleUpsellUnitCents,
   type CartUpsellOffer as CartUpsellConfig,
   type PagePreOrderUpsell,
 } from "@/lib/cart-upsell";
+import type { UpsellRule } from "@/lib/upsells/rules";
+
+const NO_UPSELL_RULES: UpsellRule[] = [];
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/public-product";
@@ -122,6 +126,7 @@ export default function StandCartCheckout({
   upsell = null,
   preOrderUpsell = null,
   pagePreOrderUpsells = [],
+  upsellRules = NO_UPSELL_RULES,
   firstOrder = null,
   shopHref,
 }: {
@@ -147,6 +152,7 @@ export default function StandCartCheckout({
   upsell?: CartUpsellConfig | null;
   preOrderUpsell?: CartUpsellConfig | null;
   pagePreOrderUpsells?: PagePreOrderUpsell[];
+  upsellRules?: UpsellRule[];
   firstOrder?: FirstOrderOffer | null;
   /** Continue-shopping link; defaults to the website products page or the stand. */
   shopHref?: string;
@@ -212,8 +218,17 @@ export default function StandCartCheckout({
         let usedTier = false;
         let saveCents = 0;
         if (asUpsell) {
-          let priced = false;
+          const ruleCents = ruleUpsellUnitCents({
+            cartLines,
+            products,
+            rules: upsellRules,
+            standUpsell: upsell,
+            offerProductId: product.id,
+          });
+          let priced = ruleCents != null;
+          if (ruleCents != null) unitCents = ruleCents;
           for (const cl of cartLines) {
+            if (priced) break;
             if (cl.asUpsell) continue;
             const trigger = products.find((p) => p.id === cl.productId);
             if (trigger?.preOrderUpsellProductId === product.id) {
@@ -279,7 +294,7 @@ export default function StandCartCheckout({
         };
       })
       .filter((l): l is NonNullable<typeof l> => Boolean(l));
-  }, [products, cartLines, upsell, preOrderUpsell, pagePreOrderUpsells]);
+  }, [products, cartLines, upsell, preOrderUpsell, pagePreOrderUpsells, upsellRules]);
 
   const preOrderOnly =
     lines.length > 0 && lines.every((l) => l.product.isPreOrder);
@@ -341,8 +356,9 @@ export default function StandCartCheckout({
         standUpsell: upsell,
         pagePreOrderUpsells,
         standPreOrderUpsell: preOrderUpsell,
+        rules: upsellRules,
       }),
-    [cartLines, products, upsell, preOrderUpsell, pagePreOrderUpsells],
+    [cartLines, products, upsell, preOrderUpsell, pagePreOrderUpsells, upsellRules],
   );
   const showUpsell = Boolean(activeUpsell) && step === "cart";
   const firstOrderHint = firstOrder?.enabled

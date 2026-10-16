@@ -16,6 +16,8 @@ import {
 import { parsePriceTiers, lineTotalWithTiers } from "@/lib/price-tiers";
 import { productLiveWhere } from "@/lib/product-visibility";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
+import { ruleUpsellUnitCents } from "@/lib/cart-upsell";
+import { loadUpsellRules } from "@/lib/upsells/load-rules";
 import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
 import {
   applyLotSharesToOrderItem,
@@ -259,6 +261,18 @@ export async function loadStandCart(
       .map((p) => [p.preOrderUpsellProductId!, p]),
   );
 
+  const upsellRules = normalized.some((n) => n.asUpsell) ? await loadUpsellRules(stand.id) : [];
+  const ruleUpsellCents = (offerProductId: string) =>
+    ruleUpsellUnitCents({
+      cartLines: normalized,
+      products,
+      rules: upsellRules,
+      standUpsell: stand.upsellProductId
+        ? { productId: stand.upsellProductId, priceCents: stand.upsellPriceCents ?? 0 }
+        : null,
+      offerProductId,
+    });
+
   const qtyByProduct = new Map<string, number>();
   for (const item of normalized) {
     qtyByProduct.set(
@@ -288,7 +302,8 @@ export async function loadStandCart(
           trigger?.preOrderUpsellProductId === item.productId
         );
       });
-      if (!allowedByStand && !allowedByPage && !allowedByProduct) {
+      const allowedByRule = ruleUpsellCents(item.productId) != null;
+      if (!allowedByStand && !allowedByPage && !allowedByProduct && !allowedByRule) {
         return { error: "Upsell is not available." as const };
       }
     }
@@ -447,6 +462,11 @@ export async function loadStandCart(
         stand.upsellPriceCents >= 0
       ) {
         unit = stand.upsellPriceCents;
+      }
+      const ruleCents = ruleUpsellCents(item.productId);
+      if (ruleCents != null) {
+        unit = ruleCents;
+        displayName = product.name;
       }
       return {
         productId: product.id,

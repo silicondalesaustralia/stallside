@@ -75,6 +75,7 @@ export default function ProductEditForm({
           {!preOrderEligible ? (
             <section className="dash-card p-5">
               <ProductUpsellFields
+                productId={product.id}
                 currency={product.currency}
                 products={product.siblingProducts}
                 upsellProductId={product.upsellProductId}

@@ -1,5 +1,6 @@
 import type { PublicProductCard } from "@/lib/public-product";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
+import { pickTakeNowUpsell, type UpsellRule } from "@/lib/upsells/rules";
 
 export type CartUpsellOffer = {
   productId: string;
@@ -39,6 +40,42 @@ function preOrderOfferFromTrigger(
   };
 }
 
+type UpsellTriggerProduct = {
+  id: string;
+  priceCents: number;
+  isPreOrder: boolean;
+  upsellProductId?: string | null;
+  upsellPriceCents?: number | null;
+};
+
+/** Price for an upsell line that came from an Upsell rule, else null (older settings price it). */
+export function ruleUpsellUnitCents(input: {
+  cartLines: { productId: string; asUpsell?: boolean }[];
+  products: UpsellTriggerProduct[];
+  rules: UpsellRule[];
+  standUpsell: { productId: string; priceCents: number } | null;
+  offerProductId: string;
+}): number | null {
+  if (input.rules.length === 0) return null;
+  const byId = new Map(input.products.map((p) => [p.id, p]));
+  const triggers = input.cartLines.filter((l) => !l.asUpsell).map((l) => l.productId);
+  if (triggers.length === 0 || triggers.every((id) => byId.get(id)?.isPreOrder)) return null;
+  const pick = pickTakeNowUpsell({
+    triggerProductIds: triggers,
+    rules: input.rules,
+    legacyByProduct: (id) => {
+      const t = byId.get(id);
+      return t?.upsellProductId ? { offerProductId: t.upsellProductId, priceCents: t.upsellPriceCents ?? null } : null;
+    },
+    legacyStand: input.standUpsell
+      ? { productId: input.standUpsell.productId, priceCents: input.standUpsell.priceCents }
+      : null,
+    isAvailable: (id) => id === input.offerProductId,
+  });
+  if (pick?.source !== "rule") return null;
+  return pick.priceCents ?? byId.get(input.offerProductId)?.priceCents ?? null;
+}
+
 /** Page-level wins for pre-order carts; then product-level; then stand fallback. */
 export function resolveCartUpsell(input: {
   cartLines: { productId: string; asUpsell?: boolean }[];
@@ -46,6 +83,7 @@ export function resolveCartUpsell(input: {
   standUpsell: CartUpsellOffer | null;
   pagePreOrderUpsells?: PagePreOrderUpsell[];
   standPreOrderUpsell: StandPreOrderUpsell;
+  rules?: UpsellRule[];
 }): CartUpsellOffer | null {
   const byId = new Map(input.products.map((p) => [p.id, p]));
   const nonUpsell = input.cartLines.filter((l) => !l.asUpsell);
@@ -95,25 +133,32 @@ export function resolveCartUpsell(input: {
     return null;
   }
 
-  for (const line of nonUpsell) {
-    const trigger = byId.get(line.productId);
-    if (!trigger?.upsellProductId) continue;
-    const offer = byId.get(trigger.upsellProductId);
-    if (!offer || offer.stockQuantity <= 0) continue;
-    if (input.cartLines.some((l) => l.productId === offer.id)) continue;
-    return {
-      productId: offer.id,
-      name: offer.name,
-      priceCents:
-        trigger.upsellPriceCents != null
-          ? trigger.upsellPriceCents
-          : offer.priceCents,
-      stockQuantity: offer.stockQuantity,
-    };
-  }
-  if (!input.standUpsell || input.standUpsell.stockQuantity <= 0) return null;
-  if (input.cartLines.some((l) => l.productId === input.standUpsell!.productId)) {
-    return null;
-  }
-  return input.standUpsell;
+  const pick = pickTakeNowUpsell({
+    triggerProductIds: nonUpsell.map((l) => l.productId),
+    rules: input.rules ?? [],
+    legacyByProduct: (id) => {
+      const trigger = byId.get(id);
+      return trigger?.upsellProductId
+        ? { offerProductId: trigger.upsellProductId, priceCents: trigger.upsellPriceCents ?? null }
+        : null;
+    },
+    legacyStand: input.standUpsell
+      ? { productId: input.standUpsell.productId, priceCents: input.standUpsell.priceCents }
+      : null,
+    isAvailable: (id) => {
+      if (input.cartLines.some((l) => l.productId === id)) return false;
+      if (input.standUpsell?.productId === id) return input.standUpsell.stockQuantity > 0;
+      return (byId.get(id)?.stockQuantity ?? 0) > 0;
+    },
+  });
+  if (!pick) return null;
+  if (pick.source === "legacy-stand" && input.standUpsell) return input.standUpsell;
+  const offer = byId.get(pick.productId);
+  if (!offer) return null;
+  return {
+    productId: offer.id,
+    name: offer.name,
+    priceCents: pick.priceCents ?? offer.priceCents,
+    stockQuantity: offer.stockQuantity,
+  };
 }

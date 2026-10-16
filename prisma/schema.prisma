@@ -491,6 +491,7 @@ model Owner {
   products                      Product[]
   categories                    Category[]
   qrCodes                       QrCode[]
+  upsells                       Upsell[]
   customers                     Customer[]
   storefront                    Storefront?
   domainPurchases               DomainPurchase[]
@@ -776,6 +777,7 @@ model Stand {
   pickupLocations               PickupLocation[]
   sellerEvents                  SellerEvent[]
   qrCodes                       QrCode[]
+  upsells                       Upsell[]
   createdAt                     DateTime                  @default(now())
   updatedAt                     DateTime                  @updatedAt
 
@@ -823,6 +825,36 @@ model QrCode {
   @@index([ownerId])
   @@index([standId])
   @@index([categoryId])
+}
+
+/**
+ * Cart upsell offer. Shows when the cart holds a matching product, a product in a matching
+ * category, or anything (sitewide); the most specific match wins.
+ */
+model Upsell {
+  id             String   @id @default(cuid())
+  ownerId        String
+  owner          Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  standId        String
+  stand          Stand    @relation(fields: [standId], references: [id], onDelete: Cascade)
+  /// Dashboard-only label.
+  name           String
+  offerProductId String
+  offerProduct   Product  @relation("UpsellOffer", fields: [offerProductId], references: [id], onDelete: Cascade)
+  /// Special price; null charges the product's normal price.
+  priceCents     Int?
+  isActive       Boolean  @default(true)
+  sitewide       Boolean  @default(false)
+  categoryIds    String[] @default([])
+  productIds     String[] @default([])
+  showOnWebsite  Boolean  @default(true)
+  showAtStall    Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([standId, isActive])
+  @@index([offerProductId])
 }
 
 /**
@@ -1444,6 +1476,7 @@ model Product {
    */
   primaryCategoryId           String?
   primaryCategory             Category?                  @relation("ProductPrimaryCategory", fields: [primaryCategoryId], references: [id], onDelete: SetNull)
+  upsellOffers                Upsell[]                   @relation("UpsellOffer")
   channels                    ProductChannel[]
   preOrderPageItems           PreOrderPageProduct[]
   menuItems                   MenuProduct[]

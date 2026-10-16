@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import SortableOrderList from "@/components/SortableOrderList";
 import CategoryEditForm from "./CategoryEditForm";
 import CategoryProductsPicker from "./CategoryProductsPicker";
+import CategoryUpsellCard from "./CategoryUpsellCard";
 import { saveCategoryProductOrder } from "../category-product-actions";
 import { setCategoryActive } from "../actions";
 import PublishStatusCard from "@/components/website/PublishStatusCard";
@@ -109,6 +110,8 @@ export default async function CategoryDetailPage({
           }))}
         />
       </section>
+
+      <CategoryUpsellCard ownerId={owner.id} categoryId={category.id} />
 
       <EntitySeoCard
         ownerId={owner.id}
