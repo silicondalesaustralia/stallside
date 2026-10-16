@@ -4,6 +4,7 @@ import type { BriefData } from "@/lib/website-ai/assistant/brief/schema";
 import ImageUploadButton from "./ImageUploadButton";
 import PhotoList from "./PhotoList";
 import ColourInput from "./ColourInput";
+import ColourUsagePreview from "./ColourUsagePreview";
 import LogoCard from "./LogoCard";
 import type { BriefUpdater } from "./assistant-copy";
 
@@ -40,12 +41,18 @@ export default function BrandingStep({ brief, update }: Props) {
           Use my own brand colours
         </label>
         {br.useExisting ? (
-          <div className="flex flex-wrap gap-4">
-            <ColourInput label="Main colour" value={br.accentColor} onChange={(v) => set("accentColor", v)} />
-            <ColourInput label="Second colour" value={br.secondaryColor} onChange={(v) => set("secondaryColor", v)} />
-          </div>
+          <>
+            <div className="flex flex-wrap gap-4">
+              <ColourInput label="Main colour" value={br.accentColor} onChange={(v) => set("accentColor", v)} />
+              <ColourInput label="Second colour" value={br.secondaryColor} onChange={(v) => set("secondaryColor", v)} />
+            </div>
+            <ColourUsagePreview main={br.accentColor} second={br.secondaryColor} />
+          </>
         ) : (
-          <p className="text-xs text-[var(--muted)]">Vendl will choose colours that suit your business.</p>
+          <p className="text-xs text-[var(--muted)]">
+            Vendl will choose colours that suit your business: a main colour for buttons, links and small labels, and a
+            second colour for prices and highlights.
+          </p>
         )}
       </section>
 
