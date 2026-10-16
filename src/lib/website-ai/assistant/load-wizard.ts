@@ -7,6 +7,9 @@ import { extractWebsiteAiScaffold } from "@/lib/website-ai/scaffold-storage";
 import { assistantEnabledFor } from "./access";
 import { buildAssistantContext } from "./context/build";
 import { searchProfileSummary } from "./context/search-profile";
+import { loadSearchProfileView } from "@/lib/seo/load-search-profile";
+import type { BusinessProfile } from "@/lib/seo/business-profile";
+import type { BusinessTypeId } from "@/lib/seo/business-types";
 import { loadBrief } from "./brief/store";
 import { prefillBrief } from "./brief/prefill";
 import type { BriefData } from "./brief/schema";
@@ -34,6 +37,7 @@ export type WizardData = {
   previewPath: string;
   editorHref: string;
   searchProfile: { complete: boolean; summary: string[] };
+  profileForm: { profile: BusinessProfile; defaultType: BusinessTypeId };
   productCount: number;
 };
 
@@ -42,6 +46,7 @@ export async function loadWizardData(): Promise<WizardData> {
   const ctx = await loadStorefrontContext(storefront.slug, { draft: true, ownerId: owner.id });
   if (!ctx) throw new Error("Storefront context unavailable");
   const assistant = await buildAssistantContext(ctx);
+  const profileView = await loadSearchProfileView(ctx);
   const stored = await loadBrief(owner.id);
   const brief = stored?.data ?? prefillBrief(assistant, extractWebsiteAiScaffold(storefront.draftConfig)?.intent);
   const jobs = await prisma.websiteGenerationJob.findMany({
@@ -68,6 +73,7 @@ export async function loadWizardData(): Promise<WizardData> {
       complete: assistant.searchProfile.complete,
       summary: searchProfileSummary(assistant.searchProfile),
     },
+    profileForm: { profile: profileView.profile, defaultType: profileView.defaultType },
     productCount: assistant.catalogue.productCount,
   };
 }

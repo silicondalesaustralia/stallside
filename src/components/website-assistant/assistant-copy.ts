@@ -11,6 +11,8 @@ export const GOAL_LABELS: Record<PrimaryGoal, string> = {
 
 export const STEP_LABELS = ["Your business", "Branding & photos", "Your website", "Create & preview"] as const;
 
+export const SEARCH_PROFILE_HREF = "/dashboard/website/web-studio?tab=details#search-profile";
+
 export type BriefUpdater = (fn: (brief: BriefData) => BriefData) => void;
 
 export const inputClass =

@@ -5,8 +5,7 @@ import { useState, useTransition } from "react";
 import { restorePreviousAction } from "@/app/dashboard/(gated)/website/assistant/build-actions";
 import type { JobStatusView } from "@/lib/website-ai/assistant/jobs/status";
 import PolicyReviewList from "./PolicyReviewList";
-import { SEARCH_PROFILE_HREF } from "./SearchProfileNote";
-import { primaryButton, secondaryButton } from "./assistant-copy";
+import { SEARCH_PROFILE_HREF, primaryButton, secondaryButton } from "./assistant-copy";
 
 type Props = { status: JobStatusView; previewPath: string; editorHref: string; onRebuild: () => void };
 

@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 import WebStudioDetailsFlash, {
   type WebStudioDetailsFlashState,
 } from "@/components/website/WebStudioDetailsFlash";
+import PublishLockedNote from "@/components/website/PublishLockedNote";
 
 type Props = {
   headline: string;
@@ -25,6 +26,8 @@ type Props = {
   history?: ReactNode;
   standPicker?: ReactNode;
   searchProfile?: ReactNode;
+  /** Set when there's no site to publish yet (assistant owners). */
+  publishLocked?: { createHref: string; editorHref: string };
 };
 
 export default function WebStudioDetailsPanel({
@@ -41,6 +44,7 @@ export default function WebStudioDetailsPanel({
   history,
   standPicker,
   searchProfile,
+  publishLocked,
 }: Props) {
   return (
     <>
@@ -78,6 +82,8 @@ export default function WebStudioDetailsPanel({
                 </button>
               </form>
             </>
+          ) : publishLocked ? (
+            <PublishLockedNote {...publishLocked} />
           ) : (
             <form action={publishStorefrontAction}>
               <button type="submit" className={dashCtaClass}>

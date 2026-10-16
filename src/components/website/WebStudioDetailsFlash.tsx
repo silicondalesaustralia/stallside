@@ -16,6 +16,8 @@ const ERRORS: Record<string, string> = {
   publish_blocked:
     "Your site can't be published yet: some sections still have example text such as \"Tell customers…\". Replace it in the layout editor, then publish again.",
   restore: "That version couldn't be restored. Reload and try again.",
+  no_site:
+    "There's no website to publish yet. Create it with AI, or build it in the front-end editor and publish from there.",
   website_stand: "Couldn't change the website stand. Reload and try again.",
 };
 

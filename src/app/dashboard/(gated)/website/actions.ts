@@ -27,6 +27,7 @@ import { clearHeroDecorativeFromDraftRaw } from "@/lib/studio/storage";
 import { getFontPair } from "@/lib/website/brand-looks";
 import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
 import { publishErrorCode, tryPublishStorefront } from "@/lib/website/persistence/publish";
+import { publishLockedForAssistant } from "@/lib/website-ai/assistant/publish-lock";
 
 function removeFlag(formData: FormData, name: string): boolean {
   return formData.has(name);
@@ -198,6 +199,7 @@ export async function saveStorefrontBranding(formData: FormData) {
 export async function publishStorefrontAction() {
   const { owner, user } = await requireWebsiteOwner();
   const sf = await ensureStorefront(owner.id, owner.businessName);
+  if (publishLockedForAssistant(owner.id, sf)) redirect(webStudioPath("details", { error: "no_site" }));
   const published = await tryPublishStorefront(owner.id, user.id);
   if (!published.ok) redirect(webStudioPath("details", { error: publishErrorCode(published) }));
   revalidatePath("/dashboard/website/web-studio");

@@ -63,7 +63,7 @@ export default function WebsiteAssistant({ data }: Props) {
         />
       ) : (
         <>
-          {step === 1 ? <BusinessStep brief={brief} update={update} aiAvailable={data.aiAvailable} searchProfile={data.searchProfile} /> : null}
+          {step === 1 ? <BusinessStep brief={brief} update={update} aiAvailable={data.aiAvailable} searchProfile={data.searchProfile} profileForm={data.profileForm} /> : null}
           {step === 2 ? <BrandingStep brief={brief} update={update} /> : null}
           {step === 3 ? <PagesStep brief={brief} update={update} options={options} notes={data.featureNotes} /> : null}
           {step === 4 ? (

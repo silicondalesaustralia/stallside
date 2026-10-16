@@ -1,5 +1,6 @@
 import Link from "next/link";
 import WebsiteAssistant from "@/components/website-assistant/WebsiteAssistant";
+import AssistantHowItWorks from "@/components/website-assistant/AssistantHowItWorks";
 import { loadWizardData } from "@/lib/website-ai/assistant/load-wizard";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,7 @@ export default async function WebsiteAssistantPage() {
           Answer a few questions and Vendl builds a draft website from your real details. You can edit everything afterwards.
         </p>
       </div>
+      {data.activeJobId ? null : <AssistantHowItWorks editorHref={data.editorHref} />}
       <WebsiteAssistant data={data} />
     </main>
   );

@@ -30,7 +30,8 @@ import WebStudioLayoutPanel from "@/components/website/WebStudioLayoutPanel";
 import AssistantEntryCard from "@/components/website-assistant/AssistantEntryCard";
 import { assistantEnabledFor } from "@/lib/website-ai/assistant/access";
 import WebsiteReadinessChecklist from "@/components/website/WebsiteReadinessChecklist";
-import { websiteReadiness } from "@/lib/website/readiness";
+import { ASSISTANT_PATH, websiteReadiness } from "@/lib/website/readiness";
+import { publishLockedForAssistant } from "@/lib/website-ai/assistant/publish-lock";
 import { findPublishBlockers } from "@/lib/website/persistence/publish-checks";
 import BusinessProfileCard from "@/components/website/search-profile/BusinessProfileCard";
 import { loadSearchProfileView } from "@/lib/seo/load-search-profile";
@@ -144,6 +145,11 @@ export default async function WebStudioPage({
               error: initialTab === "details" ? sp.error : undefined,
             }}
             history={<WebsitePublishHistory {...history} />}
+            publishLocked={
+              publishLockedForAssistant(owner.id, storefront)
+                ? { createHref: ASSISTANT_PATH, editorHref: studioEditorPath(storefront.slug) }
+                : undefined
+            }
             searchProfile={
               <BusinessProfileCard
                 {...searchProfile}
@@ -176,7 +182,11 @@ export default async function WebStudioPage({
         }
         ai={
           useAssistant ? (
-            <AssistantEntryCard hasSite={Boolean(websiteStudio?.nodes)} productCount={metadata.products.length} />
+            <AssistantEntryCard
+              hasSite={Boolean(websiteStudio?.nodes)}
+              productCount={metadata.products.length}
+              editorHref={studioEditorPath(storefront.slug)}
+            />
           ) : (
           <WebStudioAiPanel
             enabled={aiEnabled}
