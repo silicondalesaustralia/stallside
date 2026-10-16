@@ -3,6 +3,13 @@ import { PRICE_RANGES, type BusinessProfile } from "@/lib/seo/business-profile";
 import ProfileField, { profileInputClass } from "./ProfileField";
 import ProfileSection from "./ProfileSection";
 
+const PRICE_RANGE_LABELS: Record<(typeof PRICE_RANGES)[number], string> = {
+  $: "Budget / inexpensive",
+  $$: "Moderate / average",
+  $$$: "Above average",
+  $$$$: "Premium / luxury",
+};
+
 export default function ProfileIdentityFields({
   profile,
   defaultType,
@@ -46,17 +53,25 @@ export default function ProfileIdentityFields({
         hint="1–2 sentences. Leave blank to use your About text."
       />
       <ProfileField label="Founded" name="foundingDate" defaultValue={profile.foundingDate} placeholder="2015" hint="Year, or YYYY-MM-DD." />
-      <ProfileField label="ABN / tax ID" name="taxId" defaultValue={profile.taxId} />
+      <ProfileField
+        label="ABN / tax ID (optional)"
+        name="taxId"
+        defaultValue={profile.taxId}
+        hint="Leave blank if you don't have one."
+      />
       <label className="block text-sm">
-        <span className="font-medium">Price range</span>
+        <span className="font-medium">Price range (optional)</span>
         <select name="priceRange" defaultValue={profile.priceRange ?? ""} className={profileInputClass}>
           <option value="">Not set</option>
           {PRICE_RANGES.map((r) => (
             <option key={r} value={r}>
-              {r}
+              {r} — {PRICE_RANGE_LABELS[r]}
             </option>
           ))}
         </select>
+        <span className="mt-1 block text-xs text-[var(--muted)]">
+          How your prices compare with similar businesses nearby. Google shows this next to your listing.
+        </span>
       </label>
       <ProfileField
         label="Payment accepted"

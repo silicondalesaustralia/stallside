@@ -1,5 +1,6 @@
 import type { BusinessProfile } from "@/lib/seo/business-profile";
-import ProfileField from "./ProfileField";
+import { PROFILE_COUNTRIES } from "@/lib/seo/countries";
+import ProfileField, { profileInputClass } from "./ProfileField";
 import ProfileSection from "./ProfileSection";
 
 export default function ProfileLocationFields({ profile }: { profile: BusinessProfile }) {
@@ -13,7 +14,19 @@ export default function ProfileLocationFields({ profile }: { profile: BusinessPr
       <ProfileField label="Suburb / town" name="locality" defaultValue={a?.locality} />
       <ProfileField label="State" name="region" defaultValue={a?.region} placeholder="NSW" />
       <ProfileField label="Postcode" name="postcode" defaultValue={a?.postcode} />
-      <ProfileField label="Country code" name="country" defaultValue={a?.country} placeholder="AU" hint="Two letters, e.g. AU, NZ." />
+      <label className="block text-sm">
+        <span className="font-medium">Country</span>
+        <select name="country" defaultValue={a?.country ?? "AU"} className={profileInputClass}>
+          {a?.country && !PROFILE_COUNTRIES.some((c) => c.code === a.country) ? (
+            <option value={a.country}>{a.country}</option>
+          ) : null}
+          {PROFILE_COUNTRIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </label>
       <label className="flex items-start gap-2 self-center text-sm">
         <input type="checkbox" name="showStreetAddress" defaultChecked={profile.showStreetAddress} className="mt-1" />
         <span>

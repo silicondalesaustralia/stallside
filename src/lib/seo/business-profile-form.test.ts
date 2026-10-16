@@ -37,6 +37,16 @@ test("an empty form saves an empty profile", () => {
   if (r.ok) assert.deepEqual(JSON.parse(JSON.stringify(r.profile)), {});
 });
 
+test("country accepts names or codes; country alone saves no address", () => {
+  const named = profileFromForm(form({ locality: "Testville", country: "Australia" }));
+  assert.ok(named.ok);
+  if (named.ok) assert.equal(named.profile.address?.country, "AU");
+  const alias = profileFromForm(form({ locality: "Testville", country: "uk" }));
+  if (alias.ok) assert.equal(alias.profile.address?.country, "GB");
+  const only = profileFromForm(form({ country: "AU" }));
+  if (only.ok) assert.equal(only.profile.address, undefined);
+});
+
 test("reports the first invalid field by name", () => {
   const r = profileFromForm(form({ foundingDate: "last year" }));
   assert.equal(r.ok, false);

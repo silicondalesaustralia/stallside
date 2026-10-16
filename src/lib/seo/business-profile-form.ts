@@ -1,4 +1,5 @@
 import { DAY_IDS, businessProfileSchema, type BusinessProfile } from "./business-profile";
+import { countryCode } from "./countries";
 
 type Form = { get(name: string): FormDataEntryValue | null };
 
@@ -41,7 +42,7 @@ function rawProfile(f: Form): Record<string, unknown> {
     locality: str(f, "locality"),
     region: str(f, "region"),
     postcode: str(f, "postcode"),
-    country: str(f, "country")?.toUpperCase(),
+    country: countryCode(str(f, "country")),
   };
   return {
     businessType: str(f, "businessType"),
@@ -51,7 +52,7 @@ function rawProfile(f: Form): Record<string, unknown> {
     description: str(f, "description"),
     foundingDate: str(f, "foundingDate"),
     taxId: str(f, "taxId"),
-    address: Object.values(address).some(Boolean) ? address : undefined,
+    address: address.street || address.locality || address.region || address.postcode ? address : undefined,
     showStreetAddress: f.get("showStreetAddress") === "on" || undefined,
     geo: lat !== undefined && lng !== undefined ? { lat, lng } : undefined,
     areaServed: lines(f, "areaServed"),
