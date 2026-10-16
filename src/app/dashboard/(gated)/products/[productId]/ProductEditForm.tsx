@@ -76,7 +76,6 @@ export default function ProductEditForm({
             <section className="dash-card p-5">
               <ProductUpsellFields
                 currency={product.currency}
-                businessId={product.standId}
                 products={product.siblingProducts}
                 upsellProductId={product.upsellProductId}
                 upsellPriceCents={product.upsellPriceCents}

@@ -4,9 +4,13 @@ export const BUSINESS_TABS = [
   { id: "details", label: "Business Details" },
   { id: "payments", label: "Checkout payments" },
   { id: "branding", label: "Branding" },
-  { id: "products", label: "Products" },
-  { id: "upsells", label: "Upsells" },
 ] as const;
+
+/** Tabs that moved to their own dashboard pages; old links redirect there. */
+export const MOVED_BUSINESS_TABS: Record<string, string> = {
+  products: "/dashboard/products",
+  upsells: "/dashboard/upsells",
+};
 
 export type BusinessTabId = (typeof BUSINESS_TABS)[number]["id"];
 

@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ownerHasProAccess } from "@/lib/owner-trial";
@@ -9,15 +9,14 @@ import BusinessCheckoutStrip from "./BusinessCheckoutStrip";
 import BusinessPageHeader from "./BusinessPageHeader";
 import BusinessSetupPrompt from "./BusinessSetupPrompt";
 import BusinessPaymentsTab from "./BusinessPaymentsTab";
-import BusinessProductsTab from "./BusinessProductsTab";
 import BusinessSetupTabs, {
   isBusinessTabId,
+  MOVED_BUSINESS_TABS,
   type BusinessTabId,
 } from "./BusinessSetupTabs";
 import StandBrandingForm from "./StandBrandingForm";
 import StandDeleteButton from "./StandDeleteButton";
 import StandEditForm from "./StandEditForm";
-import StandUpsellsForm from "./StandUpsellsForm";
 import PaymentsOverview from "./PaymentsOverview";
 import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 import { ownerSquareReady } from "@/lib/square/owner-ready";
@@ -33,6 +32,7 @@ export default async function StandDetailPage({
 }) {
   const { standId } = await params;
   const { tab: tabParam, new: newParam } = await searchParams;
+  if (tabParam && MOVED_BUSINESS_TABS[tabParam]) redirect(MOVED_BUSINESS_TABS[tabParam]);
   const tab: BusinessTabId = isBusinessTabId(tabParam) ? tabParam : "details";
   const isNewBusiness = newParam === "1";
 
@@ -59,14 +59,6 @@ export default async function StandDetailPage({
     ...owner,
     user: { email: user.email, role: user.role },
   });
-  const productOpts = stand.products
-    .filter((p) => !p.isHidden)
-    .map((p) => ({
-      id: p.id,
-      name: p.name,
-      priceCents: p.priceCents,
-    }));
-
   return (
     <main className="flex flex-col gap-8">
       <SyncSelectedBusiness
@@ -147,34 +139,6 @@ export default async function StandDetailPage({
           }}
         />
       ) : null}
-      {tab === "products" ? (
-        <BusinessProductsTab
-          standId={stand.id}
-          currency={stand.currency}
-          products={stand.products.map((p) => ({
-            id: p.id,
-            name: p.name,
-            priceCents: p.priceCents,
-            stockQuantity: p.stockQuantity,
-          }))}
-        />
-      ) : null}
-      {tab === "upsells" ? (
-        <StandUpsellsForm
-          standId={stand.id}
-          currency={stand.currency}
-          products={productOpts}
-          conversion={{
-            upsellProductId: stand.upsellProductId,
-            upsellPriceCents: stand.upsellPriceCents,
-            firstOrderDiscountEnabled: stand.firstOrderDiscountEnabled,
-            firstOrderDiscountPercent: stand.firstOrderDiscountPercent,
-            firstOrderDiscountAmountCents: stand.firstOrderDiscountAmountCents,
-            showPublicScarcity: stand.showPublicScarcity,
-          }}
-        />
-      ) : null}
-
       {tab === "details" ? (
         <StandDeleteButton standId={stand.id} standName={stand.name} />
       ) : null}

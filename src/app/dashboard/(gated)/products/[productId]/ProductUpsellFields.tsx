@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type ProductOpt = { id: string; name: string; priceCents: number };
 
 /** Take-now cart upsell only (pre-order add-ons live on pre-order pages). */
@@ -6,13 +8,11 @@ export default function ProductUpsellFields({
   products,
   upsellProductId,
   upsellPriceCents,
-  businessId,
 }: {
   currency: string;
   products: ProductOpt[];
   upsellProductId: string | null;
   upsellPriceCents: number | null;
-  businessId: string;
 }) {
   const priceDefault =
     upsellPriceCents != null ? (upsellPriceCents / 100).toFixed(2) : "";
@@ -24,19 +24,13 @@ export default function ProductUpsellFields({
         <p className="mt-1 text-sm text-[var(--muted)]">
           When this product is in a take-now cart, offer one extra item. Overrides
           the{" "}
-          <a
-            href={`/dashboard/businesses/${businessId}?tab=upsells`}
-            className="text-[var(--leaf-dark)] underline"
-          >
-            business Upsells
-          </a>{" "}
+          <Link href="/dashboard/upsells" className="text-[var(--leaf-dark)] underline">
+            Upsells &amp; offers
+          </Link>{" "}
           default. Pre-order add-ons are set on each{" "}
-          <a
-            href="/dashboard/pre-order-pages"
-            className="text-[var(--leaf-dark)] underline"
-          >
+          <Link href="/dashboard/pre-order-pages" className="text-[var(--leaf-dark)] underline">
             pre-order page
-          </a>
+          </Link>
           .
         </p>
       </div>
