@@ -2,11 +2,19 @@ import Link from "next/link";
 import { ASSISTANT_PATH } from "@/lib/website/readiness";
 import NoProductsWarning from "./NoProductsWarning";
 import AssistantHowItWorks from "./AssistantHowItWorks";
+import AssistantBuildBanner from "./AssistantBuildBanner";
+import type { LatestBuild } from "@/lib/website-ai/assistant/jobs/latest-build";
 
-type Props = { hasSite: boolean; productCount: number; editorHref: string };
+type Props = {
+  hasSite: boolean;
+  productCount: number;
+  editorHref: string;
+  build: LatestBuild;
+  previewPath: string;
+};
 
 /** Replaces the template/look-based AI builder for owners on the guided assistant. */
-export default function AssistantEntryCard({ hasSite, productCount, editorHref }: Props) {
+export default function AssistantEntryCard({ hasSite, productCount, editorHref, build, previewPath }: Props) {
   return (
     <>
       <div>
@@ -17,6 +25,7 @@ export default function AssistantEntryCard({ hasSite, productCount, editorHref }
           Answer a few questions about your business and Vendl builds a draft website you can preview and edit.
         </p>
       </div>
+      {build ? <AssistantBuildBanner state={build} previewPath={previewPath} editorHref={editorHref} /> : null}
       <AssistantHowItWorks editorHref={editorHref} />
       {productCount === 0 ? <NoProductsWarning /> : null}
       {hasSite ? (

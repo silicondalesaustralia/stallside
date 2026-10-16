@@ -32,6 +32,7 @@ import { assistantEnabledFor } from "@/lib/website-ai/assistant/access";
 import WebsiteReadinessChecklist from "@/components/website/WebsiteReadinessChecklist";
 import { ASSISTANT_PATH, websiteReadiness } from "@/lib/website/readiness";
 import { publishLockedForAssistant } from "@/lib/website-ai/assistant/publish-lock";
+import { latestBuildState } from "@/lib/website-ai/assistant/jobs/latest-build";
 import { findPublishBlockers } from "@/lib/website/persistence/publish-checks";
 import BusinessProfileCard from "@/components/website/search-profile/BusinessProfileCard";
 import { loadSearchProfileView } from "@/lib/seo/load-search-profile";
@@ -186,6 +187,8 @@ export default async function WebStudioPage({
               hasSite={Boolean(websiteStudio?.nodes)}
               productCount={metadata.products.length}
               editorHref={studioEditorPath(storefront.slug)}
+              build={await latestBuildState(owner.id, storefront.id)}
+              previewPath={previewPath}
             />
           ) : (
           <WebStudioAiPanel

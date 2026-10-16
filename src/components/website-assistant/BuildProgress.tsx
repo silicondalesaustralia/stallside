@@ -68,6 +68,9 @@ export default function BuildProgress({ jobId, previewPath, editorHref, onReset 
         <div className="h-full bg-[var(--field)] transition-all" style={{ width: `${Math.max(5, status.progress)}%` }} />
       </div>
       {status.status === "RETRY_WAIT" ? <p className="text-xs text-[var(--muted)]">The AI service is busy — retrying shortly.</p> : null}
+      <p className="text-xs text-[var(--muted)]">
+        You can leave this page — we&apos;ll keep building. Website → Create with AI shows when it&apos;s ready.
+      </p>
       {error ? <p className="text-xs text-[var(--muted)]">{error}</p> : null}
       <button type="button" className={`${secondaryButton} w-fit`} disabled={pending} onClick={() => act(() => cancelBuildAction(jobId))}>
         Cancel
