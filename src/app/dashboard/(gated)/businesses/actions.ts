@@ -222,6 +222,7 @@ function revalidateStandPaths(
   revalidatePath("/dashboard/businesses");
   revalidatePath(`/dashboard/businesses/${standId}`);
   revalidatePath(`/dashboard/businesses/${standId}/qr`);
+  revalidatePath(`/dashboard/qr/business/${standId}`);
   revalidatePath(`/s/${slug}`);
   revalidateTag(standCatalogTag(slug), "max");
   if (slug !== previousSlug) {
@@ -377,6 +378,7 @@ export async function updateStandQrPrint(standId: string, formData: FormData) {
   revalidatePath("/dashboard/businesses");
   revalidatePath(`/dashboard/businesses/${standId}`);
   revalidatePath(`/dashboard/businesses/${standId}/qr`);
+  revalidatePath(`/dashboard/qr/business/${standId}`);
   revalidatePath(`/s/${existing.slug}`);
   revalidateTag(standCatalogTag(existing.slug), "max");
   revalidatePath(`/s/${existing.slug}/pay`);

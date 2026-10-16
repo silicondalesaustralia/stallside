@@ -121,7 +121,7 @@ export default async function DashboardPage({
           showPreOrders={showPreOrdersCrossSell}
           upgradeHref={upgradeLabel ? "/dashboard/settings/billing" : null}
           upgradeLabel={upgradeLabel}
-          qrHref={`/dashboard/businesses/${selected.id}/qr`}
+          qrHref={`/dashboard/qr/business/${selected.id}`}
         />
         <DashboardLowStockCard items={lowStock} />
       </div>

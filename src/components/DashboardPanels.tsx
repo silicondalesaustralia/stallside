@@ -42,7 +42,7 @@ export default function DashboardPanels({
         {standRows.map((stand) => (
           <Link
             key={stand.id}
-            href={`/dashboard/businesses/${stand.id}/qr`}
+            href={`/dashboard/qr/business/${stand.id}`}
             className="mt-4 inline-flex items-center justify-between rounded-full bg-[var(--field)] px-4 py-2.5 text-sm font-semibold text-[var(--ink-on-dark)]"
           >
             <span>{stand.name}</span>

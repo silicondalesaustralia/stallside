@@ -1,67 +1,83 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { unstable_rethrow } from "next/navigation";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
+import QrTargetPicker from "@/components/qr/QrTargetPicker";
+import AtStallToggle from "@/components/qr/AtStallToggle";
+import type { QrTargetOption } from "@/lib/qr/target-types";
+import type { CreateQrInput, QrActionResult } from "../actions";
 
 type StandOpt = { id: string; name: string };
-type CatOpt = { id: string; title: string };
 
 export default function NewQrCodeForm({
   action,
   stands,
-  categories,
+  options,
   defaultStandId,
 }: {
-  action: (formData: FormData) => Promise<{ error?: string } | void>;
+  action: (input: CreateQrInput) => Promise<QrActionResult>;
   stands: StandOpt[];
-  categories: CatOpt[];
+  options: QrTargetOption[];
   defaultStandId: string;
 }) {
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const [linkMode, setLinkMode] = useState<"WEBSITE_HOME" | "WEBSITE_CATEGORY">(
-    categories.length > 0 ? "WEBSITE_CATEGORY" : "WEBSITE_HOME",
-  );
-  const [categoryId, setCategoryId] = useState(categories[0]?.id ?? "");
-  const [name, setName] = useState(
-    categories[0] ? `${categories[0].title} QR` : "Shop QR",
-  );
+  const [target, setTarget] = useState<QrTargetOption | null>(options[0] ?? null);
+  const [name, setName] = useState(options[0] ? `${options[0].label} QR` : "");
+  const [nameTouched, setNameTouched] = useState(false);
+  const [standId, setStandId] = useState(defaultStandId);
+  const [atStall, setAtStall] = useState(false);
 
-  const inputClass =
-    "rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 text-sm";
+  const inputClass = "rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 text-sm";
 
-  function onSubmit(formData: FormData) {
+  function pick(option: QrTargetOption) {
+    setTarget(option);
+    if (!nameTouched) setName(`${option.label} QR`);
+  }
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!target) return setMessage("Pick a page for this QR code.");
     setMessage(null);
     startTransition(async () => {
-      const result = await action(formData);
-      if (result && "error" in result && result.error) {
-        setMessage(result.error);
+      try {
+        const result = await action({ name, standId, targetKind: target.kind, targetId: target.id, atStall });
+        if ("error" in result) setMessage(result.error);
+      } catch (err) {
+        unstable_rethrow(err);
+        setMessage("Could not create the QR code. Please try again.");
       }
     });
   }
 
   return (
-    <form action={onSubmit} className="dash-card flex flex-col gap-4 p-5">
+    <form onSubmit={onSubmit} className="dash-card flex flex-col gap-4 p-5">
+      <div className="flex flex-col gap-2 text-sm">
+        <span className="font-medium">Opens</span>
+        <QrTargetPicker options={options} value={target} onChange={pick} />
+      </div>
+
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Name</span>
         <input
-          name="name"
           required
+          maxLength={80}
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setName(e.target.value);
+            setNameTouched(true);
+          }}
           className={inputClass}
-          placeholder="Farm Stand"
+          placeholder="Farm Stand shelf"
         />
+        <span className="text-xs text-[var(--muted)]">Only you see this. It helps you find the code later.</span>
       </label>
 
       {stands.length > 1 ? (
         <label className="flex flex-col gap-2 text-sm">
           <span className="font-medium">Business</span>
-          <select
-            name="standId"
-            defaultValue={defaultStandId}
-            className={inputClass}
-          >
+          <select value={standId} onChange={(e) => setStandId(e.target.value)} className={inputClass}>
             {stands.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
@@ -69,75 +85,14 @@ export default function NewQrCodeForm({
             ))}
           </select>
         </label>
-      ) : (
-        <input type="hidden" name="standId" value={stands[0].id} />
-      )}
-
-      <fieldset className="flex flex-col gap-2">
-        <legend className="text-sm font-medium">Opens</legend>
-        <label className="flex items-start gap-2 text-sm">
-          <input
-            type="radio"
-            name="linkMode"
-            value="WEBSITE_HOME"
-            checked={linkMode === "WEBSITE_HOME"}
-            onChange={() => {
-              setLinkMode("WEBSITE_HOME");
-              setName("Shop QR");
-            }}
-            className="mt-1"
-          />
-          <span>Whole website / shop home</span>
-        </label>
-        <label className="flex items-start gap-2 text-sm">
-          <input
-            type="radio"
-            name="linkMode"
-            value="WEBSITE_CATEGORY"
-            checked={linkMode === "WEBSITE_CATEGORY"}
-            disabled={categories.length === 0}
-            onChange={() => {
-              setLinkMode("WEBSITE_CATEGORY");
-              const cat = categories.find((c) => c.id === categoryId);
-              if (cat) setName(`${cat.title} QR`);
-            }}
-            className="mt-1"
-          />
-          <span>One category (e.g. Farm Stand shelf)</span>
-        </label>
-      </fieldset>
-
-      {linkMode === "WEBSITE_CATEGORY" ? (
-        <label className="flex flex-col gap-2 text-sm">
-          <span className="font-medium">Category</span>
-          <select
-            name="categoryId"
-            value={categoryId}
-            onChange={(e) => {
-              setCategoryId(e.target.value);
-              const cat = categories.find((c) => c.id === e.target.value);
-              if (cat) setName(`${cat.title} QR`);
-            }}
-            className={inputClass}
-            required
-          >
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.title}
-              </option>
-            ))}
-          </select>
-        </label>
       ) : null}
+
+      <AtStallToggle checked={atStall} onChange={setAtStall} />
 
       {message ? <p className="text-sm text-[var(--warn)]">{message}</p> : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className={dashCtaClass}
-      >
-        {pending ? "Creating…" : "Create QR code"}
+      <button type="submit" disabled={pending || !target} className={dashCtaClass}>
+        {pending ? "Creating…" : "Create QR code and design poster"}
       </button>
     </form>
   );

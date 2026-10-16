@@ -56,8 +56,10 @@ import {
   CART_MIX_HANDOVER,
   cartHandoverNote,
   cartHandoverOptions,
+  STALL_HANDOVER_NOTE,
   type HandoverValue,
 } from "@/lib/fulfilment/handover-choice";
+import { useAtStall } from "@/components/storefront/useAtStall";
 import { shopButtonColour } from "@/lib/storefront/shop-button-colour";
 import { shippingCostCents, type ShippingSettings } from "@/lib/shipping/shipping-cost";
 
@@ -170,6 +172,7 @@ export default function StandCartCheckout({
   const [deliveryPostcode, setDeliveryPostcode] = useState("");
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [handoverPick, setHandoverPick] = useState<HandoverValue>("COLLECT");
+  const atStall = useAtStall();
   const rootRef = useRef<HTMLDivElement>(null);
 
   const productIds = products.map((p) => p.id).join(",");
@@ -284,8 +287,9 @@ export default function StandCartCheckout({
     lines.filter((l) => !l.asUpsell).map((l) => l.product.fulfilment),
   );
   const handoverConflict = !handoverOptions.pickup && !handoverOptions.delivery;
-  const canChooseHandover = handoverOptions.pickup && handoverOptions.delivery;
-  const handoverNote = cartHandoverNote(handoverOptions);
+  const stallPickup = atStall && handoverOptions.pickup && !preOrderOnly;
+  const canChooseHandover = handoverOptions.pickup && handoverOptions.delivery && !stallPickup;
+  const handoverNote = stallPickup ? STALL_HANDOVER_NOTE : cartHandoverNote(handoverOptions);
   const handover: HandoverValue = canChooseHandover
     ? handoverPick
     : handoverOptions.pickup

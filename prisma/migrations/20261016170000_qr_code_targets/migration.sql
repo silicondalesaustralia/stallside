@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "QrCode" ADD COLUMN "targetKind" TEXT;
+ALTER TABLE "QrCode" ADD COLUMN "targetId" TEXT;
+ALTER TABLE "QrCode" ADD COLUMN "poster" JSONB;
+ALTER TABLE "QrCode" ADD COLUMN "atStall" BOOLEAN NOT NULL DEFAULT false;

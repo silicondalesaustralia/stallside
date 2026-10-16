@@ -36,7 +36,7 @@ export default function BusinessPageHeader({
         <div className="flex flex-wrap items-center gap-2">
           <ViewOnSiteLink href={checkoutUrl} />
           <Link
-            href={`/dashboard/businesses/${standId}/qr`}
+            href={`/dashboard/qr/business/${standId}`}
             className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
           >
             QR &amp; print

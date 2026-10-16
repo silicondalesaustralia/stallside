@@ -808,6 +808,15 @@ model QrCode {
   linkMode   StandQrLinkMode @default(WEBSITE_CATEGORY)
   categoryId String?
   category   Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  /// Website page this QR opens: home | page | shop | category | product | menu | preorder_page | cart.
+  /// Null on older rows, which fall back to linkMode + categoryId.
+  targetKind String?
+  /// Id of the custom page, category, product, menu or pre-order page (ids survive renames).
+  targetId   String?
+  /// This QR's own poster wording and sections; null uses the business's sign settings.
+  poster     Json?
+  /// Scanned at the stall: checkout favours take-it-now wording and hides shipping.
+  atStall    Boolean         @default(false)
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
 

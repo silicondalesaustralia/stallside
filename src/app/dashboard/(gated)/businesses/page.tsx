@@ -45,7 +45,7 @@ export default async function StandsPage() {
               </div>
               <div className="flex flex-wrap gap-3 text-sm">
                 <Link
-                  href={`/dashboard/businesses/${stand.id}/qr`}
+                  href={`/dashboard/qr/business/${stand.id}`}
                   className="font-semibold text-[var(--leaf-dark)] underline"
                 >
                   QR &amp; print

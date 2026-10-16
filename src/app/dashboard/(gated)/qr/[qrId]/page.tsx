@@ -7,59 +7,43 @@ import { standQrDataUrl } from "@/lib/stand-qr";
 import { qrShortUrl } from "@/lib/qr-short-link";
 import { standPaymentBrands, withSquarePaymentsReady } from "@/lib/stand-payment-brands";
 import { publicApexHost } from "@/lib/tenancy/host-mode";
-import CategoryQrStudio from "./CategoryQrStudio";
+import { resolvePoster } from "@/lib/qr/poster";
+import { loadPosterExtras } from "@/lib/qr/poster-extras";
+import { listQrTargets } from "@/lib/qr/targets";
+import { legacyQrTarget, parseQrTarget } from "@/lib/qr/target-types";
+import QrCodeStudio from "@/components/qr/designer/QrCodeStudio";
+import QrDestinationCard from "@/components/qr/designer/QrDestinationCard";
 
-export default async function WebsiteQrDetailPage({
-  params,
-}: {
-  params: Promise<{ qrId: string }>;
-}) {
+export default async function WebsiteQrDetailPage({ params }: { params: Promise<{ qrId: string }> }) {
   const { qrId } = await params;
   const { owner, user } = await requireOwner();
 
   const qr = await prisma.qrCode.findFirst({
     where: { id: qrId, ownerId: owner.id },
     include: {
-      category: { select: { id: true, slug: true, title: true } },
       stand: {
         select: {
-          id: true,
-          name: true,
-          slug: true,
-          cartMode: true,
-          locationLabel: true,
-          logoUrl: true,
-          accentColor: true,
-          secondaryColor: true,
-          acceptCash: true,
-          acceptLocalTransfer: true,
-          acceptCard: true,
-          acceptPayPal: true,
-          acceptSquare: true,
-          localTransferAlias: true,
-          localTransferMethodId: true,
-          currency: true,
+          id: true, name: true, description: true, locationLabel: true, qrCallout: true, qrSignMessage: true,
+          posterShowCta: true, posterCtaText: true, posterShowBundles: true, posterShowFirstOrder: true,
+          posterShowInstructions: true, posterShowFreshness: true, posterShowHowItWorks: true,
+          logoUrl: true, accentColor: true, secondaryColor: true,
+          acceptCash: true, acceptLocalTransfer: true, acceptCard: true, acceptPayPal: true, acceptSquare: true,
+          localTransferAlias: true, localTransferMethodId: true, currency: true,
         },
       },
     },
   });
   if (!qr) notFound();
 
-  const checkoutUrl = qrShortUrl(qr.id);
-  const qrDataUrl = await standQrDataUrl(checkoutUrl, 640);
-  const siteUrl = `https://${publicApexHost()}`;
-  const paymentBrands = standPaymentBrands(
-    qr.stand,
-    await withSquarePaymentsReady({
-      ...owner,
-      user: { email: user.email, role: user.role },
-    }),
-  );
-
-  const destinationLabel =
-    qr.linkMode === "WEBSITE_CATEGORY" && qr.category
-      ? `Category · ${qr.category.title}`
-      : "Website home";
+  const qrUrl = qrShortUrl(qr.id);
+  const [qrDataUrl, options, extras, squareReady] = await Promise.all([
+    standQrDataUrl(qrUrl, 640),
+    listQrTargets(owner.id),
+    loadPosterExtras(qr.stand.id),
+    withSquarePaymentsReady({ ...owner, user: { email: user.email, role: user.role } }),
+  ]);
+  const apex = publicApexHost();
+  const target = parseQrTarget(qr.targetKind, qr.targetId) ?? legacyQrTarget(qr.linkMode, qr.categoryId);
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 pb-10 print:max-w-none print:gap-0 print:px-0">
@@ -74,20 +58,26 @@ export default async function WebsiteQrDetailPage({
         {qr.name}
       </h1>
 
-      <CategoryQrStudio
+      <div className="print:hidden">
+        <QrDestinationCard qrId={qr.id} target={target} options={options} />
+      </div>
+
+      <QrCodeStudio
         qrId={qr.id}
-        name={qr.name}
-        destinationLabel={destinationLabel}
-        checkoutUrl={checkoutUrl}
+        initialName={qr.name}
+        initialAtStall={qr.atStall}
+        initialPoster={resolvePoster(qr.poster, qr.stand)}
+        qrUrl={qrUrl}
         qrDataUrl={qrDataUrl}
         fileName={`${qr.name.replace(/\s+/g, "-").toLowerCase()}-qr.png`}
-        siteUrl={siteUrl || `https://${APP_DOMAIN}`}
-        paymentBrands={paymentBrands}
-        standName={qr.stand.name}
-        locationLabel={qr.stand.locationLabel}
-        logoUrl={qr.stand.logoUrl}
-        accentColor={qr.stand.accentColor}
-        secondaryColor={qr.stand.secondaryColor}
+        brand={{
+          siteUrl: apex ? `https://${apex}` : `https://${APP_DOMAIN}`,
+          paymentBrands: standPaymentBrands(qr.stand, squareReady),
+          logoUrl: qr.stand.logoUrl,
+          accentColor: qr.stand.accentColor,
+          secondaryColor: qr.stand.secondaryColor,
+        }}
+        extras={extras}
       />
     </main>
   );

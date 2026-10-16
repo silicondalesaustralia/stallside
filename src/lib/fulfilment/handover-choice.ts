@@ -10,6 +10,7 @@ export const FULFILMENT_CHOICE_LABELS: Record<FulfilmentChoiceValue, string> = {
 export const CART_MIX_HANDOVER =
   "Some items are pickup only and others are shipping only. Please place them as separate orders.";
 export const DELIVERY_NEEDS_CARD = "Shipped orders are paid by card.";
+export const STALL_HANDOVER_NOTE = "You're at the stall: pay here and take your items with you now.";
 
 export function parseFulfilmentChoice(value: unknown): FulfilmentChoiceValue | null {
   return value === "PICKUP" || value === "DELIVERY" || value === "BOTH" ? value : null;

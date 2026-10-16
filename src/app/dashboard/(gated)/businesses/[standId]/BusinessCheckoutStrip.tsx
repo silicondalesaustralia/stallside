@@ -30,7 +30,7 @@ export default function BusinessCheckoutStrip({
         </p>
         <div className="mt-3 flex flex-wrap gap-3 text-sm">
           <Link
-            href={`/dashboard/businesses/${standId}/qr`}
+            href={`/dashboard/qr/business/${standId}`}
             className="font-medium text-[var(--leaf-dark)] underline"
           >
             Open print page

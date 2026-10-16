@@ -1,6 +1,7 @@
 import { applyStorefrontRedirects } from "@/lib/studio/apply-redirects";
 import { applyPreferredOriginRedirect } from "@/lib/domains/preferred-redirect";
 import { redirectStorefrontSlugAlias } from "@/lib/storefront/slug-alias-redirect";
+import StallVisitMarker from "@/components/storefront/StallVisitMarker";
 
 export default async function ShopSlugLayout({
   children,
@@ -18,5 +19,10 @@ export default async function ShopSlugLayout({
   for (const check of checks) {
     if (check.status === "rejected") throw check.reason;
   }
-  return <div className="storefront-cq">{children}</div>;
+  return (
+    <div className="storefront-cq">
+      <StallVisitMarker />
+      {children}
+    </div>
+  );
 }

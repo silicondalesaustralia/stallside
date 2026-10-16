@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { websiteSectionEnabledFor } from "@/lib/website/access";
+import { listQrTargets } from "@/lib/qr/targets";
 import { createQrCode } from "../actions";
 import NewQrCodeForm from "./NewQrCodeForm";
 
@@ -11,17 +12,13 @@ export default async function NewWebsiteQrPage() {
   const { owner } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
 
-  const [stands, categories, storefront] = await Promise.all([
+  const [stands, options, storefront] = await Promise.all([
     prisma.stand.findMany({
       where: { ownerId: owner.id, isActive: true },
       orderBy: { name: "asc" },
       select: { id: true, name: true },
     }),
-    prisma.category.findMany({
-      where: { ownerId: owner.id, isActive: true },
-      orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
-      select: { id: true, title: true },
-    }),
+    listQrTargets(owner.id),
     prisma.storefront.findUnique({
       where: { ownerId: owner.id },
       select: { slug: true },
@@ -51,7 +48,8 @@ export default async function NewWebsiteQrPage() {
           New QR code
         </h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          Point a poster at your whole shop or one category — e.g. Farm Stand.
+          Pick any page of your online store: a category like Farm Stand, one product, a menu or your
+          checkout. Next you&apos;ll design the poster.
         </p>
       </div>
 
@@ -70,20 +68,10 @@ export default async function NewWebsiteQrPage() {
         </p>
       ) : null}
 
-      {categories.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">
-          No categories yet.{" "}
-          <Link href="/dashboard/categories" className="underline">
-            Create a category
-          </Link>{" "}
-          (like “Farm Stand”) then come back — or make a whole-shop QR now.
-        </p>
-      ) : null}
-
       <NewQrCodeForm
         action={createQrCode}
         stands={stands}
-        categories={categories}
+        options={options}
         defaultStandId={selected?.id ?? stands[0].id}
       />
     </main>
