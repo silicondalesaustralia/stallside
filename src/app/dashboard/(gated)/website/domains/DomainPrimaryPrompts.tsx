@@ -1,21 +1,23 @@
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { makePrimaryDomainAction } from "./actions";
-import ApexForwardSteps from "./ApexForwardSteps";
+import ApexPrimarySteps from "./ApexPrimarySteps";
 
 type Row = { id: string; hostname: string; status: string; isPrimary: boolean };
 
 /**
- * Nudges after a domain connects: make it primary (so the subdomain, old links and QR
- * codes forward there) and forward the bare domain to www at the registrar.
+ * After a domain connects: a fallback "make primary" choice for domains that went
+ * active without becoming primary, and — while www is primary — how to switch the
+ * main address to the bare domain.
  */
 export default function DomainPrimaryPrompts({ domains }: { domains: Row[] }) {
   const active = domains.filter((d) => d.status === "ACTIVE");
   if (active.length === 0) return null;
   const primary = active.find((d) => d.isPrimary);
   const candidate = primary ?? active.find((d) => d.hostname.startsWith("www.")) ?? active[0];
-  const apex = candidate.hostname.startsWith("www.") ? candidate.hostname.slice(4) : null;
-  const apexConnected = apex ? domains.some((d) => d.hostname === apex) : false;
+  const apex = primary?.hostname.startsWith("www.") ? primary.hostname.slice(4) : null;
+  const apexRow = apex ? domains.find((d) => d.hostname === apex) : undefined;
   const choices = active.length > 1 ? active : [candidate];
+  if (primary && (!apex || apexRow?.status === "ACTIVE")) return null;
 
   return (
     <section className="dash-card flex flex-col gap-4 p-5">
@@ -40,16 +42,8 @@ export default function DomainPrimaryPrompts({ domains }: { domains: Row[] }) {
           </div>
         </div>
       ) : null}
-      {apex && !apexConnected ? (
-        <div className="flex flex-col gap-2">
-          <p className="font-semibold">Forward {apex} to www</p>
-          <p className="text-sm text-[var(--muted)]">
-            Some visitors type {apex} without the www. Where your domain&apos;s DNS is managed, add a
-            permanent (301) redirect from <strong>{apex}</strong> to{" "}
-            <strong>https://{candidate.hostname}</strong> so they reach your site too. Pick your provider:
-          </p>
-          <ApexForwardSteps apex={apex} target={candidate.hostname} />
-        </div>
+      {primary && apex ? (
+        <ApexPrimarySteps apex={apex} wwwHost={primary.hostname} apexStatus={apexRow?.status ?? null} />
       ) : null}
     </section>
   );

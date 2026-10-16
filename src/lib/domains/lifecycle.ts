@@ -52,7 +52,7 @@ export async function connectCustomDomain(input: {
   storefrontId: string;
   owner: OwnerEntitlement;
   hostname: string;
-  /** Bare domains only work when Vendl controls the DNS (bought through Vendl). */
+  /** Bare domains need a DNS host that allows CNAME flattening, ALIAS or ANAME at the root. */
   allowApex?: boolean;
 }) {
   if (!customDomainsFeatureEnabled()) {
@@ -232,7 +232,7 @@ export async function verifyCustomDomain(input: {
     activatedAt = new Date();
   }
 
-  return prisma.storefrontDomain.update({
+  const updated = await prisma.storefrontDomain.update({
     where: { id: row.id },
     data: {
       status,
@@ -248,6 +248,23 @@ export async function verifyCustomDomain(input: {
       errorMessage,
     },
   });
+
+  if (updated.status === StorefrontDomainStatus.ACTIVE && !updated.isPrimary) {
+    const existingPrimary = await prisma.storefrontDomain.findFirst({
+      where: {
+        storefrontId: input.storefrontId,
+        type: StorefrontDomainType.CUSTOM,
+        status: StorefrontDomainStatus.ACTIVE,
+        isPrimary: true,
+      },
+      select: { id: true },
+    });
+    if (!existingPrimary) {
+      await setPrimaryCustomDomain({ storefrontId: input.storefrontId, domainId: updated.id });
+      return { ...updated, isPrimary: true };
+    }
+  }
+  return updated;
 }
 
 export async function setPrimaryCustomDomain(input: {

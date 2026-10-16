@@ -31,6 +31,7 @@ export async function connectDomainAction(formData: FormData) {
       storefrontId: storefront.id,
       owner: ownerRow,
       hostname,
+      allowApex: true,
     });
   } catch (e) {
     if (e instanceof DomainActionFailure) redirectError(e.code);

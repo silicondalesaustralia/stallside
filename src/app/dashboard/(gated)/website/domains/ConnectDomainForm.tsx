@@ -55,10 +55,10 @@ export default function ConnectDomainForm() {
           </p>
         </div>
         <p className="rounded-lg bg-[var(--line)]/40 p-3 text-xs">
-          Don&apos;t enter the bare domain on its own (yourfarm.com.au) — it can&apos;t
-          be connected yet. Once www is working, set up a redirect from
-          yourfarm.com.au to www.yourfarm.com.au in your registrar&apos;s settings
-          (often called &quot;domain forwarding&quot;).
+          Start with www — it works with every DNS provider. Once it&apos;s live you can
+          also connect the bare domain (yourfarm.com.au) and make that your main
+          address if your DNS provider supports CNAME flattening, ALIAS or ANAME
+          (Cloudflare and Namecheap do).
         </p>
       </div>
       <label className="flex flex-col gap-2 text-sm">
@@ -70,7 +70,7 @@ export default function ConnectDomainForm() {
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
         <span className="text-xs text-[var(--muted)]">
-          Must start with www or another subdomain (e.g. shop).
+          We recommend www or another subdomain (e.g. shop).
         </span>
       </label>
       <button type="submit" className={dashCtaClass}>
