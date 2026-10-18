@@ -20,20 +20,22 @@ function NavItem({
   collapsed,
   active,
   badge,
+  soon,
 }: {
   href: string;
   label: string;
   collapsed: boolean;
   active: boolean;
   badge?: number;
+  soon?: boolean;
 }) {
   return (
     <Link
       href={href}
-      title={collapsed ? label : undefined}
+      title={collapsed ? (soon ? `${label} (coming soon)` : label) : undefined}
       className={`flex items-center rounded-lg transition-colors duration-200 ${
         collapsed ? "justify-center px-2 py-2" : "gap-3 px-3 py-2"
-      } ${
+      } ${soon ? "opacity-50" : ""} ${
         active
           ? "bg-white/12 text-[var(--ink-on-dark)]"
           : "text-[var(--ink-on-dark)]/70 hover:bg-white/10 hover:text-[var(--ink-on-dark)]"
@@ -48,6 +50,9 @@ function NavItem({
       {collapsed ? null : (
         <span className="flex flex-1 items-center justify-between gap-2">
           <span className="truncate text-sm">{label}</span>
+          {soon ? (
+            <span className="rounded-full border border-current px-1.5 text-[10px] font-semibold uppercase">Soon</span>
+          ) : null}
           {badge && badge > 0 ? (
             <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
               {badge > 9 ? "9+" : badge}
@@ -122,6 +127,7 @@ export default function DashboardSidebar({
                 collapsed={collapsed}
                 active={link.href === activeHref}
                 badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
+                soon={link.comingSoon}
               />
             )}
           />

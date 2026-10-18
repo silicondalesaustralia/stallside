@@ -14,11 +14,23 @@ const TABS = [
   { href: SOCIAL_PATHS.brand, label: 'Brand' },
 ] as const
 
-export default function SocialSubnav() {
+export default function SocialSubnav({ disabled = false }: { disabled?: boolean }) {
   const pathname = usePathname()
   return (
     <nav aria-label="Social" className="mb-6 flex gap-1 overflow-x-auto border-b border-[var(--line)]">
       {TABS.map((tab) => {
+        if (disabled) {
+          return (
+            <span
+              key={tab.href}
+              aria-disabled="true"
+              title="Coming soon"
+              className="cursor-not-allowed whitespace-nowrap border-b-2 border-transparent px-3 py-2 text-sm font-semibold text-[var(--muted)] opacity-50"
+            >
+              {tab.label}
+            </span>
+          )
+        }
         const active = pathname.startsWith(tab.href)
         return (
           <Link

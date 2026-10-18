@@ -5,6 +5,8 @@ export type DashNavLink = {
   websiteOnly?: boolean;
   /** Extra path prefixes that count as this link (e.g. tabs that live elsewhere). */
   alsoActiveOn?: string[];
+  /** Shown greyed with a "Soon" tag; the page explains what's coming. */
+  comingSoon?: boolean;
 };
 
 export type DashNavGroup = {
@@ -42,7 +44,7 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
       { href: "/dashboard/upsells", label: "Upsells & offers" },
       { href: "/dashboard/communication", label: "Communications" },
       { href: "/dashboard/reviews", label: "Reviews" },
-      { href: "/dashboard/social", label: "Social" },
+      { href: "/dashboard/social", label: "Social", comingSoon: true },
     ],
   },
   {
