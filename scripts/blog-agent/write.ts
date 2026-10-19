@@ -9,6 +9,8 @@ import "dotenv/config";
 import { appGet, appPost, reportFailure } from "./api";
 import { ARTICLE_JSON_SHAPE, articleSchema, type AgentArticle } from "./article-schema";
 import { insertFigures, type PlacedImage } from "./figures";
+import { fixInternalLinks } from "./internal-links";
+import { normalizeArticle } from "./normalize-article";
 import { tryCreatePostImage, uniqueFilenames } from "./images";
 import { askJson } from "./openai";
 import { agentDoc, knowledgeBaseSource, todayInAdelaide, vendlFactsSource } from "./repo-context";
@@ -51,7 +53,7 @@ async function draftArticle(topic: Topic, targetPost: TargetPost | null): Promis
     })}`,
     webSearch: true,
   });
-  const parsed = articleSchema.safeParse(raw);
+  const parsed = articleSchema.safeParse(normalizeArticle(raw));
   if (!parsed.success) {
     throw new Error(`Writer output failed validation: ${JSON.stringify(parsed.error.issues).slice(0, 1500)}`);
   }
@@ -74,7 +76,7 @@ async function main() {
   try {
     const { topic, targetPost } = await appGet<{ topic: Topic; targetPost: TargetPost | null }>(`/topics/${topicId}`);
     if (topic.targetPostSlug && !targetPost) throw new Error(`Post /${topic.targetPostSlug} is no longer published`);
-    const article = await draftArticle(topic, targetPost);
+    const article = await fixInternalLinks(await draftArticle(topic, targetPost));
     const folder = folderFor(article, targetPost);
 
     if (targetPost) {

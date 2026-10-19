@@ -6,19 +6,16 @@ import NewsArticleView from "@/components/NewsArticleView";
 import { SITE_URL } from "@/lib/legal";
 import { DEFAULT_OG_IMAGE } from "@/lib/og-image";
 import { newsArticleGraphSchema, newsArticlePath } from "@/lib/farms-stand-news";
-import { getGuide, getGuideSlugs } from "@/lib/blog/guides";
+import { getGuide } from "@/lib/blog/guides";
 import { guidePath } from "@/lib/blog/paths";
 import { findLiveBlogSection } from "@/lib/blog/queries";
 
-export const revalidate = 3600;
+/** The marketing header reads the session cookie, so these pages can't be statically cached. */
+export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
-
-export async function generateStaticParams() {
-  return (await getGuideSlugs()).map((slug) => ({ slug }));
-}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
