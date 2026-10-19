@@ -36,6 +36,7 @@ const BRIEF_SHAPE = `{
 export async function buildSerpBrief(topic: unknown, targetPost: unknown): Promise<SerpBrief | null> {
   try {
     const raw = await askJson({
+      task: "RESEARCH",
       instructions: [
         "You are a search analyst for Vendl's blog (Australian small sellers and home producers).",
         "Pick the single search query this topic should rank for (prefer the topic's targetQueries).",

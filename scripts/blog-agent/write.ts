@@ -37,6 +37,7 @@ async function draftArticle(topic: Topic, targetPost: TargetPost | null): Promis
     ? "Propose an update to the published post in targetPost. Return the complete revised bodyHtml and changeNotes."
     : "Write a complete new post for this topic.";
   const raw = await askJson({
+    task: "WRITE",
     instructions: [
       "You are the writer for Vendl's blog. Follow the playbook and writing standard exactly.",
       agentDoc("PLAYBOOK"),
@@ -64,7 +65,7 @@ async function inlineImages(article: AgentArticle, folder: string, limit: number
   const briefs = uniqueFilenames(article.images.inline.slice(0, limit));
   const results = await Promise.all(
     briefs.map(async (brief): Promise<PlacedImage | null> => {
-      const uploaded = await tryCreatePostImage({ folder, filename: brief.filename, prompt: brief.prompt, shape: "landscape" });
+      const uploaded = await tryCreatePostImage({ folder, filename: brief.filename, prompt: brief.prompt, shape: "landscape", kind: "inline" });
       return uploaded ? { ...uploaded, alt: brief.alt, caption: brief.caption, afterHeading: brief.afterHeading } : null;
     }),
   );
@@ -102,7 +103,7 @@ async function main() {
     const heroBrief = article.images.hero;
     const [hero, images] = await Promise.all([
       heroBrief
-        ? tryCreatePostImage({ folder, filename: uniqueFilenames([heroBrief])[0].filename, prompt: heroBrief.prompt, shape: "landscape" })
+        ? tryCreatePostImage({ folder, filename: uniqueFilenames([heroBrief])[0].filename, prompt: heroBrief.prompt, shape: "landscape", kind: "hero" })
         : Promise.resolve(null),
       inlineImages(article, folder, 3),
     ]);

@@ -46,7 +46,16 @@ Repository settings → Secrets and variables → Actions:
 | Variable | `BLOG_AGENT_GIT_REF` | `feature/social-kit` now, `main` later |
 | Variable | `GSC_SITE_URL` | `sc-domain:vendl.app` |
 
-Optional: `BLOG_AGENT_MODEL` (default `gpt-6-astra`), `BLOG_AGENT_REASONING_EFFORT` (`high`), `BLOG_AGENT_IMAGE_MODEL` (`gpt-image-1`), `BLOG_AGENT_IMAGE_QUALITY` (`medium`) as workflow env overrides.
+Models per task (defaults in `scripts/blog-agent/model-config.ts`; every run logs `[usage]` token counts per call):
+
+| Task | Model | Effort | Web search depth |
+| --- | --- | --- | --- |
+| `WRITE` (article draft) | `gpt-6-astra` | medium | medium |
+| `PLAN` (choose 10 ideas) | `gpt-6-astra` | low | low |
+| `RESEARCH` (search results brief, competitor and community scans) | `gpt-5.4-mini` | low | medium |
+| `VISIBILITY` (24 weekly ChatGPT questions) | `gpt-5.4-mini` | low | low |
+
+Override with `BLOG_AGENT_MODEL_<TASK>`, `BLOG_AGENT_EFFORT_<TASK>`, `BLOG_AGENT_SEARCH_<TASK>`. Images: feature image `gpt-image-1`, inline `gpt-image-1-mini` (`BLOG_AGENT_IMAGE_MODEL_HERO`, `BLOG_AGENT_IMAGE_MODEL_INLINE`, `BLOG_AGENT_IMAGE_QUALITY`).
 
 ## 5. Authors
 
