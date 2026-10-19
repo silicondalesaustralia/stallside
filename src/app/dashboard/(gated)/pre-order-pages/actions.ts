@@ -2,11 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import {
-  HandoverMode,
-  PaymentTiming,
-  type Prisma,
-} from "@/generated/prisma/client";
+import { HandoverMode, PaymentTiming } from "@/generated/prisma/client";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { parsePreOrderFromForm } from "@/lib/pre-order";
@@ -18,8 +14,8 @@ import { parsePreOrderAddonForm } from "@/lib/preorder-addon-form";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 import { upsertPreOrderAddonProduct } from "@/lib/preorder-upsell-addon";
 import { uploadPreOrderPageImage } from "@/lib/preorder-page-image-upload";
-
-type Tx = Prisma.TransactionClient;
+import { clearOrphanedPreOrderFlags } from "@/lib/pre-order-pages/orphans";
+import { deleteOwnerPreOrderPage } from "@/lib/pre-order-pages/service";
 
 async function resolvePageImageUrl(input: {
   formData: FormData;
@@ -108,31 +104,6 @@ function scheduleFromPre(pre: {
         ? HandoverMode.DELIVER
         : HandoverMode.COLLECT,
   };
-}
-
-async function clearOrphanedPreOrderFlags(
-  tx: Tx,
-  productIds: string[],
-) {
-  for (const productId of productIds) {
-    const stillOnPage = await tx.preOrderPageProduct.findFirst({
-      where: { productId },
-      select: { id: true },
-    });
-    if (stillOnPage) continue;
-    await tx.product.update({
-      where: { id: productId },
-      data: {
-        isPreOrder: false,
-        orderByAt: null,
-        collectionAt: null,
-        collectionNote: null,
-        paymentTiming: PaymentTiming.PAY_NOW,
-        depositPercent: null,
-        handoverMode: HandoverMode.COLLECT,
-      },
-    });
-  }
 }
 
 async function resolvePageAddon(input: {
@@ -480,46 +451,6 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
 
 export async function deletePreOrderPage(pageId: string) {
   const { owner } = await requireOwnerWrite();
-  const existing = await prisma.preOrderPage.findFirst({
-    where: { id: pageId, ownerId: owner.id },
-    include: {
-      stand: { select: { slug: true, currency: true, id: true } },
-      items: { select: { productId: true } },
-    },
-  });
-  if (!existing) {
-    redirect("/dashboard/pre-order-pages");
-  }
-
-  const productIds = existing.items.map((i) => i.productId);
-
-  if (existing.preOrderUpsellProductId) {
-    await upsertPreOrderAddonProduct({
-      standId: existing.stand.id,
-      ownerId: owner.id,
-      existingProductId: existing.preOrderUpsellProductId,
-      name: null,
-      priceCents: null,
-      defaults: {
-        orderByAt: null,
-        collectionAt: null,
-        collectionNote: null,
-        paymentTiming: PaymentTiming.PAY_UPFRONT,
-        depositPercent: null,
-        handoverMode: HandoverMode.COLLECT,
-        currency: existing.stand.currency,
-        showExactStock: false,
-      },
-    });
-  }
-
-  await prisma.$transaction(async (tx) => {
-    await tx.preOrderPage.delete({ where: { id: existing.id } });
-    await clearOrphanedPreOrderFlags(tx, productIds);
-  });
-
-  revalidatePath("/dashboard/pre-order-pages");
-  revalidatePath("/dashboard/products");
-  revalidatePath(preOrderPagePath(existing.stand.slug, existing.slug));
+  await deleteOwnerPreOrderPage(owner.id, pageId);
   redirect("/dashboard/pre-order-pages");
 }

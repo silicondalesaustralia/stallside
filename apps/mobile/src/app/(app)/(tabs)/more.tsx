@@ -1,4 +1,11 @@
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { router, type Href } from "expo-router";
 import type { MobileFeature } from "@contracts/mobile/me";
 import { useAuth, useToken } from "@/auth/useAuth";
@@ -21,6 +28,7 @@ const NATIVE_ROUTES: Record<string, Href> = {
   subscriptions: "/subscriptions",
   qr: "/qr",
   categories: "/categories",
+  "pre-order-pages": "/pre-orders",
 };
 
 function groupFeatures(features: MobileFeature[]): [string, MobileFeature[]][] {
@@ -61,19 +69,33 @@ export default function MoreScreen() {
         </View>
       ) : null}
       {me.data && !me.data.owner.onboardingComplete ? (
-        <Pressable accessibilityRole="button" onPress={() => void openOnWeb("/onboarding", token)} style={styles.banner}>
-          <Text style={styles.bannerText}>Finish setting up your business on the web</Text>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => void openOnWeb("/onboarding", token)}
+          style={styles.banner}
+        >
+          <Text style={styles.bannerText}>
+            Finish setting up your business on the web
+          </Text>
         </Pressable>
       ) : null}
       {groupFeatures(me.data?.features ?? []).map(([group, features]) => (
         <View key={group} style={styles.group}>
           <Text style={styles.groupHeading}>{group}</Text>
           {features.map((feature) => (
-            <FeatureRow key={feature.id} feature={feature} onPress={openFeature} />
+            <FeatureRow
+              key={feature.id}
+              feature={feature}
+              onPress={openFeature}
+            />
           ))}
         </View>
       ))}
-      <Pressable accessibilityRole="button" onPress={() => void signOut()} style={styles.signOut}>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => void signOut()}
+        style={styles.signOut}
+      >
         <Text style={styles.signOutText}>Sign out</Text>
       </Pressable>
     </ScrollView>
@@ -81,13 +103,23 @@ export default function MoreScreen() {
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.background },
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.background,
+  },
   screen: { backgroundColor: colors.background },
   content: { paddingVertical: spacing.md, gap: spacing.lg },
   account: { paddingHorizontal: spacing.md },
   name: { color: colors.text, fontSize: 20, fontWeight: "700" },
   email: { color: colors.muted },
-  banner: { marginHorizontal: spacing.md, backgroundColor: colors.brand, borderRadius: 12, padding: spacing.md },
+  banner: {
+    marginHorizontal: spacing.md,
+    backgroundColor: colors.brand,
+    borderRadius: 12,
+    padding: spacing.md,
+  },
   bannerText: { color: colors.brandText, fontWeight: "600" },
   group: { gap: 0 },
   groupHeading: {

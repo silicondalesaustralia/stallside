@@ -25,6 +25,10 @@ export function openCategory(categoryId: string) {
   router.push({ pathname: "/categories/[categoryId]", params: { categoryId } });
 }
 
+export function openPreOrderPage(pageId: string) {
+  router.push({ pathname: "/pre-orders/[pageId]", params: { pageId } });
+}
+
 export function openProduct(productId: string) {
   router.push({ pathname: "/product/[productId]", params: { productId } });
 }

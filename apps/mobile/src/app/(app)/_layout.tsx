@@ -24,23 +24,61 @@ export default function SignedInLayout() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="order/[orderId]" options={{ title: "Order" }} />
-        <Stack.Screen name="product/[productId]" options={{ title: "Product" }} />
+        <Stack.Screen
+          name="product/[productId]"
+          options={{ title: "Product" }}
+        />
         <Stack.Screen name="inventory" options={{ title: "Inventory" }} />
-        <Stack.Screen name="notifications" options={{ title: "Notifications" }} />
+        <Stack.Screen
+          name="notifications"
+          options={{ title: "Notifications" }}
+        />
         <Stack.Screen name="reviews/index" options={{ title: "Reviews" }} />
         <Stack.Screen name="reviews/[reviewId]" options={{ title: "Review" }} />
         <Stack.Screen name="discounts/index" options={{ title: "Discounts" }} />
-        <Stack.Screen name="discounts/[discountId]" options={{ title: "Discount" }} />
-        <Stack.Screen name="subscriptions/index" options={{ title: "Subscriptions" }} />
-        <Stack.Screen name="subscriptions/[offerId]" options={{ title: "Subscription" }} />
-        <Stack.Screen name="categories/index" options={{ title: "Categories" }} />
-        <Stack.Screen name="categories/[categoryId]/index" options={{ title: "Category" }} />
-        <Stack.Screen name="categories/[categoryId]/products" options={{ title: "Choose products" }} />
+        <Stack.Screen
+          name="discounts/[discountId]"
+          options={{ title: "Discount" }}
+        />
+        <Stack.Screen
+          name="subscriptions/index"
+          options={{ title: "Subscriptions" }}
+        />
+        <Stack.Screen
+          name="subscriptions/[offerId]"
+          options={{ title: "Subscription" }}
+        />
+        <Stack.Screen
+          name="categories/index"
+          options={{ title: "Categories" }}
+        />
+        <Stack.Screen
+          name="categories/[categoryId]/index"
+          options={{ title: "Category" }}
+        />
+        <Stack.Screen
+          name="categories/[categoryId]/products"
+          options={{ title: "Choose products" }}
+        />
+        <Stack.Screen
+          name="pre-orders/index"
+          options={{ title: "Pre-order pages" }}
+        />
+        <Stack.Screen
+          name="pre-orders/[pageId]"
+          options={{ title: "Pre-order page" }}
+        />
         <Stack.Screen name="qr/index" options={{ title: "QR codes" }} />
         <Stack.Screen name="qr/[kind]/[id]" options={{ title: "QR code" }} />
-        <Stack.Screen name="collections" options={{ title: "Pick ups & delivery" }} />
+        <Stack.Screen
+          name="collections"
+          options={{ title: "Pick ups & delivery" }}
+        />
         <Stack.Screen name="customers/index" options={{ title: "Customers" }} />
-        <Stack.Screen name="customers/[customerId]" options={{ title: "Customer" }} />
+        <Stack.Screen
+          name="customers/[customerId]"
+          options={{ title: "Customer" }}
+        />
       </Stack>
     </BusinessProvider>
   );

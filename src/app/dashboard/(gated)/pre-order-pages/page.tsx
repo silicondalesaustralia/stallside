@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import { listOwnerPreOrderPages } from "@/lib/pre-order-pages/service";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
@@ -23,11 +23,7 @@ export default async function PreOrderPagesListPage() {
     );
   }
 
-  const pages = await prisma.preOrderPage.findMany({
-    where: { standId: selected.id, ownerId: owner.id },
-    orderBy: [{ collectionAt: "asc" }, { title: "asc" }],
-    include: { _count: { select: { items: true } } },
-  });
+  const pages = await listOwnerPreOrderPages(owner.id, selected.id);
 
   return (
     <main className="flex flex-col gap-8">
