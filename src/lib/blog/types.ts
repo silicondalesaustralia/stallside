@@ -16,6 +16,10 @@ export const blogTargetQuerySchema = z.object({
   clicks: z.number().int().nonnegative().optional(),
   position: z.number().nonnegative().optional(),
   page: z.string().max(500).optional(),
+  /** Monthly Google Australia searches (DataForSEO). */
+  volume: z.number().int().nonnegative().nullish(),
+  difficulty: z.number().int().min(0).max(100).nullish(),
+  intent: z.string().max(40).nullish(),
 });
 
 export const blogResearchNotesSchema = z.object({

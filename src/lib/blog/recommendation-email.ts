@@ -4,12 +4,21 @@ import { escapeHtml } from "@/lib/lifecycle-emails/html";
 import { adminBlogPath, blogPickPath } from "./paths";
 import { createPickToken } from "./pick-token";
 import { MAX_PICKS_PER_BATCH } from "./recommendation-schemas";
-import { parseTargetQueries } from "./types";
+import { parseTargetQueries, type BlogTargetQuery } from "./types";
 
 type EmailTopic = Pick<
   BlogTopic,
   "id" | "title" | "angle" | "notes" | "featureRef" | "section" | "source" | "targetPostSlug" | "targetQueries" | "recommendationRank"
 >;
+
+function queryStats(q: BlogTargetQuery): string {
+  const parts = [
+    typeof q.volume === "number" ? `${q.volume.toLocaleString("en-AU")}/mo` : null,
+    typeof q.difficulty === "number" ? `difficulty ${q.difficulty}` : null,
+    q.impressions ? `${q.impressions} impr.` : null,
+  ].filter(Boolean);
+  return parts.length ? ` (${parts.join(", ")})` : "";
+}
 
 function topicCard(topic: EmailTopic): string {
   const pickUrl = `${SITE_URL}${blogPickPath(createPickToken(topic.id))}`;
@@ -17,7 +26,7 @@ function topicCard(topic: EmailTopic): string {
   const section = topic.section === "NEWS" ? "News" : "Guide";
   const queries = parseTargetQueries(topic.targetQueries)
     .slice(0, 3)
-    .map((q) => `“${escapeHtml(q.query)}”${q.impressions ? ` (${q.impressions} impr.)` : ""}`)
+    .map((q) => `“${escapeHtml(q.query)}”${queryStats(q)}`)
     .join(", ");
 
   return `<tr><td style="padding:16px 0;border-bottom:1px solid #e5e2d8">

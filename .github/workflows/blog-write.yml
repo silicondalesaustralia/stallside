@@ -33,4 +33,8 @@ jobs:
           BLOG_AGENT_BASE_URL: ${{ vars.BLOG_AGENT_BASE_URL }}
           BLOG_AGENT_TOKEN: ${{ secrets.BLOG_AGENT_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
+          DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
+          DATAFORSEO_RELAY_URL: ${{ secrets.DATAFORSEO_RELAY_URL }}
+          DATAFORSEO_RELAY_SECRET: ${{ secrets.DATAFORSEO_RELAY_SECRET }}
           GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
