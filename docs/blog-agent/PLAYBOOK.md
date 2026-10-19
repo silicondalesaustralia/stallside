@@ -65,5 +65,6 @@ Each new post gets one feature image and 1–3 inline images; updates get 0–2 
 
 ## Output rules
 
+- **Links are HTML, never Markdown.** Cite sources with `<a href="...">` on descriptive anchor text inside the sentence (e.g. `Queensland's <a href="https://www.qld.gov.au/...">food business licence guidance</a> says...`), not `[text](url)` and not trailing "(domain.gov.au)" citations. Cite each source once or twice where it matters, not after every sentence. FAQ answers are plain text: no links, no citations.
 - Allowed HTML: `p h2 h3 h4 ul ol li strong em a blockquote table thead tbody tr th td code pre hr`. Don't put images in `bodyHtml`; the code inserts them. No inline styles, no `h1`.
 - `researchNotes` must include `whyThisTopic`, `sources` and `factChecks` in the labelled format from `WRITING.md`.
