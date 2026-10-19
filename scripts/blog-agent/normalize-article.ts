@@ -1,3 +1,5 @@
+import { markdownLinksToHtml, stripMarkdownLinks } from "../../src/lib/blog/markdown-links";
+
 type Obj = Record<string, unknown>;
 
 function isObj(value: unknown): value is Obj {
@@ -57,7 +59,10 @@ export function normalizeArticle(raw: unknown): unknown {
     excerpt: clip(raw.excerpt, 400),
     keywords: clip(raw.keywords, 400),
     agentSummary: clip(raw.agentSummary, 2000),
-    faqs: list(raw.faqs, 12),
+    bodyHtml: typeof raw.bodyHtml === "string" ? markdownLinksToHtml(raw.bodyHtml) : raw.bodyHtml,
+    faqs: list(raw.faqs, 12)?.map((faq) =>
+      isObj(faq) && typeof faq.answer === "string" ? { ...faq, answer: stripMarkdownLinks(faq.answer) } : faq,
+    ),
     targetQueries: list(raw.targetQueries, 30),
     changeNotes: list(raw.changeNotes, 30),
     researchNotes: normalizeNotes(raw.researchNotes),
