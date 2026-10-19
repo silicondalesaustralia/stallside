@@ -7,6 +7,8 @@ import {
   newsArticlePath,
   newsIndexPath,
 } from "@/lib/farms-stand-news";
+import { getAllGuides } from "@/lib/blog/guides";
+import { guidesIndexPath } from "@/lib/blog/paths";
 import { isReservedProductSlug } from "@/lib/slug";
 import {
   standCatalogPath,
@@ -47,6 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/privacy",
     "/terms",
     newsIndexPath(),
+    guidesIndexPath(),
   ] as const;
 
   const entries: MetadataRoute.Sitemap = marketing.map((path) => ({
@@ -106,9 +109,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  for (const article of getAllArticles()) {
+  const guides = await getAllGuides();
+  const posts = [...(await getAllArticles()), ...guides];
+  const seen = new Set<string>();
+  for (const article of posts) {
+    const path = article.canonicalPath ?? newsArticlePath(article.slug);
+    if (seen.has(path)) continue;
+    seen.add(path);
     entries.push({
-      url: `${SITE_URL}${newsArticlePath(article.slug)}`,
+      url: `${SITE_URL}${path}`,
       lastModified: new Date(article.updatedAt ?? article.publishedAt),
       changeFrequency: "monthly",
       priority: 0.5,

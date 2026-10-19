@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
 import MarketingPageShell from "@/components/MarketingPageShell";
 import NewsArticleView from "@/components/NewsArticleView";
@@ -11,23 +11,27 @@ import {
   newsArticleGraphSchema,
   newsArticlePath,
 } from "@/lib/farms-stand-news";
+import { findLiveBlogSection } from "@/lib/blog/queries";
+import { guidePath } from "@/lib/blog/paths";
+
+export const revalidate = 3600;
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getArticleSlugs().map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  return (await getArticleSlugs()).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const article = await getArticle(slug);
   if (!article) return { title: "Article" };
 
-  const path = newsArticlePath(article.slug);
+  const path = article.canonicalPath ?? newsArticlePath(article.slug);
   const canonical = `${SITE_URL}${path}`;
 
   return {
@@ -64,8 +68,11 @@ export async function generateMetadata({
 
 export default async function FarmsStandNewsArticlePage({ params }: PageProps) {
   const { slug } = await params;
-  const article = getArticle(slug);
-  if (!article) notFound();
+  const article = await getArticle(slug);
+  if (!article) {
+    if ((await findLiveBlogSection(slug)) === "GUIDE") permanentRedirect(guidePath(slug));
+    notFound();
+  }
 
   return (
     <MarketingPageShell>

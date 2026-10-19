@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import MarketingPageShell from "@/components/MarketingPageShell";
+import BlogArticleList from "@/components/blog/BlogArticleList";
 import { APP_NAME } from "@/lib/constants";
-import { getAllArticles, newsArticlePath } from "@/lib/farms-stand-news";
+import { getAllArticles } from "@/lib/farms-stand-news";
 import { DEFAULT_OG_IMAGE } from "@/lib/og-image";
 import { marketingPageGraphSchema } from "@/lib/schema";
 
@@ -24,18 +24,10 @@ export const metadata: Metadata = {
   },
 };
 
-function formatListDate(iso: string) {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return new Intl.DateTimeFormat("en-AU", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(date);
-}
+export const revalidate = 3600;
 
-export default function FarmsStandNewsPage() {
-  const articles = getAllArticles();
+export default async function FarmsStandNewsPage() {
+  const articles = await getAllArticles();
 
   return (
     <MarketingPageShell>
@@ -55,44 +47,7 @@ export default function FarmsStandNewsPage() {
           Guides and updates for people running unattended stands.
         </p>
 
-        {articles.length === 0 ? (
-          <p className="mt-12 text-[var(--muted)]">
-            New articles are on the way. Check back soon.
-          </p>
-        ) : (
-          <ul className="mt-12 flex flex-col gap-10">
-            {articles.map((article) => (
-              <li key={article.slug}>
-                <article>
-                  <p className="text-sm text-[var(--muted)]">
-                    <time dateTime={article.publishedAt}>
-                      {formatListDate(article.publishedAt)}
-                    </time>
-                  </p>
-                  <h2 className="mt-2 font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)] sm:text-2xl">
-                    <Link
-                      href={newsArticlePath(article.slug)}
-                      className="transition hover:text-[var(--leaf-dark)]"
-                    >
-                      {article.title}
-                    </Link>
-                  </h2>
-                  <p className="mt-2 text-base leading-relaxed text-[var(--ink)]">
-                    {article.excerpt}
-                  </p>
-                  <p className="mt-3">
-                    <Link
-                      href={newsArticlePath(article.slug)}
-                      className="text-sm font-semibold text-[var(--leaf-dark)] underline"
-                    >
-                      Read more
-                    </Link>
-                  </p>
-                </article>
-              </li>
-            ))}
-          </ul>
-        )}
+        <BlogArticleList items={articles} />
       </main>
     </MarketingPageShell>
   );

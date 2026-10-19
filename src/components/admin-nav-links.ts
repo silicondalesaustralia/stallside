@@ -6,4 +6,5 @@ export const adminLinks = [
   { href: "/admin/gallery", label: "Gallery" },
   { href: "/admin/stands", label: "Stands" },
   { href: "/admin/orders", label: "Orders" },
+  { href: "/admin/blog", label: "Blog" },
 ] as const;
