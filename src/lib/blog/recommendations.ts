@@ -6,7 +6,7 @@ import { MAX_PICKS_PER_BATCH, type BlogRecommendationsBatch } from "./recommenda
 
 const EXPIRE_AFTER_MS = 7 * 86_400_000;
 
-/** Store the week's ranked ideas as backlog topics and email them with pick links. */
+/** Store tonight's ranked ideas as backlog topics and email them with pick links. */
 export async function saveAndEmailRecommendations(batch: BlogRecommendationsBatch) {
   const recommendedAt = new Date();
   const ranked = [...batch.recommendations].sort((a, b) => b.score - a.score);
@@ -31,14 +31,14 @@ export async function saveAndEmailRecommendations(batch: BlogRecommendationsBatc
       }),
     ),
   );
-  const subject = `This week's blog ideas: pick up to ${MAX_PICKS_PER_BATCH} of ${topics.length}`;
+  const subject = `Tomorrow's blog: pick ${MAX_PICKS_PER_BATCH} of ${topics.length} ideas`;
   await sendOwnerEmail(blogDigestRecipients(), subject, recommendationEmailHtml(topics, batch.summary), {
     kind: "blog-recommendations",
   });
   return topics.map((t) => ({ id: t.id, title: t.title, rank: t.recommendationRank }));
 }
 
-/** How many topics from the same weekly batch have already been picked. */
+/** How many topics from the same evening batch have already been picked. */
 export async function picksInBatch(recommendedAt: Date): Promise<number> {
   return prisma.blogTopic.count({
     where: { recommendedAt, selectedAt: { not: null } },

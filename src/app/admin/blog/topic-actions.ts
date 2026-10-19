@@ -22,7 +22,7 @@ export async function writeTopicNowAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   if (!id) throw new Error("Missing topic id");
-  const result = await pickBlogTopic(id);
+  const result = await pickBlogTopic(id, { enforceLimit: false });
   const query = result.ok ? "" : `&error=${encodeURIComponent(result.reason)}`;
   redirect(`${adminBlogPath("topics")}${query}`);
 }

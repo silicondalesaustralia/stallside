@@ -30,7 +30,7 @@ export default async function BlogPickPage({
     return (
       <main className={shell}>
         <h1 className="text-2xl font-bold text-[var(--field)]">This link has expired</h1>
-        <p className="text-[var(--muted)]">Pick links last 7 days. You can still write any idea from the topic backlog.</p>
+        <p className="text-[var(--muted)]">Pick links last 48 hours. You can still write any idea from the topic backlog.</p>
         <Link href={adminBlogPath("topics")} className="font-semibold text-[var(--leaf-dark)] underline">Open the topic backlog</Link>
       </main>
     );

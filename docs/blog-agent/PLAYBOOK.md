@@ -2,7 +2,7 @@
 
 The agent runs in two stages on GitHub Actions. It never publishes; Jono reviews everything in `/admin/blog`.
 
-1. **Weekly planner** (Sundays 9pm Australia/Adelaide, `scripts/blog-agent/plan.ts`): recommends 10 ranked ideas for the week and emails them. Each has a "Write this" link; Jono picks up to six, one a day Monday to Saturday.
+1. **Evening planner** (9pm Australia/Adelaide daily, `scripts/blog-agent/plan.ts`): recommends 5 ranked ideas and emails them. Each has a "Write this" link; Jono picks one for tomorrow.
 2. **Writer** (`scripts/blog-agent/write.ts`, started when an idea is picked): drafts one post or update, with images, into the review queue from the prepared research (search results brief and official facts). Nothing is written if nothing is picked.
 
 Vendl is moving from a farm-stand checkout tool to a full ecommerce platform for home producers and small sellers, competing directly with home-producer platforms (CottageCMS, Bakebug, Hotplate, Loafly, Bakesy) and broadly with Shopify, Wix, Square Online and WooCommerce. The audience: farm stands, home bakers, makers, market stallholders and small online shops, mostly in Australia.
@@ -17,22 +17,22 @@ The blog exists to bring sellers to Vendl. Every idea must solve a reader's prob
 - **Titles** lead with the seller's problem or outcome, not a competitor's name. Competitor names belong in titles only for fair comparison guides where Vendl is one of the options.
 - **Regulatory and how-to guides** (licences, pricing, food rules) are fine when the tie-in is natural: e.g. after the licence checklist, "take pre-orders and payments with Vendl".
 
-## Planner: choosing the week's 10
+## Planner: choosing tonight's 5
 
-Inputs: blog context (existing posts, backlog topics, recent rejections and discarded revision reasons), the Search Console report, the knowledge base index (one line per article), the week's commit subjects on `main` (shipped) and the preview branch (upcoming), live web search for news, and the weekly research: `competitorScan` (competitors' recent content, product changes, content gaps), `communityScan` (real seller questions from Reddit, Quora, LinkedIn and Medium) and `aiVisibility` (ChatGPT's answers to buyer questions: whether Vendl is mentioned or cited, which competitors appear, which pages are cited).
+Inputs: blog context (existing posts, backlog topics, recent rejections and discarded revision reasons), the Search Console report, the knowledge base index (one line per article), the last 7 days' commit subjects on `main` (shipped) and the preview branch (upcoming), live web search for news, and on Sundays the weekly research: `competitorScan` (competitors' recent content, product changes, content gaps), `communityScan` (real seller questions from Reddit, Quora, LinkedIn and Medium) and `aiVisibility` (ChatGPT's answers to buyer questions: whether Vendl is mentioned or cited, which competitors appear, which pages are cited).
 
-Aim for a mix across the 10; no single source should exceed half the ideas. Ideas should stay relevant all week: news items only when they will still matter by Saturday.
+Aim for a mix across the 5; across a week no single source should exceed half the ideas.
 
-- **Search Console (2–4 ideas).** Take the top opportunities.
+- **Search Console (1–2 ideas).** Take the top opportunities.
   - Page is a published DB post (slug in `blogContext.posts`, `status: PUBLISHED`) → recommend an **update** (`targetPostSlug`). Skip it if `contentUpdatedAt` or `lastRevisionAt` is under 21 days old, or it has `pendingRevision`.
   - Page is a hand-built reference page (`/sell-food-from-home/...`, `/cottage-food-laws/...`) or a hand-coded article (`blogContext.codeArticles`) → recommend a **new guide** that answers the query cluster in depth and links to that page. Never target these for updates.
   - Page is a landing page and the intent is commercial ("app", "software", "best", "price") → skip it; it needs a page change, not a post.
   - Informational queries ("how to", "can I", "what is") that only a sales page or the home page ranks for → **new post** targeting the cluster.
   - The report's `tier`: `strict` = genuine striking distance, so favour updates. `loose` = young-site fallback, so favour new guides that cover whole clusters.
-- **News (1–3 ideas).** Search the web for the last 7 days. Sources: CottageCMS, Bakebug, Hotplate, Loafly, Bakesy, Shopify, Square, Wix, WooCommerce and Stripe changelogs, blogs and pricing pages; RBA surcharging, ACCC, ATO small business and GST updates; FSANZ and state food authorities; farmers market associations; Google Search Central and Merchant Center. Recommend only items that materially affect small sellers, have a genuine Vendl angle and aren't already covered. Set `timeSensitive: true` and `section: NEWS`.
-- **Shipped features and knowledge base (2–3 ideas).** Deeper guides on features in the knowledge base or recent `main` commits, framed by the broader ecommerce benefit rather than as a product tour.
-- **Market and comparison topics (1–3 ideas).** Evergreen guides that help sellers choose and run their setup: platform comparisons, fees explained, pre-orders, inventory, selling at markets and online.
-- **Weekly research (2–4 ideas in total from the three below).** These replace part of the usual mix.
+- **News (0–1 ideas).** Search the web for the last ~72 hours. Sources: CottageCMS, Bakebug, Hotplate, Loafly, Bakesy, Shopify, Square, Wix, WooCommerce and Stripe changelogs, blogs and pricing pages; RBA surcharging, ACCC, ATO small business and GST updates; FSANZ and state food authorities; farmers market associations; Google Search Central and Merchant Center. Recommend only items that materially affect small sellers, have a genuine Vendl angle and aren't already covered. Set `timeSensitive: true` and `section: NEWS`.
+- **Shipped features and knowledge base (1 idea).** Deeper guides on features in the knowledge base or recent `main` commits, framed by the broader ecommerce benefit rather than as a product tour.
+- **Market and comparison topics (1 idea).** Evergreen guides that help sellers choose and run their setup: platform comparisons, fees explained, pre-orders, inventory, selling at markets and online.
+- **Weekly research (Sundays only, 1–2 ideas in total from the three below).** These replace part of the usual mix that night.
 - **Community questions (`source: COMMUNITY`).** From `communityScan`, pick questions with a strong `signal` that no existing page answers. Put thread URLs in `sourceUrls`, mention the platform and signal in `whyNow`, and put the sellers' `realWording` in `angle` so the writer can use it for headings and FAQs.
 - **AI answer gaps (`source: AI_ANSWERS`).** From `aiVisibility`, pick questions where Vendl is neither mentioned nor cited and the cited pages are thin, dated, generic or not Australian. Put the cited pages in `sourceUrls` and the question in `targetQueries` (query only; omit impressions, position and page). The goal is a page an AI assistant would cite: a direct answer in the first paragraph, specific Australian facts, a clear comparison table or steps, and FAQs phrased like the question.
 - **Competitor gaps (`source: COMPETITOR`).** When `competitorScan` is present, turn its strongest `contentGaps` into ideas: topics competitors rank or publish on that Vendl lacks, or cover badly. Put the competitor URLs in `sourceUrls` and the evidence in `whyNow`. Write a better, seller-first answer; never copy a competitor's structure or target their brand name unless it is a fair comparison guide.
