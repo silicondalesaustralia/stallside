@@ -69,6 +69,7 @@ async function main() {
   });
 
   const raw = await askJson({
+    task: "PLAN",
     instructions: `You are the evening planner for Vendl's blog. Follow this playbook exactly.\n\n${agentDoc("PLAYBOOK")}\n\n${OUTPUT_CONTRACT}`,
     input: `Plan tomorrow's 10 recommendations from this json context. Use web search for news from the last 72 hours.\n${input}`,
     webSearch: true,

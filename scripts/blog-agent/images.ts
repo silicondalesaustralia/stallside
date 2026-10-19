@@ -15,8 +15,9 @@ export async function createPostImage(opts: {
   filename: string;
   prompt: string;
   shape: ImageShape;
+  kind: "hero" | "inline";
 }): Promise<UploadedImage> {
-  const image = await generateImage(`${opts.prompt.trim()}\n\n${STYLE_RULES}`, opts.shape);
+  const image = await generateImage(`${opts.prompt.trim()}\n\n${STYLE_RULES}`, opts.shape, opts.kind);
   return appPost<UploadedImage>("/images", {
     folder: opts.folder,
     filename: opts.filename,

@@ -45,6 +45,7 @@ const SCAN_SHAPE = `{
 export async function runCompetitorScan(existingTitles: string[]): Promise<CompetitorScan | null> {
   try {
     const raw = await askJson({
+      task: "RESEARCH",
       instructions: [
         "You research competitors of Vendl, an ecommerce platform for Australian home producers, farm stands and small sellers.",
         `Competitors: ${COMPETITORS.join(", ")}. Find each one's official site with web search, then read their blog, guides, help centre and changelog or pricing pages.`,

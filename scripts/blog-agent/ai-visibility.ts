@@ -2,6 +2,7 @@ import type { AiCitation, AiVisibilityResult } from "../../src/lib/blog/ai-visib
 import { AI_VISIBILITY_QUESTIONS } from "./ai-questions";
 import { appPost } from "./api";
 import { COMPETITORS } from "./competitor-scan";
+import { logUsage, taskConfig } from "./model-config";
 import { awaitResponse, openaiPost, outputText, type ResponsesJson } from "./openai";
 
 const ENGINE = "chatgpt";
@@ -32,15 +33,17 @@ function citationsOf(data: ResponsesJson): AiCitation[] {
 
 /** Ask like a shopper would: no system prompt, web search on, Australian location. */
 async function askAsShopper(question: string): Promise<AiVisibilityResult> {
+  const config = taskConfig("VISIBILITY");
   const created = await openaiPost<ResponsesJson & { id?: string }>("/responses", {
     background: true,
-    model: process.env.BLOG_AGENT_VISIBILITY_MODEL?.trim() || process.env.BLOG_AGENT_MODEL?.trim() || "gpt-6-astra",
-    reasoning: { effort: "low" },
+    model: config.model,
+    reasoning: { effort: config.effort },
     input: question,
-    tools: [{ type: "web_search", user_location: { type: "approximate", country: "AU" } }],
+    tools: [{ type: "web_search", search_context_size: config.search, user_location: { type: "approximate", country: "AU" } }],
     max_output_tokens: 4_000,
   });
   const data = await awaitResponse(created);
+  logUsage("VISIBILITY", config.model, data.usage);
   const text = outputText(data);
   const citations = citationsOf(data);
   const lower = text.toLowerCase();

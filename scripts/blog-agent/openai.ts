@@ -1,4 +1,5 @@
 /** Minimal OpenAI REST client (Responses + Images) so the agent needs no SDK dependency. */
+import { imageModel, logUsage, taskConfig, type AgentTask } from "./model-config";
 
 export type UrlCitation = { type?: string; url?: string; title?: string };
 
@@ -8,6 +9,7 @@ export type ResponsesJson = {
   output?: Array<{ type?: string; content?: Array<{ type?: string; text?: string; annotations?: UrlCitation[] }> }>;
   error?: { message?: string } | null;
   incomplete_details?: { reason?: string } | null;
+  usage?: Parameters<typeof logUsage>[2];
 };
 
 function apiKey(): string {
@@ -73,21 +75,24 @@ function parseJsonObject(text: string): unknown {
 
 /** One Responses API call with optional live web search; returns the parsed JSON object. */
 export async function askJson(opts: {
+  task: AgentTask;
   instructions: string;
   input: string;
   webSearch?: boolean;
   maxOutputTokens?: number;
 }): Promise<unknown> {
+  const config = taskConfig(opts.task);
   const created = await openaiPost<ResponsesJson & { id?: string }>("/responses", {
     background: true,
-    model: process.env.BLOG_AGENT_MODEL?.trim() || "gpt-6-astra",
-    reasoning: { effort: process.env.BLOG_AGENT_REASONING_EFFORT?.trim() || "high" },
+    model: config.model,
+    reasoning: { effort: config.effort },
     instructions: opts.instructions,
     input: opts.input,
-    ...(opts.webSearch ? { tools: [{ type: "web_search" }] } : {}),
+    ...(opts.webSearch ? { tools: [{ type: "web_search", search_context_size: config.search }] } : {}),
     max_output_tokens: opts.maxOutputTokens ?? 32_000,
   });
   const data = await awaitResponse(created);
+  logUsage(opts.task, config.model, data.usage);
   if (data.error?.message) throw new Error(`OpenAI error: ${data.error.message}`);
   return parseJsonObject(outputText(data));
 }
@@ -96,10 +101,10 @@ export const IMAGE_SIZES = { landscape: { width: 1536, height: 1024 }, square: {
 export type ImageShape = keyof typeof IMAGE_SIZES;
 
 /** Generate one WebP image; returns base64 plus its pixel size. */
-export async function generateImage(prompt: string, shape: ImageShape) {
+export async function generateImage(prompt: string, shape: ImageShape, kind: "hero" | "inline") {
   const { width, height } = IMAGE_SIZES[shape];
   const data = await openaiPost<{ data?: Array<{ b64_json?: string }> }>("/images/generations", {
-    model: process.env.BLOG_AGENT_IMAGE_MODEL?.trim() || "gpt-image-1",
+    model: imageModel(kind),
     prompt,
     size: `${width}x${height}`,
     quality: process.env.BLOG_AGENT_IMAGE_QUALITY?.trim() || "medium",

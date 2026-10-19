@@ -58,6 +58,7 @@ export async function runCommunityScan(existingTitles: string[]): Promise<Commun
   try {
     const medium = (await Promise.all(MEDIUM_TAGS.map(mediumTag))).flat();
     const raw = await askJson({
+      task: "RESEARCH",
       instructions: [
         "You research what small sellers are asking online, for Vendl's blog (Australian farm stands, home bakers, makers, market stallholders, small online shops).",
         "Use web search restricted to reddit.com (e.g. r/smallbusiness, r/AusFinance, r/australia, r/Baking, r/homestead, r/farmersmarket, r/Etsy), quora.com and public linkedin.com posts, focusing on the last ~30 days.",
