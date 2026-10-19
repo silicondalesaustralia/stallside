@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { registerPushDevice, unregisterPushDevice } from "@/lib/push-devices";
 
 const bodySchema = z.object({
   token: z.string().min(10).max(4096),
@@ -28,18 +29,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid body" }, { status: 400 });
     }
 
-    await prisma.pushDevice.upsert({
-      where: { token: parsed.data.token },
-      create: {
-        ownerId: owner.id,
-        token: parsed.data.token,
-        platform: parsed.data.platform,
-      },
-      update: {
-        ownerId: owner.id,
-        platform: parsed.data.platform,
-      },
-    });
+    await registerPushDevice(owner.id, parsed.data.token, parsed.data.platform);
 
     return NextResponse.json({ ok: true });
   } catch (error) {
@@ -69,9 +59,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Invalid body" }, { status: 400 });
     }
 
-    await prisma.pushDevice.deleteMany({
-      where: { token: token.data.token, ownerId: owner.id },
-    });
+    await unregisterPushDevice(owner.id, token.data.token);
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Push unregister failed", error);
