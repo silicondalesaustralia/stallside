@@ -60,7 +60,7 @@ Format: `[fact] <claim as written in the article> (<regulator URL>; checked 2026
 
 ### Scope honesty
 
-Do not claim search volume, Google Trends, People Also Ask extraction, competitor audits or ranking checks unless you actually did them. GSC numbers from `gsc-opportunities` are real and may be cited in `changeNotes` and `researchNotes`.
+Do not claim search volume, Google Trends, People Also Ask extraction, competitor audits or ranking checks unless you actually did them. GSC numbers from `gsc-opportunities` are real and may be cited in `changeNotes` and `researchNotes`. The `serpBrief` comes from a web search of the main query (an approximation of Google's results, not a rank tracker); describe it as "top search results reviewed".
 
 ## 5. Human writing and genuine authority
 

@@ -12,6 +12,7 @@ import { insertFigures, type PlacedImage } from "./figures";
 import { tryCreatePostImage, uniqueFilenames } from "./images";
 import { askJson } from "./openai";
 import { agentDoc, knowledgeBaseSource, todayInAdelaide, vendlFactsSource } from "./repo-context";
+import { buildSerpBrief } from "./serp-brief";
 
 type Topic = { id: string; title: string; angle: string | null; notes: string | null; source: string; section: string | null; targetQueries: unknown; sourceUrls: unknown; targetPostSlug: string | null; expiresAt: string | null };
 type TargetPost = { id: string; slug: string; section: string; title: string; seoTitle: string; seoDescription: string; excerpt: string; bodyHtml: string; faqs: unknown };
@@ -29,7 +30,7 @@ function folderFor(article: AgentArticle, targetPost: TargetPost | null): string
 }
 
 async function draftArticle(topic: Topic, targetPost: TargetPost | null): Promise<AgentArticle> {
-  const context = await appGet<unknown>("/context");
+  const [context, serpBrief] = await Promise.all([appGet<unknown>("/context"), buildSerpBrief(topic, targetPost)]);
   const task = targetPost
     ? "Propose an update to the published post in targetPost. Return the complete revised bodyHtml and changeNotes."
     : "Write a complete new post for this topic.";
@@ -43,6 +44,7 @@ async function draftArticle(topic: Topic, targetPost: TargetPost | null): Promis
     input: `${task} Research with web search before writing. Today is ${todayInAdelaide()}.\n${JSON.stringify({
       topic,
       targetPost,
+      serpBrief,
       blogContext: context,
       vendlFactFiles: vendlFactsSource(),
       knowledgeBase: knowledgeBaseSource(),

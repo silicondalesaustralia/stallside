@@ -5,11 +5,11 @@ The agent runs in two stages on GitHub Actions. It never publishes; Jono reviews
 1. **Evening planner** (9pm Australia/Adelaide, `scripts/blog-agent/plan.ts`): recommends 10 ranked ideas and emails them. Each has a "Write this" link.
 2. **Writer** (`scripts/blog-agent/write.ts`, started when an idea is picked, up to 3 per evening): researches and drafts one post or update, with images, into the review queue. Nothing is written if nothing is picked.
 
-Vendl is moving from a farm-stand checkout tool to a full ecommerce platform for home producers and small sellers, competing with Shopify, Wix, Square Online, WooCommerce and Bakesy. The audience: farm stands, home bakers, makers, market stallholders and small online shops, mostly in Australia.
+Vendl is moving from a farm-stand checkout tool to a full ecommerce platform for home producers and small sellers, competing directly with home-producer platforms (CottageCMS, Bakebug, Hotplate, Loafly, Bakesy) and broadly with Shopify, Wix, Square Online and WooCommerce. The audience: farm stands, home bakers, makers, market stallholders and small online shops, mostly in Australia.
 
 ## Planner: choosing tonight's 10
 
-Inputs: blog context (existing posts, backlog topics, recent rejections and discarded revisions), the Search Console report, knowledge base articles, recent commits on `main` (shipped) and the preview branch (upcoming), and live web search for news.
+Inputs: blog context (existing posts, backlog topics, recent rejections and discarded revisions), the Search Console report, knowledge base articles, recent commits on `main` (shipped) and the preview branch (upcoming), live web search for news, and on Sundays `competitorScan` (competitors' recent blog, guide and help content, product changes, and content gaps).
 
 Aim for a mix across the 10. Across a week no single source should exceed half the ideas.
 
@@ -19,9 +19,10 @@ Aim for a mix across the 10. Across a week no single source should exceed half t
   - Page is a landing page and the intent is commercial ("app", "software", "best", "price") → skip it; it needs a page change, not a post.
   - Informational queries ("how to", "can I", "what is") that only a sales page or the home page ranks for → **new post** targeting the cluster.
   - The report's `tier`: `strict` = genuine striking distance, so favour updates. `loose` = young-site fallback, so favour new guides that cover whole clusters.
-- **News (1–3 ideas).** Search the web for the last ~72 hours. Sources: Shopify, Square, Wix, WooCommerce, Stripe and Bakesy changelogs, blogs and pricing pages; RBA surcharging, ACCC, ATO small business and GST updates; FSANZ and state food authorities; farmers market associations; Google Search Central and Merchant Center. Recommend only items that materially affect small sellers, have a genuine Vendl angle and aren't already covered. Set `timeSensitive: true` and `section: NEWS`.
+- **News (1–3 ideas).** Search the web for the last ~72 hours. Sources: CottageCMS, Bakebug, Hotplate, Loafly, Bakesy, Shopify, Square, Wix, WooCommerce and Stripe changelogs, blogs and pricing pages; RBA surcharging, ACCC, ATO small business and GST updates; FSANZ and state food authorities; farmers market associations; Google Search Central and Merchant Center. Recommend only items that materially affect small sellers, have a genuine Vendl angle and aren't already covered. Set `timeSensitive: true` and `section: NEWS`.
 - **Shipped features and knowledge base (2–3 ideas).** Deeper guides on features in the knowledge base or recent `main` commits, framed by the broader ecommerce benefit rather than as a product tour.
 - **Market and comparison topics (1–3 ideas).** Evergreen guides that help sellers choose and run their setup: platform comparisons, fees explained, pre-orders, inventory, selling at markets and online.
+- **Competitor gaps (Sundays, 1–2 ideas, `source: MARKET`).** When `competitorScan` is present, turn its strongest `contentGaps` into ideas: topics competitors rank or publish on that Vendl lacks, or cover badly. Put the competitor URLs in `sourceUrls` and the evidence in `whyNow`. Write a better, seller-first answer; never copy a competitor's structure or target their brand name unless it is a fair comparison guide.
 - **Never recommend** a topic that duplicates an existing post, repeats a rejected angle (read `recentRejections` and `recentDiscardedRevisions`), or describes a feature only on the preview branch.
 - **Rank by** expected value to readers and search: real demand (impressions), timeliness, fit with Vendl's audience, and how clearly Vendl can add something useful. `score` 0–100.
 
@@ -29,6 +30,7 @@ Aim for a mix across the 10. Across a week no single source should exceed half t
 
 Read `WRITING.md` in full and follow it. Then:
 
+- **Search results brief:** `serpBrief` (when present) lists what the top results for the main query cover, their weaknesses, the gaps, and reader questions. Cover every `mustCover` point, answer the `readerQuestions`, and make at least two `gaps` the article's distinctive sections. Beat the top results on usefulness and Australian specifics, not length. Never paraphrase them. Note in `researchNotes.whyThisTopic` which gaps the article fills.
 - **New post:** write the complete draft. Choose `NEWS` for time-bound items, `GUIDE` for evergreen how-tos, comparisons, feature deep dives and knowledge base expansions.
 - **Update** (`targetPostSlug` set): edit the existing HTML minimally. Add a section or FAQ answering the target queries, tighten the title or meta if the query is missing, add internal links. Don't rewrite unrelated sections. Every change needs a `changeNotes` entry: `section` = heading name, `reason` = which query it answers and its numbers (e.g. "Answers 'honesty box payment app' (pos 14.2, 320 impressions)").
 - **Vendl facts** come only from the supplied pricing and knowledge base source files, never memory. **Never describe a feature that is not in them.**

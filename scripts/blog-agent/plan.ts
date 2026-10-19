@@ -1,7 +1,9 @@
 /**
  * Evening planner: recommend 10 ranked blog ideas and email them with "Write this" links.
  *
- *   npx tsx scripts/blog-agent/plan.ts [--force]
+ *   npx tsx scripts/blog-agent/plan.ts [--force] [--competitors]
+ *
+ * Sundays (or --competitors) also run a competitor content scan first.
  *
  * Scheduled twice (10:30 and 11:30 UTC) to cover Adelaide daylight saving; only the run that
  * lands at 9pm Adelaide time proceeds unless --force is passed.
@@ -12,9 +14,17 @@ import { tieredOpportunityReport } from "../../src/lib/gsc/tiered-report";
 import { recommendationsBatchSchema } from "../../src/lib/blog/recommendation-schemas";
 import { appGet, appPost, reportFailure } from "./api";
 import { askJson } from "./openai";
-import { adelaideHour, agentDoc, knowledgeBaseSource, recentCommits, todayInAdelaide } from "./repo-context";
+import { runCompetitorScan } from "./competitor-scan";
+import { adelaideHour, adelaideWeekday, agentDoc, knowledgeBaseSource, recentCommits, todayInAdelaide } from "./repo-context";
 
 const PLAN_HOUR = 21;
+const COMPETITOR_SCAN_DAY = "Sunday";
+
+type PlannerContext = { posts?: Array<{ title: string }>; codeArticles?: Array<{ title: string }> };
+
+function existingTitles(context: PlannerContext): string[] {
+  return [...(context.posts ?? []), ...(context.codeArticles ?? [])].map((item) => item.title);
+}
 
 const OUTPUT_CONTRACT = `Return only a json object:
 {
@@ -47,11 +57,14 @@ async function main() {
     return;
   }
 
-  const [context, gsc] = await Promise.all([appGet<unknown>("/context"), gscReport()]);
+  const [context, gsc] = await Promise.all([appGet<PlannerContext>("/context"), gscReport()]);
+  const scanNight = process.argv.includes("--competitors") || adelaideWeekday() === COMPETITOR_SCAN_DAY;
+  const competitorScan = scanNight ? await runCompetitorScan(existingTitles(context)) : null;
   const input = JSON.stringify({
     today: todayInAdelaide(),
     blogContext: context,
     searchConsole: gsc,
+    competitorScan,
     commits: recentCommits(7),
     knowledgeBase: knowledgeBaseSource(),
   });
