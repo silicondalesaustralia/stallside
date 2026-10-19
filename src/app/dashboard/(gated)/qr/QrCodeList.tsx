@@ -1,14 +1,7 @@
 import Link from "next/link";
+import type { OwnerQrCode } from "@/lib/qr/owner-codes";
 
-export type QrCodeRow = {
-  id: string;
-  name: string;
-  standName: string;
-  destination: { label: string; path: string } | null;
-  atStall: boolean;
-};
-
-export default function QrCodeList({ codes }: { codes: QrCodeRow[] }) {
+export default function QrCodeList({ codes }: { codes: OwnerQrCode[] }) {
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">QR codes for pages</h2>

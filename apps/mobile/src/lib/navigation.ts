@@ -17,6 +17,10 @@ export function openSubscription(offerId: string) {
   router.push({ pathname: "/subscriptions/[offerId]", params: { offerId } });
 }
 
+export function openQr(kind: "business" | "code", id: string) {
+  router.push({ pathname: "/qr/[kind]/[id]", params: { kind, id } });
+}
+
 export function openProduct(productId: string) {
   router.push({ pathname: "/product/[productId]", params: { productId } });
 }
