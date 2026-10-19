@@ -43,6 +43,7 @@ Aim for a mix across the 10. Across a week no single source should exceed half t
 
 Read `WRITING.md` in full and follow it. Then:
 
+- **Search data:** every idea lists 2–5 `targetQueries` (the searches a reader would type, main one first). After planning, Google Australia volume, difficulty and intent are attached from DataForSEO and shown in the email; the writer's brief uses the highest-volume query.
 - **Search results brief:** `serpBrief` (when present) lists what the top results for the main query cover, their weaknesses, the gaps, and reader questions. Cover every `mustCover` point, answer the `readerQuestions`, and make at least two `gaps` the article's distinctive sections. Beat the top results on usefulness and Australian specifics, not length. Never paraphrase them. Note in `researchNotes.whyThisTopic` which gaps the article fills.
 - **New post:** write the complete draft. Choose `NEWS` for time-bound items, `GUIDE` for evergreen how-tos, comparisons, feature deep dives and knowledge base expansions.
 - **Update** (`targetPostSlug` set): edit the existing HTML minimally. Add a section or FAQ answering the target queries, tighten the title or meta if the query is missing, add internal links. Don't rewrite unrelated sections. Every change needs a `changeNotes` entry: `section` = heading name, `reason` = which query it answers and its numbers (e.g. "Answers 'honesty box payment app' (pos 14.2, 320 impressions)").
