@@ -55,6 +55,10 @@ export function adelaideHour(now = new Date()): number {
   );
 }
 
+export function adelaideWeekday(now = new Date()): string {
+  return new Intl.DateTimeFormat("en-AU", { timeZone: "Australia/Adelaide", weekday: "long" }).format(now);
+}
+
 export function todayInAdelaide(now = new Date()): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Australia/Adelaide" }).format(now);
 }

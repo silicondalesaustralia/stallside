@@ -6,7 +6,12 @@ on:
     # The script only proceeds for the run that lands at 21:00 Adelaide time.
     - cron: "30 10 * * *"
     - cron: "30 11 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      competitors:
+        description: "Also run the competitor scan (normally Sundays only)"
+        type: boolean
+        default: false
 
 concurrency:
   group: blog-plan
@@ -27,7 +32,7 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Recommend tomorrow's ideas
-        run: npx -y tsx scripts/blog-agent/plan.ts ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }}
+        run: npx -y tsx scripts/blog-agent/plan.ts ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }} ${{ inputs.competitors && '--competitors' || '' }}
         env:
           BLOG_AGENT_BASE_URL: ${{ vars.BLOG_AGENT_BASE_URL }}
           BLOG_AGENT_TOKEN: ${{ secrets.BLOG_AGENT_TOKEN }}
