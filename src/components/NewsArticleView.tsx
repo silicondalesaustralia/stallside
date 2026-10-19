@@ -25,10 +25,10 @@ export default function NewsArticleView({ article }: { article: NewsArticle }) {
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
             <Link
-              href={newsIndexPath()}
+              href={article.sectionPath ?? newsIndexPath()}
               className="font-medium text-[var(--leaf-dark)] underline-offset-2 hover:underline"
             >
-              Farm Stand News
+              {article.sectionLabel ?? "Farm Stand News"}
             </Link>
           </li>
           <li aria-hidden className="text-[var(--line)]">
