@@ -5,6 +5,7 @@ import {
   type ProductTab,
   type ProductsResponse,
 } from "@contracts/mobile/products";
+import type { MobileProductDetail } from "@contracts/mobile/product-detail";
 import { apiFetch } from "@/lib/api";
 import { useToken } from "@/auth/useAuth";
 
@@ -41,6 +42,9 @@ export function useSetStock() {
               ),
             }
           : data,
+      );
+      queryClient.setQueryData<MobileProductDetail>(["product", result.productId], (product) =>
+        product ? { ...product, stockQuantity: result.stockQuantity } : product,
       );
       void queryClient.invalidateQueries({ queryKey: ["home"] });
       void queryClient.invalidateQueries({ queryKey: ["inventory"] });

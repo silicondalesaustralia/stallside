@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { InventoryRow } from "@contracts/mobile/inventory";
+import { openProduct } from "@/lib/navigation";
 import { colors, spacing } from "@/lib/theme";
 import StockStepper from "@/components/StockStepper";
 
@@ -32,7 +33,9 @@ export default function InventoryItemRow({ row, saving, onSaveStock }: Props) {
   return (
     <View style={styles.row}>
       <View style={styles.header}>
-        <Text style={styles.name}>{row.name}</Text>
+        <Pressable accessibilityRole="button" onPress={() => openProduct(row.id)} style={styles.nameButton}>
+          {({ pressed }) => <Text style={[styles.name, pressed && styles.pressed]}>{row.name}</Text>}
+        </Pressable>
         <Text style={[styles.status, row.stockStatus !== "in_stock" && styles.warn]}>
           {STATUS_LABEL[row.stockStatus]}
         </Text>
@@ -61,7 +64,9 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   header: { flexDirection: "row", justifyContent: "space-between", gap: spacing.sm },
-  name: { color: colors.text, fontSize: 16, fontWeight: "600", flexShrink: 1 },
+  nameButton: { flexShrink: 1 },
+  name: { color: colors.text, fontSize: 16, fontWeight: "600", textDecorationLine: "underline" },
+  pressed: { opacity: 0.6 },
   status: { color: colors.muted, fontSize: 13, fontWeight: "700" },
   warn: { color: colors.danger },
   meta: { color: colors.muted, fontSize: 13 },

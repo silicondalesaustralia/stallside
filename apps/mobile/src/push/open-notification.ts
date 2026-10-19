@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { openOrder } from "@/lib/navigation";
+import { openOrder, openProduct } from "@/lib/navigation";
 
 const STOCK_TYPES = new Set(["low_stock", "sold_out", "supplier_stock"]);
 
@@ -17,8 +17,13 @@ export function openNotification(data: Record<string, unknown>) {
     openOrder(orderId);
     return;
   }
-  if ((type && STOCK_TYPES.has(type)) || stringField(data, "productId")) {
-    router.navigate("/products");
+  const productId = stringField(data, "productId");
+  if (productId) {
+    openProduct(productId);
+    return;
+  }
+  if (type && STOCK_TYPES.has(type)) {
+    router.navigate("/inventory");
     return;
   }
   router.navigate("/orders");

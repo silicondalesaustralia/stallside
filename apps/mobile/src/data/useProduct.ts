@@ -1,0 +1,55 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  mobileProductDetail,
+  type MobileProductDetail,
+  type ProductPriceBody,
+  type ProductStatusBody,
+} from "@contracts/mobile/product-detail";
+import { apiFetch } from "@/lib/api";
+import { useToken } from "@/auth/useAuth";
+
+const productPath = (productId: string) => `/products/${encodeURIComponent(productId)}`;
+
+export function useProduct(productId: string) {
+  const token = useToken();
+  return useQuery({
+    queryKey: ["product", productId],
+    enabled: Boolean(token && productId),
+    queryFn: () => apiFetch(productPath(productId), { token, schema: mobileProductDetail }),
+  });
+}
+
+function useStoreProduct(productId: string) {
+  const queryClient = useQueryClient();
+  return (product: MobileProductDetail) => {
+    queryClient.setQueryData(["product", productId], product);
+    void queryClient.invalidateQueries({ queryKey: ["products"] });
+    void queryClient.invalidateQueries({ queryKey: ["home"] });
+    void queryClient.invalidateQueries({ queryKey: ["inventory"] });
+  };
+}
+
+export function useSaveProductPrice(productId: string) {
+  const token = useToken();
+  const store = useStoreProduct(productId);
+  return useMutation({
+    mutationFn: (body: ProductPriceBody) =>
+      apiFetch(productPath(productId), { method: "PATCH", token, body, schema: mobileProductDetail }),
+    onSuccess: store,
+  });
+}
+
+export function useSetProductStatus(productId: string) {
+  const token = useToken();
+  const store = useStoreProduct(productId);
+  return useMutation({
+    mutationFn: (body: ProductStatusBody) =>
+      apiFetch(`${productPath(productId)}/status`, {
+        method: "POST",
+        token,
+        body,
+        schema: mobileProductDetail,
+      }),
+    onSuccess: store,
+  });
+}

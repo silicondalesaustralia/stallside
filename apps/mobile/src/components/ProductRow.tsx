@@ -1,6 +1,8 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import type { MobileProduct } from "@contracts/mobile/products";
 import { formatCents } from "@/lib/format";
+import { openProduct } from "@/lib/navigation";
 import { colors, spacing } from "@/lib/theme";
 import StockStepper from "@/components/StockStepper";
 
@@ -27,8 +29,18 @@ export default function ProductRow({ product, saving, onSaveStock }: Props) {
 
   return (
     <View style={styles.row}>
-      <Text style={styles.name}>{product.name}</Text>
-      <Text style={styles.meta}>{meta.join(" · ")}</Text>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityHint="Opens the product"
+        onPress={() => openProduct(product.id)}
+        style={({ pressed }) => [styles.info, pressed && styles.pressed]}
+      >
+        <View style={styles.text}>
+          <Text style={styles.name}>{product.name}</Text>
+          <Text style={styles.meta}>{meta.join(" · ")}</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+      </Pressable>
       <View style={styles.stockLine}>
         <Text style={[styles.note, note.warn && styles.warn]}>{note.text}</Text>
         <StockStepper
@@ -51,6 +63,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
+  info: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  pressed: { opacity: 0.6 },
+  text: { flex: 1, gap: spacing.xs },
   name: { color: colors.text, fontSize: 16, fontWeight: "600" },
   meta: { color: colors.muted, fontSize: 13 },
   stockLine: {
