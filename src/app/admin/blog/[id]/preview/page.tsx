@@ -8,7 +8,7 @@ import { blogPostToNewsArticle } from "@/lib/blog/to-news-article";
 export default async function AdminBlogPreviewPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
   const { id } = await params;
-  const post = await prisma.blogPost.findUnique({ where: { id } });
+  const post = await prisma.blogPost.findUnique({ where: { id }, include: { author: true } });
   if (!post) notFound();
 
   return (

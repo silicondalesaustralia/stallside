@@ -40,7 +40,16 @@ all output goes through the blog-agent API. Produce at most two drafts or revisi
 backlog, then send the digest. If an API call fails twice, stop and send a digest describing the failure.
 ```
 
-## 5. Daily review
+## 5. Authors
+
+Open `/admin/blog/authors` → **New author**. Fill in name, job title, short bio (shown under every article), full bio (profile page: real experience, not marketing), expertise, a square headshot, and social profile links (one per line). Tick **Public** and **Default author for new drafts**.
+
+- Every new draft (agent or manual) is credited to the default author; change it per post in the editor. Publishing requires an author.
+- Each public author gets `/authors/{slug}` with ProfilePage + Person schema. Articles link to it in the byline and an "About the author" box, and their BlogPosting `author` uses the same Person `@id`.
+- `/editorial-policy` explains how articles are researched, AI-assisted, fact-checked and reviewed; it is linked from author boxes and referenced as the organisation's `publishingPrinciples`.
+- Posts with no author (or a hidden one) are credited to the Vendl organisation.
+
+## 6. Daily review
 
 Open `/admin/blog`:
 

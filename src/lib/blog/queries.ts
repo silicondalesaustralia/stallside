@@ -15,6 +15,7 @@ export async function getLiveBlogArticles(section: BlogSection): Promise<NewsArt
         ...liveWhere(new Date()),
         OR: [{ section }, { alsoListedIn: section }],
       },
+      include: { author: true },
       orderBy: { publishedAt: "desc" },
     });
     return posts.map(blogPostToNewsArticle);
@@ -32,6 +33,7 @@ export async function getLiveBlogArticle(
   try {
     const post = await prisma.blogPost.findFirst({
       where: { ...liveWhere(new Date()), slug, section },
+      include: { author: true },
     });
     return post ? blogPostToNewsArticle(post) : undefined;
   } catch (error) {
@@ -51,6 +53,20 @@ export async function findLiveBlogSection(slug: string): Promise<BlogSection | n
   } catch (error) {
     console.error(`[blog] failed to look up section for ${slug}`, error);
     return null;
+  }
+}
+
+export async function getLiveBlogArticlesByAuthor(authorId: string): Promise<NewsArticle[]> {
+  try {
+    const posts = await prisma.blogPost.findMany({
+      where: { ...liveWhere(new Date()), authorId },
+      include: { author: true },
+      orderBy: { publishedAt: "desc" },
+    });
+    return posts.map(blogPostToNewsArticle);
+  } catch (error) {
+    console.error(`[blog] failed to load posts for author ${authorId}`, error);
+    return [];
   }
 }
 

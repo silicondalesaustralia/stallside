@@ -28,6 +28,7 @@ export const vendlVsBakesyArticle: NewsArticle = {
   updatedAt: "2026-08-06T09:00:00+10:00",
   author: {
     slug: "vendl",
+    kind: "organization",
     name: "Vendl",
     bio: "Comparisons and guides for farm stand, roadside stall and unattended retail sellers.",
     jobTitle: "Editorial",

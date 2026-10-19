@@ -7,6 +7,7 @@ import { parseBlogPostForm, publishBlockers } from "@/lib/blog/admin-form";
 import { adminBlogPath, adminBlogPostPath } from "@/lib/blog/paths";
 import { revalidateBlogPost } from "@/lib/blog/revalidate";
 import { uniqueBlogSlug } from "@/lib/blog/slug";
+import { defaultBlogAuthorId } from "@/lib/blog/authors";
 
 function backTo(id: string, query: Record<string, string>): never {
   redirect(`${adminBlogPostPath(id)}?${new URLSearchParams(query)}`);
@@ -52,6 +53,7 @@ async function goLive(formData: FormData, when: Date | null) {
   const id = postId(formData);
   const post = await saveFromForm(id, formData);
   const blockers = publishBlockers(post);
+  if (!post.authorId) blockers.push("Choose an author");
   if (blockers.length) backTo(id, { error: blockers.join("; ") });
 
   const now = new Date();
@@ -114,6 +116,7 @@ export async function createManualBlogDraftAction() {
       excerpt: "",
       bodyHtml: "",
       source: "MANUAL",
+      authorId: await defaultBlogAuthorId(),
     },
     select: { id: true },
   });

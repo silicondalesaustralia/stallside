@@ -33,6 +33,11 @@ export default async function AdminBlogPostPage({
   });
   if (!post) notFound();
   const pendingRevision = post.revisions[0];
+  const authors = await prisma.blogAuthor.findMany({
+    where: post.authorId ? { OR: [{ active: true }, { id: post.authorId }] } : { active: true },
+    select: { id: true, name: true, jobTitle: true, active: true },
+    orderBy: { name: "asc" },
+  });
 
   return (
     <main className="flex flex-col gap-5">
@@ -56,7 +61,7 @@ export default async function AdminBlogPostPage({
         <input type="hidden" name="id" value={post.id} />
         <AdminBlogPostFields post={post} />
         <div className="flex flex-col gap-4">
-          <AdminBlogPublishPanel post={post} />
+          <AdminBlogPublishPanel post={post} authors={authors} />
           <AdminBlogResearchPanel
             summary={post.agentSummary}
             notes={parseResearchNotes(post.researchNotes)}

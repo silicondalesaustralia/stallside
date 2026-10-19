@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/session";
+import { adminBlogAuthorsPath } from "@/lib/blog/paths";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import {
   loadAdminBlogCounts,
@@ -42,9 +44,17 @@ export default async function AdminBlogPage({
             Review the agent&apos;s daily drafts and updates, then publish to News or Guides.
           </p>
         </div>
-        <form action={createManualBlogDraftAction}>
-          <button type="submit" className={dashCtaClass}>New post</button>
-        </form>
+        <div className="flex items-center gap-2">
+          <Link
+            href={adminBlogAuthorsPath()}
+            className="rounded-full bg-white px-4 py-2 text-sm font-semibold ring-1 ring-[var(--line)] hover:bg-[var(--panel)]"
+          >
+            Authors
+          </Link>
+          <form action={createManualBlogDraftAction}>
+            <button type="submit" className={dashCtaClass}>New post</button>
+          </form>
+        </div>
       </div>
       {error ? <p className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p> : null}
       <AdminBlogTabs active={tab} counts={counts} />

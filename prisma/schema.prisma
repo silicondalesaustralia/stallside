@@ -3281,11 +3281,32 @@ model BlogPost {
   contentUpdatedAt DateTime?
   topicId          String?
   topic            BlogTopic?         @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  authorId         String?
+  author           BlogAuthor?        @relation(fields: [authorId], references: [id], onDelete: SetNull)
   revisions        BlogPostRevision[]
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
 
   @@index([status, section, publishedAt])
+  @@index([authorId])
+}
+
+/// Named post author with a public profile at /authors/{slug}. One may be the default for agent drafts.
+model BlogAuthor {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  name      String
+  jobTitle  String
+  shortBio  String
+  bio       String
+  avatarUrl String?
+  expertise String[]   @default([])
+  sameAs    String[]   @default([])
+  isDefault Boolean    @default(false)
+  active    Boolean    @default(true)
+  posts     BlogPost[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 /// Agent-proposed changes to a live post; live content is untouched until published.

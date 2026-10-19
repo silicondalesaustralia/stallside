@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ComponentProps } from "react";
 import type { BlogPost } from "@/generated/prisma/client";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import BlogCountedField from "@/components/blog/BlogCountedField";
@@ -10,13 +11,20 @@ import {
   scheduleBlogPostAction,
   unpublishBlogPostAction,
 } from "../actions";
+import AdminBlogAuthorSelect from "./AdminBlogAuthorSelect";
 
 const fieldClass =
   "w-full rounded-[var(--radius)] border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none ring-[var(--leaf)] focus:ring-2";
 const secondaryClass =
   "rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-[var(--line)] bg-white hover:bg-[var(--panel)]";
 
-export default function AdminBlogPublishPanel({ post }: { post: BlogPost }) {
+export default function AdminBlogPublishPanel({
+  post,
+  authors,
+}: {
+  post: BlogPost;
+  authors: ComponentProps<typeof AdminBlogAuthorSelect>["authors"];
+}) {
   const now = new Date();
   const live = post.status === "PUBLISHED" && post.publishedAt !== null && post.publishedAt <= now;
   const scheduled = post.status === "PUBLISHED" && post.publishedAt !== null && post.publishedAt > now;
@@ -30,6 +38,7 @@ export default function AdminBlogPublishPanel({ post }: { post: BlogPost }) {
             {live ? "Live" : scheduled ? `Scheduled ${post.publishedAt?.toLocaleString("en-AU")}` : post.status.toLowerCase()}
           </span>
         </p>
+        <AdminBlogAuthorSelect authors={authors} value={post.authorId} />
         <div className="flex flex-wrap gap-2">
           <button type="submit" formAction={publishBlogPostAction} className={dashCtaClass}>
             {live ? "Update live post" : "Publish now"}

@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { NewsArticle } from "@/lib/farms-stand-news";
 import { newsIndexPath } from "@/lib/farms-stand-news";
+import ArticleAuthorBox from "@/components/blog/ArticleAuthorBox";
+import ArticleBylineAuthor from "@/components/blog/ArticleBylineAuthor";
 
 function formatPublishedDate(iso: string) {
   const date = new Date(iso);
@@ -54,7 +56,7 @@ export default function NewsArticleView({ article }: { article: NewsArticle }) {
             </>
           ) : null}
           <span aria-hidden> · </span>
-          <span>{article.author.name}</span>
+          <ArticleBylineAuthor author={article.author} />
         </p>
       </header>
 
@@ -100,6 +102,8 @@ export default function NewsArticleView({ article }: { article: NewsArticle }) {
           </dl>
         </section>
       ) : null}
+
+      <ArticleAuthorBox author={article.author} />
     </article>
   );
 }
