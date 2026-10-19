@@ -34,6 +34,7 @@ const OUTPUT_CONTRACT = `Return only a json object:
     "section": "NEWS" | "GUIDE",
     "source": "GSC" | "KNOWLEDGE_BASE" | "FEATURE" | "MARKET" | "NEWS" | "COMPETITOR" | "COMMUNITY" | "AI_ANSWERS",
     "whyNow": string (the evidence: impressions/position, news date, feature commit),
+    "vendlTieIn": string (the named Vendl feature(s) from the knowledge base that solve the reader's problem, and the signup hook),
     "score": integer 0-100,
     "targetQueries": [{ "query": string, "impressions": number, "position": number, "page": string }],
     "sourceUrls": [string],

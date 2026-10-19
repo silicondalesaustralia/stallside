@@ -8,7 +8,7 @@ import { parseTargetQueries } from "./types";
 
 type EmailTopic = Pick<
   BlogTopic,
-  "id" | "title" | "angle" | "notes" | "section" | "source" | "targetPostSlug" | "targetQueries" | "recommendationRank"
+  "id" | "title" | "angle" | "notes" | "featureRef" | "section" | "source" | "targetPostSlug" | "targetQueries" | "recommendationRank"
 >;
 
 function topicCard(topic: EmailTopic): string {
@@ -24,6 +24,7 @@ function topicCard(topic: EmailTopic): string {
 <p style="margin:0;font-size:12px;color:#6b6b5e;text-transform:uppercase;letter-spacing:.04em">#${topic.recommendationRank ?? ""} · ${kind} · ${section} · ${escapeHtml(topic.source.replace("_", " ").toLowerCase())}</p>
 <p style="margin:6px 0 4px;font-size:17px;font-weight:bold;color:#182c1b">${escapeHtml(topic.title)}</p>
 <p style="margin:0 0 6px;color:#333">${escapeHtml(topic.angle ?? "")}</p>
+${topic.featureRef ? `<p style="margin:0 0 6px;color:#2f6b3a;font-size:14px"><strong>Vendl tie-in:</strong> ${escapeHtml(topic.featureRef)}</p>` : ""}
 ${topic.notes ? `<p style="margin:0 0 6px;color:#555;font-size:14px"><strong>Why now:</strong> ${escapeHtml(topic.notes)}</p>` : ""}
 ${queries ? `<p style="margin:0 0 10px;color:#555;font-size:14px"><strong>Targets:</strong> ${queries}</p>` : ""}
 <a href="${pickUrl}" style="display:inline-block;background:#2f6b3a;color:#fff;text-decoration:none;padding:9px 18px;border-radius:999px;font-weight:bold;font-size:14px">Write this</a>

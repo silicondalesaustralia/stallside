@@ -11,6 +11,8 @@ export const recommendationSchema = z.object({
   section: z.enum(["NEWS", "GUIDE"]),
   source: z.enum(["GSC", "KNOWLEDGE_BASE", "FEATURE", "MARKET", "NEWS", "MANUAL", "COMPETITOR", "COMMUNITY", "AI_ANSWERS"]),
   whyNow: z.string().trim().min(20).max(600),
+  /** The Vendl feature that solves the reader's problem, and how the post leads to signing up. */
+  vendlTieIn: z.string().trim().min(20).max(500),
   score: z.number().int().min(0).max(100),
   targetQueries: z.array(blogTargetQuerySchema).max(30).optional(),
   sourceUrls: z.array(z.string().url()).max(10).optional(),

@@ -7,6 +7,16 @@ The agent runs in two stages on GitHub Actions. It never publishes; Jono reviews
 
 Vendl is moving from a farm-stand checkout tool to a full ecommerce platform for home producers and small sellers, competing directly with home-producer platforms (CottageCMS, Bakebug, Hotplate, Loafly, Bakesy) and broadly with Shopify, Wix, Square Online and WooCommerce. The audience: farm stands, home bakers, makers, market stallholders and small online shops, mostly in Australia.
 
+## The Vendl-first rule (every idea, every article)
+
+The blog exists to bring sellers to Vendl. Every idea must solve a reader's problem **with a Vendl feature** that exists in the knowledge base, and lead to signing up.
+
+- `vendlTieIn` names the feature(s) (e.g. QR pay at the stand, pre-orders with pickup windows, stock alerts, online shop, gift cards) and how the post leads to a signup. If you can't name a real Vendl feature that genuinely helps, drop the idea.
+- **Vendl is the hero, never another platform.** Don't recommend workflows, tutorials or routines for running another product (e.g. "a Square POS reconciliation routine", "how to use Shopify's new feature"). Integrations are framed as Vendl features ("Sell at markets and online without double-counting stock: Vendl's Square sync").
+- **Competitor news** only when there is a clear Vendl angle: what it means for small sellers and how Vendl handles it (or does it more simply or cheaply). Otherwise skip it.
+- **Titles** lead with the seller's problem or outcome, not a competitor's name. Competitor names belong in titles only for fair comparison guides where Vendl is one of the options.
+- **Regulatory and how-to guides** (licences, pricing, food rules) are fine when the tie-in is natural: e.g. after the licence checklist, "take pre-orders and payments with Vendl".
+
 ## Planner: choosing tonight's 10
 
 Inputs: blog context (existing posts, backlog topics, recent rejections and discarded revisions), the Search Console report, knowledge base articles, recent commits on `main` (shipped) and the preview branch (upcoming), live web search for news, and on Sundays the weekly research: `competitorScan` (competitors' recent content, product changes, content gaps), `communityScan` (real seller questions from Reddit, Quora, LinkedIn and Medium) and `aiVisibility` (ChatGPT's answers to buyer questions: whether Vendl is mentioned or cited, which competitors appear, which pages are cited).
@@ -36,6 +46,7 @@ Read `WRITING.md` in full and follow it. Then:
 - **Search results brief:** `serpBrief` (when present) lists what the top results for the main query cover, their weaknesses, the gaps, and reader questions. Cover every `mustCover` point, answer the `readerQuestions`, and make at least two `gaps` the article's distinctive sections. Beat the top results on usefulness and Australian specifics, not length. Never paraphrase them. Note in `researchNotes.whyThisTopic` which gaps the article fills.
 - **New post:** write the complete draft. Choose `NEWS` for time-bound items, `GUIDE` for evergreen how-tos, comparisons, feature deep dives and knowledge base expansions.
 - **Update** (`targetPostSlug` set): edit the existing HTML minimally. Add a section or FAQ answering the target queries, tighten the title or meta if the query is missing, add internal links. Don't rewrite unrelated sections. Every change needs a `changeNotes` entry: `section` = heading name, `reason` = which query it answers and its numbers (e.g. "Answers 'honesty box payment app' (pos 14.2, 320 impressions)").
+- **Vendl tie-in and CTA (required):** follow the Vendl-first rule and the topic's `featureRef` (its Vendl tie-in). Include one section where the Vendl feature is part of the solution (what it does for this reader, concretely, with a link to its page), and end the article with a short call to action paragraph linking to `/signup?utm_source=blog&utm_medium=article&utm_campaign={slug}` (e.g. "Start selling with Vendl free"). Mention Vendl naturally elsewhere where it genuinely helps, but keep the article useful even to someone who never signs up.
 - **Vendl facts** come only from the supplied pricing and knowledge base source files, never memory. **Never describe a feature that is not in them.**
 - **Competitor claims** need a cited source (their pricing, feature or changelog page) in `researchNotes.sources`, dated ("as of October 2026").
 - Australian context by default (AUD, GST, state food rules, card surcharging rules) and Australian spelling.
