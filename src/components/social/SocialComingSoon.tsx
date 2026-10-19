@@ -1,15 +1,18 @@
-const STEPS = [
+const PLATFORMS = ["Facebook", "Instagram", "TikTok", "Pinterest", "YouTube", "X.com"];
+
+const STEPS: { title: string; body: string; chips?: string[] }[] = [
   {
     title: "Connect your accounts",
-    body: "Link your Facebook page and Instagram account once. Vendl only posts what you approve.",
+    body: "Link your social accounts once. Vendl only posts what you approve.",
+    chips: PLATFORMS,
   },
   {
     title: "Set your brand",
     body: "Your logo, colours and the way you talk, so every post sounds like you.",
   },
   {
-    title: "Create posts in a click",
-    body: "Pick a product, a fresh batch or a market day and Vendl writes the caption and lays out the image from your photos.",
+    title: "Create posts your way",
+    body: "Upload your own photos, videos and captions, or let Vendl draft them for you. Post about anything: products, market days, behind the scenes, news or a special offer.",
   },
   {
     title: "Plan the week",
@@ -48,6 +51,18 @@ export default function SocialComingSoon() {
             <span>
               <span className="block text-sm font-semibold">{step.title}</span>
               <span className="mt-0.5 block text-sm text-[var(--muted)]">{step.body}</span>
+              {step.chips ? (
+                <span className="mt-2 flex flex-wrap gap-1.5">
+                  {step.chips.map((chip) => (
+                    <span
+                      key={chip}
+                      className="rounded-full border border-[var(--line)] bg-[var(--panel)] px-2.5 py-0.5 text-xs font-medium"
+                    >
+                      {chip}
+                    </span>
+                  ))}
+                </span>
+              ) : null}
             </span>
           </li>
         ))}
