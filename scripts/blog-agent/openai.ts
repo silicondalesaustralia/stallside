@@ -1,9 +1,11 @@
 /** Minimal OpenAI REST client (Responses + Images) so the agent needs no SDK dependency. */
 
-type ResponsesJson = {
+export type UrlCitation = { type?: string; url?: string; title?: string };
+
+export type ResponsesJson = {
   status?: string;
   output_text?: string;
-  output?: Array<{ type?: string; content?: Array<{ type?: string; text?: string }> }>;
+  output?: Array<{ type?: string; content?: Array<{ type?: string; text?: string; annotations?: UrlCitation[] }> }>;
   error?: { message?: string } | null;
   incomplete_details?: { reason?: string } | null;
 };
@@ -27,7 +29,7 @@ async function openaiRequest<T>(method: "GET" | "POST", path: string, body?: unk
   return (await res.json()) as T;
 }
 
-function openaiPost<T>(path: string, body: unknown): Promise<T> {
+export function openaiPost<T>(path: string, body: unknown): Promise<T> {
   return openaiRequest<T>("POST", path, body);
 }
 
@@ -35,7 +37,7 @@ const POLL_INTERVAL_MS = 10_000;
 const MAX_WAIT_MS = 40 * 60_000;
 
 /** Background responses avoid HTTP timeouts on long research runs; poll until done. */
-async function awaitResponse(created: ResponsesJson & { id?: string }): Promise<ResponsesJson> {
+export async function awaitResponse(created: ResponsesJson & { id?: string }): Promise<ResponsesJson> {
   if (!created.id) throw new Error("OpenAI did not return a response id");
   const started = Date.now();
   let current: ResponsesJson = created;
@@ -50,7 +52,7 @@ async function awaitResponse(created: ResponsesJson & { id?: string }): Promise<
   return current;
 }
 
-function outputText(data: ResponsesJson): string {
+export function outputText(data: ResponsesJson): string {
   if (data.output_text?.trim()) return data.output_text;
   for (const item of data.output ?? []) {
     for (const part of item.content ?? []) {

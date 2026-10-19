@@ -41,6 +41,10 @@ export function adminBlogAuthorsPath() {
   return "/admin/blog/authors";
 }
 
+export function adminBlogAiVisibilityPath() {
+  return "/admin/blog/ai-visibility";
+}
+
 export function adminBlogAuthorPath(id: string) {
   return `/admin/blog/authors/${id}`;
 }

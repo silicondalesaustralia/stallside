@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/session";
-import { adminBlogAuthorsPath } from "@/lib/blog/paths";
+import { adminBlogAiVisibilityPath, adminBlogAuthorsPath } from "@/lib/blog/paths";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import {
   loadAdminBlogCounts,
@@ -45,6 +45,12 @@ export default async function AdminBlogPage({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            href={adminBlogAiVisibilityPath()}
+            className="rounded-full bg-white px-4 py-2 text-sm font-semibold ring-1 ring-[var(--line)] hover:bg-[var(--panel)]"
+          >
+            AI visibility
+          </Link>
           <Link
             href={adminBlogAuthorsPath()}
             className="rounded-full bg-white px-4 py-2 text-sm font-semibold ring-1 ring-[var(--line)] hover:bg-[var(--panel)]"

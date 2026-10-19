@@ -20,6 +20,9 @@ const SOURCE_LABELS: Record<string, string> = {
   MARKET: "Market topic",
   NEWS: "Industry news",
   MANUAL: "Manual",
+  COMPETITOR: "Competitor gap",
+  COMMUNITY: "Community question",
+  AI_ANSWERS: "AI answers gap",
 };
 
 export default function AdminBlogPostList({ posts }: { posts: AdminBlogPostRow[] }) {

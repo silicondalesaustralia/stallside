@@ -8,7 +8,7 @@ import {
 } from "./types";
 
 const section = z.enum(["NEWS", "GUIDE"]);
-const source = z.enum(["GSC", "KNOWLEDGE_BASE", "FEATURE", "MARKET", "NEWS", "MANUAL"]);
+const source = z.enum(["GSC", "KNOWLEDGE_BASE", "FEATURE", "MARKET", "NEWS", "MANUAL", "COMPETITOR", "COMMUNITY", "AI_ANSWERS"]);
 const bodyHtml = z.string().min(200).max(BLOG_HTML_MAX_LENGTH);
 
 const heroImage = z.object({
