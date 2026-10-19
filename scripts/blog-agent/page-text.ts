@@ -4,7 +4,7 @@ const ENTITIES: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"'
 
 function htmlToText(html: string): string {
   return html
-    .replace(/<(script|style|noscript|svg|nav|footer|header|form)[^>]*>[\s\S]*?<\/\1>/gi, " ")
+    .replace(/<(script|style|noscript|svg|nav|footer|header)[^>]*>[\s\S]*?<\/\1>/gi, " ")
     .replace(/<\/(p|div|li|h[1-6]|tr|section|article)>/gi, "\n")
     .replace(/<[^>]+>/g, " ")
     .replace(/&([a-z]+);/gi, (entity, name: string) => ENTITIES[name.toLowerCase()] ?? entity)
