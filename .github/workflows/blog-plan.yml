@@ -1,11 +1,8 @@
 name: Blog planner (9pm Adelaide)
 
 on:
-  schedule:
-    # 9pm Adelaide in daylight saving (ACDT, UTC+10:30) and standard time (ACST, UTC+9:30).
-    # The script only proceeds for the run that lands at 21:00 Adelaide time.
-    - cron: "30 10 * * *"
-    - cron: "30 11 * * *"
+  # Started at 9pm Adelaide by the app's Vercel cron (/api/cron/blog-plan). GitHub's own
+  # schedule is not used: it ran hours late.
   workflow_dispatch:
     inputs:
       weekly:

@@ -6,8 +6,8 @@
  *
  * Sundays (or --weekly) first run the competitor scan, community scan and ChatGPT visibility check.
  *
- * Scheduled twice (10:30 and 11:30 UTC) to cover Adelaide daylight saving; only the run that
- * lands at 9pm Adelaide time proceeds unless --force is passed.
+ * Started at 9pm Adelaide by the app's Vercel cron (/api/cron/blog-plan), which dispatches the
+ * workflow with --force. Without --force it only proceeds at 9pm Adelaide time.
  * Env: BLOG_AGENT_BASE_URL, BLOG_AGENT_TOKEN, OPENAI_API_KEY, GSC_SERVICE_ACCOUNT_JSON, GSC_SITE_URL,
  * optional DATAFORSEO_LOGIN/DATAFORSEO_PASSWORD (or DATAFORSEO_RELAY_URL/DATAFORSEO_RELAY_SECRET).
  */

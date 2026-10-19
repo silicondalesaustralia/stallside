@@ -29,6 +29,14 @@
     {
       "path": "/api/cron/square-subscriptions",
       "schedule": "30 * * * *"
+    },
+    {
+      "path": "/api/cron/blog-plan?tz=acdt",
+      "schedule": "30 10 * * *"
+    },
+    {
+      "path": "/api/cron/blog-plan?tz=acst",
+      "schedule": "30 11 * * *"
     }
   ]
 }
