@@ -49,6 +49,7 @@ export const createRevisionSchema = z.object({
   changeNotes: z.array(blogChangeNoteSchema).min(1).max(30),
   targetQueries: z.array(blogTargetQuerySchema).max(30).optional(),
   agentSummary: z.string().max(2000).optional(),
+  topicId: z.string().max(40).optional(),
 });
 
 const topicInput = z.object({
@@ -70,6 +71,8 @@ const topicUpdate = z.object({
   status: z.enum(["IDEA", "WAITING_FOR_RELEASE", "USED", "REJECTED", "EXPIRED"]).optional(),
   score: z.number().int().min(0).max(100).optional(),
   notes: z.string().max(2000).optional(),
+  /** Writer failure message; clears the pick so the topic can be picked again. */
+  writeError: z.string().max(1000).optional(),
 });
 
 export const topicsBatchSchema = z.object({

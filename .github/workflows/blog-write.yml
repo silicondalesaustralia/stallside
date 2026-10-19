@@ -1,0 +1,36 @@
+name: Blog writer
+
+# Started by the app when an idea is picked (email "Write this" link or admin "Write now").
+on:
+  workflow_dispatch:
+    inputs:
+      topic_id:
+        description: BlogTopic id to research and draft
+        required: true
+        type: string
+
+concurrency:
+  group: blog-write-${{ inputs.topic_id }}
+  cancel-in-progress: false
+
+jobs:
+  write:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ vars.BLOG_AGENT_GIT_REF || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Research and draft
+        run: npx -y tsx scripts/blog-agent/write.ts --topic "$TOPIC_ID"
+        env:
+          TOPIC_ID: ${{ inputs.topic_id }}
+          BLOG_AGENT_BASE_URL: ${{ vars.BLOG_AGENT_BASE_URL }}
+          BLOG_AGENT_TOKEN: ${{ secrets.BLOG_AGENT_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

@@ -3247,6 +3247,7 @@ enum BlogTopicSource {
 
 enum BlogTopicStatus {
   IDEA
+  SELECTED
   WAITING_FOR_RELEASE
   USED
   REJECTED
@@ -3349,9 +3350,17 @@ model BlogTopic {
   notes         String?
   expiresAt     DateTime?
   usedAt        DateTime?
+  /// Set when proposed in an evening recommendation email (batch = same timestamp).
+  recommendedAt      DateTime?
+  recommendationRank Int?
+  /// Published post this topic would update instead of creating a new one.
+  targetPostSlug     String?
+  selectedAt         DateTime?
+  writeError         String?
   posts         BlogPost[]
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
   @@index([status, score])
+  @@index([recommendedAt])
 }

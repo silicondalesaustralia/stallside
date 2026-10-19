@@ -33,6 +33,10 @@ export function editorialPolicyPath() {
   return "/editorial-policy";
 }
 
+export function blogPickPath(token: string) {
+  return `/blog-pick?t=${encodeURIComponent(token)}`;
+}
+
 export function adminBlogAuthorsPath() {
   return "/admin/blog/authors";
 }

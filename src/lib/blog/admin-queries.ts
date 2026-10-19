@@ -77,8 +77,8 @@ export type AdminBlogRevisionRow = Awaited<ReturnType<typeof loadAdminBlogRevisi
 
 export function loadAdminBlogTopics() {
   return prisma.blogTopic.findMany({
-    where: { status: { in: ["IDEA", "WAITING_FOR_RELEASE"] } },
-    orderBy: [{ score: "desc" }, { createdAt: "desc" }],
+    where: { status: { in: ["SELECTED", "IDEA", "WAITING_FOR_RELEASE"] } },
+    orderBy: [{ selectedAt: { sort: "desc", nulls: "last" } }, { score: "desc" }, { createdAt: "desc" }],
     take: 200,
   });
 }

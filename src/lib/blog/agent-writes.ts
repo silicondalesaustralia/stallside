@@ -67,6 +67,12 @@ export async function createBlogRevision(input: CreateRevisionInput) {
       where: { postId: post.id, status: "PENDING" },
       data: { status: "DISCARDED", resolvedAt: new Date() },
     });
+    if (input.topicId) {
+      await tx.blogTopic.updateMany({
+        where: { id: input.topicId },
+        data: { status: "USED", usedAt: new Date() },
+      });
+    }
     return tx.blogPostRevision.create({
       data: {
         postId: post.id,
@@ -100,10 +106,14 @@ export async function applyTopicsBatch(input: TopicsBatchInput) {
     ),
   );
   const updated = await Promise.all(
-    (input.update ?? []).map(({ id, ...data }) =>
+    (input.update ?? []).map(({ id, writeError, ...data }) =>
       prisma.blogTopic.updateMany({
         where: { id },
-        data: { ...data, usedAt: data.status === "USED" ? new Date() : undefined },
+        data: {
+          ...data,
+          usedAt: data.status === "USED" ? new Date() : undefined,
+          ...(writeError ? { writeError, status: "IDEA" as const, selectedAt: null } : {}),
+        },
       }),
     ),
   );
