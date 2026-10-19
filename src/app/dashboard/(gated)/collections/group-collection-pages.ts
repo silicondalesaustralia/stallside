@@ -1,6 +1,6 @@
 import { PaymentStatus, PaymentTiming } from "@/generated/prisma/client";
 import { formatCollectionLabel } from "@/lib/pre-order";
-import type { CollectionOrderView } from "./group-collections";
+import type { CollectionOrderView } from "@/lib/collections/group-collections";
 import type { CollectionSubscriptionOfferRef } from "./load-subscription-offers";
 
 export type CollectionPageRef = {

@@ -7,7 +7,7 @@ import { groupCollectionPages } from "./group-collection-pages";
 import {
   loadCollectionOrders,
   toCollectionOrderView,
-} from "./load-collections";
+} from "@/lib/collections/load-collections";
 import { loadStandPreOrderPages } from "./load-preorder-pages";
 import { loadStandSubscriptionOffers } from "./load-subscription-offers";
 

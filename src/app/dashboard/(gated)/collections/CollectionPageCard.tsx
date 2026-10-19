@@ -1,7 +1,7 @@
 import { formatMoney } from "@/lib/money";
 import type { PrintBrand } from "./CollectionPrintBrand";
 import type { CollectionPageGroup } from "./group-collection-pages";
-import { dayMakeListMeta } from "./group-collections";
+import { dayMakeListMeta } from "@/lib/collections/group-collections";
 import { buildCollectionsPrintPayload } from "./build-print-payload";
 import CollectionDaySection from "./CollectionDaySection";
 import CollectionsPrintControls from "./CollectionsPrintControls";

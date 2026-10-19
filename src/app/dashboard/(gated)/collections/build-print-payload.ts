@@ -7,7 +7,7 @@ import {
   dayMakeListMeta,
   groupCollectionDays,
   type CollectionOrderView,
-} from "./group-collections";
+} from "@/lib/collections/group-collections";
 
 export function buildCollectionsPrintPayload(
   orders: CollectionOrderView[],
