@@ -12,7 +12,7 @@ import { resolveDateWindow } from "@/lib/date-range";
 import { resolveStandTimezone } from "@/lib/stand-timezone";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
-import { loadDashboardHomeData } from "./load-dashboard-home";
+import { loadDashboardHomeData } from "@/lib/dashboard/home";
 import { resolveDashboardOnboardingPath } from "@/lib/dashboard-onboarding-path";
 
 
