@@ -26,7 +26,8 @@ export function resolveHostname(
   const host = normalizeHostname(hostHeader);
   if (!host) return { type: "UNKNOWN" };
 
-  if (host === "localhost" || host === "127.0.0.1") {
+  // A bare IPv4 (e.g. a phone on the LAN hitting `next dev -H 0.0.0.0`) is never a custom domain.
+  if (host === "localhost" || /^\d{1,3}(\.\d{1,3}){3}$/.test(host)) {
     return { type: "LOCAL" };
   }
 

@@ -280,8 +280,31 @@ model User {
   sessions         Session[]
   owner            Owner?
   standMemberships StandMember[]
+  mobileSessions   MobileSession[]
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
+}
+
+/**
+ * Bearer-token session for the native companion app (iOS/Android).
+ */
+model MobileSession {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /**
+   * sha256 of the bearer token; the raw token is only ever held by the device.
+   */
+  tokenHash  String    @unique
+  platform   String
+  deviceName String?
+  appVersion String?
+  lastUsedAt DateTime  @default(now())
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
 }
 
 /**

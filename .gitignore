@@ -68,3 +68,4 @@ ios/DerivedData
 .tmp-app-icon.jpg
 .DS_Store
 public/tinymce/
+.env*.local

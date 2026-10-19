@@ -5,6 +5,7 @@ import type { Adapter } from "next-auth/adapters";
 import type { Role } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { authorizeEmailOtp } from "@/lib/auth-otp-user";
+import { consumeWebHandoff } from "@/lib/mobile/web-handoff";
 import { SESSION_MAX_AGE_SEC, SESSION_UPDATE_AGE_SEC } from "@/lib/auth-session";
 
 function createAdapter(): Adapter {
@@ -55,6 +56,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const email = String(credentials?.email ?? "");
         const code = String(credentials?.code ?? "");
         return authorizeEmailOtp(email, code);
+      },
+    }),
+    Credentials({
+      id: "mobile-handoff",
+      name: "Companion app",
+      credentials: { token: { label: "Token", type: "text" } },
+      async authorize(credentials) {
+        return consumeWebHandoff(String(credentials?.token ?? ""));
       },
     }),
   ],

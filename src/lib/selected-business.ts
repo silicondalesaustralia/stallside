@@ -34,6 +34,15 @@ export async function writeSelectedBusinessCookie(standId: string) {
   });
 }
 
+/** All of an owner's stands, by name. Shared by the web switcher and the mobile API. */
+export function listOwnerBusinesses(ownerId: string): Promise<BusinessOption[]> {
+  return prisma.stand.findMany({
+    where: { ownerId },
+    orderBy: { name: "asc" },
+    select: { id: true, name: true, slug: true, timezone: true },
+  });
+}
+
 /** Stands for owner + resolved selection (cookie, else first by name). */
 export const resolveSelectedBusiness = cache(async (
   ownerId: string,
@@ -41,11 +50,7 @@ export const resolveSelectedBusiness = cache(async (
   businesses: BusinessOption[];
   selected: BusinessOption | null;
 }> => {
-  const businesses = await prisma.stand.findMany({
-    where: { ownerId },
-    orderBy: { name: "asc" },
-    select: { id: true, name: true, slug: true, timezone: true },
-  });
+  const businesses = await listOwnerBusinesses(ownerId);
   if (businesses.length === 0) {
     return { businesses, selected: null };
   }

@@ -62,6 +62,11 @@ describe("resolveHostname", () => {
     });
   });
 
+  it("treats bare IPv4 hosts (LAN dev server) as LOCAL, not custom domains", () => {
+    assert.deepEqual(resolveHostname("127.0.0.1:3000"), { type: "LOCAL" });
+    assert.deepEqual(resolveHostname("192.168.1.36:3000"), { type: "LOCAL" });
+  });
+
   it("detects Vercel preview hosts", () => {
     assert.deepEqual(
       resolveHostname("myfarmstand-git-main-team.vercel.app"),

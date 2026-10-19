@@ -90,7 +90,7 @@ Use `127.0.0.1`, not Android’s `10.0.2.2`, for Simulator. ATS allows local net
 | `AUTH_SECRET` / `AUTH_URL` | Auth.js |
 | `DATABASE_URL` | Postgres |
 | `RESEND_API_KEY` / `EMAIL_FROM` | Magic links + sale/low-stock emails (else console) |
-| `FCM_SERVER_KEY` | Push send via FCM (else push payloads console-log) |
+| `FCM_SERVICE_ACCOUNT_JSON` | Android push via FCM HTTP v1 (else push payloads console-log) |
 | `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` | Connect + Checkout |
 
 ---
@@ -187,7 +187,7 @@ Design direction (rebrand): see user Downloads `rebrand-ui-direction.md` if avai
 ## 9. Known gaps / next work
 
 1. **DB migrations** - ensure `qrSignMessage` + `PushDevice` applied on the live Postgres in use.
-2. **Push production** - Xcode Push Notifications capability; real device; `FCM_SERVER_KEY` (+ Firebase/APNs for iOS). Simulator push is unreliable.
+2. **Push production** - Xcode Push Notifications capability; real device; `FCM_SERVICE_ACCOUNT_JSON` for Android, `APNS_*` for iOS. Simulator push is unreliable.
 3. **SaaS billing** - $9.99 plan is copy/constants only; no Stripe Billing subscription collection yet.
 4. **Connect application fee** - fee is tracked only, not skimmed.
 5. **Store launch polish** - splash screens, deeper a11y/offline, more native polish; UI is TestFlight-OK, not fully “App Store refined.”

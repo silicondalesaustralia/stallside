@@ -5,6 +5,35 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  // Web dashboard and companion app must share business logic: these entry points go
+  // through services in src/lib, never Prisma directly. Add folders as features move over.
+  {
+    files: [
+      "src/app/api/mobile/**/*.ts",
+      "src/app/dashboard/(gated)/orders/actions.ts",
+      "src/app/dashboard/(gated)/orders/shipping-actions.ts",
+      "src/app/dashboard/(gated)/collections/actions.ts",
+      "src/app/dashboard/(gated)/customers/actions.ts",
+      "src/app/dashboard/(gated)/customers/page.tsx",
+      "src/app/dashboard/(gated)/customers/[[]customerId]/page.tsx",
+      "src/app/dashboard/(gated)/page.tsx",
+      "src/app/dashboard/(gated)/products/page.tsx",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@/lib/prisma",
+              message:
+                "Call a shared service in src/lib/<feature> so the web dashboard and the app stay in sync.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
@@ -12,6 +41,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Expo companion app lints with its own config.
+    "apps/**",
   ]),
 ]);
 
