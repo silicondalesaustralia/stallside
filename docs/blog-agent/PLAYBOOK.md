@@ -54,12 +54,8 @@ Request shapes are in `src/lib/blog/agent-schemas.ts`. A 400 response includes `
 
 ## Writing standard
 
-- 1,200–2,000 words for guides, 500–900 for news. Answer the target query in the first two paragraphs.
-- Structure: short intro, `h2` sections, `h3` where useful, lists/tables where they help. No `h1` in the body (the title is the H1).
-- 3–5 internal links (relative paths: `/guides/...`, `/farms-stand-news/...`, `/stall`, `/pre-orders`, `/sell-food-from-home`) and one clear call to action.
-- 3–6 FAQs in `faqs` (not in the body).
-- `seoTitle` ≤ 60 chars ideal (70 max), `seoDescription` 120–160 chars, `excerpt` 1–2 sentences.
-- No hype, no invented statistics, no fake testimonials. Be fair to competitors; say where they are the better fit.
+**Read `docs/blog-agent/WRITING.md` in full before writing each draft or revision** and run its final check before every POST. It covers search intent, coverage checks, sourcing, the evidence record, voice, structure, internal links, SEO fields and what must never be invented.
+
 - Allowed HTML: `p h2 h3 h4 ul ol li strong em a blockquote table thead tbody tr th td img figure figcaption code pre hr`. No inline styles. Do not set `heroImage` unless the URL is on `*.public.blob.vercel-storage.com`, `images.unsplash.com`, or a site path that already exists under `/public`.
 
 ## Revisions
@@ -69,7 +65,7 @@ Request shapes are in `src/lib/blog/agent-schemas.ts`. A 400 response includes `
 
 ## Every draft must include
 
-`source`, `targetQueries` (when from GSC), `agentSummary` (2–3 sentences: what and why), `researchNotes.whyThisTopic`, `researchNotes.sources`, `researchNotes.factChecks` (each Vendl claim and the file it was checked against), `timeSensitive: true` for news.
+`source`, `targetQueries` (when from GSC), `agentSummary` (2–3 sentences: what and why), `researchNotes.whyThisTopic`, `researchNotes.sources`, `researchNotes.factChecks` (each Vendl claim and the file it was checked against; in the labelled format from `WRITING.md`), `timeSensitive: true` for news.
 
 ## News sources to scan
 
