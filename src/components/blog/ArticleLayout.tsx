@@ -14,6 +14,7 @@ const KEEP_READING_COUNT = 3;
 const SIDEBAR_RELATED_COUNT = 4;
 
 const STAND_PHOTO_COUNT = 4;
+const SIDEBAR_TESTIMONIAL_ID = "fletchers-donnybrook";
 
 const FEATURED_PHOTOS: StandPhoto[] = featuredStands.flatMap((stand) =>
   stand.images.map((image, i) => ({
@@ -51,9 +52,7 @@ export default async function ArticleLayout({ article }: { article: NewsArticle 
   ]);
   const rest = related.slice(KEEP_READING_COUNT);
   const sidebarRelated = rest.length >= 2 ? rest : related.slice(0, SIDEBAR_RELATED_COUNT);
-  const testimonial = testimonials.length
-    ? testimonials[article.slug.length % testimonials.length]
-    : undefined;
+  const testimonial = testimonials.find((t) => t.id === SIDEBAR_TESTIMONIAL_ID) ?? testimonials[0];
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-12 sm:px-6 sm:py-16 lg:grid lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-12">
