@@ -9,17 +9,14 @@ import BlogArticleList from "@/components/blog/BlogArticleList";
 import { SITE_URL } from "@/lib/legal";
 import { DEFAULT_OG_IMAGE } from "@/lib/og-image";
 import { authorProfileGraphSchema } from "@/lib/blog/author-schema";
-import { getActiveAuthor, getActiveAuthors } from "@/lib/blog/authors";
+import { getActiveAuthor } from "@/lib/blog/authors";
 import { authorPath, authorsIndexPath, editorialPolicyPath } from "@/lib/blog/paths";
 import { getLiveBlogArticlesByAuthor } from "@/lib/blog/queries";
 
-export const revalidate = 3600;
+/** The marketing header reads the session cookie, so these pages can't be statically cached. */
+export const dynamic = "force-dynamic";
 
 type PageProps = { params: Promise<{ slug: string }> };
-
-export async function generateStaticParams() {
-  return (await getActiveAuthors()).map((author) => ({ slug: author.slug }));
-}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
