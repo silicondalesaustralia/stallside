@@ -16,6 +16,7 @@ import { recommendationsBatchSchema } from "../../src/lib/blog/recommendation-sc
 import { appGet, appPost, reportFailure } from "./api";
 import { askJson } from "./openai";
 import { adelaideHour, agentDoc, knowledgeBaseSource, recentCommits, todayInAdelaide } from "./repo-context";
+import { searchDemandPool } from "./search-demand";
 import { addSearchVolumes } from "./search-volume";
 import { isWeeklyResearchNight, runWeeklyResearch } from "./weekly-research";
 
@@ -38,7 +39,7 @@ const OUTPUT_CONTRACT = `Return only a json object:
     "whyNow": string (the evidence: impressions/position, news date, feature commit),
     "vendlTieIn": string (the named Vendl feature(s) from the knowledge base that solve the reader's problem, and the signup hook),
     "score": integer 0-100,
-    "targetQueries": [2-5 items: { "query": string, "impressions": number, "position": number, "page": string }] (always: the searches an Australian reader would type for this post, main one first, plus close variations; impressions/position/page only for Search Console queries),
+    "targetQueries": [2-5 items: { "query": string, "impressions": number, "position": number, "page": string }] (always: the searches a reader would type for this post, main one first; 2-5 words as typed into Google, no "Australia" suffix, no brand names; prefer exact queries from searchDemand when they fit the post; impressions/position/page only for Search Console queries),
     "sourceUrls": [string],
     "timeSensitive": boolean
   } ]
@@ -59,12 +60,17 @@ async function main() {
     return;
   }
 
-  const [context, gsc] = await Promise.all([appGet<PlannerContext>("/context"), gscReport()]);
+  const [context, gsc, searchDemand] = await Promise.all([
+    appGet<PlannerContext>("/context"),
+    gscReport(),
+    searchDemandPool(),
+  ]);
   const weeklyResearch = isWeeklyResearchNight() ? await runWeeklyResearch(existingTitles(context)) : null;
   const input = JSON.stringify({
     today: todayInAdelaide(),
     blogContext: context,
     searchConsole: gsc,
+    ...(searchDemand.length ? { searchDemand } : {}),
     ...weeklyResearch,
     commits: recentCommits(7),
     knowledgeBase: knowledgeBaseSource(),

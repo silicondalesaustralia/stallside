@@ -31,6 +31,34 @@ export async function keywordOverview(keywords: string[]): Promise<Map<string, K
   return metrics;
 }
 
+export type DemandKeyword = KeywordMetrics & { keyword: string };
+
+/** Real searches containing each seed phrase (volume >= 10), merged and sorted by volume. */
+export async function keywordSuggestions(seeds: string[], perSeed = 20): Promise<DemandKeyword[]> {
+  const results = await Promise.all(
+    seeds.map((seed) =>
+      dfsTask<{ items?: OverviewItem[] }>("dataforseo_labs/google/keyword_suggestions/live", {
+        keyword: seed,
+        ...AU_LOCATION,
+        limit: perSeed,
+        filters: ["keyword_info.search_volume", ">=", 10],
+        order_by: ["keyword_info.search_volume,desc"],
+      }),
+    ),
+  );
+  const byKeyword = new Map<string, DemandKeyword>();
+  for (const item of results.flatMap((r) => r?.items ?? [])) {
+    if (!item.keyword || byKeyword.has(item.keyword)) continue;
+    byKeyword.set(item.keyword, {
+      keyword: item.keyword,
+      volume: item.keyword_info?.search_volume ?? null,
+      difficulty: item.keyword_properties?.keyword_difficulty ?? null,
+      intent: item.search_intent_info?.main_intent ?? null,
+    });
+  }
+  return [...byKeyword.values()].sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0));
+}
+
 /** Searches related to the seed with measurable volume, highest first. */
 export async function relatedKeywords(seed: string, limit = 20): Promise<KeywordVariation[]> {
   const result = await dfsTask<{ items?: RelatedItem[] }>("dataforseo_labs/google/related_keywords/live", {

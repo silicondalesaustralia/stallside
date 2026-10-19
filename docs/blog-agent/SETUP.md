@@ -50,7 +50,7 @@ Repository settings → Secrets and variables → Actions:
 
 DataForSEO (Google Australia data) is optional; without it the research falls back to OpenAI web search. With it:
 
-- **Planner:** each idea's `targetQueries` get monthly volume, keyword difficulty and intent (`dataforseo_labs/google/keyword_overview`, about $0.01 a night), shown in the email.
+- **Planner:** before planning, a search demand pool of real searches containing 10 seed phrases (`keyword_suggestions`, about $0.14 a night; seeds in `scripts/blog-agent/search-demand.ts`, override with `BLOG_AGENT_DEMAND_SEEDS`). After planning, each idea's `targetQueries` get monthly volume, keyword difficulty and intent (`keyword_overview`, about $0.01), shown in the email.
 - **Writer:** the brief uses the live Google top 10 for the highest-volume query (`serp/google/organic/live/advanced`, $0.002), reads the top 5 pages directly, and adds People also ask, related searches, AI Overview cited pages and related keywords with volumes (`related_keywords`, about $0.01).
 - The account's IP allowlist must include the IP the requests come from (local testing: your own IP; scheduled runs: the relay's IP).
 
