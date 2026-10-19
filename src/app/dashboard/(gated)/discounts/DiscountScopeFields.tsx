@@ -1,7 +1,7 @@
 "use client";
 
 import ScopeChecklist, { type ScopeOption } from "../upsells/ScopeChecklist";
-import type { DiscountInput } from "./discount-input";
+import type { DiscountInput } from "@/lib/discounts/input";
 
 export default function DiscountScopeFields({
   value,

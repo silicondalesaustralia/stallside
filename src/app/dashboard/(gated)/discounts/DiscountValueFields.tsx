@@ -1,6 +1,6 @@
 "use client";
 
-import type { DiscountInput } from "./discount-input";
+import type { DiscountInput } from "@/lib/discounts/input";
 
 const inputClass = "rounded-lg border border-[var(--line)] bg-white px-3 py-2.5 text-sm";
 

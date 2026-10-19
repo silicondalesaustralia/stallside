@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { loadUpsellFormOptions } from "../../upsells/load-upsell-form";
-import { EMPTY_DISCOUNT } from "../discount-input";
+import { EMPTY_DISCOUNT } from "@/lib/discounts/input";
 import DiscountForm from "../DiscountForm";
 
 export default async function NewDiscountPage() {

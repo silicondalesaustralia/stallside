@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import DiscountList from "./DiscountList";
-import { loadDiscountRows } from "./load-discounts";
+import { loadDiscountRows } from "@/lib/discounts/load";
 
 export default async function DiscountsPage() {
   const { owner } = await requireOwner();

@@ -4,7 +4,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { loadUpsellFormOptions } from "../../upsells/load-upsell-form";
-import { discountToInput } from "../load-discounts";
+import { discountToInput } from "@/lib/discounts/load";
 import DiscountForm from "../DiscountForm";
 
 export default async function EditDiscountPage({ params }: { params: Promise<{ discountId: string }> }) {

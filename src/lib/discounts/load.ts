@@ -2,8 +2,17 @@ import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
 import { PaymentStatus, type Promotion } from "@/generated/prisma/client";
 import { dateKeyInTimeZone } from "@/lib/utils/australiaSydneyTime";
-import type { DiscountInput } from "./discount-input";
-import type { DiscountRow } from "./DiscountList";
+import type { DiscountInput } from "./input";
+
+export type DiscountRow = {
+  id: string;
+  code: string;
+  name: string | null;
+  summary: string;
+  uses: string;
+  status: string | null;
+  isActive: boolean;
+};
 
 const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
@@ -55,8 +64,15 @@ export async function loadDiscountRows(ownerId: string, standId: string, currenc
       summary: `${discountValueLabel(p, currency)} · ${scope} · ${channels}`,
       uses: p.usageLimit != null ? `${used} of ${p.usageLimit} used` : count(used, "use", "uses"),
       status: status(p, used),
+      isActive: p.isActive,
     };
   });
+}
+
+/** Same rows, looking up the business currency; empty when the business isn't the owner's. */
+export async function loadStandDiscountRows(ownerId: string, standId: string): Promise<DiscountRow[]> {
+  const stand = await prisma.stand.findFirst({ where: { id: standId, ownerId }, select: { currency: true } });
+  return stand ? loadDiscountRows(ownerId, standId, stand.currency) : [];
 }
 
 export function discountToInput(p: Promotion, timeZone: string): DiscountInput {

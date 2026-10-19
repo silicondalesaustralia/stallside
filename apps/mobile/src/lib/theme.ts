@@ -5,6 +5,7 @@ export const colors = {
   brandText: "#ffffff",
   text: "#182c1b",
   muted: "#5c6b5e",
+  placeholder: "#a3afa5",
   border: "#d3ddd0",
   danger: "#b42318",
 } as const;

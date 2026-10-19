@@ -1,14 +1,6 @@
 import Link from "next/link";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
-
-export type DiscountRow = {
-  id: string;
-  code: string;
-  name: string | null;
-  summary: string;
-  uses: string;
-  status: string | null;
-};
+import type { DiscountRow } from "@/lib/discounts/load";
 
 export default function DiscountList({ discounts }: { discounts: DiscountRow[] }) {
   return (

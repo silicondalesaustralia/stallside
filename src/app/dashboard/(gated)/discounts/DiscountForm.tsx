@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import type { ScopeOption } from "../upsells/ScopeChecklist";
 import { deleteDiscount, saveDiscount } from "./actions";
-import type { DiscountInput } from "./discount-input";
+import type { DiscountInput } from "@/lib/discounts/input";
 import DiscountValueFields from "./DiscountValueFields";
 import DiscountScopeFields from "./DiscountScopeFields";
 import DiscountLimitFields from "./DiscountLimitFields";

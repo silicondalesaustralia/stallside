@@ -29,6 +29,8 @@ export default function SignedInLayout() {
         <Stack.Screen name="notifications" options={{ title: "Notifications" }} />
         <Stack.Screen name="reviews/index" options={{ title: "Reviews" }} />
         <Stack.Screen name="reviews/[reviewId]" options={{ title: "Review" }} />
+        <Stack.Screen name="discounts/index" options={{ title: "Discounts" }} />
+        <Stack.Screen name="discounts/[discountId]" options={{ title: "Discount" }} />
         <Stack.Screen name="collections" options={{ title: "Pick ups & delivery" }} />
         <Stack.Screen name="customers/index" options={{ title: "Customers" }} />
         <Stack.Screen name="customers/[customerId]" options={{ title: "Customer" }} />
