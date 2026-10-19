@@ -1,20 +1,18 @@
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import StandUpsellsForm from "@/app/dashboard/(gated)/businesses/[standId]/StandUpsellsForm";
+import { listOwnerUpsellRows } from "@/lib/upsells/load";
+import { loadUpsellOverview } from "@/lib/upsells/overview";
 import UpsellOverridesList from "./UpsellOverridesList";
 import UpsellList from "./UpsellList";
-import { loadUpsellRows } from "./load-upsell-rows";
 
 export default async function UpsellsPage() {
   const { owner } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
-  const stand = selected
-    ? await prisma.stand.findFirst({ where: { id: selected.id, ownerId: owner.id } })
-    : null;
+  const overview = selected ? await loadUpsellOverview(owner.id, selected.id) : null;
 
-  if (!stand) {
+  if (!overview) {
     return (
       <main className="flex flex-col gap-6">
         <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">Upsells &amp; offers</h1>
@@ -23,25 +21,8 @@ export default async function UpsellsPage() {
     );
   }
 
-  const [upsellRows, products, productOverrides, preOrderPages] = await Promise.all([
-    loadUpsellRows(stand.id),
-    prisma.product.findMany({
-      where: { standId: stand.id, isArchived: false, isHidden: false },
-      orderBy: { sortOrder: "asc" },
-      select: { id: true, name: true, priceCents: true },
-    }),
-    prisma.product.findMany({
-      where: { standId: stand.id, isArchived: false, upsellProductId: { not: null } },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true, upsellProductId: true },
-    }),
-    prisma.preOrderPage.findMany({
-      where: { standId: stand.id, isActive: true, preOrderUpsellName: { not: null } },
-      orderBy: { title: "asc" },
-      select: { id: true, title: true, preOrderUpsellName: true },
-    }),
-  ]);
-  const nameById = new Map(products.map((p) => [p.id, p.name]));
+  const { stand, products } = overview;
+  const upsellRows = await listOwnerUpsellRows(owner.id, stand.id);
 
   return (
     <main className="flex max-w-2xl flex-col gap-8">
@@ -75,12 +56,8 @@ export default async function UpsellsPage() {
       />
 
       <UpsellOverridesList
-        products={productOverrides.map((p) => ({
-          id: p.id,
-          name: p.name,
-          offers: (p.upsellProductId && nameById.get(p.upsellProductId)) || "another product",
-        }))}
-        preOrderPages={preOrderPages.map((p) => ({ id: p.id, title: p.title, addOn: p.preOrderUpsellName ?? "" }))}
+        products={overview.productOverrides}
+        preOrderPages={overview.preOrderAddOns.map((p) => ({ id: p.id, title: p.name, addOn: p.offers }))}
       />
     </main>
   );

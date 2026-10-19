@@ -1,20 +1,16 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
-import { loadUpsellFormOptions } from "../load-upsell-form";
+import { loadUpsellFormOptions } from "@/lib/upsells/load";
 import UpsellForm from "../UpsellForm";
 
 export default async function NewUpsellPage({ searchParams }: { searchParams: Promise<{ category?: string; product?: string }> }) {
   const { owner } = await requireOwner();
   const { category, product } = await searchParams;
   const { selected } = await resolveSelectedBusiness(owner.id);
-  const stand = selected
-    ? await prisma.stand.findFirst({ where: { id: selected.id, ownerId: owner.id }, select: { id: true, currency: true } })
-    : null;
-  if (!stand) return <NoBusinessYet />;
-  const options = await loadUpsellFormOptions(owner.id, stand.id, stand.currency);
+  const options = selected ? await loadUpsellFormOptions(owner.id, selected.id) : null;
+  if (!options) return <NoBusinessYet />;
   const categoryIds = category && options.categories.some((c) => c.id === category) ? [category] : [];
   const productIds = product && options.products.some((p) => p.id === product) ? [product] : [];
 
@@ -41,7 +37,6 @@ export default async function NewUpsellPage({ searchParams }: { searchParams: Pr
           showOnWebsite: true,
           showAtStall: true,
         }}
-        currency={stand.currency}
         {...options}
       />
     </main>

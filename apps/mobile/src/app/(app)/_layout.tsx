@@ -68,6 +68,11 @@ export default function SignedInLayout() {
           name="pre-orders/[pageId]"
           options={{ title: "Pre-order page" }}
         />
+        <Stack.Screen
+          name="upsells/index"
+          options={{ title: "Upsells & offers" }}
+        />
+        <Stack.Screen name="upsells/[upsellId]" options={{ title: "Upsell" }} />
         <Stack.Screen name="qr/index" options={{ title: "QR codes" }} />
         <Stack.Screen name="qr/[kind]/[id]" options={{ title: "QR code" }} />
         <Stack.Screen

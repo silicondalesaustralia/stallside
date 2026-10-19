@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
-import { loadUpsellFormOptions } from "../../upsells/load-upsell-form";
+import { loadUpsellFormOptions } from "@/lib/upsells/load";
 import { discountToInput } from "@/lib/discounts/load";
 import DiscountForm from "../DiscountForm";
 
@@ -20,7 +20,9 @@ export default async function EditDiscountPage({ params }: { params: Promise<{ d
       })
     : null;
   if (!stand) notFound();
-  const { categories, products } = await loadUpsellFormOptions(owner.id, stand.id, stand.currency);
+  const options = await loadUpsellFormOptions(owner.id, stand.id);
+  if (!options) notFound();
+  const { categories, products } = options;
 
   return (
     <main className="flex max-w-2xl flex-col gap-6">

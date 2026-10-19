@@ -3,7 +3,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
-import { loadUpsellFormOptions } from "../../upsells/load-upsell-form";
+import { loadUpsellFormOptions } from "@/lib/upsells/load";
 import { EMPTY_DISCOUNT } from "@/lib/discounts/input";
 import DiscountForm from "../DiscountForm";
 
@@ -14,7 +14,9 @@ export default async function NewDiscountPage() {
     ? await prisma.stand.findFirst({ where: { id: selected.id, ownerId: owner.id }, select: { id: true, currency: true } })
     : null;
   if (!stand) return <NoBusinessYet />;
-  const { categories, products } = await loadUpsellFormOptions(owner.id, stand.id, stand.currency);
+  const options = await loadUpsellFormOptions(owner.id, stand.id);
+  if (!options) return <NoBusinessYet />;
+  const { categories, products } = options;
 
   return (
     <main className="flex max-w-2xl flex-col gap-6">

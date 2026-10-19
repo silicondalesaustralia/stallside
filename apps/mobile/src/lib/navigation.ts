@@ -29,6 +29,11 @@ export function openPreOrderPage(pageId: string) {
   router.push({ pathname: "/pre-orders/[pageId]", params: { pageId } });
 }
 
+/** Pass "new" to open a blank upsell form. */
+export function openUpsell(upsellId: string) {
+  router.push({ pathname: "/upsells/[upsellId]", params: { upsellId } });
+}
+
 export function openProduct(productId: string) {
   router.push({ pathname: "/product/[productId]", params: { productId } });
 }
