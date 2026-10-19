@@ -1,77 +1,53 @@
-# Vendl daily blog agent: playbook
+# Vendl blog agent: playbook
 
-You run once each morning (Australia/Adelaide). You produce **at most two drafts per day**, never publish anything, and finish by sending one digest email. A human reviews everything in `/admin/blog`.
+The agent runs in two stages on GitHub Actions. It never publishes; Jono reviews everything in `/admin/blog`.
 
-Vendl is moving from a farm-stand checkout tool to a full ecommerce platform for home producers and small sellers, competing with Shopify, Wix, Square Online, WooCommerce and Bakesy. Write for that audience: farm stands, home bakers, makers, market stallholders and small online shops, mostly in Australia.
+1. **Evening planner** (9pm Australia/Adelaide, `scripts/blog-agent/plan.ts`): recommends 10 ranked ideas and emails them. Each has a "Write this" link.
+2. **Writer** (`scripts/blog-agent/write.ts`, started when an idea is picked, up to 3 per evening): researches and drafts one post or update, with images, into the review queue. Nothing is written if nothing is picked.
 
-## API
+Vendl is moving from a farm-stand checkout tool to a full ecommerce platform for home producers and small sellers, competing with Shopify, Wix, Square Online, WooCommerce and Bakesy. The audience: farm stands, home bakers, makers, market stallholders and small online shops, mostly in Australia.
 
-Base URL: `$BLOG_AGENT_BASE_URL` (e.g. `https://www.vendl.app`). Every call sends `Authorization: Bearer $BLOG_AGENT_TOKEN`.
+## Planner: choosing tonight's 10
 
-| Method | Path | Use |
-| --- | --- | --- |
-| GET | `/api/blog-agent/context` | Posts, pending revisions, topic backlog, recent rejections. Call first. |
-| GET | `/api/blog-agent/posts/{id-or-slug}` | Full post incl. `bodyHtml`, before proposing a revision. |
-| POST | `/api/blog-agent/drafts` | New post (status DRAFT). |
-| POST | `/api/blog-agent/revisions` | Proposed update to a **published** post. Live content is untouched. |
-| POST | `/api/blog-agent/topics` | `{ create: [...], update: [{ id, status }] }` backlog changes. |
-| POST | `/api/blog-agent/digest` | `{ subject, summaryHtml }` morning email. Call last. |
+Inputs: blog context (existing posts, backlog topics, recent rejections and discarded revisions), the Search Console report, knowledge base articles, recent commits on `main` (shipped) and the preview branch (upcoming), and live web search for news.
 
-Request shapes are in `src/lib/blog/agent-schemas.ts`. A 400 response includes `issues`; fix and retry once.
+Aim for a mix across the 10. Across a week no single source should exceed half the ideas.
 
-## Daily routine
+- **Search Console (2–4 ideas).** Take the top opportunities.
+  - Page is a published DB post (slug in `context.posts`, `status: PUBLISHED`) → recommend an **update** (`targetPostSlug`). Skip it if `contentUpdatedAt` or `lastRevisionAt` is under 21 days old, or it has a pending revision.
+  - Page is a hand-built reference page (`/sell-food-from-home/...`, `/cottage-food-laws/...`) or a hand-coded article (`context.codeArticles`) → recommend a **new guide** that answers the query cluster in depth and links to that page. Never target these for updates.
+  - Page is a landing page and the intent is commercial ("app", "software", "best", "price") → skip it; it needs a page change, not a post.
+  - Informational queries ("how to", "can I", "what is") that only a sales page or the home page ranks for → **new post** targeting the cluster.
+  - The report's `tier`: `strict` = genuine striking distance, so favour updates. `loose` = young-site fallback, so favour new guides that cover whole clusters.
+- **News (1–3 ideas).** Search the web for the last ~72 hours. Sources: Shopify, Square, Wix, WooCommerce, Stripe and Bakesy changelogs, blogs and pricing pages; RBA surcharging, ACCC, ATO small business and GST updates; FSANZ and state food authorities; farmers market associations; Google Search Central and Merchant Center. Recommend only items that materially affect small sellers, have a genuine Vendl angle and aren't already covered. Set `timeSensitive: true` and `section: NEWS`.
+- **Shipped features and knowledge base (2–3 ideas).** Deeper guides on features in the knowledge base or recent `main` commits, framed by the broader ecommerce benefit rather than as a product tour.
+- **Market and comparison topics (1–3 ideas).** Evergreen guides that help sellers choose and run their setup: platform comparisons, fees explained, pre-orders, inventory, selling at markets and online.
+- **Never recommend** a topic that duplicates an existing post, repeats a rejected angle (read `recentRejections` and `recentDiscardedRevisions`), or describes a feature only on the preview branch.
+- **Rank by** expected value to readers and search: real demand (impressions), timeliness, fit with Vendl's audience, and how clearly Vendl can add something useful. `score` 0–100.
 
-1. **Gather**
-   - `GET /context`. Read `recentRejections` and `recentDiscardedRevisions` first and avoid repeating those mistakes.
-   - `npx tsx scripts/gsc-opportunities.ts --out /tmp/gsc.json` (striking-distance searches grouped by ranking page).
-   - `git log origin/main --since="2 days ago" --oneline` for shipped features; `git log origin/feature/social-kit --since="2 days ago" --oneline` for upcoming ones.
-   - Changes in `src/lib/knowledge-base/` on `origin/main`.
-   - News scan (see sources below).
-2. **Slot 1: Search Console** (skip if nothing qualifies). Take the top opportunity whose page is not in cooldown:
-   - Page is a DB post (`pageKind: "post"`, slug in `context.posts` with `status: PUBLISHED`) → **revision**. Cooldown: skip if the post's `contentUpdatedAt` or `lastRevisionAt` is under 21 days old, or it has a pending revision.
-   - Page is a hand-coded article (`context.codeArticles`) → do not revise; mention in digest.
-   - Page is a landing page and intent matches (commercial: "app", "software", "best", "price") → do not edit code; put a concrete suggestion in the digest.
-   - Page is home/unrelated, or the query is informational ("how to", "what is", "can I") and only a sales page ranks → **new post** targeting the query cluster.
-   - Page is a hand-built reference page (`/sell-food-from-home/...`, `/cottage-food-laws/...`) → do not edit it; write a **new guide** that answers the cluster's questions in depth and links to that page.
-   - The report's `tier` says how strict the thresholds were. `strict` = real striking distance (positions 8–40), favour revisions. `loose` = young-site fallback (90 days, positions up to 70), favour new guides for whole query clusters over small revisions. The script widens and tightens itself; always run it without overrides.
-3. **Slot 2: new content.** Priority: time-sensitive news worth covering → newly shipped feature → expand a knowledge-base article → backlog/market topic. Across a week, no single source should exceed half the drafts.
-4. **Backlog refill.** Add 3–8 topics via `/topics`. Features only on `feature/social-kit` go in as `WAITING_FOR_RELEASE` with `featureRef` set to the commit or path. When such a feature lands on `origin/main`, flip it to `IDEA`. Expire stale news topics.
-5. **Digest.** One email listing: each draft/revision with its review URL (time-sensitive first), the top 5 GSC opportunities and what you did, landing-page suggestions, news you skipped and why.
+## Writer: one picked idea
 
-## Section choice
+Read `WRITING.md` in full and follow it. Then:
 
-- `NEWS` (`/farms-stand-news/...`): time-bound items: industry news, competitor changes, Vendl launches.
-- `GUIDE` (`/guides/...`): evergreen how-tos, comparisons, feature deep-dives, KB expansions.
-- Use `alsoListedIn` sparingly (e.g. a launch post that is also a lasting guide). One canonical URL only.
+- **New post:** write the complete draft. Choose `NEWS` for time-bound items, `GUIDE` for evergreen how-tos, comparisons, feature deep dives and knowledge base expansions.
+- **Update** (`targetPostSlug` set): edit the existing HTML minimally. Add a section or FAQ answering the target queries, tighten the title or meta if the query is missing, add internal links. Don't rewrite unrelated sections. Every change needs a `changeNotes` entry: `section` = heading name, `reason` = which query it answers and its numbers (e.g. "Answers 'honesty box payment app' (pos 14.2, 320 impressions)").
+- **Vendl facts** come only from the supplied pricing and knowledge base source files, never memory. **Never describe a feature that is not in them.**
+- **Competitor claims** need a cited source (their pricing, feature or changelog page) in `researchNotes.sources`, dated ("as of October 2026").
+- Australian context by default (AUD, GST, state food rules, card surcharging rules) and Australian spelling.
 
-## Research rules (non-negotiable)
+## Images
 
-- **Vendl facts come from the code on `origin/main`**, never memory. Pricing and fees: `src/lib/plan-copy.ts`, `src/lib/pricing-model.ts`, `src/lib/constants.ts`. Feature behaviour: the knowledge base (`src/lib/knowledge-base/`) and the feature's code.
-- **Never describe a feature that is not on `origin/main`.** Social-kit branch features are backlog only.
-- **Competitor claims need a cited source** (their pricing/feature page or changelog) in `researchNotes.sources`. Date-stamp prices ("as of October 2026").
-- Australian context by default (AUD, GST, state food rules, card surcharging rules). Australian spelling.
-- Check `context.posts` and `codeArticles` so you never write a second post on a covered topic; prefer revising the existing post.
+Each new post gets one feature image and 1–3 inline images; updates get 0–2 inline images for new sections only.
 
-## Writing standard
+- **Purpose:** each image must illustrate something specific in its section (a stall layout, a pre-order pickup table, a QR sign on a stand), not decorate.
+- **Prompt:** describe a realistic editorial photograph: subject, setting (regional Australian where relevant), composition, natural light. The code adds style and safety rules.
+- **Never:** text, numbers, signage wording, logos, brand names, real or identifiable people presented as customers, competitor products, phone or app screens (they come out wrong), or anything implying a real place or event.
+- **Alt text:** describe what is in the image in plain words for someone who can't see it (under 125 characters), not keywords.
+- **Filename:** 3–7 lowercase hyphenated words describing the image (e.g. `eggs-on-roadside-honesty-stall`), unique within the post.
+- **Caption:** optional; one short sentence that adds context.
+- **Placement:** `afterHeading` = the exact text of the `h2` the image belongs under.
 
-**Read `docs/blog-agent/WRITING.md` in full before writing each draft or revision** and run its final check before every POST. It covers search intent, coverage checks, sourcing, the evidence record, voice, structure, internal links, SEO fields and what must never be invented.
+## Output rules
 
-- Allowed HTML: `p h2 h3 h4 ul ol li strong em a blockquote table thead tbody tr th td img figure figcaption code pre hr`. No inline styles. Do not set `heroImage` unless the URL is on `*.public.blob.vercel-storage.com`, `images.unsplash.com`, or a site path that already exists under `/public`.
-
-## Revisions
-
-- Fetch the post, edit the existing HTML minimally: add a section/FAQ answering the query, tighten title/meta if the query is missing, add internal links. Do not rewrite unrelated sections.
-- Every revision needs `changeNotes`: one entry per changed area, `section` = heading name, `reason` = which query and its numbers (e.g. "Answers 'honesty box payment app' (pos 14.2, 320 impressions)").
-
-## Every draft must include
-
-`source`, `targetQueries` (when from GSC), `agentSummary` (2–3 sentences: what and why), `researchNotes.whyThisTopic`, `researchNotes.sources`, `researchNotes.factChecks` (each Vendl claim and the file it was checked against; in the labelled format from `WRITING.md`), `timeSensitive: true` for news.
-
-## News sources to scan
-
-- Platforms: Shopify, Square, Wix, WooCommerce, Stripe, Bakesy changelogs/blogs/pricing pages.
-- Australia: RBA card surcharging decisions, ACCC, ATO small business/GST updates, FSANZ and state food authority changes affecting home food businesses.
-- Home producers and markets: farmers market associations, seasonal produce, local food trends.
-- Search: Google Search Central blog, Merchant Center updates affecting small stores.
-
-Worth writing only if: under ~72 hours old, materially affects small sellers, has a genuine Vendl angle, not already covered. Otherwise add it as a topic with `expiresAt` or mention it in the digest.
+- Allowed HTML: `p h2 h3 h4 ul ol li strong em a blockquote table thead tbody tr th td code pre hr`. Don't put images in `bodyHtml`; the code inserts them. No inline styles, no `h1`.
+- `researchNotes` must include `whyThisTopic`, `sources` and `factChecks` in the labelled format from `WRITING.md`.

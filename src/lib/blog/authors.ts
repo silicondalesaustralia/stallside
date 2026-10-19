@@ -37,12 +37,13 @@ export function blogAuthorToNewsAuthor(author: PublicBlogAuthor | null): NewsAut
   };
 }
 
-/** Author credited on new drafts (agent and manual); null when none is set. */
+export const DEFAULT_AUTHOR_SLUG = "jono-farrington";
+
+/** Author credited on new drafts (agent and manual): the flagged default, else Jono. */
 export async function defaultBlogAuthorId(): Promise<string | null> {
-  const author = await prisma.blogAuthor.findFirst({
-    where: { isDefault: true, active: true },
-    select: { id: true },
-  });
+  const author =
+    (await prisma.blogAuthor.findFirst({ where: { isDefault: true, active: true }, select: { id: true } })) ??
+    (await prisma.blogAuthor.findUnique({ where: { slug: DEFAULT_AUTHOR_SLUG }, select: { id: true } }));
   return author?.id ?? null;
 }
 

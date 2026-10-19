@@ -1,0 +1,38 @@
+name: Blog planner (9pm Adelaide)
+
+on:
+  schedule:
+    # 9pm Adelaide in daylight saving (ACDT, UTC+10:30) and standard time (ACST, UTC+9:30).
+    # The script only proceeds for the run that lands at 21:00 Adelaide time.
+    - cron: "30 10 * * *"
+    - cron: "30 11 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: blog-plan
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ vars.BLOG_AGENT_GIT_REF || 'main' }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Recommend tomorrow's ideas
+        run: npx -y tsx scripts/blog-agent/plan.ts ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }}
+        env:
+          BLOG_AGENT_BASE_URL: ${{ vars.BLOG_AGENT_BASE_URL }}
+          BLOG_AGENT_TOKEN: ${{ secrets.BLOG_AGENT_TOKEN }}
+          BLOG_AGENT_PREVIEW_REF: origin/feature/social-kit
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+          GSC_SITE_URL: ${{ vars.GSC_SITE_URL || 'sc-domain:vendl.app' }}
+          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

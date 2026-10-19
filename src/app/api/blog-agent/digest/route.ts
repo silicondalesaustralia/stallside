@@ -8,17 +8,11 @@ import {
 import { digestSchema } from "@/lib/blog/agent-schemas";
 import { adminBlogPath } from "@/lib/blog/paths";
 import { sanitizeBlogHtml } from "@/lib/blog/sanitize-blog-html";
-import { cleanEnvSecret } from "@/lib/env";
+import { blogDigestRecipients } from "@/lib/blog/digest-recipients";
 import { SITE_URL } from "@/lib/legal";
-import { contactInbox, sendOwnerEmail } from "@/lib/notify-email";
+import { sendOwnerEmail } from "@/lib/notify-email";
 
 export const runtime = "nodejs";
-
-function digestRecipients(): string[] {
-  const configured = cleanEnvSecret(process.env.BLOG_DIGEST_EMAIL);
-  if (!configured) return contactInbox();
-  return configured.split(",").map((e) => e.trim()).filter(Boolean);
-}
 
 /** Morning summary email: drafts to review, GSC opportunities, skipped news. */
 export async function POST(req: NextRequest) {
@@ -35,7 +29,7 @@ ${sanitizeBlogHtml(parsed.data.summaryHtml)}
 </div>`;
 
   try {
-    await sendOwnerEmail(digestRecipients(), parsed.data.subject, html, { kind: "blog-digest" });
+    await sendOwnerEmail(blogDigestRecipients(), parsed.data.subject, html, { kind: "blog-digest" });
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("[blog-agent] digest send failed", error);
