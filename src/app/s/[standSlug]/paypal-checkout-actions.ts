@@ -28,6 +28,7 @@ export async function startPayPalCheckout(input: {
   items?: CartItemInput[];
   customerChoiceAmountCents?: number;
   customerEmail?: string;
+  couponCode?: string | null;
 }) {
   try {
     if (!isPayPalConfigured() || !isPayPalConnectAvailable()) {
@@ -45,6 +46,7 @@ export async function startPayPalCheckout(input: {
         : await loadStandCart(input.standSlug, input.items ?? [], {
             receiptEmail: email || null,
             claimFirstOrder: Boolean(email),
+            couponCode: input.couponCode,
           });
     if ("error" in loaded) return { error: loaded.error };
 
@@ -95,6 +97,8 @@ export async function startPayPalCheckout(input: {
         subtotalCents,
         discountCents,
         discountLabel,
+        promotionId: loaded.promotionId,
+        promotionCodeSnapshot: loaded.promotionCode,
         totalCents,
         currency: stand.currency,
         platformFeeCents: trackedFee,

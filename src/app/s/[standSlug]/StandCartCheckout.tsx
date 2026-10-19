@@ -29,6 +29,9 @@ import {
 import type { UpsellRule } from "@/lib/upsells/rules";
 
 const NO_UPSELL_RULES: UpsellRule[] = [];
+import type { DiscountChannel } from "@/lib/discounts/resolve-code";
+import { useCartDiscount } from "./useCartDiscount";
+import DiscountCodeField from "./DiscountCodeField";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/public-product";
@@ -127,6 +130,7 @@ export default function StandCartCheckout({
   preOrderUpsell = null,
   pagePreOrderUpsells = [],
   upsellRules = NO_UPSELL_RULES,
+  discountChannel = null,
   firstOrder = null,
   shopHref,
 }: {
@@ -153,6 +157,8 @@ export default function StandCartCheckout({
   preOrderUpsell?: CartUpsellConfig | null;
   pagePreOrderUpsells?: PagePreOrderUpsell[];
   upsellRules?: UpsellRule[];
+  /** Set when the business has live discount codes for this channel. */
+  discountChannel?: DiscountChannel | null;
   firstOrder?: FirstOrderOffer | null;
   /** Continue-shopping link; defaults to the website products page or the stand. */
   shopHref?: string;
@@ -313,16 +319,29 @@ export default function StandCartCheckout({
   const deliver = handover === "DELIVER";
   const needsContact = preOrderOnly || deliver;
 
+  const payload = lines.map((l) => ({
+    productId: l.product.id,
+    quantity: l.quantity,
+    choiceIds: l.choiceIds,
+    asUpsell: l.asUpsell || undefined,
+  }));
+  const discount = useCartDiscount({
+    standSlug,
+    items: payload,
+    email: customerEmail,
+    channel: discountChannel,
+  });
   const subtotal = lines.reduce((sum, l) => sum + l.lineTotalCents, 0);
+  const codeOff = Math.min(discount.applied?.discountCents ?? 0, subtotal);
   const shippingCents =
-    deliver && !preOrderOnly && shipping
+    deliver && !preOrderOnly && shipping && !discount.applied?.freeShipping
       ? shippingCostCents(
           shipping,
           lines.map((l) => ({ shippingCents: l.product.shippingCents, quantity: l.quantity })),
-          subtotal,
+          subtotal - codeOff,
         )
       : 0;
-  const total = subtotal + shippingCents;
+  const total = subtotal - codeOff + shippingCents;
   const passOnApplies = stallsideFeeApplies && passFeeToCustomer && total > 0;
   const cardFeeCents = passOnApplies
     ? stallsidePassOnFeeCents(total, stripeFixedFeeCents)
@@ -342,12 +361,6 @@ export default function StandCartCheckout({
     const fee = passOnApplies ? stallsidePassOnFeeCents(split.depositCents) : 0;
     return { amountCents: split.depositCents + fee, balanceCents: split.balanceCents };
   })();
-  const payload = lines.map((l) => ({
-    productId: l.product.id,
-    quantity: l.quantity,
-    choiceIds: l.choiceIds,
-    asUpsell: l.asUpsell || undefined,
-  }));
   const activeUpsell = useMemo(
     () =>
       resolveCartUpsell({
@@ -425,6 +438,7 @@ export default function StandCartCheckout({
         items: payload,
         receiptEmail: email || null,
         claimFirstOrder: Boolean(firstOrder?.enabled && email),
+        couponCode: discount.couponCode,
       });
       if ("error" in result && result.error) {
         setError(result.error);
@@ -443,6 +457,7 @@ export default function StandCartCheckout({
         items: payload,
         receiptEmail: email || null,
         claimFirstOrder: Boolean(firstOrder?.enabled && email),
+        couponCode: discount.couponCode,
       });
       if ("error" in result && result.error) {
         setError(result.error);
@@ -492,6 +507,7 @@ export default function StandCartCheckout({
         handoverMode: handover,
         buttonColour: shopButtonColour(rootRef.current),
         embedded: !isEmbeddedCheckout(),
+        couponCode: discount.couponCode,
       });
       if ("error" in result && result.error) {
         setError(result.error);
@@ -628,6 +644,7 @@ export default function StandCartCheckout({
             canChooseHandover ? { value: handover, onChange: setHandoverPick } : null
           }
           firstOrderHint={firstOrderHint}
+          couponCode={discount.couponCode}
           customerName={customerName}
           customerEmail={customerEmail}
           customerPhone={customerPhone}
@@ -674,6 +691,15 @@ export default function StandCartCheckout({
         />
       ) : null}
 
+      {step === "cart" && discountChannel ? (
+        <DiscountCodeField
+          currency={currency}
+          applied={discount.applied}
+          check={discount.check}
+          onApplied={discount.onApplied}
+          showFirstOrderNote={Boolean(firstOrder?.enabled)}
+        />
+      ) : null}
       {step === "cart" ? (
         <CartTotalBar
           totalLabel={formatMoney(total, currency)}

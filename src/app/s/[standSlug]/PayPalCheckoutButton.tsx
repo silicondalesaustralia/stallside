@@ -49,6 +49,7 @@ export default function PayPalCheckoutButton({
   standSlug,
   items,
   customerChoiceAmountCents,
+  couponCode = null,
   sandbox,
   disabled,
   onError,
@@ -59,6 +60,7 @@ export default function PayPalCheckoutButton({
   standSlug: string;
   items?: CartItem[];
   customerChoiceAmountCents?: number;
+  couponCode?: string | null;
   sandbox?: boolean;
   disabled?: boolean;
   onError: (message: string) => void;
@@ -68,6 +70,10 @@ export default function PayPalCheckoutButton({
   const cancelTokenRef = useRef<string | null>(null);
   const itemsRef = useRef(items);
   itemsRef.current = items;
+  const couponRef = useRef(couponCode);
+  useEffect(() => {
+    couponRef.current = couponCode;
+  }, [couponCode]);
   const amountRef = useRef(customerChoiceAmountCents);
   const siteSuccessPath = useCheckoutSuccessPath();
   const successPath = customerChoiceAmountCents != null ? "/checkout/success" : siteSuccessPath;
@@ -117,7 +123,7 @@ export default function PayPalCheckoutButton({
           const result = await startPayPalCheckout(
             amount != null
               ? { standSlug, customerChoiceAmountCents: amount }
-              : { standSlug, items: itemsRef.current ?? [] },
+              : { standSlug, items: itemsRef.current ?? [], couponCode: couponRef.current },
           );
           if ("error" in result && result.error) {
             onErrorRef.current(result.error);
@@ -162,7 +168,7 @@ export default function PayPalCheckoutButton({
       const result = await startPayPalCheckout(
         amountRef.current != null
           ? { standSlug, customerChoiceAmountCents: amountRef.current }
-          : { standSlug, items: itemsRef.current ?? [] },
+          : { standSlug, items: itemsRef.current ?? [], couponCode: couponRef.current },
       );
       if ("error" in result && result.error) {
         onErrorRef.current(result.error);

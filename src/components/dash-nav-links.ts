@@ -42,6 +42,7 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
     heading: "Marketing",
     links: [
       { href: "/dashboard/upsells", label: "Upsells & offers" },
+      { href: "/dashboard/discounts", label: "Discounts" },
       { href: "/dashboard/communication", label: "Communications" },
       { href: "/dashboard/reviews", label: "Reviews" },
       { href: "/dashboard/social", label: "Social", comingSoon: true },

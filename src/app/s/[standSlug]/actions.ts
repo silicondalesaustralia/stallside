@@ -26,6 +26,7 @@ import { DELIVERY_NEEDS_CARD } from "@/lib/fulfilment/handover-choice";
 type CheckoutExtras = {
   receiptEmail?: string | null;
   claimFirstOrder?: boolean;
+  couponCode?: string | null;
 };
 
 type CheckoutPayload = {
@@ -46,6 +47,7 @@ async function loadCheckoutCart(input: CheckoutPayload) {
   const loaded = await loadStandCart(input.standSlug, input.items ?? [], {
     receiptEmail: input.receiptEmail,
     claimFirstOrder: input.claimFirstOrder,
+    couponCode: input.couponCode,
   });
   if ("error" in loaded) return loaded;
   const handover = loadedCartHandover(loaded, input.items);
@@ -148,6 +150,8 @@ async function confirmDeclaredCheckout(
             subtotalCents,
             discountCents,
             discountLabel,
+            promotionId: loaded.promotionId,
+            promotionCodeSnapshot: loaded.promotionCode,
             totalCents,
             currency: stand.currency,
             platformFeeCents: 0,

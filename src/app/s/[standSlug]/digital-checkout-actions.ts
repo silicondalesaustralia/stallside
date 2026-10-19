@@ -54,6 +54,7 @@ export async function startCardCheckout(input: {
   buttonColour?: string;
   /** Show Stripe Checkout inside the page when possible (else redirect). */
   embedded?: boolean;
+  couponCode?: string | null;
 }): Promise<{ error: string } | { url: string } | { embedded: EmbeddedCheckoutInfo }> {
   try {
     const customerName = (input.customerName ?? "").trim().slice(0, 120);
@@ -80,6 +81,7 @@ export async function startCardCheckout(input: {
         : await loadStandCart(input.standSlug, input.items ?? [], {
             receiptEmail: customerEmail || null,
             claimFirstOrder: Boolean(customerEmail),
+            couponCode: input.couponCode,
           });
     if ("error" in loaded) return { error: loaded.error ?? "Could not start card checkout." };
 
@@ -177,6 +179,8 @@ export async function startCardCheckout(input: {
         subtotalCents,
         discountCents,
         discountLabel,
+        promotionId: loaded.promotionId,
+        promotionCodeSnapshot: loaded.promotionCode,
         totalCents: depositMode
           ? totalCents + (passOn ? applicationFee : 0)
           : chargeTotal,

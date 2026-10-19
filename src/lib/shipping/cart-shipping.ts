@@ -12,10 +12,11 @@ export function loadedCartShippingCents(
     lineData: { productId: string; quantity: number }[];
     totalCents: number;
     preOrderCart: unknown;
+    freeShipping?: boolean;
   },
   shipping: boolean,
 ): number {
-  if (!shipping || loaded.preOrderCart) return 0;
+  if (!shipping || loaded.preOrderCart || loaded.freeShipping) return 0;
   const lines = loaded.lineData.map((line) => ({
     shippingCents: loaded.byId.get(line.productId)?.shippingCents ?? null,
     quantity: line.quantity,

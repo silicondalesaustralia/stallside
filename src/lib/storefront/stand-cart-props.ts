@@ -22,6 +22,7 @@ import {
   standPreOrderUpsell,
 } from "./cart-upsell-offers";
 import { loadUpsellRules, type UpsellChannel } from "@/lib/upsells/load-rules";
+import { hasLiveDiscountCodes } from "@/lib/discounts/has-live-codes";
 
 export type StandCartCheckoutProps = Omit<ComponentProps<typeof StandCartCheckout>, "shopHref">;
 
@@ -118,6 +119,9 @@ export async function loadStandCartData(
       preOrderUpsell: standPreOrderUpsell(stand),
       pagePreOrderUpsells: await standPagePreOrderUpsells(stand),
       upsellRules: await loadUpsellRules(stand.id, channel),
+      discountChannel: (await hasLiveDiscountCodes(stand.ownerId, stand.id, channel))
+        ? channel
+        : null,
       firstOrder: stand.firstOrderDiscountEnabled
         ? {
             enabled: true,

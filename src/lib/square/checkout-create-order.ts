@@ -56,6 +56,7 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
       : await loadStandCart(input.standSlug, input.items ?? [], {
           receiptEmail: shopper.customerEmail || null,
           claimFirstOrder: Boolean(shopper.customerEmail),
+          couponCode: input.couponCode,
         });
   if ("error" in loaded) return { error: loaded.error };
 
@@ -137,6 +138,8 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
       totalCents: deposit ? totalCents + (passedOn ? applicationFeeCents : 0) : chargeTotalCents,
       discountCents,
       discountLabel,
+      promotionId: loaded.promotionId,
+      promotionCodeSnapshot: loaded.promotionCode,
       currency: stand.currency,
       platformFeeCents,
       squareLocationId: conn.primaryLocationId,

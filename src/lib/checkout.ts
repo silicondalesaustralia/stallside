@@ -18,6 +18,8 @@ import { productLiveWhere } from "@/lib/product-visibility";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 import { ruleUpsellUnitCents } from "@/lib/cart-upsell";
 import { loadUpsellRules } from "@/lib/upsells/load-rules";
+import { pickBetterDiscount } from "@/lib/discounts/compute";
+import { resolveDiscountCode, type DiscountChannel } from "@/lib/discounts/resolve-code";
 import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
 import {
   applyLotSharesToOrderItem,
@@ -181,13 +183,22 @@ export async function loadCustomerChoiceCheckout(
     totalCents: amountCents,
     preOrderCart: null,
     skipStock: true as const,
+    freeShipping: false,
+    promotionId: null as string | null,
+    promotionCode: null as string | null,
   };
 }
 
 export async function loadStandCart(
   standSlug: string,
   items: CartItemInput[],
-  opts?: { receiptEmail?: string | null; claimFirstOrder?: boolean },
+  opts?: {
+    receiptEmail?: string | null;
+    claimFirstOrder?: boolean;
+    couponCode?: string | null;
+    channel?: DiscountChannel;
+    codePreview?: boolean;
+  },
 ) {
   if (!items.length) {
     return { error: "Add at least one item." as const };
@@ -506,8 +517,7 @@ export async function loadStandCart(
   const subtotalCents = lineData.reduce((sum, l) => sum + l.lineTotalCents, 0);
   const usedTier = lineData.some((l) => l.usedTier);
 
-  let discountCents = 0;
-  let discountLabel: string | null = null;
+  const firstOrder = { discountCents: 0, label: null as string | null };
   const email = opts?.receiptEmail
     ? normalizeReceiptEmail(opts.receiptEmail)
     : "";
@@ -521,10 +531,31 @@ export async function loadStandCart(
         subtotalCents,
         usedTier,
       });
-      discountCents = d.discountCents;
-      discountLabel = d.label;
+      firstOrder.discountCents = d.discountCents;
+      firstOrder.label = d.label;
     }
   }
+
+  const code = opts?.couponCode?.trim()
+    ? await resolveDiscountCode({
+        ownerId: stand.ownerId,
+        standId: stand.id,
+        currency: stand.currency,
+        rawCode: opts.couponCode,
+        email,
+        lines: lineData,
+        channel: opts.channel,
+        hasPriorOrder: () => emailHasPriorOrderAtStand(stand.id, email),
+        emailOptional: opts.codePreview,
+      })
+    : null;
+  if (code && "error" in code) return { error: code.error };
+  const chosen = pickBetterDiscount(firstOrder, code);
+  const discountCents = chosen.discountCents;
+  const discountLabel = chosen.label;
+  const freeShipping = Boolean(code?.freeShipping);
+  const promotionId = code && (chosen.usedCode || freeShipping) ? code.promotionId : null;
+  const promotionCode = promotionId ? (code?.code ?? null) : null;
 
   const totalCents = Math.max(0, subtotalCents - discountCents);
 
@@ -544,6 +575,9 @@ export async function loadStandCart(
     totalCents,
     preOrderCart,
     skipStock: false as const,
+    freeShipping,
+    promotionId,
+    promotionCode,
   };
 }
 

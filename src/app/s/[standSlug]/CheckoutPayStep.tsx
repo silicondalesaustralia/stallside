@@ -56,6 +56,7 @@ type CheckoutPayStepProps = {
   handoverChoice?: { value: HandoverValue; onChange: (value: HandoverValue) => void } | null;
   /** Offer first-order discount when email provided. */
   firstOrderHint?: string | null;
+  couponCode?: string | null;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -104,6 +105,7 @@ export default function CheckoutPayStep({
   deliver = false,
   handoverChoice = null,
   firstOrderHint = null,
+  couponCode = null,
   customerName,
   customerEmail,
   customerPhone,
@@ -226,6 +228,7 @@ export default function CheckoutPayStep({
           deliveryPostcode={deliver ? deliveryPostcode : undefined}
           deliveryNotes={deliver ? deliveryNotes : undefined}
           handoverMode={deliver ? "DELIVER" : "COLLECT"}
+          couponCode={couponCode}
           depositMode={Boolean(squareDeposit)}
           amountCents={
             squareDeposit?.amountCents ||
@@ -298,6 +301,7 @@ export default function CheckoutPayStep({
           standSlug={standSlug}
           items={customerChoiceAmountCents != null ? undefined : items}
           customerChoiceAmountCents={customerChoiceAmountCents}
+          couponCode={couponCode}
           sandbox={paypalSandbox}
           disabled={pending}
           onError={onPayPalError}

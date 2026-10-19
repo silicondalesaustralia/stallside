@@ -29,6 +29,9 @@ export const CONTENT_NAV_ICONS: Record<string, React.ReactNode> = {
   "/dashboard/upsells": (
     <Icon d="M3 7h18v4H3zM5 11v9h14v-9M12 7v13M12 7c-2-4-6-3-6-1s3 1 6 1c3 0 6 1 6-1s-4-3-6 1" />
   ),
+  "/dashboard/discounts": (
+    <Icon d="M3 12V4h8l10 10-8 8L3 12zM9 15l6-6" extra={<path d="M7.5 7.5h.01" />} />
+  ),
   "/dashboard/qr": (
     <Icon d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2" />
   ),
