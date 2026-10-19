@@ -20,7 +20,7 @@ export default function SubscriptionLifecycleActions({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  function run(action: () => Promise<{ error?: string } | void>) {
+  function run(action: () => Promise<{ error: string } | { ok: true } | void>) {
     setError(null);
     startTransition(async () => {
       try {

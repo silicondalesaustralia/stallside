@@ -14,10 +14,8 @@ import {
 import { formatMoney } from "@/lib/money";
 import { SITE_URL } from "@/lib/legal";
 import { SubscriptionOfferKind } from "@/generated/prisma/client";
-import {
-  countHoldingMembers,
-  isOfferAtCapacity,
-} from "@/lib/subscription-capacity";
+import { isOfferAtCapacity } from "@/lib/subscription-capacity";
+import { listOwnerOffers } from "@/lib/subscriptions/service";
 import StandSubscriptionsNavToggle from "./StandSubscriptionsNavToggle";
 import SubscriptionLifecycleActions from "./SubscriptionLifecycleActions";
 
@@ -39,20 +37,7 @@ export default async function SubscriptionsListPage() {
     select: { id: true, slug: true, showSubscriptionsOnStand: true },
   });
 
-  const offers = await prisma.subscriptionOffer.findMany({
-    where: { standId: selected.id, ownerId: owner.id },
-    orderBy: [{ title: "asc" }],
-    include: {
-      _count: { select: { items: true, subscriptions: true } },
-    },
-  });
-
-  const holdingByOffer = new Map<string, number>();
-  await Promise.all(
-    offers.map(async (offer) => {
-      holdingByOffer.set(offer.id, await countHoldingMembers(offer.id));
-    }),
-  );
+  const offers = await listOwnerOffers(owner.id, selected.id);
 
   return (
     <main className="flex flex-col gap-8">
@@ -91,7 +76,7 @@ export default async function SubscriptionsListPage() {
             const isMembership =
               offer.kind === SubscriptionOfferKind.MEMBERSHIP;
             const ready = membershipOfferReady(offer);
-            const holding = holdingByOffer.get(offer.id) ?? 0;
+            const holding = offer.holding;
             const full = isOfferAtCapacity(offer.maxMembers, holding);
             return (
               <li
