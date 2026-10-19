@@ -1,16 +1,8 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
-import { PaymentStatus } from "@/generated/prisma/client";
 import CustomersSearchForm from "./CustomersSearchForm";
-import { syncOwnerCustomerLinks } from "@/lib/crm/sync-customer-links";
-
-const PAID: PaymentStatus[] = [
-  PaymentStatus.PAID,
-  PaymentStatus.CUSTOMER_CONFIRMED,
-  PaymentStatus.DEPOSIT_PAID,
-];
+import { listOwnerCustomers } from "@/lib/customers/service";
 
 export default async function CustomersPage({
   searchParams,
@@ -21,38 +13,7 @@ export default async function CustomersPage({
   const { q } = await searchParams;
   const query = (q ?? "").trim();
 
-  await syncOwnerCustomerLinks(owner.id);
-
-  const customers = await prisma.customer.findMany({
-    where: {
-      ownerId: owner.id,
-      ...(query
-        ? {
-            OR: [
-              { name: { contains: query, mode: "insensitive" } },
-              { email: { contains: query, mode: "insensitive" } },
-              { phone: { contains: query, mode: "insensitive" } },
-            ],
-          }
-        : {}),
-    },
-    orderBy: { updatedAt: "desc" },
-    take: 200,
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      phone: true,
-      marketingConsent: true,
-      source: true,
-      createdAt: true,
-      _count: { select: { orders: true } },
-      orders: {
-        where: { paymentStatus: { in: PAID } },
-        select: { totalCents: true, currency: true },
-      },
-    },
-  });
+  const customers = await listOwnerCustomers(owner.id, query);
 
   return (
     <main className="flex flex-col gap-6">
