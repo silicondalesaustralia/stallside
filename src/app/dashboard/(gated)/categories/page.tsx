@@ -1,5 +1,6 @@
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { listOwnerCategories } from "@/lib/categories/load";
 import SortableOrderList from "@/components/SortableOrderList";
 import CategoryRowActions from "./CategoryRowActions";
 import { createCategory, deleteCategory, saveCategoryOrder, setCategoryActive } from "./actions";
@@ -17,17 +18,7 @@ export default async function CategoriesPage({
   const { error, published, unpublished, deleted } = await searchParams;
 
   const [categories, shopUrl, storefront] = await Promise.all([
-    prisma.category.findMany({
-      where: { ownerId: owner.id },
-      orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
-      select: {
-        id: true,
-        title: true,
-        isActive: true,
-        showOnWebsite: true,
-        _count: { select: { products: true } },
-      },
-    }),
+    listOwnerCategories(owner.id),
     ownerSiteUrl(owner.id, (slug, draft, base) => shopPagePath(slug, "shop", draft, base)),
     prisma.storefront.findFirst({ where: { ownerId: owner.id }, select: { draftConfig: true } }),
   ]);

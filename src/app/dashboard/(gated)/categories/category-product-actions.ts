@@ -2,18 +2,8 @@
 
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import {
-  revalidateOwnerStores,
-  validOrderedIds,
-  type OrderActionResult,
-} from "@/lib/categories/category-admin";
-
-async function ownedCategory(ownerId: string, categoryId: string) {
-  return prisma.category.findFirst({
-    where: { id: categoryId, ownerId },
-    select: { id: true },
-  });
-}
+import { revalidateOwnerStores, type OrderActionResult } from "@/lib/categories/category-admin";
+import { saveOwnerCategoryProductOrder, setOwnerCategoryProducts } from "@/lib/categories/products";
 
 /** Order of products inside one category (ProductCategory.sortOrder). */
 export async function saveCategoryProductOrder(
@@ -22,19 +12,7 @@ export async function saveCategoryProductOrder(
 ): Promise<OrderActionResult> {
   try {
     const { owner } = await requireOwnerWrite();
-    const ids = validOrderedIds(raw);
-    if (!ids) return { error: "Invalid order." };
-    if (!(await ownedCategory(owner.id, categoryId))) return { error: "Category not found." };
-    await prisma.$transaction(
-      ids.map((productId, index) =>
-        prisma.productCategory.updateMany({
-          where: { categoryId, productId },
-          data: { sortOrder: index },
-        }),
-      ),
-    );
-    await revalidateOwnerStores(owner.id);
-    return { ok: true };
+    return await saveOwnerCategoryProductOrder(owner.id, categoryId, raw);
   } catch (error) {
     console.error("saveCategoryProductOrder failed", error);
     return { error: "Could not save order." };
@@ -48,33 +26,7 @@ export async function setCategoryProducts(
 ): Promise<OrderActionResult> {
   try {
     const { owner } = await requireOwnerWrite();
-    if (!(await ownedCategory(owner.id, categoryId))) return { error: "Category not found." };
-    const wanted = formData.getAll("productId").map(String);
-    const owned = await prisma.product.findMany({
-      where: { ownerId: owner.id, id: { in: wanted } },
-      select: { id: true },
-    });
-    const keep = new Set(owned.map((p) => p.id));
-    const existing = await prisma.productCategory.findMany({
-      where: { categoryId },
-      select: { productId: true, sortOrder: true },
-    });
-    const have = new Set(existing.map((l) => l.productId));
-    let next = existing.reduce((max, l) => Math.max(max, l.sortOrder), -1) + 1;
-
-    await prisma.$transaction([
-      prisma.productCategory.deleteMany({
-        where: { categoryId, productId: { notIn: [...keep] } },
-      }),
-      prisma.productCategory.createMany({
-        data: [...keep]
-          .filter((id) => !have.has(id))
-          .map((productId) => ({ categoryId, productId, sortOrder: next++ })),
-        skipDuplicates: true,
-      }),
-    ]);
-    await revalidateOwnerStores(owner.id);
-    return { ok: true };
+    return await setOwnerCategoryProducts(owner.id, categoryId, formData.getAll("productId").map(String));
   } catch (error) {
     console.error("setCategoryProducts failed", error);
     return { error: "Could not update products." };

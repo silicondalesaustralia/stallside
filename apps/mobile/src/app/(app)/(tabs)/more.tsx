@@ -20,6 +20,7 @@ const NATIVE_ROUTES: Record<string, Href> = {
   discounts: "/discounts",
   subscriptions: "/subscriptions",
   qr: "/qr",
+  categories: "/categories",
 };
 
 function groupFeatures(features: MobileFeature[]): [string, MobileFeature[]][] {

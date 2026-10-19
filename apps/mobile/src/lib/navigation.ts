@@ -21,6 +21,10 @@ export function openQr(kind: "business" | "code", id: string) {
   router.push({ pathname: "/qr/[kind]/[id]", params: { kind, id } });
 }
 
+export function openCategory(categoryId: string) {
+  router.push({ pathname: "/categories/[categoryId]", params: { categoryId } });
+}
+
 export function openProduct(productId: string) {
   router.push({ pathname: "/product/[productId]", params: { productId } });
 }
