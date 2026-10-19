@@ -27,6 +27,13 @@ export const DEFAULT_OPPORTUNITY_OPTIONS: OpportunityOptions = {
   brandTerms: ["vendl", "stallside"],
 };
 
+/** Low-traffic fallback: longer window, thinner signals, deeper positions. */
+export const LOOSE_OPPORTUNITY_OPTIONS: OpportunityOptions = {
+  ...DEFAULT_OPPORTUNITY_OPTIONS,
+  minImpressions: 5,
+  maxPosition: 70,
+};
+
 export function classifyPath(path: string): GscPageKind {
   if (path === "/" || path === "") return "home";
   if (/^\/(s|dashboard|admin|api|checkout|login|signup|onboarding|c)(\/|$)/.test(path)) return "excluded";
