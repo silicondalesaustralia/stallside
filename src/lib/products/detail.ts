@@ -9,6 +9,7 @@ export function getOwnerProductDetail(ownerId: string, productId: string) {
       name: true,
       description: true,
       imageUrl: true,
+      galleryImageUrls: true,
       priceCents: true,
       compareAtPriceCents: true,
       costCents: true,

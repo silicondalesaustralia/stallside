@@ -6,16 +6,19 @@ import {
   type ProductStatusBody,
 } from "@contracts/mobile/product-detail";
 import { apiFetch } from "@/lib/api";
+import type { PickedPhoto } from "@/lib/pick-photo";
 import { useToken } from "@/auth/useAuth";
 
-const productPath = (productId: string) => `/products/${encodeURIComponent(productId)}`;
+const productPath = (productId: string) =>
+  `/products/${encodeURIComponent(productId)}`;
 
 export function useProduct(productId: string) {
   const token = useToken();
   return useQuery({
     queryKey: ["product", productId],
     enabled: Boolean(token && productId),
-    queryFn: () => apiFetch(productPath(productId), { token, schema: mobileProductDetail }),
+    queryFn: () =>
+      apiFetch(productPath(productId), { token, schema: mobileProductDetail }),
   });
 }
 
@@ -34,7 +37,63 @@ export function useSaveProductPrice(productId: string) {
   const store = useStoreProduct(productId);
   return useMutation({
     mutationFn: (body: ProductPriceBody) =>
-      apiFetch(productPath(productId), { method: "PATCH", token, body, schema: mobileProductDetail }),
+      apiFetch(productPath(productId), {
+        method: "PATCH",
+        token,
+        body,
+        schema: mobileProductDetail,
+      }),
+    onSuccess: store,
+  });
+}
+
+export function useAddProductPhoto(productId: string) {
+  const token = useToken();
+  const store = useStoreProduct(productId);
+  return useMutation({
+    mutationFn: (photo: PickedPhoto) => {
+      const body = new FormData();
+      body.append("image", photo);
+      return apiFetch(`${productPath(productId)}/photos`, {
+        method: "POST",
+        token,
+        body,
+        schema: mobileProductDetail,
+      });
+    },
+    onSuccess: store,
+  });
+}
+
+export function useRemoveProductPhoto(productId: string) {
+  const token = useToken();
+  const store = useStoreProduct(productId);
+  return useMutation({
+    mutationFn: (url: string) =>
+      apiFetch(
+        `${productPath(productId)}/photos?url=${encodeURIComponent(url)}`,
+        {
+          method: "DELETE",
+          token,
+          schema: mobileProductDetail,
+        },
+      ),
+    onSuccess: store,
+  });
+}
+
+/** Saves a new order; the first photo becomes the main photo. */
+export function useReorderProductPhotos(productId: string) {
+  const token = useToken();
+  const store = useStoreProduct(productId);
+  return useMutation({
+    mutationFn: (order: string[]) =>
+      apiFetch(`${productPath(productId)}/photos`, {
+        method: "PUT",
+        token,
+        body: { order },
+        schema: mobileProductDetail,
+      }),
     onSuccess: store,
   });
 }

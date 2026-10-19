@@ -1,6 +1,7 @@
 import type { MobileProductDetail, ProductStatus } from "@/contracts/mobile/product-detail";
 import type { OwnerProductDetail } from "@/lib/products/detail";
 import { parsePriceTiers } from "@/lib/price-tiers";
+import { productImageList } from "@/lib/product-images";
 
 function statusOf(product: OwnerProductDetail): ProductStatus {
   if (product.isArchived) return "draft";
@@ -13,6 +14,7 @@ export function toMobileProductDetail(product: OwnerProductDetail): MobileProduc
     name: product.name,
     description: product.description,
     imageUrl: product.imageUrl,
+    photos: productImageList(product.imageUrl, product.galleryImageUrls),
     standName: product.stand.name,
     status: statusOf(product),
     priceCents: product.priceCents,

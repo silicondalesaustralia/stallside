@@ -32,7 +32,14 @@
       "expo-status-bar",
       "expo-secure-store",
       "expo-web-browser",
-      "expo-notifications"
+      "expo-notifications",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Vendl uses your photos so you can add pictures to your products.",
+          "cameraPermission": "Vendl uses the camera so you can photograph your products."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

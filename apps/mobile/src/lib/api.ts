@@ -41,16 +41,17 @@ export async function apiFetch<S extends z.ZodType>(
   path: string,
   { schema, method = "GET", body, token }: ApiOptions<S>,
 ): Promise<z.infer<S>> {
+  const isForm = body instanceof FormData;
   let res: Response;
   try {
     res = await fetch(`${API_URL}${MOBILE_API_BASE}${path}`, {
       method,
       headers: {
         Accept: "application/json",
-        ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+        ...(body !== undefined && !isForm ? { "Content-Type": "application/json" } : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
     });
   } catch {
     throw new ApiError(0, "Can't reach Vendl. Check your connection and try again.");

@@ -5,6 +5,7 @@ import { useProduct } from "@/data/useProduct";
 import { openOnWeb } from "@/lib/open-web";
 import { colors, spacing } from "@/lib/theme";
 import ProductSummaryCard from "@/components/ProductSummaryCard";
+import ProductPhotosCard from "@/components/ProductPhotosCard";
 import ProductPriceForm from "@/components/ProductPriceForm";
 import ProductStockCard from "@/components/ProductStockCard";
 import ProductStatusCard from "@/components/ProductStatusCard";
@@ -41,11 +42,12 @@ export default function ProductDetailScreen() {
             keyboardDismissMode="on-drag"
           >
             <ProductSummaryCard product={detail} />
+            <ProductPhotosCard product={detail} />
             <ProductPriceForm key={`${detail.priceCents}:${detail.compareAtPriceCents}`} product={detail} />
             <ProductStockCard product={detail} />
             <ProductStatusCard product={detail} />
             <Pressable accessibilityRole="link" onPress={() => void editOnWeb(detail.webPath)} style={styles.web}>
-              <Text style={styles.webText}>Edit photos, description & more on the web</Text>
+              <Text style={styles.webText}>Edit description, options & more on the web</Text>
             </Pressable>
           </ScrollView>
         </KeyboardAvoidingView>
