@@ -99,6 +99,9 @@ const ICONS: Record<string, React.ReactNode> = {
   "/admin/orders": (
     <Icon d="M7 3h10v18H7zM10 7h4M10 11h4M10 15h3" />
   ),
+  "/admin/blog": (
+    <Icon d="M5 4h10l4 4v12H5zM15 4v4h4M8 12h8M8 16h5" />
+  ),
 };
 
 export default function DashNavIcon({ href }: { href: string }) {

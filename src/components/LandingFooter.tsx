@@ -22,6 +22,7 @@ const COMPANY = [
   { href: "/about", label: "About" },
   { href: "/testimonials-and-gallery", label: "Testimonials & gallery" },
   { href: "/farms-stand-news", label: "News" },
+  { href: "/guides", label: "Guides" },
   { href: "/contact", label: "Contact" },
   { href: "/contact?subject=feature-request", label: "Feature request" },
 ] as const;

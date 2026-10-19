@@ -11,7 +11,7 @@ import { appendComparisonNodes } from "./schema-comparison";
 
 /** Full BlogPosting graph used by every farms-stand-news article. */
 export function newsArticleGraphSchema(article: NewsArticleMeta) {
-  const path = newsArticlePath(article.slug);
+  const path = article.canonicalPath ?? newsArticlePath(article.slug);
   const postUrl = `${SITE_URL}${path}`;
   const datePublished = article.publishedAt;
   const dateModified = article.updatedAt ?? article.publishedAt;
@@ -50,8 +50,8 @@ export function newsArticleGraphSchema(article: NewsArticleMeta) {
         {
           "@type": "ListItem",
           position: 2,
-          name: "Farm Stand News",
-          item: `${SITE_URL}${newsIndexPath()}`,
+          name: article.sectionLabel ?? "Farm Stand News",
+          item: `${SITE_URL}${article.sectionPath ?? newsIndexPath()}`,
         },
         {
           "@type": "ListItem",

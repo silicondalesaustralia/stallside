@@ -20,7 +20,8 @@
     "cap:android": "npx cap open android",
     "admin:promote": "npx tsx scripts/promote-admin.ts",
     "seed:green-valley-demo": "npx tsx scripts/seed-green-valley-demo.ts",
-    "push:test": "npx tsx scripts/test-web-push.ts"
+    "push:test": "npx tsx scripts/test-web-push.ts",
+    "gsc:opportunities": "npx tsx scripts/gsc-opportunities.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.2",

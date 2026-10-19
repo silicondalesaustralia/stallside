@@ -47,6 +47,11 @@ export type NewsArticlePart = {
 
 export type NewsArticleMeta = {
   slug: string;
+  /** Defaults to /farms-stand-news/{slug}; guides live under /guides. */
+  canonicalPath?: string;
+  /** Breadcrumb parent; defaults to Farm Stand News. */
+  sectionLabel?: string;
+  sectionPath?: string;
   title: string;
   seoTitle: string;
   seoDescription: string;
