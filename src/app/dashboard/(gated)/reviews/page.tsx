@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import { countOwnerReviews, listOwnerReviews } from "@/lib/reviews/service";
 import ReviewItem from "./ReviewItem";
 
 const TABS = [
@@ -30,32 +30,9 @@ export default async function ReviewsPage({
 }) {
   const { owner } = await requireOwner();
   const { tab: rawTab, done } = await searchParams;
-  const grouped = await prisma.review.groupBy({ by: ["status"], where: { ownerId: owner.id }, _count: true });
-  const counts = Object.fromEntries(grouped.map((g) => [g.status, g._count]));
+  const counts = await countOwnerReviews(owner.id);
   const tab = TABS.find((t) => t.id === rawTab) ?? (counts.PENDING ? TABS[0] : TABS[3]);
-
-  const reviews = await prisma.review.findMany({
-    where: { ownerId: owner.id, ...(tab.status ? { status: tab.status } : {}) },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-    select: {
-      id: true,
-      rating: true,
-      title: true,
-      body: true,
-      status: true,
-      authorName: true,
-      authorEmail: true,
-      verified: true,
-      sellerReply: true,
-      createdAt: true,
-      productId: true,
-      customer: { select: { id: true, name: true, email: true } },
-    },
-  });
-  const productIds = [...new Set(reviews.map((r) => r.productId).filter((id): id is string => Boolean(id)))];
-  const products = await prisma.product.findMany({ where: { id: { in: productIds }, ownerId: owner.id }, select: { id: true, name: true } });
-  const productName = new Map(products.map((p) => [p.id, p.name]));
+  const reviews = await listOwnerReviews(owner.id, tab.status);
 
   return (
     <main className="flex flex-col gap-6">
@@ -68,7 +45,7 @@ export default async function ReviewsPage({
       {done && NOTICES[done] ? <p className="text-sm font-medium text-[var(--ok)]">{NOTICES[done]}</p> : null}
       <nav className="flex flex-wrap gap-2">
         {TABS.map((t) => {
-          const count = t.status ? counts[t.status] ?? 0 : Object.values(counts).reduce((a, b) => a + b, 0);
+          const count = t.status ? counts[t.status] ?? 0 : Object.values(counts).reduce((a, b) => a + (b ?? 0), 0);
           return (
             <Link
               key={t.id}
@@ -90,7 +67,7 @@ export default async function ReviewsPage({
       ) : (
         <ul className="flex flex-col gap-4">
           {reviews.map((r) => (
-            <ReviewItem key={r.id} review={r} productName={r.productId ? productName.get(r.productId) ?? "A product" : null} tab={tab.id} />
+            <ReviewItem key={r.id} review={r} productName={r.productName} tab={tab.id} />
           ))}
         </ul>
       )}
