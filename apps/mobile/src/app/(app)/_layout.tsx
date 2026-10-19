@@ -26,6 +26,7 @@ export default function SignedInLayout() {
         <Stack.Screen name="order/[orderId]" options={{ title: "Order" }} />
         <Stack.Screen name="product/[productId]" options={{ title: "Product" }} />
         <Stack.Screen name="inventory" options={{ title: "Inventory" }} />
+        <Stack.Screen name="notifications" options={{ title: "Notifications" }} />
         <Stack.Screen name="collections" options={{ title: "Pick ups & delivery" }} />
         <Stack.Screen name="customers/index" options={{ title: "Customers" }} />
         <Stack.Screen name="customers/[customerId]" options={{ title: "Customer" }} />

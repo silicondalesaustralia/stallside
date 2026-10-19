@@ -22,6 +22,7 @@ export function usePushRegistration(sessionToken: string | null) {
       void queryClient.invalidateQueries({ queryKey: ["orders"] });
       void queryClient.invalidateQueries({ queryKey: ["home"] });
       void queryClient.invalidateQueries({ queryKey: ["products"] });
+      void queryClient.invalidateQueries({ queryKey: ["notifications"] });
     });
     return () => received.remove();
   }, [queryClient]);

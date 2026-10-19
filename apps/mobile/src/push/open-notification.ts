@@ -26,5 +26,5 @@ export function openNotification(data: Record<string, unknown>) {
     router.navigate("/inventory");
     return;
   }
-  router.navigate("/orders");
+  router.navigate(type === "sale" ? "/orders" : "/notifications");
 }
