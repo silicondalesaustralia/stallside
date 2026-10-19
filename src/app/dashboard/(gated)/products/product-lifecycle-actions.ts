@@ -1,8 +1,7 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
-import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { redirect } from "next/navigation";
+import { revalidateProductPaths, setOwnerProductStatus } from "@/lib/products/lifecycle";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { uniqueProductSlug } from "@/lib/slug";
@@ -35,20 +34,6 @@ async function ownedProduct(productId: string, ownerId: string) {
       },
     },
   });
-}
-
-function revalidateProductPaths(opts: {
-  standId: string;
-  standSlug: string;
-  productId: string;
-  slug: string;
-}) {
-  revalidatePath("/dashboard/products");
-  revalidatePath(`/dashboard/products/${opts.productId}`);
-  revalidatePath(`/dashboard/businesses/${opts.standId}`);
-  revalidatePath(`/s/${opts.standSlug}`);
-  revalidateTag(standCatalogTag(opts.standSlug), "max");
-  revalidatePath(`/s/${opts.standSlug}/${opts.slug}`);
 }
 
 /** Copy a product for editing; new slug, not hidden/archived. */
@@ -120,60 +105,15 @@ export async function duplicateProduct(productId: string) {
 
 export async function setProductHidden(productId: string, hidden: boolean) {
   const { owner } = await requireOwnerWrite();
-  const product = await ownedProduct(productId, owner.id);
-  if (!product) return { error: "Product not found." };
-  if (product.isArchived) {
-    return { error: "Restore the product before changing catalog visibility." };
-  }
-
-  await prisma.product.update({
-    where: { id: product.id },
-    data: { isHidden: hidden },
-  });
-
-  revalidateProductPaths({
-    standId: product.standId,
-    standSlug: product.stand.slug,
-    productId: product.id,
-    slug: product.slug,
-  });
-  return { ok: true as const };
+  return setOwnerProductStatus(owner.id, productId, hidden ? "hide" : "show");
 }
 
 export async function archiveProduct(productId: string) {
   const { owner } = await requireOwnerWrite();
-  const product = await ownedProduct(productId, owner.id);
-  if (!product) return { error: "Product not found." };
-
-  await prisma.product.update({
-    where: { id: product.id },
-    data: { isArchived: true, isActive: false, isHidden: false },
-  });
-
-  revalidateProductPaths({
-    standId: product.standId,
-    standSlug: product.stand.slug,
-    productId: product.id,
-    slug: product.slug,
-  });
-  return { ok: true as const };
+  return setOwnerProductStatus(owner.id, productId, "archive");
 }
 
 export async function restoreProduct(productId: string) {
   const { owner } = await requireOwnerWrite();
-  const product = await ownedProduct(productId, owner.id);
-  if (!product) return { error: "Product not found." };
-
-  await prisma.product.update({
-    where: { id: product.id },
-    data: { isArchived: false, isActive: true, isHidden: false },
-  });
-
-  revalidateProductPaths({
-    standId: product.standId,
-    standSlug: product.stand.slug,
-    productId: product.id,
-    slug: product.slug,
-  });
-  return { ok: true as const };
+  return setOwnerProductStatus(owner.id, productId, "restore");
 }
