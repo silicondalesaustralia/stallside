@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
-import { productDashboardWhere } from "@/lib/product-visibility";
+import { listStandProducts } from "@/lib/products/list";
 import ProductsTabs, { productTabFrom } from "./ProductsTabs";
 import ProductListRow from "./ProductListRow";
 import ProductsSearchForm from "./ProductsSearchForm";
@@ -41,40 +40,7 @@ export default async function ProductsPage({
     );
   }
 
-  const products = await prisma.product.findMany({
-      where: {
-        ownerId: owner.id,
-        standId: selected.id,
-        ...(isSupplier
-          ? { memberId: { not: null } }
-          : isDraft
-            ? { memberId: null, isHidden: false, isArchived: true }
-            : { memberId: null, preOrderEligible: isPreOrder, isHidden: false, ...productDashboardWhere }),
-        ...(q
-          ? {
-              OR: [
-                { name: { contains: q, mode: "insensitive" } },
-                { sku: { contains: q, mode: "insensitive" } },
-                { upc: { contains: q, mode: "insensitive" } },
-              ],
-            }
-          : {}),
-      },
-      select: {
-        id: true,
-        name: true,
-        isHidden: true,
-        isArchived: true,
-        priceCents: true,
-        currency: true,
-        costCents: true,
-        stockQuantity: true,
-        supplyStatus: true,
-        sku: true,
-        member: { select: { name: true } },
-      },
-      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-    });
+  const products = await listStandProducts({ ownerId: owner.id, standId: selected.id, tab, q });
 
   const [stockSplits, shopUrl] = await Promise.all([
     loadProductStockSplits(products),

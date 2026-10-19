@@ -1,5 +1,6 @@
 import { formatMoney } from "@/lib/money";
 import type { InventoryRow } from "@/lib/inventory/load-inventory-report";
+import { summarizeInventory } from "@/lib/inventory/summary";
 
 function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
@@ -16,21 +17,16 @@ function Tile({ label, value, hint }: { label: string; value: string; hint?: str
 }
 
 export default function InventorySummaryTiles({ rows }: { rows: InventoryRow[] }) {
-  const currency = rows[0]?.currency ?? "AUD";
-  let costValue = 0;
-  let retailValue = 0;
-  let missingCost = 0;
-  let sold30 = 0;
-  for (const r of rows) {
-    const onHand = Math.max(0, r.stockQuantity);
-    retailValue += r.priceCents * onHand;
-    if (r.costCents == null) missingCost += 1;
-    else costValue += r.costCents * onHand;
-    sold30 += r.sold30;
-  }
-  const low = rows.filter((r) => r.stockStatus === "low").length;
-  const out = rows.filter((r) => r.stockStatus === "out").length;
-  const runningOut = rows.filter((r) => r.daysCover != null && r.daysCover <= 7).length;
+  const {
+    currency,
+    costValueCents: costValue,
+    retailValueCents: retailValue,
+    missingCost,
+    sold30,
+    low,
+    out,
+    runningOut,
+  } = summarizeInventory(rows);
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 2xl:grid-cols-6">
