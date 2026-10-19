@@ -1,8 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { NewsArticle } from "@/lib/farms-stand-news";
-import { newsIndexPath } from "@/lib/farms-stand-news";
+import { newsArticlePath, newsIndexPath } from "@/lib/farms-stand-news";
+import { SITE_URL } from "@/lib/legal";
 import ArticleAuthorBox from "@/components/blog/ArticleAuthorBox";
+import ArticleShareButtons from "@/components/blog/ArticleShareButtons";
 import ArticleBylineAuthor from "@/components/blog/ArticleBylineAuthor";
 import ArticleSignupCta from "@/components/blog/ArticleSignupCta";
 
@@ -16,14 +19,35 @@ function formatPublishedDate(iso: string) {
   }).format(date);
 }
 
-export default function NewsArticleView({ article }: { article: NewsArticle }) {
+const WORDS_PER_MINUTE = 220;
+
+export default function NewsArticleView({
+  article,
+  layout = "standalone",
+  children,
+}: {
+  article: NewsArticle;
+  /** "column" when a parent layout supplies width, padding and a sidebar. */
+  layout?: "standalone" | "column";
+  children?: ReactNode;
+}) {
   const { Content } = article;
   const modified = article.updatedAt ?? article.publishedAt;
   const showHero =
     Boolean(article.image) && article.featuredImagePlacement !== "body-only";
+  const readingMinutes = article.wordCount
+    ? Math.max(1, Math.round(article.wordCount / WORDS_PER_MINUTE))
+    : null;
+  const shareUrl = `${SITE_URL}${article.canonicalPath ?? newsArticlePath(article.slug)}`;
 
   return (
-    <article className="mx-auto w-full max-w-3xl px-5 py-12 sm:px-6 sm:py-16">
+    <article
+      className={
+        layout === "column"
+          ? "w-full min-w-0"
+          : "mx-auto w-full max-w-3xl px-5 py-12 sm:px-6 sm:py-16"
+      }
+    >
       <nav className="text-sm text-[var(--muted)]" aria-label="Breadcrumb">
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
@@ -58,7 +82,9 @@ export default function NewsArticleView({ article }: { article: NewsArticle }) {
           ) : null}
           <span aria-hidden> · </span>
           <ArticleBylineAuthor author={article.author} />
+          {readingMinutes ? <span> · {readingMinutes} min read</span> : null}
         </p>
+        <ArticleShareButtons url={shareUrl} title={article.title} />
       </header>
 
       {showHero && article.image ? (
@@ -74,7 +100,7 @@ export default function NewsArticleView({ article }: { article: NewsArticle }) {
         </div>
       ) : null}
 
-      <div className="prose-marketing mt-10 text-base leading-relaxed sm:text-lg">
+      <div className="prose-marketing mt-10 text-base leading-relaxed sm:text-lg [&_h2]:scroll-mt-6">
         <Content />
       </div>
 
@@ -106,6 +132,7 @@ export default function NewsArticleView({ article }: { article: NewsArticle }) {
 
       <ArticleSignupCta slug={article.slug} placement="end" />
       <ArticleAuthorBox author={article.author} />
+      {children}
     </article>
   );
 }

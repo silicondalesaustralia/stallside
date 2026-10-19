@@ -80,6 +80,8 @@ export type NewsArticleMeta = {
   hasPart?: NewsArticlePart[];
   comparedSoftware?: NewsComparedSoftware[];
   faqs?: FaqItem[];
+  /** Section headings (with anchor ids) for the "On this page" list. */
+  headings?: Array<{ id: string; text: string }>;
 };
 
 export type NewsArticle = NewsArticleMeta & {

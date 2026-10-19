@@ -3385,3 +3385,13 @@ model BlogAiVisibilityCheck {
   @@index([runAt])
   @@index([question, runAt])
 }
+
+/// Reader who asked for new guides by email from an article page.
+model BlogSubscriber {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  /// Article slug the reader signed up from.
+  sourceSlug     String?
+  unsubscribedAt DateTime?
+  createdAt      DateTime  @default(now())
+}

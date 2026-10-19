@@ -5,7 +5,8 @@ import type { NewsArticle } from "@/lib/farms-stand-news/types";
 import { blogAuthorToNewsAuthor, type PublicBlogAuthor } from "./authors";
 import { blogPostPath, blogSectionIndexPath, blogSectionLabel } from "./paths";
 import { blogHtmlWordCount } from "./sanitize-blog-html";
-import { stripMarkdownLinks } from "./markdown-links";
+import { withHeadingIds } from "./heading-ids";
+import { markdownLinksToHtml, stripMarkdownLinks } from "./markdown-links";
 import { splitAtMiddleHeading } from "./split-at-middle-heading";
 import { parseFaqs, parseResearchNotes } from "./types";
 
@@ -44,7 +45,7 @@ export function blogPostToNewsArticle(post: BlogPostRow): NewsArticle {
           height: post.heroImageHeight,
         }
       : undefined;
-  const html = post.bodyHtml;
+  const { html, headings } = withHeadingIds(markdownLinksToHtml(post.bodyHtml));
 
   return {
     slug: post.slug,
@@ -65,6 +66,7 @@ export function blogPostToNewsArticle(post: BlogPostRow): NewsArticle {
     speakableSelectors: [".post-title"],
     citations: notes.sources?.map((s) => ({ name: s.title, url: s.url })),
     faqs: parseFaqs(post.faqs).map((faq) => ({ ...faq, answer: stripMarkdownLinks(faq.answer) })),
+    headings,
     Content: function BlogPostContent() {
       const halves = splitAtMiddleHeading(html);
       if (!halves) return <BlogHtml html={html} />;

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
 import MarketingPageShell from "@/components/MarketingPageShell";
-import NewsArticleView from "@/components/NewsArticleView";
+import ArticleLayout from "@/components/blog/ArticleLayout";
 import { SITE_URL } from "@/lib/legal";
 import { DEFAULT_OG_IMAGE } from "@/lib/og-image";
 import {
@@ -77,7 +77,7 @@ export default async function FarmsStandNewsArticlePage({ params }: PageProps) {
   return (
     <MarketingPageShell>
       <JsonLd data={newsArticleGraphSchema(article)} />
-      <NewsArticleView article={article} />
+      <ArticleLayout article={article} />
     </MarketingPageShell>
   );
 }

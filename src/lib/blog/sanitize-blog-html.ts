@@ -106,6 +106,10 @@ export function sanitizeBlogHtml(raw: string): string {
       const scope = attrValue(attrs, "scope");
       return scope && /^(row|col)$/i.test(scope) ? `<${name} scope="${scope}">` : `<${name}>`;
     }
+    if (name === "h2") {
+      const id = attrValue(attrs, "id");
+      return id && /^[a-z0-9-]{1,80}$/.test(id) ? `<h2 id="${id}">` : "<h2>";
+    }
     return `<${name}>`;
   });
 
