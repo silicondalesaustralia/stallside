@@ -40,8 +40,8 @@ export type InlineImageBrief = AgentArticle["images"]["inline"][number];
 
 /** JSON shape described to the model (kept beside the schema so they stay in sync). */
 export const ARTICLE_JSON_SHAPE = `{
-  "title": string, "slug": string, "section": "NEWS" | "GUIDE",
-  "seoTitle": string (<=60 ideal, 70 max), "seoDescription": string (140-160), "excerpt": string,
+  "title": string (on-page H1; a semantic variation, never the same wording as seoTitle), "slug": string, "section": "NEWS" | "GUIDE",
+  "seoTitle": string (primary query first; <=60 ideal, 70 max), "seoDescription": string (140-160), "excerpt": string,
   "bodyHtml": string (no h1, no images), "faqs": [{ "question": string, "answer": string }],
   "keywords": string, "agentSummary": string (2-3 sentences: what and why),
   "researchNotes": { "whyThisTopic": string, "sources": [{ "title": string, "url": string }], "factChecks": [string], "internalLinks": [string] },
