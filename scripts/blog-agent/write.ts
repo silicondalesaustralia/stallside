@@ -15,6 +15,7 @@ import { tryCreatePostImage, uniqueFilenames } from "./images";
 import { askJson } from "./openai";
 import { agentDoc, knowledgeBaseSource, todayInAdelaide, vendlFactsSource } from "./repo-context";
 import { buildSerpBrief } from "./serp-brief";
+import { titlesTooSimilar } from "./title-variation";
 
 type Topic = { id: string; title: string; angle: string | null; notes: string | null; featureRef: string | null; source: string; section: string | null; targetQueries: unknown; sourceUrls: unknown; targetPostSlug: string | null; expiresAt: string | null };
 type TargetPost = { id: string; slug: string; section: string; title: string; seoTitle: string; seoDescription: string; excerpt: string; bodyHtml: string; faqs: unknown };
@@ -58,7 +59,9 @@ async function draftArticle(topic: Topic, targetPost: TargetPost | null): Promis
   if (!parsed.success) {
     throw new Error(`Writer output failed validation: ${JSON.stringify(parsed.error.issues).slice(0, 1500)}`);
   }
-  return parsed.data;
+  if (!titlesTooSimilar(parsed.data.title, parsed.data.seoTitle)) return parsed.data;
+  console.warn("H1 and SEO title are near-identical");
+  return { ...parsed.data, agentSummary: `${parsed.data.agentSummary} Note: the H1 and SEO title are near-identical; vary one before publishing.`.slice(0, 2000) };
 }
 
 async function inlineImages(article: AgentArticle, folder: string, limit: number): Promise<PlacedImage[]> {
@@ -126,6 +129,7 @@ async function main() {
       topicId,
     });
     console.log(`Draft ${draft.id} (/${draft.slug}) created with ${hero ? 1 : 0} hero + ${images.length} inline images`);
+    console.log(`H1: ${article.title}\nSEO title: ${article.seoTitle}`);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     await appPost("/topics", { update: [{ id: topicId, writeError: message.slice(0, 1000) }] }).catch((e: unknown) =>

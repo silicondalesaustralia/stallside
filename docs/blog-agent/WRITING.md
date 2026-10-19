@@ -115,8 +115,11 @@ Length follows the question. Guides often land at 900–1,800 words and news at 
 
 ## 9. SEO fields
 
-- `title`: readable, matches intent; need not equal `seoTitle`.
-- `seoTitle`: accurate, around 50–60 characters (70 max).
+- **`seoTitle` and `title` (H1) must be different wordings of the same promise.** Together they cover more of the query cluster in `serpBrief` and `targetQueries`.
+  - `seoTitle` (the search result headline): front-loads the **primary query** almost as people type it; around 50–60 characters (70 max). Don't add "· Vendl"; the site appends the brand.
+  - `title` (the on-page H1): written for the reader who has already clicked. Use a **secondary or semantic variation** (synonyms, the long-tail phrasing, the outcome or the format, e.g. "checklist", "step by step", "what changes in 2026"). Keep the core entity (place, product, task) so the page still clearly matches the query. Don't just reorder the same words or add a suffix.
+  - Example: `seoTitle` "Selling Food From Home QLD: Product Licence Checklist"; `title` "Do you need a food licence in Queensland? Check each product before you sell".
+  - The excerpt and first paragraph can use a third variation; keywords list the variations you targeted.
 - `seoDescription`: around 140–160 characters describing the benefit of reading; no keyword lists or guarantees.
 - `slug`: short, lowercase, hyphenated; no year for evergreen topics.
 - `excerpt`: 1–2 sentences for listing cards.
