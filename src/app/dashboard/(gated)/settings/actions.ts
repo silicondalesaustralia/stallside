@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { updateOwnerAlertSettings } from "@/lib/alerts/settings";
 
 function parseAlertEmails(raw: string): string[] | { error: string } {
   const parts = raw
@@ -33,16 +34,7 @@ export async function updateAlertSettings(formData: FormData) {
   const primary = owner.contactEmail.trim().toLowerCase();
   const alertEmails = parsed.filter((email) => email !== primary);
 
-  await prisma.owner.update({
-    where: { id: owner.id },
-    data: {
-      emailAlertsEnabled,
-      pushAlertsEnabled,
-      alertEmails,
-    },
-  });
-
-  revalidatePath("/dashboard/settings");
+  await updateOwnerAlertSettings(owner.id, { emailAlertsEnabled, pushAlertsEnabled, alertEmails });
   return { ok: true as const };
 }
 

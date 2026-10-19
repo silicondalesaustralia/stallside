@@ -1,17 +1,12 @@
-import { prisma } from "@/lib/prisma";
 import { requireOwner } from "@/lib/session";
+import { listOwnerNotifications } from "@/lib/notifications/service";
 import NotificationsList from "./NotificationsList";
 import NotificationsHeader from "./NotificationsHeader";
 
 export default async function NotificationsPage() {
   const { owner } = await requireOwner();
 
-  const notifications = await prisma.notification.findMany({
-    where: { ownerId: owner.id },
-    include: { stand: true },
-    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
-    take: 100,
-  });
+  const notifications = await listOwnerNotifications(owner.id);
 
   const openCount = notifications.filter((n) => n.status === "OPEN").length;
 
