@@ -12,12 +12,12 @@ const communityScanSchema = z.object({
       z.object({
         question: z.string().min(1),
         platforms: z.array(z.enum(["reddit", "quora", "linkedin", "medium"])).min(1),
-        realWording: z.array(z.string()).max(5),
-        urls: z.array(z.string()).max(6),
+        realWording: z.array(z.string()).transform((items) => items.slice(0, 5)),
+        urls: z.array(z.string()).transform((items) => items.slice(0, 6)),
         signal: z.string().min(1),
       }),
     )
-    .max(15),
+    .transform((items) => items.slice(0, 15)),
 });
 
 export type CommunityScan = z.infer<typeof communityScanSchema>;

@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { cleanEnvSecret } from "@/lib/env";
 
-const PICK_TOKEN_TTL_MS = 48 * 60 * 60 * 1000;
+const PICK_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 function secret(): string {
   const key = cleanEnvSecret(process.env.BLOG_PICK_SECRET) ?? cleanEnvSecret(process.env.BLOG_AGENT_TOKEN);

@@ -15,7 +15,7 @@ const DEFAULT_SEEDS = [
   "price homemade",
 ];
 
-const POOL_SIZE = 150;
+const POOL_SIZE = 80;
 
 function seeds(): string[] {
   const custom = process.env.BLOG_AGENT_DEMAND_SEEDS?.split(",").map((s) => s.trim()).filter(Boolean);

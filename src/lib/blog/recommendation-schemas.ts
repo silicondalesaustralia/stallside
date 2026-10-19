@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { blogTargetQuerySchema } from "./types";
 
-export const MAX_PICKS_PER_BATCH = 3;
+/** One article a day, Monday to Saturday, from the Sunday plan. */
+export const MAX_PICKS_PER_BATCH = 6;
 
 export const recommendationSchema = z.object({
   title: z.string().trim().min(10).max(200),

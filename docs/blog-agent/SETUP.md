@@ -1,4 +1,4 @@
-# Daily blog agent: setup
+# Weekly blog agent: setup
 
 ## 1. Database
 
@@ -29,11 +29,11 @@ Migration `prisma/migrations/20261019110000_blog_posts` adds `BlogPost`, `BlogPo
 
 Two workflows in `.github/workflows/`. GitHub only runs scheduled and dispatched workflows whose files are on the **default branch (`main`)**; they check out `BLOG_AGENT_GIT_REF` to run the code.
 
-- `blog-plan.yml`: 9pm Adelaide daily (two UTC crons cover daylight saving). Builds the Search Console report, reads blog context, knowledge base and recent commits, searches the web for news, and asks GPT-6 Astra for 10 ranked ideas. On Sundays it first runs weekly research (tick "weekly research" on a manual run to force it):
+- `blog-plan.yml`: Sundays 9pm Adelaide (two UTC crons cover daylight saving). Builds the Search Console report, reads a compact blog context (titles, slugs, statuses), the knowledge base index and the week's commit subjects, searches the web for the last week's news, and asks GPT-5.4 for 10 ranked ideas for the week's six articles. It first runs the weekly research:
   - **Competitor scan:** CottageCMS, Bakebug, Hotplate, Loafly, Bakesy, Shopify, Square Online and Wix; recent content, product changes and content gaps (`scripts/blog-agent/competitor-scan.ts`).
   - **Community scan:** Reddit, Quora and public LinkedIn posts via web search, plus Medium tag feeds; real seller questions and wording (`scripts/blog-agent/community-scan.ts`).
-  - **ChatGPT visibility:** asks ChatGPT (web search, Australian location) 24 fixed buyer questions and stores whether Vendl is mentioned or cited, competitor mentions and cited pages. See the trend at `/admin/blog/ai-visibility`. Questions are in `scripts/blog-agent/ai-questions.ts`; add new ones rather than rewording, so the trend stays comparable. The app stores them as topics and emails them, each with a **Write this** link (signed, 48 hours). Run it manually from the Actions tab to test.
-- `blog-write.yml`: started by the app when an idea is picked (email link or **Write now** in the topic backlog). Up to 3 picks per evening; nothing is written if nothing is picked. First reviews the top search results for the main query (what they cover, weaknesses, gaps, reader questions), then researches and drafts with GPT-6 Astra, generates a feature image and 1–3 inline images with `gpt-image-1` (WebP, SEO filenames, alt text, captions), and posts a draft or a revision to the review queue (~10–20 minutes). Failures are emailed and shown on the topic.
+  - **ChatGPT visibility:** asks ChatGPT (web search, Australian location) 24 fixed buyer questions and stores whether Vendl is mentioned or cited, competitor mentions and cited pages. See the trend at `/admin/blog/ai-visibility`. Questions are in `scripts/blog-agent/ai-questions.ts`; add new ones rather than rewording, so the trend stays comparable. The app stores them as topics and emails them, each with a **Write this** link (signed, 7 days). Run it manually from the Actions tab to test.
+- `blog-write.yml`: started by the app when an idea is picked (email link or **Write now** in the topic backlog). Up to 6 picks per weekly list (one a day, Monday to Saturday; schedule the drafts across the week); nothing is written if nothing is picked. First reviews the top search results for the main query (what they cover, weaknesses, gaps, reader questions) and confirms the article's regulatory and fee facts on official sites (`gov.au`, Stripe, Square; `scripts/blog-agent/official-facts.ts`). The writer then drafts with GPT-6 Astra from that research without searching itself, with only the published pages it may link to and the best-matching knowledge base articles in full, generates a feature image and 1–3 inline images with `gpt-image-1` (WebP, SEO filenames, alt text, captions), and posts a draft or a revision to the review queue (~10–20 minutes). Failures are emailed and shown on the topic.
 
 Repository settings → Secrets and variables → Actions:
 
@@ -50,7 +50,7 @@ Repository settings → Secrets and variables → Actions:
 
 DataForSEO (Google Australia data) is optional; without it the research falls back to OpenAI web search. With it:
 
-- **Planner:** before planning, a search demand pool of real searches containing 10 seed phrases (`keyword_suggestions`, about $0.14 a night; seeds in `scripts/blog-agent/search-demand.ts`, override with `BLOG_AGENT_DEMAND_SEEDS`). After planning, each idea's `targetQueries` get monthly volume, keyword difficulty and intent (`keyword_overview`, about $0.01), shown in the email.
+- **Planner:** before planning, a search demand pool of real searches containing 10 seed phrases (`keyword_suggestions`, about $0.14 a week; seeds in `scripts/blog-agent/search-demand.ts`, override with `BLOG_AGENT_DEMAND_SEEDS`). After planning, each idea's `targetQueries` get monthly volume, keyword difficulty and intent (`keyword_overview`, about $0.01), shown in the email.
 - **Writer:** the brief uses the live Google top 10 for the highest-volume query (`serp/google/organic/live/advanced`, $0.002), reads the top 5 pages directly, and adds People also ask, related searches, AI Overview cited pages and related keywords with volumes (`related_keywords`, about $0.01).
 - The account's IP allowlist must include the IP the requests come from (local testing: your own IP; scheduled runs: the relay's IP).
 
@@ -58,9 +58,9 @@ Models per task (defaults in `scripts/blog-agent/model-config.ts`; every run log
 
 | Task | Model | Effort | Web search depth |
 | --- | --- | --- | --- |
-| `WRITE` (article draft) | `gpt-6-astra` | medium | medium |
-| `PLAN` (choose 10 ideas) | `gpt-6-astra` | low | low |
-| `RESEARCH` (search results brief, competitor and community scans) | `gpt-5.4-mini` | low | medium |
+| `WRITE` (article draft) | `gpt-6-astra` | medium | none |
+| `PLAN` (choose 10 ideas weekly) | `gpt-5.4` | low | low |
+| `RESEARCH` (search results brief, official facts, competitor and community scans) | `gpt-5.4-mini` | low | medium |
 | `VISIBILITY` (24 weekly ChatGPT questions) | `gpt-5.4-mini` | low | low |
 
 Override with `BLOG_AGENT_MODEL_<TASK>`, `BLOG_AGENT_EFFORT_<TASK>`, `BLOG_AGENT_SEARCH_<TASK>`. Images: feature image `gpt-image-1`, inline `gpt-image-1-mini` (`BLOG_AGENT_IMAGE_MODEL_HERO`, `BLOG_AGENT_IMAGE_MODEL_INLINE`, `BLOG_AGENT_IMAGE_QUALITY`).
@@ -74,12 +74,12 @@ Jono Farrington (Co-founder, `/authors/jono-farrington`) is seeded by migration 
 - `/editorial-policy` explains how articles are researched, AI-assisted, fact-checked and reviewed; it is linked from author boxes and referenced as the organisation's `publishingPrinciples`.
 - Posts with no author (or a hidden one) are credited to the Vendl organisation.
 
-## 6. Daily review
+## 6. Review
 
 Open `/admin/blog`:
 
 - **Drafts**: edit in the editor, Preview, then Publish now or Schedule. Reject with a reason the agent will read.
 - **Updates to review**: highlighted changes (green = added, struck red = removed). Edit the proposed version if needed, then Publish update, or Discard with a reason.
-- **Topic backlog**: every evening idea lands here too. **Write now** starts the writer for any idea; add your own ideas or mark topics "Not interested".
+- **Topic backlog**: every weekly idea lands here too. **Write now** starts the writer for any idea; add your own ideas or mark topics "Not interested".
 
 Published posts appear at `/guides/{slug}` or `/farms-stand-news/{slug}`, in the section index, and in `sitemap.xml`. Scheduled posts go live within an hour of their time.

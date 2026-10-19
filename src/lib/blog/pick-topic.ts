@@ -7,14 +7,14 @@ export type PickResult =
   | { ok: true; title: string }
   | { ok: false; reason: string };
 
-/** Claim a topic (once), enforce the per-evening limit, then start the writer. */
+/** Claim a topic (once), enforce the per-week limit, then start the writer. */
 export async function pickBlogTopic(topicId: string): Promise<PickResult> {
   const topic = await prisma.blogTopic.findUnique({ where: { id: topicId } });
   if (!topic) return { ok: false, reason: "This idea no longer exists." };
   if (topic.selectedAt) return { ok: false, reason: "Already picked. The draft is on its way to the review queue." };
   if (topic.status !== "IDEA") return { ok: false, reason: `This idea is ${topic.status.toLowerCase()}, so it can't be written.` };
   if (topic.recommendedAt && (await picksInBatch(topic.recommendedAt)) >= MAX_PICKS_PER_BATCH) {
-    return { ok: false, reason: `You've already picked ${MAX_PICKS_PER_BATCH} from this evening's list.` };
+    return { ok: false, reason: `You've already picked ${MAX_PICKS_PER_BATCH} from this week's list.` };
   }
 
   const claimed = await prisma.blogTopic.updateMany({
