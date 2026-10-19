@@ -1,9 +1,11 @@
+import ArticleSignupCta from "@/components/blog/ArticleSignupCta";
 import BlogHtml from "@/components/blog/BlogHtml";
 import type { BlogPost } from "@/generated/prisma/client";
 import type { NewsArticle } from "@/lib/farms-stand-news/types";
 import { blogAuthorToNewsAuthor, type PublicBlogAuthor } from "./authors";
 import { blogPostPath, blogSectionIndexPath, blogSectionLabel } from "./paths";
 import { blogHtmlWordCount } from "./sanitize-blog-html";
+import { splitAtMiddleHeading } from "./split-at-middle-heading";
 import { parseFaqs, parseResearchNotes } from "./types";
 
 export type BlogPostRow = Pick<
@@ -63,7 +65,15 @@ export function blogPostToNewsArticle(post: BlogPostRow): NewsArticle {
     citations: notes.sources?.map((s) => ({ name: s.title, url: s.url })),
     faqs: parseFaqs(post.faqs),
     Content: function BlogPostContent() {
-      return <BlogHtml html={html} />;
+      const halves = splitAtMiddleHeading(html);
+      if (!halves) return <BlogHtml html={html} />;
+      return (
+        <>
+          <BlogHtml html={halves[0]} />
+          <ArticleSignupCta slug={post.slug} placement="mid" />
+          <BlogHtml html={halves[1]} />
+        </>
+      );
     },
   };
 }
