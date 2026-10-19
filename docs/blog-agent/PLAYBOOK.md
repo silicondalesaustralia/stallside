@@ -24,7 +24,7 @@ Request shapes are in `src/lib/blog/agent-schemas.ts`. A 400 response includes `
 1. **Gather**
    - `GET /context`. Read `recentRejections` and `recentDiscardedRevisions` first and avoid repeating those mistakes.
    - `npx tsx scripts/gsc-opportunities.ts --out /tmp/gsc.json` (striking-distance searches grouped by ranking page).
-   - `git log origin/main --since="2 days ago" --oneline` for shipped features; `git log origin/feature/social-kit-website --since="2 days ago" --oneline` for upcoming ones.
+   - `git log origin/main --since="2 days ago" --oneline` for shipped features; `git log origin/feature/social-kit --since="2 days ago" --oneline` for upcoming ones.
    - Changes in `src/lib/knowledge-base/` on `origin/main`.
    - News scan (see sources below).
 2. **Slot 1: Search Console** (skip if nothing qualifies). Take the top opportunity whose page is not in cooldown:
@@ -35,7 +35,7 @@ Request shapes are in `src/lib/blog/agent-schemas.ts`. A 400 response includes `
    - Page is a hand-built reference page (`/sell-food-from-home/...`, `/cottage-food-laws/...`) → do not edit it; write a **new guide** that answers the cluster's questions in depth and links to that page.
    - The report's `tier` says how strict the thresholds were. `strict` = real striking distance (positions 8–40), favour revisions. `loose` = young-site fallback (90 days, positions up to 70), favour new guides for whole query clusters over small revisions. The script widens and tightens itself; always run it without overrides.
 3. **Slot 2: new content.** Priority: time-sensitive news worth covering → newly shipped feature → expand a knowledge-base article → backlog/market topic. Across a week, no single source should exceed half the drafts.
-4. **Backlog refill.** Add 3–8 topics via `/topics`. Features only on `feature/social-kit-website` go in as `WAITING_FOR_RELEASE` with `featureRef` set to the commit or path. When such a feature lands on `origin/main`, flip it to `IDEA`. Expire stale news topics.
+4. **Backlog refill.** Add 3–8 topics via `/topics`. Features only on `feature/social-kit` go in as `WAITING_FOR_RELEASE` with `featureRef` set to the commit or path. When such a feature lands on `origin/main`, flip it to `IDEA`. Expire stale news topics.
 5. **Digest.** One email listing: each draft/revision with its review URL (time-sensitive first), the top 5 GSC opportunities and what you did, landing-page suggestions, news you skipped and why.
 
 ## Section choice
