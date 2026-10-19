@@ -1,9 +1,9 @@
 /**
  * Evening planner: recommend 10 ranked blog ideas and email them with "Write this" links.
  *
- *   npx tsx scripts/blog-agent/plan.ts [--force] [--competitors]
+ *   npx tsx scripts/blog-agent/plan.ts [--force] [--weekly]
  *
- * Sundays (or --competitors) also run a competitor content scan first.
+ * Sundays (or --weekly) first run the competitor scan, community scan and ChatGPT visibility check.
  *
  * Scheduled twice (10:30 and 11:30 UTC) to cover Adelaide daylight saving; only the run that
  * lands at 9pm Adelaide time proceeds unless --force is passed.
@@ -14,11 +14,10 @@ import { tieredOpportunityReport } from "../../src/lib/gsc/tiered-report";
 import { recommendationsBatchSchema } from "../../src/lib/blog/recommendation-schemas";
 import { appGet, appPost, reportFailure } from "./api";
 import { askJson } from "./openai";
-import { runCompetitorScan } from "./competitor-scan";
-import { adelaideHour, adelaideWeekday, agentDoc, knowledgeBaseSource, recentCommits, todayInAdelaide } from "./repo-context";
+import { adelaideHour, agentDoc, knowledgeBaseSource, recentCommits, todayInAdelaide } from "./repo-context";
+import { isWeeklyResearchNight, runWeeklyResearch } from "./weekly-research";
 
 const PLAN_HOUR = 21;
-const COMPETITOR_SCAN_DAY = "Sunday";
 
 type PlannerContext = { posts?: Array<{ title: string }>; codeArticles?: Array<{ title: string }> };
 
@@ -33,7 +32,7 @@ const OUTPUT_CONTRACT = `Return only a json object:
     "title": string, "angle": string (what the post covers and for whom),
     "targetPostSlug": string | null (only for updates to a published DB post),
     "section": "NEWS" | "GUIDE",
-    "source": "GSC" | "KNOWLEDGE_BASE" | "FEATURE" | "MARKET" | "NEWS",
+    "source": "GSC" | "KNOWLEDGE_BASE" | "FEATURE" | "MARKET" | "NEWS" | "COMPETITOR" | "COMMUNITY" | "AI_ANSWERS",
     "whyNow": string (the evidence: impressions/position, news date, feature commit),
     "score": integer 0-100,
     "targetQueries": [{ "query": string, "impressions": number, "position": number, "page": string }],
@@ -58,13 +57,12 @@ async function main() {
   }
 
   const [context, gsc] = await Promise.all([appGet<PlannerContext>("/context"), gscReport()]);
-  const scanNight = process.argv.includes("--competitors") || adelaideWeekday() === COMPETITOR_SCAN_DAY;
-  const competitorScan = scanNight ? await runCompetitorScan(existingTitles(context)) : null;
+  const weeklyResearch = isWeeklyResearchNight() ? await runWeeklyResearch(existingTitles(context)) : null;
   const input = JSON.stringify({
     today: todayInAdelaide(),
     blogContext: context,
     searchConsole: gsc,
-    competitorScan,
+    ...weeklyResearch,
     commits: recentCommits(7),
     knowledgeBase: knowledgeBaseSource(),
   });

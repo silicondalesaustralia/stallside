@@ -2482,6 +2482,9 @@ enum BlogTopicSource {
   MARKET
   NEWS
   MANUAL
+  COMPETITOR
+  COMMUNITY
+  AI_ANSWERS
 }
 
 enum BlogTopicStatus {
@@ -2602,5 +2605,23 @@ model BlogTopic {
 
   @@index([status, score])
   @@index([recommendedAt])
+}
+
+/// Weekly sample of an AI assistant's answer to a buyer question (same runAt = one run).
+model BlogAiVisibilityCheck {
+  id                   String   @id @default(cuid())
+  runAt                DateTime
+  engine               String
+  question             String
+  answerExcerpt        String
+  vendlMentioned       Boolean
+  vendlCited           Boolean
+  competitorsMentioned String[]
+  /// [{ url, title, domain }]
+  citations            Json
+  createdAt            DateTime @default(now())
+
+  @@index([runAt])
+  @@index([question, runAt])
 }
 

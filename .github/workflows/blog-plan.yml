@@ -8,8 +8,8 @@ on:
     - cron: "30 11 * * *"
   workflow_dispatch:
     inputs:
-      competitors:
-        description: "Also run the competitor scan (normally Sundays only)"
+      weekly:
+        description: "Also run weekly research: competitors, community, ChatGPT visibility (normally Sundays only)"
         type: boolean
         default: false
 
@@ -32,7 +32,7 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Recommend tomorrow's ideas
-        run: npx -y tsx scripts/blog-agent/plan.ts ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }} ${{ inputs.competitors && '--competitors' || '' }}
+        run: npx -y tsx scripts/blog-agent/plan.ts ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }} ${{ inputs.weekly && '--weekly' || '' }}
         env:
           BLOG_AGENT_BASE_URL: ${{ vars.BLOG_AGENT_BASE_URL }}
           BLOG_AGENT_TOKEN: ${{ secrets.BLOG_AGENT_TOKEN }}
