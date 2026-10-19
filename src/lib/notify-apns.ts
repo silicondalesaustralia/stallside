@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import http2 from "node:http2";
 import { APP_NAME } from "@/lib/constants";
+import { prisma } from "@/lib/prisma";
 
 type ApnsPayload = {
   title: string;
@@ -99,6 +100,11 @@ export async function sendApns(token: string, payload: ApnsPayload) {
           return;
         }
         console.error("APNs send failed", status, responseData);
+        if (status === 410) {
+          prisma.pushDevice.deleteMany({ where: { token } }).catch((error: unknown) => {
+            console.error("APNs: could not remove unregistered device", error);
+          });
+        }
         reject(new Error(`APNs ${status}: ${responseData}`));
       });
     });

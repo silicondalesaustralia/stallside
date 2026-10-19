@@ -9,6 +9,7 @@ import { loadStripeSetupBanner } from "@/lib/load-stripe-setup-banner";
 import { requireOwner } from "@/lib/session";
 import { paidAccessDaysRemaining } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
+import { countAppDevices } from "@/lib/push-devices";
 import SupplyForOthersLink from "@/components/SupplyForOthersLink";
 
 export const metadata: Metadata = {
@@ -23,7 +24,10 @@ export default async function DashboardLayout({
   const { owner, user, impersonator } = await requireOwner();
   const access = { email: user.email, role: user.role };
   const paidDays = paidAccessDaysRemaining(owner, access);
-  const { businesses, selected } = await resolveSelectedBusiness(owner.id);
+  const [{ businesses, selected }, appDevices] = await Promise.all([
+    resolveSelectedBusiness(owner.id),
+    countAppDevices(owner.id),
+  ]);
   const stripeSetupBanner = await loadStripeSetupBanner({
     ownerId: owner.id,
     businessCount: businesses.length,
@@ -47,7 +51,7 @@ export default async function DashboardLayout({
       </Suspense>
       <div className="flex min-w-0 flex-1 flex-col pb-28 print:pb-0 md:pb-0">
         <OwnerPushRegister
-          pushAlertsEnabled={owner.pushAlertsEnabled && !impersonator}
+          pushAlertsEnabled={owner.pushAlertsEnabled && !impersonator && appDevices === 0}
         />
         <Suspense fallback={null}>
           <DashboardNavWithUnread
