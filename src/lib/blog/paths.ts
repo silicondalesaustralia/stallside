@@ -21,6 +21,26 @@ export function blogSectionIndexPath(section: BlogSection) {
   return section === "GUIDE" ? guidesIndexPath() : "/farms-stand-news";
 }
 
+export function authorsIndexPath() {
+  return "/authors";
+}
+
+export function authorPath(slug: string) {
+  return `/authors/${slug}`;
+}
+
+export function editorialPolicyPath() {
+  return "/editorial-policy";
+}
+
+export function adminBlogAuthorsPath() {
+  return "/admin/blog/authors";
+}
+
+export function adminBlogAuthorPath(id: string) {
+  return `/admin/blog/authors/${id}`;
+}
+
 export function adminBlogPath(tab?: string) {
   return tab ? `/admin/blog?tab=${tab}` : "/admin/blog";
 }

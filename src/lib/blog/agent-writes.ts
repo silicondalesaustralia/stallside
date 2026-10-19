@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { defaultBlogAuthorId } from "./authors";
 import type { CreateDraftInput, CreateRevisionInput, TopicsBatchInput } from "./agent-schemas";
 import { sanitizeBlogHtml } from "./sanitize-blog-html";
 import { uniqueBlogSlug } from "./slug";
@@ -37,6 +38,7 @@ export async function createBlogDraft(input: CreateDraftInput) {
       agentSummary: input.agentSummary,
       timeSensitive: input.timeSensitive ?? false,
       topicId: input.topicId,
+      authorId: await defaultBlogAuthorId(),
     },
     select: { id: true, slug: true },
   });

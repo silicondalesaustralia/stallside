@@ -1,22 +1,10 @@
 import BlogHtml from "@/components/blog/BlogHtml";
 import type { BlogPost } from "@/generated/prisma/client";
-import { SITE_URL } from "@/lib/legal";
-import type { NewsArticle, NewsAuthor } from "@/lib/farms-stand-news/types";
+import type { NewsArticle } from "@/lib/farms-stand-news/types";
+import { blogAuthorToNewsAuthor, type PublicBlogAuthor } from "./authors";
 import { blogPostPath, blogSectionIndexPath, blogSectionLabel } from "./paths";
 import { blogHtmlWordCount } from "./sanitize-blog-html";
 import { parseFaqs, parseResearchNotes } from "./types";
-
-export const BLOG_AUTHOR: NewsAuthor = {
-  slug: "vendl",
-  name: "Vendl",
-  bio: "Guides, news and comparisons for farm stands, home producers and small online sellers.",
-  jobTitle: "Editorial",
-  url: `${SITE_URL}/about`,
-  sameAs: [
-    "https://www.facebook.com/vendlapp",
-    "https://www.instagram.com/vendlapp/",
-  ],
-};
 
 export type BlogPostRow = Pick<
   BlogPost,
@@ -37,7 +25,7 @@ export type BlogPostRow = Pick<
   | "publishedAt"
   | "contentUpdatedAt"
   | "createdAt"
->;
+> & { author: PublicBlogAuthor | null };
 
 /** Map a DB post onto the existing NewsArticle shape (view + JSON-LD reuse). */
 export function blogPostToNewsArticle(post: BlogPostRow): NewsArticle {
@@ -66,7 +54,7 @@ export function blogPostToNewsArticle(post: BlogPostRow): NewsArticle {
     excerpt: post.excerpt,
     publishedAt: published,
     updatedAt: updated,
-    author: BLOG_AUTHOR,
+    author: blogAuthorToNewsAuthor(post.author),
     image,
     keywords: post.keywords ?? undefined,
     wordCount: blogHtmlWordCount(html),

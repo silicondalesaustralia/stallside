@@ -35,6 +35,7 @@ export function newsOrganizationSchema() {
     },
     image: { "@id": `${SITE_URL}/#logo` },
     sameAs: [...NEWS_SOCIAL_SAME_AS],
+    publishingPrinciples: `${SITE_URL}/editorial-policy`,
   };
 }
 

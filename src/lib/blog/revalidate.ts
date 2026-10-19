@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import type { BlogSection } from "@/generated/prisma/client";
-import { blogPostPath, blogSectionIndexPath } from "./paths";
+import { authorPath, authorsIndexPath, blogPostPath, blogSectionIndexPath } from "./paths";
 
 /** Refresh every public page a post can appear on. */
 export function revalidateBlogPost(
@@ -13,5 +13,15 @@ export function revalidateBlogPost(
   if (alsoListedIn && alsoListedIn !== section) {
     revalidatePath(blogSectionIndexPath(alsoListedIn));
   }
+  revalidatePath("/authors/[slug]", "page");
+  revalidatePath("/sitemap.xml");
+}
+
+/** Author details appear on their profile and in the byline/schema of every post. */
+export function revalidateBlogAuthor(...slugs: string[]) {
+  for (const slug of new Set(slugs)) revalidatePath(authorPath(slug));
+  revalidatePath(authorsIndexPath());
+  revalidatePath("/guides/[slug]", "page");
+  revalidatePath("/farms-stand-news/[slug]", "page");
   revalidatePath("/sitemap.xml");
 }

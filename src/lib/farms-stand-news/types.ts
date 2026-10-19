@@ -17,6 +17,12 @@ export type NewsAuthor = {
   /** Profile or about URL */
   url?: string;
   sameAs?: string[];
+  /** "organization" credits the publisher itself (no Person node in schema). */
+  kind?: "person" | "organization";
+  /** Site path of the author's profile page (/authors/{slug}). */
+  profilePath?: string;
+  imageUrl?: string;
+  knowsAbout?: string[];
 };
 
 export type NewsSoftwareOffer = {

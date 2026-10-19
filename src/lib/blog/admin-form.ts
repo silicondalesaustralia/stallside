@@ -22,6 +22,7 @@ const postFormSchema = z.object({
   heroImageWidth: optionalInt,
   heroImageHeight: optionalInt,
   faqsJson: z.string().max(40_000).optional(),
+  authorId: z.string().trim().max(40).optional(),
 });
 
 function parseFaqJson(raw: string | undefined) {
@@ -68,6 +69,7 @@ export function parseBlogPostForm(formData: FormData) {
       heroImageWidth: d.heroImageWidth ?? null,
       heroImageHeight: d.heroImageHeight ?? null,
       faqs: parseFaqJson(d.faqsJson),
+      authorId: d.authorId || null,
     },
   };
 }

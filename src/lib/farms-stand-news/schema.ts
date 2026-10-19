@@ -7,6 +7,7 @@ import {
   newsWebsiteSchema,
 } from "./schema-base";
 import { blogPostingNode } from "./schema-blog";
+import { authorPersonNode, authorSchemaId } from "./schema-person";
 import { appendComparisonNodes } from "./schema-comparison";
 
 /** Full BlogPosting graph used by every farms-stand-news article. */
@@ -15,7 +16,8 @@ export function newsArticleGraphSchema(article: NewsArticleMeta) {
   const postUrl = `${SITE_URL}${path}`;
   const datePublished = article.publishedAt;
   const dateModified = article.updatedAt ?? article.publishedAt;
-  const authorId = `${SITE_URL}/#/schema/person/${article.author.slug}`;
+  const authorId = authorSchemaId(article.author);
+  const person = authorPersonNode(article.author);
   const imageUrl = article.image
     ? absoluteUrl(article.image.src)
     : undefined;
@@ -25,23 +27,7 @@ export function newsArticleGraphSchema(article: NewsArticleMeta) {
   const graph: Record<string, unknown>[] = [
     newsWebsiteSchema(),
     newsOrganizationSchema(),
-    {
-      "@type": "Person",
-      "@id": authorId,
-      name: article.author.name,
-      url: article.author.url ?? `${SITE_URL}/about`,
-      description: article.author.bio,
-      jobTitle: article.author.jobTitle,
-      knowsAbout: [
-        "Unattended retail",
-        "QR code checkout",
-        "Farm stand and roadside stall operations",
-        "Small business payment processing",
-      ],
-      ...(article.author.sameAs?.length
-        ? { sameAs: article.author.sameAs }
-        : {}),
-    },
+    ...(person ? [person] : []),
     {
       "@type": "BreadcrumbList",
       "@id": `${postUrl}#breadcrumb`,

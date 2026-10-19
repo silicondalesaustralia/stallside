@@ -2,13 +2,13 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/legal";
 import { prisma } from "@/lib/prisma";
 import { isDemoStandSlug } from "@/lib/demo";
+import { newsIndexPath } from "@/lib/farms-stand-news";
 import {
-  getAllArticles,
-  newsArticlePath,
-  newsIndexPath,
-} from "@/lib/farms-stand-news";
-import { getAllGuides } from "@/lib/blog/guides";
-import { guidesIndexPath } from "@/lib/blog/paths";
+  authorsIndexPath,
+  editorialPolicyPath,
+  guidesIndexPath,
+} from "@/lib/blog/paths";
+import { blogSitemapEntries } from "@/lib/blog/sitemap-entries";
 import { isReservedProductSlug } from "@/lib/slug";
 import {
   standCatalogPath,
@@ -50,6 +50,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/terms",
     newsIndexPath(),
     guidesIndexPath(),
+    authorsIndexPath(),
+    editorialPolicyPath(),
   ] as const;
 
   const entries: MetadataRoute.Sitemap = marketing.map((path) => ({
@@ -109,20 +111,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const guides = await getAllGuides();
-  const posts = [...(await getAllArticles()), ...guides];
-  const seen = new Set<string>();
-  for (const article of posts) {
-    const path = article.canonicalPath ?? newsArticlePath(article.slug);
-    if (seen.has(path)) continue;
-    seen.add(path);
-    entries.push({
-      url: `${SITE_URL}${path}`,
-      lastModified: new Date(article.updatedAt ?? article.publishedAt),
-      changeFrequency: "monthly",
-      priority: 0.5,
-    });
-  }
+  entries.push(...(await blogSitemapEntries()));
 
   try {
     const stands = await prisma.stand.findMany({
