@@ -14,7 +14,7 @@ import { askJson } from "./openai";
 import { agentDoc, knowledgeBaseSource, todayInAdelaide, vendlFactsSource } from "./repo-context";
 import { buildSerpBrief } from "./serp-brief";
 
-type Topic = { id: string; title: string; angle: string | null; notes: string | null; source: string; section: string | null; targetQueries: unknown; sourceUrls: unknown; targetPostSlug: string | null; expiresAt: string | null };
+type Topic = { id: string; title: string; angle: string | null; notes: string | null; featureRef: string | null; source: string; section: string | null; targetQueries: unknown; sourceUrls: unknown; targetPostSlug: string | null; expiresAt: string | null };
 type TargetPost = { id: string; slug: string; section: string; title: string; seoTitle: string; seoDescription: string; excerpt: string; bodyHtml: string; faqs: unknown };
 
 function topicIdArg(): string {

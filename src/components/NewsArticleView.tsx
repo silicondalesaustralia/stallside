@@ -4,6 +4,7 @@ import type { NewsArticle } from "@/lib/farms-stand-news";
 import { newsIndexPath } from "@/lib/farms-stand-news";
 import ArticleAuthorBox from "@/components/blog/ArticleAuthorBox";
 import ArticleBylineAuthor from "@/components/blog/ArticleBylineAuthor";
+import ArticleSignupCta from "@/components/blog/ArticleSignupCta";
 
 function formatPublishedDate(iso: string) {
   const date = new Date(iso);
@@ -103,6 +104,7 @@ export default function NewsArticleView({ article }: { article: NewsArticle }) {
         </section>
       ) : null}
 
+      <ArticleSignupCta slug={article.slug} />
       <ArticleAuthorBox author={article.author} />
     </article>
   );

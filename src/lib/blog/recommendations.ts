@@ -17,6 +17,7 @@ export async function saveAndEmailRecommendations(batch: BlogRecommendationsBatc
           title: rec.title,
           angle: rec.angle,
           notes: rec.whyNow,
+          featureRef: rec.vendlTieIn,
           source: rec.source,
           section: rec.section,
           score: rec.score,
