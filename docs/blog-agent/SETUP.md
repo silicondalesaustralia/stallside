@@ -24,9 +24,9 @@ Migration `prisma/migrations/20261019110000_blog_posts` adds `BlogPost`, `BlogPo
 
 ## 4. Cursor Automation (daily cloud agent)
 
-Create an Automation on this repository, schedule `0 7 * * *` in Australia/Adelaide, with these secrets:
+Create an Automation on this repository, schedule `0 7 * * *` in Australia/Adelaide, branch `feature/social-kit` (switch to `main` once the blog ships to production), with these secrets:
 
-- `BLOG_AGENT_BASE_URL` = `https://www.vendl.app`
+- `BLOG_AGENT_BASE_URL` = `https://stagingv2.vendl.app` (switch to `https://www.vendl.app` once on `main`)
 - `BLOG_AGENT_TOKEN` = same value as Vercel
 - `GSC_SERVICE_ACCOUNT_JSON` = the key JSON (or base64 of it)
 - `GSC_SITE_URL` = `sc-domain:vendl.app`
@@ -35,7 +35,7 @@ Prompt:
 
 ```text
 You are Vendl's daily blog agent. Read docs/blog-agent/PLAYBOOK.md in full and follow it exactly.
-Run `git fetch origin main feature/social-kit-website` first. Do not commit, push, or open pull requests:
+Run `git fetch origin main feature/social-kit` first. Do not commit, push, or open pull requests:
 all output goes through the blog-agent API. Produce at most two drafts or revisions, refill the topic
 backlog, then send the digest. If an API call fails twice, stop and send a digest describing the failure.
 ```
