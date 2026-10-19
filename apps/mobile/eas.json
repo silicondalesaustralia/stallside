@@ -6,16 +6,19 @@
   "build": {
     "preview": {
       "distribution": "internal",
+      "environment": "preview",
       "android": { "buildType": "apk" },
       "env": { "EXPO_PUBLIC_API_URL": "https://stagingv2.vendl.app" }
     },
     "testflight": {
       "distribution": "store",
+      "environment": "preview",
       "autoIncrement": true,
       "env": { "EXPO_PUBLIC_API_URL": "https://stagingv2.vendl.app" }
     },
     "production": {
       "distribution": "store",
+      "environment": "production",
       "autoIncrement": true,
       "env": { "EXPO_PUBLIC_API_URL": "https://www.vendl.app" }
     }
