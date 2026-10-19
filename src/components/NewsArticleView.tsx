@@ -104,7 +104,7 @@ export default function NewsArticleView({ article }: { article: NewsArticle }) {
         </section>
       ) : null}
 
-      <ArticleSignupCta slug={article.slug} />
+      <ArticleSignupCta slug={article.slug} placement="end" />
       <ArticleAuthorBox author={article.author} />
     </article>
   );

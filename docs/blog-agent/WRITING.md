@@ -101,7 +101,7 @@ Length follows the question. Guides often land at 900–1,800 words and news at 
 ## 7. Internal links and Vendl mentions
 
 - Use the few links that genuinely help the reader (typically 2–5), placed inside relevant sentences, never as a promotional block.
-- Every article ties back to Vendl: one section where a named Vendl feature is part of the solution, and a closing call-to-action paragraph linking to `/signup?utm_source=blog&utm_medium=article&utm_campaign={slug}`. Another platform is never the hero; integrations are presented as Vendl features.
+- Every article ties back to Vendl: one section where a named Vendl feature is part of the solution, and a closing sentence with an inline link to `/signup?utm_source=blog&utm_medium=article&utm_campaign={slug}`. The page adds "Get My Free Vendl Account" boxes mid-article and at the end, so never write CTA boxes or sign-up sections yourself. Another platform is never the hero; integrations are presented as Vendl features.
 - Relative paths only, and only to pages that exist now: `/guides/...`, `/farms-stand-news/...`, `/sell-food-from-home/...`, `/cottage-food-laws/...`, `/stall`, `/pre-orders`, `/signup`. Never link to a planned or unpublished URL; put suggested future links in `researchNotes`.
 - Do not claim Vendl does something its code on `origin/main` does not do. Do not overstate: Vendl is not a food-safety authority, accountant or lawyer; say "check with your council" where it applies.
 
@@ -133,7 +133,7 @@ Length follows the question. Guides often land at 900–1,800 words and news at 
 - Hypothetical examples are labelled and their arithmetic is correct.
 - Internal links point to pages that exist, inside relevant sentences.
 - Vendl's capabilities are not overstated; competitors are treated fairly.
-- A named Vendl feature is part of the solution, and the article ends with a `/signup` call to action.
+- A named Vendl feature is part of the solution, and the final section ends with an inline `/signup` link (no CTA boxes; the page adds them).
 - FAQs add new answers and agree with the body.
 - No em dashes, placeholders, editorial notes or instructions in the public copy.
 - SEO fields accurately describe the content.
