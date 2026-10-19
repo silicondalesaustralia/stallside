@@ -7,7 +7,8 @@
  *
  * Scheduled twice (10:30 and 11:30 UTC) to cover Adelaide daylight saving; only the run that
  * lands at 9pm Adelaide time proceeds unless --force is passed.
- * Env: BLOG_AGENT_BASE_URL, BLOG_AGENT_TOKEN, OPENAI_API_KEY, GSC_SERVICE_ACCOUNT_JSON, GSC_SITE_URL.
+ * Env: BLOG_AGENT_BASE_URL, BLOG_AGENT_TOKEN, OPENAI_API_KEY, GSC_SERVICE_ACCOUNT_JSON, GSC_SITE_URL,
+ * optional DATAFORSEO_LOGIN/DATAFORSEO_PASSWORD (or DATAFORSEO_RELAY_URL/DATAFORSEO_RELAY_SECRET).
  */
 import "dotenv/config";
 import { tieredOpportunityReport } from "../../src/lib/gsc/tiered-report";
@@ -15,6 +16,8 @@ import { recommendationsBatchSchema } from "../../src/lib/blog/recommendation-sc
 import { appGet, appPost, reportFailure } from "./api";
 import { askJson } from "./openai";
 import { adelaideHour, agentDoc, knowledgeBaseSource, recentCommits, todayInAdelaide } from "./repo-context";
+import { searchDemandPool } from "./search-demand";
+import { addSearchVolumes } from "./search-volume";
 import { isWeeklyResearchNight, runWeeklyResearch } from "./weekly-research";
 
 const PLAN_HOUR = 21;
@@ -36,7 +39,7 @@ const OUTPUT_CONTRACT = `Return only a json object:
     "whyNow": string (the evidence: impressions/position, news date, feature commit),
     "vendlTieIn": string (the named Vendl feature(s) from the knowledge base that solve the reader's problem, and the signup hook),
     "score": integer 0-100,
-    "targetQueries": [{ "query": string, "impressions": number, "position": number, "page": string }],
+    "targetQueries": [2-5 items: { "query": string, "impressions": number, "position": number, "page": string }] (always: the searches a reader would type for this post, main one first; 2-5 words as typed into Google, no "Australia" suffix, no brand names; prefer exact queries from searchDemand when they fit the post; impressions/position/page only for Search Console queries),
     "sourceUrls": [string],
     "timeSensitive": boolean
   } ]
@@ -57,12 +60,17 @@ async function main() {
     return;
   }
 
-  const [context, gsc] = await Promise.all([appGet<PlannerContext>("/context"), gscReport()]);
+  const [context, gsc, searchDemand] = await Promise.all([
+    appGet<PlannerContext>("/context"),
+    gscReport(),
+    searchDemandPool(),
+  ]);
   const weeklyResearch = isWeeklyResearchNight() ? await runWeeklyResearch(existingTitles(context)) : null;
   const input = JSON.stringify({
     today: todayInAdelaide(),
     blogContext: context,
     searchConsole: gsc,
+    ...(searchDemand.length ? { searchDemand } : {}),
     ...weeklyResearch,
     commits: recentCommits(7),
     knowledgeBase: knowledgeBaseSource(),
@@ -82,7 +90,7 @@ async function main() {
 
   const result = await appPost<{ topics: Array<{ id: string; title: string; rank: number | null }> }>(
     "/recommendations",
-    parsed.data,
+    await addSearchVolumes(parsed.data),
   );
   for (const topic of result.topics) console.log(`#${topic.rank} ${topic.title} (${topic.id})`);
 }

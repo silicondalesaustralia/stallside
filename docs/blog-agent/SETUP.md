@@ -45,6 +45,14 @@ Repository settings → Secrets and variables → Actions:
 | Variable | `BLOG_AGENT_BASE_URL` | `https://stagingv2.vendl.app` now, `https://www.vendl.app` on `main` |
 | Variable | `BLOG_AGENT_GIT_REF` | `feature/social-kit` now, `main` later |
 | Variable | `GSC_SITE_URL` | `sc-domain:vendl.app` |
+| Secret | `DATAFORSEO_LOGIN`, `DATAFORSEO_PASSWORD` | Optional. DataForSEO API login and API password (not the dashboard password) |
+| Secret | `DATAFORSEO_RELAY_URL`, `DATAFORSEO_RELAY_SECRET` | Optional. A relay on a fixed IP, needed while the DataForSEO account has an IP allowlist (GitHub runners have no fixed IP) |
+
+DataForSEO (Google Australia data) is optional; without it the research falls back to OpenAI web search. With it:
+
+- **Planner:** before planning, a search demand pool of real searches containing 10 seed phrases (`keyword_suggestions`, about $0.14 a night; seeds in `scripts/blog-agent/search-demand.ts`, override with `BLOG_AGENT_DEMAND_SEEDS`). After planning, each idea's `targetQueries` get monthly volume, keyword difficulty and intent (`keyword_overview`, about $0.01), shown in the email.
+- **Writer:** the brief uses the live Google top 10 for the highest-volume query (`serp/google/organic/live/advanced`, $0.002), reads the top 5 pages directly, and adds People also ask, related searches, AI Overview cited pages and related keywords with volumes (`related_keywords`, about $0.01).
+- The account's IP allowlist must include the IP the requests come from (local testing: your own IP; scheduled runs: the relay's IP).
 
 Models per task (defaults in `scripts/blog-agent/model-config.ts`; every run logs `[usage]` token counts per call):
 

@@ -38,6 +38,10 @@ jobs:
           BLOG_AGENT_TOKEN: ${{ secrets.BLOG_AGENT_TOKEN }}
           BLOG_AGENT_PREVIEW_REF: origin/feature/social-kit
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
+          DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
+          DATAFORSEO_RELAY_URL: ${{ secrets.DATAFORSEO_RELAY_URL }}
+          DATAFORSEO_RELAY_SECRET: ${{ secrets.DATAFORSEO_RELAY_SECRET }}
           GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
           GSC_SITE_URL: ${{ vars.GSC_SITE_URL || 'sc-domain:vendl.app' }}
           GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

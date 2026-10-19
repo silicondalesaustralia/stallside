@@ -60,7 +60,7 @@ Format: `[fact] <claim as written in the article> (<regulator URL>; checked 2026
 
 ### Scope honesty
 
-Do not claim search volume, Google Trends, People Also Ask extraction, competitor audits or ranking checks unless you actually did them. GSC numbers from `gsc-opportunities` are real and may be cited in `changeNotes` and `researchNotes`. The `serpBrief` comes from a web search of the main query (an approximation of Google's results, not a rank tracker); describe it as "top search results reviewed".
+Do not claim search volume, Google Trends, People Also Ask extraction, competitor audits or ranking checks unless you actually did them. GSC numbers from `gsc-opportunities` are real and may be cited in `changeNotes` and `researchNotes`. When `serpBrief.google` is present, the brief comes from live Google Australia results (DataForSEO) and the volumes in `targetQueries` and `serpBrief.google.keywordVariations` are real monthly Google Australia searches; describe them as such. Without `serpBrief.google`, the brief comes from a web search (an approximation of Google's results); describe it as "top search results reviewed" and claim no volumes.
 
 ## 5. Human writing and genuine authority
 
@@ -116,6 +116,7 @@ Length follows the question. Guides often land at 900–1,800 words and news at 
 ## 9. SEO fields
 
 - **`seoTitle` and `title` (H1) must be different wordings of the same promise.** Together they cover more of the query cluster in `serpBrief` and `targetQueries`.
+  - With search data (`serpBrief.google`): the `seoTitle` uses the highest-volume query that matches the article's intent (often `serpBrief.primaryQuery`); the H1 uses a strong variation from `keywordVariations` or `relatedSearches`. Use `peopleAlsoAsk` questions as FAQ questions where the article answers them, and write the opening so it could be quoted by an AI Overview (pages already cited are in `aiOverview.citedPages`; link to the official ones as sources).
   - `seoTitle` (the search result headline): front-loads the **primary query** almost as people type it; around 50–60 characters (70 max). Don't add "· Vendl"; the site appends the brand.
   - `title` (the on-page H1): written for the reader who has already clicked. Use a **secondary or semantic variation** (synonyms, the long-tail phrasing, the outcome or the format, e.g. "checklist", "step by step", "what changes in 2026"). Keep the core entity (place, product, task) so the page still clearly matches the query. Don't just reorder the same words or add a suffix.
   - Example: `seoTitle` "Selling Food From Home QLD: Product Licence Checklist"; `title` "Do you need a food licence in Queensland? Check each product before you sell".
