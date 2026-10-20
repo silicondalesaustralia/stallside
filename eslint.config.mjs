@@ -27,6 +27,7 @@ const eslintConfig = defineConfig([
       "src/app/dashboard/(gated)/pre-order-pages/page.tsx",
       "src/app/dashboard/(gated)/upsells/**/*.{ts,tsx}",
       "src/app/dashboard/(gated)/communication/**/*.{ts,tsx}",
+      "src/app/dashboard/(gated)/shipping/**/*.{ts,tsx}",
       "src/app/dashboard/(gated)/page.tsx",
       "src/app/dashboard/(gated)/products/page.tsx",
     ],

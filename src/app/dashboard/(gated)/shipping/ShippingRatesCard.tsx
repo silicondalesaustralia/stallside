@@ -14,22 +14,19 @@ const STATUS_TEXT: Record<string, { tone: string; text: string }> = {
   error: { tone: "text-[var(--gone)]", text: "Could not save. Try again." },
 };
 
-function dollars(cents: number | null): string {
-  return cents ? (cents / 100).toFixed(2) : "";
-}
-
 export default function ShippingRatesCard({
   standId,
   mode,
-  flatCents,
-  freeOverCents,
+  flat,
+  freeOver,
   currency,
   status,
 }: {
   standId: string;
   mode: ShippingModeValue;
-  flatCents: number;
-  freeOverCents: number | null;
+  /** Typed dollars, "" when unset. */
+  flat: string;
+  freeOver: string;
   currency: string;
   status?: string;
 }) {
@@ -58,11 +55,11 @@ export default function ShippingRatesCard({
         <div className="flex flex-wrap gap-4">
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-semibold">Flat rate ({currency})</span>
-            <input name="shippingFlat" inputMode="decimal" defaultValue={dollars(flatCents)} placeholder="9.95" className={input} />
+            <input name="shippingFlat" inputMode="decimal" defaultValue={flat} placeholder="9.95" className={input} />
           </label>
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-semibold">Free shipping over ({currency})</span>
-            <input name="shippingFreeOver" inputMode="decimal" defaultValue={dollars(freeOverCents)} placeholder="Optional" className={input} />
+            <input name="shippingFreeOver" inputMode="decimal" defaultValue={freeOver} placeholder="Optional" className={input} />
           </label>
         </div>
         <div className="flex items-center gap-3">
