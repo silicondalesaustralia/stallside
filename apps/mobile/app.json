@@ -8,16 +8,16 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.myfarmstand.owner",
+      "supportsTablet": false,
+      "bundleIdentifier": "app.vendl.owner",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
-      "package": "com.myfarmstand.owner",
+      "package": "app.vendl.owner",
       "adaptiveIcon": {
-        "backgroundColor": "#e8efe4",
+        "backgroundColor": "#17361f",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -33,6 +33,15 @@
       "expo-secure-store",
       "expo-web-browser",
       "expo-notifications",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#17361f"
+        }
+      ],
       [
         "expo-image-picker",
         {
