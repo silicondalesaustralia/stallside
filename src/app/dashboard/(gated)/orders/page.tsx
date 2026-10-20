@@ -2,7 +2,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesAnalyticsPanel from "@/components/SalesAnalyticsPanel";
-import { resolveDateWindow } from "@/lib/date-range";
+import { RANGE_PRESETS, resolveDateWindow } from "@/lib/date-range";
 import {
   COUNTED_STATUSES,
   summarizeByChannel,
@@ -142,6 +142,7 @@ export default async function OrdersPage({
 
       <DateRangeFilter
         pathname="/dashboard/orders"
+        presets={RANGE_PRESETS}
         activeKey={window.key}
         from={window.fromParam}
         to={window.toParam}
