@@ -40,7 +40,7 @@ export default async function GuidesPage() {
           type: "CollectionPage",
         })}
       />
-      <main className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-16">
+      <main className="mx-auto w-full max-w-6xl px-5 py-12 sm:px-6 sm:py-16">
         <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)] sm:text-4xl">
           Guides
         </h1>
