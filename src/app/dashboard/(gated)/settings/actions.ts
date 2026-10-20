@@ -1,9 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { requireOwnerWrite } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import { updateOwnerAlertSettings } from "@/lib/alerts/settings";
+import { updateOwnerBusinessName } from "@/lib/account/service";
 
 function parseAlertEmails(raw: string): string[] | { error: string } {
   const parts = raw
@@ -40,20 +39,5 @@ export async function updateAlertSettings(formData: FormData) {
 
 export async function updateBusinessName(formData: FormData) {
   const { owner } = await requireOwnerWrite();
-  const businessName = String(formData.get("businessName") ?? "").trim();
-  if (businessName.length < 2) {
-    return { error: "Enter a business name (at least 2 characters)." };
-  }
-  if (businessName.length > 120) {
-    return { error: "Business name is too long." };
-  }
-
-  await prisma.owner.update({
-    where: { id: owner.id },
-    data: { businessName },
-  });
-
-  revalidatePath("/dashboard/settings");
-  revalidatePath("/dashboard");
-  return { ok: true as const };
+  return updateOwnerBusinessName(owner.id, String(formData.get("businessName") ?? ""));
 }
