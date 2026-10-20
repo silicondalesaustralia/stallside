@@ -1,45 +1,16 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
-import { ensureStandingLists } from "@/lib/crm/standing-lists";
 import {
-  countSegmentAudience,
-  parseSegmentRules,
-} from "@/lib/crm/segments";
-import { STANDING_LIST_PRESET_KEYS } from "@/lib/crm/segment-rules";
+  listOwnerCampaigns,
+  listOwnerStandingLists,
+} from "@/lib/communication/load";
 
 export default async function CommunicationPage() {
   const { owner } = await requireOwner();
-  await ensureStandingLists(owner.id);
-
   const [campaigns, standingLists] = await Promise.all([
-    prisma.campaign.findMany({
-      where: { ownerId: owner.id },
-      orderBy: { createdAt: "desc" },
-      take: 50,
-    }),
-    prisma.customerSegment.findMany({
-      where: {
-        ownerId: owner.id,
-        isActive: true,
-        presetKey: { in: [...STANDING_LIST_PRESET_KEYS] },
-      },
-      orderBy: { name: "asc" },
-    }),
+    listOwnerCampaigns(owner.id),
+    listOwnerStandingLists(owner.id),
   ]);
-
-  const standingCounts = await Promise.all(
-    standingLists.map(async (list) => ({
-      id: list.id,
-      count: await countSegmentAudience(
-        owner.id,
-        parseSegmentRules(list.rules),
-      ),
-    })),
-  );
-  const countById = Object.fromEntries(
-    standingCounts.map((c) => [c.id, c.count]),
-  );
 
   return (
     <main className="flex flex-col gap-8">
@@ -76,7 +47,7 @@ export default async function CommunicationPage() {
                 <div>
                   <p className="font-medium">{list.name}</p>
                   <p className="mt-1 text-[var(--muted)]">
-                    {list.description} · {countById[list.id] ?? 0} contacts
+                    {list.description} · {list.count} contacts
                   </p>
                 </div>
                 <Link

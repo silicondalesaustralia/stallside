@@ -34,6 +34,20 @@ export function openUpsell(upsellId: string) {
   router.push({ pathname: "/upsells/[upsellId]", params: { upsellId } });
 }
 
+export function openCampaign(campaignId: string) {
+  router.push({
+    pathname: "/communication/[campaignId]",
+    params: { campaignId },
+  });
+}
+
+/** Opens the composer, optionally addressed to a saved list or one customer. */
+export function composeMessage(
+  params: { listId?: string; customerId?: string } = {},
+) {
+  router.push({ pathname: "/communication/new", params });
+}
+
 export function openProduct(productId: string) {
   router.push({ pathname: "/product/[productId]", params: { productId } });
 }

@@ -1,10 +1,8 @@
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import CommunicationComposer from "./CommunicationComposer";
-import { ensureStandingLists } from "@/lib/crm/standing-lists";
-import { resolveCampaignAudience } from "@/lib/grow/campaigns";
-import { listEmailableCustomers } from "@/lib/crm/list-emailable-customers";
+import { loadComposeOptions } from "@/lib/communication/load";
+import { listOwnerListMembers } from "@/lib/communication/audience";
 
 export default async function NewCommunicationPage({
   searchParams,
@@ -13,37 +11,13 @@ export default async function NewCommunicationPage({
 }) {
   const { owner } = await requireOwner();
   const { customerId, listId } = await searchParams;
-  await ensureStandingLists(owner.id);
-
-  const [customers, products, lists, preOrderPages] = await Promise.all([
-    listEmailableCustomers(owner.id),
-    prisma.product.findMany({
-      where: { ownerId: owner.id, isArchived: false, isHidden: false },
-      orderBy: { name: "asc" },
-      take: 300,
-      select: { id: true, name: true },
-    }),
-    prisma.customerSegment.findMany({
-      where: { ownerId: owner.id, isActive: true },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true },
-    }),
-    prisma.preOrderPage.findMany({
-      where: { ownerId: owner.id },
-      orderBy: [{ isActive: "desc" }, { collectionAt: "desc" }],
-      take: 100,
-      select: { id: true, title: true },
-    }),
-  ]);
+  const { customers, products, lists, preOrderPages } =
+    await loadComposeOptions(owner.id);
 
   const initialListMembers = listId
-    ? (
-        await resolveCampaignAudience({
-          ownerId: owner.id,
-          audienceType: "list",
-          audienceRefId: listId,
-        })
-      ).map((m) => ({ email: m.email }))
+    ? ((await listOwnerListMembers(owner.id, listId)) ?? []).map((email) => ({
+        email,
+      }))
     : [];
 
   return (

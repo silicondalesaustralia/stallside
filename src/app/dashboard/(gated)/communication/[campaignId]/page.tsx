@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import { getOwnerCampaign } from "@/lib/communication/load";
 
 export default async function CommunicationDetailPage({
   params,
@@ -10,16 +10,7 @@ export default async function CommunicationDetailPage({
 }) {
   const { campaignId } = await params;
   const { owner } = await requireOwner();
-  const campaign = await prisma.campaign.findFirst({
-    where: { id: campaignId, ownerId: owner.id },
-    include: {
-      recipients: {
-        orderBy: { createdAt: "asc" },
-        take: 100,
-        select: { email: true, status: true, errorMessage: true },
-      },
-    },
-  });
+  const campaign = await getOwnerCampaign(owner.id, campaignId);
   if (!campaign) notFound();
 
   return (

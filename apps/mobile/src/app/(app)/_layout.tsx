@@ -73,6 +73,18 @@ export default function SignedInLayout() {
           options={{ title: "Upsells & offers" }}
         />
         <Stack.Screen name="upsells/[upsellId]" options={{ title: "Upsell" }} />
+        <Stack.Screen
+          name="communication/index"
+          options={{ title: "Communications" }}
+        />
+        <Stack.Screen
+          name="communication/new"
+          options={{ title: "New message" }}
+        />
+        <Stack.Screen
+          name="communication/[campaignId]"
+          options={{ title: "Message" }}
+        />
         <Stack.Screen name="qr/index" options={{ title: "QR codes" }} />
         <Stack.Screen name="qr/[kind]/[id]" options={{ title: "QR code" }} />
         <Stack.Screen
