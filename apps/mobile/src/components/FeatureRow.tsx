@@ -1,5 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import type { MobileFeature } from "@contracts/mobile/me";
+import { featureIcon } from "@/lib/feature-icons";
 import { colors, spacing } from "@/lib/theme";
 
 type Props = {
@@ -13,12 +15,27 @@ export default function FeatureRow({ feature, onPress }: Props) {
       accessibilityRole="button"
       disabled={feature.comingSoon}
       onPress={() => onPress(feature)}
-      style={({ pressed }) => [styles.row, pressed && styles.pressed, feature.comingSoon && styles.soon]}
+      style={({ pressed }) => [
+        styles.row,
+        pressed && styles.pressed,
+        feature.comingSoon && styles.soon,
+      ]}
     >
-      <Text style={styles.label}>{feature.label}</Text>
+      <View style={styles.left}>
+        <Ionicons
+          name={featureIcon(feature.id)}
+          size={20}
+          color={colors.brand}
+        />
+        <Text style={styles.label}>{feature.label}</Text>
+      </View>
       <View style={styles.right}>
         <Text style={styles.hint}>
-          {feature.comingSoon ? "Soon" : feature.native ? "Open" : "Open on web"}
+          {feature.comingSoon
+            ? "Soon"
+            : feature.native
+              ? "Open"
+              : "Open on web"}
         </Text>
       </View>
     </Pressable>
@@ -38,6 +55,7 @@ const styles = StyleSheet.create({
   },
   pressed: { backgroundColor: colors.background },
   soon: { opacity: 0.5 },
+  left: { flexDirection: "row", alignItems: "center", gap: spacing.sm + 4 },
   label: { color: colors.text, fontSize: 16 },
   right: { flexDirection: "row", alignItems: "center" },
   hint: { color: colors.muted, fontSize: 13 },
