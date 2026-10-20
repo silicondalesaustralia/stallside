@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import { listOwnerSuppliers } from "@/lib/suppliers/members";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import InviteForm from "./InviteForm";
@@ -10,17 +10,7 @@ export default async function SuppliersPage() {
   const { selected } = await resolveSelectedBusiness(owner.id);
   if (!selected) return <NoBusinessYet />;
 
-  const members = await prisma.standMember.findMany({
-    where: { standId: selected.id, ownerId: owner.id },
-    orderBy: { name: "asc" },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      status: true,
-      _count: { select: { products: true } },
-    },
-  });
+  const members = await listOwnerSuppliers(owner.id, selected.id);
 
   return (
     <div className="flex flex-col gap-6">

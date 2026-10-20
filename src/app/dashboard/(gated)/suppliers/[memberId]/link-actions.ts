@@ -1,11 +1,10 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireOwnerWrite } from "@/lib/session";
 import { dollarsToCents } from "@/lib/money";
-import { standCatalogTag } from "@/lib/stand-catalog-tag";
-import { activatePendingLot } from "@/lib/suppliers/contribute";
+import { approveOwnerSupplierLot } from "@/lib/suppliers/settle";
 
 async function ownedMember(ownerId: string, memberId: string) {
   return prisma.standMember.findFirst({
@@ -96,30 +95,11 @@ export async function updateLinkedOwed(formData: FormData) {
 
 export async function approveSupplierLot(formData: FormData) {
   const { owner } = await requireOwnerWrite();
-  const memberId = String(formData.get("memberId") ?? "");
-  const lotId = String(formData.get("lotId") ?? "");
-  const member = await ownedMember(owner.id, memberId);
-  if (!member) return { error: "Supplier not found." };
-
-  try {
-    const result = await prisma.$transaction((tx) =>
-      activatePendingLot(tx, {
-        lotId,
-        ownerId: owner.id,
-        standId: member.standId,
-        memberName: member.name,
-      }),
-    );
-    if (!result) return { error: "Nothing to approve." };
-  } catch (error) {
-    console.error("Approve supplier lot failed", error);
-    return { error: "Could not approve." };
-  }
-
-  revalidatePath(`/dashboard/suppliers/${member.id}`);
-  revalidatePath("/dashboard/products");
-  revalidateTag(standCatalogTag(member.stand.slug), "max");
-  return { ok: true as const };
+  return approveOwnerSupplierLot(
+    owner.id,
+    String(formData.get("memberId") ?? ""),
+    String(formData.get("lotId") ?? ""),
+  );
 }
 
 export async function unlinkSupplierProduct(formData: FormData) {

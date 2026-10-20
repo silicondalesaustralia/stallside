@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
-import { loadSupplierLedger } from "@/lib/suppliers/ledger";
+import { getOwnerSupplier } from "@/lib/suppliers/members";
 import { revokeSupplier } from "./member-actions";
 import ProductTermsForm from "./ProductTermsForm";
 import LinkedProductTermsForm from "./LinkedProductTermsForm";
@@ -21,30 +21,20 @@ export default async function SupplierMemberPage({
 }) {
   const { memberId } = await params;
   const { owner } = await requireOwner();
-  const member = await prisma.standMember.findFirst({
-    where: { id: memberId, ownerId: owner.id },
-    include: { stand: { select: { id: true, name: true, currency: true } } },
-  });
-  if (!member) notFound();
+  const supplier = await getOwnerSupplier(owner.id, memberId);
+  if (!supplier) notFound();
+  const { member, ledger, pendingLots } = supplier;
 
-  const [ledger, linkable, pendingLots] = await Promise.all([
-    loadSupplierLedger(member.id),
-    prisma.product.findMany({
-      where: {
-        ownerId: owner.id,
-        standId: member.standId,
-        memberId: null,
-        isArchived: false,
-      },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true },
-    }),
-    prisma.stockLot.findMany({
-      where: { memberId: member.id, status: "PENDING", quantityRemaining: { gt: 0 } },
-      include: { product: { select: { name: true } } },
-      orderBy: { createdAt: "asc" },
-    }),
-  ]);
+  const linkable = await prisma.product.findMany({
+    where: {
+      ownerId: owner.id,
+      standId: member.standId,
+      memberId: null,
+      isArchived: false,
+    },
+    orderBy: { name: "asc" },
+    select: { id: true, name: true },
+  });
   const linkedIds = new Set(ledger.products.filter((p) => p.linked).map((p) => p.id));
   const currency = member.stand.currency;
   const balance = ledger.owedCents - ledger.paidCents;

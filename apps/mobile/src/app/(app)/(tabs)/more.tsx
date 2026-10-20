@@ -32,6 +32,7 @@ const NATIVE_ROUTES: Record<string, Href> = {
   upsells: "/upsells",
   communication: "/communication",
   shipping: "/shipping",
+  suppliers: "/suppliers",
 };
 
 function groupFeatures(features: MobileFeature[]): [string, MobileFeature[]][] {

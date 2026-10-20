@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { requireOwnerWrite } from "@/lib/session";
 import { dollarsToCents } from "@/lib/money";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
+import { revokeOwnerSupplier } from "@/lib/suppliers/members";
+import { recordOwnerSupplierPayout } from "@/lib/suppliers/settle";
 
 async function ownedMember(ownerId: string, memberId: string) {
   return prisma.standMember.findFirst({
@@ -62,47 +64,16 @@ export async function saveSupplierTerms(formData: FormData) {
 
 export async function markSupplierPaid(formData: FormData) {
   const { owner } = await requireOwnerWrite();
-  const memberId = String(formData.get("memberId") ?? "");
-  const note = String(formData.get("note") ?? "").trim();
-  const member = await ownedMember(owner.id, memberId);
-  if (!member) return { error: "Supplier not found." };
-
-  let amountCents = 0;
-  try {
-    amountCents = dollarsToCents(String(formData.get("amount") ?? ""));
-  } catch {
-    return { error: "Enter the amount you paid." };
-  }
-  if (amountCents < 1) return { error: "Enter the amount you paid." };
-
-  try {
-    await prisma.supplierPayout.create({
-      data: {
-        memberId: member.id,
-        amountCents,
-        note: note || null,
-      },
-    });
-  } catch (error) {
-    console.error("Supplier payout record failed", error);
-    return { error: "Could not record the payment." };
-  }
-
-  revalidatePath(`/dashboard/suppliers/${member.id}`);
-  return { ok: true as const };
+  return recordOwnerSupplierPayout(
+    owner.id,
+    String(formData.get("memberId") ?? ""),
+    String(formData.get("amount") ?? ""),
+    String(formData.get("note") ?? ""),
+  );
 }
 
 export async function revokeSupplier(formData: FormData) {
   const { owner } = await requireOwnerWrite();
-  const memberId = String(formData.get("memberId") ?? "");
-  const member = await ownedMember(owner.id, memberId);
-  if (!member) redirect("/dashboard/suppliers");
-
-  await prisma.standMember.update({
-    where: { id: member.id },
-    data: { status: "REVOKED" },
-  });
-  revalidatePath("/dashboard/suppliers");
-  revalidatePath(`/dashboard/suppliers/${member.id}`);
+  await revokeOwnerSupplier(owner.id, String(formData.get("memberId") ?? ""));
   redirect("/dashboard/suppliers");
 }

@@ -48,6 +48,10 @@ export function composeMessage(
   router.push({ pathname: "/communication/new", params });
 }
 
+export function openSupplier(memberId: string) {
+  router.push({ pathname: "/suppliers/[memberId]", params: { memberId } });
+}
+
 export function openProduct(productId: string) {
   router.push({ pathname: "/product/[productId]", params: { productId } });
 }
