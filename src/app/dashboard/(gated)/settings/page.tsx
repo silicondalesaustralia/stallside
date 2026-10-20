@@ -57,9 +57,9 @@ export default async function SettingsPage() {
 
       {owner.country === "AU" ? (
         <section className="space-y-3 text-sm">
-          <h2 className="text-lg font-semibold">GST</h2>
+          <h2 className="text-lg font-semibold">GST (Australia only)</h2>
           <p className="text-[var(--muted)]">
-            When registered, Vendl records the GST in each sale (1/11 of
+            For Australian businesses only. When registered, Vendl records the GST in each sale (1/11 of
             taxable items) for your order exports. Mark GST-free products,
             like fresh produce, on each product.
           </p>
