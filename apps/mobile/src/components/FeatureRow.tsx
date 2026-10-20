@@ -29,15 +29,16 @@ export default function FeatureRow({ feature, onPress }: Props) {
         />
         <Text style={styles.label}>{feature.label}</Text>
       </View>
-      <View style={styles.right}>
-        <Text style={styles.hint}>
-          {feature.comingSoon
-            ? "Soon"
-            : feature.native
-              ? "Open"
-              : "Open on web"}
-        </Text>
-      </View>
+      {feature.comingSoon ? (
+        <Text style={styles.soonPill}>Soon</Text>
+      ) : (
+        <Ionicons
+          name={feature.native ? "chevron-forward" : "open-outline"}
+          size={feature.native ? 18 : 17}
+          color={colors.placeholder}
+          accessibilityLabel={feature.native ? undefined : "Opens on the web"}
+        />
+      )}
     </Pressable>
   );
 }
@@ -57,6 +58,14 @@ const styles = StyleSheet.create({
   soon: { opacity: 0.5 },
   left: { flexDirection: "row", alignItems: "center", gap: spacing.sm + 4 },
   label: { color: colors.text, fontSize: 16 },
-  right: { flexDirection: "row", alignItems: "center" },
-  hint: { color: colors.muted, fontSize: 13 },
+  soonPill: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "600",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
+    overflow: "hidden",
+    backgroundColor: colors.background,
+  },
 });
