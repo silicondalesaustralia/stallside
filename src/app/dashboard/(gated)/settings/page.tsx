@@ -11,6 +11,7 @@ import { isSquareIntegrationEnabled } from "@/lib/square/config";
 import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 import BusinessNameForm from "./BusinessNameForm";
 import GstSettingsForm from "./GstSettingsForm";
+import GstSyncButton from "./GstSyncButton";
 import DeleteAccountButton from "./DeleteAccountButton";
 
 export default async function SettingsPage() {
@@ -64,6 +65,7 @@ export default async function SettingsPage() {
             like fresh produce, on each product.
           </p>
           <GstSettingsForm abn={owner.abn} gstRegistered={owner.gstRegistered} />
+          <GstSyncButton />
         </section>
       ) : null}
 

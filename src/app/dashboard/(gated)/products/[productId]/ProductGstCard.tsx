@@ -36,7 +36,7 @@ export default function ProductGstCard({
       title="GST"
       hint={
         gstRegistered
-          ? "Fresh fruit, veg, eggs, meat and plain bread are usually GST-free. Applies to new sales."
+          ? "Fresh fruit, veg, eggs, meat and plain bread are usually GST-free. Use Sync in Settings → GST to update past orders."
           : "Only used once you mark your business as GST registered in Settings."
       }
     >

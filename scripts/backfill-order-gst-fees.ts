@@ -9,43 +9,25 @@
  */
 import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
-import { lineGstCents } from "../src/lib/gst";
+import { syncOwnerOrderGst } from "../src/lib/order-gst-sync";
 import { syncPendingProcessorFees } from "../src/lib/order-fees/sync-pending-fees";
 
 const apply = process.argv.includes("--apply");
 const gstOnly = process.argv.includes("--gst-only");
 
 async function backfillGst() {
-  const orders = await prisma.order.findMany({
-    where: {
-      gstCents: 0,
-      currency: "AUD",
-      owner: { gstRegistered: true },
-    },
-    include: { items: { include: { product: { select: { gstFree: true } } } } },
+  const owners = await prisma.owner.findMany({
+    where: { gstRegistered: true },
+    select: { id: true },
   });
+  let checked = 0;
   let updated = 0;
-  for (const order of orders) {
-    const lines = order.items.map((i) => ({
-      lineTotalCents: i.lineTotalCents,
-      gstFree: i.product.gstFree,
-    }));
-    const gst = lineGstCents(lines, order.discountCents, true);
-    const total = gst.reduce((sum, cents) => sum + cents, 0);
-    if (total === 0) continue;
-    updated += 1;
-    if (!apply) continue;
-    await prisma.$transaction([
-      ...order.items.map((item, i) =>
-        prisma.orderItem.update({
-          where: { id: item.id },
-          data: { gstFree: lines[i].gstFree, gstCents: gst[i] },
-        }),
-      ),
-      prisma.order.update({ where: { id: order.id }, data: { gstCents: total } }),
-    ]);
+  for (const { id } of owners) {
+    const result = await syncOwnerOrderGst(id, { onlyMissing: true, dryRun: !apply });
+    checked += result.checked;
+    updated += result.updated;
   }
-  console.log(`GST: ${updated} of ${orders.length} orders ${apply ? "updated" : "would update"}.`);
+  console.log(`GST: ${updated} of ${checked} orders ${apply ? "updated" : "would update"}.`);
 }
 
 async function backfillFees() {
