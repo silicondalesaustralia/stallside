@@ -10,6 +10,7 @@ import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
 import { isSquareIntegrationEnabled } from "@/lib/square/config";
 import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 import BusinessNameForm from "./BusinessNameForm";
+import GstSettingsForm from "./GstSettingsForm";
 import DeleteAccountButton from "./DeleteAccountButton";
 
 export default async function SettingsPage() {
@@ -53,6 +54,18 @@ export default async function SettingsPage() {
           <DeleteAccountButton />
         </div>
       </section>
+
+      {owner.country === "AU" ? (
+        <section className="space-y-3 text-sm">
+          <h2 className="text-lg font-semibold">GST</h2>
+          <p className="text-[var(--muted)]">
+            When registered, Vendl records the GST in each sale (1/11 of
+            taxable items) for your order exports. Mark GST-free products,
+            like fresh produce, on each product.
+          </p>
+          <GstSettingsForm abn={owner.abn} gstRegistered={owner.gstRegistered} />
+        </section>
+      ) : null}
 
       <section className="space-y-2 text-sm">
         <h2 className="text-lg font-semibold">Notifications</h2>

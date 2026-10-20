@@ -1090,6 +1090,8 @@ model Product {
   sku                String?
   /** Owner-only barcode / UPC. */
   upc                String?
+  /** AU: GST-free supply (e.g. fresh produce). Ignored unless the owner is GST registered. */
+  gstFree            Boolean              @default(false)
   currency           String               @default("AUD")
   stockQuantity      Int                  @default(0)
   lowStockThreshold  Int                  @default(5)
@@ -1460,6 +1462,15 @@ model Order {
   campaign                Campaign?         @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   currency                String
   platformFeeCents        Int               @default(0)
+  /** GST included in totalCents (AU, GST-registered owners), snapshotted at checkout. */
+  gstCents                Int               @default(0)
+  /** Card processor fee (Stripe / Square / PayPal), excluding the Vendl fee and tax on the fee. Null until synced. */
+  processorFeeCents       Int?
+  /** Tax the processor charged on its fee (e.g. GST on Stripe AU fees). */
+  processorFeeTaxCents    Int?
+  /** Settlement currency of the processor fee. */
+  processorFeeCurrency    String?
+  processorFeesSyncedAt   DateTime?
   /** Fee + reporting: Vendl-originated vs observed external (e.g. Square POS). */
   saleOrigin              SaleOrigin        @default(VENDL_WEB)
   onlinePaymentProvider   OnlinePaymentProvider?
@@ -1525,6 +1536,7 @@ model Order {
   @@index([standId, createdAt])
   @@index([standId, collectionAt, collectionStatus])
   @@index([paymentStatus, balanceDueAt])
+  @@index([paymentStatus, processorFeesSyncedAt])
   @@index([shopperSubscriptionId])
   @@index([customerId])
   @@index([promotionId])
@@ -1545,6 +1557,10 @@ model OrderItem {
   quantity            Int
   unitPriceCents      Int
   lineTotalCents      Int
+  /** Product GST-free flag at sale time. */
+  gstFree             Boolean   @default(false)
+  /** GST in this line after its share of the order discount. */
+  gstCents            Int       @default(0)
   /** Phase 8 packing checkoff — set when line is packed (qty unchanged). */
   packedAt            DateTime?
   /** Supplier attributed at sale time. */

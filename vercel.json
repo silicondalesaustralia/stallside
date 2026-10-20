@@ -27,6 +27,10 @@
       "schedule": "*/15 * * * *"
     },
     {
+      "path": "/api/cron/order-fees",
+      "schedule": "45 * * * *"
+    },
+    {
       "path": "/api/cron/square-subscriptions",
       "schedule": "30 * * * *"
     },

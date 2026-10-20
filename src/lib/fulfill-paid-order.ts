@@ -10,6 +10,7 @@ import { notifySale } from "@/lib/notify";
 import { notifyOrderCustomer } from "@/lib/notify-order-customer";
 import { decrementStockForOrder } from "@/lib/checkout";
 import { syncSaleToSquare } from "@/lib/square/sync-stock";
+import { syncOrderProcessorFees } from "@/lib/order-fees/sync-order-fees";
 
 export async function fulfillPaidCardOrder(
   orderId: string,
@@ -165,6 +166,9 @@ async function fulfillPaidOnlineOrder(
     skipStock
       ? Promise.resolve()
       : syncSaleToSquare({ ownerId: order.ownerId, orderId, items }),
+    syncOrderProcessorFees(orderId).catch((error) => {
+      console.error("Processor fee sync failed", error);
+    }),
     (async () => {
       try {
         const fresh = await prisma.order.findUnique({

@@ -14,6 +14,7 @@ import { notifySale } from "@/lib/notify";
 import { notifyOrderCustomer } from "@/lib/notify-order-customer";
 import { nextCollectionAt } from "@/lib/subscription-offer";
 import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
+import { orderLineFields } from "@/lib/order-gst";
 
 export type CycleOrderPayment =
   | { rail: "stripe"; stripeInvoiceId: string; stripePaymentIntentId: string | null }
@@ -27,6 +28,7 @@ export async function createSubscriptionCycleOrder(
   const sub = await prisma.shopperSubscription.findUnique({
     where: { id: shopperSubscriptionId },
     include: {
+      owner: { select: { gstRegistered: true } },
       offer: {
         include: {
           items: { orderBy: { sortOrder: "asc" }, include: { product: true } },
@@ -53,6 +55,7 @@ export async function createSubscriptionCycleOrder(
     unitPriceCents: i.product.priceCents,
     lineTotalCents: i.product.priceCents * i.quantity,
     ...supplierLineSnapshot(i.product),
+    gstFree: i.product.gstFree,
   }));
   const subtotalCents = lineCreates.reduce((s, l) => s + l.lineTotalCents, 0);
   const byId = new Map(liveItems.map((i) => [i.product.id, i.product]));
@@ -98,7 +101,10 @@ export async function createSubscriptionCycleOrder(
           deliveryPostcode: sub.deliveryPostcode,
           deliveryNotes: sub.deliveryNotes,
           shopperSubscriptionId: sub.id,
-          items: { create: lineCreates },
+          ...orderLineFields(lineCreates, 0, {
+            currency: offer.currency,
+            owner: sub.owner,
+          }),
         },
       });
       await decrementStockForOrder(tx, {

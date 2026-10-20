@@ -9,6 +9,7 @@ import ProductLifecycleActions from "../ProductLifecycleActions";
 import ProductOptionsEditor from "./ProductOptionsEditor";
 import ProductStockCard from "./ProductStockCard";
 import ProductCategoriesCard from "./ProductCategoriesCard";
+import ProductGstCard from "./ProductGstCard";
 import { parsePriceTiers } from "@/lib/price-tiers";
 
 /** Auth-gated; never serve a cached anonymous RSC payload for Edit links. */
@@ -127,6 +128,9 @@ export default async function EditProductPage({
         stockQuantity={product.stockQuantity}
         supplyStatus={product.supplyStatus}
       />
+      {owner.country === "AU" ? (
+        <ProductGstCard productId={product.id} gstFree={product.gstFree} gstRegistered={owner.gstRegistered} />
+      ) : null}
       <ProductCategoriesCard
         productId={product.id}
         categories={categories.map((c) => ({

@@ -15,6 +15,7 @@ import { notifySale } from "@/lib/notify";
 import { notifyOrderCustomer } from "@/lib/notify-order-customer";
 import { nextCollectionAt } from "@/lib/subscription-offer";
 import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
+import { orderLineFields } from "@/lib/order-gst";
 
 /** Create due weekly collection orders for active memberships. */
 export async function runMembershipCollectionCron(now = new Date()) {
@@ -27,6 +28,7 @@ export async function runMembershipCollectionCron(now = new Date()) {
       offer: { kind: SubscriptionOfferKind.MEMBERSHIP },
     },
     include: {
+      owner: { select: { gstRegistered: true } },
       offer: {
         include: {
           fulfillmentProduct: true,
@@ -64,6 +66,7 @@ async function createMembershipCollectionOrder(
     /** Square billing still owed; keeps the membership active after its last collection. */
     nextBillingAt: Date | null;
     skipNextCycle: boolean;
+    owner: { gstRegistered: boolean };
     offer: {
       id: string;
       title: string;
@@ -82,6 +85,7 @@ async function createMembershipCollectionOrder(
         isArchived: boolean;
         memberId: string | null;
         supplierUnitCents: number | null;
+        gstFree: boolean;
       } | null;
     };
   },
@@ -129,6 +133,7 @@ async function createMembershipCollectionOrder(
       unitPriceCents,
       lineTotalCents: unitPriceCents,
       ...supplierLineSnapshot(product),
+      gstFree: product.gstFree,
     },
   ];
   const orderNumber = `FS-M${Date.now().toString(36).toUpperCase()}`;
@@ -167,7 +172,10 @@ async function createMembershipCollectionOrder(
           deliveryPostcode: sub.deliveryPostcode,
           deliveryNotes: sub.deliveryNotes,
           shopperSubscriptionId: sub.id,
-          items: { create: lineCreates },
+          ...orderLineFields(lineCreates, 0, {
+            currency: sub.offer.currency,
+            owner: sub.owner,
+          }),
         },
       });
 

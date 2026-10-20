@@ -62,6 +62,7 @@ export type CartLineData = {
   usedUpsell: boolean;
   memberId: string | null;
   supplierUnitCents: number | null;
+  gstFree: boolean;
 };
 
 /** True if this email already has a completed order at the stand. */
@@ -82,30 +83,6 @@ export async function emailHasPriorOrderAtStand(
     select: { id: true },
   });
   return Boolean(prior);
-}
-
-export function orderItemCreates(lineData: CartLineData[]) {
-  return lineData.map(
-    ({
-      productId,
-      productNameSnapshot,
-      optionsSnapshot,
-      quantity,
-      unitPriceCents,
-      lineTotalCents,
-      memberId,
-      supplierUnitCents,
-    }) => ({
-      productId,
-      productNameSnapshot,
-      optionsSnapshot,
-      quantity,
-      unitPriceCents,
-      lineTotalCents,
-      memberId,
-      supplierUnitCents,
-    }),
-  );
 }
 
 export async function loadCustomerChoiceCheckout(
@@ -162,6 +139,7 @@ export async function loadCustomerChoiceCheckout(
       usedTier: false,
       usedUpsell: false,
       ...supplierLineSnapshot(product),
+      gstFree: product.gstFree,
     },
   ];
 
@@ -460,6 +438,7 @@ export async function loadStandCart(
         usedTier: false,
         usedUpsell: true,
         ...supplierLineSnapshot(product),
+        gstFree: product.gstFree,
       };
     }
 
@@ -480,6 +459,7 @@ export async function loadStandCart(
       usedTier: priced.usedTier,
       usedUpsell: false,
       ...supplierLineSnapshot(product),
+      gstFree: product.gstFree,
     };
   });
 

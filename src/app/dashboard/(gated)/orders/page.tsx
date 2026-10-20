@@ -11,6 +11,7 @@ import { buildChannelSalesSeries } from "@/lib/sales-series";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import Link from "next/link";
 import OrderListRow from "./OrderListRow";
+import OrdersExportBar from "./OrdersExportBar";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { resolveStandTimezone } from "@/lib/stand-timezone";
@@ -142,6 +143,12 @@ export default async function OrdersPage({
       <DateRangeFilter
         pathname="/dashboard/orders"
         activeKey={window.key}
+        from={window.fromParam}
+        to={window.toParam}
+      />
+
+      <OrdersExportBar
+        range={window.key}
         from={window.fromParam}
         to={window.toParam}
       />

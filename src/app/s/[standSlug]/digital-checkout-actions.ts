@@ -12,9 +12,9 @@ import {
 import {
   loadCustomerChoiceCheckout,
   loadStandCart,
-  orderItemCreates,
   type CartItemInput,
 } from "@/lib/checkout";
+import { orderLineFields } from "@/lib/order-gst";
 import { isDemoStandSlug } from "@/lib/demo";
 import { appBaseUrl, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe } from "@/lib/stripe-demo";
@@ -175,7 +175,7 @@ export async function startCardCheckout(input: {
           ? ReceiptChannel.EMAIL
           : ReceiptChannel.NONE,
         receiptEmail: customerEmail || null,
-        items: { create: orderItemCreates(lineData) },
+        ...orderLineFields(lineData, discountCents, stand),
         ...(preOrderCart
           ? {
               isPreOrder: true,

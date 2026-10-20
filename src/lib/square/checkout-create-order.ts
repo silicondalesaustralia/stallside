@@ -12,9 +12,9 @@ import {
 import {
   loadCustomerChoiceCheckout,
   loadStandCart,
-  orderItemCreates,
   type CartItemInput,
 } from "@/lib/checkout";
+import { orderLineFields } from "@/lib/order-gst";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
 import { isSquarePaymentsEnabled, squareApplicationId } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
@@ -124,7 +124,7 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
       handoverMode: preOrderCart?.handoverMode ?? HandoverMode.COLLECT,
       ...(deposit ?? {}),
       ...(plan?.delivery ?? {}),
-      items: { create: orderItemCreates(lineData) },
+      ...orderLineFields(lineData, discountCents, stand),
     },
   });
 
