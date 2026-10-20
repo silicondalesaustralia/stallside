@@ -1,9 +1,8 @@
 import { visibleNavGroups } from "@/components/dash-nav-links";
-import { websiteSectionEnabledFor } from "@/lib/website/access";
 import type { MobileFeature } from "@/contracts/mobile/me";
 
-/** Web sections the app hides entirely (social-kit stays web-only for now). */
-const EXCLUDED_HREFS = new Set(["/dashboard/social"]);
+/** Desk-only sections the app never lists, on top of the Website-beta links (`websiteOnly`). */
+const WEB_ONLY_HREFS = new Set(["/dashboard/connectors"]);
 
 /** Sections with a native screen; every other nav link opens on the web inside the app. */
 const NATIVE_HREFS = new Set([
@@ -36,10 +35,10 @@ function featureId(href: string): string {
 }
 
 /** Built from the web dashboard nav, so a new web section shows up in the app with no app release. */
-export function buildMobileFeatures(ownerId: string): MobileFeature[] {
-  return visibleNavGroups(websiteSectionEnabledFor(ownerId)).flatMap((group) =>
+export function buildMobileFeatures(): MobileFeature[] {
+  return visibleNavGroups(false).flatMap((group) =>
     group.links
-      .filter((link) => !EXCLUDED_HREFS.has(link.href))
+      .filter((link) => !WEB_ONLY_HREFS.has(link.href))
       .map((link) => ({
         id: featureId(link.href),
         label: link.label,

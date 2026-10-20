@@ -23,7 +23,7 @@ export async function GET(request: Request) {
         onboardingComplete: owner.onboardingCompletedAt !== null,
       },
       businesses,
-      features: buildMobileFeatures(owner.id),
+      features: buildMobileFeatures(),
       minAppVersion: MOBILE_MIN_APP_VERSION,
     });
   } catch (error) {
