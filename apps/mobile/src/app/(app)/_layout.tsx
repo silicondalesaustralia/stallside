@@ -89,6 +89,8 @@ export default function SignedInLayout() {
         <Stack.Screen name="calendar" options={{ title: "Calendar" }} />
         <Stack.Screen name="payments" options={{ title: "Payments" }} />
         <Stack.Screen name="account" options={{ title: "Account" }} />
+        <Stack.Screen name="guides/index" options={{ title: "Guides" }} />
+        <Stack.Screen name="guides/[slug]" options={{ title: "Guide" }} />
         <Stack.Screen name="suppliers/index" options={{ title: "Suppliers" }} />
         <Stack.Screen
           name="suppliers/[memberId]"

@@ -6,37 +6,15 @@ import {
   Text,
   View,
 } from "react-native";
-import { router, type Href } from "expo-router";
+import { router } from "expo-router";
 import type { MobileFeature } from "@contracts/mobile/me";
 import { useAuth, useToken } from "@/auth/useAuth";
 import { useMe } from "@/data/useMe";
+import { NATIVE_ROUTES } from "@/lib/native-routes";
 import { openOnWeb } from "@/lib/open-web";
 import { colors, spacing } from "@/lib/theme";
 import FeatureRow from "@/components/FeatureRow";
 import ErrorMessage from "@/components/ErrorMessage";
-
-const NATIVE_ROUTES: Record<string, Href> = {
-  overview: "/home",
-  orders: "/orders",
-  products: "/products",
-  inventory: "/inventory",
-  collections: "/collections",
-  customers: "/customers",
-  notifications: "/notifications",
-  reviews: "/reviews",
-  discounts: "/discounts",
-  subscriptions: "/subscriptions",
-  qr: "/qr",
-  categories: "/categories",
-  "pre-order-pages": "/pre-orders",
-  upsells: "/upsells",
-  communication: "/communication",
-  shipping: "/shipping",
-  suppliers: "/suppliers",
-  calendar: "/calendar",
-  payments: "/payments",
-  settings: "/account",
-};
 
 function groupFeatures(features: MobileFeature[]): [string, MobileFeature[]][] {
   const groups = new Map<string, MobileFeature[]>();

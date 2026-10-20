@@ -52,6 +52,10 @@ export function openSupplier(memberId: string) {
   router.push({ pathname: "/suppliers/[memberId]", params: { memberId } });
 }
 
+export function openGuide(slug: string) {
+  router.push({ pathname: "/guides/[slug]", params: { slug } });
+}
+
 export function openProduct(productId: string) {
   router.push({ pathname: "/product/[productId]", params: { productId } });
 }
