@@ -13,6 +13,7 @@ export const secondaryLinks = [
   { href: "/dashboard/communication", label: "Communication" },
   { href: "/dashboard/notifications", label: "Notifications" },
   { href: "/dashboard/suppliers", label: "Suppliers" },
+  { href: "/dashboard/data", label: "Data management" },
   { href: "/dashboard/knowledge", label: "Guides" },
   { href: "/dashboard/settings", label: "Settings" },
 ] as const;
