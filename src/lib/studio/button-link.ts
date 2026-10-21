@@ -5,6 +5,7 @@ import {
   shopMenusPath,
   shopPagePath,
   shopPreOrderPath,
+  shopPreOrdersPath,
   shopProductPath,
   shopSubscriptionsPath,
 } from "@/lib/storefront/paths";
@@ -12,7 +13,7 @@ import {
 /**
  * Where a section's button goes. Stored as a token so it resolves to the right URL in the
  * editor (draft) and on the live site:
- *   page:<home|shop|about|contact|menu|blog|subscriptions>  nav:<custom page slug>  product:<slug>  category:<slug>
+ *   page:<home|shop|about|contact|menu|blog|subscriptions|preorders>  nav:<custom page slug>  product:<slug>  category:<slug>
  *   offer:<subscription or membership slug>  preorder:<pre-order page slug>
  *   or a web address, email (mailto:) or phone (tel:) accepted by `safeHref`.
  * Empty / missing means the section's default (usually the shop).
@@ -24,7 +25,7 @@ export type ButtonPage = (typeof BUTTON_PAGES)[number];
 export const LINKABLE_BUTTON_SECTIONS = new Set(["CraftHeroSection", "CraftImageTextSection", "CraftFarmStandSection"]);
 
 const TOKEN =
-  /^(page:(home|shop|about|contact|menu|blog|subscriptions)|nav:[\w-]{1,120}|product:[\w-]{1,160}|category:[\w-]{1,160}|offer:[\w-]{1,160}|preorder:[\w-]{1,160})$/;
+  /^(page:(home|shop|about|contact|menu|blog|subscriptions|preorders)|nav:[\w-]{1,120}|product:[\w-]{1,160}|category:[\w-]{1,160}|offer:[\w-]{1,160}|preorder:[\w-]{1,160})$/;
 
 export function isButtonLink(value: unknown): value is string {
   return typeof value === "string" && value.length <= 500 && (TOKEN.test(value) || safeHref(value) !== null);
@@ -44,6 +45,7 @@ export function resolveButtonLink(link: unknown, ctx: LinkContext): string | nul
   if (!isButtonLink(link)) return null;
   const { storefrontSlug: slug, draft, basePath } = ctx;
   if (link === "page:subscriptions") return shopSubscriptionsPath(slug, undefined, draft, basePath);
+  if (link === "page:preorders") return shopPreOrdersPath(slug, draft, basePath);
   if (link.startsWith("offer:")) return shopSubscriptionsPath(slug, link.slice(6), draft, basePath);
   if (link.startsWith("preorder:")) return shopPreOrderPath(slug, link.slice(9), draft, basePath);
   if (link.startsWith("page:")) {

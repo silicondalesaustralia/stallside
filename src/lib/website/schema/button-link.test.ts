@@ -28,6 +28,7 @@ describe("button links", () => {
 
   it("resolves subscription, membership and pre-order pages", () => {
     assert.equal(resolveButtonLink("page:subscriptions", live), "/shop/green-acres/subscriptions");
+    assert.equal(resolveButtonLink("page:preorders", live), "/shop/green-acres/pre-orders");
     assert.equal(resolveButtonLink("offer:veg-box", live), "/shop/green-acres/subscriptions/veg-box");
     assert.equal(resolveButtonLink("preorder:xmas-hams", { ...live, draft: true }), "/shop/green-acres/pre-orders/xmas-hams?draft=1");
   });

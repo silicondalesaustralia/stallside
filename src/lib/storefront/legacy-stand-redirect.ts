@@ -31,7 +31,7 @@ async function websitePath(site: StandWebsite, target: LegacyStandTarget): Promi
     case "category":
       return `/${seg(target.categorySlug)}`;
     case "preOrders":
-      return "/menus";
+      return "/pre-orders";
     case "preOrder":
       return `/pre-orders/${seg(target.pageSlug)}`;
     case "subscriptions":

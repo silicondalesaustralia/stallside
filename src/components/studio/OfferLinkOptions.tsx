@@ -25,6 +25,7 @@ export default function OfferLinkOptions({
       </optgroup>
       {preOrders.length ? (
         <optgroup label="Pre-order pages">
+          <option value="page:preorders">All pre-orders</option>
           {preOrders
             .filter((p, i) => preOrders.findIndex((q) => q.slug === p.slug) === i)
             .map((p) => (

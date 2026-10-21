@@ -134,6 +134,11 @@ export function shopBlogTopicPath(
   return draft ? `${base}?draft=1` : base;
 }
 
+export function shopPreOrdersPath(storefrontSlug: string, draft = false, basePath?: string): string {
+  const base = joinRoot(rootFor(storefrontSlug, basePath), "/pre-orders");
+  return draft ? `${base}?draft=1` : base;
+}
+
 export function shopPreOrderPath(
   storefrontSlug: string,
   slug: string,

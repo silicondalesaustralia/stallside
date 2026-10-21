@@ -27,12 +27,15 @@ export default function PreOrderCategoryView({
   timezone,
   accentColor,
   pages,
+  pageHrefBase,
 }: {
   standSlug: string;
   standName: string;
   timezone: string;
   accentColor?: string | null;
   pages: Page[];
+  /** Base for card links, e.g. the website's `/pre-orders`; defaults to the stand page. */
+  pageHrefBase?: string;
 }) {
   const intro = preorderCategoryIntro(standName);
 
@@ -60,7 +63,11 @@ export default function PreOrderCategoryView({
           return (
             <li key={page.slug} className="min-w-0">
               <PreOrderCategoryCard
-                href={preOrderPagePath(standSlug, page.slug)}
+                href={
+                  pageHrefBase
+                    ? `${pageHrefBase}/${encodeURIComponent(page.slug)}`
+                    : preOrderPagePath(standSlug, page.slug)
+                }
                 title={page.title}
                 imageUrl={page.imageUrl || page.fallbackImageUrl}
                 statusLabel="Pre-order open"
