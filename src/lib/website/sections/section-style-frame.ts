@@ -46,10 +46,15 @@ export function sectionStyleFrame(style: SectionStyle, palette: ThemePalette): S
     vars["--panel"] = card;
     classes.push("section-style--card");
   }
+  // The seller's own text/heading colours beat the automatic readable-on-card colour.
   const cardInk =
-    style.cardTextColour ?? (style.cardBackground ? resolvedTextColour({ background: style.cardBackground }, palette) : null);
+    style.cardTextColour ??
+    style.textColour ??
+    (style.cardBackground ? resolvedTextColour({ background: style.cardBackground }, palette) : null);
   if (cardInk) {
-    vars["--section-card-ink"] = stableColour(cardInk, palette);
+    const ink = stableColour(cardInk, palette);
+    vars["--section-card-ink"] = ink;
+    vars["--section-card-heading"] = style.headingColour ? stableColour(style.headingColour, palette) : ink;
     classes.push("section-style--card-ink");
   }
   if (style.buttonColour || style.buttonTextColour) {

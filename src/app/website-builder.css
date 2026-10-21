@@ -722,7 +722,7 @@ header.studio-nav[data-header-colours] .studio-btn--secondary {
 .section-style--card-ink [data-section-card] {
   color: var(--section-card-ink);
   --ink: var(--section-card-ink);
-  --field: var(--section-card-ink);
+  --field: var(--section-card-heading, var(--section-card-ink));
   --muted: color-mix(in srgb, var(--section-card-ink) 75%, transparent);
   --m-ink: var(--section-card-ink);
   --m-muted: color-mix(in srgb, var(--section-card-ink) 75%, transparent);
