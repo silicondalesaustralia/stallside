@@ -3,14 +3,13 @@ import { DEFAULT_TIMEZONE, STAND_TIMEZONES } from "@/lib/stand-timezone";
 import { createStand } from "../actions";
 import FormField from "@/components/FormField";
 import CreateStandSubmitButton from "./CreateStandSubmitButton";
+import OnboardingFlow from "./OnboardingFlow";
 
 export default function NewStandPage() {
   return (
     <main className="flex flex-col gap-6">
       <h1 className="text-3xl font-semibold tracking-tight">New Business</h1>
-      <p className="mt-2 text-[var(--muted)]">
-        Give it a name and go live — add products, pre-orders, and payments anytime.
-      </p>
+      <OnboardingFlow />
       <form action={createStand} className="mt-8 flex flex-col gap-4">
         <input type="hidden" name="intent" value="create" />
         <FormField
@@ -23,11 +22,6 @@ export default function NewStandPage() {
           label="Suburb / location"
           name="locationLabel"
           placeholder="Woodend"
-        />
-        <FormField
-          label="Instructions"
-          name="description"
-          placeholder="Please take eggs from the fridge…"
         />
         <label className="flex flex-col gap-2 text-sm">
           <span className="font-medium">Currency</span>
