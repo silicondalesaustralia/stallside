@@ -40,10 +40,10 @@ function NavDropdown({ item }: { item: StudioNavItem }) {
         <span aria-hidden className="text-[10px]">▾</span>
       </button>
       <div className="invisible absolute left-0 top-full z-40 min-w-[10rem] pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-        <ul role="menu" className="rounded-lg border border-[var(--line)] bg-[var(--panel)] py-1 shadow-md">
+        <ul role="menu" className="studio-nav__dropdown rounded-lg border border-[var(--line)] py-1 shadow-md">
           {item.children.map((child) => (
             <li key={child.slug} role="none">
-              <NavItemLink role="menuitem" href={child.href} className="block px-3 py-2 text-[length:var(--nav-link-size,0.875rem)] text-[var(--field)] hover:bg-[var(--wash)]">
+              <NavItemLink role="menuitem" href={child.href} className="studio-nav__dropdown-link block px-3 py-2 text-[length:var(--nav-link-size,0.875rem)]">
                 {child.label}
               </NavItemLink>
             </li>

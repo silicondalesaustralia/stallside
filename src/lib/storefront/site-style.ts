@@ -52,6 +52,11 @@ export const siteStyleSchema = z.object({
   /** Header bar colours; text is picked for the background when only that is set. */
   headerBackground: colourValue.optional(),
   headerText: colourValue.optional(),
+  /** Header dropdown menus; unset follows the header bar. */
+  dropdownBackground: colourValue.optional(),
+  dropdownText: colourValue.optional(),
+  dropdownHoverBackground: colourValue.optional(),
+  dropdownHoverText: colourValue.optional(),
   productRatio: z.enum(PRODUCT_RATIOS).optional(),
   cardHover: z.enum(CARD_HOVERS).optional(),
   animation: z.enum(SECTION_ANIMATIONS).optional(),

@@ -967,6 +967,21 @@ header.studio-nav[data-header-colours] .studio-btn--secondary {
   border-bottom-color: var(--leaf-dark);
 }
 
+/* Header dropdowns follow the header bar unless the seller set dropdown colours. */
+.studio-nav__dropdown {
+  background: var(--dropdown-bg, var(--panel));
+}
+
+.studio-nav__dropdown-link {
+  color: var(--dropdown-ink, var(--field));
+}
+
+.studio-nav__dropdown-link:hover,
+.studio-nav__dropdown-link:focus-visible {
+  background: var(--dropdown-hover-bg, color-mix(in srgb, var(--dropdown-ink, var(--field)) 12%, transparent));
+  color: var(--dropdown-hover-ink, var(--dropdown-ink, var(--field)));
+}
+
 /* Section style: image corners and swapped split layouts. */
 [data-image-radius="none"] { --section-image-radius: 0; }
 [data-image-radius="sm"] { --section-image-radius: 0.5rem; }

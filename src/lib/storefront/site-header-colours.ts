@@ -18,5 +18,15 @@ export function siteHeaderVars(style: SiteStyle, palette: ThemePalette): Record<
     vars["--muted"] = `color-mix(in srgb, ${ink} 78%, transparent)`;
     vars["--line"] = `color-mix(in srgb, ${ink} 18%, transparent)`;
   }
+  if (style.dropdownBackground) vars["--dropdown-bg"] = colourHex(style.dropdownBackground, palette);
+  const dropdownInk =
+    style.dropdownText ??
+    (style.dropdownBackground ? resolvedTextColour({ background: style.dropdownBackground }, palette) : null);
+  if (dropdownInk) vars["--dropdown-ink"] = colourHex(dropdownInk, palette);
+  if (style.dropdownHoverBackground) vars["--dropdown-hover-bg"] = colourHex(style.dropdownHoverBackground, palette);
+  const hoverInk =
+    style.dropdownHoverText ??
+    (style.dropdownHoverBackground ? resolvedTextColour({ background: style.dropdownHoverBackground }, palette) : null);
+  if (hoverInk) vars["--dropdown-hover-ink"] = colourHex(hoverInk, palette);
   return vars;
 }
