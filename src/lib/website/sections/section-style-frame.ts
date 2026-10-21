@@ -40,6 +40,18 @@ export function sectionStyleFrame(style: SectionStyle, palette: ThemePalette): S
     vars["--section-muted"] = vars["--muted"];
     classes.push("section-style--ink");
   }
+  if (style.cardBackground) {
+    const card = stableColour(style.cardBackground, palette);
+    vars["--section-card-bg"] = card;
+    vars["--panel"] = card;
+    classes.push("section-style--card");
+  }
+  const cardInk =
+    style.cardTextColour ?? (style.cardBackground ? resolvedTextColour({ background: style.cardBackground }, palette) : null);
+  if (cardInk) {
+    vars["--section-card-ink"] = stableColour(cardInk, palette);
+    classes.push("section-style--card-ink");
+  }
   if (style.buttonColour || style.buttonTextColour) {
     if (style.buttonColour) vars["--section-btn-bg"] = stableColour(style.buttonColour, palette);
     const btnText =

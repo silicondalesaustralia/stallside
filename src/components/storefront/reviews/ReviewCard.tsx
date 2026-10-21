@@ -6,7 +6,7 @@ import ReviewStars from "./ReviewStars";
 /** One published review; parts take the section's "Text elements" styles. */
 export default function ReviewCard({ review, className = "" }: { review: StorefrontReviewView; className?: string }) {
   return (
-    <li className={`rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-5 ${className}`}>
+    <li data-section-card className={`rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-5 ${className}`}>
       <ReviewStars rating={review.rating} />
       {review.title ? (
         <SectionElement el="reviewTitle" className="mt-2 font-semibold text-[var(--field)]">

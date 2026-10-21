@@ -33,7 +33,7 @@ export default function OrderConfirmationCard({ state, backHref, backLabel, prev
   const { preOrder, demoStandSlug, demoProduct, restock } = state;
   return (
     <>
-      <div className="relative rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-8">
+      <div data-section-card className="relative rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-8">
         <div
           aria-hidden
           className="absolute left-4 top-4 size-8 border-l-[3px] border-t-[3px] border-[var(--leaf)]"

@@ -245,7 +245,6 @@ export default function StudioSettingsPanel() {
             toggles={[]}
             wording={LIST_WORDING}
             palette={paletteOf(metadata.resolvedBranding)}
-            cardColour={false}
           />
         ) : null}
         {LINKABLE_BUTTON_SECTIONS.has(selected.type) ? (

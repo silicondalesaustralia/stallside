@@ -707,6 +707,29 @@ header.studio-nav[data-header-colours] .studio-btn--secondary {
   color: var(--field);
 }
 
+/* Inner cards (order card, farm stand cards, review cards…) take the section's card colours. */
+.section-style--card [data-section-card] {
+  background-color: var(--section-card-bg);
+  --m-card: var(--section-card-bg);
+  --mc-card: var(--section-card-bg);
+}
+
+.section-style--card .studio-product-card[data-section-card] {
+  padding: 0.75rem;
+  border-radius: var(--studio-card-radius);
+}
+
+.section-style--card-ink [data-section-card] {
+  color: var(--section-card-ink);
+  --ink: var(--section-card-ink);
+  --field: var(--section-card-ink);
+  --muted: color-mix(in srgb, var(--section-card-ink) 75%, transparent);
+  --m-ink: var(--section-card-ink);
+  --m-muted: color-mix(in srgb, var(--section-card-ink) 75%, transparent);
+  --mc-ink: var(--section-card-ink);
+  --mc-muted: color-mix(in srgb, var(--section-card-ink) 75%, transparent);
+}
+
 /* An element with its own size (SectionElement) keeps it on rich-text paragraphs too. */
 .section-style [data-el-sized] :is(p, li) {
   font-size: inherit !important;

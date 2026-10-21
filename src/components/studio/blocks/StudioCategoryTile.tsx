@@ -58,7 +58,7 @@ export default function StudioCategoryTile({
 
   if (look === "list") {
     return (
-      <Link href={href} className={`${CARD} flex items-center gap-4 ${bare ? "py-2" : "p-3"}`}>
+      <Link href={href} data-section-card className={`${CARD} flex items-center gap-4 ${bare ? "py-2" : "p-3"}`}>
         <CategoryPhoto imageUrl={cat.imageUrl} title={cat.title} className="size-20 shrink-0 rounded-[var(--studio-card-radius)]" sizes="80px" />
         <CategoryTileText cat={cat} options={options} className="min-w-0 flex-1" />
         <span aria-hidden className="pr-1 text-xl text-[var(--muted)] group-hover:text-[var(--leaf-dark)]">→</span>
@@ -85,7 +85,7 @@ export default function StudioCategoryTile({
 
   if (look === "cards") {
     return (
-      <Link href={href} className={`${CARD} h-full`}>
+      <Link href={href} data-section-card className={`${CARD} h-full`}>
         <CategoryPhoto
           imageUrl={cat.imageUrl}
           title={cat.title}

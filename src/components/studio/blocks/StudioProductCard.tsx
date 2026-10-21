@@ -40,7 +40,7 @@ export default function StudioProductCard({
         : "studio-product-card";
 
   return (
-    <Link href={href} className={`group block h-full ${cardClass}`} data-edit-product={product.id}>
+    <Link href={href} className={`group block h-full ${cardClass}`} data-edit-product={product.id} data-section-card>
       <div className={`studio-product-card__media relative overflow-hidden rounded-[var(--studio-card-radius)] bg-[var(--wash)] ${aspect}`}>
         {product.imageUrl ? (
           <Image

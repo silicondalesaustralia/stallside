@@ -7,22 +7,19 @@ import ColourField from "./ColourField";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
 
-/** Pre-order and subscription page layouts: what shows, middle column and card colours, button wording. */
+/** Pre-order and subscription layouts: what shows, middle column colour, button wording. Card colours are in Style. */
 export default function OfferPageSettings({
   props,
   setProp,
   toggles,
   wording,
   palette,
-  cardColour = true,
 }: {
   props: Record<string, unknown>;
   setProp: (k: string, v: unknown) => void;
   toggles: OfferPageToggle[];
   wording: OfferPageWording[];
   palette: ThemePalette;
-  /** Off for pages without cards of their own. */
-  cardColour?: boolean;
 }) {
   const texts = parseSectionTexts(props.texts);
   const colour = (key: string) => (typeof props[key] === "string" ? (props[key] as string) : undefined);
@@ -51,15 +48,6 @@ export default function OfferPageSettings({
         palette={palette}
         noneLabel="None (uses the section background)"
       />
-      {cardColour ? (
-      <ColourField
-        label="Card background"
-        value={colour("cardBackground")}
-        onChange={(v) => setProp("cardBackground", v)}
-        palette={palette}
-        noneLabel="Template default"
-      />
-      ) : null}
       {wording.map((w) => (
         <div key={w.key} className="space-y-1.5">
           <label className="block text-xs font-semibold text-[var(--field)]" htmlFor={`offer-${w.key}`}>

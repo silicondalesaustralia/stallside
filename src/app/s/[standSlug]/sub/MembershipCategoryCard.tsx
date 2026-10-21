@@ -20,7 +20,7 @@ export default function MembershipCategoryCard({
   termLine: string | null;
 }) {
   return (
-    <article className="membership-card flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--mc-border)] bg-[var(--mc-card)]">
+    <article data-section-card className="membership-card flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--mc-border)] bg-[var(--mc-card)]">
       {imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img

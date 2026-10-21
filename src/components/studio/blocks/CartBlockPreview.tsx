@@ -28,6 +28,7 @@ export default function CartBlockPreview({
           sample.map((p) => (
             <li
               key={p.id}
+              data-section-card
               className="flex items-center justify-between gap-3 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-3"
             >
               <span className="font-semibold">1 × {p.name}</span>
@@ -41,7 +42,7 @@ export default function CartBlockPreview({
       <CartEmptyView shopHref={shopHref} />
       <CheckoutCopyPreview />
       <p className={caption}>After paying cash, by bank transfer or with Square</p>
-      <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-6">
+      <div data-section-card className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] p-6">
         <SectionCopy k="thanks" fallback="Thank you" as="h2" className="block text-2xl font-bold" />
         <SectionCopy k="paidCash" fallback="Cash payment confirmed. You're all set." as="p" className="mt-2 block" />
         <SectionCopy k="paidCard" fallback="Card payment confirmed. You're all set." as="p" className="mt-2 block" />

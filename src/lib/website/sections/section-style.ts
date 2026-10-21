@@ -31,6 +31,23 @@ export const BUTTON_SECTIONS = new Set([
   "CraftPreOrderSection",
   "CraftSubscriptionSection",
 ]);
+/** Sections with inner cards (`data-section-card` or theme panels) that take their own colours. */
+export const CARD_SECTIONS = new Set([
+  "CraftOrderConfirmationSection",
+  "CraftFarmStandSection",
+  "CraftCategoriesSection",
+  "CraftPickupSection",
+  "CraftNextDropSection",
+  "CraftReviewsSection",
+  "CraftProductDetailSection",
+  "CraftProductGridSection",
+  "CraftCategoryDetailSection",
+  "CraftCartSection",
+  "CraftPreOrderSection",
+  "CraftSubscriptionSection",
+  "CraftPreOrderListSection",
+  "CraftSubscriptionListSection",
+]);
 /** Sections with a main image whose corners can be rounded. */
 export const IMAGE_RADIUS_SECTIONS = new Set(["CraftHeroSection", "CraftImageSection", "CraftImageTextSection"]);
 /** Sections with a side-by-side (image | text) layout that can be swapped. */
@@ -44,6 +61,8 @@ export const sectionStyleSchema = z.object({
   background: colourValue.optional(),
   headingColour: colourValue.optional(),
   textColour: colourValue.optional(),
+  cardBackground: colourValue.optional(),
+  cardTextColour: colourValue.optional(),
   /** Per-element looks (price, bullet points…) keyed by the ids in `section-elements.ts`. */
   elements: z.record(z.string(), elementStyleSchema).optional(),
   headingSize: z.enum(HEADING_SIZES).optional(),
@@ -68,6 +87,8 @@ export function parseSectionStyle(raw: unknown): SectionStyle {
   if (isColourValue(obj.background)) out.background = obj.background;
   if (isColourValue(obj.headingColour)) out.headingColour = obj.headingColour;
   if (isColourValue(obj.textColour)) out.textColour = obj.textColour;
+  if (isColourValue(obj.cardBackground)) out.cardBackground = obj.cardBackground;
+  if (isColourValue(obj.cardTextColour)) out.cardTextColour = obj.cardTextColour;
   const elements = parseElementStyles(obj.elements);
   if (elements) out.elements = elements;
   if ((HEADING_SIZES as readonly unknown[]).includes(obj.headingSize)) {

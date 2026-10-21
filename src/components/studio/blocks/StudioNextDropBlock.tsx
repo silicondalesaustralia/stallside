@@ -97,6 +97,7 @@ function FeaturedMenuCard({
   return (
     <Link
       href={shopMenuPath(meta.storefrontSlug, menu.slug, meta.draft, meta.basePath, menu.isPreOrderDrop)}
+      data-section-card
       className="mt-8 block overflow-hidden rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-6 sf-sm:p-8"
     >
       <SectionCopy k="eyebrow" fallback="Order window open" as="p" className="studio-eyebrow text-[var(--leaf-dark)]" />
@@ -146,6 +147,7 @@ function MenuCard({
   return (
     <Link
       href={shopMenuPath(meta.storefrontSlug, menu.slug, meta.draft, meta.basePath, menu.isPreOrderDrop)}
+      data-section-card={compact ? undefined : ""}
       className={`block ${compact ? "border-l-2 border-[var(--leaf-dark)] pl-4 py-2" : "rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-5"}`}
     >
       <h3 className="font-semibold text-[var(--field)]">{menu.title}</h3>

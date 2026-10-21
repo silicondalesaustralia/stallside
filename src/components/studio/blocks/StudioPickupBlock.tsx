@@ -75,6 +75,7 @@ export default function StudioPickupBlock({
             return (
               <li
                 key={opt.id}
+                data-section-card
                 className="rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-5"
               >
                 <h3 className="font-semibold text-[var(--field)]">{opt.label}</h3>

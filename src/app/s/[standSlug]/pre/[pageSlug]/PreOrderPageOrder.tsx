@@ -96,7 +96,7 @@ export default function PreOrderPageOrder({
   const canOrder = cardReady && ordersOpen && selectedCount > 0 && !busy;
 
   return (
-    <section className="rounded-[18px] border border-[var(--line)] bg-[var(--offer-card-bg,var(--panel))] p-5 sm:p-6">
+    <section data-section-card className="rounded-[18px] border border-[var(--line)] bg-[var(--offer-card-bg,var(--panel))] p-5 sm:p-6">
       <h2 className="font-[family-name:var(--font-display)] text-[20px] font-medium tracking-tight">
         <SectionElement el="cardHeading" as="span">
           {cardHeading}

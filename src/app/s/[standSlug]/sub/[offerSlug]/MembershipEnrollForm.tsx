@@ -86,6 +86,7 @@ export default function MembershipEnrollForm({
   return (
     <form
       action={onSubmit}
+      data-section-card
       className="rounded-[18px] border border-[var(--m-card-border)] bg-[var(--m-card)] p-5 text-[var(--m-ink)] sm:p-6"
     >
       <h2 className="text-[19px] font-semibold">

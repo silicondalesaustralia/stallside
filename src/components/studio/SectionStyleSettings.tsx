@@ -4,6 +4,7 @@ import { useEditor } from "@craftjs/core";
 import { studioSectionRule } from "@/lib/studio/section-registry";
 import {
   BODY_SIZES,
+  CARD_SECTIONS,
   HEADING_SIZES,
   HEADING_TAGS,
   defaultHeadingTag,
@@ -76,6 +77,15 @@ export default function SectionStyleSettings({
       <ColourField label="Text colour" value={style.textColour} onChange={(v) => patch("textColour", v)} palette={palette} noneLabel="Auto (readable on the background)" />
       {hasLowContrast(style, palette) ? (
         <p className="text-xs text-red-700">Text may be hard to read on this background. Try Auto text colour.</p>
+      ) : null}
+      {CARD_SECTIONS.has(craftName) ? (
+        <>
+          <ColourField label="Card background" value={style.cardBackground} onChange={(v) => patch("cardBackground", v)} palette={palette} noneLabel="None (template default)" />
+          <ColourField label="Card text colour" value={style.cardTextColour} onChange={(v) => patch("cardTextColour", v)} palette={palette} noneLabel="Auto (readable on the card)" />
+          {style.cardBackground && hasLowContrast({ background: style.cardBackground, textColour: style.cardTextColour }, palette) ? (
+            <p className="text-xs text-red-700">Card text may be hard to read. Try Auto card text colour.</p>
+          ) : null}
+        </>
       ) : null}
       <div className="space-y-1.5">
         <p className="block text-xs font-semibold text-[var(--field)]">Heading size</p>

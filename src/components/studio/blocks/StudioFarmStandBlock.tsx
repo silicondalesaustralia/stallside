@@ -41,7 +41,7 @@ export default function StudioFarmStandBlock({
         />
         <div className="mt-8 grid gap-6 sf-lg:grid-cols-3">
           {showLocation ? (
-            <div className={CARD}>
+            <div className={CARD} data-section-card>
               <SectionElement el="cardLabel" className={LABEL}>
                 <SectionCopy k="locationLabel" fallback="Location" />
               </SectionElement>
@@ -63,7 +63,7 @@ export default function StudioFarmStandBlock({
             </div>
           ) : null}
           {showHours ? (
-            <div className={CARD}>
+            <div className={CARD} data-section-card>
               <SectionElement el="cardLabel" className={LABEL}>
                 <SectionCopy k="hoursLabel" fallback="Stand hours" />
               </SectionElement>
@@ -76,7 +76,7 @@ export default function StudioFarmStandBlock({
               </SectionElement>
             </div>
           ) : null}
-          <div className={CARD}>
+          <div className={CARD} data-section-card>
             <SectionElement el="cardLabel" className={LABEL}>
               <SectionCopy k="availableLabel" fallback="What's available" />
             </SectionElement>

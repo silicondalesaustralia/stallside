@@ -47,7 +47,7 @@ export default function PreOrderCategoryCard({
   orderByLabel: string | null;
 }) {
   return (
-    <article className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--panel)]">
+    <article data-section-card className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--panel)]">
       {imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
