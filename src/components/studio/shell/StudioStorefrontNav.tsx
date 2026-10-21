@@ -255,9 +255,12 @@ export default function StudioStorefrontNav({
     );
   }
 
+  // A colour the owner picked must render exactly (e.g. to match a logo's background), so no see-through.
+  const headerBg = Object.keys(headerColours).length ? "bg-[var(--panel)]" : "bg-[var(--panel)]/95 backdrop-blur";
+
   return (
     <header
-      className={`${navClass} ${branding.siteStyle.headerScroll === "scroll" ? "relative" : "sticky top-0"} z-30 border-b border-[var(--line)] bg-[var(--panel)]/95 backdrop-blur ${
+      className={`${navClass} ${branding.siteStyle.headerScroll === "scroll" ? "relative" : "sticky top-0"} z-30 border-b border-[var(--line)] ${headerBg} ${
         selected ? "ring-2 ring-inset ring-[var(--leaf)]" : ""
       } ${editable ? "cursor-pointer" : ""}`}
       style={headerColours}
