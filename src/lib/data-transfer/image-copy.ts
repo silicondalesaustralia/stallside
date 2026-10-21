@@ -2,7 +2,7 @@ import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
 import { put } from "@vercel/blob";
 import { cleanEnvSecret } from "@/lib/env";
-import { shrinkPhoto } from "@/lib/mobile/shrink-photo";
+import { PRODUCT_IMAGE_MAX_BYTES } from "@/lib/image-upload-limits";
 
 const MAX_SOURCE_BYTES = 15 * 1024 * 1024;
 const FETCH_TIMEOUT_MS = 20_000;
@@ -14,6 +14,18 @@ function privateAddress(ip: string): boolean {
   if (Number.isNaN(a)) return false;
   return a === 10 || a === 127 || a === 0 || (a === 169 && b === 254) ||
     (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127);
+}
+
+/** sharp is loaded only for oversized photos so a missing native build can't break the whole page. */
+async function fitPhoto(file: File): Promise<File> {
+  if (file.size <= PRODUCT_IMAGE_MAX_BYTES) return file;
+  try {
+    const { shrinkPhoto } = await import("@/lib/mobile/shrink-photo");
+    return await shrinkPhoto(file);
+  } catch (error) {
+    console.error("Import photo resize failed", error);
+    throw new Error("Image is over 900 KB and could not be resized; upload a smaller copy.");
+  }
 }
 
 async function assertPublicHttps(raw: string): Promise<URL> {
@@ -50,7 +62,7 @@ export async function copyImageToStand(raw: string, standId: string, folder: str
   if (bytes.byteLength > MAX_SOURCE_BYTES) throw new Error("Image is larger than 15 MB.");
 
   const baseName = url.pathname.split("/").pop()?.replace(/[^\w.\-]+/g, "_").slice(0, 60) || "image";
-  const shrunk = await shrinkPhoto(new File([bytes], baseName, { type }));
+  const shrunk = await fitPhoto(new File([bytes], baseName, { type }));
   const blob = await put(`stands/${standId}/${folder}/${Date.now()}-${shrunk.name}`, shrunk, {
     access: "public",
     token,
