@@ -12,7 +12,7 @@ type Props = {
 export default function NextDropThumb({ src, alt, className, sizes }: Props) {
   return (
     <div className={`relative shrink-0 overflow-hidden rounded-[var(--studio-card-radius)] bg-[var(--wash)] ${className}`}>
-      <Image src={src} alt={alt} fill className="object-cover" sizes={sizes} />
+      <Image src={src} alt={alt} fill className="sf-photo" sizes={sizes} />
     </div>
   );
 }

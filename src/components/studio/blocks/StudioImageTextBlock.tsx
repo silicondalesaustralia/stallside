@@ -46,7 +46,7 @@ export default function StudioImageTextBlock({
             <ImagePairStack primaryUrl={imageUrl} secondaryUrl={secondImageUrl} />
           ) : imageUrl ? (
             <div className="studio-section-image relative aspect-[4/3] overflow-hidden rounded-[var(--studio-card-radius)]">
-              <Image src={imageUrl} alt="" fill className="object-cover" sizes="(max-width:768px) 100vw, 480px" />
+              <Image src={imageUrl} alt="" fill className="sf-photo" sizes="(max-width:768px) 100vw, 480px" />
             </div>
           ) : (
             <div className="studio-section-image flex aspect-[4/3] items-center justify-center rounded-[var(--studio-card-radius)] border border-dashed border-[var(--line)] bg-[var(--wash)] text-sm text-[var(--muted)]">

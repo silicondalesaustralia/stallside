@@ -808,6 +808,21 @@ header.studio-nav[data-header-colours] .studio-btn--secondary {
 [data-site-product-ratio="portrait"] .studio-product-card__media { aspect-ratio: 4 / 5; }
 [data-site-product-ratio="landscape"] .studio-product-card__media { aspect-ratio: 4 / 3; }
 
+/* Photo fit, focus and frame shape: site style sets the defaults, section style overrides. */
+.sf-photo {
+  object-fit: var(--photo-fit, cover);
+  object-position: var(--photo-focus, 50% 50%);
+}
+
+img.sf-photo-frame {
+  aspect-ratio: var(--photo-ratio, var(--photo-default-ratio, 16 / 10));
+  height: auto;
+}
+
+.sf-photo-box {
+  aspect-ratio: var(--photo-box-ratio, var(--photo-default-ratio, 16 / 10));
+}
+
 [data-site-card-hover] .studio-product-card,
 [data-site-card-hover] .studio-product-card__media img {
   transition: transform 0.25s ease, box-shadow 0.25s ease;

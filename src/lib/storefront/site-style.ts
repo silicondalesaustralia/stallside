@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { BODY_SIZES, HEADING_SIZES, colourValue } from "@/lib/website/sections/section-style";
+import { PHOTO_FITS, PHOTO_FOCI, PHOTO_SHAPES } from "@/lib/website/sections/photo-style";
 import { siteFont } from "./site-fonts";
 
 export const CONTENT_WIDTHS = ["narrow", "standard", "wide", "full"] as const;
@@ -58,6 +59,10 @@ export const siteStyleSchema = z.object({
   dropdownHoverBackground: colourValue.optional(),
   dropdownHoverText: colourValue.optional(),
   productRatio: z.enum(PRODUCT_RATIOS).optional(),
+  /** How photos sit in their frames; sections can override. */
+  photoFit: z.enum(PHOTO_FITS).optional(),
+  photoFocus: z.enum(PHOTO_FOCI).optional(),
+  photoShape: z.enum(PHOTO_SHAPES).optional(),
   cardHover: z.enum(CARD_HOVERS).optional(),
   animation: z.enum(SECTION_ANIMATIONS).optional(),
   dividers: z.enum(SECTION_DIVIDERS).optional(),

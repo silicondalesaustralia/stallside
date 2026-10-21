@@ -44,7 +44,7 @@ export default function HeroFeaturedProduct({ view }: { view: HeroView }) {
           className="studio-section-image relative block aspect-square overflow-hidden rounded-[var(--studio-card-radius)] bg-[var(--panel)]"
         >
           {product.imageUrl ? (
-            <Image src={product.imageUrl} alt={product.name} fill priority className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" />
+            <Image src={product.imageUrl} alt={product.name} fill priority className="sf-photo" sizes="(max-width:1024px) 100vw, 50vw" />
           ) : (
             <span className="flex h-full items-center justify-center p-8 text-center text-lg font-semibold text-[var(--muted)]">
               {product.name}

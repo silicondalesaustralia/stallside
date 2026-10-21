@@ -32,10 +32,10 @@ export default function MembershipCategoryCard({
         <img
           src={imageUrl}
           alt=""
-          className="aspect-[16/9] w-full object-cover sm:aspect-[16/10]"
+          className="sf-photo sf-photo-frame w-full bg-[var(--mc-divider)]"
         />
       ) : (
-        <div className="aspect-[16/9] w-full bg-[var(--mc-divider)] sm:aspect-[16/10]" />
+        <div className="sf-photo-box w-full bg-[var(--mc-divider)]" />
       )}
       <div className="flex flex-1 flex-col p-5">
         {quantityLabel ? (

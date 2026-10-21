@@ -7,6 +7,8 @@ import {
   CARD_SECTIONS,
   HEADING_SIZES,
   HEADING_TAGS,
+  PHOTO_SECTIONS,
+  PHOTO_SHAPE_SECTIONS,
   defaultHeadingTag,
   parseSectionStyle,
   type HeadingTag,
@@ -15,6 +17,7 @@ import {
 import { hasLowContrast, type ThemePalette } from "@/lib/website/sections/colour";
 import { countPageH1, h1Warning } from "@/lib/website/sections/heading-outline";
 import ColourField from "./ColourField";
+import PhotoStyleFields from "./PhotoStyleFields";
 const SIZE_LABELS: Record<string, string> = { sm: "S", md: "M", lg: "L", xl: "XL" };
 const PILL = "rounded-lg border px-2.5 py-1.5 text-xs font-semibold";
 const PILL_ON = "border-[var(--field)] bg-[var(--wash)] text-[var(--field)]";
@@ -86,6 +89,15 @@ export default function SectionStyleSettings({
             <p className="text-xs text-red-700">Card text may be hard to read. Try Auto card text colour.</p>
           ) : null}
         </>
+      ) : null}
+      {PHOTO_SECTIONS.has(craftName) ? (
+        <PhotoStyleFields
+          idPrefix="section"
+          value={style}
+          onChange={patch}
+          showShape={PHOTO_SHAPE_SECTIONS.has(craftName)}
+          defaultLabel="Site default"
+        />
       ) : null}
       <div className="space-y-1.5">
         <p className="block text-xs font-semibold text-[var(--field)]">Heading size</p>

@@ -24,7 +24,7 @@ export default function HeroOverlay({ view, farm }: { view: HeroView; farm: bool
       style={view.style}
     >
       <div className={below ? "relative aspect-[4/3] sf-sm:absolute sf-sm:inset-0 sf-sm:aspect-auto" : "absolute inset-0"}>
-        <Image src={view.heroImage ?? ""} alt="" fill priority className="object-cover" sizes="100vw" />
+        <Image src={view.heroImage ?? ""} alt="" fill priority className="sf-photo" sizes="100vw" />
         <div className={`studio-hero__overlay absolute inset-0 ${heroOverlayClass(view.look, farm)} ${below ? "hidden sf-sm:block" : ""}`} />
       </div>
       <div

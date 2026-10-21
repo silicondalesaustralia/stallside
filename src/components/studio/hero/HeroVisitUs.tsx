@@ -52,7 +52,7 @@ export default function HeroVisitUs({ view }: { view: HeroView }) {
         </div>
         {view.heroImage ? (
           <div className="studio-section-image relative min-h-[22rem] overflow-hidden rounded-[var(--studio-card-radius)]">
-            <Image src={view.heroImage} alt="" fill priority className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" />
+            <Image src={view.heroImage} alt="" fill priority className="sf-photo" sizes="(max-width:1024px) 100vw, 50vw" />
             <div className="absolute inset-x-4 bottom-4 sf-sm:left-auto sf-sm:w-72">{card}</div>
           </div>
         ) : (

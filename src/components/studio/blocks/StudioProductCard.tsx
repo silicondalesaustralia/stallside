@@ -47,7 +47,7 @@ export default function StudioProductCard({
             src={product.imageUrl}
             alt={product.name}
             fill
-            className="object-cover transition duration-300 group-hover:scale-[1.02]"
+            className="sf-photo transition duration-300 group-hover:scale-[1.02]"
             sizes="(max-width:768px) 50vw, 25vw"
           />
         ) : (

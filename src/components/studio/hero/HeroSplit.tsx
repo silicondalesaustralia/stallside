@@ -32,7 +32,7 @@ export default function HeroSplit({ view }: { view: HeroView }) {
         ) : (
         <div className="studio-section-image studio-hero__split-image relative aspect-[4/3] overflow-hidden bg-[var(--wash)] sf-lg:aspect-auto sf-lg:min-h-[var(--studio-hero-split-min,28rem)]">
           {view.heroImage ? (
-            <Image src={view.heroImage} alt="" fill className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" priority />
+            <Image src={view.heroImage} alt="" fill className="sf-photo" sizes="(max-width:1024px) 100vw, 50vw" priority />
           ) : (
             <div className="flex h-full items-center justify-center p-8 text-center text-sm text-[var(--muted)]">
               Add a hero image in branding settings

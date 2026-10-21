@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { isColourValue } from "./colour-value";
 import { elementStyleSchema, parseElementStyles } from "./element-style-schema";
+import { PHOTO_FITS, PHOTO_FOCI, PHOTO_SHAPES, parsePhotoStyle } from "./photo-style";
 
 export { COLOUR_TOKENS, isColourValue, type ColourToken } from "./colour-value";
 
@@ -52,6 +53,28 @@ export const CARD_SECTIONS = new Set([
 ]);
 /** Sections with a main image whose corners can be rounded. */
 export const IMAGE_RADIUS_SECTIONS = new Set(["CraftHeroSection", "CraftImageSection", "CraftImageTextSection"]);
+/** Sections with photos whose fit and focus can be set. */
+export const PHOTO_SECTIONS = new Set([
+  "CraftHeroSection",
+  "CraftImageSection",
+  "CraftImageTextSection",
+  "CraftCategoriesSection",
+  "CraftProductGridSection",
+  "CraftCategoryDetailSection",
+  "CraftFarmStandSection",
+  "CraftNextDropSection",
+  "CraftPreOrderSection",
+  "CraftSubscriptionSection",
+  "CraftPreOrderListSection",
+  "CraftSubscriptionListSection",
+]);
+/** Photo sections whose frame shape can be changed too. */
+export const PHOTO_SHAPE_SECTIONS = new Set([
+  "CraftPreOrderSection",
+  "CraftSubscriptionSection",
+  "CraftPreOrderListSection",
+  "CraftSubscriptionListSection",
+]);
 /** Sections with a side-by-side (image | text) layout that can be swapped. */
 export const SPLIT_SECTIONS = new Set(["CraftHeroSection", "CraftImageTextSection"]);
 
@@ -77,6 +100,9 @@ export const sectionStyleSchema = z.object({
   buttonColour: colourValue.optional(),
   buttonTextColour: colourValue.optional(),
   buttonFont: z.enum(BUTTON_FONTS).optional(),
+  photoFit: z.enum(PHOTO_FITS).optional(),
+  photoFocus: z.enum(PHOTO_FOCI).optional(),
+  photoShape: z.enum(PHOTO_SHAPES).optional(),
 });
 
 export type SectionStyle = z.infer<typeof sectionStyleSchema>;
@@ -110,7 +136,7 @@ export function parseSectionStyle(raw: unknown): SectionStyle {
   if (isColourValue(obj.buttonColour)) out.buttonColour = obj.buttonColour;
   if (isColourValue(obj.buttonTextColour)) out.buttonTextColour = obj.buttonTextColour;
   if ((BUTTON_FONTS as readonly unknown[]).includes(obj.buttonFont)) out.buttonFont = obj.buttonFont as ButtonFont;
-  return out;
+  return { ...out, ...parsePhotoStyle(obj) };
 }
 
 /** Sections whose main heading is the page title (h1) unless the seller changes it. */

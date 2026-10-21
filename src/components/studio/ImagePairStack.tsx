@@ -5,7 +5,7 @@ const PLACEHOLDER =
 
 function Photo({ url, label, sizes, priority }: { url: string | null; label: string; sizes: string; priority?: boolean }) {
   return url ? (
-    <Image src={url} alt="" fill className="object-cover" sizes={sizes} priority={priority} />
+    <Image src={url} alt="" fill className="sf-photo" sizes={sizes} priority={priority} />
   ) : (
     <div className={PLACEHOLDER}>{label}</div>
   );

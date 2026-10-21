@@ -1,4 +1,5 @@
 import { colourCss, colourHex, type ThemePalette } from "@/lib/website/sections/colour";
+import { photoVars } from "@/lib/website/sections/photo-style";
 import { siteFont } from "./site-fonts";
 import type { ContentWidth, SectionSpacing, SiteStyle } from "./site-style";
 
@@ -76,7 +77,7 @@ export function siteLayoutVars(style: SiteStyle): Record<string, string> {
   if (style.headingWeight) vars["--studio-heading-weight"] = style.headingWeight;
   if (style.headingTracking) vars["--studio-heading-tracking"] = TRACKING[style.headingTracking];
   if (style.headingCase === "upper") vars["--site-heading-case"] = "uppercase";
-  return vars;
+  return { ...vars, ...photoVars(style) };
 }
 
 /** Data attributes for the site root; CSS in website-builder.css reads them. */

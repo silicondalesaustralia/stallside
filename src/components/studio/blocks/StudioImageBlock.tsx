@@ -53,7 +53,7 @@ export default function StudioImageBlock({
   } else {
     media = (
       <div className="studio-section-image relative aspect-[16/10] overflow-hidden rounded-[var(--studio-card-radius,var(--storefront-radius))]">
-        <Image src={imageUrl ?? ""} alt={alt} fill className="object-cover" sizes="(max-width:768px) 100vw, 960px" />
+        <Image src={imageUrl ?? ""} alt={alt} fill className="sf-photo" sizes="(max-width:768px) 100vw, 960px" />
       </div>
     );
   }

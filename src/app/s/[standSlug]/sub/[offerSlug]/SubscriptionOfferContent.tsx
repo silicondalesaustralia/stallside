@@ -32,7 +32,7 @@ export default function SubscriptionOfferContent({
         <img
           src={offer.imageUrl}
           alt=""
-          className="aspect-[16/9] w-full rounded-xl object-cover"
+          className="sf-photo sf-photo-frame w-full rounded-xl bg-[var(--wash)] [--photo-default-ratio:16/9]"
         />
       ) : null}
       {data.isMembership ? (

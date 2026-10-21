@@ -21,7 +21,7 @@ export default function HeroCollage({ view }: { view: HeroView }) {
           {collage.map((p) => (
             <li key={p.id} className="studio-section-image relative aspect-square overflow-hidden rounded-[var(--studio-card-radius)] bg-[var(--wash)]">
               {p.imageUrl ? (
-                <Image src={p.imageUrl} alt={p.name} fill className="object-cover" sizes="25vw" />
+                <Image src={p.imageUrl} alt={p.name} fill className="sf-photo" sizes="25vw" />
               ) : (
                 <span className="flex h-full items-end p-3 text-sm font-medium text-[var(--muted)]">{p.name}</span>
               )}

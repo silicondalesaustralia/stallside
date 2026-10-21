@@ -82,7 +82,7 @@ export default function StudioImageSlider({
             aria-roledescription="slide"
             aria-label={`${i + 1} of ${count}`}
           >
-            <Image src={img.url} alt={img.alt ?? ""} fill className="object-cover" sizes="(max-width:768px) 100vw, 960px" />
+            <Image src={img.url} alt={img.alt ?? ""} fill className="sf-photo" sizes="(max-width:768px) 100vw, 960px" />
           </div>
         ))}
       </div>

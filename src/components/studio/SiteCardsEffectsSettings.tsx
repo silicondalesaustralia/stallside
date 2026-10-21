@@ -5,6 +5,7 @@ import { BUTTON_SHAPES, CARD_HOVERS, PRODUCT_RATIOS, SITE_BUTTON_SIZES } from "@
 import SiteChoice from "./SiteChoice";
 import SiteStyleSelect from "./SiteStyleSelect";
 import CartBarSettings from "./CartBarSettings";
+import PhotoStyleFields from "./PhotoStyleFields";
 
 const SHAPES = { square: "Square", rounded: "Rounded", pill: "Pill" } as const;
 const SIZES = { sm: "Small", md: "Medium", lg: "Large" } as const;
@@ -26,6 +27,7 @@ export default function SiteCardsEffectsSettings() {
         <SiteStyleSelect id="site-product-ratio" label="Product image shape" options={PRODUCT_RATIOS} labels={RATIOS} value={siteStyle.productRatio} onChange={(v) => set("productRatio", v)} defaultLabel="Template default" />
         <SiteStyleSelect id="site-card-hover" label="Card hover" options={CARD_HOVERS} labels={HOVERS} value={siteStyle.cardHover} onChange={(v) => set("cardHover", v)} defaultLabel="Template default" />
       </div>
+      <PhotoStyleFields idPrefix="site" value={siteStyle} onChange={set} showShape defaultLabel="Template default" />
       <SiteChoice
         label="Section animation"
         options={["none", "fade"] as const}

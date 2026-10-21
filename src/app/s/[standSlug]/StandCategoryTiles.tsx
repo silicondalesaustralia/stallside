@@ -25,7 +25,7 @@ export default function StandCategoryTiles({
                   alt=""
                   fill
                   sizes="(max-width: 512px) 50vw, 256px"
-                  className="object-cover transition group-hover:scale-[1.03]"
+                  className="sf-photo transition group-hover:scale-[1.03]"
                 />
               ) : null}
             </div>

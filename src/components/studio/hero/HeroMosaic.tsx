@@ -34,7 +34,7 @@ export default function HeroMosaic({ view }: { view: HeroView }) {
                 className="group studio-section-image relative block aspect-[4/5] overflow-hidden rounded-[var(--studio-card-radius)] bg-[var(--wash)]"
               >
                 {c.image ? (
-                  <Image src={c.image} alt="" fill className="object-cover transition duration-300 group-hover:scale-[1.03]" sizes="(max-width:1024px) 50vw, 25vw" />
+                  <Image src={c.image} alt="" fill className="sf-photo transition duration-300 group-hover:scale-[1.03]" sizes="(max-width:1024px) 50vw, 25vw" />
                 ) : null}
                 <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 <span className="absolute inset-x-0 bottom-0 p-4 text-lg font-semibold text-white sf-sm:text-xl">{c.title}</span>

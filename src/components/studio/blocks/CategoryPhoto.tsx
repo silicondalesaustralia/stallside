@@ -15,7 +15,7 @@ export default function CategoryPhoto({
   return (
     <div className={`relative overflow-hidden bg-[var(--wash)] ${className}`}>
       {imageUrl ? (
-        <Image src={imageUrl} alt="" fill className="object-cover transition-transform duration-300 group-hover:scale-[1.03]" sizes={sizes} />
+        <Image src={imageUrl} alt="" fill className="sf-photo transition-transform duration-300 group-hover:scale-[1.03]" sizes={sizes} />
       ) : (
         <span aria-hidden className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-[var(--muted)] opacity-50">
           {title.trim().charAt(0).toUpperCase()}

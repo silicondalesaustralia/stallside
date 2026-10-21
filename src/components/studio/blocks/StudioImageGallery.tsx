@@ -28,7 +28,7 @@ export default function StudioImageGallery({
             src={img.url}
             alt={img.alt ?? ""}
             fill
-            className="object-cover"
+            className="sf-photo"
             sizes={`(max-width:768px) 50vw, ${Math.round(100 / columns)}vw`}
           />
         </li>
