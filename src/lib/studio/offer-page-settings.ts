@@ -24,6 +24,16 @@ export const SUBSCRIPTION_TOGGLES: OfferPageToggle[] = [
   { key: "showTerms", label: "Terms and details" },
 ];
 
+/** Parts of the pre-order and subscription list pages the seller can hide. */
+export const LIST_TOGGLES: OfferPageToggle[] = [
+  { key: "showEyebrow", label: "Small label above the heading" },
+  { key: "showHeading", label: "Heading" },
+  { key: "showIntro", label: "Intro text" },
+  { key: "showImages", label: "Card photos" },
+  { key: "showDescriptions", label: "Card descriptions" },
+  { key: "showFooter", label: "Note under the cards (memberships)" },
+];
+
 /** Button wording that can't be clicked to edit on the page. */
 export const PREORDER_WORDING: OfferPageWording[] = [
   { key: "checkoutButton", label: "Checkout button", fallback: "Add & checkout" },

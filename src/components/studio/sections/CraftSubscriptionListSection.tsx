@@ -5,7 +5,7 @@ import CraftSectionChrome from "@/components/craft/CraftSectionChrome";
 import { useCraftMetadata } from "@/components/craft/CraftEditorContext";
 import StudioSubscriptionListBlock from "@/components/studio/blocks/StudioSubscriptionListBlock";
 import type { StudioMetadata } from "@/lib/studio/types";
-import { offerPageView } from "@/lib/studio/offer-page-settings";
+import { LIST_TOGGLES, offerPageView } from "@/lib/studio/offer-page-settings";
 
 function isStudioMetadata(meta: unknown): meta is StudioMetadata {
   return Boolean(meta && typeof meta === "object" && "templateId" in meta);
@@ -25,7 +25,7 @@ export default function CraftSubscriptionListSection(props: Record<string, unkno
     >
       <CraftSectionChrome>
         {isStudioMetadata(metadata) ? (
-          <StudioSubscriptionListBlock metadata={metadata} view={offerPageView(props, [])} />
+          <StudioSubscriptionListBlock metadata={metadata} view={offerPageView(props, LIST_TOGGLES)} />
         ) : (
           <p className="p-6 text-sm text-[var(--muted)]">Subscriptions & memberships category</p>
         )}

@@ -30,6 +30,8 @@ export const BUTTON_SECTIONS = new Set([
   "CraftOrderConfirmationSection",
   "CraftPreOrderSection",
   "CraftSubscriptionSection",
+  "CraftPreOrderListSection",
+  "CraftSubscriptionListSection",
 ]);
 /** Sections with inner cards (`data-section-card` or theme panels) that take their own colours. */
 export const CARD_SECTIONS = new Set([

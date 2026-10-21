@@ -1,4 +1,6 @@
 import Link from "next/link";
+import SectionCopy from "@/components/studio/SectionCopy";
+import SectionElement from "@/components/studio/SectionElement";
 
 export default function MembershipCategoryCard({
   href,
@@ -9,6 +11,8 @@ export default function MembershipCategoryCard({
   priceAmount,
   priceUnit,
   termLine,
+  showImage = true,
+  showDescription = true,
 }: {
   href: string;
   title: string;
@@ -18,10 +22,12 @@ export default function MembershipCategoryCard({
   priceAmount: string | null;
   priceUnit: string | null;
   termLine: string | null;
+  showImage?: boolean;
+  showDescription?: boolean;
 }) {
   return (
     <article data-section-card className="membership-card flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--mc-border)] bg-[var(--mc-card)]">
-      {imageUrl ? (
+      {!showImage ? null : imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={imageUrl}
@@ -33,42 +39,46 @@ export default function MembershipCategoryCard({
       )}
       <div className="flex flex-1 flex-col p-5">
         {quantityLabel ? (
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--mc-label)]">
+          <SectionElement el="cardLabel" className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--mc-label)]">
             {quantityLabel}
-          </p>
+          </SectionElement>
         ) : null}
         <h2
           className={`font-[family-name:var(--font-display)] text-[25px] font-medium leading-[1.2] tracking-tight ${
             quantityLabel ? "mt-2" : ""
           }`}
         >
-          {title}
+          <SectionElement el="cardTitle" as="span">
+            {title}
+          </SectionElement>
         </h2>
-        <p className="mt-2 text-[15px] leading-relaxed text-[var(--mc-muted)]">
-          {shortDescription}
-        </p>
+        {showDescription ? (
+          <SectionElement el="cardText" className="mt-2 text-[15px] leading-relaxed text-[var(--mc-muted)]">
+            {shortDescription}
+          </SectionElement>
+        ) : null}
         <div className="mt-auto border-t border-[var(--mc-divider)] pt-4">
           {priceAmount ? (
             <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-              <span className="text-[28px] font-semibold leading-none tracking-tight">
+              <SectionElement el="price" as="span" className="text-[28px] font-semibold leading-none tracking-tight">
                 {priceAmount}
-              </span>
+              </SectionElement>
               {priceUnit ? (
                 <span className="text-sm text-[var(--mc-muted)]">{priceUnit}</span>
               ) : null}
             </p>
           ) : null}
           {termLine ? (
-            <p className="mt-2 text-[13px] leading-snug text-[var(--mc-muted)]">
+            <SectionElement el="smallPrint" className="mt-2 text-[13px] leading-snug text-[var(--mc-muted)]">
               {termLine}
-            </p>
+            </SectionElement>
           ) : null}
           <Link
             href={href}
-            className="mt-4 flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--mc-action)] px-4 py-3 text-sm font-semibold text-[var(--mc-action-text)] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mc-action)]"
+            className="offer-btn mt-4 flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--mc-action)] px-4 py-3 text-sm font-semibold text-[var(--mc-action-text)] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mc-action)]"
             aria-label={`View ${title} membership`}
           >
-            View membership →
+            <SectionCopy k="cardButton" fallback="View membership →" />
           </Link>
         </div>
       </div>

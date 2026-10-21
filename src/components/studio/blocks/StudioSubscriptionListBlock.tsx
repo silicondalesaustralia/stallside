@@ -7,11 +7,11 @@ export default function StudioSubscriptionListBlock({ metadata, view }: { metada
   const data = metadata.commerceContext?.subscriptionList;
   if (!data) return null;
   const style = offerPanelStyle(view);
-  if (!style) return <SubscriptionListBody data={data} />;
+  if (!style) return <SubscriptionListBody data={data} view={view} />;
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-4">
       <div style={style}>
-        <SubscriptionListBody data={data} />
+        <SubscriptionListBody data={data} view={view} />
       </div>
     </div>
   );

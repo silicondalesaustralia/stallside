@@ -10,6 +10,7 @@ import MembershipCategoryCard from "./MembershipCategoryCard";
 import MembershipCategoryFooter from "./MembershipCategoryFooter";
 import MembershipCategoryIntro from "./MembershipCategoryIntro";
 import MembershipCategoryShell from "./MembershipCategoryShell";
+import { isShown, type OfferPageView } from "@/lib/studio/offer-page-settings";
 
 type Offer = {
   slug: string;
@@ -29,12 +30,15 @@ export default function MembershipCategoryView({
   accentColor,
   offers,
   offerHrefBase,
+  view,
 }: {
   standSlug: string;
   standName: string;
   accentColor?: string | null;
   offers: Offer[];
   offerHrefBase?: string;
+  /** Website layout choices; the stand page shows everything. */
+  view?: OfferPageView;
 }) {
   const intro = membershipCategoryIntro(standSlug, standName);
   const ordered = sortMembershipCategoryOffers(standSlug, offers);
@@ -45,6 +49,7 @@ export default function MembershipCategoryView({
         eyebrow={intro.eyebrow}
         heading={intro.heading}
         intro={intro.intro}
+        view={view}
       />
       <ul
         className={
@@ -82,12 +87,14 @@ export default function MembershipCategoryView({
                 priceAmount={price?.amount ?? null}
                 priceUnit={price?.unit ?? null}
                 termLine={termLine}
+                showImage={isShown(view, "showImages")}
+                showDescription={isShown(view, "showDescriptions")}
               />
             </li>
           );
         })}
       </ul>
-      <MembershipCategoryFooter text={intro.footer} />
+      {isShown(view, "showFooter") ? <MembershipCategoryFooter text={intro.footer} /> : null}
     </MembershipCategoryShell>
   );
 }

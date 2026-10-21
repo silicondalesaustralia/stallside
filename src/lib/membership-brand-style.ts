@@ -38,15 +38,15 @@ export function membershipCategoryBrandStyle(
 ): CSSProperties {
   const accent = resolveAccent(accentColor);
   return {
-    "--mc-bg": "#F7F5EF",
+    "--mc-bg": "var(--offer-panel-bg, var(--section-bg, #F7F5EF))",
     "--mc-card": "#FFFDF8",
-    "--mc-ink": "#292F26",
-    "--mc-muted": "#656858",
+    "--mc-ink": "var(--section-ink, #292F26)",
+    "--mc-muted": "var(--section-muted, #656858)",
     "--mc-border": "#DFDFD3",
     "--mc-divider": "#E3E3D9",
     "--mc-label": accent,
-    "--mc-action": accent,
-    "--mc-action-text": onAccentText(accent),
+    "--mc-action": `var(--section-btn-bg, ${accent})`,
+    "--mc-action-text": `var(--section-btn-ink, ${onAccentText(accent)})`,
   } as CSSProperties;
 }
 
@@ -71,8 +71,8 @@ export function preorderCategoryBrandStyle(
   const accent = resolveAccent(accentColor);
   return {
     "--pc-label": accent,
-    "--pc-action": accent,
-    "--pc-action-text": onAccentText(accent),
+    "--pc-action": `var(--section-btn-bg, ${accent})`,
+    "--pc-action-text": `var(--section-btn-ink, ${onAccentText(accent)})`,
     "--pc-tint": mixWhite(accent, 0.88),
   } as CSSProperties;
 }

@@ -1,10 +1,11 @@
 import type { PreOrderListData } from "@/lib/storefront/views/offer-list-types";
+import type { OfferPageView } from "@/lib/studio/offer-page-settings";
 import ChannelInterestForm from "../ChannelInterestForm";
 import SectionCopy from "@/components/studio/SectionCopy";
 import PreOrderCategoryView from "./PreOrderCategoryView";
 
 /** The pre-order cards, or a note and interest form when nothing is open. */
-export default function PreOrderListBody({ data }: { data: PreOrderListData }) {
+export default function PreOrderListBody({ data, view }: { data: PreOrderListData; view?: OfferPageView }) {
   if (data.pages.length === 0) {
     return (
       <div className="mx-auto mt-4 w-full max-w-lg px-4 pb-10">
@@ -30,6 +31,7 @@ export default function PreOrderListBody({ data }: { data: PreOrderListData }) {
       accentColor={data.accentColor}
       pages={data.pages.map((p) => ({ ...p, collectionAt: new Date(p.collectionAt), orderByAt: new Date(p.orderByAt) }))}
       pageHrefBase={data.pageHrefBase ?? undefined}
+      view={view}
     />
   );
 }

@@ -9,6 +9,7 @@ import {
 import PreOrderCategoryCard from "./PreOrderCategoryCard";
 import PreOrderCategoryIntro from "./PreOrderCategoryIntro";
 import PreOrderCategoryShell from "./PreOrderCategoryShell";
+import { isShown, type OfferPageView } from "@/lib/studio/offer-page-settings";
 
 type Page = {
   slug: string;
@@ -28,6 +29,7 @@ export default function PreOrderCategoryView({
   accentColor,
   pages,
   pageHrefBase,
+  view,
 }: {
   standSlug: string;
   standName: string;
@@ -36,6 +38,8 @@ export default function PreOrderCategoryView({
   pages: Page[];
   /** Base for card links, e.g. the website's `/pre-orders`; defaults to the stand page. */
   pageHrefBase?: string;
+  /** Website layout choices; the stand page shows everything. */
+  view?: OfferPageView;
 }) {
   const intro = preorderCategoryIntro(standName);
 
@@ -45,6 +49,7 @@ export default function PreOrderCategoryView({
         eyebrow={intro.eyebrow}
         heading={intro.heading}
         intro={intro.intro}
+        view={view}
       />
       <ul
         className={
@@ -78,6 +83,8 @@ export default function PreOrderCategoryView({
                   timezone,
                 )}
                 orderByLabel={formatOrderByLabel(page.orderByAt, timezone)}
+                showImage={isShown(view, "showImages")}
+                showDescription={isShown(view, "showDescriptions")}
               />
             </li>
           );

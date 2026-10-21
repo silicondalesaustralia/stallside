@@ -1,10 +1,11 @@
 import type { SubscriptionListData } from "@/lib/storefront/views/offer-list-types";
+import type { OfferPageView } from "@/lib/studio/offer-page-settings";
 import ChannelInterestForm from "../ChannelInterestForm";
 import SectionCopy from "@/components/studio/SectionCopy";
 import MembershipCategoryView from "./MembershipCategoryView";
 
 /** The membership and subscription cards, or a note and interest form when none are live. */
-export default function SubscriptionListBody({ data }: { data: SubscriptionListData }) {
+export default function SubscriptionListBody({ data, view }: { data: SubscriptionListData; view?: OfferPageView }) {
   if (data.offers.length === 0) {
     return (
       <div className="mx-auto mt-4 w-full max-w-lg px-4 pb-10">
@@ -29,6 +30,7 @@ export default function SubscriptionListBody({ data }: { data: SubscriptionListD
       accentColor={data.accentColor}
       offers={data.offers}
       offerHrefBase={data.offerHrefBase ?? undefined}
+      view={view}
     />
   );
 }

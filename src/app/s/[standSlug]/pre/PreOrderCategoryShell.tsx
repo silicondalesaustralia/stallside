@@ -11,7 +11,7 @@ export default function PreOrderCategoryShell({
   return (
     <section
       style={preorderCategoryBrandStyle(accentColor)}
-      className="w-full text-[var(--field)]"
+      className="w-full text-[var(--section-ink,var(--field))]"
     >
       <div className="mx-auto max-w-[960px] px-4 py-6 sm:px-6 sm:py-[30px]">
         {children}

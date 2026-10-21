@@ -1,4 +1,6 @@
 import Link from "next/link";
+import SectionCopy from "@/components/studio/SectionCopy";
+import SectionElement from "@/components/studio/SectionElement";
 
 function CalendarIcon() {
   return (
@@ -36,6 +38,8 @@ export default function PreOrderCategoryCard({
   handoverHeading,
   dateLabel,
   orderByLabel,
+  showImage = true,
+  showDescription = true,
 }: {
   href: string;
   title: string;
@@ -45,10 +49,12 @@ export default function PreOrderCategoryCard({
   handoverHeading: string;
   dateLabel: string;
   orderByLabel: string | null;
+  showImage?: boolean;
+  showDescription?: boolean;
 }) {
   return (
     <article data-section-card className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--panel)]">
-      {imageUrl ? (
+      {!showImage ? null : imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={imageUrl}
@@ -60,41 +66,47 @@ export default function PreOrderCategoryCard({
       )}
       <div className="flex flex-1 flex-col p-5">
         {statusLabel ? (
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--pc-label)]">
-            {statusLabel}
-          </p>
+          <SectionElement el="cardLabel" className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--pc-label)]">
+            <SectionCopy k="cardStatus" fallback={statusLabel} />
+          </SectionElement>
         ) : null}
         <h2
           className={`font-[family-name:var(--font-display)] text-[23px] font-medium leading-[1.25] tracking-tight sm:text-[25px] ${
             statusLabel ? "mt-2" : ""
           }`}
         >
-          {title}
+          <SectionElement el="cardTitle" as="span">
+            {title}
+          </SectionElement>
         </h2>
-        <p className="mt-2 text-[15px] leading-relaxed text-[var(--muted)]">
-          {shortDescription}
-        </p>
+        {showDescription ? (
+          <SectionElement el="cardText" className="mt-2 text-[15px] leading-relaxed text-[var(--muted)]">
+            {shortDescription}
+          </SectionElement>
+        ) : null}
         <div className="mt-auto border-t border-[var(--line)] pt-4">
           <div className="flex gap-2.5">
             <CalendarIcon />
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--muted)]">
+              <SectionElement el="factLabel" className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--muted)]">
                 {handoverHeading}
-              </p>
-              <p className="mt-0.5 text-sm font-medium leading-snug">{dateLabel}</p>
+              </SectionElement>
+              <SectionElement el="factValue" className="mt-0.5 text-sm font-medium leading-snug">
+                {dateLabel}
+              </SectionElement>
               {orderByLabel ? (
-                <p className="mt-1 text-[13px] leading-snug text-[var(--muted)]">
-                  Order by {orderByLabel}
-                </p>
+                <SectionElement el="smallPrint" className="mt-1 text-[13px] leading-snug text-[var(--muted)]">
+                  <SectionCopy k="orderBy" fallback="Order by" /> {orderByLabel}
+                </SectionElement>
               ) : null}
             </div>
           </div>
           <Link
             href={href}
-            className="mt-4 flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--pc-action)] px-4 py-3 text-sm font-semibold text-[var(--pc-action-text)] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pc-action)]"
+            className="offer-btn mt-4 flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--pc-action)] px-4 py-3 text-sm font-semibold text-[var(--pc-action-text)] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pc-action)]"
             aria-label={`View ${title} pre-order`}
           >
-            View pre-order →
+            <SectionCopy k="cardButton" fallback="View pre-order →" />
           </Link>
         </div>
       </div>

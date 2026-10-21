@@ -63,6 +63,7 @@ import type { CraftOrderConfirmationProps } from "./sections/CraftOrderConfirmat
 import type { CraftContactFormProps } from "@/components/studio/sections/CraftContactFormSection";
 import OfferPageSettings from "./OfferPageSettings";
 import {
+  LIST_TOGGLES,
   LIST_WORDING,
   PREORDER_TOGGLES,
   PREORDER_WORDING,
@@ -242,7 +243,7 @@ export default function StudioSettingsPanel() {
           <OfferPageSettings
             props={selected.props}
             setProp={setProp}
-            toggles={[]}
+            toggles={LIST_TOGGLES}
             wording={LIST_WORDING}
             palette={paletteOf(metadata.resolvedBranding)}
           />

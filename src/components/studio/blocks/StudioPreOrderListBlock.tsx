@@ -7,11 +7,11 @@ export default function StudioPreOrderListBlock({ metadata, view }: { metadata: 
   const data = metadata.commerceContext?.preOrderList;
   if (!data) return null;
   const style = offerPanelStyle(view);
-  if (!style) return <PreOrderListBody data={data} />;
+  if (!style) return <PreOrderListBody data={data} view={view} />;
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-4">
       <div style={style}>
-        <PreOrderListBody data={data} />
+        <PreOrderListBody data={data} view={view} />
       </div>
     </div>
   );

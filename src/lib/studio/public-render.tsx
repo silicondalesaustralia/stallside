@@ -21,7 +21,7 @@ import StudioImageTextBlock from "@/components/studio/blocks/StudioImageTextBloc
 import StudioPaymentsBlock from "@/components/studio/blocks/StudioPaymentsBlock";
 import StudioPreOrderBlock from "@/components/studio/blocks/StudioPreOrderBlock";
 import StudioSubscriptionBlock from "@/components/studio/blocks/StudioSubscriptionBlock";
-import { offerPageView, PREORDER_TOGGLES, SUBSCRIPTION_TOGGLES } from "@/lib/studio/offer-page-settings";
+import { LIST_TOGGLES, offerPageView, PREORDER_TOGGLES, SUBSCRIPTION_TOGGLES } from "@/lib/studio/offer-page-settings";
 import StudioPreOrderListBlock from "@/components/studio/blocks/StudioPreOrderListBlock";
 import StudioSubscriptionListBlock from "@/components/studio/blocks/StudioSubscriptionListBlock";
 import { parseGalleryImages, parseImageAspect, parseImageDisplay } from "@/lib/studio/gallery-images";
@@ -185,9 +185,9 @@ function StudioSectionRender({
     case "CraftPreOrderSection":
       return <StudioPreOrderBlock metadata={metadata} view={offerPageView(p, PREORDER_TOGGLES)} />;
     case "CraftPreOrderListSection":
-      return <StudioPreOrderListBlock metadata={metadata} view={offerPageView(p, [])} />;
+      return <StudioPreOrderListBlock metadata={metadata} view={offerPageView(p, LIST_TOGGLES)} />;
     case "CraftSubscriptionListSection":
-      return <StudioSubscriptionListBlock metadata={metadata} view={offerPageView(p, [])} />;
+      return <StudioSubscriptionListBlock metadata={metadata} view={offerPageView(p, LIST_TOGGLES)} />;
     case "CraftSubscriptionSection":
       return <StudioSubscriptionBlock metadata={metadata} view={offerPageView(p, SUBSCRIPTION_TOGGLES)} />;
     case "CraftOrderConfirmationSection":
