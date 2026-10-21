@@ -1,11 +1,18 @@
+import { redirect } from "next/navigation";
 import { CURRENCIES } from "@/lib/constants";
 import { DEFAULT_TIMEZONE, STAND_TIMEZONES } from "@/lib/stand-timezone";
+import { requireOwner } from "@/lib/session";
+import { businessLimitReached } from "@/lib/business-limit";
 import { createStand } from "../actions";
 import FormField from "@/components/FormField";
 import CreateStandSubmitButton from "./CreateStandSubmitButton";
 import OnboardingFlow from "./OnboardingFlow";
 
-export default function NewStandPage() {
+export default async function NewStandPage() {
+  const { owner, user } = await requireOwner();
+  const existing = await businessLimitReached(owner.id, user.email);
+  if (existing) redirect(`/dashboard/businesses/${existing.id}`);
+
   return (
     <main className="flex flex-col gap-6">
       <h1 className="text-3xl font-semibold tracking-tight">New Business</h1>

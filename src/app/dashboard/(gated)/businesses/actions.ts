@@ -4,7 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { requireOwnerWrite } from "@/lib/session";
+import { isPlatformAdminEmail, requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { CURRENCIES } from "@/lib/constants";
 import {
@@ -49,7 +49,7 @@ export async function createStand(formData: FormData) {
     throw new Error("Invalid create request.");
   }
 
-  const { owner } = await requireOwnerWrite();
+  const { owner, user } = await requireOwnerWrite();
 
   const parsed = standSchema.safeParse({
     name: formData.get("name"),
@@ -71,17 +71,21 @@ export async function createStand(formData: FormData) {
     return Boolean(found);
   });
 
-  const stand = await createStandOnce({
-    ownerId: owner.id,
-    name: parsed.data.name,
-    slug,
-    description: parsed.data.description,
-    locationLabel: parsed.data.locationLabel,
-    currency: parsed.data.currency,
-    timezone: parsed.data.timezone,
-    showExactStock: parsed.data.showExactStock ?? false,
-    isActive: true,
-  });
+  const { stand, limited } = await createStandOnce(
+    {
+      ownerId: owner.id,
+      name: parsed.data.name,
+      slug,
+      description: parsed.data.description,
+      locationLabel: parsed.data.locationLabel,
+      currency: parsed.data.currency,
+      timezone: parsed.data.timezone,
+      showExactStock: parsed.data.showExactStock ?? false,
+      isActive: true,
+    },
+    { allowMultiple: isPlatformAdminEmail(user.email) },
+  );
+  if (limited) redirect(`/dashboard/businesses/${stand.id}`);
 
   await writeSelectedBusinessCookie(stand.id);
   revalidatePath("/dashboard", "layout");

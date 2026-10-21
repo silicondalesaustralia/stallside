@@ -2,9 +2,10 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
+import { mayAddBusiness } from "@/lib/business-limit";
 
 export default async function StandsPage() {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
   const stands = await prisma.stand.findMany({
     where: { ownerId: owner.id },
     orderBy: { createdAt: "desc" },
@@ -20,9 +21,11 @@ export default async function StandsPage() {
             Open a business anytime to edit details or print its QR code.
           </p>
         </div>
-        <DashPrimaryCta href="/dashboard/businesses/new">
-          + New business
-        </DashPrimaryCta>
+        {mayAddBusiness(user.email, stands.length) ? (
+          <DashPrimaryCta href="/dashboard/businesses/new">
+            + New business
+          </DashPrimaryCta>
+        ) : null}
       </div>
 
       {stands.length === 0 ? (
