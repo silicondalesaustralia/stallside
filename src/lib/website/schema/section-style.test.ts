@@ -50,6 +50,17 @@ describe("section style values", () => {
     assert.equal(frame["data-swap-sides"], "");
   });
 
+  it("takes image corners in pixels; 0 is square and out-of-range values are dropped", () => {
+    assert.equal(parseSectionStyle({ imageRadius: 24 }).imageRadius, 24);
+    assert.equal(parseSectionStyle({ imageRadius: 500 }).imageRadius, undefined);
+    assert.equal(parseSectionStyle({ imageRadius: 2.5 }).imageRadius, undefined);
+    const px = sectionStyleFrame({ imageRadius: 24, photoFit: "contain" }, palette);
+    assert.equal(px["data-image-radius"], "px");
+    assert.equal(px.style["--section-image-radius"], "24px");
+    assert.equal(px["data-photo-fit"], "contain");
+    assert.equal(sectionStyleFrame({ imageRadius: 0 }, palette)["data-image-radius"], "none");
+  });
+
   it("styles the button: sizes, font, colours with auto text", () => {
     const style = parseSectionStyle({
       buttonSize: "lg",

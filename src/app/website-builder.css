@@ -1026,6 +1026,28 @@ img.sf-photo-frame {
   border-radius: var(--section-image-radius);
 }
 
+/* "Show whole photo": shrink the photo to its own shape inside the frame so its corners can be rounded. */
+:is([data-site-photo-fit="contain"], [data-photo-fit="contain"]) .studio-section-image > img.sf-photo {
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  border-radius: var(--section-image-radius, var(--studio-card-radius, 0));
+}
+
+[data-photo-fit="cover"] .studio-section-image > img.sf-photo {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0;
+  border-radius: 0;
+}
+
+:is([data-site-photo-fit="contain"], [data-photo-fit="contain"]) .studio-section-image:has(> img.sf-photo) {
+  background: var(--photo-bg, transparent);
+}
+
 /* Section style: primary buttons. Doubled class beats template button rules. */
 .section-style.section-style--btn .studio-btn--primary {
   background: var(--section-btn-bg, var(--site-btn-bg, var(--leaf-dark)));

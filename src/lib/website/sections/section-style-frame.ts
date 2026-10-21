@@ -8,6 +8,7 @@ export type SectionStyleFrameAttrs = {
   "data-heading-size"?: string;
   "data-body-size"?: string;
   "data-image-radius"?: string;
+  "data-photo-fit"?: string;
   "data-swap-sides"?: string;
   "data-button-size"?: string;
   "data-button-text-size"?: string;
@@ -66,17 +67,25 @@ export function sectionStyleFrame(style: SectionStyle, palette: ThemePalette): S
     if (btnText) vars["--section-btn-ink"] = stableColour(btnText, palette);
     classes.push("section-style--btn");
   }
+  if (typeof style.imageRadius === "number") vars["--section-image-radius"] = `${style.imageRadius}px`;
   return {
     className: classes.join(" "),
     style: { ...vars, ...photoVars(style), ...photoBackgroundVars(style, palette) },
     ...(style.headingSize ? { "data-heading-size": style.headingSize } : {}),
     ...(style.bodySize ? { "data-body-size": style.bodySize } : {}),
-    ...(style.imageRadius ? { "data-image-radius": style.imageRadius } : {}),
+    ...(style.imageRadius !== undefined ? { "data-image-radius": radiusAttr(style.imageRadius) } : {}),
+    ...(style.photoFit ? { "data-photo-fit": style.photoFit } : {}),
     ...(style.swapSides ? { "data-swap-sides": "" } : {}),
     ...(style.buttonSize ? { "data-button-size": style.buttonSize } : {}),
     ...(style.buttonTextSize ? { "data-button-text-size": style.buttonTextSize } : {}),
     ...(style.buttonFont ? { "data-button-font": style.buttonFont } : {}),
   };
+}
+
+/** Pixel radii use the "px" attribute (the value is in --section-image-radius); 0 counts as square. */
+function radiusAttr(radius: NonNullable<SectionStyle["imageRadius"]>): string {
+  if (typeof radius === "number") return radius === 0 ? "none" : "px";
+  return radius;
 }
 
 /** Theme accent/secondary stay live CSS variables; fixed tokens become hex so section ink overrides can't change them. */

@@ -89,6 +89,7 @@ export function siteStyleAttrs(style: SiteStyle): Record<string, string> {
     ...(headingStyled ? { "data-site-heading-style": "" } : {}),
     ...(style.buttonShape ? { "data-site-btn-shape": style.buttonShape } : {}),
     ...(style.productRatio ? { "data-site-product-ratio": style.productRatio } : {}),
+    ...(style.photoFit ? { "data-site-photo-fit": style.photoFit } : {}),
     ...(style.cardHover ? { "data-site-card-hover": style.cardHover } : {}),
     ...(style.animation && style.animation !== "none" ? { "data-site-animate": style.animation } : {}),
     ...(style.dividers && style.dividers !== "none" ? { "data-site-dividers": style.dividers } : {}),

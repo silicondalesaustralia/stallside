@@ -12,7 +12,9 @@ export type HeadingSize = (typeof HEADING_SIZES)[number];
 export type BodySize = (typeof BODY_SIZES)[number];
 export type HeadingTag = (typeof HEADING_TAGS)[number];
 export const IMAGE_RADII = ["none", "sm", "md", "lg", "xl"] as const;
-export type ImageRadius = (typeof IMAGE_RADII)[number];
+/** Preset names (older saves) or a pixel value. */
+export type ImageRadius = (typeof IMAGE_RADII)[number] | number;
+export const IMAGE_RADIUS_MAX = 200;
 
 export const BUTTON_SIZES = ["sm", "md", "lg"] as const;
 export type ButtonSize = (typeof BUTTON_SIZES)[number];
@@ -93,7 +95,7 @@ export const sectionStyleSchema = z.object({
   headingSize: z.enum(HEADING_SIZES).optional(),
   bodySize: z.enum(BODY_SIZES).optional(),
   headingTag: z.enum(HEADING_TAGS).optional(),
-  imageRadius: z.enum(IMAGE_RADII).optional(),
+  imageRadius: z.union([z.enum(IMAGE_RADII), z.number().int().min(0).max(IMAGE_RADIUS_MAX)]).optional(),
   swapSides: z.boolean().optional(),
   buttonSize: z.enum(BUTTON_SIZES).optional(),
   buttonTextSize: z.enum(BUTTON_SIZES).optional(),
@@ -127,9 +129,9 @@ export function parseSectionStyle(raw: unknown): SectionStyle {
   if ((HEADING_TAGS as readonly unknown[]).includes(obj.headingTag)) {
     out.headingTag = obj.headingTag as HeadingTag;
   }
-  if ((IMAGE_RADII as readonly unknown[]).includes(obj.imageRadius)) {
-    out.imageRadius = obj.imageRadius as ImageRadius;
-  }
+  const radius = obj.imageRadius;
+  if ((IMAGE_RADII as readonly unknown[]).includes(radius)) out.imageRadius = radius as ImageRadius;
+  else if (typeof radius === "number" && Number.isInteger(radius) && radius >= 0 && radius <= IMAGE_RADIUS_MAX) out.imageRadius = radius;
   if (obj.swapSides === true) out.swapSides = true;
   const isSize = (v: unknown): v is ButtonSize => (BUTTON_SIZES as readonly unknown[]).includes(v);
   if (isSize(obj.buttonSize)) out.buttonSize = obj.buttonSize;
