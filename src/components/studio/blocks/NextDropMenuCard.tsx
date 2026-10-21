@@ -20,14 +20,14 @@ export default function NextDropMenuCard({ menu, meta, preset, showClosingDate, 
     <Link
       href={shopMenuPath(meta.storefrontSlug, menu.slug, meta.draft, meta.basePath, menu.isPreOrderDrop)}
       data-section-card={compact ? undefined : ""}
-      className={`flex items-center gap-4 ${compact ? "border-l-2 border-[var(--leaf-dark)] pl-4 py-2" : "rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-4 sf-sm:p-5"}`}
+      className={`flex gap-4 ${compact ? "items-center border-l-2 border-[var(--leaf-dark)] pl-4 py-2" : "flex-col rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-4 sf-sm:flex-row sf-sm:items-center sf-sm:p-5"}`}
     >
       {menu.imageUrl ? (
         <NextDropThumb
           src={menu.imageUrl}
           alt={menu.title}
-          className={compact ? "h-12 w-12" : "h-20 w-20 sf-sm:h-24 sf-sm:w-24"}
-          sizes={compact ? "48px" : "96px"}
+          className={compact ? "h-12 w-12" : "aspect-[16/10] w-full sf-sm:aspect-auto sf-sm:h-24 sf-sm:w-24"}
+          sizes={compact ? "48px" : "(max-width:640px) 100vw, 96px"}
         />
       ) : null}
       <div className="min-w-0">

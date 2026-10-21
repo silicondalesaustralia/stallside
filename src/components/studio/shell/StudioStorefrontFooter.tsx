@@ -12,6 +12,7 @@ import { paletteOf } from "@/lib/website/sections/colour";
 import StudioFooterBrand from "./StudioFooterBrand";
 import StudioFooterColumn from "./StudioFooterColumn";
 import StudioFooterSocial from "./StudioFooterSocial";
+import StudioFooterPoweredBy from "./StudioFooterPoweredBy";
 
 const GRID_COLS: Record<number, string> = {
   2: "sf-lg:grid-cols-2",
@@ -126,6 +127,7 @@ export default function StudioStorefrontFooter({
               : null}
           </p>
           {footer?.showSocial === false ? null : <StudioFooterSocial branding={branding} />}
+          <StudioFooterPoweredBy />
         </div>
       </div>
     </footer>
