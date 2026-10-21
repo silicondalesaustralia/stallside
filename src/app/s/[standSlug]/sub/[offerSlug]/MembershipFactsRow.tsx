@@ -1,4 +1,5 @@
 import type { MembershipFact } from "@/lib/membership-offer-display";
+import SectionElement from "@/components/studio/SectionElement";
 
 export default function MembershipFactsRow({
   facts,
@@ -16,12 +17,12 @@ export default function MembershipFactsRow({
             i > 0 ? "border-l border-[var(--m-divider)]" : ""
           }`}
         >
-          <p className="text-[21px] font-semibold leading-tight text-[var(--m-ink)]">
+          <SectionElement el="factValue" className="text-[21px] font-semibold leading-tight text-[var(--m-ink)]">
             {fact.main}
-          </p>
-          <p className="mt-1 text-[12px] leading-snug text-[var(--m-muted)]">
+          </SectionElement>
+          <SectionElement el="factLabel" className="mt-1 text-[12px] leading-snug text-[var(--m-muted)]">
             {fact.label}
-          </p>
+          </SectionElement>
         </div>
       ))}
     </div>

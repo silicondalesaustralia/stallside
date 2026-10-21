@@ -10,6 +10,7 @@ import {
   preorderOrderCardHeading,
 } from "@/lib/preorder-detail-copy";
 import { formatCollectionLabel } from "@/lib/pre-order";
+import { isShown, type OfferPageView } from "@/lib/studio/offer-page-settings";
 import PreOrderDetailShell from "./PreOrderDetailShell";
 import PreOrderPageOrder from "./PreOrderPageOrder";
 import PreOrderPageStory from "./PreOrderPageStory";
@@ -24,6 +25,7 @@ export default function PreOrderPageContent({
   page,
   pageProducts,
   catalogProducts,
+  view,
 }: {
   standSlug: string;
   standName: string;
@@ -41,6 +43,8 @@ export default function PreOrderPageContent({
   };
   pageProducts: PublicProductCard[];
   catalogProducts: PublicProductCard[];
+  /** Website layout choices; the stand page shows everything. */
+  view?: OfferPageView;
 }) {
   const ordersOpen = page.orderByAt.getTime() > Date.now();
   const facts = preorderDetailFacts({
@@ -79,9 +83,10 @@ export default function PreOrderPageContent({
       <PreOrderPageStory
         standName={standName}
         title={page.title}
-        intro={intro}
+        intro={isShown(view, "showIntro") ? intro : null}
         ordersOpen={ordersOpen}
-        facts={facts}
+        facts={isShown(view, "showFacts") ? facts : []}
+        showEyebrow={isShown(view, "showEyebrow")}
       />
       <PreOrderPageOrder
         standSlug={standSlug}
@@ -96,16 +101,18 @@ export default function PreOrderPageContent({
         collectionReminder={collectionReminder}
         ordersOpen={ordersOpen}
       />
-      <PreOrderPageSupport
-        aboutHeading={preorderAboutHeading({
-          standSlug,
-          pageSlug: page.slug,
-          productCount: pageProducts.length,
-        })}
-        aboutBody={aboutBody}
-        collectionHeading={`${handover} details`}
-        collectionBody={collectionBody || null}
-      />
+      {isShown(view, "showDetails") ? (
+        <PreOrderPageSupport
+          aboutHeading={preorderAboutHeading({
+            standSlug,
+            pageSlug: page.slug,
+            productCount: pageProducts.length,
+          })}
+          aboutBody={aboutBody}
+          collectionHeading={`${handover} details`}
+          collectionBody={collectionBody || null}
+        />
+      ) : null}
     </PreOrderDetailShell>
   );
 }

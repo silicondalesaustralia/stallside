@@ -11,7 +11,7 @@ export default function PreOrderDetailShell({
   return (
     <div
       style={preorderDetailBrandStyle(accentColor)}
-      className="flex flex-col gap-6 text-[15px] leading-[1.55] text-[var(--field)] sm:gap-7"
+      className="flex flex-col gap-6 text-[15px] leading-[1.55] text-[var(--section-ink,var(--field))] sm:gap-7"
     >
       {children}
     </div>

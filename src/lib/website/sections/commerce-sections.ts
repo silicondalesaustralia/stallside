@@ -2,6 +2,7 @@ import { z } from "zod";
 import { WEBSITE_LIMITS as L } from "@/lib/website/schema/limits";
 import { ALL_PAGE_KINDS, count, entityId, heading, shortText } from "./fields";
 import type { SectionDefinition } from "./types";
+import { colourValue } from "./section-style";
 import {
   PRODUCT_IMAGE_RATIOS,
   PRODUCT_IMAGE_SIDES,
@@ -184,6 +185,19 @@ export const cart: SectionDefinition = {
   emptyState: "render",
 };
 
+const OFFER_PAGE_SETTINGS = {
+  showImage: z.boolean().optional(),
+  showEyebrow: z.boolean().optional(),
+  showIntro: z.boolean().optional(),
+  showFacts: z.boolean().optional(),
+  showDetails: z.boolean().optional(),
+  showPrice: z.boolean().optional(),
+  showHowItWorks: z.boolean().optional(),
+  showTerms: z.boolean().optional(),
+  panelBackground: colourValue.optional(),
+  cardBackground: colourValue.optional(),
+};
+
 export const preOrder: SectionDefinition = {
   type: "preOrder",
   version: 1,
@@ -192,7 +206,7 @@ export const preOrder: SectionDefinition = {
   variants: DEFAULT_ONLY,
   defaultVariant: "default",
   content: z.object({}),
-  settings: z.object({}),
+  settings: z.object(OFFER_PAGE_SETTINGS),
   pageKinds: ["preorder"],
   singleton: true,
   required: true,
@@ -237,7 +251,7 @@ export const subscription: SectionDefinition = {
   variants: DEFAULT_ONLY,
   defaultVariant: "default",
   content: z.object({}),
-  settings: z.object({}),
+  settings: z.object(OFFER_PAGE_SETTINGS),
   pageKinds: ["subscription"],
   singleton: true,
   required: true,

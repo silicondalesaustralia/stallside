@@ -28,6 +28,8 @@ export const BUTTON_SECTIONS = new Set([
   "CraftFarmStandSection",
   "CraftProductDetailSection",
   "CraftOrderConfirmationSection",
+  "CraftPreOrderSection",
+  "CraftSubscriptionSection",
 ]);
 /** Sections with a main image whose corners can be rounded. */
 export const IMAGE_RADIUS_SECTIONS = new Set(["CraftHeroSection", "CraftImageSection", "CraftImageTextSection"]);

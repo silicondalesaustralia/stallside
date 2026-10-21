@@ -1,3 +1,5 @@
+import SectionElement from "@/components/studio/SectionElement";
+
 export default function PreOrderPageSupport({
   aboutHeading,
   aboutBody,
@@ -27,7 +29,9 @@ export default function PreOrderPageSupport({
           <details key={section.heading} className="group py-3">
             <summary className="cursor-pointer list-none text-[15px] font-semibold marker:content-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pd-focus)] [&::-webkit-details-marker]:hidden">
               <span className="flex items-center justify-between gap-3">
-                {section.heading}
+                <SectionElement el="detailsHeading" as="span">
+                  {section.heading}
+                </SectionElement>
                 <span
                   className="text-[var(--muted)] transition group-open:rotate-45"
                   aria-hidden
@@ -36,9 +40,9 @@ export default function PreOrderPageSupport({
                 </span>
               </span>
             </summary>
-            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[var(--muted)]">
+            <SectionElement el="detailsText" className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[var(--muted)]">
               {section.body}
-            </p>
+            </SectionElement>
           </details>
         ))}
       </div>

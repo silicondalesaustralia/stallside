@@ -37,6 +37,7 @@ export function sectionStyleFrame(style: SectionStyle, palette: ThemePalette): S
     vars["--section-ink"] = ink;
     vars["--ink"] = ink;
     vars["--muted"] = `color-mix(in srgb, ${ink} 78%, transparent)`;
+    vars["--section-muted"] = vars["--muted"];
     classes.push("section-style--ink");
   }
   if (style.buttonColour || style.buttonTextColour) {

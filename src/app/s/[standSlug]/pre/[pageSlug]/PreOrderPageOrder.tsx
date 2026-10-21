@@ -12,6 +12,7 @@ import {
 } from "@/lib/pre-order-page-cart";
 import PreOrderPageActions from "./PreOrderPageActions";
 import PreOrderPageProductRow from "./PreOrderPageProductRow";
+import SectionElement from "@/components/studio/SectionElement";
 
 export default function PreOrderPageOrder({
   standSlug,
@@ -93,9 +94,11 @@ export default function PreOrderPageOrder({
   const canOrder = ordersOpen && selectedCount > 0 && !busy;
 
   return (
-    <section className="rounded-[18px] border border-[var(--line)] bg-[var(--panel)] p-5 sm:p-6">
+    <section className="rounded-[18px] border border-[var(--line)] bg-[var(--offer-card-bg,var(--panel))] p-5 sm:p-6">
       <h2 className="font-[family-name:var(--font-display)] text-[20px] font-medium tracking-tight">
-        {cardHeading}
+        <SectionElement el="cardHeading" as="span">
+          {cardHeading}
+        </SectionElement>
       </h2>
       {!ordersOpen ? (
         <p className="mt-3 text-sm text-[var(--gone)]">

@@ -61,6 +61,13 @@ import ContactFormSettings from "./ContactFormSettings";
 import OrderConfirmationSettings from "./OrderConfirmationSettings";
 import type { CraftOrderConfirmationProps } from "./sections/CraftOrderConfirmationSection";
 import type { CraftContactFormProps } from "@/components/studio/sections/CraftContactFormSection";
+import OfferPageSettings from "./OfferPageSettings";
+import {
+  PREORDER_TOGGLES,
+  PREORDER_WORDING,
+  SUBSCRIPTION_TOGGLES,
+  SUBSCRIPTION_WORDING,
+} from "@/lib/studio/offer-page-settings";
 
 const INPUT =
   "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
@@ -220,6 +227,15 @@ export default function StudioSettingsPanel() {
         ) : null}
         {selected.type === "CraftCategoryDetailSection" ? (
           <CategoryDetailSettings props={selected.props as CraftCategoryDetailProps} setProp={setProp} />
+        ) : null}
+        {selected.type === "CraftPreOrderSection" || selected.type === "CraftSubscriptionSection" ? (
+          <OfferPageSettings
+            props={selected.props}
+            setProp={setProp}
+            toggles={selected.type === "CraftPreOrderSection" ? PREORDER_TOGGLES : SUBSCRIPTION_TOGGLES}
+            wording={selected.type === "CraftPreOrderSection" ? PREORDER_WORDING : SUBSCRIPTION_WORDING}
+            palette={paletteOf(metadata.resolvedBranding)}
+          />
         ) : null}
         {LINKABLE_BUTTON_SECTIONS.has(selected.type) ? (
           <ButtonLinkField

@@ -5,20 +5,35 @@ import MembershipContentShell from "./MembershipContentShell";
 import MembershipEnrollForm from "./MembershipEnrollForm";
 import MembershipOfferStory from "./MembershipOfferStory";
 import MembershipTermsAccordion from "./MembershipTermsAccordion";
+import SectionElement from "@/components/studio/SectionElement";
+import { isShown, type OfferPageView } from "@/lib/studio/offer-page-settings";
 
 const CANCELLED = "Checkout cancelled. You can try again when ready.";
 
 /** A subscription or membership offer: the story, prices and sign-up form. */
-export default function SubscriptionOfferContent({ data, cancelled = false }: { data: SubscriptionOfferData; cancelled?: boolean }) {
+export default function SubscriptionOfferContent({
+  data,
+  cancelled = false,
+  view,
+}: {
+  data: SubscriptionOfferData;
+  cancelled?: boolean;
+  /** Website layout choices; the stand page shows everything. */
+  view?: OfferPageView;
+}) {
   const { offer } = data;
   const remaining = data.spotsLeft;
   const signUp = data.unavailableReason === null;
 
   return (
     <div className="flex flex-col gap-6">
-      {offer.imageUrl ? (
+      {offer.imageUrl && isShown(view, "showImage") ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={offer.imageUrl} alt="" className="aspect-[16/9] w-full rounded-xl object-cover" />
+        <img
+          src={offer.imageUrl}
+          alt=""
+          className="aspect-[16/9] w-full rounded-xl object-cover"
+        />
       ) : null}
       {data.isMembership ? (
         <MembershipContentShell accentColor={data.accentColor}>
@@ -35,12 +50,17 @@ export default function SubscriptionOfferContent({ data, cancelled = false }: { 
             collectionNote={offer.collectionNote}
             handoverCollect={offer.handoverCollect}
             plans={data.plans.map((p) => p.plan)}
+            view={view}
           />
           {cancelled ? (
-            <p className="rounded-lg border border-[var(--m-card-border)] bg-[var(--m-card)] px-3 py-2 text-sm">{CANCELLED}</p>
+            <p className="rounded-lg border border-[var(--m-card-border)] bg-[var(--m-card)] px-3 py-2 text-sm">
+              {CANCELLED}
+            </p>
           ) : null}
           {remaining != null && remaining > 0 && remaining <= 5 ? (
-            <p className="text-sm text-[var(--muted)]">{remaining === 1 ? "1 spot left" : `${remaining} spots left`}</p>
+            <p className="text-sm text-[var(--muted)]">
+              {remaining === 1 ? "1 spot left" : `${remaining} spots left`}
+            </p>
           ) : null}
           {signUp ? (
             <MembershipEnrollForm
@@ -53,22 +73,49 @@ export default function SubscriptionOfferContent({ data, cancelled = false }: { 
               handoverDeliver={offer.handoverDeliver}
             />
           ) : (
-            <p className="text-sm text-[var(--warn)]">{data.unavailableReason}</p>
+            <p className="text-sm text-[var(--warn)]">
+              {data.unavailableReason}
+            </p>
           )}
-          {offer.termsText ? <MembershipTermsAccordion text={offer.termsText} /> : null}
+          {offer.termsText && isShown(view, "showTerms") ? (
+            <MembershipTermsAccordion text={offer.termsText} />
+          ) : null}
         </MembershipContentShell>
       ) : (
         <>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">{offer.title}</h1>
-            {offer.description ? <p className="mt-2 whitespace-pre-wrap text-[var(--muted)]">{offer.description}</p> : null}
-            <p className="mt-2 text-sm text-[var(--muted)]">
+            <h1
+              data-section-heading
+              className="text-2xl font-semibold tracking-tight"
+            >
+              <SectionElement el="title" as="span">
+                {offer.title}
+              </SectionElement>
+            </h1>
+            {offer.description && isShown(view, "showIntro") ? (
+              <SectionElement
+                el="intro"
+                className="mt-2 whitespace-pre-wrap text-[var(--muted)]"
+              >
+                {offer.description}
+              </SectionElement>
+            ) : null}
+            <SectionElement
+              el="smallPrint"
+              className="mt-2 text-sm text-[var(--muted)]"
+            >
               {intervalLabel(offer.interval)}
-              {data.collectionDayLabel ? ` · ${data.collectionDayLabel} collection` : ""}
+              {data.collectionDayLabel
+                ? ` · ${data.collectionDayLabel} collection`
+                : ""}
               {offer.collectionNote ? ` · ${offer.collectionNote}` : ""}
-            </p>
+            </SectionElement>
           </div>
-          {cancelled ? <p className="rounded-lg border border-[var(--line)] px-3 py-2 text-sm">{CANCELLED}</p> : null}
+          {cancelled ? (
+            <p className="rounded-lg border border-[var(--line)] px-3 py-2 text-sm">
+              {CANCELLED}
+            </p>
+          ) : null}
           {signUp ? (
             <SubscriptionEnrollForm
               standSlug={data.standSlug}
@@ -81,7 +128,9 @@ export default function SubscriptionOfferContent({ data, cancelled = false }: { 
               lines={data.lines}
             />
           ) : (
-            <p className="text-sm text-[var(--warn)]">{data.unavailableReason}</p>
+            <p className="text-sm text-[var(--warn)]">
+              {data.unavailableReason}
+            </p>
           )}
         </>
       )}

@@ -5,6 +5,7 @@ import { startShopperSubscriptionCheckout } from "../enroll-actions";
 import SquareSubscriptionCardStep from "../SquareSubscriptionCardStep";
 import type { SquareSubscriptionSession } from "@/lib/square-subscriptions/enrol-start";
 import { formatMoney } from "@/lib/money";
+import { useSectionText } from "@/components/studio/SectionStyleContext";
 import {
   intervalLabel,
   type ShopperInterval,
@@ -35,6 +36,7 @@ export default function SubscriptionEnrollForm({
   const [message, setMessage] = useState<string | null>(null);
   const [squareSession, setSquareSession] = useState<SquareSubscriptionSession | null>(null);
   const [pending, startTransition] = useTransition();
+  const payLabel = useSectionText("payButton", "Continue to payment");
 
   if (squareSession) return <SquareSubscriptionCardStep session={squareSession} />;
 
@@ -154,9 +156,9 @@ export default function SubscriptionEnrollForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-[var(--site-btn-bg,var(--leaf))] px-4 py-3 text-sm font-semibold text-[var(--site-btn-ink,#fff)] disabled:opacity-60"
+        className="offer-btn rounded-lg bg-[var(--section-btn-bg,var(--site-btn-bg,var(--leaf)))] px-4 py-3 text-sm font-semibold text-[var(--section-btn-ink,var(--site-btn-ink,#fff))] disabled:opacity-60"
       >
-        {pending ? "Starting…" : "Continue to payment"}
+        {pending ? "Starting…" : payLabel}
       </button>
       <p className="text-xs text-[var(--muted)]">
         You can manage your subscription from the link emailed after signup.

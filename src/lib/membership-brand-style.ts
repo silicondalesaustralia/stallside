@@ -57,8 +57,8 @@ export function preorderDetailBrandStyle(
   const accent = resolveAccent(accentColor);
   return {
     "--pd-label": accent,
-    "--pd-action": accent,
-    "--pd-action-text": onAccentText(accent),
+    "--pd-action": `var(--section-btn-bg, ${accent})`,
+    "--pd-action-text": `var(--section-btn-ink, ${onAccentText(accent)})`,
     "--pd-tint": mixWhite(accent, 0.88),
     "--pd-focus": accent,
   } as CSSProperties;
@@ -83,14 +83,14 @@ export function membershipContentBrandStyle(
 ): CSSProperties {
   const accent = resolveAccent(accentColor);
   return {
-    "--m-bg": "#F7F5EF",
-    "--m-card": "#FFFDF8",
-    "--m-ink": "#292F26",
-    "--m-muted": "#656858",
+    "--m-bg": "var(--offer-panel-bg, var(--section-bg, #F7F5EF))",
+    "--m-card": "var(--offer-card-bg, #FFFDF8)",
+    "--m-ink": "var(--section-ink, #292F26)",
+    "--m-muted": "var(--section-muted, #656858)",
     "--m-divider": "#DCDCCD",
     "--m-card-border": "#DFDFD3",
-    "--m-button": accent,
-    "--m-button-text": onAccentText(accent),
+    "--m-button": `var(--section-btn-bg, ${accent})`,
+    "--m-button-text": `var(--section-btn-ink, ${onAccentText(accent)})`,
     "--m-selected-bg": mixWhite(accent, 0.88),
     "--m-selected-border": accent,
     "--m-upfront-bg": mixWhite(accent, 0.92),

@@ -1,4 +1,5 @@
 import type { PreorderDetailFact } from "@/lib/preorder-detail-copy";
+import SectionElement from "@/components/studio/SectionElement";
 
 export default function PreOrderPageFacts({
   facts,
@@ -23,12 +24,12 @@ export default function PreOrderPageFacts({
             i > 0 ? "border-t border-[var(--line)] sm:border-l sm:border-t-0" : ""
           }`}
         >
-          <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[var(--muted)]">
+          <SectionElement el="factLabel" className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[var(--muted)]">
             {fact.label}
-          </p>
-          <p className="mt-1 text-[15px] font-semibold leading-snug">
+          </SectionElement>
+          <SectionElement el="factValue" className="mt-1 text-[15px] font-semibold leading-snug">
             {fact.value}
-          </p>
+          </SectionElement>
         </div>
       ))}
     </div>

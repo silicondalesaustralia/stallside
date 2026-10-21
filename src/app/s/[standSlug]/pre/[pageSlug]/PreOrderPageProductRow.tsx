@@ -5,6 +5,7 @@ import { formatMoney } from "@/lib/public-product";
 import { formatTierSaving, lineTotalWithTiers } from "@/lib/price-tiers";
 import { standProductPath } from "@/lib/stand-seo";
 import QtyStepper from "../../QtyStepper";
+import SectionElement from "@/components/studio/SectionElement";
 
 export default function PreOrderPageProductRow({
   standSlug,
@@ -46,14 +47,16 @@ export default function PreOrderPageProductRow({
               className="size-16 shrink-0 rounded-lg object-cover"
             />
           ) : null}
-          <p className="min-w-0 font-medium leading-snug">{product.name}</p>
+          <SectionElement el="productName" className="min-w-0 font-medium leading-snug">
+            {product.name}
+          </SectionElement>
         </div>
       ) : null}
 
       <p className="flex flex-wrap items-baseline gap-x-2">
-        <span className="text-[28px] font-semibold leading-none tracking-tight">
+        <SectionElement el="price" as="span" className="text-[28px] font-semibold leading-none tracking-tight">
           {formatMoney(product.priceCents, currency)}
-        </span>
+        </SectionElement>
         <span className="text-sm text-[var(--muted)]">each</span>
       </p>
 

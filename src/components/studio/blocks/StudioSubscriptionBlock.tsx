@@ -1,8 +1,17 @@
 import type { StudioMetadata } from "@/lib/studio/types";
+import { offerPanelStyle, type OfferPageView } from "@/lib/studio/offer-page-settings";
 import SubscriptionOfferContent from "@/app/s/[standSlug]/sub/[offerSlug]/SubscriptionOfferContent";
 
 /** The subscription or membership offer itself: story, prices and sign-up. */
-export default function StudioSubscriptionBlock({ metadata, isEditing }: { metadata: StudioMetadata; isEditing?: boolean }) {
+export default function StudioSubscriptionBlock({
+  metadata,
+  view,
+  isEditing,
+}: {
+  metadata: StudioMetadata;
+  view?: OfferPageView;
+  isEditing?: boolean;
+}) {
   const cc = metadata.commerceContext;
   const data = cc?.subscription;
   if (!data) {
@@ -17,7 +26,9 @@ export default function StudioSubscriptionBlock({ metadata, isEditing }: { metad
   }
   return (
     <div className="storefront-page-content storefront-page-content--narrow">
-      <SubscriptionOfferContent data={data} cancelled={cc?.cancelled === true} />
+      <div style={offerPanelStyle(view)}>
+        <SubscriptionOfferContent data={data} cancelled={cc?.cancelled === true} view={view} />
+      </div>
     </div>
   );
 }

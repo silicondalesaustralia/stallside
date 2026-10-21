@@ -12,6 +12,9 @@ import type { MembershipPlan } from "@/lib/subscription-offer";
 import MembershipDeliveryFields from "./MembershipDeliveryFields";
 import MembershipPlanPicker from "./MembershipPlanPicker";
 import MembershipUpfrontBenefits from "./MembershipUpfrontBenefits";
+import SectionCopy from "@/components/studio/SectionCopy";
+import SectionElement from "@/components/studio/SectionElement";
+import { useSectionText } from "@/components/studio/SectionStyleContext";
 
 type PlanOption = { plan: MembershipPlan; priceCents: number };
 
@@ -35,6 +38,7 @@ export default function MembershipEnrollForm({
   const benefitsId = useId();
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const payLabel = useSectionText("payButton", "Continue to payment");
   const [billingPlan, setBillingPlan] = useState<MembershipPlan | "">(
     plans[0]?.plan ?? "",
   );
@@ -84,7 +88,9 @@ export default function MembershipEnrollForm({
       action={onSubmit}
       className="rounded-[18px] border border-[var(--m-card-border)] bg-[var(--m-card)] p-5 text-[var(--m-ink)] sm:p-6"
     >
-      <h2 className="text-[19px] font-semibold">Make it your weekly ritual</h2>
+      <h2 className="text-[19px] font-semibold">
+        <SectionCopy k="formHeading" fallback="Make it your weekly ritual" />
+      </h2>
       <MembershipPlanPicker
         plans={plans}
         currency={currency}
@@ -100,7 +106,9 @@ export default function MembershipEnrollForm({
         footnote={benefits.footnote}
       />
       <div className="mt-5">
-        <h3 className="text-sm font-semibold">Your details</h3>
+        <h3 className="text-sm font-semibold">
+          <SectionCopy k="detailsHeading" fallback="Your details" />
+        </h3>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-medium">Name</span>
@@ -108,7 +116,7 @@ export default function MembershipEnrollForm({
               name="customerName"
               required
               autoComplete="name"
-              className="rounded-[9px] border border-[var(--m-input-border)] bg-[var(--m-input)] px-3 py-2.5 text-base"
+              className="rounded-[9px] border border-[var(--m-input-border)] bg-[var(--m-input)] px-3 py-2.5 text-base text-[#292F26]"
             />
           </label>
           <label className="flex flex-col gap-1 text-sm">
@@ -118,7 +126,7 @@ export default function MembershipEnrollForm({
               type="email"
               required
               autoComplete="email"
-              className="rounded-[9px] border border-[var(--m-input-border)] bg-[var(--m-input)] px-3 py-2.5 text-base"
+              className="rounded-[9px] border border-[var(--m-input-border)] bg-[var(--m-input)] px-3 py-2.5 text-base text-[#292F26]"
             />
           </label>
           <label className="flex flex-col gap-1 text-sm sm:col-span-2">
@@ -126,7 +134,7 @@ export default function MembershipEnrollForm({
             <input
               name="customerPhone"
               autoComplete="tel"
-              className="rounded-[9px] border border-[var(--m-input-border)] bg-[var(--m-input)] px-3 py-2.5 text-base"
+              className="rounded-[9px] border border-[var(--m-input-border)] bg-[var(--m-input)] px-3 py-2.5 text-base text-[#292F26]"
             />
           </label>
         </div>
@@ -147,13 +155,13 @@ export default function MembershipEnrollForm({
       <button
         type="submit"
         disabled={pending || !billingPlan}
-        className="mt-3 w-full rounded-[9px] bg-[var(--m-button)] px-4 py-3 text-base font-semibold text-[var(--m-button-text)] disabled:opacity-60"
+        className="offer-btn mt-3 w-full rounded-[9px] bg-[var(--m-button)] px-4 py-3 text-base font-semibold text-[var(--m-button-text)] disabled:opacity-60"
       >
-        {pending ? "Starting…" : "Continue to payment →"}
+        {pending ? "Starting…" : `${payLabel} →`}
       </button>
-      <p className="mt-2 text-[12px] text-[var(--m-muted)]">
-        Manage your membership through the link emailed after signup.
-      </p>
+      <SectionElement el="smallPrint" className="mt-2 text-[12px] text-[var(--m-muted)]">
+        <SectionCopy k="manageNote" fallback="Manage your membership through the link emailed after signup." />
+      </SectionElement>
     </form>
   );
 }

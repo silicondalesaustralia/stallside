@@ -1,3 +1,6 @@
+import SectionCopy from "@/components/studio/SectionCopy";
+import SectionElement from "@/components/studio/SectionElement";
+
 export default function MembershipHowItWorks({
   plansSummary,
   collectionDay,
@@ -35,8 +38,12 @@ export default function MembershipHowItWorks({
           1
         </span>
         <div>
-          <p className="font-semibold text-[var(--m-ink)]">Choose how you pay</p>
-          <p className="mt-0.5 text-sm text-[var(--m-muted)]">{plansSummary}</p>
+          <SectionElement el="stepTitle" className="font-semibold text-[var(--m-ink)]">
+            <SectionCopy k="stepPay" fallback="Choose how you pay" />
+          </SectionElement>
+          <SectionElement el="stepText" className="mt-0.5 text-sm text-[var(--m-muted)]">
+            {plansSummary}
+          </SectionElement>
         </div>
       </li>
       <li className="flex gap-3">
@@ -47,9 +54,13 @@ export default function MembershipHowItWorks({
           2
         </span>
         <div>
-          <p className="font-semibold text-[var(--m-ink)]">{step2Title}</p>
+          <SectionElement el="stepTitle" className="font-semibold text-[var(--m-ink)]">
+            {step2Title}
+          </SectionElement>
           {step2Body ? (
-            <p className="mt-0.5 text-sm text-[var(--m-muted)]">{step2Body}</p>
+            <SectionElement el="stepText" className="mt-0.5 text-sm text-[var(--m-muted)]">
+              {step2Body}
+            </SectionElement>
           ) : null}
         </div>
       </li>

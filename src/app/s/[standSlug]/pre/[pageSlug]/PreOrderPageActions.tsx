@@ -1,6 +1,8 @@
 "use client";
 
 import { formatMoney } from "@/lib/public-product";
+import { useSectionText } from "@/components/studio/SectionStyleContext";
+import SectionElement from "@/components/studio/SectionElement";
 
 export default function PreOrderPageActions({
   selectedCount,
@@ -21,6 +23,8 @@ export default function PreOrderPageActions({
   onCheckout: () => void;
   onAddToCart: () => void;
 }) {
+  const checkoutLabel = useSectionText("checkoutButton", "Add & checkout");
+  const cartLabel = useSectionText("cartButton", "Add to cart");
   return (
     <div className="mt-4 border-t border-[var(--line)] pt-4">
       {selectedCount > 0 ? (
@@ -43,23 +47,23 @@ export default function PreOrderPageActions({
           type="button"
           disabled={!canOrder}
           onClick={onCheckout}
-          className="flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--pd-action)] px-4 py-3 text-base font-semibold text-[var(--pd-action-text)] disabled:opacity-40"
+          className="offer-btn flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--pd-action)] px-4 py-3 text-base font-semibold text-[var(--pd-action-text)] disabled:opacity-40"
         >
-          Add &amp; checkout
+          {checkoutLabel}
         </button>
         <button
           type="button"
           disabled={!canOrder}
           onClick={onAddToCart}
-          className="flex min-h-11 w-full items-center justify-center rounded-lg border border-[var(--line)] bg-[var(--wash)] px-4 py-3 text-base font-semibold disabled:opacity-40"
+          className="offer-btn flex min-h-11 w-full items-center justify-center rounded-lg border border-[var(--line)] bg-[var(--wash)] px-4 py-3 text-base font-semibold disabled:opacity-40"
         >
-          Add to cart
+          {cartLabel}
         </button>
       </div>
       {collectionReminder ? (
-        <p className="mt-4 text-[13px] leading-snug text-[var(--muted)]">
+        <SectionElement el="smallPrint" className="mt-4 text-[13px] leading-snug text-[var(--muted)]">
           {collectionReminder}
-        </p>
+        </SectionElement>
       ) : null}
     </div>
   );
