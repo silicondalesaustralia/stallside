@@ -10,6 +10,8 @@ import {
 } from "@/lib/website/sections/element-style";
 import ColourField from "./ColourField";
 import SiteStyleSelect from "./SiteStyleSelect";
+import FontSamplePreview from "./FontSamplePreview";
+import { useFontSamples } from "./useFontSamples";
 
 const SIZES = { xs: "Extra small", sm: "Small", md: "Medium", lg: "Large", xl: "Extra large", "2xl": "2XL", "3xl": "3XL" } as const;
 const FONTS = { heading: "Heading font", body: "Text font", sans: "Sans serif", serif: "Serif", mono: "Monospace" } as const;
@@ -28,6 +30,7 @@ export default function ElementStyleFields({
   onChange: (next: ElementStyle) => void;
   palette: ThemePalette;
 }) {
+  const samples = useFontSamples();
   function set<K extends keyof ElementStyle>(key: K, v: ElementStyle[K] | undefined) {
     const next: ElementStyle = { ...value };
     if (v === undefined) delete next[key];
@@ -44,6 +47,7 @@ export default function ElementStyleFields({
         <SiteStyleSelect id={`${id}-weight`} label="Weight" options={ELEMENT_WEIGHTS} labels={WEIGHTS} value={value.weight} onChange={(v) => set("weight", v)} />
         <SiteStyleSelect id={`${id}-case`} label="Capitals" options={ELEMENT_CASES} labels={CASES} value={value.textCase} onChange={(v) => set("textCase", v)} />
       </div>
+      {value.font ? <FontSamplePreview sample={samples.choice(value.font)} /> : null}
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" checked={Boolean(value.italic)} onChange={(e) => set("italic", e.target.checked || undefined)} />
         Italic

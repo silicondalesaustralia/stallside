@@ -7,6 +7,9 @@ import { HEADING_CASES, HEADING_TRACKINGS, HEADING_WEIGHTS } from "@/lib/storefr
 import { SITE_FONTS } from "@/lib/storefront/site-fonts";
 import ColourField from "./ColourField";
 import SiteStyleSelect from "./SiteStyleSelect";
+import FontSamplePreview from "./FontSamplePreview";
+import { useFontSamples } from "./useFontSamples";
+import type { FontSample } from "@/lib/storefront/font-sample";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
 const SIZES = { sm: "Small", md: "Medium", lg: "Large", xl: "Extra large" } as const;
@@ -15,7 +18,7 @@ const CASES = { normal: "As typed", upper: "ALL CAPS" } as const;
 const TRACKINGS = { tight: "Tight", normal: "Normal", wide: "Wide" } as const;
 const KINDS = ["Serif", "Sans serif"] as const;
 
-function FontSelect({ id, label, value, onChange }: { id: string; label: string; value?: string; onChange: (v?: string) => void }) {
+function FontSelect({ id, label, value, onChange, sample }: { id: string; label: string; value?: string; onChange: (v?: string) => void; sample: FontSample }) {
   return (
     <div className="space-y-1.5">
       <label htmlFor={id} className="block text-xs font-semibold text-[var(--field)]">{label}</label>
@@ -29,6 +32,7 @@ function FontSelect({ id, label, value, onChange }: { id: string; label: string;
           </optgroup>
         ))}
       </select>
+      <FontSamplePreview sample={sample} />
     </div>
   );
 }
@@ -38,12 +42,13 @@ export default function SiteTypographySettings() {
   const palette = paletteOf(useStudioMetadata().resolvedBranding);
   const { siteStyle = {}, setSiteStyleField } = useStudioEditorChrome();
   const set = setSiteStyleField ?? (() => undefined);
+  const samples = useFontSamples();
 
   return (
     <div className="mt-6 space-y-4 border-t border-[var(--line)] pt-4">
       <p className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">Fonts &amp; text</p>
-      <FontSelect id="site-heading-font" label="Heading font" value={siteStyle.headingFont} onChange={(v) => set("headingFont", v)} />
-      <FontSelect id="site-body-font" label="Text font" value={siteStyle.bodyFont} onChange={(v) => set("bodyFont", v)} />
+      <FontSelect id="site-heading-font" label="Heading font" value={siteStyle.headingFont} onChange={(v) => set("headingFont", v)} sample={samples.site("heading")} />
+      <FontSelect id="site-body-font" label="Text font" value={siteStyle.bodyFont} onChange={(v) => set("bodyFont", v)} sample={samples.site("body")} />
       <div className="grid grid-cols-2 gap-2">
         <SiteStyleSelect id="site-heading-size" label="Heading size" options={HEADING_SIZES} labels={SIZES} value={siteStyle.headingSize} onChange={(v) => set("headingSize", v)} />
         <SiteStyleSelect id="site-body-size" label="Text size" options={BODY_SIZES} labels={SIZES} value={siteStyle.bodySize} onChange={(v) => set("bodySize", v)} />

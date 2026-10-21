@@ -11,6 +11,8 @@ import { colourHex, hasLowContrast, type ThemePalette } from "@/lib/website/sect
 import ColourField from "./ColourField";
 import { useStudioEditorChrome } from "./StudioEditorContext";
 import PillChoice from "./PillChoice";
+import FontSamplePreview from "./FontSamplePreview";
+import { useFontSamples } from "./useFontSamples";
 
 const SIZE_LABELS: Record<ButtonSize, string> = { sm: "S", md: "M", lg: "L" };
 const FONT_LABELS: Record<ButtonFont, string> = {
@@ -31,6 +33,7 @@ export default function SectionButtonFields({
   setField: <K extends keyof SectionStyle>(key: K, value: SectionStyle[K] | undefined) => void;
 }) {
   const site = useStudioEditorChrome().siteButtonColours ?? { background: null, text: null };
+  const samples = useFontSamples();
   const lowContrast =
     Boolean(style.buttonColour || style.buttonTextColour) &&
     hasLowContrast(
@@ -62,6 +65,7 @@ export default function SectionButtonFields({
         <p className="text-xs text-red-700">The button text may be hard to read. Try Auto text colour.</p>
       ) : null}
       <PillChoice label="Button font" options={BUTTON_FONTS} labels={FONT_LABELS} value={style.buttonFont} onChange={(v) => setField("buttonFont", v)} />
+      {style.buttonFont ? <FontSamplePreview sample={samples.choice(style.buttonFont)} /> : null}
     </div>
   );
 }
