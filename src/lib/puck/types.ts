@@ -48,6 +48,8 @@ export type PuckSpikeMetadata = {
     /** ISO time orders close, for live countdowns. */
     orderByAt?: string | null;
     collectionLabel: string | null;
+    /** Cover photo, or the first product's photo. */
+    imageUrl?: string | null;
   }>;
   storefrontSlug: string;
   standSlug: string;

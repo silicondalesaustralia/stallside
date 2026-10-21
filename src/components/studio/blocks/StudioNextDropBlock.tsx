@@ -1,9 +1,8 @@
-import Link from "next/link";
 import type { StudioMetadata } from "@/lib/studio/types";
-import { shopMenuPath } from "@/lib/storefront/paths";
 import type { NextDropPreset } from "@/lib/studio/preset-registry";
 import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
-import SectionCopy from "@/components/studio/SectionCopy";
+import NextDropFeaturedCard from "./NextDropFeaturedCard";
+import NextDropMenuCard from "./NextDropMenuCard";
 
 type Props = {
   maxItems: number;
@@ -57,7 +56,7 @@ export default function StudioNextDropBlock({
       <div className="studio-section__inner">
         {title}
         {featured ? (
-          <FeaturedMenuCard
+          <NextDropFeaturedCard
             menu={featured}
             meta={meta}
             showClosingDate={showClosingDate}
@@ -67,7 +66,7 @@ export default function StudioNextDropBlock({
           <ul className="mt-8 flex flex-col gap-4">
             {menus.map((menu) => (
               <li key={menu.slug}>
-                <MenuCard
+                <NextDropMenuCard
                   menu={menu}
                   meta={meta}
                   preset={preset}
@@ -80,89 +79,5 @@ export default function StudioNextDropBlock({
         )}
       </div>
     </section>
-  );
-}
-
-function FeaturedMenuCard({
-  menu,
-  meta,
-  showClosingDate,
-  showPickupDate,
-}: {
-  menu: StudioMetadata["menus"][number];
-  meta: StudioMetadata;
-  showClosingDate: boolean;
-  showPickupDate: boolean;
-}) {
-  return (
-    <Link
-      href={shopMenuPath(meta.storefrontSlug, menu.slug, meta.draft, meta.basePath, menu.isPreOrderDrop)}
-      data-section-card
-      className="mt-8 block overflow-hidden rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-6 sf-sm:p-8"
-    >
-      <SectionCopy k="eyebrow" fallback="Order window open" as="p" className="studio-eyebrow text-[var(--leaf-dark)]" />
-      <h3 className="studio-heading mt-2 text-2xl sf-sm:text-3xl">{menu.title}</h3>
-      {menu.description ? (
-        <p className="mt-3 max-w-2xl text-[var(--muted)]">{menu.description}</p>
-      ) : null}
-      <dl className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-        {showClosingDate && menu.orderByLabel ? (
-          <div>
-            <dt className="font-semibold text-[var(--field)]">
-              <SectionCopy k="closesLabel" fallback="Orders close" />
-            </dt>
-            <dd className="text-[var(--muted)]">{menu.orderByLabel}</dd>
-          </div>
-        ) : null}
-        {showPickupDate && menu.collectionLabel ? (
-          <div>
-            <dt className="font-semibold text-[var(--field)]">
-              <SectionCopy k="pickupLabel" fallback="Pick up" />
-            </dt>
-            <dd className="text-[var(--muted)]">{menu.collectionLabel}</dd>
-          </div>
-        ) : null}
-      </dl>
-      <span className="studio-btn studio-btn--primary mt-6 inline-flex">
-        <SectionCopy k="viewMenu" fallback="View menu" />
-      </span>
-    </Link>
-  );
-}
-
-function MenuCard({
-  menu,
-  meta,
-  preset,
-  showClosingDate,
-  showPickupDate,
-}: {
-  menu: StudioMetadata["menus"][number];
-  meta: StudioMetadata;
-  preset: NextDropPreset;
-  showClosingDate: boolean;
-  showPickupDate: boolean;
-}) {
-  const compact = preset === "timeline";
-  return (
-    <Link
-      href={shopMenuPath(meta.storefrontSlug, menu.slug, meta.draft, meta.basePath, menu.isPreOrderDrop)}
-      data-section-card={compact ? undefined : ""}
-      className={`block ${compact ? "border-l-2 border-[var(--leaf-dark)] pl-4 py-2" : "rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-white p-5"}`}
-    >
-      <h3 className="font-semibold text-[var(--field)]">{menu.title}</h3>
-      {menu.description && !compact ? (
-        <p className="mt-2 text-sm text-[var(--muted)]">{menu.description}</p>
-      ) : null}
-      <p className="mt-2 text-sm text-[var(--leaf-dark)]">
-        {showClosingDate && menu.orderByLabel ? (
-          <SectionCopy k="closesLine" fallback="Orders close {date}" vars={{ date: menu.orderByLabel }} />
-        ) : null}
-        {showClosingDate && menu.orderByLabel && showPickupDate && menu.collectionLabel ? " · " : null}
-        {showPickupDate && menu.collectionLabel ? (
-          <SectionCopy k="pickupLine" fallback="Pick up {date}" vars={{ date: menu.collectionLabel }} />
-        ) : null}
-      </p>
-    </Link>
   );
 }

@@ -11,7 +11,16 @@ export type UpcomingMenuView = {
   /** ISO time orders close, for live countdowns. */
   orderByAt: string | null;
   collectionLabel: string | null;
+  /** Cover photo, or the first product's photo. */
+  imageUrl: string | null;
 };
+
+const FIRST_PHOTO = {
+  where: { product: { imageUrl: { not: null } } },
+  orderBy: { sortOrder: "asc" },
+  take: 1,
+  select: { product: { select: { imageUrl: true } } },
+} as const;
 
 /** Upcoming menus and open pre-order pages for the Next drop section. */
 export async function loadUpcomingMenusForStorefront(input: {
@@ -35,6 +44,7 @@ export async function loadUpcomingMenusForStorefront(input: {
       kind: true,
       orderByAt: true,
       collectionAt: true,
+      items: FIRST_PHOTO,
     },
     take: input.limit ?? 6,
   });
@@ -43,7 +53,15 @@ export async function loadUpcomingMenusForStorefront(input: {
   const pages = await prisma.preOrderPage.findMany({
     where: { standId: input.standId, isActive: true, orderByAt: { gt: new Date(now) } },
     orderBy: { orderByAt: "asc" },
-    select: { slug: true, title: true, description: true, orderByAt: true, collectionAt: true },
+    select: {
+      slug: true,
+      title: true,
+      description: true,
+      orderByAt: true,
+      collectionAt: true,
+      imageUrl: true,
+      items: FIRST_PHOTO,
+    },
     take: input.limit ?? 6,
   });
   const pageViews: UpcomingMenuView[] = pages.map((p) => ({
@@ -54,6 +72,7 @@ export async function loadUpcomingMenusForStorefront(input: {
     orderByLabel: formatOrderByLabel(p.orderByAt, input.timeZone),
     orderByAt: p.orderByAt.toISOString(),
     collectionLabel: formatCollectionLabel(p.collectionAt, input.timeZone),
+    imageUrl: p.imageUrl ?? p.items[0]?.product.imageUrl ?? null,
   }));
   const menuViews: UpcomingMenuView[] = menus
     .filter(
@@ -75,6 +94,7 @@ export async function loadUpcomingMenusForStorefront(input: {
         m.collectionAt && m.kind !== MenuKind.ALWAYS_AVAILABLE
           ? formatCollectionLabel(m.collectionAt, input.timeZone)
           : null,
+      imageUrl: m.items[0]?.product.imageUrl ?? null,
     }));
   // Dated drops first (soonest close), then always-available menus.
   return [...menuViews, ...pageViews]
