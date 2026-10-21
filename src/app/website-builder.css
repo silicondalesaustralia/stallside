@@ -669,8 +669,10 @@ header.studio-nav[data-header-colours] .studio-btn--secondary {
   padding-block: var(--studio-section-py-mobile);
 }
 
+/* The theme sets --font-body here, below <body>, so the font must be resolved here too. */
 .storefront-cq {
   container: storefront / inline-size;
+  font-family: var(--font-body), system-ui, sans-serif;
 }
 
 @container storefront (min-width: 640px) {
