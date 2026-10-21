@@ -24,6 +24,8 @@ export type VendlSectionType =
   | "spacer"
   | "menuDetail"
   | "preOrder"
+  | "preOrderList"
+  | "subscriptionList"
   | "subscription"
   | "cart"
   | "orderConfirmation";

@@ -3,7 +3,9 @@ import { about, faq, hero, image, imageText, spacer, text } from "./content-sect
 import {
   cart,
   preOrder,
+  preOrderList,
   subscription,
+  subscriptionList,
   categories,
   menuDetail,
   nextDrop,
@@ -44,7 +46,9 @@ const DEFINITIONS = {
   spacer,
   menuDetail,
   preOrder,
+  preOrderList,
   subscription,
+  subscriptionList,
   cart,
   orderConfirmation,
 } satisfies Record<VendlSectionType, SectionDefinition>;
@@ -89,6 +93,8 @@ export const VENDL_TYPE_BY_CRAFT_NAME = {
   CraftCartSection: "cart",
   CraftPreOrderSection: "preOrder",
   CraftSubscriptionSection: "subscription",
+  CraftPreOrderListSection: "preOrderList",
+  CraftSubscriptionListSection: "subscriptionList",
   CraftOrderConfirmationSection: "orderConfirmation",
 } as const satisfies Record<StudioSectionType, VendlSectionType>;
 

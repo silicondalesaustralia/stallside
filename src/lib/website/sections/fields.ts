@@ -26,7 +26,9 @@ export type PageKind =
   | "category"
   | "product"
   | "menu"
+  | "preorders"
   | "preorder"
+  | "subscriptions"
   | "subscription"
   | "cart"
   | "success";
@@ -37,7 +39,9 @@ export const ALL_PAGE_KINDS: PageKind[] = [
   "category",
   "product",
   "menu",
+  "preorders",
   "preorder",
+  "subscriptions",
   "subscription",
   "cart",
   "success",

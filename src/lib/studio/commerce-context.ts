@@ -13,6 +13,8 @@ import { productMainCategory } from "./product-main-category";
 import { categorySlugsById } from "@/lib/catalogue/main-category";
 import { loadPreOrderPageData } from "@/lib/storefront/views/load-preorder-page";
 import { loadSubscriptionOffer } from "@/lib/storefront/views/load-subscription-offer";
+import { loadPreOrderList, loadSubscriptionList } from "@/lib/storefront/views/load-offer-lists";
+import { shopPreOrdersPath, shopSubscriptionsPath } from "@/lib/storefront/paths";
 
 function mapStandProducts(ctx: NonNullable<StorefrontContext>) {
   return ctx.products.map((p) =>
@@ -44,6 +46,14 @@ export async function buildSampleCommerceContext(
   };
 
   if (kind === "shop" || kind === "cart" || kind === "success") return base;
+  if (kind === "preorders") {
+    const preOrderList = await loadPreOrderList(ctx.stand.id, shopPreOrdersPath(ctx.storefront.slug));
+    return { ...base, preOrderList: preOrderList ?? undefined };
+  }
+  if (kind === "subscriptions") {
+    const href = shopSubscriptionsPath(ctx.storefront.slug);
+    return { ...base, subscriptionList: (await loadSubscriptionList(ctx.stand.id, href)) ?? undefined };
+  }
   if (kind === "preorder") return { ...base, preOrder: (await loadPreOrderPageData(ctx)) ?? undefined };
   if (kind === "subscription") {
     return { ...base, subscription: (await loadSubscriptionOffer({ standId: ctx.stand.id })) ?? undefined };

@@ -15,6 +15,8 @@ import CraftMenuDetailSection from "@/components/studio/sections/CraftMenuDetail
 import CraftCartSection from "@/components/studio/sections/CraftCartSection";
 import CraftPreOrderSection from "@/components/studio/sections/CraftPreOrderSection";
 import CraftSubscriptionSection from "@/components/studio/sections/CraftSubscriptionSection";
+import CraftPreOrderListSection from "@/components/studio/sections/CraftPreOrderListSection";
+import CraftSubscriptionListSection from "@/components/studio/sections/CraftSubscriptionListSection";
 import CraftOrderConfirmationSection from "@/components/studio/sections/CraftOrderConfirmationSection";
 
 export function buildCommerceStarterTree(input: {
@@ -71,6 +73,12 @@ export function buildCommerceStarterTree(input: {
       sections.push(
         <CraftPickupSection preset="cards" heading="Pickup & delivery" />,
       );
+      break;
+    case "preorders":
+      sections.push(<CraftPreOrderListSection />);
+      break;
+    case "subscriptions":
+      sections.push(<CraftSubscriptionListSection />);
       break;
     case "preorder":
       sections.push(<CraftPreOrderSection />);

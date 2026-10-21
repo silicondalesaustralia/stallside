@@ -3,6 +3,7 @@ import type { StandCartCheckoutProps } from "@/lib/storefront/stand-cart-props";
 import type { SuccessPageState } from "@/app/checkout/success/success-state";
 import type { PreOrderPageData } from "@/lib/storefront/views/preorder-page-types";
 import type { SubscriptionOfferData } from "@/lib/storefront/views/subscription-offer-types";
+import type { PreOrderListData, SubscriptionListData } from "@/lib/storefront/views/offer-list-types";
 
 export const COMMERCE_SHOP_KEY = "commerce-shop";
 export const COMMERCE_CATEGORY_KEY = "commerce-category";
@@ -12,15 +13,29 @@ export const COMMERCE_CART_KEY = "commerce-cart";
 export const COMMERCE_SUCCESS_KEY = "commerce-success";
 export const COMMERCE_PREORDER_KEY = "commerce-preorder";
 export const COMMERCE_SUBSCRIPTION_KEY = "commerce-subscription";
+export const COMMERCE_PREORDERS_KEY = "commerce-preorders";
+export const COMMERCE_SUBSCRIPTIONS_KEY = "commerce-subscriptions";
 
-export type CommercePageKind = "shop" | "category" | "product" | "menu" | "preorder" | "subscription" | "cart" | "success";
+export type CommercePageKind =
+  | "shop"
+  | "category"
+  | "product"
+  | "menu"
+  | "preorders"
+  | "preorder"
+  | "subscriptions"
+  | "subscription"
+  | "cart"
+  | "success";
 
 export const COMMERCE_PAGE_KEYS = [
   COMMERCE_SHOP_KEY,
   COMMERCE_CATEGORY_KEY,
   COMMERCE_PRODUCT_KEY,
   COMMERCE_MENU_KEY,
+  COMMERCE_PREORDERS_KEY,
   COMMERCE_PREORDER_KEY,
+  COMMERCE_SUBSCRIPTIONS_KEY,
   COMMERCE_SUBSCRIPTION_KEY,
   COMMERCE_CART_KEY,
   COMMERCE_SUCCESS_KEY,
@@ -59,10 +74,22 @@ export const COMMERCE_PAGES: {
     description: "Shared layout for menu and drop order pages",
   },
   {
+    kind: "preorders",
+    key: COMMERCE_PREORDERS_KEY,
+    label: "Pre-orders category",
+    description: "The list of every open pre-order page (/pre-orders)",
+  },
+  {
     kind: "preorder",
     key: COMMERCE_PREORDER_KEY,
     label: "Pre-order page",
     description: "Shared layout for every pre-order page",
+  },
+  {
+    kind: "subscriptions",
+    key: COMMERCE_SUBSCRIPTIONS_KEY,
+    label: "Subscriptions & memberships category",
+    description: "The list of every subscription and membership (/subscriptions)",
   },
   {
     kind: "subscription",
@@ -132,6 +159,10 @@ export type StudioCommerceContext = {
   preOrder?: PreOrderPageData;
   /** The subscription or membership offer being shown (subscription layout only). */
   subscription?: SubscriptionOfferData;
+  /** Open pre-order pages (pre-orders category only). */
+  preOrderList?: PreOrderListData;
+  /** Live offers (subscriptions category only). */
+  subscriptionList?: SubscriptionListData;
   /** Shopper came back from a cancelled checkout. */
   cancelled?: boolean;
   ownerId?: string;

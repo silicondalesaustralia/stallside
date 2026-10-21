@@ -78,6 +78,8 @@ export type StudioSectionType =
   | "CraftSpacerSection"
   | "CraftMenuDetailSection"
   | "CraftPreOrderSection"
+  | "CraftPreOrderListSection"
+  | "CraftSubscriptionListSection"
   | "CraftSubscriptionSection"
   | "CraftCartSection"
   | "CraftOrderConfirmationSection";
