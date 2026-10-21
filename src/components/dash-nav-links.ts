@@ -59,6 +59,7 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
       { href: "/dashboard/collections", label: "Pick Ups & Delivery" },
       { href: "/dashboard/calendar", label: "Calendar" },
       { href: "/dashboard/qr", label: "QR codes" },
+      { href: "/dashboard/data", label: "Data management" },
     ],
   },
   {
