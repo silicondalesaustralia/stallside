@@ -3,35 +3,11 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import {
-  intervalLabel,
-  membershipOfferReady,
-  subscriptionOfferPath,
-  weekdayLabel,
-  type MembershipPlan,
-} from "@/lib/subscription-offer";
+import { intervalLabel, subscriptionOfferPath } from "@/lib/subscription-offer";
 import { standSectionMetadata } from "@/lib/stand-seo";
-import { standOffersStripeRecurring } from "@/lib/stand-payment-brands";
-import {
-  squareMembershipPlans,
-  squareOfferReady,
-  squareSubscriptionRail,
-} from "@/lib/square-subscriptions/rail";
-import {
-  countHoldingMembers,
-  isOfferAtCapacity,
-  spotsLeft,
-} from "@/lib/subscription-capacity";
-import {
-  HandoverMode,
-  SubscriptionOfferKind,
-} from "@/generated/prisma/client";
+import { loadSubscriptionOffer } from "@/lib/storefront/views/load-subscription-offer";
 import StandStoreHeader from "../../StandStoreHeader";
-import SubscriptionEnrollForm from "./SubscriptionEnrollForm";
-import MembershipContentShell from "./MembershipContentShell";
-import MembershipEnrollForm from "./MembershipEnrollForm";
-import MembershipOfferStory from "./MembershipOfferStory";
-import MembershipTermsAccordion from "./MembershipTermsAccordion";
+import SubscriptionOfferContent from "./SubscriptionOfferContent";
 import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
 
 export async function generateMetadata({
@@ -79,170 +55,20 @@ export default async function PublicSubscriptionOfferPage({
   const { standSlug, offerSlug } = await params;
   await redirectLegacyStandToWebsite(standSlug, { kind: "subscription", offerSlug });
   const sp = await searchParams;
-  const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
-  const offerKey = decodeURIComponent(offerSlug).trim().toLowerCase();
-
-  const offer = await prisma.subscriptionOffer.findFirst({
-    where: {
-      slug: offerKey,
-      isActive: true,
-      stand: { slug: standKey, isActive: true },
-    },
-    include: {
-      stand: { include: { owner: true } },
-      items: {
-        orderBy: { sortOrder: "asc" },
-        include: { product: true },
-      },
-    },
+  const data = await loadSubscriptionOffer({ standSlug, offerSlug });
+  if (!data) notFound();
+  const stand = await prisma.stand.findFirst({
+    where: { slug: data.standSlug },
+    include: { owner: true },
   });
-  if (!offer) notFound();
-
-  const { stand } = offer;
+  if (!stand) notFound();
   const branded = publicStandBranding(stand, stand.owner);
-  const squareRail = await squareSubscriptionRail({
-    stand,
-    owner: stand.owner,
-    offerCurrency: offer.currency,
-  });
-  const cardEnabled = Boolean(squareRail) || standOffersStripeRecurring(stand, stand.owner);
-  const ready = squareRail ? squareOfferReady(offer) : membershipOfferReady(offer);
-  const holding = await countHoldingMembers(offer.id);
-  const atCapacity = isOfferAtCapacity(offer.maxMembers, holding);
-  const remaining = spotsLeft(offer.maxMembers, holding);
-  const cardOk = cardEnabled && ready && !atCapacity;
-  const day = weekdayLabel(offer.collectionWeekday);
-  const isMembership = offer.kind === SubscriptionOfferKind.MEMBERSHIP;
-  const unavailableReason = atCapacity
-    ? "This membership is full. No more spots are available right now."
-    : !cardEnabled
-      ? "This stand cannot take card payments yet."
-      : !ready
-        ? "This offer is not ready for signup yet. The owner needs to save it again after Stripe is connected."
-        : "Card subscriptions are not available for this offer right now.";
-
-  const plans: { plan: MembershipPlan; priceCents: number }[] = [];
-  if (isMembership && squareRail) {
-    plans.push(...squareMembershipPlans(offer));
-  } else if (isMembership) {
-    if (offer.weeklyPriceCents != null && offer.stripeWeeklyPriceId) {
-      plans.push({ plan: "WEEKLY", priceCents: offer.weeklyPriceCents });
-    }
-    if (offer.monthlyPriceCents != null && offer.stripeMonthlyPriceId) {
-      plans.push({ plan: "MONTHLY", priceCents: offer.monthlyPriceCents });
-    }
-    if (offer.upfrontPriceCents != null && offer.stripeUpfrontPriceId) {
-      plans.push({ plan: "UPFRONT", priceCents: offer.upfrontPriceCents });
-    }
-  }
 
   return (
-    <div
-      style={standAccentStyle(branded.accentColor, branded.secondaryColor)}
-      className="min-h-dvh bg-[var(--bg)]"
-    >
-      <StandStoreHeader
-        standName={branded.name}
-        standSlug={stand.slug}
-        logoUrl={branded.logoUrl}
-      />
-      <main className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-8 sm:px-6">
-        {offer.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={offer.imageUrl}
-            alt=""
-            className="aspect-[16/9] w-full rounded-xl object-cover"
-          />
-        ) : null}
-
-        {isMembership ? (
-          <MembershipContentShell accentColor={branded.accentColor}>
-            <MembershipOfferStory
-              standName={branded.name}
-              title={offer.title}
-              description={offer.description}
-              currency={offer.currency}
-              termWeeks={offer.termWeeks}
-              weeklyPriceCents={offer.weeklyPriceCents}
-              monthlyPriceCents={offer.monthlyPriceCents}
-              upfrontPriceCents={offer.upfrontPriceCents}
-              collectionWeekdayLabel={day}
-              collectionNote={offer.collectionNote}
-              handoverCollect={offer.handoverMode === HandoverMode.COLLECT}
-              plans={plans.map((p) => p.plan)}
-            />
-            {sp.cancelled ? (
-              <p className="rounded-lg border border-[var(--m-card-border)] bg-[var(--m-card)] px-3 py-2 text-sm">
-                Checkout cancelled. You can try again when ready.
-              </p>
-            ) : null}
-            {remaining != null && remaining > 0 && remaining <= 5 ? (
-              <p className="text-sm text-[var(--muted)]">
-                {remaining === 1
-                  ? "1 spot left"
-                  : `${remaining} spots left`}
-              </p>
-            ) : null}
-            {cardOk ? (
-              <MembershipEnrollForm
-                standSlug={stand.slug}
-                offerSlug={offer.slug}
-                currency={offer.currency}
-                plans={plans}
-                termWeeks={offer.termWeeks}
-                upfrontBenefitsText={offer.upfrontBenefitsText}
-                handoverDeliver={offer.handoverMode === HandoverMode.DELIVER}
-              />
-            ) : (
-              <p className="text-sm text-[var(--warn)]">{unavailableReason}</p>
-            )}
-            {offer.termsText ? (
-              <MembershipTermsAccordion text={offer.termsText} />
-            ) : null}
-          </MembershipContentShell>
-        ) : (
-          <>
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight">
-                {offer.title}
-              </h1>
-              {offer.description ? (
-                <p className="mt-2 whitespace-pre-wrap text-[var(--muted)]">
-                  {offer.description}
-                </p>
-              ) : null}
-              <p className="mt-2 text-sm text-[var(--muted)]">
-                {intervalLabel(offer.interval)}
-                {day ? ` · ${day} collection` : ""}
-                {offer.collectionNote ? ` · ${offer.collectionNote}` : ""}
-              </p>
-            </div>
-            {sp.cancelled ? (
-              <p className="rounded-lg border border-[var(--line)] px-3 py-2 text-sm">
-                Checkout cancelled. You can try again when ready.
-              </p>
-            ) : null}
-            {cardOk ? (
-              <SubscriptionEnrollForm
-                standSlug={stand.slug}
-                offerSlug={offer.slug}
-                title={offer.title}
-                interval={offer.interval}
-                priceCents={offer.priceCents}
-                currency={offer.currency}
-                handoverDeliver={offer.handoverMode === HandoverMode.DELIVER}
-                lines={offer.items.map((i) => ({
-                  name: i.product.name,
-                  quantity: i.quantity,
-                  lineTotalCents: i.product.priceCents * i.quantity,
-                }))}
-              />
-            ) : (
-              <p className="text-sm text-[var(--warn)]">{unavailableReason}</p>
-            )}
-          </>
-        )}
+    <div style={standAccentStyle(branded.accentColor, branded.secondaryColor)} className="min-h-dvh bg-[var(--bg)]">
+      <StandStoreHeader standName={branded.name} standSlug={stand.slug} logoUrl={branded.logoUrl} />
+      <main className="mx-auto max-w-lg px-4 py-8 sm:px-6">
+        <SubscriptionOfferContent data={data} cancelled={Boolean(sp.cancelled)} />
       </main>
     </div>
   );

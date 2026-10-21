@@ -1,6 +1,8 @@
 import type { PublicProductCard } from "@/lib/public-product";
 import type { StandCartCheckoutProps } from "@/lib/storefront/stand-cart-props";
 import type { SuccessPageState } from "@/app/checkout/success/success-state";
+import type { PreOrderPageData } from "@/lib/storefront/views/preorder-page-types";
+import type { SubscriptionOfferData } from "@/lib/storefront/views/subscription-offer-types";
 
 export const COMMERCE_SHOP_KEY = "commerce-shop";
 export const COMMERCE_CATEGORY_KEY = "commerce-category";
@@ -8,14 +10,18 @@ export const COMMERCE_PRODUCT_KEY = "commerce-product";
 export const COMMERCE_MENU_KEY = "commerce-menu";
 export const COMMERCE_CART_KEY = "commerce-cart";
 export const COMMERCE_SUCCESS_KEY = "commerce-success";
+export const COMMERCE_PREORDER_KEY = "commerce-preorder";
+export const COMMERCE_SUBSCRIPTION_KEY = "commerce-subscription";
 
-export type CommercePageKind = "shop" | "category" | "product" | "menu" | "cart" | "success";
+export type CommercePageKind = "shop" | "category" | "product" | "menu" | "preorder" | "subscription" | "cart" | "success";
 
 export const COMMERCE_PAGE_KEYS = [
   COMMERCE_SHOP_KEY,
   COMMERCE_CATEGORY_KEY,
   COMMERCE_PRODUCT_KEY,
   COMMERCE_MENU_KEY,
+  COMMERCE_PREORDER_KEY,
+  COMMERCE_SUBSCRIPTION_KEY,
   COMMERCE_CART_KEY,
   COMMERCE_SUCCESS_KEY,
 ] as const;
@@ -51,6 +57,18 @@ export const COMMERCE_PAGES: {
     key: COMMERCE_MENU_KEY,
     label: "Menu",
     description: "Shared layout for menu and drop order pages",
+  },
+  {
+    kind: "preorder",
+    key: COMMERCE_PREORDER_KEY,
+    label: "Pre-order page",
+    description: "Shared layout for every pre-order page",
+  },
+  {
+    kind: "subscription",
+    key: COMMERCE_SUBSCRIPTION_KEY,
+    label: "Subscription & membership",
+    description: "Shared layout for every subscription and membership page",
   },
   {
     kind: "cart",
@@ -110,5 +128,11 @@ export type StudioCommerceContext = {
   cart?: StandCartCheckoutProps;
   /** Payment result (order confirmation page only). */
   success?: SuccessPageState;
+  /** The pre-order page being shown (pre-order page layout only). */
+  preOrder?: PreOrderPageData;
+  /** The subscription or membership offer being shown (subscription layout only). */
+  subscription?: SubscriptionOfferData;
+  /** Shopper came back from a cancelled checkout. */
+  cancelled?: boolean;
   ownerId?: string;
 };

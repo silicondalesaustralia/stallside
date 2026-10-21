@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import PublicSubscriptionOfferPage from "@/app/s/[standSlug]/sub/[offerSlug]/page";
+import { notFound } from "next/navigation";
 import { loadStorefrontPage } from "@/lib/storefront/page-loader";
 import { prisma } from "@/lib/prisma";
 import { buildStorefrontPageMetadata, seoConfigSource } from "@/lib/studio/resolve-seo-metadata";
-import StorefrontJsonLd from "@/components/storefront/StorefrontJsonLd";
 import { subscriptionPageSeo } from "@/lib/seo/subscription-page-seo";
+import { COMMERCE_SUBSCRIPTION_KEY } from "@/lib/studio/commerce-pages";
+import CommerceLayoutView from "@/lib/storefront/views/CommerceLayoutView";
+import { loadSubscriptionOffer } from "@/lib/storefront/views/load-subscription-offer";
+import StudioSubscriptionBlock from "@/components/studio/blocks/StudioSubscriptionBlock";
+import SubscriptionOfferContent from "@/app/s/[standSlug]/sub/[offerSlug]/SubscriptionOfferContent";
 
 type Props = {
   params: Promise<{ slug: string; offer: string }>;
@@ -37,22 +41,37 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   });
 }
 
-/** A subscription offer on the website (`/subscriptions/{offer}`); sign-up and payment work as on the stand page. */
+/** A subscription or membership offer on the website, in the seller's subscription layout with the site menu and footer. */
 export default async function StorefrontSubscriptionOfferPage({ params, searchParams }: Props) {
   const { slug, offer } = await params;
-  const draft = (await searchParams).draft === "1";
+  const sp = await searchParams;
+  const draft = sp.draft === "1";
   const ctx = await loadStorefrontPage(slug, draft);
-  const row = await prisma.subscriptionOffer.findFirst({
-    where: { standId: ctx.stand.id, slug: decodeURIComponent(offer).trim().toLowerCase(), isActive: true },
-    select: { slug: true, title: true, description: true, imageUrl: true, priceCents: true, interval: true },
-  });
+  const data = await loadSubscriptionOffer({ standId: ctx.stand.id, offerSlug: offer });
+  if (!data) notFound();
+  const cancelled = Boolean(sp.cancelled);
+
   return (
-    <>
-      {row ? <StorefrontJsonLd ctx={ctx} draft={draft} seo={subscriptionPageSeo(ctx, row)} /> : null}
-      <PublicSubscriptionOfferPage
-        params={Promise.resolve({ standSlug: ctx.stand.slug, offerSlug: offer })}
-        searchParams={searchParams}
-      />
-    </>
+    <CommerceLayoutView
+      ctx={ctx}
+      draft={draft}
+      activePage="subscriptions"
+      pageKey={COMMERCE_SUBSCRIPTION_KEY}
+      commerceContext={{ kind: "subscription", ownerId: ctx.owner.id, subscription: data, cancelled }}
+      renderBlock={(metadata) => <StudioSubscriptionBlock metadata={metadata} />}
+      fallback={
+        <div className="storefront-page-content storefront-page-content--narrow">
+          <SubscriptionOfferContent data={data} cancelled={cancelled} />
+        </div>
+      }
+      seo={subscriptionPageSeo(ctx, {
+        slug: data.offer.slug,
+        title: data.offer.title,
+        description: data.offer.description,
+        imageUrl: data.offer.imageUrl,
+        priceCents: data.offer.priceCents,
+        interval: data.offer.interval,
+      })}
+    />
   );
 }

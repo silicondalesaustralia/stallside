@@ -2,6 +2,8 @@ import type { StudioSectionType } from "@/lib/studio/types";
 import { about, faq, hero, image, imageText, spacer, text } from "./content-sections";
 import {
   cart,
+  preOrder,
+  subscription,
   categories,
   menuDetail,
   nextDrop,
@@ -41,6 +43,8 @@ const DEFINITIONS = {
   categoryDetail,
   spacer,
   menuDetail,
+  preOrder,
+  subscription,
   cart,
   orderConfirmation,
 } satisfies Record<VendlSectionType, SectionDefinition>;
@@ -83,6 +87,8 @@ export const VENDL_TYPE_BY_CRAFT_NAME = {
   CraftSpacerSection: "spacer",
   CraftMenuDetailSection: "menuDetail",
   CraftCartSection: "cart",
+  CraftPreOrderSection: "preOrder",
+  CraftSubscriptionSection: "subscription",
   CraftOrderConfirmationSection: "orderConfirmation",
 } as const satisfies Record<StudioSectionType, VendlSectionType>;
 

@@ -7,6 +7,7 @@ import { withCommerceContext } from "@/lib/studio/commerce-context";
 import { studioPageNodes } from "@/lib/studio/storage";
 import StudioPublicSections from "@/lib/studio/public-render";
 import type { StudioMetadata } from "@/lib/studio/types";
+import type { PageSeo } from "@/lib/seo/graph/page-graph";
 
 /**
  * A commerce page (cart, order confirmation): the seller's saved layout when they have one,
@@ -20,6 +21,8 @@ export default async function CommerceLayoutView({
   commerceContext,
   renderBlock,
   fallback,
+  seo,
+  after,
 }: {
   ctx: NonNullable<StorefrontContext>;
   draft: boolean;
@@ -28,6 +31,9 @@ export default async function CommerceLayoutView({
   commerceContext: StudioCommerceContext;
   renderBlock: (metadata: StudioMetadata) => ReactNode;
   fallback: ReactNode;
+  seo?: PageSeo;
+  /** Shown below the page body, e.g. the go-to-cart bar. */
+  after?: ReactNode;
 }) {
   const studioCtx = await resolveStudioPublicContext(ctx, draft);
   const metadata = studioCtx.active ? withCommerceContext(studioCtx.metadata, commerceContext) : undefined;
@@ -38,8 +44,9 @@ export default async function CommerceLayoutView({
   else if (metadata) body = renderBlock(metadata);
 
   return (
-    <StorefrontPageShell ctx={ctx} draft={draft} activePage={activePage}>
+    <StorefrontPageShell ctx={ctx} draft={draft} activePage={activePage} seo={seo}>
       {body}
+      {after}
     </StorefrontPageShell>
   );
 }

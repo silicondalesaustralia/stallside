@@ -11,9 +11,12 @@ import MembershipCategoryView from "./MembershipCategoryView";
 export default async function SubscriptionsIndexView({
   standSlug,
   offerHrefBase,
+  standHeader = true,
 }: {
   standSlug: string;
   offerHrefBase?: string;
+  /** The stand page header; off on the website, which has its own menu. */
+  standHeader?: boolean;
 }) {
   const slug = decodeURIComponent(standSlug).trim().toLowerCase();
   const stand = await prisma.stand.findUnique({
@@ -52,13 +55,15 @@ export default async function SubscriptionsIndexView({
       className="min-h-dvh w-full"
       style={standAccentStyle(branded.accentColor, branded.secondaryColor)}
     >
-      <div className="mx-auto w-full max-w-lg px-4 pb-2 pt-8">
-        <StandStoreHeader
-          standName={stand.name}
-          standSlug={stand.slug}
-          logoUrl={branded.logoUrl}
-        />
-      </div>
+      {standHeader ? (
+        <div className="mx-auto w-full max-w-lg px-4 pb-2 pt-8">
+          <StandStoreHeader
+            standName={stand.name}
+            standSlug={stand.slug}
+            logoUrl={branded.logoUrl}
+          />
+        </div>
+      ) : null}
       {liveOffers.length === 0 ? (
         <div className="mx-auto mt-4 w-full max-w-lg px-4 pb-10">
           <div className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">

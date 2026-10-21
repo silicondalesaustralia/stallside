@@ -3,7 +3,7 @@ import SubscriptionsIndexView from "@/app/s/[standSlug]/sub/SubscriptionsIndexVi
 import { loadStorefrontPage } from "@/lib/storefront/page-loader";
 import { shopSubscriptionsPath } from "@/lib/storefront/paths";
 import { currentStorefrontBasePath } from "@/lib/tenancy/request-base-path";
-import StorefrontJsonLd from "@/components/storefront/StorefrontJsonLd";
+import StorefrontPageShell from "@/components/storefront/StorefrontPageShell";
 import { simplePageSeo } from "@/lib/seo/simple-page-seo";
 
 type Props = {
@@ -26,16 +26,17 @@ export default async function StorefrontSubscriptionsPage({ params, searchParams
   const ctx = await loadStorefrontPage(slug, draft);
   const basePath = await currentStorefrontBasePath(ctx.storefront.slug);
   return (
-    <>
-      <StorefrontJsonLd
-        ctx={ctx}
-        draft={draft}
-        seo={simplePageSeo(ctx, "/subscriptions", "Memberships", { type: "CollectionPage" })}
-      />
+    <StorefrontPageShell
+      ctx={ctx}
+      draft={draft}
+      activePage="subscriptions"
+      seo={simplePageSeo(ctx, "/subscriptions", "Memberships", { type: "CollectionPage" })}
+    >
       <SubscriptionsIndexView
         standSlug={ctx.stand.slug}
         offerHrefBase={shopSubscriptionsPath(ctx.storefront.slug, undefined, false, basePath)}
+        standHeader={false}
       />
-    </>
+    </StorefrontPageShell>
   );
 }

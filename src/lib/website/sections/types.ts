@@ -23,6 +23,8 @@ export type VendlSectionType =
   | "categoryDetail"
   | "spacer"
   | "menuDetail"
+  | "preOrder"
+  | "subscription"
   | "cart"
   | "orderConfirmation";
 

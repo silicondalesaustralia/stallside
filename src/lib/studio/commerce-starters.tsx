@@ -13,6 +13,8 @@ import { DEFAULT_INFO_ROWS } from "@/lib/studio/product-detail-settings";
 import CraftCategoryDetailSection from "@/components/studio/sections/CraftCategoryDetailSection";
 import CraftMenuDetailSection from "@/components/studio/sections/CraftMenuDetailSection";
 import CraftCartSection from "@/components/studio/sections/CraftCartSection";
+import CraftPreOrderSection from "@/components/studio/sections/CraftPreOrderSection";
+import CraftSubscriptionSection from "@/components/studio/sections/CraftSubscriptionSection";
 import CraftOrderConfirmationSection from "@/components/studio/sections/CraftOrderConfirmationSection";
 
 export function buildCommerceStarterTree(input: {
@@ -69,6 +71,12 @@ export function buildCommerceStarterTree(input: {
       sections.push(
         <CraftPickupSection preset="cards" heading="Pickup & delivery" />,
       );
+      break;
+    case "preorder":
+      sections.push(<CraftPreOrderSection />);
+      break;
+    case "subscription":
+      sections.push(<CraftSubscriptionSection />);
       break;
     case "cart":
       sections.push(<CraftCartSection />);

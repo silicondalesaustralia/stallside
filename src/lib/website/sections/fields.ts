@@ -19,7 +19,17 @@ export const entityId = z.string().min(1).max(L.idChars);
 
 export const count = (min: number, max: number) => z.number().int().min(min).max(max);
 
-export type PageKind = "home" | "content" | "shop" | "category" | "product" | "menu" | "cart" | "success";
+export type PageKind =
+  | "home"
+  | "content"
+  | "shop"
+  | "category"
+  | "product"
+  | "menu"
+  | "preorder"
+  | "subscription"
+  | "cart"
+  | "success";
 export const ALL_PAGE_KINDS: PageKind[] = [
   "home",
   "content",
@@ -27,6 +37,8 @@ export const ALL_PAGE_KINDS: PageKind[] = [
   "category",
   "product",
   "menu",
+  "preorder",
+  "subscription",
   "cart",
   "success",
 ];

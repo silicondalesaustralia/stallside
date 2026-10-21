@@ -20,6 +20,8 @@ import CraftCategoryDetailSection from "@/components/studio/sections/CraftCatego
 import CraftSpacerSection from "@/components/studio/sections/CraftSpacerSection";
 import CraftMenuDetailSection from "@/components/studio/sections/CraftMenuDetailSection";
 import CraftCartSection from "@/components/studio/sections/CraftCartSection";
+import CraftPreOrderSection from "@/components/studio/sections/CraftPreOrderSection";
+import CraftSubscriptionSection from "@/components/studio/sections/CraftSubscriptionSection";
 import CraftOrderConfirmationSection from "@/components/studio/sections/CraftOrderConfirmationSection";
 
 import type { StudioSectionType } from "./types";
@@ -47,6 +49,8 @@ export const studioResolver = {
   CraftSpacerSection,
   CraftMenuDetailSection,
   CraftCartSection,
+  CraftPreOrderSection,
+  CraftSubscriptionSection,
   CraftOrderConfirmationSection,
 } satisfies Record<StudioSectionType | "StudioPageRoot" | "CraftPageRoot", unknown>;
 

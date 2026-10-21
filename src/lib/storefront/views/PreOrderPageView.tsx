@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
-import { categorySlugsById } from "@/lib/catalogue/main-category";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { mapPublicProduct } from "@/lib/public-product";
-import { productLiveWhere } from "@/lib/product-visibility";
 import { loadStorefrontPage } from "@/lib/storefront/page-loader";
 import { buildStorefrontPageMetadata, seoConfigSource } from "@/lib/studio/resolve-seo-metadata";
-import StorefrontPageShell from "@/components/storefront/StorefrontPageShell";
+import { COMMERCE_PREORDER_KEY } from "@/lib/studio/commerce-pages";
 import StorefrontGoToCartBar from "@/components/storefront/StorefrontGoToCartBar";
-import PreOrderPageContent from "@/app/s/[standSlug]/pre/[pageSlug]/PreOrderPageContent";
+import StudioPreOrderBlock from "@/components/studio/blocks/StudioPreOrderBlock";
+import PreOrderPageBody from "@/components/studio/blocks/PreOrderPageBody";
 import { menuPageSeo } from "@/lib/seo/menu-page-seo";
+import CommerceLayoutView from "./CommerceLayoutView";
+import { loadPreOrderPageData } from "./load-preorder-page";
 
 type ViewProps = { slug: string; pageSlug: string; draft: boolean };
 
@@ -42,70 +42,29 @@ export async function preOrderPageViewMetadata(props: ViewProps): Promise<Metada
   }
 }
 
-/** A stand pre-order page shown on the website at `/pre-orders/{page}`. */
+/** A stand pre-order page shown on the website at `/pre-orders/{page}`, in the seller's pre-order layout. */
 export default async function PreOrderPageView(props: ViewProps) {
-  const { ctx, page } = await loadPage(props);
-  if (!page) notFound();
-  const products = await prisma.product.findMany({
-    where: { standId: ctx.stand.id, ...productLiveWhere },
-    include: {
-      optionGroups: {
-        orderBy: { sortOrder: "asc" },
-        include: { choices: { orderBy: { sortOrder: "asc" } } },
-      },
-    },
-  });
-  const categorySlugs = categorySlugsById(ctx.products);
-  const byId = new Map(
-    products.map((p) => [
-      p.id,
-      mapPublicProduct({ ...p, mainCategorySlug: categorySlugs.get(p.id) ?? null }, {
-        showExactStock: ctx.stand.showExactStock || page.showExactStock,
-        showPublicScarcity: ctx.stand.showPublicScarcity,
-        timeZone: ctx.stand.timezone,
-      }),
-    ]),
-  );
-  const pageProducts = page.items
-    .map((i) => byId.get(i.productId))
-    .filter((p): p is NonNullable<typeof p> => Boolean(p));
-  if (pageProducts.length === 0) notFound();
-
+  const ctx = await loadStorefrontPage(props.slug, props.draft);
+  const data = await loadPreOrderPageData(ctx, props.pageSlug);
+  if (!data) notFound();
   return (
-    <StorefrontPageShell
+    <CommerceLayoutView
       ctx={ctx}
       draft={props.draft}
       activePage="menu"
+      pageKey={COMMERCE_PREORDER_KEY}
+      commerceContext={{ kind: "preorder", ownerId: ctx.owner.id, preOrder: data }}
+      renderBlock={(metadata) => <StudioPreOrderBlock metadata={metadata} />}
+      fallback={<PreOrderPageBody data={data} />}
       seo={menuPageSeo(ctx, {
-        path: `/pre-orders/${encodeURIComponent(page.slug)}`,
-        name: page.title,
-        description: page.description,
-        imageUrl: page.imageUrl,
-        products: pageProducts,
+        path: `/pre-orders/${encodeURIComponent(data.page.slug)}`,
+        name: data.page.title,
+        description: data.page.description,
+        imageUrl: data.page.imageUrl,
+        products: data.pageProducts,
         isPreOrder: true,
       })}
-    >
-      <div className="storefront-page-content storefront-page-content--narrow">
-        <PreOrderPageContent
-          standSlug={ctx.stand.slug}
-          standName={ctx.stand.name}
-          timezone={ctx.stand.timezone}
-          currency={ctx.stand.currency}
-          accentColor={ctx.branding.accentColor ?? null}
-          page={{
-            slug: page.slug,
-            title: page.title,
-            description: page.description,
-            collectionAt: page.collectionAt,
-            orderByAt: page.orderByAt,
-            collectionNote: page.collectionNote,
-            handoverMode: page.handoverMode,
-          }}
-          pageProducts={pageProducts}
-          catalogProducts={[...byId.values()]}
-        />
-      </div>
-      <StorefrontGoToCartBar standSlug={ctx.stand.slug} branding={ctx.branding} />
-    </StorefrontPageShell>
+      after={<StorefrontGoToCartBar standSlug={ctx.stand.slug} branding={ctx.branding} />}
+    />
   );
 }

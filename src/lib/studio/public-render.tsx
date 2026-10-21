@@ -19,6 +19,8 @@ import { parseContactLayout } from "@/lib/studio/contact-form";
 import StudioImageBlock from "@/components/studio/blocks/StudioImageBlock";
 import StudioImageTextBlock from "@/components/studio/blocks/StudioImageTextBlock";
 import StudioPaymentsBlock from "@/components/studio/blocks/StudioPaymentsBlock";
+import StudioPreOrderBlock from "@/components/studio/blocks/StudioPreOrderBlock";
+import StudioSubscriptionBlock from "@/components/studio/blocks/StudioSubscriptionBlock";
 import { parseGalleryImages, parseImageAspect, parseImageDisplay } from "@/lib/studio/gallery-images";
 import { parseImageStyle } from "@/lib/studio/image-pair";
 import StudioReviewsBlock from "@/components/studio/blocks/StudioReviewsBlock";
@@ -177,6 +179,10 @@ function StudioSectionRender({
       return <StudioMenuDetailBlock metadata={metadata} />;
     case "CraftCartSection":
       return <StudioCartBlock metadata={metadata} />;
+    case "CraftPreOrderSection":
+      return <StudioPreOrderBlock metadata={metadata} />;
+    case "CraftSubscriptionSection":
+      return <StudioSubscriptionBlock metadata={metadata} />;
     case "CraftOrderConfirmationSection":
       return <StudioOrderConfirmationBlock metadata={metadata} showRestock={p.showRestock !== false} />;
     case "CraftCategoriesSection":

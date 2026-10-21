@@ -9,6 +9,8 @@ import { WEBSITE_LIMITS, WEBSITE_SCHEMA_VERSION } from "./limits";
 const REQUIRED_BY_KIND: Partial<Record<PageKind, string>> = {
   product: "productDetail",
   menu: "menuDetail",
+  preorder: "preOrder",
+  subscription: "subscription",
   cart: "cart",
   success: "orderConfirmation",
 };

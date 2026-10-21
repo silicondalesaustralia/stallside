@@ -184,6 +184,36 @@ export const cart: SectionDefinition = {
   emptyState: "render",
 };
 
+export const preOrder: SectionDefinition = {
+  type: "preOrder",
+  version: 1,
+  craftName: "CraftPreOrderSection",
+  label: "Pre-order page",
+  variants: DEFAULT_ONLY,
+  defaultVariant: "default",
+  content: z.object({}),
+  settings: z.object({}),
+  pageKinds: ["preorder"],
+  singleton: true,
+  required: true,
+  emptyState: "render",
+};
+
+export const subscription: SectionDefinition = {
+  type: "subscription",
+  version: 1,
+  craftName: "CraftSubscriptionSection",
+  label: "Subscription & membership",
+  variants: DEFAULT_ONLY,
+  defaultVariant: "default",
+  content: z.object({}),
+  settings: z.object({}),
+  pageKinds: ["subscription"],
+  singleton: true,
+  required: true,
+  emptyState: "render",
+};
+
 export const orderConfirmation: SectionDefinition = {
   type: "orderConfirmation",
   version: 1,
