@@ -224,7 +224,7 @@ export default function PreOrderPageForm({
         ) : null}
         <button
           type="submit"
-          disabled={pending || imageBusy || !stripeConnected}
+          disabled={pending || imageBusy}
           className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60"
         >
           {pending

@@ -22,6 +22,7 @@ export default function PreOrderPageOrder({
   cardHeading,
   collectionReminder,
   ordersOpen,
+  cardReady = true,
 }: {
   standSlug: string;
   currency: string;
@@ -30,6 +31,7 @@ export default function PreOrderPageOrder({
   cardHeading: string;
   collectionReminder: string | null;
   ordersOpen: boolean;
+  cardReady?: boolean;
 }) {
   const router = useRouter();
   const cartHref = useCartHref(standSlug);
@@ -91,7 +93,7 @@ export default function PreOrderPageOrder({
   }
 
   const lines = readStandCartLines(standSlug);
-  const canOrder = ordersOpen && selectedCount > 0 && !busy;
+  const canOrder = cardReady && ordersOpen && selectedCount > 0 && !busy;
 
   return (
     <section className="rounded-[18px] border border-[var(--line)] bg-[var(--offer-card-bg,var(--panel))] p-5 sm:p-6">
@@ -104,6 +106,9 @@ export default function PreOrderPageOrder({
         <p className="mt-3 text-sm text-[var(--gone)]">
           Orders are closed for this collection.
         </p>
+      ) : null}
+      {ordersOpen && !cardReady ? (
+        <p className="mt-3 text-sm text-[var(--warn)]">This stand cannot take card payments yet.</p>
       ) : null}
       <ul className="mt-2">
         {products.map((product) => (

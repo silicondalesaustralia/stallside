@@ -3,6 +3,7 @@ import { categorySlugsById } from "@/lib/catalogue/main-category";
 import { prisma } from "@/lib/prisma";
 import { mapPublicProduct } from "@/lib/public-product";
 import { productLiveWhere } from "@/lib/product-visibility";
+import { loadPreOrderCardRail } from "@/lib/preorder-card-rail";
 import type { PreOrderPageData } from "./preorder-page-types";
 
 /** One active pre-order page by slug (or the stand's first one), with its products; null when there's nothing to show. */
@@ -52,6 +53,7 @@ export async function loadPreOrderPageData(
     timezone: ctx.stand.timezone,
     currency: ctx.stand.currency,
     accentColor: ctx.branding.accentColor ?? null,
+    cardReady: (await loadPreOrderCardRail(ctx.owner)).cardReady,
     page: {
       slug: page.slug,
       title: page.title,

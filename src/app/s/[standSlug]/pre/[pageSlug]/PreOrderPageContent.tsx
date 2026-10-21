@@ -26,6 +26,7 @@ export default function PreOrderPageContent({
   pageProducts,
   catalogProducts,
   view,
+  cardReady = true,
 }: {
   standSlug: string;
   standName: string;
@@ -45,6 +46,8 @@ export default function PreOrderPageContent({
   catalogProducts: PublicProductCard[];
   /** Website layout choices; the stand page shows everything. */
   view?: OfferPageView;
+  /** False until the stand can take card payments; ordering is switched off. */
+  cardReady?: boolean;
 }) {
   const ordersOpen = page.orderByAt.getTime() > Date.now();
   const facts = preorderDetailFacts({
@@ -100,6 +103,7 @@ export default function PreOrderPageContent({
         })}
         collectionReminder={collectionReminder}
         ordersOpen={ordersOpen}
+        cardReady={cardReady}
       />
       {isShown(view, "showDetails") ? (
         <PreOrderPageSupport

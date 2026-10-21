@@ -9,6 +9,7 @@ import { productLiveWhere } from "@/lib/product-visibility";
 import StandStoreHeader from "../../StandStoreHeader";
 import StandGoToCartBar from "../../StandGoToCartBar";
 import PreOrderPageContent from "./PreOrderPageContent";
+import { loadPreOrderCardRail } from "@/lib/preorder-card-rail";
 import { preOrderDetailMetadata } from "./pre-order-detail-metadata";
 import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
 
@@ -107,6 +108,7 @@ export default async function PublicPreOrderPage({
           timezone={stand.timezone}
           currency={stand.currency}
           accentColor={branded.accentColor}
+          cardReady={(await loadPreOrderCardRail(stand.owner)).cardReady}
           page={{
             slug: page.slug,
             title: page.title,

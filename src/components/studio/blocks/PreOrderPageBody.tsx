@@ -13,6 +13,7 @@ export default function PreOrderPageBody({ data, view }: { data: PreOrderPageDat
           timezone={data.timezone}
           currency={data.currency}
           accentColor={data.accentColor}
+          cardReady={data.cardReady}
           page={{
             ...data.page,
             collectionAt: new Date(data.page.collectionAt),

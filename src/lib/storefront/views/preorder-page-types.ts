@@ -8,6 +8,8 @@ export type PreOrderPageData = {
   timezone: string;
   currency: string;
   accentColor: string | null;
+  /** False until Stripe or Square can take the payment; ordering is switched off. */
+  cardReady: boolean;
   page: {
     slug: string;
     title: string;

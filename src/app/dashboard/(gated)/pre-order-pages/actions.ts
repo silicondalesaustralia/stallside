@@ -183,7 +183,8 @@ export async function createPreOrderPage(formData: FormData) {
   const pre = parsePreOrderFromForm(
     formData,
     true,
-    rail.cardReady,
+    // Pages save without payments; the public page switches ordering off until a card provider is ready.
+    true,
     stand.timezone,
   );
   if (!pre.ok) return { error: pre.error };
@@ -320,7 +321,8 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
   const pre = parsePreOrderFromForm(
     formData,
     true,
-    rail.cardReady,
+    // Pages save without payments; the public page switches ordering off until a card provider is ready.
+    true,
     existing.stand.timezone,
   );
   if (!pre.ok) return { error: pre.error };
