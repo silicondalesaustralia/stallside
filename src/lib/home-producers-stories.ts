@@ -37,4 +37,6 @@ function lpStand(id: string): FeaturedStand | null {
   };
 }
 
-export const lpFletcherbrook = lpStand("fletcherbrook");
+export const lpStands = [lpStand("fletcherbrook"), lpStand("jacaranda-hill")].filter(
+  (s): s is FeaturedStand => s !== null,
+);

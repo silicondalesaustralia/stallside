@@ -7,7 +7,7 @@ import {
   HOME_PRODUCERS_SIGNUP_HREF,
   HOME_PRODUCERS_TESTIMONIALS_ID,
 } from "@/lib/home-producers-lp";
-import { lpFletcherbrook as stand, lpTestimonials } from "@/lib/home-producers-stories";
+import { lpStands, lpTestimonials } from "@/lib/home-producers-stories";
 
 export default function ProducerStories() {
   return (
@@ -32,9 +32,11 @@ export default function ProducerStories() {
           </p>
         </div>
 
-        {stand ? (
-          <div className="mt-10">
-            <FeaturedStandCard stand={stand} />
+        {lpStands.length > 0 ? (
+          <div className="mt-10 space-y-8">
+            {lpStands.map((stand, i) => (
+              <FeaturedStandCard key={stand.id} stand={stand} reverse={i % 2 === 1} />
+            ))}
           </div>
         ) : null}
 
