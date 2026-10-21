@@ -2,6 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { submitChannelInterest } from "./channel-interest-actions";
+import SectionCopy from "@/components/studio/SectionCopy";
+import { useSectionText } from "@/components/studio/SectionStyleContext";
+
+export const INTEREST_BUTTON = "Tell the store owner";
+const INTEREST_PROMPT =
+  "Add your email here and tap “Tell the store owner” to let them know you're interested in {kind}. This way you won't miss out when they become available!";
 
 export default function ChannelInterestForm({
   standSlug,
@@ -14,6 +20,7 @@ export default function ChannelInterestForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const label = kind === "PREORDER" ? "pre-orders" : "subscriptions";
+  const buttonLabel = useSectionText("interestButton", INTEREST_BUTTON);
 
   function onSubmit(formData: FormData) {
     formData.set("standSlug", standSlug);
@@ -32,7 +39,7 @@ export default function ChannelInterestForm({
   if (sent) {
     return (
       <p className="mt-4 text-lg text-[var(--leaf)]">
-        Thanks — we&apos;ve told the stall you&apos;d like {label}.
+        <SectionCopy k="interestThanks" fallback="Thanks — we've told the store you'd like {kind}." vars={{ kind: label }} />
       </p>
     );
   }
@@ -41,9 +48,7 @@ export default function ChannelInterestForm({
     <form action={onSubmit} className="mt-4 flex flex-col gap-3">
       <label className="flex flex-col gap-1.5 text-sm">
         <span className="font-medium">
-          Add your email here and tap &ldquo;Tell the stall owner&rdquo; to let them know
-          you&apos;re interested in {label}. This way you won&apos;t miss out when they
-          become available!
+          <SectionCopy k="interestPrompt" fallback={INTEREST_PROMPT} vars={{ kind: label }} multiline />
         </span>
         <input
           type="email"
@@ -59,7 +64,7 @@ export default function ChannelInterestForm({
         disabled={pending}
         className="rounded-[var(--radius-pill)] bg-[var(--site-btn-bg,var(--leaf))] px-5 py-3 text-sm font-semibold text-[var(--site-btn-ink,#fff)] hover:bg-[var(--leaf-dark)] disabled:opacity-50"
       >
-        {pending ? "Sending…" : "Tell the stall owner"}
+        {pending ? "Sending…" : buttonLabel}
       </button>
       {error ? <p className="text-sm text-[var(--gone)]">{error}</p> : null}
     </form>

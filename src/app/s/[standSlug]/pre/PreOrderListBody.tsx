@@ -1,5 +1,6 @@
 import type { PreOrderListData } from "@/lib/storefront/views/offer-list-types";
 import ChannelInterestForm from "../ChannelInterestForm";
+import SectionCopy from "@/components/studio/SectionCopy";
 import PreOrderCategoryView from "./PreOrderCategoryView";
 
 /** The pre-order cards, or a note and interest form when nothing is open. */
@@ -8,11 +9,14 @@ export default function PreOrderListBody({ data }: { data: PreOrderListData }) {
     return (
       <div className="mx-auto mt-4 w-full max-w-lg px-4 pb-10">
         <div className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
-          <p className="font-medium">No pre-orders available</p>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
-            Pre-orders let you pay by card for a collection or delivery day. The stall packs your order; you pick it up
-            (or they deliver) on that day. Nothing is listed here right now.
-          </p>
+          <SectionCopy k="emptyHeading" fallback="No pre-orders available" as="p" className="font-medium" />
+          <SectionCopy
+            k="emptyText"
+            fallback="Pre-orders let you pay by card for a collection or delivery day. We pack your order; you pick it up (or we deliver) on that day. Nothing is listed here right now."
+            as="p"
+            className="mt-2 text-sm leading-relaxed text-[var(--muted)]"
+            multiline
+          />
           <ChannelInterestForm standSlug={data.standSlug} kind="PREORDER" />
         </div>
       </div>

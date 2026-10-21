@@ -34,6 +34,11 @@ export const SUBSCRIPTION_WORDING: OfferPageWording[] = [
   { key: "payButton", label: "Payment button", fallback: "Continue to payment" },
 ];
 
+/** List pages: only the empty-state button can't be clicked to edit. */
+export const LIST_WORDING: OfferPageWording[] = [
+  { key: "interestButton", label: "“Tell the store owner” button", fallback: "Tell the store owner" },
+];
+
 export type OfferPageView = {
   /** Toggle key → shown; missing keys are shown. */
   show: Record<string, boolean>;

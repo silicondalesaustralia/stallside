@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { publicStandBranding } from "@/lib/public-stand-branding";
-import { membershipOfferReady } from "@/lib/subscription-offer";
 import type { PreOrderListData, SubscriptionListData } from "./offer-list-types";
 
 async function loadStand(standId: string) {
@@ -44,7 +43,7 @@ export async function loadPreOrderList(standId: string, pageHrefBase: string | n
   };
 }
 
-/** Offers ready for sign-up, for the subscriptions list; null when the stand is gone. */
+/** Every active offer, as the offer pages show them; null when the stand is gone. */
 export async function loadSubscriptionList(
   standId: string,
   offerHrefBase: string | null,
@@ -64,13 +63,6 @@ export async function loadSubscriptionList(
       weeklyPriceCents: true,
       monthlyPriceCents: true,
       upfrontPriceCents: true,
-      stripePriceId: true,
-      stripeWeeklyPriceId: true,
-      stripeMonthlyPriceId: true,
-      stripeUpfrontPriceId: true,
-      kind: true,
-      interval: true,
-      priceCents: true,
     },
   });
   return {
@@ -78,7 +70,7 @@ export async function loadSubscriptionList(
     standName: stand.name,
     accentColor: publicStandBranding(stand, stand.owner).accentColor ?? null,
     offerHrefBase,
-    offers: offers.filter((o) => membershipOfferReady(o)).map((o) => ({
+    offers: offers.map((o) => ({
       slug: o.slug,
       title: o.title,
       description: o.description,

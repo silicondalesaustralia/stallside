@@ -63,6 +63,7 @@ import type { CraftOrderConfirmationProps } from "./sections/CraftOrderConfirmat
 import type { CraftContactFormProps } from "@/components/studio/sections/CraftContactFormSection";
 import OfferPageSettings from "./OfferPageSettings";
 import {
+  LIST_WORDING,
   PREORDER_TOGGLES,
   PREORDER_WORDING,
   SUBSCRIPTION_TOGGLES,
@@ -235,6 +236,16 @@ export default function StudioSettingsPanel() {
             toggles={selected.type === "CraftPreOrderSection" ? PREORDER_TOGGLES : SUBSCRIPTION_TOGGLES}
             wording={selected.type === "CraftPreOrderSection" ? PREORDER_WORDING : SUBSCRIPTION_WORDING}
             palette={paletteOf(metadata.resolvedBranding)}
+          />
+        ) : null}
+        {selected.type === "CraftPreOrderListSection" || selected.type === "CraftSubscriptionListSection" ? (
+          <OfferPageSettings
+            props={selected.props}
+            setProp={setProp}
+            toggles={[]}
+            wording={LIST_WORDING}
+            palette={paletteOf(metadata.resolvedBranding)}
+            cardColour={false}
           />
         ) : null}
         {LINKABLE_BUTTON_SECTIONS.has(selected.type) ? (

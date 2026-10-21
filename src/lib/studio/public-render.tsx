@@ -185,9 +185,9 @@ function StudioSectionRender({
     case "CraftPreOrderSection":
       return <StudioPreOrderBlock metadata={metadata} view={offerPageView(p, PREORDER_TOGGLES)} />;
     case "CraftPreOrderListSection":
-      return <StudioPreOrderListBlock metadata={metadata} />;
+      return <StudioPreOrderListBlock metadata={metadata} view={offerPageView(p, [])} />;
     case "CraftSubscriptionListSection":
-      return <StudioSubscriptionListBlock metadata={metadata} />;
+      return <StudioSubscriptionListBlock metadata={metadata} view={offerPageView(p, [])} />;
     case "CraftSubscriptionSection":
       return <StudioSubscriptionBlock metadata={metadata} view={offerPageView(p, SUBSCRIPTION_TOGGLES)} />;
     case "CraftOrderConfirmationSection":
