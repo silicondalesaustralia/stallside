@@ -7,6 +7,7 @@ import { createStand } from "../actions";
 import FormField from "@/components/FormField";
 import CreateStandSubmitButton from "./CreateStandSubmitButton";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
+import BusinessNameAddressField from "@/components/onboarding/BusinessNameAddressField";
 
 export default async function NewStandPage() {
   const { owner, user } = await requireOwner();
@@ -19,12 +20,7 @@ export default async function NewStandPage() {
       <OnboardingFlow />
       <form action={createStand} className="mt-8 flex flex-col gap-4">
         <input type="hidden" name="intent" value="create" />
-        <FormField
-          label="Business name"
-          name="name"
-          required
-          placeholder="Green Valley Eggs"
-        />
+        <BusinessNameAddressField />
         <FormField
           label="Suburb / location"
           name="locationLabel"

@@ -1,4 +1,5 @@
 import { DRAFT_CONFLICT_MESSAGE } from "@/lib/website/persistence/draft-store";
+import { ADDRESS_LOCKED_MESSAGE } from "@/lib/storefront/web-address-copy";
 
 export type WebStudioDetailsFlashState = {
   saved?: boolean;
@@ -12,6 +13,7 @@ const ERRORS: Record<string, string> = {
   headline: "Shop name is required.",
   slug: "Enter a valid URL slug.",
   slug_taken: "That URL is already in use. Try a different slug.",
+  slug_locked: ADDRESS_LOCKED_MESSAGE,
   conflict: DRAFT_CONFLICT_MESSAGE,
   publish_blocked:
     "Your site can't be published yet: some sections still have example text such as \"Tell customers…\". Replace it in the layout editor, then publish again.",

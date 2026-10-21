@@ -23,6 +23,7 @@ import { parseAccentColor } from "@/lib/stand-brand";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
 import { patchSiteConfig } from "@/lib/website/persistence/site-redirect-patch";
 import { withSlugAlias } from "@/lib/storefront/slug-alias";
+import { customDomainConnected } from "@/lib/storefront/web-address";
 import { clearHeroDecorativeFromDraftRaw } from "@/lib/studio/storage";
 import { getFontPair } from "@/lib/website/brand-looks";
 import { overlayStorefrontIdentity } from "@/lib/storefront/identity";
@@ -54,6 +55,7 @@ export async function saveStorefrontDetails(formData: FormData) {
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   let slug = storefront.slug;
   if (slugInput !== storefront.slug) {
+    if (await customDomainConnected(storefront)) redirect(webStudioPath("details", { error: "slug_locked" }));
     slug = await uniqueStorefrontSlug(slugInput, owner.id);
     if (slug !== slugInput) {
       redirect(webStudioPath("details", { error: "slug_taken" }));

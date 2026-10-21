@@ -14,6 +14,8 @@ import {
 } from "@/lib/stand-timezone";
 import { uniqueStandSlug } from "@/lib/slug";
 import { createStandOnce } from "@/lib/create-stand-once";
+import { ensureStorefront } from "@/lib/catalogue/storefront";
+import { syncWebAddressToName } from "@/lib/storefront/web-address";
 import { GET_STARTED_PATH } from "@/lib/onboarding/onboarding-gate";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
 import { localTransferForCurrency } from "@/lib/local-transfer";
@@ -87,6 +89,18 @@ export async function createStand(formData: FormData) {
     { allowMultiple: isPlatformAdminEmail(user.email) },
   );
   if (limited) redirect(`/dashboard/businesses/${stand.id}`);
+
+  try {
+    if (isPlatformAdminEmail(user.email)) {
+      await ensureStorefront(owner.id, parsed.data.name);
+    } else {
+      await prisma.owner.update({ where: { id: owner.id }, data: { businessName: parsed.data.name } });
+      const address = await syncWebAddressToName(owner.id, parsed.data.name);
+      if ("error" in address) console.warn("createStand: web address kept", address.error);
+    }
+  } catch (error) {
+    console.error("createStand: website address setup failed", error);
+  }
 
   await writeSelectedBusinessCookie(stand.id);
   revalidatePath("/dashboard", "layout");

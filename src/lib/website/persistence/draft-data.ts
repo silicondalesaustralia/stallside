@@ -44,7 +44,7 @@ export async function saveStorefrontDraftData(input: {
 }
 
 /** Keep the included Vendl subdomain row in sync when the slug changes. */
-async function syncVendlSubdomainRow(ownerId: string) {
+export async function syncVendlSubdomainRow(ownerId: string) {
   const { APP_DOMAIN } = await import("@/lib/constants");
   const sf = await prisma.storefront.findUniqueOrThrow({
     where: { ownerId },
