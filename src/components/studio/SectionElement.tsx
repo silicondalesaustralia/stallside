@@ -20,7 +20,13 @@ export default function SectionElement({
   const css = useElementCss(el);
   return createElement(
     as,
-    { className, style: css, "data-el": el, ...(css?.fontSize ? { "data-el-sized": "" } : {}) },
+    {
+      className,
+      style: css,
+      "data-el": el,
+      ...(css?.fontSize ? { "data-el-sized": "" } : {}),
+      ...(css?.["--el-hover"] ? { "data-el-hover": "" } : {}),
+    },
     children,
   );
 }

@@ -11,6 +11,7 @@ import {
 
 export const elementStyleSchema = z.object({
   colour: z.string().refine(isColourValue).optional(),
+  hoverColour: z.string().refine(isColourValue).optional(),
   size: z.enum(ELEMENT_SIZES).optional(),
   font: z.enum(ELEMENT_FONTS).optional(),
   weight: z.enum(ELEMENT_WEIGHTS).optional(),

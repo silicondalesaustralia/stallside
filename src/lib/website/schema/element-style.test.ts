@@ -59,3 +59,12 @@ describe("section heading and text colours", () => {
     assert.equal(frame.style["--field"], frame.style["--ink"]);
   });
 });
+
+describe("element hover colour", () => {
+  it("keeps a valid hover colour and turns it into a CSS variable", () => {
+    const parsed = parseElementStyles({ categoryName: { hoverColour: "#ffcc00" }, other: { hoverColour: "nope" } });
+    assert.deepEqual(parsed, { categoryName: { hoverColour: "#ffcc00" } });
+    assert.equal(elementCss({ hoverColour: "#ffcc00" }, palette)["--el-hover"], "#ffcc00");
+    assert.equal(elementCss({}, palette)["--el-hover"], undefined);
+  });
+});

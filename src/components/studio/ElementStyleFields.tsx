@@ -41,6 +41,7 @@ export default function ElementStyleFields({
   return (
     <div className="space-y-3">
       <ColourField label="Colour" value={value.colour} onChange={(v) => set("colour", v)} palette={palette} noneLabel="Section default" />
+      <ColourField label="Hover colour (linked text)" value={value.hoverColour} onChange={(v) => set("hoverColour", v)} palette={palette} noneLabel="Section default" />
       <div className="grid grid-cols-2 gap-2">
         <SiteStyleSelect id={`${id}-size`} label="Size" options={ELEMENT_SIZES} labels={SIZES} value={value.size} onChange={(v) => set("size", v)} />
         <SiteStyleSelect id={`${id}-font`} label="Font" options={ELEMENT_FONTS} labels={FONTS} value={value.font} onChange={(v) => set("font", v)} />

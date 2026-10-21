@@ -1010,6 +1010,18 @@ img.sf-photo-frame {
   overflow: hidden;
 }
 
+/* A seller-picked hover colour for linked text beats its inline colour. */
+:is(a, .group):hover [data-el-hover] {
+  color: var(--el-hover) !important;
+}
+
+/* With section or card colours set, category names keep the heading colour on hover instead of the theme green. */
+:is(.section-style--bg, .section-style--heading, .section-style--ink, .section-style--card, .section-style--card-ink)
+  .group:hover
+  .category-name-hover {
+  color: var(--field);
+}
+
 [data-image-radius] .studio-image-pair > div {
   border-radius: var(--section-image-radius);
 }

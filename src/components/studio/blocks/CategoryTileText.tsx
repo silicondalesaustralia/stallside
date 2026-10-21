@@ -7,7 +7,7 @@ export default function CategoryTileText({
   cat,
   options,
   className = "",
-  nameClass = "font-semibold text-[var(--field)] group-hover:text-[var(--leaf-dark)]",
+  nameClass = "category-name-hover font-semibold text-[var(--field)] group-hover:text-[var(--leaf-dark)]",
   onDark = false,
 }: {
   cat: CategoryTileData;

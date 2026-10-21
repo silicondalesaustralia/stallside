@@ -28,6 +28,8 @@ const FONT_FAMILY: Record<ElementFont, string> = {
 
 export type ElementStyle = {
   colour?: string;
+  /** Colour while the link it sits in is hovered. */
+  hoverColour?: string;
   size?: ElementSize;
   font?: ElementFont;
   weight?: (typeof ELEMENT_WEIGHTS)[number];
@@ -44,15 +46,14 @@ export type ElementCss = {
   fontWeight?: string;
   fontStyle?: string;
   textTransform?: "uppercase" | "none";
+  "--el-hover"?: string;
 };
 
 /** Inline CSS for one element; theme accent/secondary stay live variables. */
 export function elementCss(style: ElementStyle, palette: ThemePalette): ElementCss {
   const css: ElementCss = {};
-  if (style.colour) {
-    const live = style.colour === "accent" || style.colour === "secondary";
-    css.color = live ? colourCss(style.colour) : colourHex(style.colour, palette);
-  }
+  if (style.colour) css.color = elementColour(style.colour, palette);
+  if (style.hoverColour) css["--el-hover"] = elementColour(style.hoverColour, palette);
   if (style.size) {
     css.fontSize = SIZE_REM[style.size];
     css.lineHeight = style.size === "2xl" || style.size === "3xl" ? "1.15" : "1.5";
@@ -62,6 +63,10 @@ export function elementCss(style: ElementStyle, palette: ThemePalette): ElementC
   if (style.italic) css.fontStyle = "italic";
   if (style.textCase) css.textTransform = style.textCase === "upper" ? "uppercase" : "none";
   return css;
+}
+
+function elementColour(value: string, palette: ThemePalette): string {
+  return value === "accent" || value === "secondary" ? colourCss(value) : colourHex(value, palette);
 }
 
 export function elementCssMap(styles: ElementStyles | undefined, palette: ThemePalette): Record<string, ElementCss> {
