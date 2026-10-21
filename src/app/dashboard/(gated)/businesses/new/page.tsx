@@ -54,10 +54,6 @@ export default function NewStandPage() {
             Used for pre-order order-by and collection times.
           </span>
         </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" name="showExactStock" className="size-4" />
-          Show exact stock counts on public checkout
-        </label>
         <CreateStandSubmitButton />
       </form>
     </main>
