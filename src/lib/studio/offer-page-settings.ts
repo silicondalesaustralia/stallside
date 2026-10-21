@@ -7,6 +7,7 @@ export type OfferPageWording = { key: string; label: string; fallback: string };
 
 /** Parts of the pre-order page the seller can hide. */
 export const PREORDER_TOGGLES: OfferPageToggle[] = [
+  { key: "showImage", label: "Page photo" },
   { key: "showEyebrow", label: "Small label above the title" },
   { key: "showIntro", label: "Intro text" },
   { key: "showFacts", label: "Order by / collection facts" },
