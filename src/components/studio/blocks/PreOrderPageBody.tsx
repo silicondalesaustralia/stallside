@@ -9,7 +9,7 @@ export default function PreOrderPageBody({ data, view }: { data: PreOrderPageDat
       <div style={offerPanelStyle(view)}>
         {data.page.imageUrl && isShown(view, "showImage") ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={data.page.imageUrl} alt="" className="sf-photo sf-photo-frame mb-6 w-full rounded-xl bg-[var(--wash)] [--photo-default-ratio:16/9]" />
+          <img src={data.page.imageUrl} alt="" className="sf-photo sf-photo-frame mb-6 w-full rounded-xl [--photo-default-bg:var(--wash)] [--photo-default-ratio:16/9]" />
         ) : null}
         <PreOrderPageContent
           standSlug={data.standSlug}

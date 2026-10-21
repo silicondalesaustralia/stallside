@@ -103,6 +103,7 @@ export const sectionStyleSchema = z.object({
   photoFit: z.enum(PHOTO_FITS).optional(),
   photoFocus: z.enum(PHOTO_FOCI).optional(),
   photoShape: z.enum(PHOTO_SHAPES).optional(),
+  photoBackground: colourValue.optional(),
 });
 
 export type SectionStyle = z.infer<typeof sectionStyleSchema>;

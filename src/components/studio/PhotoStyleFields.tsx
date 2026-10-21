@@ -9,7 +9,9 @@ import {
   PHOTO_SHAPE_LABELS,
   type PhotoStyle,
 } from "@/lib/website/sections/photo-style";
+import type { ThemePalette } from "@/lib/website/sections/colour";
 import SiteStyleSelect from "./SiteStyleSelect";
+import ColourField from "./ColourField";
 
 type Props = {
   idPrefix: string;
@@ -17,10 +19,11 @@ type Props = {
   onChange: <K extends keyof PhotoStyle>(key: K, value: PhotoStyle[K]) => void;
   showShape: boolean;
   defaultLabel: string;
+  palette: ThemePalette;
 };
 
 /** Photo fit, focus point and (where the frame can change) shape. */
-export default function PhotoStyleFields({ idPrefix, value, onChange, showShape, defaultLabel }: Props) {
+export default function PhotoStyleFields({ idPrefix, value, onChange, showShape, defaultLabel, palette }: Props) {
   return (
     <div className="space-y-3">
       <SiteStyleSelect
@@ -52,8 +55,15 @@ export default function PhotoStyleFields({ idPrefix, value, onChange, showShape,
           defaultLabel={defaultLabel}
         />
       ) : null}
+      <ColourField
+        label="Photo background"
+        value={value.photoBackground}
+        onChange={(v) => onChange("photoBackground", v)}
+        palette={palette}
+        noneLabel={defaultLabel}
+      />
       <p className="text-xs text-[var(--muted)]">
-        &ldquo;Show whole photo&rdquo; never cuts anything off; empty space around the photo takes the card colour.
+        &ldquo;Show whole photo&rdquo; never cuts anything off; the photo background fills the space around it.
       </p>
     </div>
   );

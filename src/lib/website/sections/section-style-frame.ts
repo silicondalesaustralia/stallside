@@ -1,6 +1,6 @@
 import { colourCss, colourHex, resolvedHeadingColour, resolvedTextColour, type ThemePalette } from "./colour";
 import type { SectionStyle } from "./section-style";
-import { photoVars } from "./photo-style";
+import { photoBackgroundVars, photoVars } from "./photo-style";
 
 export type SectionStyleFrameAttrs = {
   className: string;
@@ -68,7 +68,7 @@ export function sectionStyleFrame(style: SectionStyle, palette: ThemePalette): S
   }
   return {
     className: classes.join(" "),
-    style: { ...vars, ...photoVars(style) },
+    style: { ...vars, ...photoVars(style), ...photoBackgroundVars(style, palette) },
     ...(style.headingSize ? { "data-heading-size": style.headingSize } : {}),
     ...(style.bodySize ? { "data-body-size": style.bodySize } : {}),
     ...(style.imageRadius ? { "data-image-radius": style.imageRadius } : {}),

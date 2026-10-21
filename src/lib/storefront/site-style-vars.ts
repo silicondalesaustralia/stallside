@@ -1,5 +1,5 @@
 import { colourCss, colourHex, type ThemePalette } from "@/lib/website/sections/colour";
-import { photoVars } from "@/lib/website/sections/photo-style";
+import { photoBackgroundVars, photoVars } from "@/lib/website/sections/photo-style";
 import { siteFont } from "./site-fonts";
 import type { ContentWidth, SectionSpacing, SiteStyle } from "./site-style";
 
@@ -40,7 +40,7 @@ export function siteThemeVars(style: SiteStyle, palette: ThemePalette): Record<s
     vars["--ink"] = text;
     vars["--muted"] = `color-mix(in srgb, ${text} 78%, transparent)`;
   }
-  return { ...vars, ...saleBadgeVars(style, palette) };
+  return { ...vars, ...saleBadgeVars(style, palette), ...photoBackgroundVars(style, palette) };
 }
 
 /** The "Sale" badge next to on-sale prices; CSS reads these so the editor previews changes live. */

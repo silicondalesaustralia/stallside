@@ -97,6 +97,7 @@ export default function SectionStyleSettings({
           onChange={patch}
           showShape={PHOTO_SHAPE_SECTIONS.has(craftName)}
           defaultLabel="Site default"
+          palette={palette}
         />
       ) : null}
       <div className="space-y-1.5">

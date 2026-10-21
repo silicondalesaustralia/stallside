@@ -59,7 +59,7 @@ export default function PreOrderCategoryCard({
         <img
           src={imageUrl}
           alt=""
-          className="sf-photo sf-photo-frame w-full bg-[var(--wash)]"
+          className="sf-photo sf-photo-frame w-full [--photo-default-bg:var(--wash)]"
         />
       ) : (
         <div className="sf-photo-box w-full bg-[var(--line)]" />

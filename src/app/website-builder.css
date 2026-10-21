@@ -812,6 +812,7 @@ header.studio-nav[data-header-colours] .studio-btn--secondary {
 .sf-photo {
   object-fit: var(--photo-fit, cover);
   object-position: var(--photo-focus, 50% 50%);
+  background-color: var(--photo-bg, var(--photo-default-bg, transparent));
 }
 
 img.sf-photo-frame {

@@ -1,3 +1,6 @@
+import { isColourValue } from "./colour-value";
+import { colourHex, type ThemePalette } from "./colour";
+
 /** How photos sit in their frames; site-wide defaults, overridable per section. */
 export const PHOTO_FITS = ["cover", "contain"] as const;
 export const PHOTO_FOCI = ["top", "center", "bottom"] as const;
@@ -24,7 +27,13 @@ const RATIO: Record<Exclude<PhotoShape, "original">, string> = {
   wide: "16 / 9",
 };
 
-export type PhotoStyle = { photoFit?: PhotoFit; photoFocus?: PhotoFocus; photoShape?: PhotoShape };
+export type PhotoStyle = {
+  photoFit?: PhotoFit;
+  photoFocus?: PhotoFocus;
+  photoShape?: PhotoShape;
+  /** Fills the space around a whole (uncropped) photo. */
+  photoBackground?: string;
+};
 
 /** CSS variables read by `.sf-photo` (fit, focus) and `.sf-photo-frame` (shape) in website-builder.css. */
 export function photoVars(style: PhotoStyle): Record<string, string> {
@@ -40,11 +49,17 @@ export function photoVars(style: PhotoStyle): Record<string, string> {
   return vars;
 }
 
+/** Colour behind photos; `.sf-photo` reads it. */
+export function photoBackgroundVars(style: PhotoStyle, palette: ThemePalette): Record<string, string> {
+  return style.photoBackground ? { "--photo-bg": colourHex(style.photoBackground, palette) } : {};
+}
+
 /** Drops anything that isn't a known photo option. */
 export function parsePhotoStyle(obj: Record<string, unknown>): PhotoStyle {
   const out: PhotoStyle = {};
   if ((PHOTO_FITS as readonly unknown[]).includes(obj.photoFit)) out.photoFit = obj.photoFit as PhotoFit;
   if ((PHOTO_FOCI as readonly unknown[]).includes(obj.photoFocus)) out.photoFocus = obj.photoFocus as PhotoFocus;
   if ((PHOTO_SHAPES as readonly unknown[]).includes(obj.photoShape)) out.photoShape = obj.photoShape as PhotoShape;
+  if (isColourValue(obj.photoBackground)) out.photoBackground = obj.photoBackground;
   return out;
 }

@@ -32,7 +32,7 @@ export default function MembershipCategoryCard({
         <img
           src={imageUrl}
           alt=""
-          className="sf-photo sf-photo-frame w-full bg-[var(--mc-divider)]"
+          className="sf-photo sf-photo-frame w-full [--photo-default-bg:var(--mc-divider)]"
         />
       ) : (
         <div className="sf-photo-box w-full bg-[var(--mc-divider)]" />

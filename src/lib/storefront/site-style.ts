@@ -63,6 +63,7 @@ export const siteStyleSchema = z.object({
   photoFit: z.enum(PHOTO_FITS).optional(),
   photoFocus: z.enum(PHOTO_FOCI).optional(),
   photoShape: z.enum(PHOTO_SHAPES).optional(),
+  photoBackground: colourValue.optional(),
   cardHover: z.enum(CARD_HOVERS).optional(),
   animation: z.enum(SECTION_ANIMATIONS).optional(),
   dividers: z.enum(SECTION_DIVIDERS).optional(),

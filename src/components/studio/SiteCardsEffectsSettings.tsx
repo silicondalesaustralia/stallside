@@ -1,6 +1,7 @@
 "use client";
 
-import { useStudioEditorChrome } from "./StudioEditorContext";
+import { paletteOf } from "@/lib/website/sections/colour";
+import { useStudioEditorChrome, useStudioMetadata } from "./StudioEditorContext";
 import { BUTTON_SHAPES, CARD_HOVERS, PRODUCT_RATIOS, SITE_BUTTON_SIZES } from "@/lib/storefront/site-style";
 import SiteChoice from "./SiteChoice";
 import SiteStyleSelect from "./SiteStyleSelect";
@@ -17,6 +18,7 @@ const ANIMATIONS = { none: "Off", fade: "Fade in on scroll" } as const;
 export default function SiteCardsEffectsSettings() {
   const { siteStyle = {}, setSiteStyleField } = useStudioEditorChrome();
   const set = setSiteStyleField ?? (() => undefined);
+  const palette = paletteOf(useStudioMetadata().resolvedBranding);
 
   return (
     <div className="mt-6 space-y-4 border-t border-[var(--line)] pt-4">
@@ -27,7 +29,7 @@ export default function SiteCardsEffectsSettings() {
         <SiteStyleSelect id="site-product-ratio" label="Product image shape" options={PRODUCT_RATIOS} labels={RATIOS} value={siteStyle.productRatio} onChange={(v) => set("productRatio", v)} defaultLabel="Template default" />
         <SiteStyleSelect id="site-card-hover" label="Card hover" options={CARD_HOVERS} labels={HOVERS} value={siteStyle.cardHover} onChange={(v) => set("cardHover", v)} defaultLabel="Template default" />
       </div>
-      <PhotoStyleFields idPrefix="site" value={siteStyle} onChange={set} showShape defaultLabel="Template default" />
+      <PhotoStyleFields idPrefix="site" value={siteStyle} onChange={set} showShape defaultLabel="Template default" palette={palette} />
       <SiteChoice
         label="Section animation"
         options={["none", "fade"] as const}

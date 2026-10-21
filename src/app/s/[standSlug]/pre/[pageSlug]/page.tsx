@@ -98,7 +98,7 @@ export default async function PublicPreOrderPage({
         <img
           src={page.imageUrl}
           alt=""
-          className="sf-photo sf-photo-frame mt-6 w-full rounded-[var(--radius)] bg-[var(--wash)] [--photo-default-ratio:1.91/1]"
+          className="sf-photo sf-photo-frame mt-6 w-full rounded-[var(--radius)] [--photo-default-bg:var(--wash)] [--photo-default-ratio:1.91/1]"
         />
       ) : null}
       <div className="mt-6">

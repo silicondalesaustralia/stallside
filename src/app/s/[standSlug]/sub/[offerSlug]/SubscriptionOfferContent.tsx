@@ -32,7 +32,7 @@ export default function SubscriptionOfferContent({
         <img
           src={offer.imageUrl}
           alt=""
-          className="sf-photo sf-photo-frame w-full rounded-xl bg-[var(--wash)] [--photo-default-ratio:16/9]"
+          className="sf-photo sf-photo-frame w-full rounded-xl [--photo-default-bg:var(--wash)] [--photo-default-ratio:16/9]"
         />
       ) : null}
       {data.isMembership ? (
