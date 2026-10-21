@@ -11,6 +11,7 @@ import {
   type ImageAspect,
   type ImageDisplay,
 } from "@/lib/studio/gallery-images";
+import { parseImageStyle } from "@/lib/studio/image-pair";
 
 export type CraftImageProps = {
   imageUrl: string;
@@ -22,6 +23,8 @@ export type CraftImageProps = {
   columns?: 2 | 3 | 4;
   aspect?: ImageAspect;
   autoplay?: boolean;
+  imageStyle?: string;
+  secondImageUrl?: string;
 };
 
 export default function CraftImageSection(props: CraftImageProps) {
@@ -39,6 +42,8 @@ export default function CraftImageSection(props: CraftImageProps) {
           columns={props.columns ?? 3}
           aspect={parseImageAspect(props.aspect)}
           autoplay={props.autoplay === true}
+          imageStyle={parseImageStyle(props.imageStyle)}
+          secondImageUrl={props.secondImageUrl || null}
           editable
         />
       </CraftSectionChrome>

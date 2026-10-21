@@ -50,6 +50,8 @@ import type { CraftCategoriesProps } from "@/components/studio/sections/CraftCat
 import type { CraftTextProps } from "@/components/studio/sections/CraftTextSection";
 import type { CraftImageProps } from "@/components/studio/sections/CraftImageSection";
 import type { CraftImageTextProps } from "@/components/studio/sections/CraftImageTextSection";
+import ImageStyleField from "@/components/studio/ImageStyleField";
+import { parseImageStyle } from "@/lib/studio/image-pair";
 import type { CraftPaymentsProps } from "@/components/studio/sections/CraftPaymentsSection";
 import PaymentsSettings from "./PaymentsSettings";
 import ImageSectionSettings from "./ImageSectionSettings";
@@ -382,7 +384,12 @@ function ImageTextSettings({
       <p className="text-xs text-[var(--muted)]">
         Edit the heading and text directly on the page.
       </p>
-      <SectionImageField label="Image" value={props.imageUrl ?? ""} onChange={(url) => setProp("imageUrl", url)} />
+      <SectionImageField
+        label={parseImageStyle(props.imageStyle) === "pair" ? "Main photo (back)" : "Image"}
+        value={props.imageUrl ?? ""}
+        onChange={(url) => setProp("imageUrl", url)}
+      />
+      <ImageStyleField imageStyle={props.imageStyle} secondImageUrl={props.secondImageUrl} setProp={setProp} />
       <Field label="Button label">
         <input className={INPUT} value={props.ctaLabel} onChange={(e) => setProp("ctaLabel", e.target.value)} />
       </Field>

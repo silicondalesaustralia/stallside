@@ -3,6 +3,7 @@
 import { useNode } from "@craftjs/core";
 import CraftSectionChrome from "@/components/craft/CraftSectionChrome";
 import StudioImageTextBlock from "@/components/studio/blocks/StudioImageTextBlock";
+import { parseImageStyle } from "@/lib/studio/image-pair";
 
 export type CraftImageTextProps = {
   imageUrl: string;
@@ -10,6 +11,8 @@ export type CraftImageTextProps = {
   body: string;
   layout: "image-left" | "image-right" | "editorial";
   ctaLabel: string;
+  imageStyle?: string;
+  secondImageUrl?: string;
 };
 
 export default function CraftImageTextSection(props: CraftImageTextProps) {
@@ -20,6 +23,8 @@ export default function CraftImageTextSection(props: CraftImageTextProps) {
         <StudioImageTextBlock
           {...props}
           imageUrl={props.imageUrl || null}
+          imageStyle={parseImageStyle(props.imageStyle)}
+          secondImageUrl={props.secondImageUrl || null}
           editable
         />
       </CraftSectionChrome>

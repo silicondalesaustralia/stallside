@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { isButtonLink } from "./button-link";
+import { parseImageStyle, type ImageStyle } from "./image-pair";
 
 export const HERO_HEIGHTS = ["small", "medium", "large"] as const;
 export const HERO_ALIGNS = ["auto", "left", "centre"] as const;
@@ -15,6 +16,9 @@ export type HeroLook = {
   mobileTextBelow: boolean;
   secondaryLabel: string;
   secondaryLink: string | undefined;
+  /** Text-beside-photo styles: one photo or two layered photos. */
+  imageStyle: ImageStyle;
+  secondImageUrl: string | null;
 };
 
 function pick<T extends string>(options: readonly T[], value: unknown, fallback: T): T {
@@ -32,6 +36,8 @@ export function parseHeroLook(props: Record<string, unknown>): HeroLook {
     mobileTextBelow: props.mobileTextBelow === true,
     secondaryLabel: label,
     secondaryLink: isButtonLink(props.secondaryLink) ? props.secondaryLink : undefined,
+    imageStyle: parseImageStyle(props.imageStyle),
+    secondImageUrl: typeof props.secondImageUrl === "string" && props.secondImageUrl ? props.secondImageUrl : null,
   };
 }
 

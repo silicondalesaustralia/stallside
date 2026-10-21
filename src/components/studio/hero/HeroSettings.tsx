@@ -11,6 +11,7 @@ import type { HeroFacts } from "@/lib/studio/hero-needs";
 import { countdownMenu } from "./HeroCountdown";
 import HeroStylePicker from "./HeroStylePicker";
 import HeroLookFields from "./HeroLookFields";
+import ImageStyleField from "@/components/studio/ImageStyleField";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
 const LABEL = "block text-xs font-semibold text-[var(--field)]";
@@ -27,6 +28,7 @@ export default function HeroSettings({
   const image = props.decorativeImageUrl || props.imageUrl || "";
   const look = parseHeroLook(props);
   const style = resolveHeroStyle(meta.templateId, props.layout);
+  const pairable = style === "split" || style === "produce-split";
   const facts: HeroFacts = {
     hasPhoto: Boolean(image || meta.branding.heroImageUrl),
     productCount: meta.products.length,
@@ -40,7 +42,7 @@ export default function HeroSettings({
       <p className="text-xs text-[var(--muted)]">Edit the headline and text directly on the page.</p>
       <HeroStylePicker value={heroPickerValue(meta.templateId, props.layout)} facts={facts} onChange={(v) => setProp("layout", v)} />
       <SectionImageField
-        label="Image"
+        label={pairable && look.imageStyle === "pair" ? "Main photo (back)" : "Image"}
         value={image}
         onChange={(url) => {
           setProp("imageUrl", url);
@@ -49,6 +51,9 @@ export default function HeroSettings({
         fallbackUrl={meta.branding.heroImageUrl}
         fallbackLabel="Using the hero image from Branding."
       />
+      {pairable ? (
+        <ImageStyleField imageStyle={props.imageStyle} secondImageUrl={props.secondImageUrl} setProp={setProp} />
+      ) : null}
       <HeroLookFields style={style} look={look} setProp={setProp} />
       <SiteChoice
         label="Width"

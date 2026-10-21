@@ -20,6 +20,7 @@ import StudioImageBlock from "@/components/studio/blocks/StudioImageBlock";
 import StudioImageTextBlock from "@/components/studio/blocks/StudioImageTextBlock";
 import StudioPaymentsBlock from "@/components/studio/blocks/StudioPaymentsBlock";
 import { parseGalleryImages, parseImageAspect, parseImageDisplay } from "@/lib/studio/gallery-images";
+import { parseImageStyle } from "@/lib/studio/image-pair";
 import StudioReviewsBlock from "@/components/studio/blocks/StudioReviewsBlock";
 import StudioPickupBlock from "@/components/studio/blocks/StudioPickupBlock";
 import StudioSignupBlock from "@/components/studio/blocks/StudioSignupBlock";
@@ -235,6 +236,8 @@ function StudioSectionRender({
       return (
         <StudioImageBlock
           imageUrl={p.imageUrl ? String(p.imageUrl) : null}
+          imageStyle={parseImageStyle(p.imageStyle)}
+          secondImageUrl={p.secondImageUrl ? String(p.secondImageUrl) : null}
           alt={String(p.alt ?? "")}
           layout={(p.layout as "contained") ?? "contained"}
           caption={String(p.caption ?? "")}
@@ -249,6 +252,8 @@ function StudioSectionRender({
       return (
         <StudioImageTextBlock
           imageUrl={p.imageUrl ? String(p.imageUrl) : null}
+          imageStyle={parseImageStyle(p.imageStyle)}
+          secondImageUrl={p.secondImageUrl ? String(p.secondImageUrl) : null}
           heading={String(p.heading ?? "")}
           body={String(p.body ?? "")}
           layout={(p.layout as "image-left") ?? "image-left"}

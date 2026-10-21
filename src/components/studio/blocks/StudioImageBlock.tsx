@@ -2,6 +2,8 @@ import Image from "next/image";
 import type { GalleryImage, ImageAspect, ImageDisplay } from "@/lib/studio/gallery-view";
 import StudioImageGallery from "./StudioImageGallery";
 import StudioImageSlider from "./StudioImageSlider";
+import ImagePairStack from "@/components/studio/ImagePairStack";
+import { showImagePair, type ImageStyle } from "@/lib/studio/image-pair";
 
 const EMPTY =
   "studio-section-image flex aspect-[16/10] items-center justify-center rounded-[var(--studio-card-radius)] border border-dashed border-[var(--line)] bg-[var(--wash)] text-sm text-[var(--muted)]";
@@ -17,8 +19,12 @@ export default function StudioImageBlock({
   aspect = "landscape",
   autoplay = false,
   editable = false,
+  imageStyle = "single",
+  secondImageUrl = null,
 }: {
   imageUrl: string | null;
+  imageStyle?: ImageStyle;
+  secondImageUrl?: string | null;
   alt: string;
   caption: string;
   layout: "full" | "contained" | "wide";
@@ -42,6 +48,8 @@ export default function StudioImageBlock({
     media = <StudioImageGallery images={images} columns={columns} aspect={aspect} />;
   } else if (display === "slider") {
     media = <StudioImageSlider images={images} aspect={aspect} autoplay={autoplay} />;
+  } else if (showImagePair(imageStyle, secondImageUrl, editable)) {
+    media = <ImagePairStack primaryUrl={imageUrl} secondaryUrl={secondImageUrl} />;
   } else {
     media = (
       <div className="studio-section-image relative aspect-[16/10] overflow-hidden rounded-[var(--studio-card-radius,var(--storefront-radius))]">

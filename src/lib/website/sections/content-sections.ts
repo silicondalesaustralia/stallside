@@ -13,6 +13,7 @@ import {
 } from "./variants";
 import { HERO_ALIGNS, HERO_HEIGHTS, HERO_IMAGE_SIDES, HERO_OVERLAYS } from "@/lib/studio/hero-look";
 import { isButtonLink } from "@/lib/studio/button-link";
+import { IMAGE_STYLES } from "@/lib/studio/image-pair";
 
 const CONTENT_PAGES = ALL_PAGE_KINDS;
 
@@ -30,9 +31,11 @@ export const hero: SectionDefinition = {
     ctaLabel: label.optional(),
     imageUrl: mediaUrl.optional(),
     decorativeImageUrl: mediaUrl.optional(),
+    secondImageUrl: mediaUrl.optional(),
     secondaryLabel: label.optional(),
   }),
   settings: z.object({
+    imageStyle: z.enum(IMAGE_STYLES).optional(),
     showCta: z.boolean().optional(),
     width: z.enum(["full", "contained"]).optional(),
     height: z.enum(HERO_HEIGHTS).optional(),
@@ -91,8 +94,10 @@ export const image: SectionDefinition = {
     alt: shortText.optional(),
     caption: shortText.optional(),
     images: galleryImagesSchema.optional(),
+    secondImageUrl: mediaUrl.nullable().optional(),
   }),
   settings: z.object({
+    imageStyle: z.enum(IMAGE_STYLES).optional(),
     display: z.enum(IMAGE_DISPLAYS).optional(),
     columns: z.union([z.literal(2), z.literal(3), z.literal(4)]).optional(),
     aspect: z.enum(IMAGE_ASPECTS).optional(),
@@ -114,11 +119,12 @@ export const imageText: SectionDefinition = {
   defaultVariant: "image-left",
   content: z.object({
     imageUrl: mediaUrl.nullable().optional(),
+    secondImageUrl: mediaUrl.nullable().optional(),
     heading: heading.optional(),
     body: body.optional(),
     ctaLabel: label.optional(),
   }),
-  settings: z.object({}),
+  settings: z.object({ imageStyle: z.enum(IMAGE_STYLES).optional() }),
   pageKinds: CONTENT_PAGES,
   singleton: false,
   required: false,

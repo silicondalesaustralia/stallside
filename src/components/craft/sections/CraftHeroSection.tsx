@@ -24,6 +24,8 @@ export type CraftHeroProps = {
   mobileTextBelow?: boolean;
   secondaryLabel?: string;
   secondaryLink?: string;
+  imageStyle?: string;
+  secondImageUrl?: string;
 };
 
 function isStudioMetadata(meta: unknown): meta is StudioMetadata {

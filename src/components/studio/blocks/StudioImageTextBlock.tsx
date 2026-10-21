@@ -7,6 +7,8 @@ import InlineRichText from "@/components/studio/InlineRichText";
 import RichText from "@/components/studio/RichText";
 import SectionButtonLink from "@/components/studio/SectionButtonLink";
 import type { StudioMetadata } from "@/lib/studio/types";
+import ImagePairStack from "@/components/studio/ImagePairStack";
+import { showImagePair, type ImageStyle } from "@/lib/studio/image-pair";
 
 export default function StudioImageTextBlock({
   imageUrl,
@@ -16,8 +18,12 @@ export default function StudioImageTextBlock({
   ctaLabel,
   metadata,
   editable = false,
+  imageStyle = "single",
+  secondImageUrl = null,
 }: {
   imageUrl: string | null;
+  imageStyle?: ImageStyle;
+  secondImageUrl?: string | null;
   heading: string;
   body: string;
   layout: "image-left" | "image-right" | "editorial";
@@ -36,7 +42,9 @@ export default function StudioImageTextBlock({
         className={`studio-split grid items-center gap-8 ${layout === "editorial" ? "sf-lg:grid-cols-1" : "sf-lg:grid-cols-2"} ${reverse ? "sf-lg:[direction:rtl]" : ""}`}
       >
         <div className={reverse ? "sf-lg:[direction:ltr]" : ""}>
-          {imageUrl ? (
+          {showImagePair(imageStyle, secondImageUrl, editable) ? (
+            <ImagePairStack primaryUrl={imageUrl} secondaryUrl={secondImageUrl} />
+          ) : imageUrl ? (
             <div className="studio-section-image relative aspect-[4/3] overflow-hidden rounded-[var(--studio-card-radius)]">
               <Image src={imageUrl} alt="" fill className="object-cover" sizes="(max-width:768px) 100vw, 480px" />
             </div>

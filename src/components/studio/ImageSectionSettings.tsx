@@ -10,6 +10,8 @@ import {
 } from "@/lib/studio/gallery-images";
 import SectionImageField from "./SectionImageField";
 import ImageListField from "./ImageListField";
+import ImageStyleField from "./ImageStyleField";
+import { parseImageStyle } from "@/lib/studio/image-pair";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
 const LABEL = "block text-xs font-semibold text-[var(--field)]";
@@ -51,7 +53,12 @@ export default function ImageSectionSettings({
       </div>
       {display === "single" ? (
         <>
-          <SectionImageField label="Image" value={props.imageUrl ?? ""} onChange={(url) => setProp("imageUrl", url)} />
+          <SectionImageField
+            label={parseImageStyle(props.imageStyle) === "pair" ? "Main photo (back)" : "Image"}
+            value={props.imageUrl ?? ""}
+            onChange={(url) => setProp("imageUrl", url)}
+          />
+          <ImageStyleField imageStyle={props.imageStyle} secondImageUrl={props.secondImageUrl} setProp={setProp} />
           <div className="space-y-1.5">
             <label className={LABEL}>Alt text</label>
             <input className={INPUT} value={props.alt} onChange={(e) => setProp("alt", e.target.value)} />
