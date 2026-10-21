@@ -13,6 +13,7 @@ export type UpcomingMenuView = {
   collectionLabel: string | null;
 };
 
+/** Upcoming menus and open pre-order pages for the Next drop section. */
 export async function loadUpcomingMenusForStorefront(input: {
   ownerId: string;
   standId: string;
@@ -39,7 +40,22 @@ export async function loadUpcomingMenusForStorefront(input: {
   });
 
   const now = Date.now();
-  return menus
+  const pages = await prisma.preOrderPage.findMany({
+    where: { standId: input.standId, isActive: true, orderByAt: { gt: new Date(now) } },
+    orderBy: { orderByAt: "asc" },
+    select: { slug: true, title: true, description: true, orderByAt: true, collectionAt: true },
+    take: input.limit ?? 6,
+  });
+  const pageViews: UpcomingMenuView[] = pages.map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    description: p.description,
+    isPreOrderDrop: true,
+    orderByLabel: formatOrderByLabel(p.orderByAt, input.timeZone),
+    orderByAt: p.orderByAt.toISOString(),
+    collectionLabel: formatCollectionLabel(p.collectionAt, input.timeZone),
+  }));
+  const menuViews: UpcomingMenuView[] = menus
     .filter(
       (m) =>
         m.kind === MenuKind.ALWAYS_AVAILABLE ||
@@ -60,4 +76,8 @@ export async function loadUpcomingMenusForStorefront(input: {
           ? formatCollectionLabel(m.collectionAt, input.timeZone)
           : null,
     }));
+  // Dated drops first (soonest close), then always-available menus.
+  return [...menuViews, ...pageViews]
+    .sort((x, y) => (x.orderByAt ?? "9999").localeCompare(y.orderByAt ?? "9999"))
+    .slice(0, input.limit ?? 6);
 }

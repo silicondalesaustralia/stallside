@@ -88,8 +88,12 @@ export default function ButtonLinkField({
         <OfferLinkOptions
           offers={meta.offerPages}
           preOrders={[
-            ...meta.menus.filter((m) => m.isPreOrderDrop).map((m) => ({ slug: m.slug, title: m.title })),
-            ...(meta.preOrderPages ?? []),
+            ...new Map(
+              [
+                ...meta.menus.filter((m) => m.isPreOrderDrop).map((m) => ({ slug: m.slug, title: m.title })),
+                ...(meta.preOrderPages ?? []),
+              ].map((p) => [p.slug, p]),
+            ).values(),
           ]}
         />
         {meta.categories.length ? (

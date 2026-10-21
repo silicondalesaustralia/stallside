@@ -43,7 +43,7 @@ export default function StudioNextDropBlock({
         <div className="studio-section__inner">
           {title}
           <p className="mt-3 rounded-xl border border-dashed border-[var(--line)] bg-white/60 p-6 text-sm text-[var(--muted)]">
-            No upcoming menu yet. Create a menu to use this section.
+            No upcoming menu or open pre-order yet. Create a menu or a pre-order page to use this section.
           </p>
         </div>
       </section>
