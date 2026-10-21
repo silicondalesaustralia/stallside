@@ -6,10 +6,9 @@ import {
   intervalLabel,
   membershipOfferReady,
   offerDisplayPriceCents,
-  subscriptionOfferPath,
 } from "@/lib/subscription-offer";
 import { formatMoney } from "@/lib/money";
-import { SITE_URL } from "@/lib/legal";
+import { standPublicLinks } from "@/lib/storefront/stand-public-links";
 import { productCatalogWhere } from "@/lib/product-visibility";
 import { SubscriptionOfferKind } from "@/generated/prisma/client";
 import { squareOfferReady, squareSubscriptionRail } from "@/lib/square-subscriptions/rail";
@@ -95,7 +94,7 @@ export default async function EditSubscriptionOfferPage({
   for (const item of offer.items) {
     quantities[item.productId] = item.quantity;
   }
-  const path = subscriptionOfferPath(offer.stand.slug, offer.slug);
+  const publicUrl = (await standPublicLinks(offer.stand.slug)).offer(offer.slug);
   const ready = squareReady ? squareOfferReady(offer) : membershipOfferReady(offer);
   const isMembership = offer.kind === SubscriptionOfferKind.MEMBERSHIP;
 
@@ -112,7 +111,7 @@ export default async function EditSubscriptionOfferPage({
         </p>
         <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
           <h1 className="text-3xl font-semibold tracking-tight">{offer.title}</h1>
-          <ViewOnSiteLink href={`${SITE_URL}${path}`} />
+          <ViewOnSiteLink href={publicUrl} />
         </div>
         <p className="mt-1 text-sm text-[var(--muted)]">
           {isMembership
@@ -120,9 +119,8 @@ export default async function EditSubscriptionOfferPage({
             : intervalLabel(offer.interval)}{" "}
           · {formatMoney(offerDisplayPriceCents(offer), offer.currency)} ·{" "}
           {!offer.isActive ? "Off · " : null}
-          <a href={path} className="underline" target="_blank" rel="noreferrer">
-            {SITE_URL}
-            {path}
+          <a href={publicUrl} className="underline" target="_blank" rel="noreferrer">
+            {publicUrl}
           </a>
         </p>
         <div className="mt-4">

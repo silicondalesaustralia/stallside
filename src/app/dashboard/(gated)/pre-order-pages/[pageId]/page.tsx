@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { loadPreOrderCardRail } from "@/lib/preorder-card-rail";
 import { prisma } from "@/lib/prisma";
-import { preOrderPageUrl } from "@/lib/preorder-page";
+import { standPublicLinks } from "@/lib/storefront/stand-public-links";
 import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
 import { entitySeoKey } from "@/lib/studio/seo-settings";
 import PreOrderPageForm from "../PreOrderPageForm";
@@ -59,7 +59,7 @@ export default async function EditPreOrderPagePage({
   });
 
   const stripeConnected = (await loadPreOrderCardRail(owner)).cardReady;
-  const publicUrl = preOrderPageUrl(page.stand.slug, page.slug);
+  const publicUrl = (await standPublicLinks(page.stand.slug)).preOrder(page.slug);
   const remove = deletePreOrderPage.bind(null, page.id);
 
   return (

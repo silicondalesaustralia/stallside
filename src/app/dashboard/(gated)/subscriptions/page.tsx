@@ -8,11 +8,10 @@ import {
   intervalLabel,
   membershipOfferReady,
   offerDisplayPriceCents,
-  subscriptionOfferPath,
   subscriptionOffersPath,
 } from "@/lib/subscription-offer";
 import { formatMoney } from "@/lib/money";
-import { SITE_URL } from "@/lib/legal";
+import { standPublicLinks } from "@/lib/storefront/stand-public-links";
 import { SubscriptionOfferKind } from "@/generated/prisma/client";
 import { isOfferAtCapacity } from "@/lib/subscription-capacity";
 import { listOwnerOffers } from "@/lib/subscriptions/service";
@@ -37,7 +36,10 @@ export default async function SubscriptionsListPage() {
     select: { id: true, slug: true, showSubscriptionsOnStand: true },
   });
 
-  const offers = await listOwnerOffers(owner.id, selected.id);
+  const [offers, links] = await Promise.all([
+    listOwnerOffers(owner.id, selected.id),
+    standPublicLinks(selected.slug),
+  ]);
 
   return (
     <main className="flex flex-col gap-8">
@@ -72,7 +74,7 @@ export default async function SubscriptionsListPage() {
       ) : (
         <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
           {offers.map((offer) => {
-            const path = subscriptionOfferPath(selected.slug, offer.slug);
+            const publicUrl = links.offer(offer.slug);
             const isMembership =
               offer.kind === SubscriptionOfferKind.MEMBERSHIP;
             const ready = membershipOfferReady(offer);
@@ -122,8 +124,7 @@ export default async function SubscriptionsListPage() {
                       : `${holding} members`}
                   </p>
                   <p className="mt-1 break-all text-xs text-[var(--muted)]">
-                    {SITE_URL}
-                    {path}
+                    {publicUrl}
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-2">
@@ -135,7 +136,7 @@ export default async function SubscriptionsListPage() {
                       Edit
                     </Link>
                     <Link
-                      href={path}
+                      href={publicUrl}
                       target="_blank"
                       className="text-[var(--leaf-dark)] underline"
                     >

@@ -5,8 +5,7 @@ import DashPrimaryCta from "@/components/DashPrimaryCta";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { formatCollectionLabel } from "@/lib/pre-order";
-import { preOrderPagePath } from "@/lib/preorder-page";
-import { SITE_URL } from "@/lib/legal";
+import { standPublicLinks } from "@/lib/storefront/stand-public-links";
 
 export default async function PreOrderPagesListPage() {
   const { owner } = await requireOwner();
@@ -23,7 +22,10 @@ export default async function PreOrderPagesListPage() {
     );
   }
 
-  const pages = await listOwnerPreOrderPages(owner.id, selected.id);
+  const [pages, links] = await Promise.all([
+    listOwnerPreOrderPages(owner.id, selected.id),
+    standPublicLinks(selected.slug),
+  ]);
 
   return (
     <main className="flex flex-col gap-8">
@@ -49,7 +51,7 @@ export default async function PreOrderPagesListPage() {
       ) : (
         <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
           {pages.map((page) => {
-            const path = preOrderPagePath(selected.slug, page.slug);
+            const publicUrl = links.preOrder(page.slug);
             return (
               <li
                 key={page.id}
@@ -67,8 +69,7 @@ export default async function PreOrderPagesListPage() {
                     {page._count.items} products
                   </p>
                   <p className="mt-1 break-all text-xs text-[var(--muted)]">
-                    {SITE_URL}
-                    {path}
+                    {publicUrl}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
@@ -85,7 +86,7 @@ export default async function PreOrderPagesListPage() {
                     QR
                   </Link>
                   <Link
-                    href={path}
+                    href={publicUrl}
                     target="_blank"
                     className="text-[var(--leaf-dark)] underline"
                   >
