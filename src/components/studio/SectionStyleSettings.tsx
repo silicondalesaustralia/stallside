@@ -18,6 +18,7 @@ import { hasLowContrast, type ThemePalette } from "@/lib/website/sections/colour
 import { countPageH1, h1Warning } from "@/lib/website/sections/heading-outline";
 import ColourField from "./ColourField";
 import PhotoStyleFields from "./PhotoStyleFields";
+import SectionImageLayoutFields from "./SectionImageLayoutFields";
 const SIZE_LABELS: Record<string, string> = { sm: "S", md: "M", lg: "L", xl: "XL" };
 const PILL = "rounded-lg border px-2.5 py-1.5 text-xs font-semibold";
 const PILL_ON = "border-[var(--field)] bg-[var(--wash)] text-[var(--field)]";
@@ -90,6 +91,13 @@ export default function SectionStyleSettings({
           ) : null}
         </>
       ) : null}
+      <SectionImageLayoutFields
+        craftName={craftName}
+        imageRadius={style.imageRadius}
+        swapSides={style.swapSides}
+        onRadius={(v) => patch("imageRadius", v)}
+        onSwap={(v) => patch("swapSides", v || undefined)}
+      />
       {PHOTO_SECTIONS.has(craftName) ? (
         <PhotoStyleFields
           idPrefix="section"

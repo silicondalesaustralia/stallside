@@ -1010,6 +1010,10 @@ img.sf-photo-frame {
   overflow: hidden;
 }
 
+[data-image-radius] .studio-image-pair > div {
+  border-radius: var(--section-image-radius);
+}
+
 /* Section style: primary buttons. Doubled class beats template button rules. */
 .section-style.section-style--btn .studio-btn--primary {
   background: var(--section-btn-bg, var(--site-btn-bg, var(--leaf-dark)));

@@ -11,7 +11,6 @@ import CardBackgroundField from "./CardBackgroundField";
 import SectionImageField from "./SectionImageField";
 import SectionStyleSettings from "./SectionStyleSettings";
 import SettingsGroup from "./SettingsGroup";
-import SectionImageLayoutFields from "./SectionImageLayoutFields";
 import { BUTTON_SECTIONS, parseSectionStyle, type SectionStyle } from "@/lib/website/sections/section-style";
 import SectionButtonFields from "./SectionButtonFields";
 import SectionElementStyles from "./SectionElementStyles";
@@ -256,13 +255,6 @@ export default function StudioSettingsPanel() {
             onChange={(v) => setProp("buttonLink", v)}
           />
         ) : null}
-        <SectionImageLayoutFields
-          craftName={selected.type}
-          imageRadius={sectionStyle.imageRadius}
-          swapSides={sectionStyle.swapSides}
-          onRadius={(v) => setStyleField("imageRadius", v)}
-          onSwap={(v) => setStyleField("swapSides", v || undefined)}
-        />
         </SettingsGroup>
         {BUTTON_SECTIONS.has(selected.type) ? (
           <SettingsGroup title="Button" open={openGroups.button} onToggle={(o) => toggleGroup("button", o)}>
