@@ -22,6 +22,7 @@ import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 import { ownerSquareReady } from "@/lib/square/owner-ready";
 import SyncSelectedBusiness from "@/components/SyncSelectedBusiness";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
+import { GET_STARTED_PATH } from "@/lib/onboarding/onboarding-gate";
 
 export default async function StandDetailPage({
   params,
@@ -34,7 +35,7 @@ export default async function StandDetailPage({
   const { tab: tabParam, new: newParam } = await searchParams;
   if (tabParam && MOVED_BUSINESS_TABS[tabParam]) redirect(MOVED_BUSINESS_TABS[tabParam]);
   const tab: BusinessTabId = isBusinessTabId(tabParam) ? tabParam : "details";
-  const isNewBusiness = newParam === "1";
+  if (newParam === "1") redirect(GET_STARTED_PATH);
 
   const { owner, user } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
@@ -82,7 +83,6 @@ export default async function StandDetailPage({
       <BusinessSetupPrompt
         standId={stand.id}
         productCount={stand.products.length}
-        isNew={isNewBusiness}
       />
 
       <BusinessSetupTabs standId={stand.id} active={tab} />

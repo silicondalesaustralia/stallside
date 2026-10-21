@@ -14,6 +14,7 @@ import {
 } from "@/lib/stand-timezone";
 import { uniqueStandSlug } from "@/lib/slug";
 import { createStandOnce } from "@/lib/create-stand-once";
+import { GET_STARTED_PATH } from "@/lib/onboarding/onboarding-gate";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { brandingDataFromForm } from "./stand-branding-from-form";
@@ -90,7 +91,7 @@ export async function createStand(formData: FormData) {
   await writeSelectedBusinessCookie(stand.id);
   revalidatePath("/dashboard", "layout");
   revalidatePath("/dashboard/businesses");
-  redirect(`/dashboard/businesses/${stand.id}?new=1`);
+  redirect(GET_STARTED_PATH);
 }
 
 export async function updateStand(standId: string, formData: FormData) {

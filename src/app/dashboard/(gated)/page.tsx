@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
+import { GET_STARTED_PATH, onboardingPending } from "@/lib/onboarding/onboarding-gate";
 import DashboardChannelCard from "@/components/DashboardChannelCard";
 import DashboardGreeting from "@/components/DashboardGreeting";
 import DashboardLowStockCard from "@/components/DashboardLowStockCard";
@@ -44,6 +46,8 @@ export default async function DashboardPage({
       </main>
     );
   }
+
+  if ((await onboardingPending(owner, user.email)).pending) redirect(GET_STARTED_PATH);
 
   const data = await loadDashboardHomeData({
     ownerId: owner.id,

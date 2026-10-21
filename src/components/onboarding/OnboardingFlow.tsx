@@ -9,7 +9,9 @@ const STEPS: { icon: OnboardingStepIconName; title: string; detail: string }[] =
   { icon: "sell", title: "Start selling", detail: "Take payments and fulfil orders" },
 ];
 
-export default function OnboardingFlow() {
+/** `activeStep` is 1-based; earlier steps show as done. */
+export default function OnboardingFlow({ activeStep = 1 }: { activeStep?: number }) {
+  const active = activeStep - 1;
   return (
     <ol
       aria-label="How onboarding works"
@@ -25,7 +27,7 @@ export default function OnboardingFlow() {
           )}
           <li
             className={`flex flex-1 items-start gap-3 rounded-xl border p-3 md:flex-col md:items-center md:text-center ${
-              i === 0
+              i === active
                 ? "border-[var(--leaf)] bg-white"
                 : "border-[var(--line)] bg-white/60"
             }`}
@@ -33,14 +35,17 @@ export default function OnboardingFlow() {
             <span className="relative flex size-11 shrink-0 items-center justify-center rounded-full bg-[var(--leaf)]/10 text-[var(--leaf)]">
               <OnboardingStepIcon name={step.icon} />
               <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-[var(--leaf)] text-[11px] font-semibold text-white">
-                {i + 1}
+                {i < active ? "✓" : i + 1}
               </span>
             </span>
             <span className="flex flex-col gap-0.5">
               <span className="text-sm font-medium">{step.title}</span>
               <span className="text-xs text-[var(--muted)]">{step.detail}</span>
-              {i === 0 && (
+              {i === active && (
                 <span className="text-xs font-medium text-[var(--leaf)]">You are here</span>
+              )}
+              {i < active && (
+                <span className="text-xs font-medium text-[var(--leaf)]">Done</span>
               )}
             </span>
           </li>

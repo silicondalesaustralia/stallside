@@ -3,18 +3,16 @@ import Link from "next/link";
 export default function BusinessSetupPrompt({
   standId,
   productCount,
-  isNew,
 }: {
   standId: string;
   productCount: number;
-  isNew: boolean;
 }) {
   if (productCount > 0) return null;
 
   return (
     <section className="rounded-[var(--radius-card)] border border-[var(--marigold)]/50 bg-[var(--marigold)]/15 p-5">
       <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--leaf-dark)]">
-        {isNew ? "Business created" : "Your next move"}
+        Your next move
       </p>
       <h2 className="mt-2 font-[family-name:var(--font-display)] text-xl font-bold text-[var(--ink)]">
         Add what you sell

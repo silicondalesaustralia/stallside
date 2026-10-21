@@ -6,7 +6,7 @@ import { businessLimitReached } from "@/lib/business-limit";
 import { createStand } from "../actions";
 import FormField from "@/components/FormField";
 import CreateStandSubmitButton from "./CreateStandSubmitButton";
-import OnboardingFlow from "./OnboardingFlow";
+import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 
 export default async function NewStandPage() {
   const { owner, user } = await requireOwner();
