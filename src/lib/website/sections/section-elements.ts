@@ -39,6 +39,11 @@ export const SECTION_ELEMENTS: Record<string, SectionElementDef[]> = {
     { id: "stars", label: "Stars" },
     { id: "ratingCount", label: "Rating numbers" },
   ],
+  CraftFarmStandSection: [
+    { id: "cardLabel", label: "Card titles (Location, Stand hours…)" },
+    { id: "cardText", label: "Card text" },
+    { id: "cardLink", label: "Get directions link" },
+  ],
   CraftCategoryDetailSection: [
     { id: "title", label: "Category name" },
     { id: "topDescription", label: "Top description" },

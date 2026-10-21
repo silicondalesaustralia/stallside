@@ -3,6 +3,7 @@
 import { FOOTER_BRAND_MAX, FOOTER_TAGLINE_MAX, type FooterSettings } from "@/lib/studio/footer-settings";
 import { useStudioMetadata } from "./StudioEditorContext";
 import { footerSocialLinks } from "./shell/StudioFooterSocial";
+import FooterLogoFields from "./FooterLogoFields";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
 
@@ -33,6 +34,7 @@ export default function FooterBrandFields({
       </label>
       {shown ? (
         <>
+          <FooterLogoFields footer={footer} update={update} />
           <div className="space-y-1.5">
             <label className="block text-xs font-semibold text-[var(--field)]">Business name</label>
             <input

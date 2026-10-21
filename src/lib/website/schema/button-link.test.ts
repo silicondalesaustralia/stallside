@@ -26,6 +26,12 @@ describe("button links", () => {
     assert.equal(resolveButtonLink("https://x.com", live), "https://x.com");
   });
 
+  it("resolves subscription, membership and pre-order pages", () => {
+    assert.equal(resolveButtonLink("page:subscriptions", live), "/shop/green-acres/subscriptions");
+    assert.equal(resolveButtonLink("offer:veg-box", live), "/shop/green-acres/subscriptions/veg-box");
+    assert.equal(resolveButtonLink("preorder:xmas-hams", { ...live, draft: true }), "/shop/green-acres/pre-orders/xmas-hams?draft=1");
+  });
+
   it("falls back to the section default when unset, invalid or the page is gone", () => {
     assert.equal(resolveButtonLink(undefined, live), null);
     assert.equal(resolveButtonLink("javascript:alert(1)", live), null);

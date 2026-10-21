@@ -17,10 +17,17 @@ export type FooterLink = { id: string; label: string; link: string };
 export type FooterContact = { address?: string; phone?: string; email?: string; hours?: string };
 export type FooterColumn = { id: string; heading: string; links: FooterLink[]; contact?: FooterContact };
 
+export const FOOTER_LOGO_SIZES = ["sm", "md", "lg"] as const;
+export type FooterLogoSize = (typeof FOOTER_LOGO_SIZES)[number];
+
 export type FooterSettings = {
   brandName?: string;
   tagline?: string;
   showBrand?: boolean;
+  /** Show a logo above the business name: `logoUrl`, else the site logo. */
+  showLogo?: boolean;
+  logoUrl?: string;
+  logoSize?: FooterLogoSize;
   showTagline?: boolean;
   showRegion?: boolean;
   showEmail?: boolean;

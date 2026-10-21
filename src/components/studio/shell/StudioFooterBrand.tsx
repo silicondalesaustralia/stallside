@@ -1,5 +1,8 @@
 import type { ResolvedStorefrontBranding } from "@/lib/storefront/types";
-import type { FooterSettings } from "@/lib/studio/footer-view";
+import type { FooterLogoSize, FooterSettings } from "@/lib/studio/footer-view";
+
+const LOGO_HEIGHT: Record<FooterLogoSize, string> = { sm: "h-10", md: "h-14", lg: "h-20" };
+
 /** The footer's first column: business name, tagline, region and contact details. */
 export default function StudioFooterBrand({
   branding,
@@ -16,9 +19,14 @@ export default function StudioFooterBrand({
   const region = footer?.showRegion === false ? null : branding.regionLabel;
   const email = footer?.showEmail === false ? null : branding.contactEmail;
   const phone = footer?.showPhone ? branding.contactPhone : null;
+  const logo = footer?.showLogo ? footer.logoUrl || branding.logoUrl : null;
 
   return (
     <div className={className}>
+      {logo ? (
+        // eslint-disable-next-line @next/next/no-img-element -- seller-uploaded logo of any shape
+        <img src={logo} alt="" className={`studio-footer__logo mb-3 w-auto max-w-[14rem] object-contain ${LOGO_HEIGHT[footer?.logoSize ?? "md"]}`} />
+      ) : null}
       <p className="studio-footer__brand">{name}</p>
       {tagline ? <p className="mt-2 max-w-xs text-sm leading-relaxed opacity-80">{tagline}</p> : null}
       {region ? <p className="mt-3 text-sm opacity-75">{region}</p> : null}

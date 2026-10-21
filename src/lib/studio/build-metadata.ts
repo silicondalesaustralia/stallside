@@ -12,6 +12,7 @@ import type { PaymentBrand } from "@/lib/payment-brand-assets";
 import { ensureBlogSettings } from "./blog";
 import { buildStudioHeaderNav } from "./navigation";
 import { visitFacts } from "./visit-facts";
+import { loadLinkTargets } from "./load-link-targets";
 import type { StudioMetadata, StudioTemplateId } from "./types";
 
 async function loadPaymentBrands(ctx: NonNullable<StorefrontContext>): Promise<PaymentBrand[]> {
@@ -31,10 +32,11 @@ export async function buildStudioMetadata(
 ): Promise<StudioMetadata> {
   const base = await buildPuckSpikeMetadata(ctx, draft);
   const shown = ctx.categories.filter((c) => c.showOnWebsite !== false);
-  const [reviews, paymentBrands, ratings] = await Promise.all([
+  const [reviews, paymentBrands, ratings, linkTargets] = await Promise.all([
     loadStorefrontReviews(ctx.owner.id, 6),
     loadPaymentBrands(ctx),
     loadCategoryRatings(ctx.owner.id, shown.map((c) => c.id)),
+    loadLinkTargets(ctx.stand.id),
   ]);
 
   const categories = shown.map((c) => ({
@@ -80,6 +82,7 @@ export async function buildStudioMetadata(
         label: p.navLabel || p.title,
         href: customPagePublicPath(ctx.storefront.slug, p, draft, base.basePath),
       })),
+    ...linkTargets,
     headerMenu: parseHeaderMenu(configSource),
     paymentBrands,
     ...visitFacts(ctx.storefront.businessProfile, ctx.stand.timezone, base.branding.regionLabel),

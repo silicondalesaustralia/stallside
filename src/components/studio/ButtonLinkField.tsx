@@ -4,6 +4,7 @@ import { useState } from "react";
 import { normaliseLinkInput } from "@/lib/website/rich-text/parse";
 import { isButtonLink } from "@/lib/studio/button-link";
 import { useStudioMetadata } from "./StudioEditorContext";
+import OfferLinkOptions from "./OfferLinkOptions";
 
 const INPUT = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm";
 const URL_OPTION = "__url";
@@ -16,7 +17,7 @@ const PAGES = [
   ["page:blog", "Blog"],
 ] as const;
 
-const isToken = (v: string) => /^(page|nav|product|category):/.test(v);
+const isToken = (v: string) => /^(page|nav|product|category|offer|preorder):/.test(v);
 
 /** Where a button or menu link goes: a site page, custom page, category, product or any web address. */
 export default function ButtonLinkField({
@@ -84,6 +85,13 @@ export default function ButtonLinkField({
               <option key={p.slug} value={`nav:${p.slug}`}>{p.label}</option>
             ))}
         </optgroup>
+        <OfferLinkOptions
+          offers={meta.offerPages}
+          preOrders={[
+            ...meta.menus.filter((m) => m.isPreOrderDrop).map((m) => ({ slug: m.slug, title: m.title })),
+            ...(meta.preOrderPages ?? []),
+          ]}
+        />
         {meta.categories.length ? (
           <optgroup label="Categories">
             {meta.categories.filter((c) => isButtonLink(`category:${c.slug}`)).map((c) => (

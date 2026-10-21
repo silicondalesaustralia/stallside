@@ -29,6 +29,10 @@ export type StudioMetadata = PuckSpikeMetadata & {
   customNavPages: import("./navigation").StudioNavItem[];
   /** Every enabled custom page (for link pickers), in or out of the automatic menu. */
   linkablePages: { slug: string; label: string; href: string }[];
+  /** Active subscription and membership offers, for link pickers. */
+  offerPages?: import("./load-link-targets").OfferLinkTarget[];
+  /** Active pre-order pages, for link pickers. */
+  preOrderPages?: import("./load-link-targets").PreOrderLinkTarget[];
   /** The seller's own header menu, or null for the automatic one. */
   headerMenu: import("./header-menu").HeaderMenu | null;
   announcementBar: import("./announcement-bar").AnnouncementBar | null;

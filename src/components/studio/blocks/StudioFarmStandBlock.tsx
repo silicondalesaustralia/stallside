@@ -1,9 +1,11 @@
 import SectionButtonLink from "@/components/studio/SectionButtonLink";
+import SectionElement from "@/components/studio/SectionElement";
 import type { StudioMetadata } from "@/lib/studio/types";
 import { shopPagePath } from "@/lib/storefront/paths";
 import StudioSectionHeading from "@/components/studio/StudioSectionHeading";
 import SectionCopy from "@/components/studio/SectionCopy";
 
+const CARD = "studio-farm-stand__card rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-[var(--panel)] p-6 shadow-[var(--shadow-card)]";
 const LABEL = "text-xs font-bold uppercase tracking-wide text-[var(--muted)]";
 
 type Props = {
@@ -39,15 +41,13 @@ export default function StudioFarmStandBlock({
         />
         <div className="mt-8 grid gap-6 sf-lg:grid-cols-3">
           {showLocation ? (
-            <div className="studio-farm-stand__card rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-[var(--panel)] p-6 shadow-[var(--shadow-card)]">
-              <SectionCopy k="locationLabel" fallback="Location" as="p" className={LABEL} />
-              <SectionCopy
-                k="location"
-                fallback={region ?? meta.branding.businessName}
-                as="p"
-                multiline
-                className="mt-2 whitespace-pre-line font-semibold text-[var(--field)]"
-              />
+            <div className={CARD}>
+              <SectionElement el="cardLabel" className={LABEL}>
+                <SectionCopy k="locationLabel" fallback="Location" />
+              </SectionElement>
+              <SectionElement el="cardText" className="mt-2 whitespace-pre-line font-semibold text-[var(--field)]">
+                <SectionCopy k="location" fallback={region ?? meta.branding.businessName} multiline />
+              </SectionElement>
               {showDirections && region ? (
                 <a
                   href={`https://maps.google.com/?q=${encodeURIComponent(region)}`}
@@ -55,33 +55,39 @@ export default function StudioFarmStandBlock({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <SectionCopy k="directions" fallback="Get directions" />
+                  <SectionElement el="cardLink" as="span">
+                    <SectionCopy k="directions" fallback="Get directions" />
+                  </SectionElement>
                 </a>
               ) : null}
             </div>
           ) : null}
           {showHours ? (
-            <div className="studio-farm-stand__card rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-[var(--panel)] p-6 shadow-[var(--shadow-card)]">
-              <SectionCopy k="hoursLabel" fallback="Stand hours" as="p" className={LABEL} />
-              <SectionCopy
-                k="hours"
-                fallback={fulfilment[0]?.label ?? "Open for pickup — check shop for current availability"}
-                as="p"
-                multiline
-                className="mt-2 whitespace-pre-line text-sm leading-relaxed text-[var(--field)]"
-              />
+            <div className={CARD}>
+              <SectionElement el="cardLabel" className={LABEL}>
+                <SectionCopy k="hoursLabel" fallback="Stand hours" />
+              </SectionElement>
+              <SectionElement el="cardText" className="mt-2 whitespace-pre-line text-sm leading-relaxed text-[var(--field)]">
+                <SectionCopy
+                  k="hours"
+                  fallback={fulfilment[0]?.label ?? "Open for pickup — check shop for current availability"}
+                  multiline
+                />
+              </SectionElement>
             </div>
           ) : null}
-          <div className="studio-farm-stand__card rounded-[var(--studio-card-radius)] border border-[var(--line)] bg-[var(--panel)] p-6 shadow-[var(--shadow-card)]">
-            <SectionCopy k="availableLabel" fallback="What's available" as="p" className={LABEL} />
-            <SectionCopy
-              k="available"
-              fallback="{count} products listed this week"
-              vars={{ count: meta.products.length }}
-              as="p"
-              multiline
-              className="mt-2 whitespace-pre-line text-sm text-[var(--muted)]"
-            />
+          <div className={CARD}>
+            <SectionElement el="cardLabel" className={LABEL}>
+              <SectionCopy k="availableLabel" fallback="What's available" />
+            </SectionElement>
+            <SectionElement el="cardText" className="mt-2 whitespace-pre-line text-sm text-[var(--muted)]">
+              <SectionCopy
+                k="available"
+                fallback="{count} products listed this week"
+                vars={{ count: meta.products.length }}
+                multiline
+              />
+            </SectionElement>
             <SectionButtonLink meta={meta} defaultHref={shopHref} className="studio-btn studio-btn--primary mt-4 text-sm">
               <SectionCopy k="browse" fallback="Browse produce" />
             </SectionButtonLink>

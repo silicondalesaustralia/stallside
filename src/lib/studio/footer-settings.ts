@@ -1,12 +1,14 @@
 import { z } from "zod";
 import { buttonLinkSchema } from "./button-link-schema";
 import { isColourValue } from "@/lib/website/sections/section-style";
+import { mediaUrl } from "@/lib/website/sections/fields";
 import {
   FOOTER_ADDRESS_MAX,
   FOOTER_BOTTOM_MAX,
   FOOTER_BRAND_MAX,
   FOOTER_HEADING_MAX,
   FOOTER_LABEL_MAX,
+  FOOTER_LOGO_SIZES,
   FOOTER_MAX_COLUMNS,
   FOOTER_MAX_LINKS,
   FOOTER_MOBILE_LAYOUTS,
@@ -45,6 +47,9 @@ export const footerSettingsSchema = z.object({
   brandName: z.string().max(FOOTER_BRAND_MAX).optional(),
   tagline: z.string().max(FOOTER_TAGLINE_MAX).optional(),
   showBrand: z.boolean().optional(),
+  showLogo: z.boolean().optional(),
+  logoUrl: mediaUrl.optional(),
+  logoSize: z.enum(FOOTER_LOGO_SIZES).optional(),
   showTagline: z.boolean().optional(),
   showRegion: z.boolean().optional(),
   showEmail: z.boolean().optional(),
