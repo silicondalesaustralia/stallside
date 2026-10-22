@@ -5,6 +5,7 @@ import ImpersonationBanner from "@/components/ImpersonationBanner";
 import OwnerPushRegister from "@/components/OwnerPushRegisterLazy";
 import StripeSetupBanner from "@/components/StripeSetupBanner";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
+import { redirectBetaOwnerToBetaApp } from "@/lib/beta-handoff";
 import { loadStripeSetupBanner } from "@/lib/load-stripe-setup-banner";
 import { requireOwner } from "@/lib/session";
 import { paidAccessDaysRemaining } from "@/lib/owner-trial";
@@ -21,6 +22,11 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { owner, user, impersonator } = await requireOwner();
+  await redirectBetaOwnerToBetaApp({
+    userId: user.id,
+    betaFeatures: owner.betaFeatures,
+    impersonated: Boolean(impersonator),
+  });
   const access = { email: user.email, role: user.role };
   const paidDays = paidAccessDaysRemaining(owner, access);
   const { businesses, selected } = await resolveSelectedBusiness(owner.id);
