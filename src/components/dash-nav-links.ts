@@ -65,6 +65,15 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
     ],
   },
   {
+    heading: "Production",
+    links: [
+      { href: "/dashboard/production", label: "Batches" },
+      { href: "/dashboard/production/materials", label: "Materials" },
+      { href: "/dashboard/production/recipes", label: "Recipes & costing" },
+      { href: "/dashboard/production/profit", label: "Profit & loss" },
+    ],
+  },
+  {
     heading: "Website",
     links: [
       {

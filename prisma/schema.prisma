@@ -69,6 +69,8 @@ enum InventorySource {
   EXTERNAL_POS
   RECONCILIATION
   SYSTEM
+  /** Finished units added by a production batch. */
+  PRODUCTION
 }
 
 enum ProductSupplyStatus {
@@ -538,6 +540,7 @@ model Owner {
   ingredients                   Ingredient[]
   recipes                       Recipe[]
   productionPlans               ProductionPlan[]
+  productionBatches             ProductionBatch[]
   customerTags                  CustomerTag[]
   customerSegments              CustomerSegment[]
   promotions                    Promotion[]
@@ -804,6 +807,7 @@ model Stand {
   qrCodes                       QrCode[]
   upsells                       Upsell[]
   promotions                    Promotion[]
+  productionBatches             ProductionBatch[]
   createdAt                     DateTime                  @default(now())
   updatedAt                     DateTime                  @updatedAt
 
@@ -1518,6 +1522,7 @@ model Product {
    * Optional link to a production recipe (Phase 6).
    */
   productRecipe               ProductRecipe?
+  productionBatches           ProductionBatch[]
   /**
    * Optional packaging/materials cost per sellable unit (cents).
    */
@@ -2353,8 +2358,14 @@ model Ingredient {
   sku                String?
   notes              String?
   isActive           Boolean                 @default(true)
+  /** Stock on hand, in baseUnit. Can go negative when production outruns recorded purchases. */
+  onHandQuantity     Decimal                 @default(0) @db.Decimal(18, 6)
+  /** Warn when onHandQuantity falls to this level (baseUnit). */
+  reorderLevel       Decimal?                @db.Decimal(18, 6)
   recipeLines        RecipeIngredient[]
   costHistory        IngredientCostHistory[]
+  purchases          IngredientPurchase[]
+  batchLines         ProductionBatchLine[]
   createdAt          DateTime                @default(now())
   updatedAt          DateTime                @updatedAt
 
@@ -2378,6 +2389,24 @@ model IngredientCostHistory {
   @@index([ingredientId, recordedAt])
 }
 
+/** Incoming supplies. Adds to onHandQuantity and becomes the ingredient's current price. */
+model IngredientPurchase {
+  id           String      @id @default(cuid())
+  ingredientId String
+  ingredient   Ingredient  @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  quantity     Decimal     @db.Decimal(18, 6)
+  unit         MeasureUnit
+  totalCents   Int
+  supplier     String?
+  lotCode      String?
+  expiresAt    DateTime?
+  notes        String?
+  receivedAt   DateTime    @default(now())
+  createdAt    DateTime    @default(now())
+
+  @@index([ingredientId, receivedAt])
+}
+
 model Recipe {
   id              String             @id @default(cuid())
   ownerId         String
@@ -2395,9 +2424,18 @@ model Recipe {
   instructions    String?
   prepNotes       String?
   isActive        Boolean            @default(true)
+  /** Extra ingredient usage for spills, offcuts, failed prints (percent of each line). */
+  wastePercent    Decimal            @default(0) @db.Decimal(6, 2)
+  /** Hands-on minutes per batch. */
+  labourMinutes   Int                @default(0)
+  /** Hourly labour rate in cents. */
+  labourRateCents Int                @default(0)
+  /** Per-batch overhead: oven/printer time, power, equipment wear. */
+  overheadCents   Int                @default(0)
   lines           RecipeIngredient[]
   productLinks    ProductRecipe[]
   usedAsComponent RecipeIngredient[] @relation("RecipeComponent")
+  batches         ProductionBatch[]
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
 
@@ -2469,6 +2507,56 @@ model ProductionPlan {
 
   @@unique([ownerId, groupKey])
   @@index([ownerId, standId])
+}
+
+/** A completed production run: ingredients out, finished product units in, costs snapshotted. */
+model ProductionBatch {
+  id                String                @id @default(cuid())
+  ownerId           String
+  owner             Owner                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  standId           String
+  stand             Stand                 @relation(fields: [standId], references: [id], onDelete: Cascade)
+  recipeId          String?
+  recipe            Recipe?               @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  recipeName        String
+  productId         String?
+  product           Product?              @relation(fields: [productId], references: [id], onDelete: SetNull)
+  batchCode         String
+  /** Number of recipe batches made (e.g. 2 = double batch). */
+  batchCount        Decimal               @db.Decimal(18, 6)
+  /** Sellable product units added to stock. */
+  unitsMade         Int                   @default(0)
+  madeAt            DateTime              @default(now())
+  bestBefore        DateTime?
+  materialCostCents Int
+  labourCostCents   Int
+  overheadCostCents Int
+  totalCostCents    Int
+  /** totalCostCents / unitsMade, excluding packaging. */
+  unitCostCents     Int?
+  notes             String?
+  lines             ProductionBatchLine[]
+  createdAt         DateTime              @default(now())
+
+  @@unique([ownerId, batchCode])
+  @@index([standId, madeAt])
+  @@index([productId, madeAt])
+}
+
+/** Ingredient consumed by a batch (baseUnit), with cost at the time. */
+model ProductionBatchLine {
+  id             String          @id @default(cuid())
+  batchId        String
+  batch          ProductionBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  ingredientId   String?
+  ingredient     Ingredient?     @relation(fields: [ingredientId], references: [id], onDelete: SetNull)
+  ingredientName String
+  quantity       Decimal         @db.Decimal(18, 6)
+  unit           MeasureUnit
+  costCents      Int
+
+  @@index([batchId])
+  @@index([ingredientId])
 }
 
 // ─── Phase 7: Growth & Customer Retention ───────────────────────────────────

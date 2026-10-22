@@ -60,6 +60,18 @@ const ICONS: Record<string, React.ReactNode> = {
   "/dashboard/suppliers": (
     <Icon d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.27 7 12 12l8.73-5M12 22V12" />
   ),
+  "/dashboard/production": (
+    <Icon d="M3 21h18M5 21V10l5 3V10l5 3V6l4 2v13" />
+  ),
+  "/dashboard/production/materials": (
+    <Icon d="M5 8h14l-1 12H6zM9 8V5h6v3" />
+  ),
+  "/dashboard/production/recipes": (
+    <Icon d="M6 3h12v18H6zM9 7h6M9 11h6M9 15h3" />
+  ),
+  "/dashboard/production/profit": (
+    <Icon d="M4 19h16M7 15l4-4 3 3 5-6M15 8h4v4" />
+  ),
   "/dashboard/notifications": (
     <Icon d="M6 9a6 6 0 1 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9M10 21h4" />
   ),
