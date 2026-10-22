@@ -89,6 +89,13 @@ Nothing changes in the `stallside` (main) project's env.
   access**. The owner then signs in at `beta.vendl.app` with their usual email.
 - Check: a non-beta account signing in at `beta.vendl.app` lands on `www.vendl.app/dashboard`.
 
+## Hand-off from www (on `main`)
+
+- With `BETA_APP_URL=https://beta.vendl.app` on the `stallside` project, beta owners who open the
+  www dashboard are signed in to the beta app (single-use 60s token) and land on the same page.
+- Admin "log in as" and `/dashboard/settings/square` stay on www (Square's OAuth URL is www).
+- Off switch: delete `BETA_APP_URL` from `stallside` and redeploy.
+
 ## Launch (everyone gets it)
 
 1. Merge `feature/social-kit` into `main` (the beta gate is inert without `VENDL_BETA_APP`).
@@ -96,5 +103,6 @@ Nothing changes in the `stallside` (main) project's env.
    `VENDL_APP_HOST`, `VENDL_MAIN_APP_URL`, and keep `NEXT_PUBLIC_APP_URL`/`AUTH_URL` as www.
 3. Cloudflare: move `fallback.vendl.app` to the `stallside` project (Vercel domains) so custom
    domains are served by `main`. Customers change nothing in their DNS.
-4. Redirect `beta.vendl.app` to `www.vendl.app` and delete the `vendl-beta` project.
+4. Delete `BETA_APP_URL` from `stallside`, redirect `beta.vendl.app` to `www.vendl.app` and
+   delete the `vendl-beta` project.
 5. Update OAuth redirect URIs from `beta.vendl.app` to `www.vendl.app`.
