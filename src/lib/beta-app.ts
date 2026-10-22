@@ -35,22 +35,27 @@ const SOCIAL_DB_CRONS = new Set([
   "gbp-performance-sync",
 ]);
 
-/** The Social kit needs its Supabase project; without it Social stays off. */
-export function socialDbConfigured(): boolean {
+/**
+ * Social is switched on explicitly (SOCIAL_SECTION_LIVE=1) and needs its
+ * Supabase project; until then it shows as coming soon.
+ */
+export function socialLive(): boolean {
   return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
+    process.env.SOCIAL_SECTION_LIVE === "1" &&
+      process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+      process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
   );
 }
 
 /**
  * True when a cron request must be skipped: main's app already runs it, or it
- * needs the Social database and the beta app has none.
+ * is a Social cron and Social isn't live on the beta app.
  */
 export function betaAppSkipsCron(pathname: string): boolean {
   if (!isBetaApp() || !pathname.startsWith("/api/cron/")) return false;
   const name = pathname.slice("/api/cron/".length).split("/")[0] ?? "";
   if (!BETA_APP_CRONS.has(name)) return true;
-  return SOCIAL_DB_CRONS.has(name) && !socialDbConfigured();
+  return SOCIAL_DB_CRONS.has(name) && !socialLive();
 }
 
 /** Paths that belong to main's app (account creation), redirected from the beta app. */

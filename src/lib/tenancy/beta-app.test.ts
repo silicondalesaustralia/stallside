@@ -12,6 +12,7 @@ const KEYS = [
   "NEXT_PUBLIC_APP_URL",
   "NEXT_PUBLIC_SUPABASE_URL",
   "SUPABASE_SERVICE_ROLE_KEY",
+  "SOCIAL_SECTION_LIVE",
 ] as const;
 let saved: Partial<Record<(typeof KEYS)[number], string>> = {};
 
@@ -34,14 +35,15 @@ describe("beta app", () => {
     assert.equal(appRedirectHost(), "vendl.app");
   });
 
-  it("skips Social crons on the beta app until the Social database is configured", () => {
+  it("skips Social crons on the beta app until Social is switched live", () => {
     process.env.VENDL_BETA_APP = "1";
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://x.supabase.co";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "key";
     assert.equal(betaAppSkipsCron("/api/cron/publish-due-social-posts"), true);
     assert.equal(betaAppSkipsCron("/api/cron/gbp-performance-sync"), true);
     assert.equal(betaAppSkipsCron("/api/cron/process-website-generation"), false);
     assert.equal(betaAppSkipsCron("/api/cron/calendar-sync"), false);
-    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://x.supabase.co";
-    process.env.SUPABASE_SERVICE_ROLE_KEY = "key";
+    process.env.SOCIAL_SECTION_LIVE = "1";
     assert.equal(betaAppSkipsCron("/api/cron/publish-due-social-posts"), false);
   });
 
@@ -49,6 +51,7 @@ describe("beta app", () => {
     process.env.VENDL_BETA_APP = "1";
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://x.supabase.co";
     process.env.SUPABASE_SERVICE_ROLE_KEY = "key";
+    process.env.SOCIAL_SECTION_LIVE = "1";
     for (const cron of ["lifecycle", "balance-dunning", "membership-collections", "checkout-sweep", "square-reconcile"]) {
       assert.equal(betaAppSkipsCron(`/api/cron/${cron}`), true, cron);
     }

@@ -71,10 +71,12 @@ Nothing changes in the `stallside` (main) project's env.
 
 ## 4. Supabase (Social), optional
 
-- Only needed for Social. Without `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` the
-  beta app hides Social and skips the Social crons; Website studio and domains don't use it.
+- Only needed for Social. Until `SOCIAL_SECTION_LIVE=1` (plus the Supabase vars) is set on the beta
+  app, Social opens a coming-soon page and its crons are skipped; Website studio and domains don't
+  use Supabase.
 - When ready: create the production social project, run `supabase/social/001` … `010` in order,
-  add the three Supabase env vars and redeploy.
+  set `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` to it, add
+  `SOCIAL_SECTION_LIVE=1` and redeploy.
 
 ## 5. OAuth apps
 

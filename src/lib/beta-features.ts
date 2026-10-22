@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { isBetaApp, socialDbConfigured } from "@/lib/beta-app";
+import { isBetaApp, socialLive } from "@/lib/beta-app";
 
 /** Owner.betaFeatures entry that lets an owner into the beta app (any plan). */
 export const BETA_APP_ACCESS = "beta";
@@ -9,18 +9,18 @@ export function hasBetaAppAccess(owner: { betaFeatures: string[] } | null): bool
 }
 
 /**
- * Social kit access: everyone on the beta app (only beta owners get in) once its
- * Social database is configured, or when SOCIAL_SECTION_LIVE=1 (full release);
+ * Social kit access: on the beta app (only beta owners get in) once Social is
+ * switched live there; elsewhere when SOCIAL_SECTION_LIVE=1 (full release),
  * otherwise only beta owners.
  */
 export function socialKitEnabledFor(owner: { betaFeatures: string[] } | null): boolean {
-  if (isBetaApp()) return socialDbConfigured();
+  if (isBetaApp()) return socialLive();
   if (process.env.SOCIAL_SECTION_LIVE === "1") return true;
   return hasBetaAppAccess(owner);
 }
 
 export async function socialKitEnabledForOwnerId(ownerId: string): Promise<boolean> {
-  if (isBetaApp()) return socialDbConfigured();
+  if (isBetaApp()) return socialLive();
   if (process.env.SOCIAL_SECTION_LIVE === "1") return true;
   const owner = await prisma.owner.findUnique({
     where: { id: ownerId },
