@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/session";
+import { isBetaApp, mainAppUrl } from "@/lib/beta-app";
 import { prisma } from "@/lib/prisma";
 import { isSquareConnectEnabled } from "@/lib/square/config";
 import {
@@ -30,6 +31,8 @@ export async function startSquareConnect(): Promise<void> {
     throw new Error("Square is not enabled.");
   }
   const { owner } = await requireOwner();
+  // Square accepts one OAuth redirect URL (the main app's), so connect there.
+  if (isBetaApp()) redirect(`${mainAppUrl()}/dashboard/settings/square`);
   const region = squareRegionForBilling(owner.billingCurrency);
   if (!region) {
     throw new Error(SQUARE_REGION_UNAVAILABLE);
