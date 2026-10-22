@@ -1,21 +1,24 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import DashNavIcon from "@/components/DashNavIcon";
 
 type Anchor = { top: number; left: number };
 
-/** A greyed "Soon" sidebar entry; hovering or focusing it lists what the section will include. */
+/** A greyed "Soon" sidebar link; hovering or focusing it lists what the section will include. */
 export default function SidebarSoonItem({
   href,
   label,
   features,
   collapsed,
+  active,
 }: {
   href: string;
   label: string;
   features: readonly string[];
   collapsed: boolean;
+  active: boolean;
 }) {
   const [anchor, setAnchor] = useState<Anchor | null>(null);
 
@@ -25,17 +28,17 @@ export default function SidebarSoonItem({
   }
 
   return (
-    <div
-      tabIndex={0}
-      aria-disabled
+    <Link
+      href={href}
       aria-describedby={anchor ? `${label}-soon` : undefined}
       onMouseEnter={(e) => show(e.currentTarget)}
       onFocus={(e) => show(e.currentTarget)}
       onMouseLeave={() => setAnchor(null)}
       onBlur={() => setAnchor(null)}
-      className={`flex cursor-default items-center rounded-lg text-[var(--ink-on-dark)]/70 outline-none hover:bg-white/10 focus-visible:bg-white/10 ${
+      onClick={() => setAnchor(null)}
+      className={`flex items-center rounded-lg text-[var(--ink-on-dark)]/70 outline-none hover:bg-white/10 focus-visible:bg-white/10 ${
         collapsed ? "justify-center px-2 py-2" : "gap-3 px-3 py-2"
-      }`}
+      } ${active ? "bg-white/12" : ""}`}
     >
       <span className="opacity-50">
         <DashNavIcon href={href} />
@@ -68,6 +71,6 @@ export default function SidebarSoonItem({
           </ul>
         </div>
       ) : null}
-    </div>
+    </Link>
   );
 }

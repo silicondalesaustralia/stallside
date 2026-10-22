@@ -5,11 +5,11 @@ export type DashNavLink = {
   label: string;
   /** Only shown to owners with the Website beta. */
   websiteOnly?: boolean;
-  /** "Coming soon" (not clickable) for owners without the Social kit. */
+  /** "Coming soon" for owners without the Social kit (opens its coming-soon page). */
   socialKit?: boolean;
   /** Extra path prefixes that count as this link (e.g. tabs that live elsewhere). */
   alsoActiveOn?: string[];
-  /** Shown greyed with a "Soon" tag and not clickable. */
+  /** Shown greyed with a "Soon" tag. */
   comingSoon?: boolean;
   /** What a "Soon" item will include, shown on hover. */
   soonFeatures?: readonly string[];

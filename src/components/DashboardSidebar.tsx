@@ -77,6 +77,7 @@ export default function DashboardSidebar({
                   label={link.label}
                   features={link.soonFeatures ?? []}
                   collapsed={collapsed}
+                  active={link.href === activeHref}
                 />
               ) : (
                 <SidebarNavItem

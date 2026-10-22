@@ -15,6 +15,10 @@ const STEPS: { title: string; body: string; chips?: string[] }[] = [
     body: "Upload your own photos, videos and captions, or let Vendl draft them for you. Post about anything: products, market days, behind the scenes, news or a special offer.",
   },
   {
+    title: "Clip and post video",
+    body: "Upload a longer video and Vendl cuts it into short clips with your branding, ready for Reels, TikTok and Shorts.",
+  },
+  {
     title: "Plan the week",
     body: "Get a suggested posting plan built around what you're selling, then drag posts onto the calendar.",
   },
