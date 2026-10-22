@@ -69,9 +69,12 @@ Nothing changes in the `stallside` (main) project's env.
 - Seller subdomains (`<shop>.vendl.app`) are optional during beta: a wildcard needs a Vercel
   certificate. Without them, shops are at the custom domain or `beta.vendl.app/shop/<slug>`.
 
-## 4. Supabase (Social)
+## 4. Supabase (Social), optional
 
-- Create the production social project, run `supabase/social/001` … `010` in order.
+- Only needed for Social. Without `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` the
+  beta app hides Social and skips the Social crons; Website studio and domains don't use it.
+- When ready: create the production social project, run `supabase/social/001` … `010` in order,
+  add the three Supabase env vars and redeploy.
 
 ## 5. OAuth apps
 

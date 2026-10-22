@@ -25,11 +25,32 @@ const BETA_APP_CRONS = new Set([
   "calendar-sync",
 ]);
 
-/** True when a cron request must be skipped because main's app already runs it. */
+/** Beta app crons that read or write the Social (Supabase) database. */
+const SOCIAL_DB_CRONS = new Set([
+  "publish-due-social-posts",
+  "tiktok-publish-status",
+  "process-week-plan-generation",
+  "inspiration-temp-cleanup",
+  "media-asset-upload-cleanup",
+  "gbp-performance-sync",
+]);
+
+/** The Social kit needs its Supabase project; without it Social stays off. */
+export function socialDbConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
+  );
+}
+
+/**
+ * True when a cron request must be skipped: main's app already runs it, or it
+ * needs the Social database and the beta app has none.
+ */
 export function betaAppSkipsCron(pathname: string): boolean {
   if (!isBetaApp() || !pathname.startsWith("/api/cron/")) return false;
   const name = pathname.slice("/api/cron/".length).split("/")[0] ?? "";
-  return !BETA_APP_CRONS.has(name);
+  if (!BETA_APP_CRONS.has(name)) return true;
+  return SOCIAL_DB_CRONS.has(name) && !socialDbConfigured();
 }
 
 /** Paths that belong to main's app (account creation), redirected from the beta app. */

@@ -127,7 +127,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   if (betaAppSkipsCron(pathname)) {
-    return NextResponse.json({ skipped: "runs on the main app" });
+    return NextResponse.json({ skipped: "not run on the beta app" });
   }
   if (betaAppMainOnlyPath(pathname)) {
     return NextResponse.redirect(`${mainAppUrl()}${pathname}${request.nextUrl.search}`, 307);
