@@ -1,14 +1,18 @@
+import { SOCIAL_SOON_FEATURES } from "@/components/social-soon-features";
+
 export type DashNavLink = {
   href: string;
   label: string;
   /** Only shown to owners with the Website beta. */
   websiteOnly?: boolean;
-  /** Only shown to owners with the Social beta. */
-  socialOnly?: boolean;
+  /** "Coming soon" (not clickable) for owners without the Social kit. */
+  socialKit?: boolean;
   /** Extra path prefixes that count as this link (e.g. tabs that live elsewhere). */
   alsoActiveOn?: string[];
-  /** Shown greyed with a "Soon" tag; the page explains what's coming. */
+  /** Shown greyed with a "Soon" tag and not clickable. */
   comingSoon?: boolean;
+  /** What a "Soon" item will include, shown on hover. */
+  soonFeatures?: readonly string[];
 };
 
 export type DashNavGroup = {
@@ -47,7 +51,7 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
       { href: "/dashboard/discounts", label: "Discounts" },
       { href: "/dashboard/communication", label: "Communications" },
       { href: "/dashboard/reviews", label: "Reviews" },
-      { href: "/dashboard/social", label: "Social", socialOnly: true },
+      { href: "/dashboard/social", label: "Social", socialKit: true },
     ],
   },
   {
@@ -110,13 +114,17 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
 /** Which beta nav links the signed-in owner can see. */
 export type NavAccess = { website: boolean; social: boolean };
 
-/** Groups with beta links removed for owners without access; empty groups dropped. */
+/** Groups for the owner's access: Website-beta links removed, Social "Soon"; empty groups dropped. */
 export function visibleNavGroups(showWebsite: boolean, showSocial = false): DashNavGroup[] {
   return DASH_NAV_GROUPS.map((group) => ({
     ...group,
-    links: group.links.filter(
-      (link) => (showWebsite || !link.websiteOnly) && (showSocial || !link.socialOnly),
-    ),
+    links: group.links
+      .filter((link) => showWebsite || !link.websiteOnly)
+      .map((link) =>
+        link.socialKit && !showSocial
+          ? { ...link, comingSoon: true, soonFeatures: SOCIAL_SOON_FEATURES }
+          : link,
+      ),
   })).filter((group) => group.links.length > 0);
 }
 

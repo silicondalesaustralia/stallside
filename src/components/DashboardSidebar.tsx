@@ -1,68 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import BrandLockup from "@/components/BrandLockup";
 import BrandMark from "@/components/BrandMark";
-import DashNavIcon from "@/components/DashNavIcon";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
 import SidebarNavGroup from "@/components/SidebarNavGroup";
+import SidebarNavItem from "@/components/SidebarNavItem";
+import SidebarSoonItem from "@/components/SidebarSoonItem";
 import { activeNavHref, visibleNavGroups, type NavAccess } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
   type DashboardSetupAlerts,
 } from "@/lib/dashboard-setup-alerts";
 import type { BusinessOption } from "@/lib/selected-business";
-
-function NavItem({
-  href,
-  label,
-  collapsed,
-  active,
-  badge,
-  soon,
-}: {
-  href: string;
-  label: string;
-  collapsed: boolean;
-  active: boolean;
-  badge?: number;
-  soon?: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      title={collapsed ? (soon ? `${label} (coming soon)` : label) : undefined}
-      className={`flex items-center rounded-lg transition-colors duration-200 ${
-        collapsed ? "justify-center px-2 py-2" : "gap-3 px-3 py-2"
-      } ${soon ? "opacity-50" : ""} ${
-        active
-          ? "bg-white/12 text-[var(--ink-on-dark)]"
-          : "text-[var(--ink-on-dark)]/70 hover:bg-white/10 hover:text-[var(--ink-on-dark)]"
-      }`}
-    >
-      <span className={`relative ${active ? "text-[var(--marigold)]" : undefined}`}>
-        <DashNavIcon href={href} />
-        {badge && badge > 0 ? (
-          <span className="absolute -right-1 -top-1 size-2 rounded-full bg-[var(--gone)]" />
-        ) : null}
-      </span>
-      {collapsed ? null : (
-        <span className="flex flex-1 items-center justify-between gap-2">
-          <span className="truncate text-sm">{label}</span>
-          {soon ? (
-            <span className="rounded-full border border-current px-1.5 text-[10px] font-semibold uppercase">Soon</span>
-          ) : null}
-          {badge && badge > 0 ? (
-            <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
-              {badge > 9 ? "9+" : badge}
-            </span>
-          ) : null}
-        </span>
-      )}
-    </Link>
-  );
-}
 
 export default function DashboardSidebar({
   businesses,
@@ -119,17 +69,26 @@ export default function DashboardSidebar({
             first={index === 0}
             collapsed={collapsed}
             activeHref={activeHref}
-            renderLink={(link) => (
-              <NavItem
-                key={link.href}
-                href={link.href}
-                label={link.label}
-                collapsed={collapsed}
-                active={link.href === activeHref}
-                badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
-                soon={link.comingSoon}
-              />
-            )}
+            renderLink={(link) =>
+              link.comingSoon ? (
+                <SidebarSoonItem
+                  key={link.href}
+                  href={link.href}
+                  label={link.label}
+                  features={link.soonFeatures ?? []}
+                  collapsed={collapsed}
+                />
+              ) : (
+                <SidebarNavItem
+                  key={link.href}
+                  href={link.href}
+                  label={link.label}
+                  collapsed={collapsed}
+                  active={link.href === activeHref}
+                  badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
+                />
+              )
+            }
           />
         ))}
       </nav>

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import BrandLockup from "@/components/BrandLockup";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
+import MobileNavLinkItem from "@/components/MobileNavLinkItem";
 import { dashLinkActive, mobileTabs, visibleNavGroups, type NavAccess } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
@@ -85,24 +86,14 @@ export default function DashboardMobileNav({
                       {group.heading}
                     </p>
                   ) : null}
-                  {group.links.map((link) => {
-                    const badge = setupNavBadge(link.href, setupAlerts, unreadNotifications);
-                    return (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setOpen(false)}
-                        className={`flex items-center justify-between rounded-lg px-2 py-2 text-sm text-[var(--ink-on-dark)] hover:bg-white/10 ${link.comingSoon ? "opacity-50" : ""}`}
-                      >
-                        <span>{link.comingSoon ? `${link.label} · Soon` : link.label}</span>
-                        {badge && badge > 0 ? (
-                          <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
-                            {badge > 9 ? "9+" : badge}
-                          </span>
-                        ) : null}
-                      </Link>
-                    );
-                  })}
+                  {group.links.map((link) => (
+                    <MobileNavLinkItem
+                      key={link.href}
+                      link={link}
+                      badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
+                      onNavigate={() => setOpen(false)}
+                    />
+                  ))}
                 </div>
               ))}
             </nav>

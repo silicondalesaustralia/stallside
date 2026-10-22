@@ -2,7 +2,7 @@ import { visibleNavGroups } from "@/components/dash-nav-links";
 import type { MobileFeature } from "@/contracts/mobile/me";
 
 /** Desk-only sections the app never lists, on top of the Website-beta links (`websiteOnly`). */
-const WEB_ONLY_HREFS = new Set(["/dashboard/connectors"]);
+const WEB_ONLY_HREFS = new Set(["/dashboard/connectors", "/dashboard/social"]);
 
 /** Sections with a native screen; every other nav link opens on the web inside the app. */
 const NATIVE_HREFS = new Set([
