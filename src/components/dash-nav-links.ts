@@ -3,6 +3,8 @@ export type DashNavLink = {
   label: string;
   /** Only shown to owners with the Website beta. */
   websiteOnly?: boolean;
+  /** Only shown to owners with the Social beta. */
+  socialOnly?: boolean;
   /** Extra path prefixes that count as this link (e.g. tabs that live elsewhere). */
   alsoActiveOn?: string[];
   /** Shown greyed with a "Soon" tag; the page explains what's coming. */
@@ -45,7 +47,7 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
       { href: "/dashboard/discounts", label: "Discounts" },
       { href: "/dashboard/communication", label: "Communications" },
       { href: "/dashboard/reviews", label: "Reviews" },
-      { href: "/dashboard/social", label: "Social", comingSoon: true },
+      { href: "/dashboard/social", label: "Social", socialOnly: true },
     ],
   },
   {
@@ -96,11 +98,16 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
   },
 ];
 
-/** Groups with Website-beta links removed for owners without access; empty groups dropped. */
-export function visibleNavGroups(showWebsite: boolean): DashNavGroup[] {
+/** Which beta nav links the signed-in owner can see. */
+export type NavAccess = { website: boolean; social: boolean };
+
+/** Groups with beta links removed for owners without access; empty groups dropped. */
+export function visibleNavGroups(showWebsite: boolean, showSocial = false): DashNavGroup[] {
   return DASH_NAV_GROUPS.map((group) => ({
     ...group,
-    links: group.links.filter((link) => showWebsite || !link.websiteOnly),
+    links: group.links.filter(
+      (link) => (showWebsite || !link.websiteOnly) && (showSocial || !link.socialOnly),
+    ),
   })).filter((group) => group.links.length > 0);
 }
 

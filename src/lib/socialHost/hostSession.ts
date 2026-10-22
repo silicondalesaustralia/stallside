@@ -9,6 +9,7 @@
 import { prisma } from '@/lib/prisma'
 import { getAuthSession } from '@/lib/session'
 import { resolveSelectedBusiness } from '@/lib/selected-business'
+import { socialKitEnabledFor } from '@/lib/beta-features'
 
 export type HostRole = 'owner' | 'admin' | 'member'
 
@@ -31,9 +32,9 @@ export async function getHostSession(): Promise<HostSession | null> {
 
   const owner = await prisma.owner.findUnique({
     where: { userId: user.id },
-    select: { id: true, deletedAt: true, contactEmail: true },
+    select: { id: true, deletedAt: true, contactEmail: true, betaFeatures: true },
   })
-  if (!owner || owner.deletedAt) return null
+  if (!owner || owner.deletedAt || !socialKitEnabledFor(owner)) return null
 
   const { selected } = await resolveSelectedBusiness(owner.id)
   if (!selected) return null

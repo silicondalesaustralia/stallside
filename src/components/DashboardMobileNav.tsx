@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import BrandLockup from "@/components/BrandLockup";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
-import { dashLinkActive, mobileTabs, visibleNavGroups } from "@/components/dash-nav-links";
+import { dashLinkActive, mobileTabs, visibleNavGroups, type NavAccess } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
   type DashboardSetupAlerts,
@@ -17,13 +17,13 @@ export default function DashboardMobileNav({
   selectedBusinessId,
   unreadNotifications,
   setupAlerts,
-  showWebsite,
+  navAccess,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
   unreadNotifications?: number;
   setupAlerts: DashboardSetupAlerts;
-  showWebsite: boolean;
+  navAccess: NavAccess;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -78,7 +78,7 @@ export default function DashboardMobileNav({
               needsBusiness={setupAlerts.needsBusiness}
             />
             <nav className="mt-3 max-h-[70vh] overflow-y-auto border-t border-white/10 pt-3">
-              {visibleNavGroups(showWebsite).map((group, index) => (
+              {visibleNavGroups(navAccess.website, navAccess.social).map((group, index) => (
                 <div key={group.heading ?? `group-${index}`} className={index > 0 ? "mt-2" : undefined}>
                   {group.heading ? (
                     <p className="px-2 pb-0.5 pt-1 text-[11px] font-bold uppercase tracking-wide text-[var(--marigold)]/85">

@@ -10,6 +10,7 @@ import {
 } from "@/lib/owner-ltv";
 import { salesByOwner } from "@/lib/admin-sales";
 import AdminDeleteOwnerButton from "./AdminDeleteOwnerButton";
+import AdminBetaFeatures from "./AdminBetaFeatures";
 import AdminOwnerTools from "./AdminOwnerTools";
 import OwnerPaymentLedger from "./OwnerPaymentLedger";
 import OwnerAiUsageCard from "./OwnerAiUsageCard";
@@ -132,6 +133,7 @@ export default async function AdminOwnerDetailPage({
         stripeAccountId={owner.stripeAccountId}
       />
       <OwnerAiUsageCard ownerId={owner.id} audPerUsd={fx.USD} />
+      <AdminBetaFeatures ownerId={owner.id} betaFeatures={owner.betaFeatures} />
       <AdminOwnerTools ownerId={owner.id} />
       <AdminDeleteOwnerButton
         ownerId={owner.id}

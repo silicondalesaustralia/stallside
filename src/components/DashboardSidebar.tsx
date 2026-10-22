@@ -7,7 +7,7 @@ import BrandMark from "@/components/BrandMark";
 import DashNavIcon from "@/components/DashNavIcon";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
 import SidebarNavGroup from "@/components/SidebarNavGroup";
-import { activeNavHref, visibleNavGroups } from "@/components/dash-nav-links";
+import { activeNavHref, visibleNavGroups, type NavAccess } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
   type DashboardSetupAlerts,
@@ -71,7 +71,7 @@ export default function DashboardSidebar({
   onToggle,
   unreadNotifications,
   setupAlerts,
-  showWebsite,
+  navAccess,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
@@ -79,10 +79,10 @@ export default function DashboardSidebar({
   onToggle: () => void;
   unreadNotifications?: number;
   setupAlerts: DashboardSetupAlerts;
-  showWebsite: boolean;
+  navAccess: NavAccess;
 }) {
   const pathname = usePathname();
-  const groups = visibleNavGroups(showWebsite);
+  const groups = visibleNavGroups(navAccess.website, navAccess.social);
   const activeHref = activeNavHref(pathname, groups.flatMap((g) => g.links));
   return (
     <aside

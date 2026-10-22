@@ -418,6 +418,8 @@ model Owner {
   stripeNeverStartedNudgeSentAt DateTime?
   /** Unsubscribed from Vendl lifecycle / announcement emails (footer link). */
   lifecycleEmailsOptOutAt   DateTime?
+  /** Beta features switched on by admin (e.g. "social"). */
+  betaFeatures              String[]                     @default([])
   /**
    * Platform Billing customer (Vendl SaaS subscription)
    */

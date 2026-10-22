@@ -3,6 +3,7 @@ import DashboardNav from "@/components/DashboardNav";
 import { loadDashboardSetupAlerts } from "@/lib/load-dashboard-setup-alerts";
 import { prisma } from "@/lib/prisma";
 import { websiteSectionEnabledFor } from "@/lib/website/access";
+import { socialKitEnabledForOwnerId } from "@/lib/beta-features";
 import type { BusinessOption } from "@/lib/selected-business";
 
 export default async function DashboardNavWithUnread({
@@ -20,7 +21,7 @@ export default async function DashboardNavWithUnread({
   stripeChargesEnabled: boolean;
   variant: "sidebar" | "mobile";
 }) {
-  const [unreadNotifications, setupAlerts] = await Promise.all([
+  const [unreadNotifications, setupAlerts, social] = await Promise.all([
     prisma.notification.count({
       where: { ownerId, status: "OPEN" },
     }),
@@ -31,8 +32,9 @@ export default async function DashboardNavWithUnread({
       stripeAccountId,
       stripeChargesEnabled,
     }),
+    socialKitEnabledForOwnerId(ownerId),
   ]);
-  const showWebsite = websiteSectionEnabledFor(ownerId);
+  const navAccess = { website: websiteSectionEnabledFor(ownerId), social };
 
   if (variant === "mobile") {
     return (
@@ -41,7 +43,7 @@ export default async function DashboardNavWithUnread({
         selectedBusinessId={selectedBusinessId}
         unreadNotifications={unreadNotifications}
         setupAlerts={setupAlerts}
-        showWebsite={showWebsite}
+        navAccess={navAccess}
       />
     );
   }
@@ -52,7 +54,7 @@ export default async function DashboardNavWithUnread({
       selectedBusinessId={selectedBusinessId}
       unreadNotifications={unreadNotifications}
       setupAlerts={setupAlerts}
-      showWebsite={showWebsite}
+      navAccess={navAccess}
     />
   );
 }

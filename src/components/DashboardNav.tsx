@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardSidebar from "@/components/DashboardSidebar";
+import type { NavAccess } from "@/components/dash-nav-links";
 import type { DashboardSetupAlerts } from "@/lib/dashboard-setup-alerts";
 import type { BusinessOption } from "@/lib/selected-business";
 
@@ -12,13 +13,13 @@ export default function DashboardNav({
   selectedBusinessId,
   unreadNotifications,
   setupAlerts,
-  showWebsite,
+  navAccess,
 }: {
   businesses: BusinessOption[];
   selectedBusinessId: string | null;
   unreadNotifications?: number;
   setupAlerts: DashboardSetupAlerts;
-  showWebsite: boolean;
+  navAccess: NavAccess;
 }) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -42,7 +43,7 @@ export default function DashboardNav({
       onToggle={onToggle}
       unreadNotifications={unreadNotifications}
       setupAlerts={setupAlerts}
-      showWebsite={showWebsite}
+      navAccess={navAccess}
     />
   );
 }

@@ -1,21 +1,17 @@
 import '@/styles/tradiespost.css'
+import { redirect } from 'next/navigation'
 import { ToastProvider } from '@/components/ui/Toast'
 import SocialSubnav from '@/components/social/SocialSubnav'
-import SocialComingSoon from '@/components/social/SocialComingSoon'
 import { TradiesPostSocialWorkspaceProvider } from '@/components/tradiespost/TradiesPostSocialWorkspaceProvider'
+import { socialKitEnabledFor } from '@/lib/beta-features'
+import { requireOwner } from '@/lib/session'
 
 export const dynamic = 'force-dynamic'
 
-/** Social pages inside the Vendl dashboard (sidebar + owner gate come from dashboard/layout). */
-export default function SocialLayout({ children }: { children: React.ReactNode }) {
-  if (process.env.SOCIAL_SECTION_LIVE !== '1') {
-    return (
-      <>
-        <SocialSubnav disabled />
-        <SocialComingSoon />
-      </>
-    )
-  }
+/** Social pages inside the Vendl dashboard; beta owners only (see lib/beta-features). */
+export default async function SocialLayout({ children }: { children: React.ReactNode }) {
+  const { owner } = await requireOwner()
+  if (!socialKitEnabledFor(owner)) redirect('/dashboard')
   return (
     <ToastProvider>
       <TradiesPostSocialWorkspaceProvider>
