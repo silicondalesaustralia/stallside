@@ -12,12 +12,13 @@ import {
 import {
   loadCustomerChoiceCheckout,
   loadStandCart,
-  orderItemCreates,
   type CartItemInput,
 } from "@/lib/checkout";
+import { orderLineFields } from "@/lib/order-gst";
 import { isDemoStandSlug } from "@/lib/demo";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { resolveDemoCardStripe, stripeTestSecretKey } from "@/lib/stripe-demo";
+import { CARD_CHECKOUT_TTL_SECONDS } from "@/lib/stripe-card-checkout";
 import { checkoutCancelledUrl } from "@/lib/order-access-token";
 import { checkoutSuccessUrl } from "@/lib/storefront/checkout-return-url";
 import { stripePublishableKeyFor } from "@/lib/stripe-publishable-key";
@@ -26,7 +27,6 @@ import { checkoutUiParams, type EmbeddedCheckoutInfo } from "@/lib/stripe-embedd
 import { ensurePaymentMethodDomain } from "@/lib/stripe-payment-domain";
 import { stripeLineItemsFromCart } from "@/lib/stripe-cart-lines";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
-import { proVolumeForFees } from "@/lib/pro-volume-fee";
 import { standCheckoutPaymentMethodTypes } from "@/lib/stripe-checkout-methods";
 import { getDefaultPaymentMethodConfiguration } from "@/lib/stripe-payment-method-config";
 import {
@@ -164,7 +164,6 @@ export async function startCardCheckout(input: {
       computeVendlCheckoutFees(chargeGoodsCents, owner, {
         rail: "stripe",
         currency: stand.currency,
-        monthStripeVolumeCents: await proVolumeForFees(stand.ownerId, owner),
       });
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
@@ -190,7 +189,7 @@ export async function startCardCheckout(input: {
           ? ReceiptChannel.EMAIL
           : ReceiptChannel.NONE,
         receiptEmail: customerEmail || null,
-        items: { create: orderItemCreates(lineData) },
+        ...orderLineFields(lineData, discountCents, stand),
         ...(preOrderCart
           ? {
               isPreOrder: true,
@@ -276,6 +275,7 @@ export async function startCardCheckout(input: {
       mode: "payment" as const,
       line_items: lineItems.filter((l) => l.price_data.unit_amount > 0),
       ...checkoutUiParams(publishableKey, successUrl, checkoutCancelledUrl(order.id)),
+      expires_at: Math.floor(Date.now() / 1000) + CARD_CHECKOUT_TTL_SECONDS,
       ...(customerEmail ? { customer_email: customerEmail } : {}),
       ...(deliver ? { billing_address_collection: "required" as const } : {}),
       ...(buttonColour ? { branding_settings: { button_color: buttonColour } } : {}),

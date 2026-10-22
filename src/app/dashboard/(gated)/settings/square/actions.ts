@@ -15,11 +15,6 @@ import {
   getSquareConnection,
   getValidSquareAccessToken,
 } from "@/lib/square/connection";
-import {
-  hasSquareConnectionHistory,
-  SQUARE_LIFETIME_CONFIRM_COOKIE,
-} from "@/lib/square/pricing-confirm";
-import { pricingMoveConfirmed, pricingMoveNotice } from "@/lib/pricing-move-gate";
 import { listSquareCatalogItems } from "@/lib/square/catalog";
 import { buildReviewSuggestions } from "@/lib/square/match-suggestions";
 import { OnlinePaymentProvider } from "@/generated/prisma/client";
@@ -30,7 +25,7 @@ import {
 } from "@/lib/commerce/payment-rail";
 import { SQUARE_OAUTH_REGION_COOKIE } from "@/lib/square/oauth-cookies";
 
-export async function startSquareConnect(formData: FormData): Promise<void> {
+export async function startSquareConnect(): Promise<void> {
   if (!isSquareConnectEnabled()) {
     throw new Error("Square is not enabled.");
   }
@@ -38,12 +33,6 @@ export async function startSquareConnect(formData: FormData): Promise<void> {
   const region = squareRegionForBilling(owner.billingCurrency);
   if (!region) {
     throw new Error(SQUARE_REGION_UNAVAILABLE);
-  }
-  const notice = (await hasSquareConnectionHistory(owner.id))
-    ? "none"
-    : pricingMoveNotice(owner);
-  if (!pricingMoveConfirmed(notice, formData)) {
-    redirect("/dashboard/settings/square?error=confirm_required");
   }
   const state = createOAuthState();
   const jar = await cookies();
@@ -56,9 +45,6 @@ export async function startSquareConnect(formData: FormData): Promise<void> {
   };
   jar.set("square_oauth_state", state, cookieOpts);
   jar.set(SQUARE_OAUTH_REGION_COOKIE, region, cookieOpts);
-  if (notice === "lifetime") {
-    jar.set(SQUARE_LIFETIME_CONFIRM_COOKIE, "1", cookieOpts);
-  }
   const url = buildSquareAuthorizeUrl(state, region);
   if (!url) throw new Error("Square app credentials missing.");
   redirect(url);

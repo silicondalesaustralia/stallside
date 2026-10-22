@@ -2,6 +2,9 @@ import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/money";
 import { shouldChargeVendlFee } from "@/lib/stallside-fee";
+import { paymentProviderLabel, paymentTypeLabel } from "@/lib/payment-rail";
+import { isCountedPaymentStatus } from "@/lib/order-metrics";
+import { paymentStatusNote } from "@/lib/order-payment-label";
 
 export default async function AdminOrdersPage() {
   await requireAdmin();
@@ -31,12 +34,15 @@ export default async function AdminOrdersPage() {
         <ul className="dash-card divide-y divide-[var(--line)] px-5">
           {orders.map((order) => {
             // Free only; Pro / lifetime / platform-admin complimentary → $0.
-            const feeCents = shouldChargeVendlFee(order.owner, {
-              email: order.owner.user.email,
-              role: order.owner.user.role,
-            })
-              ? order.platformFeeCents
-              : 0;
+            const feeCents =
+              isCountedPaymentStatus(order.paymentStatus) &&
+              shouldChargeVendlFee(order.owner, {
+                email: order.owner.user.email,
+                role: order.owner.user.role,
+              })
+                ? order.platformFeeCents
+                : 0;
+            const provider = paymentProviderLabel(order);
             return (
               <li key={order.id} className="py-4 text-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -47,10 +53,10 @@ export default async function AdminOrdersPage() {
                 </div>
                 <p className="mt-1 text-[var(--muted)]">
                   {order.createdAt.toLocaleString()} · {order.owner.businessName}{" "}
-                  · {order.paymentMethod.toLowerCase()} ·{" "}
-                  {order.paymentStatus.toLowerCase()}
+                  · {provider} · {paymentTypeLabel(order)} ·{" "}
+                  {paymentStatusNote(order.paymentStatus)}
                   {feeCents > 0
-                    ? ` · fee ${formatMoney(feeCents, order.currency)}`
+                    ? ` · ${provider === "Direct" ? "" : `${provider} `}fee ${formatMoney(feeCents, order.currency)}`
                     : ""}
                 </p>
                 <p className="mt-2 text-[var(--muted)]">

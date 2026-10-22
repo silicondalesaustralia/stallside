@@ -31,7 +31,7 @@ export async function saveAndEmailRecommendations(batch: BlogRecommendationsBatc
       }),
     ),
   );
-  const subject = `Blog ideas for tomorrow: pick up to ${MAX_PICKS_PER_BATCH} of ${topics.length}`;
+  const subject = `Tomorrow's blog: pick ${MAX_PICKS_PER_BATCH} of ${topics.length} ideas`;
   await sendOwnerEmail(blogDigestRecipients(), subject, recommendationEmailHtml(topics, batch.summary), {
     kind: "blog-recommendations",
   });

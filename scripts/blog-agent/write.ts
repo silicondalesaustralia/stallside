@@ -8,12 +8,16 @@
 import "dotenv/config";
 import { appGet, appPost, reportFailure } from "./api";
 import { ARTICLE_JSON_SHAPE, articleSchema, type AgentArticle } from "./article-schema";
-import { insertFigures, type PlacedImage } from "./figures";
+import { folderFor, inlineImages } from "./article-images";
+import { insertFigures } from "./figures";
 import { fixInternalLinks } from "./internal-links";
 import { normalizeArticle } from "./normalize-article";
 import { tryCreatePostImage, uniqueFilenames } from "./images";
+import { linkablePages, type BlogContext } from "./compact-context";
+import { relevantKnowledge } from "./knowledge-select";
+import { gatherOfficialFacts } from "./official-facts";
 import { askJson } from "./openai";
-import { agentDoc, knowledgeBaseSource, todayInAdelaide, vendlFactsSource } from "./repo-context";
+import { agentDoc, playbookFor, todayInAdelaide, vendlFactsSource } from "./repo-context";
 import { buildSerpBrief } from "./serp-brief";
 import { titlesTooSimilar } from "./title-variation";
 
@@ -27,13 +31,13 @@ function topicIdArg(): string {
   return id;
 }
 
-function folderFor(article: AgentArticle, targetPost: TargetPost | null): string {
-  const raw = targetPost?.slug ?? article.slug ?? article.title;
-  return raw.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80) || "post";
-}
-
 async function draftArticle(topic: Topic, targetPost: TargetPost | null): Promise<AgentArticle> {
-  const [context, serpBrief] = await Promise.all([appGet<unknown>("/context"), buildSerpBrief(topic, targetPost)]);
+  const today = todayInAdelaide();
+  const [context, serpBrief, officialFacts] = await Promise.all([
+    appGet<BlogContext>("/context"),
+    buildSerpBrief(topic, targetPost),
+    gatherOfficialFacts(topic, today),
+  ]);
   const task = targetPost
     ? "Propose an update to the published post in targetPost. Return the complete revised bodyHtml and changeNotes."
     : "Write a complete new post for this topic.";
@@ -41,19 +45,19 @@ async function draftArticle(topic: Topic, targetPost: TargetPost | null): Promis
     task: "WRITE",
     instructions: [
       "You are the writer for Vendl's blog. Follow the playbook and writing standard exactly.",
-      agentDoc("PLAYBOOK"),
+      playbookFor("WRITE"),
       agentDoc("WRITING"),
       `Return only a json object with this shape:\n${ARTICLE_JSON_SHAPE}`,
     ].join("\n\n"),
-    input: `${task} Research with web search before writing. Today is ${todayInAdelaide()}.\n${JSON.stringify({
+    input: `${task} Research is done: state external facts only from officialFacts and serpBrief (cite their URLs); if something the article needs is missing, keep it general and list it in researchNotes as unverified. Today is ${today}.\n${JSON.stringify({
       topic,
       targetPost,
       serpBrief,
-      blogContext: context,
+      officialFacts,
+      linkablePages: linkablePages(context),
       vendlFactFiles: vendlFactsSource(),
-      knowledgeBase: knowledgeBaseSource(),
+      knowledgeBase: relevantKnowledge([topic.title, topic.angle, topic.featureRef, topic.notes].filter(Boolean).join(" ")),
     })}`,
-    webSearch: true,
   });
   const parsed = articleSchema.safeParse(normalizeArticle(raw));
   if (!parsed.success) {
@@ -64,24 +68,13 @@ async function draftArticle(topic: Topic, targetPost: TargetPost | null): Promis
   return { ...parsed.data, agentSummary: `${parsed.data.agentSummary} Note: the H1 and SEO title are near-identical; vary one before publishing.`.slice(0, 2000) };
 }
 
-async function inlineImages(article: AgentArticle, folder: string, limit: number): Promise<PlacedImage[]> {
-  const briefs = uniqueFilenames(article.images.inline.slice(0, limit));
-  const results = await Promise.all(
-    briefs.map(async (brief): Promise<PlacedImage | null> => {
-      const uploaded = await tryCreatePostImage({ folder, filename: brief.filename, prompt: brief.prompt, shape: "landscape", kind: "inline" });
-      return uploaded ? { ...uploaded, alt: brief.alt, caption: brief.caption, afterHeading: brief.afterHeading } : null;
-    }),
-  );
-  return results.filter((image): image is PlacedImage => image !== null);
-}
-
 async function main() {
   const topicId = topicIdArg();
   try {
     const { topic, targetPost } = await appGet<{ topic: Topic; targetPost: TargetPost | null }>(`/topics/${topicId}`);
     if (topic.targetPostSlug && !targetPost) throw new Error(`Post /${topic.targetPostSlug} is no longer published`);
     const article = await fixInternalLinks(await draftArticle(topic, targetPost));
-    const folder = folderFor(article, targetPost);
+    const folder = folderFor(article, targetPost?.slug ?? null);
 
     if (targetPost) {
       if (!article.changeNotes?.length) throw new Error("Update returned no changeNotes");

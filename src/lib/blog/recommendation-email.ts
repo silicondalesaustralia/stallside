@@ -43,7 +43,7 @@ ${queries ? `<p style="margin:0 0 10px;color:#555;font-size:14px"><strong>Target
 /** Evening email: ranked ideas, each with a signed one-click "Write this" link. */
 export function recommendationEmailHtml(topics: EmailTopic[], summary?: string): string {
   return `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.5;color:#182c1b;max-width:640px">
-<p>Here are ${topics.length} ideas for tomorrow's blog. Pick up to ${MAX_PICKS_PER_BATCH}; each one you click is researched and drafted straight away, with images, ready for review in the morning. If you don't pick any, nothing is written.</p>
+<p>Here are ${topics.length} ideas for tomorrow's blog. Pick ${MAX_PICKS_PER_BATCH}; it's researched and drafted straight away, with images, ready for review in about 20 minutes. If you don't pick one, nothing is written. The rest stay in the backlog.</p>
 ${summary ? `<p style="color:#555">${escapeHtml(summary)}</p>` : ""}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${topics.map(topicCard).join("")}</table>
 <p style="margin-top:20px;font-size:13px;color:#6b6b5e">Links expire in 48 hours. All ideas stay in the <a href="${SITE_URL}${adminBlogPath("topics")}">topic backlog</a>.</p>

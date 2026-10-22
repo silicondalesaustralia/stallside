@@ -131,7 +131,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (isDemoStandSlug(stand.slug)) continue;
 
       entries.push({
-        url: `${SITE_URL}${standCatalogPath(stand.slug)}`,
+        url: `${SITE_URL}${standCatalogPath(encodeURIComponent(stand.slug))}`,
         lastModified: stand.updatedAt,
         changeFrequency: "daily",
         priority: 0.8,
@@ -140,7 +140,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       for (const product of stand.products) {
         if (!product.slug || isReservedProductSlug(product.slug)) continue;
         entries.push({
-          url: `${SITE_URL}${standProductPath(stand.slug, product.slug)}`,
+          url: `${SITE_URL}${standProductPath(encodeURIComponent(stand.slug), encodeURIComponent(product.slug))}`,
           lastModified: product.updatedAt,
           changeFrequency: "daily",
           priority: 0.7,

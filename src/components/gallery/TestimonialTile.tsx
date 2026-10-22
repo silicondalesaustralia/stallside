@@ -9,9 +9,11 @@ const TONES = [
 export default function TestimonialTile({
   item,
   index,
+  excerpt = false,
 }: {
   item: Testimonial;
   index: number;
+  excerpt?: boolean;
 }) {
   const tone = TONES[index % TONES.length];
   const dark = index % TONES.length === 0;
@@ -36,6 +38,13 @@ export default function TestimonialTile({
         >
           {item.location}
         </span>
+        {excerpt ? (
+          <span
+            className={`mt-1 block text-xs font-normal ${dark ? "text-[var(--ink-on-dark)]/70" : "text-[var(--muted)]"}`}
+          >
+            Excerpt
+          </span>
+        ) : null}
       </footer>
       {item.link ? (
         <a

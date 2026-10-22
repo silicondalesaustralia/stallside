@@ -40,6 +40,8 @@ Before drafting, look at `context.posts`, `context.codeArticles`, the hand-built
 
 Search snippets are discovery aids. Open the page before relying on a claim. If a page cannot be accessed, use another source; never imply you read something you did not.
 
+The research steps open the pages for you: `officialFacts` (regulators, Stripe, Square) and `serpBrief` (the top results). The writer has no web search, so state external facts only from those.
+
 ### Evidence record (goes in `researchNotes`, never in the body)
 
 List every source in `researchNotes.sources` (`{ title, url }`). Record each consequential claim in `researchNotes.factChecks` as one string: `[label] claim (source URL or repo file; date checked; jurisdiction)`. Labels:
@@ -48,6 +50,7 @@ List every source in `researchNotes.sources` (`{ title, url }`). Record each con
 - `self-statement`: an organisation describing its own product or operations.
 - `interpretation`: an expert's or your own reading of the facts.
 - `recommendation`: your practical advice.
+- `unverified`: needed but not confirmed by the supplied research; the article keeps it general. Jono checks these before publishing.
 
 Format: `[fact] <claim as written in the article> (<regulator URL>; checked 2026-10-19; QLD)`. Every Vendl claim cites the file it was checked against on `origin/main`.
 

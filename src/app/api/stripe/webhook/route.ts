@@ -10,11 +10,13 @@ import {
   recordSubscriptionInvoicePaid,
   syncOwnerFromSubscription,
 } from "@/lib/stripe-billing";
-import { fulfillPaidCardOrder } from "@/lib/fulfill-paid-order";
+import {
+  completePaidCardCheckout,
+  expirePendingCardOrder,
+} from "@/lib/stripe-card-checkout";
 import { syncStripeAccountStatus } from "@/lib/stripe-sync";
 import { maybeSendStripeRestrictedNudge } from "@/lib/lifecycle-emails/send-stripe-nudges";
 import { prisma } from "@/lib/prisma";
-import { PaymentStatus } from "@/generated/prisma/client";
 import {
   handleShopperCheckoutCompleted,
   handleShopperInvoiceFailed,
@@ -64,37 +66,7 @@ async function handleCheckoutCompleted(
     return;
   }
 
-  const orderId = session.metadata?.orderId;
-  if (orderId && session.payment_status === "paid") {
-    let paymentIntentId =
-      typeof session.payment_intent === "string"
-        ? session.payment_intent
-        : session.payment_intent?.id ?? null;
-    let paymentMethodId: string | null = null;
-
-    const stripeAccount =
-      connectedAccountId ||
-      session.metadata?.stripeAccountId ||
-      null;
-    if (paymentIntentId && stripeAccount) {
-      try {
-        const stripe = stripeClientForLivemode(livemode) ?? getStripe();
-        const pi = await stripe.paymentIntents.retrieve(
-          paymentIntentId,
-          { expand: ["payment_method"] },
-          { stripeAccount },
-        );
-        paymentIntentId = pi.id;
-        const pm = pi.payment_method;
-        paymentMethodId =
-          typeof pm === "string" ? pm : pm && "id" in pm ? pm.id : null;
-      } catch (error) {
-        console.error("Could not expand payment intent for deposit vault", error);
-      }
-    }
-
-    await fulfillPaidCardOrder(orderId, paymentIntentId, paymentMethodId);
-  }
+  await completePaidCardCheckout(session, livemode, connectedAccountId);
 }
 
 async function handleConnectAccountUpdated(account: Stripe.Account) {
@@ -149,26 +121,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (event.type === "checkout.session.async_payment_failed") {
+    if (
+      event.type === "checkout.session.async_payment_failed" ||
+      event.type === "checkout.session.expired"
+    ) {
       const session = event.data.object as Stripe.Checkout.Session;
-      const orderId = session.metadata?.orderId;
-      if (orderId) {
-        await prisma.order.updateMany({
-          where: { id: orderId, paymentStatus: PaymentStatus.PENDING },
-          data: { paymentStatus: PaymentStatus.EXPIRED },
-        });
-      }
-    }
-
-    if (event.type === "checkout.session.expired") {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const orderId = session.metadata?.orderId;
-      if (orderId) {
-        await prisma.order.updateMany({
-          where: { id: orderId, paymentStatus: PaymentStatus.PENDING },
-          data: { paymentStatus: PaymentStatus.EXPIRED },
-        });
-      }
+      await expirePendingCardOrder(session.metadata?.orderId);
     }
 
     if (event.type === "account.updated") {

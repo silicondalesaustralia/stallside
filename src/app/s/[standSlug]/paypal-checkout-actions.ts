@@ -9,9 +9,9 @@ import {
 import {
   loadCustomerChoiceCheckout,
   loadStandCart,
-  orderItemCreates,
   type CartItemInput,
 } from "@/lib/checkout";
+import { orderLineFields } from "@/lib/order-gst";
 import { isPayPalConfigured, isPayPalConnectAvailable } from "@/lib/paypal";
 import { createPayPalCheckoutOrder } from "@/lib/paypal-orders";
 import { checkoutSuccessUrl } from "@/lib/storefront/checkout-return-url";
@@ -104,7 +104,7 @@ export async function startPayPalCheckout(input: {
         platformFeeCents: trackedFee,
         receiptChannel: email ? ReceiptChannel.EMAIL : ReceiptChannel.NONE,
         receiptEmail: email || null,
-        items: { create: orderItemCreates(lineData) },
+        ...orderLineFields(lineData, discountCents, stand),
       },
     });
 

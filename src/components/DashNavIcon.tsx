@@ -66,6 +66,9 @@ const ICONS: Record<string, React.ReactNode> = {
   "/dashboard/payments": (
     <Icon d="M3 6h18v12H3zM3 10h18M7 15h3" />
   ),
+  "/dashboard/data": (
+    <Icon d="M12 3v12M7 10l5 5 5-5M4 17v3h16v-3" />
+  ),
   "/dashboard/knowledge": (
     <Icon d="M4 5h7v14H4zM13 5h7v14h-7M8 8h1M17 8h1" />
   ),

@@ -14,7 +14,6 @@ import { standShippingSettings } from "@/lib/shipping/shipping-cost";
 import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
-  vendlFixedFeeCents,
 } from "@/lib/stallside-fee";
 import {
   standCartUpsell,
@@ -113,7 +112,6 @@ export async function loadStandCartData(
       restockStandId: !demoProduct && isRestockAlertsEnabled() ? stand.id : null,
       passFeeToCustomer: ownerPassesFeeToCustomer(stand.owner, stand.currency),
       stallsideFeeApplies: shouldChargeVendlFee(stand.owner),
-      stripeFixedFeeCents: vendlFixedFeeCents(stand.owner, "stripe", stand.currency),
       shipping: standShippingSettings(stand),
       upsell: standCartUpsell(stand),
       preOrderUpsell: standPreOrderUpsell(stand),

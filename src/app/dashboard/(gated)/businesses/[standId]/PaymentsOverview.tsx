@@ -30,7 +30,7 @@ export default async function PaymentsOverview({ owner }: { owner: OverviewOwner
 
   return (
     <div className="flex flex-col gap-6">
-      <PaymentProviderGuide v2026={isV2026Owner(owner)} />
+      <PaymentProviderGuide weeklyPayouts={isV2026Owner(owner)} />
       <PaymentConnectionLinks
         stripeStatus={
           owner.stripeChargesEnabled

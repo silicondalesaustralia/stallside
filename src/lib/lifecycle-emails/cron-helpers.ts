@@ -1,4 +1,14 @@
 import { prisma } from "@/lib/prisma";
+import {
+  CommerceProvider,
+  ExternalConnectionStatus,
+} from "@/generated/prisma/client";
+
+/** Owner has a live Square connection (counts as a card provider). */
+export const ACTIVE_SQUARE = {
+  provider: CommerceProvider.SQUARE,
+  status: ExternalConnectionStatus.ACTIVE,
+};
 
 export function daysAgo(days: number, from = new Date()): Date {
   const d = new Date(from);

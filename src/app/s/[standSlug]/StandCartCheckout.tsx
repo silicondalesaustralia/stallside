@@ -124,7 +124,6 @@ export default function StandCartCheckout({
   restockStandId,
   passFeeToCustomer = false,
   stallsideFeeApplies = false,
-  stripeFixedFeeCents = 0,
   shipping = null,
   upsell = null,
   preOrderUpsell = null,
@@ -149,7 +148,6 @@ export default function StandCartCheckout({
   restockStandId?: string | null;
   passFeeToCustomer?: boolean;
   stallsideFeeApplies?: boolean;
-  stripeFixedFeeCents?: number;
   /** Shipping charged on shipped (non pre-order) carts. */
   shipping?: ShippingSettings | null;
   /** Stand-level default; product-level upsells on PublicProductCard win when set. */
@@ -343,9 +341,7 @@ export default function StandCartCheckout({
       : 0;
   const total = subtotal - codeOff + shippingCents;
   const passOnApplies = stallsideFeeApplies && passFeeToCustomer && total > 0;
-  const cardFeeCents = passOnApplies
-    ? stallsidePassOnFeeCents(total, stripeFixedFeeCents)
-    : 0;
+  const cardFeeCents = passOnApplies ? stallsidePassOnFeeCents(total) : 0;
   const cardTotalCents = total + cardFeeCents;
   const squareTotalCents =
     total + (passOnApplies ? stallsidePassOnFeeCents(total) : 0);

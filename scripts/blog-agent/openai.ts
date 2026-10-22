@@ -79,16 +79,23 @@ export async function askJson(opts: {
   instructions: string;
   input: string;
   webSearch?: boolean;
+  /** Restrict web search to these domains (subdomains included). */
+  allowedDomains?: string[];
   maxOutputTokens?: number;
 }): Promise<unknown> {
   const config = taskConfig(opts.task);
+  const searchTool = {
+    type: "web_search",
+    search_context_size: config.search,
+    ...(opts.allowedDomains?.length ? { filters: { allowed_domains: opts.allowedDomains } } : {}),
+  };
   const created = await openaiPost<ResponsesJson & { id?: string }>("/responses", {
     background: true,
     model: config.model,
     reasoning: { effort: config.effort },
     instructions: opts.instructions,
     input: opts.input,
-    ...(opts.webSearch ? { tools: [{ type: "web_search", search_context_size: config.search }] } : {}),
+    ...(opts.webSearch ? { tools: [searchTool] } : {}),
     max_output_tokens: opts.maxOutputTokens ?? 32_000,
   });
   const data = await awaitResponse(created);

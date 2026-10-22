@@ -24,6 +24,14 @@
       "schedule": "15 * * * *"
     },
     {
+      "path": "/api/cron/checkout-sweep",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/order-fees",
+      "schedule": "45 * * * *"
+    },
+    {
       "path": "/api/cron/square-subscriptions",
       "schedule": "30 * * * *"
     },
@@ -34,6 +42,14 @@
     { "path": "/api/cron/inspiration-temp-cleanup", "schedule": "0 * * * *" },
     { "path": "/api/cron/media-asset-upload-cleanup", "schedule": "0 3 * * *" },
     { "path": "/api/cron/gbp-performance-sync", "schedule": "0 16 * * *" },
-    { "path": "/api/cron/calendar-sync", "schedule": "45 * * * *" }
+    { "path": "/api/cron/calendar-sync", "schedule": "45 * * * *" },
+    {
+      "path": "/api/cron/blog-plan?tz=acdt",
+      "schedule": "30 10 * * *"
+    },
+    {
+      "path": "/api/cron/blog-plan?tz=acst",
+      "schedule": "30 11 * * *"
+    }
   ]
 }

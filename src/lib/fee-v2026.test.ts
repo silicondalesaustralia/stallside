@@ -1,8 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { SubscriptionStatus } from "../generated/prisma/client";
-import { proOverageFeeCents, stripeFixedFeeCents } from "./fee-v2026";
-import { computeVendlCheckoutFees, vendlFixedFeeCents } from "./stallside-fee";
+import { computeVendlCheckoutFees } from "./stallside-fee";
 
 const free = {
   subscriptionPlan: "free",
@@ -25,22 +24,22 @@ const stripe = { rail: "stripe", currency: "AUD" } as const;
 const square = { rail: "square", currency: "AUD" } as const;
 const paypal = { rail: "paypal", currency: "AUD" } as const;
 
-describe("V2026 Free", () => {
-  it("Stripe absorb: 2.5% + 30c", () => {
+describe("Free", () => {
+  it("Stripe absorb: 2.5% with no fixed fee", () => {
     const r = computeVendlCheckoutFees(500, v2Free, stripe);
-    assert.deepEqual(r, { applicationFeeCents: 43, chargeTotalCents: 500, passedOn: false });
+    assert.deepEqual(r, { applicationFeeCents: 13, chargeTotalCents: 500, passedOn: false });
   });
 
-  it("Stripe pass-on grosses up the fixed fee", () => {
+  it("Stripe pass-on grosses up 2.5%", () => {
     const r = computeVendlCheckoutFees(500, v2FreePassOn, { rail: "stripe", currency: "USD" });
-    assert.equal(r.chargeTotalCents, 544);
-    assert.equal(r.applicationFeeCents, 44);
+    assert.equal(r.chargeTotalCents, 513);
+    assert.equal(r.applicationFeeCents, 13);
     assert.equal(r.passedOn, true);
   });
 
   it("AUD never passes the fee on (surcharge ban)", () => {
     const r = computeVendlCheckoutFees(500, v2FreePassOn, stripe);
-    assert.deepEqual(r, { applicationFeeCents: 43, chargeTotalCents: 500, passedOn: false });
+    assert.deepEqual(r, { applicationFeeCents: 13, chargeTotalCents: 500, passedOn: false });
     const usdStandAudOwner = computeVendlCheckoutFees(
       500,
       { ...v2FreePassOn, billingCurrency: "AUD" },
@@ -49,79 +48,25 @@ describe("V2026 Free", () => {
     assert.equal(usdStandAudOwner.passedOn, false);
   });
 
-  it("Square and PayPal: 2.5% only", () => {
+  it("Square and PayPal match Stripe", () => {
     assert.equal(computeVendlCheckoutFees(500, v2Free, square).applicationFeeCents, 13);
     assert.equal(computeVendlCheckoutFees(500, v2Free, paypal).applicationFeeCents, 13);
-    assert.equal(
-      computeVendlCheckoutFees(500, v2FreePassOn, { rail: "square", currency: "USD" })
-        .chargeTotalCents,
-      513,
+  });
+
+  it("LEGACY and V2026 charge the same", () => {
+    assert.deepEqual(
+      computeVendlCheckoutFees(500, legacyFree, stripe),
+      computeVendlCheckoutFees(500, v2Free, stripe),
     );
   });
-
-  it("fixed fee follows currency", () => {
-    const r = computeVendlCheckoutFees(500, v2Free, { rail: "stripe", currency: "GBP" });
-    assert.equal(r.applicationFeeCents, 33);
-    assert.equal(stripeFixedFeeCents("eur"), 25);
-  });
-
-  it("absorb fee never exceeds the charge", () => {
-    const r = computeVendlCheckoutFees(20, v2Free, stripe);
-    assert.equal(r.applicationFeeCents, 20);
-  });
 });
 
-describe("LEGACY is unchanged", () => {
-  it("Free Stripe: 2.5% only", () => {
-    assert.equal(computeVendlCheckoutFees(500, legacyFree, stripe).applicationFeeCents, 13);
-    assert.equal(vendlFixedFeeCents(legacyFree, "stripe", "AUD"), 0);
-  });
-
-  it("Pro: no overage even with volume", () => {
-    const r = computeVendlCheckoutFees(20_000, legacyPro, {
-      ...stripe,
-      monthStripeVolumeCents: 900_000,
-    });
-    assert.equal(r.applicationFeeCents, 0);
-  });
-});
-
-describe("V2026 Pro overage", () => {
-  it("0 without volume data or under allowance", () => {
-    assert.equal(computeVendlCheckoutFees(20_000, v2Pro, stripe).applicationFeeCents, 0);
-    const under = computeVendlCheckoutFees(20_000, v2Pro, {
-      ...stripe,
-      monthStripeVolumeCents: 100_000,
-    });
-    assert.equal(under.applicationFeeCents, 0);
-  });
-
-  it("0.5% on the part above A$4,000, never passed on", () => {
-    const r = computeVendlCheckoutFees(20_000, v2Pro, {
-      ...stripe,
-      monthStripeVolumeCents: 390_000,
-    });
-    assert.deepEqual(r, { applicationFeeCents: 50, chargeTotalCents: 20_000, passedOn: false });
-  });
-
-  it("Square has no overage", () => {
-    const r = computeVendlCheckoutFees(20_000, v2Pro, {
-      ...square,
-      monthStripeVolumeCents: 900_000,
-    });
-    assert.equal(r.applicationFeeCents, 0);
-  });
-
-  it("re-granted lifetime has no overage", () => {
-    const r = computeVendlCheckoutFees(20_000, v2Lifetime, {
-      ...stripe,
-      monthStripeVolumeCents: 900_000,
-    });
-    assert.equal(r.applicationFeeCents, 0);
-  });
-
-  it("proOverageFeeCents when already over allowance", () => {
-    assert.equal(proOverageFeeCents(10_000, 500_000), 50);
-    assert.equal(proOverageFeeCents(0, 500_000), 0);
+describe("Pro", () => {
+  it("no Vendl fee on any rail, at any volume", () => {
+    for (const owner of [v2Pro, legacyPro, v2Lifetime]) {
+      for (const opts of [stripe, square, paypal]) {
+        assert.equal(computeVendlCheckoutFees(2_000_000, owner, opts).applicationFeeCents, 0);
+      }
+    }
   });
 });

@@ -6,6 +6,7 @@ import type { SaasSeriesPoint } from "@/lib/saas-series";
 import DashboardStat from "@/components/DashboardStat";
 import SaasSeriesChart from "@/components/SaasSeriesChart";
 import SalesSeriesChart from "@/components/SalesSeriesChart";
+import AdminFeeStats from "./AdminFeeStats";
 import AdminVendorSalesCard from "./AdminVendorSalesCard";
 
 type SaasStats = Awaited<ReturnType<typeof getSaasStats>>;
@@ -36,8 +37,9 @@ export default function AdminSaasPanels({
         title={`${windowLabel} · LTV collected`}
       />
       <p className="-mt-6 text-sm text-[var(--muted)]">
-        Fees {formatMoney(ltv.feeAudCents, saas.currency)}
-        {ltv.feesFromStripe ? " (Stripe)" : ""} · Subscriptions{" "}
+        Fees {formatMoney(ltv.feeAudCents, saas.currency)} (Stripe{" "}
+        {formatMoney(ltv.stripeFeeAudCents, saas.currency)} · Square{" "}
+        {formatMoney(ltv.squareFeeAudCents, saas.currency)}) · Subscriptions{" "}
         {formatMoney(ltv.subscriptionAudCents, saas.currency)}
         {ltv.subscriptionsLoaded
           ? ""
@@ -49,14 +51,38 @@ export default function AdminSaasPanels({
         currency={saas.currency}
         sales={vendorSales}
         salesAllTime={vendorSalesAllTime}
-        feeCents={ltv.feeAudCents}
+        stripeFeeCents={ltv.stripeFeeAudCents}
+        squareFeeCents={ltv.squareFeeAudCents}
         feeAllTimeCents={saas.feesAllTimeCents}
-        feesFromStripe={ltv.feesFromStripe}
+      />
+
+      <AdminFeeStats
+        windowLabel={windowLabel}
+        currency={saas.currency}
+        window={{
+          stripe: ltv.stripeFeeAudCents,
+          square: ltv.squareFeeAudCents,
+          total: ltv.feeAudCents,
+        }}
+        previous={
+          ltvPrev
+            ? {
+                stripe: ltvPrev.stripeFeeAudCents,
+                square: ltvPrev.squareFeeAudCents,
+                total: ltvPrev.feeAudCents,
+              }
+            : null
+        }
+        allTime={{
+          stripe: saas.stripeFeesAllTimeCents,
+          square: saas.squareFeesAllTimeCents,
+          total: saas.feesAllTimeCents,
+        }}
       />
 
       <SaasSeriesChart points={series} title={`${windowLabel} · SaaS activity`} />
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-3">
         <DashboardStat
           label="MRR (AUD)"
           value={formatMoney(saas.mrrCents, saas.currency)}
@@ -64,10 +90,6 @@ export default function AdminSaasPanels({
         <DashboardStat
           label="ARR (AUD)"
           value={formatMoney(saas.arrCents, saas.currency)}
-        />
-        <DashboardStat
-          label="Fees all-time (AUD)"
-          value={formatMoney(saas.feesAllTimeCents, saas.currency)}
         />
         <DashboardStat
           label="Paying subs"

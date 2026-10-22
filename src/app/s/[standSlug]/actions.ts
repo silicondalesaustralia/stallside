@@ -11,9 +11,9 @@ import {
   decrementStockForOrder,
   loadCustomerChoiceCheckout,
   loadStandCart,
-  orderItemCreates,
   type CartItemInput,
 } from "@/lib/checkout";
+import { orderLineFields } from "@/lib/order-gst";
 import { after } from "next/server";
 import { normalizeReceiptEmail } from "@/lib/first-order-discount";
 import { notifySale } from "@/lib/notify";
@@ -157,7 +157,7 @@ async function confirmDeclaredCheckout(
             platformFeeCents: 0,
             receiptChannel: email ? ReceiptChannel.EMAIL : ReceiptChannel.NONE,
             receiptEmail: email || null,
-            items: { create: orderItemCreates(lineData) },
+            ...orderLineFields(lineData, discountCents, stand),
           },
         });
 

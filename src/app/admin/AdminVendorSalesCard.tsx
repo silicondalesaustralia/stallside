@@ -25,29 +25,32 @@ export default function AdminVendorSalesCard({
   currency,
   sales,
   salesAllTime,
-  feeCents,
+  stripeFeeCents,
+  squareFeeCents,
   feeAllTimeCents,
-  feesFromStripe,
 }: {
   windowLabel: string;
   currency: string;
   sales: VendorSalesTotals;
   salesAllTime: VendorSalesTotals;
-  feeCents: number;
+  stripeFeeCents: number;
+  squareFeeCents: number;
   feeAllTimeCents: number;
-  feesFromStripe: boolean;
 }) {
+  const feeCents = stripeFeeCents + squareFeeCents;
   return (
     <section className="dash-card p-5">
       <h2 className="text-lg font-semibold">Vendor sales · {windowLabel}</h2>
       <p className="mt-1 text-sm text-[var(--muted)]">
         Gross sales across all stalls (AUD) and the platform fees collected on them.
       </p>
-      <div className="mt-4 grid gap-4 sm:grid-cols-3">
+      <div className="mt-4 grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
         <Figure label="Amount" value={formatMoney(sales.salesAudCents, currency)} />
         <Figure label="Orders" value={sales.orderCount.toLocaleString()} />
+        <Figure label="Stripe fees" value={formatMoney(stripeFeeCents, currency)} />
+        <Figure label="Square fees" value={formatMoney(squareFeeCents, currency)} />
         <Figure
-          label={`Fees collected${feesFromStripe ? " (Stripe)" : ""}`}
+          label="Fees total"
           value={formatMoney(feeCents, currency)}
           hint={takeRate(feeCents, sales.salesAudCents)}
         />

@@ -1,37 +1,34 @@
 /**
- * Evening planner: recommend 10 ranked blog ideas and email them with "Write this" links.
+ * Evening planner (9pm Adelaide daily): recommend 5 ranked ideas for tomorrow's article and email
+ * them with "Write this" links.
  *
  *   npx tsx scripts/blog-agent/plan.ts [--force] [--weekly]
  *
  * Sundays (or --weekly) first run the competitor scan, community scan and ChatGPT visibility check.
  *
- * Scheduled twice (10:30 and 11:30 UTC) to cover Adelaide daylight saving; only the run that
- * lands at 9pm Adelaide time proceeds unless --force is passed.
+ * Started at 9pm Adelaide by the app's Vercel cron (/api/cron/blog-plan), which dispatches the
+ * workflow with --force. Without --force it only proceeds at 9pm Adelaide time.
  * Env: BLOG_AGENT_BASE_URL, BLOG_AGENT_TOKEN, OPENAI_API_KEY, GSC_SERVICE_ACCOUNT_JSON, GSC_SITE_URL,
  * optional DATAFORSEO_LOGIN/DATAFORSEO_PASSWORD (or DATAFORSEO_RELAY_URL/DATAFORSEO_RELAY_SECRET).
  */
 import "dotenv/config";
 import { tieredOpportunityReport } from "../../src/lib/gsc/tiered-report";
-import { recommendationsBatchSchema } from "../../src/lib/blog/recommendation-schemas";
+import { IDEAS_PER_BATCH, recommendationsBatchSchema } from "../../src/lib/blog/recommendation-schemas";
 import { appGet, appPost, reportFailure } from "./api";
+import { existingTitles, plannerContext, type BlogContext } from "./compact-context";
+import { knowledgeIndex } from "./knowledge-select";
 import { askJson } from "./openai";
-import { adelaideHour, agentDoc, knowledgeBaseSource, recentCommits, todayInAdelaide } from "./repo-context";
+import { adelaideHour, playbookFor, recentCommits, todayInAdelaide } from "./repo-context";
 import { searchDemandPool } from "./search-demand";
 import { addSearchVolumes } from "./search-volume";
 import { isWeeklyResearchNight, runWeeklyResearch } from "./weekly-research";
 
 const PLAN_HOUR = 21;
 
-type PlannerContext = { posts?: Array<{ title: string }>; codeArticles?: Array<{ title: string }> };
-
-function existingTitles(context: PlannerContext): string[] {
-  return [...(context.posts ?? []), ...(context.codeArticles ?? [])].map((item) => item.title);
-}
-
 const OUTPUT_CONTRACT = `Return only a json object:
 {
   "summary": string (2-3 sentences on tonight's picks and why),
-  "recommendations": [ exactly 10 items: {
+  "recommendations": [ exactly ${IDEAS_PER_BATCH} items: {
     "title": string, "angle": string (what the post covers and for whom),
     "targetPostSlug": string | null (only for updates to a published DB post),
     "section": "NEWS" | "GUIDE",
@@ -61,25 +58,25 @@ async function main() {
   }
 
   const [context, gsc, searchDemand] = await Promise.all([
-    appGet<PlannerContext>("/context"),
+    appGet<BlogContext>("/context"),
     gscReport(),
     searchDemandPool(),
   ]);
   const weeklyResearch = isWeeklyResearchNight() ? await runWeeklyResearch(existingTitles(context)) : null;
   const input = JSON.stringify({
     today: todayInAdelaide(),
-    blogContext: context,
+    blogContext: plannerContext(context),
     searchConsole: gsc,
     ...(searchDemand.length ? { searchDemand } : {}),
     ...weeklyResearch,
     commits: recentCommits(7),
-    knowledgeBase: knowledgeBaseSource(),
+    knowledgeBase: knowledgeIndex(),
   });
 
   const raw = await askJson({
     task: "PLAN",
-    instructions: `You are the evening planner for Vendl's blog. Follow this playbook exactly.\n\n${agentDoc("PLAYBOOK")}\n\n${OUTPUT_CONTRACT}`,
-    input: `Plan tomorrow's 10 recommendations from this json context. Use web search for news from the last 72 hours.\n${input}`,
+    instructions: `You are the evening planner for Vendl's blog. Follow this playbook exactly.\n\n${playbookFor("PLAN")}\n\n${OUTPUT_CONTRACT}`,
+    input: `Plan tomorrow's ${IDEAS_PER_BATCH} recommendations (Jono picks one) from this json context. Use web search for news from the last 72 hours.\n${input}`,
     webSearch: true,
     maxOutputTokens: 16_000,
   });
@@ -87,10 +84,11 @@ async function main() {
   if (!parsed.success) {
     throw new Error(`Planner output failed validation: ${JSON.stringify(parsed.error.issues).slice(0, 1500)}`);
   }
+  const top = [...parsed.data.recommendations].sort((a, b) => b.score - a.score).slice(0, IDEAS_PER_BATCH);
 
   const result = await appPost<{ topics: Array<{ id: string; title: string; rank: number | null }> }>(
     "/recommendations",
-    await addSearchVolumes(parsed.data),
+    await addSearchVolumes({ ...parsed.data, recommendations: top }),
   );
   for (const topic of result.topics) console.log(`#${topic.rank} ${topic.title} (${topic.id})`);
 }

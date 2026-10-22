@@ -90,7 +90,7 @@ export default async function AuthorPage({ params }: PageProps) {
           <h2 id="author-articles" className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--field)]">
             Articles by {author.name}
           </h2>
-          <BlogArticleList items={articles} emptyText="Articles are on the way." />
+          <BlogArticleList items={articles} emptyText="Articles are on the way." columns={2} />
         </section>
       </main>
     </MarketingPageShell>

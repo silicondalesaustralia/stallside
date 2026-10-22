@@ -1,11 +1,9 @@
-import { prisma } from "@/lib/prisma";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { summarizeStripeRequirements } from "@/lib/stripe-requirements-summary";
 import {
   DEFAULT_NEVER_STARTED_STEPS,
   DEFAULT_STRIPE_SETUP_STEPS,
 } from "@/lib/stripe-setup-steps";
-import { productDashboardWhere } from "@/lib/product-visibility";
 import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 import { isSquareConnectEnabled } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
@@ -39,7 +37,6 @@ async function squareStatus(ownerId: string, billingCurrency: string | null) {
 export async function loadStripeSetupBanner(input: {
   ownerId: string;
   businessCount: number;
-  selectedStandId: string | null;
   stripeAccountId: string | null;
   stripeChargesEnabled: boolean;
   billingCurrency: string | null;
@@ -71,18 +68,6 @@ export async function loadStripeSetupBanner(input: {
       helpHref: null,
     };
   }
-
-  let productCount = 0;
-  if (input.selectedStandId) {
-    productCount = await prisma.product.count({
-      where: {
-        ownerId: input.ownerId,
-        standId: input.selectedStandId,
-        ...productDashboardWhere,
-      },
-    });
-  }
-  if (productCount === 0) return null;
 
   if (square.available) {
     return {

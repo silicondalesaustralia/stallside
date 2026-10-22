@@ -1,12 +1,13 @@
 import { formatMoney } from "@/lib/money";
-import { orderPaymentLabel } from "@/lib/order-payment-label";
+import type { PaymentStatus } from "@/generated/prisma/client";
+import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
 
 type OrderRow = {
   id: string;
   orderNumber: string;
   totalCents: number;
   currency: string;
-  paymentStatus: string;
+  paymentStatus: PaymentStatus;
   paymentMethod: Parameters<typeof orderPaymentLabel>[0];
   localTransferMethodId: string | null;
   createdAt: Date;
@@ -35,7 +36,7 @@ export default function CustomerOrdersList({ orders }: { orders: OrderRow[] }) {
           </div>
           <span>
             {formatMoney(o.totalCents, o.currency)} ·{" "}
-            {o.paymentStatus.toLowerCase().replaceAll("_", " ")}
+            {paymentStatusNote(o.paymentStatus)}
           </span>
         </li>
       ))}

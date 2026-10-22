@@ -1,11 +1,14 @@
 import Image from "next/image";
 import CampaignHeader from "@/components/lp/home-producers/CampaignHeader";
 import HeroExampleCard from "@/components/lp/home-producers/HeroExampleCard";
+import LpScrollLink from "@/components/lp/LpScrollLink";
 import LpStartFreeLink from "@/components/lp/LpStartFreeLink";
 import {
   GOLD_CTA_CLASS,
   HOME_PRODUCERS_COPY,
   HOME_PRODUCERS_SIGNUP_HREF,
+  HOME_PRODUCERS_TESTIMONIALS_ID,
+  OUTLINE_ON_DARK_CTA_CLASS,
 } from "@/lib/home-producers-lp";
 
 export default function HomeProducerHero() {
@@ -16,7 +19,7 @@ export default function HomeProducerHero() {
       <div className="relative z-10 mx-auto max-w-6xl px-5 pb-10 pt-4 sm:px-8 lg:pb-24 lg:pt-12">
         <div className="max-w-xl">
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--ink-on-dark)]/85 sm:text-sm">
-            For home producers, growers &amp; farm stands
+            For home bakers, growers &amp; makers
           </p>
           <h1 className="mt-3 font-[family-name:var(--font-display)] text-[2.25rem] font-bold leading-[1.06] tracking-tight text-white lg:text-[3.5rem]">
             Make <span className="text-[var(--marigold)]">more money</span> from what you
@@ -27,12 +30,20 @@ export default function HomeProducerHero() {
             Your shop, payments and orders in one place.
           </p>
           <div id="lp-hero-cta" className="mt-7 flex flex-col items-start gap-3">
-            <LpStartFreeLink
-              placement="hero"
-              label={HOME_PRODUCERS_COPY.ctaLabel}
-              href={HOME_PRODUCERS_SIGNUP_HREF}
-              className={GOLD_CTA_CLASS}
-            />
+            <div className="flex flex-wrap items-center gap-3">
+              <LpStartFreeLink
+                placement="hero"
+                label={HOME_PRODUCERS_COPY.ctaLabel}
+                href={HOME_PRODUCERS_SIGNUP_HREF}
+                className={GOLD_CTA_CLASS}
+              />
+              <LpScrollLink
+                targetId={HOME_PRODUCERS_TESTIMONIALS_ID}
+                className={OUTLINE_ON_DARK_CTA_CLASS}
+              >
+                {HOME_PRODUCERS_COPY.testimonialsLabel}
+              </LpScrollLink>
+            </div>
             <p className="text-sm leading-relaxed text-[var(--ink-on-dark)]/80">
               {HOME_PRODUCERS_COPY.reassurance}
             </p>

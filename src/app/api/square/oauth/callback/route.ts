@@ -6,7 +6,6 @@ import {
   completeSquareOAuth,
   SquareRegionMismatchError,
 } from "@/lib/square/connection";
-import { SQUARE_LIFETIME_CONFIRM_COOKIE } from "@/lib/square/pricing-confirm";
 import { SQUARE_OAUTH_REGION_COOKIE } from "@/lib/square/oauth-cookies";
 import { squareRegionForBilling } from "@/lib/commerce/payment-rail";
 
@@ -33,10 +32,8 @@ export async function GET(req: Request) {
 
   const jar = await cookies();
   const expected = jar.get("square_oauth_state")?.value;
-  const endLifetime = jar.get(SQUARE_LIFETIME_CONFIRM_COOKIE)?.value === "1";
   const startedRegion = jar.get(SQUARE_OAUTH_REGION_COOKIE)?.value ?? "AU";
   jar.delete("square_oauth_state");
-  jar.delete(SQUARE_LIFETIME_CONFIRM_COOKIE);
   jar.delete(SQUARE_OAUTH_REGION_COOKIE);
 
   if (!code || !state || !expected || state !== expected) {
@@ -53,7 +50,7 @@ export async function GET(req: Request) {
         new URL("/dashboard/settings/square?error=region", url.origin),
       );
     }
-    await completeSquareOAuth({ ownerId: owner.id, code, region, endLifetime });
+    await completeSquareOAuth({ ownerId: owner.id, code, region });
     return NextResponse.redirect(
       new URL("/dashboard/settings/square?connected=1", url.origin),
     );

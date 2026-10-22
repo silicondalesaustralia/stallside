@@ -13,7 +13,6 @@ import {
 } from "@/lib/square/oauth";
 import { SQUARE_OAUTH_SCOPES } from "@/lib/square/scopes";
 import { connectionSquareRegion, type SquareRegion } from "@/lib/square/region";
-import { moveToV2026 } from "@/lib/pricing-model";
 
 /** The Square account's country doesn't match the app (billing region) it connected through. */
 export class SquareRegionMismatchError extends Error {
@@ -102,8 +101,6 @@ export async function completeSquareOAuth(input: {
   ownerId: string;
   code: string;
   region: SquareRegion;
-  /** Seller confirmed losing Lifetime when first connecting Square. */
-  endLifetime?: boolean;
 }) {
   const tokens = await exchangeSquareAuthCode(input.code, input.region);
   if (!tokens.access_token || !tokens.merchant_id) {
@@ -181,13 +178,6 @@ export async function completeSquareOAuth(input: {
         providerLocationName: loc.name ?? null,
         isPrimary: loc.id === primary?.id,
       },
-    });
-  }
-
-  // Sellers who connected Square before V2026 stay grandfathered on reconnect.
-  if (!existing) {
-    await moveToV2026(input.ownerId, "square_connected", {
-      endLifetime: input.endLifetime,
     });
   }
 

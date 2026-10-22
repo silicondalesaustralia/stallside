@@ -1,4 +1,4 @@
-import { escapeHtml } from "@/lib/lifecycle-emails/html";
+import { escapeHtml } from "@/lib/grow/campaign-html";
 
 export const CONTACT_FORM_LAYOUTS = ["stacked", "split"] as const;
 export type ContactFormLayout = (typeof CONTACT_FORM_LAYOUTS)[number];

@@ -8,6 +8,7 @@ import { SquareApiError } from "@/lib/square/client";
 import { createSquarePayment } from "@/lib/square/payments";
 import { ensureDepositSquareCustomer, saveDepositSquareCard } from "@/lib/square/deposit-card";
 import { fulfillPaidSquareOrder } from "@/lib/fulfill-paid-order";
+import { isCountedPaymentStatus } from "@/lib/order-metrics";
 
 export async function chargeAndFulfillSquareOrder(
   orderId: string,
@@ -21,6 +22,9 @@ export async function chargeAndFulfillSquareOrder(
     return { error: "Order not found." };
   }
   if (order.paymentStatus !== PaymentStatus.PENDING) {
+    if (!isCountedPaymentStatus(order.paymentStatus)) {
+      return { error: "This checkout timed out. Refresh the page to start again." };
+    }
     return { orderNumber: order.orderNumber, alreadyPaid: true as const };
   }
   if (!order.squareLocationId) {

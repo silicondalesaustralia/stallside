@@ -12,7 +12,6 @@ import {
   squareEnvironment,
 } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
-import { pricingMoveNotice } from "@/lib/pricing-move-gate";
 import {
   squareConnectionMatchesBilling,
   squareRegionForBilling,
@@ -146,9 +145,7 @@ export default async function SquareSettingsPage({
       />
       {params.error && !params.error.startsWith("region") ? (
         <p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          {params.error === "confirm_required"
-            ? "Please tick the pricing confirmation before connecting Square."
-            : `Could not complete Square connection (${params.error}).`}
+          Could not complete Square connection ({params.error}).
         </p>
       ) : null}
 
@@ -180,7 +177,6 @@ export default async function SquareSettingsPage({
           <SquareConnectForm
             connected={Boolean(active)}
             sandbox={squareEnvironment() === "sandbox"}
-            pricingNotice={conn ? "none" : pricingMoveNotice(owner)}
           />
         </section>
       ) : null}

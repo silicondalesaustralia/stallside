@@ -7,6 +7,7 @@ import { supplierArticles } from "./suppliers";
 import { productsInventoryArticles } from "./products-inventory";
 import { paymentArticles } from "./payments";
 import { squareArticles } from "./square";
+import { gstArticles } from "./gst";
 
 export type { KnowledgeArticle, KnowledgeCategory, KnowledgeCta } from "./types";
 
@@ -47,6 +48,11 @@ export const knowledgeCategories: KnowledgeCategory[] = [
       ...ordersAlertsBillingArticles.filter((a) => a.slug === "customer-payments"),
       ...squareArticles,
     ],
+  },
+  {
+    id: "gst",
+    title: "GST & exports (Australia only)",
+    articles: gstArticles,
   },
   {
     id: "billing",

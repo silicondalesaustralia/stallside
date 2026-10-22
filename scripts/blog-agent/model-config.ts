@@ -1,6 +1,7 @@
 /**
  * Model, reasoning effort and web-search depth per agent task. The flagship model is reserved for the
- * article draft (where quality shows); research extraction and the visibility check use a mini model.
+ * article draft (where quality shows); planning uses the previous generation, and research extraction,
+ * fact checks and the visibility check use a mini model.
  * Override any value with BLOG_AGENT_MODEL_<TASK>, BLOG_AGENT_EFFORT_<TASK>, BLOG_AGENT_SEARCH_<TASK>.
  */
 export type AgentTask = "WRITE" | "PLAN" | "RESEARCH" | "VISIBILITY";
@@ -9,7 +10,7 @@ type SearchSize = "low" | "medium" | "high";
 
 const DEFAULTS: Record<AgentTask, { model: string; effort: Effort; search: SearchSize }> = {
   WRITE: { model: "gpt-6-astra", effort: "medium", search: "medium" },
-  PLAN: { model: "gpt-6-astra", effort: "low", search: "low" },
+  PLAN: { model: "gpt-5.4", effort: "low", search: "low" },
   RESEARCH: { model: "gpt-5.4-mini", effort: "low", search: "medium" },
   VISIBILITY: { model: "gpt-5.4-mini", effort: "low", search: "low" },
 };

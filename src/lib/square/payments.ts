@@ -100,3 +100,29 @@ export async function refundSquarePayment(input: {
     idempotencyKey: input.idempotencyKey,
   });
 }
+
+/** Successful payment at a location carrying `referenceId`, if any. */
+export async function findSquarePaymentByReference(input: {
+  accessToken: string;
+  locationId: string;
+  referenceId: string;
+  since: Date;
+  until: Date;
+}) {
+  const params = new URLSearchParams({
+    location_id: input.locationId,
+    begin_time: input.since.toISOString(),
+    end_time: input.until.toISOString(),
+    limit: "100",
+  });
+  const res = await squareFetch<{
+    payments?: { id?: string; status?: string; reference_id?: string }[];
+  }>(`/v2/payments?${params.toString()}`, { accessToken: input.accessToken });
+  return (
+    res.payments?.find(
+      (p) =>
+        p.reference_id === input.referenceId &&
+        (p.status === "COMPLETED" || p.status === "APPROVED"),
+    ) ?? null
+  );
+}

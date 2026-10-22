@@ -31,6 +31,19 @@ export function orderPaymentLabel(
   return "unknown";
 }
 
+const ABANDONED_STATUSES: PaymentStatus[] = [
+  PaymentStatus.EXPIRED,
+  PaymentStatus.CANCELLED,
+];
+
+/** Checkout was started but no money was taken. */
+export function isAbandonedPaymentStatus(status: PaymentStatus): boolean {
+  return ABANDONED_STATUSES.includes(status);
+}
+
 export function paymentStatusNote(status: PaymentStatus): string {
+  if (status === PaymentStatus.PENDING) return "awaiting payment";
+  if (isAbandonedPaymentStatus(status)) return "abandoned · not paid";
+  if (status === PaymentStatus.FAILED) return "payment failed";
   return status.toLowerCase().replaceAll("_", " ");
 }

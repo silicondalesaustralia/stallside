@@ -1,4 +1,5 @@
 import { PaymentStatus } from "@/generated/prisma/client";
+import { splitSalesByGst } from "@/lib/gst";
 import type { ExportOrder } from "./load-export-orders";
 
 const FULLY_PAID: PaymentStatus[] = [
@@ -16,7 +17,10 @@ export type OrderAmounts = {
   surchargeCents: number;
   paidCents: number;
   balanceOwingCents: number;
-  feeCents: number;
+  gstFreeCents: number;
+  taxableCents: number;
+  totalExGstCents: number;
+  feeTotalCents: number;
   netCents: number;
 };
 
@@ -28,12 +32,22 @@ export function orderAmounts(order: ExportOrder): OrderAmounts {
     : depositOnly
       ? (order.depositCents ?? 0)
       : 0;
-  const feeCents = paidCents > 0 ? order.platformFeeCents : 0;
+  const { gstFreeCents, taxableCents } = splitSalesByGst(
+    order.items,
+    order.discountCents,
+  );
+  const feeTotalCents =
+    (paidCents > 0 ? order.platformFeeCents : 0) +
+    (order.processorFeeCents ?? 0) +
+    (order.processorFeeTaxCents ?? 0);
   return {
     surchargeCents: Math.max(0, order.totalCents - goodsCents),
     paidCents,
     balanceOwingCents: depositOnly ? (order.balanceCents ?? 0) : 0,
-    feeCents,
-    netCents: paidCents - feeCents,
+    gstFreeCents,
+    taxableCents,
+    totalExGstCents: order.totalCents - order.gstCents,
+    feeTotalCents,
+    netCents: paidCents - feeTotalCents,
   };
 }

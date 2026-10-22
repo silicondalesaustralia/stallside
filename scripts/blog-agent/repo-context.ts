@@ -1,10 +1,9 @@
 import { execFileSync } from "child_process";
-import { readFileSync, readdirSync } from "fs";
+import { readFileSync } from "fs";
 import { join } from "path";
 
 const ROOT = process.cwd();
 const FACT_FILES = ["src/lib/plan-copy.ts", "src/lib/pricing-model.ts", "src/lib/constants.ts"];
-const KB_DIR = "src/lib/knowledge-base";
 
 function read(relative: string): string {
   return readFileSync(join(ROOT, relative), "utf8");
@@ -18,12 +17,17 @@ export function agentDoc(name: "PLAYBOOK" | "WRITING"): string {
   return read(`docs/blog-agent/${name}.md`);
 }
 
-/** Knowledge base article sources (Vendl feature facts as shipped on this checkout). */
-export function knowledgeBaseSource(): string {
-  return readdirSync(join(ROOT, KB_DIR))
-    .filter((file) => file.endsWith(".ts") && file !== "index.ts" && file !== "types.ts")
-    .map((file) => labelled(`${KB_DIR}/${file}`))
-    .join("\n\n");
+const SECTIONS_SKIPPED_BY: Record<"PLAN" | "WRITE", RegExp> = {
+  PLAN: /^## (Writer|Images|Output rules)/,
+  WRITE: /^## Planner/,
+};
+
+/** The playbook without the sections the other stage needs. */
+export function playbookFor(stage: "PLAN" | "WRITE"): string {
+  return agentDoc("PLAYBOOK")
+    .split(/\n(?=## )/)
+    .filter((section) => !SECTIONS_SKIPPED_BY[stage].test(section))
+    .join("\n");
 }
 
 /** Pricing, plan and fee source files: the only source of truth for Vendl numbers. */
@@ -39,13 +43,15 @@ function git(args: string[]): string {
   }
 }
 
-/** Recent commit subjects on shipped (main) and upcoming (preview) branches. */
+const MAX_COMMITS = 40;
+
+/** Recent commit subjects (no bodies) on shipped (main) and upcoming (preview) branches. */
 export function recentCommits(days = 7): { shipped: string; upcoming: string } {
-  const since = `--since=${days} days ago`;
+  const range = [`--since=${days} days ago`, "--no-merges", `--max-count=${MAX_COMMITS}`, "--pretty=format:%ad %s", "--date=short"];
   const upcomingRef = process.env.BLOG_AGENT_PREVIEW_REF?.trim() || "origin/feature/social-kit";
   return {
-    shipped: git(["log", "origin/main", since, "--no-merges", "--pretty=format:%h %ad %s", "--date=short"]),
-    upcoming: git(["log", upcomingRef, "--not", "origin/main", since, "--no-merges", "--pretty=format:%h %ad %s", "--date=short"]),
+    shipped: git(["log", "origin/main", ...range]),
+    upcoming: git(["log", upcomingRef, "--not", "origin/main", ...range]),
   };
 }
 

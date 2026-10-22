@@ -2,7 +2,7 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesAnalyticsPanel from "@/components/SalesAnalyticsPanel";
-import { resolveDateWindow } from "@/lib/date-range";
+import { RANGE_PRESETS, resolveDateWindow } from "@/lib/date-range";
 import {
   COUNTED_STATUSES,
   summarizeByChannel,
@@ -11,6 +11,7 @@ import { buildChannelSalesSeries } from "@/lib/sales-series";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import Link from "next/link";
 import OrderListRow from "./OrderListRow";
+import OrdersExportBar from "./OrdersExportBar";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { resolveStandTimezone } from "@/lib/stand-timezone";
@@ -151,7 +152,14 @@ export default async function OrdersPage({
 
       <DateRangeFilter
         pathname="/dashboard/orders"
+        presets={RANGE_PRESETS}
         activeKey={window.key}
+        from={window.fromParam}
+        to={window.toParam}
+      />
+
+      <OrdersExportBar
+        range={window.key}
         from={window.fromParam}
         to={window.toParam}
       />
