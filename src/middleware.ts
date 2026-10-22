@@ -7,7 +7,8 @@ import {
   sessionCookieName,
 } from "@/lib/auth-session";
 import { resolveHostname } from "@/lib/tenancy/hostname";
-import { publicApexHost } from "@/lib/tenancy/host-mode";
+import { appRedirectHost } from "@/lib/tenancy/host-mode";
+import { betaAppMainOnlyPath, betaAppSkipsCron, mainAppUrl } from "@/lib/beta-app";
 import { requestPublicHostname } from "@/lib/tenancy/request-hostname";
 import { legacyStorefrontRedirect } from "@/lib/tenancy/legacy-redirects";
 import { resolveCustomDomainSlug } from "@/lib/domains/middleware-lookup";
@@ -17,7 +18,7 @@ const STALLSIDE_HOSTS = new Set(["stallside.app", "www.stallside.app"]);
 /** This environment's app host (vendl.app, or the staging host on staging), so checkout and login stay on it. */
 function apexOrigin(request: NextRequest): string {
   const proto = requestIsSecure(request) ? "https" : "http";
-  return `${proto}://${publicApexHost()}`;
+  return `${proto}://${appRedirectHost()}`;
 }
 
 function keepOnStallside(pathname: string): boolean {
@@ -125,6 +126,13 @@ export async function middleware(request: NextRequest) {
   const host = hostHeader;
   const pathname = request.nextUrl.pathname;
 
+  if (betaAppSkipsCron(pathname)) {
+    return NextResponse.json({ skipped: "runs on the main app" });
+  }
+  if (betaAppMainOnlyPath(pathname)) {
+    return NextResponse.redirect(`${mainAppUrl()}${pathname}${request.nextUrl.search}`, 307);
+  }
+
   const legacyDest = legacyStorefrontRedirect(
     pathname,
     request.nextUrl.search,
@@ -145,20 +153,15 @@ export async function middleware(request: NextRequest) {
 
   const resolution = resolveHostname(hostHeader);
 
-  if (resolution.type === "CUSTOM_DOMAIN") {
+  // Legacy stallside hosts skip custom-domain handling: printed QR posters (/s/...),
+  // checkout and API paths must keep being served there.
+  if (resolution.type === "CUSTOM_DOMAIN" && !STALLSIDE_HOSTS.has(host)) {
     const slug = await resolveCustomDomainSlug(
       resolution.hostname,
       request.nextUrl,
     );
     if (slug) {
       return applyTenantRewrite(request, slug, pathname);
-    }
-    // Legacy brand hosts: keep redirecting to Vendl unless connected as a custom domain.
-    if (STALLSIDE_HOSTS.has(host) && !keepOnStallside(pathname)) {
-      const dest = new URL(
-        `https://www.vendl.app${pathname}${request.nextUrl.search}`,
-      );
-      return NextResponse.redirect(dest, 307);
     }
     return NextResponse.rewrite(new URL("/not-found", request.url));
   }

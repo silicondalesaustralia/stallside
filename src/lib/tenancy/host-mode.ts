@@ -28,3 +28,8 @@ export function publicHostMode(): PublicHostMode {
 export function publicApexHost(): string {
   return publicHostMode() === "staging" ? stagingRootHost() : APP_DOMAIN;
 }
+
+/** Host that checkout, login and dashboard requests from shop hosts go to (e.g. beta.vendl.app). */
+export function appRedirectHost(): string {
+  return process.env.VENDL_APP_HOST?.trim().toLowerCase() || publicApexHost();
+}

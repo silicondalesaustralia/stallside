@@ -6,6 +6,8 @@ import { Role } from "@/generated/prisma/client";
 import { redirect } from "next/navigation";
 import { safeCallbackUrl } from "@/lib/login-callback";
 import { PLATFORM_ADMIN_EMAILS } from "@/lib/constants";
+import { isBetaApp, mainAppUrl } from "@/lib/beta-app";
+import { hasBetaAppAccess } from "@/lib/beta-features";
 
 export function isPlatformAdminEmail(email: string | null | undefined): boolean {
   if (!email) return false;
@@ -77,6 +79,14 @@ export const requireOwner = cache(async () => {
       if (membership) redirect("/supply");
     }
     redirect("/onboarding");
+  }
+  if (
+    isBetaApp() &&
+    !session.impersonator &&
+    !isPlatformAdminEmail(user.email) &&
+    !hasBetaAppAccess(owner)
+  ) {
+    redirect(`${mainAppUrl()}/dashboard`);
   }
   return {
     user,

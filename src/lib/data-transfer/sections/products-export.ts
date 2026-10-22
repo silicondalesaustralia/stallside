@@ -27,6 +27,7 @@ export const PRODUCT_HEADERS = [
   "seo_title",
   "seo_description",
   "sort_order",
+  "gst_free",
 ] as const;
 
 export const PRODUCT_TEMPLATE_ROW = [
@@ -52,6 +53,7 @@ export const PRODUCT_TEMPLATE_ROW = [
   "",
   "",
   "0",
+  "no",
 ];
 
 export async function exportProducts(ctx: DataContext): Promise<string> {
@@ -89,6 +91,7 @@ export async function exportProducts(ctx: DataContext): Promise<string> {
       p.seoTitle,
       p.seoDescription,
       p.sortOrder,
+      yesNo(p.gstFree),
     ];
   });
   return toCsv(PRODUCT_HEADERS, rows);

@@ -32,6 +32,7 @@ export type ProductRow = {
   seoTitle?: string;
   seoDescription?: string;
   sortOrder?: number;
+  gstFree?: boolean;
 };
 
 function readRow(r: RowReader): ProductRow {
@@ -65,6 +66,7 @@ function readRow(r: RowReader): ProductRow {
     seoTitle: r.text("seo_title", 120),
     seoDescription: r.text("seo_description", 300),
     sortOrder: whole("sort_order"),
+    gstFree: yes("gst_free"),
   };
 }
 

@@ -49,6 +49,7 @@ async function writeProduct(
     seoTitle: d.seoTitle,
     seoDescription: d.seoDescription,
     sortOrder: d.sortOrder,
+    gstFree: d.gstFree,
   };
   const product = row.existingId
     ? await prisma.product.update({ where: { id: row.existingId }, data: fields })
