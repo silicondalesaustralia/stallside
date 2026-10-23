@@ -13,6 +13,8 @@ import StorefrontPageShell from "@/components/storefront/StorefrontPageShell";
 import StorefrontHomeContent from "@/components/storefront/StorefrontHomeContent";
 import StorefrontGoToCartBar from "@/components/storefront/StorefrontGoToCartBar";
 import { faqItemsFromNodes } from "@/lib/seo/faq-from-nodes";
+import { unpublishedShopName } from "@/lib/storefront/unpublished-shop";
+import StorefrontComingSoon from "@/components/storefront/StorefrontComingSoon";
 
 export async function generateMetadata({
   params,
@@ -54,6 +56,10 @@ export default async function PublicStorefrontHomePage({
   const { slug } = await params;
   const sp = await searchParams;
   const draft = sp.draft === "1";
+  if (!draft) {
+    const comingSoonName = await unpublishedShopName(slug);
+    if (comingSoonName) return <StorefrontComingSoon name={comingSoonName} />;
+  }
   const ctx = await loadStorefrontPage(slug, draft);
   if (!ctx.config.pages.home?.enabled) notFound();
 

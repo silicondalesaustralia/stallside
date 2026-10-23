@@ -11,7 +11,10 @@ export type ResolvedStorefrontHost = {
   type: "VENDL_SUBDOMAIN" | "CUSTOM";
 };
 
-/** Look up an ACTIVE custom hostname → storefront slug. */
+/**
+ * Look up an ACTIVE custom hostname → storefront slug. Unpublished shops resolve too, so the
+ * domain shows a coming-soon page instead of a 404.
+ */
 export async function resolveActiveCustomHostname(
   hostname: string,
 ): Promise<ResolvedStorefrontHost | null> {
@@ -23,7 +26,6 @@ export async function resolveActiveCustomHostname(
       hostname: host,
       type: "CUSTOM",
       status: StorefrontDomainStatus.ACTIVE,
-      storefront: { isPublished: true },
     },
     select: {
       hostname: true,

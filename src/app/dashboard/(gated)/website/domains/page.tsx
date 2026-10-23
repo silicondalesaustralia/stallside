@@ -166,6 +166,8 @@ export default async function WebsiteDomainsPage({
         }
         liveUrl={liveUrl}
         customHostname={primaryCustom?.hostname}
+        published={storefront.isPublished}
+        previewUrl={storefrontPublicUrl(storefront.slug, { forcePath: true, draft: true })}
       />
 
       {!canCustom ? (
