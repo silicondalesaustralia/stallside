@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { redirectBetaStandToWebsite } from "@/lib/beta-stand-redirect";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { publicStandBranding } from "@/lib/public-stand-branding";
@@ -79,6 +80,7 @@ export default async function PublicSubscriptionOfferPage({
   const sp = await searchParams;
   const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
   const offerKey = decodeURIComponent(offerSlug).trim().toLowerCase();
+  await redirectBetaStandToWebsite(standSlug, { kind: "subscription", offerSlug });
 
   const offer = await prisma.subscriptionOffer.findFirst({
     where: {

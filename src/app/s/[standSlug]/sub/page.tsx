@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { redirectBetaStandToWebsite } from "@/lib/beta-stand-redirect";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { publicStandBranding } from "@/lib/public-stand-branding";
@@ -47,6 +48,7 @@ export default async function PublicSubscriptionsIndexPage({
     include: { owner: true },
   });
   if (!stand || !stand.isActive) notFound();
+  await redirectBetaStandToWebsite(standSlug, { kind: "subscriptions" });
 
   const offers = await prisma.subscriptionOffer.findMany({
     where: { standId: stand.id, isActive: true },

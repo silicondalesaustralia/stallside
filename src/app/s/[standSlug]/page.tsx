@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { redirectBetaStandToWebsite } from "@/lib/beta-stand-redirect";
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -45,6 +46,7 @@ export default async function PublicStandPage({
   params: Promise<{ standSlug: string }>;
 }) {
   const { standSlug } = await params;
+  await redirectBetaStandToWebsite(standSlug, { kind: "home" });
   const slug = decodeURIComponent(standSlug).trim().toLowerCase();
   const stand = await loadPublicStandCatalog(slug, "catalog");
 

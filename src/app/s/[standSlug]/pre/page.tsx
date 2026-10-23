@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { redirectBetaStandToWebsite } from "@/lib/beta-stand-redirect";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { publicStandBranding } from "@/lib/public-stand-branding";
@@ -52,6 +53,7 @@ export default async function PublicPreOrdersIndexPage({
     include: { owner: true },
   });
   if (!stand || !stand.isActive) notFound();
+  await redirectBetaStandToWebsite(standSlug, { kind: "preOrders" });
 
   const pages = await prisma.preOrderPage.findMany({
     where: {

@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { redirectBetaStandToWebsite } from "@/lib/beta-stand-redirect";
 import type { Metadata } from "next";
 import { loadPublicStandCatalog } from "@/lib/public-stand-catalog";
 import { prisma } from "@/lib/prisma";
@@ -62,6 +63,7 @@ export default async function StandCartPage({
   params: Promise<{ standSlug: string }>;
 }) {
   const { standSlug } = await params;
+  await redirectBetaStandToWebsite(standSlug, { kind: "cart" });
   const slug = decodeURIComponent(standSlug).trim().toLowerCase();
   const stand = await loadPublicStandCatalog(slug, "cart");
   if (!stand || !stand.isActive) notFound();

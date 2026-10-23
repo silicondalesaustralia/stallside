@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { redirectBetaStandToWebsite } from "@/lib/beta-stand-redirect";
 import type { Metadata } from "next";
 import {
   loadPublicStandCatalog,
@@ -39,6 +40,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function StandCategoryPage({ params }: { params: Params }) {
   const { standSlug, categorySlug } = await params;
+  await redirectBetaStandToWebsite(standSlug, { kind: "category", categorySlug });
   const slug = normalise(standSlug);
   const [stand, categories] = await Promise.all([
     loadPublicStandCatalog(slug, "catalog"),

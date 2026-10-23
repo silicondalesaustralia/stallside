@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { redirectBetaStandToWebsite } from "@/lib/beta-stand-redirect";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { mapPublicProduct } from "@/lib/public-product";
@@ -28,6 +29,7 @@ export default async function PublicPreOrderPage({
   const { standSlug, pageSlug } = await params;
   const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
   const pageKey = decodeURIComponent(pageSlug).trim().toLowerCase();
+  await redirectBetaStandToWebsite(standSlug, { kind: "preOrder", pageSlug });
 
   const stand = await prisma.stand.findUnique({
     where: { slug: standKey },

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { redirectBetaStandToWebsite } from "@/lib/beta-stand-redirect";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
@@ -58,6 +59,7 @@ export default async function PublicProductPage({
   const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
   const productKey = decodeURIComponent(productSlug).trim().toLowerCase();
   if (isReservedProductSlug(productKey)) notFound();
+  await redirectBetaStandToWebsite(standSlug, { kind: "product", productSlug });
 
   const stand = await prisma.stand.findUnique({
     where: { slug: standKey },
