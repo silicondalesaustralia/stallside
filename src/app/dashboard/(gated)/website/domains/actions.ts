@@ -13,8 +13,9 @@ import {
   verifyCustomDomain,
 } from "@/lib/domains/lifecycle";
 
-function redirectError(code: string) {
-  redirect(`/dashboard/website/domains?error=${encodeURIComponent(code)}`);
+function redirectError(code: string, detail?: string) {
+  const msg = detail ? `&msg=${encodeURIComponent(detail.slice(0, 300))}` : "";
+  redirect(`/dashboard/website/domains?error=${encodeURIComponent(code)}${msg}`);
 }
 
 export async function connectDomainAction(formData: FormData) {
@@ -34,7 +35,11 @@ export async function connectDomainAction(formData: FormData) {
       allowApex: true,
     });
   } catch (e) {
-    if (e instanceof DomainActionFailure) redirectError(e.code);
+    if (e instanceof DomainActionFailure) {
+      if (e.code !== "cloudflare_error") redirectError(e.code);
+      console.error("[domains] Cloudflare rejected", hostname, e.message);
+      redirectError(e.code, e.message);
+    }
     throw e;
   }
 

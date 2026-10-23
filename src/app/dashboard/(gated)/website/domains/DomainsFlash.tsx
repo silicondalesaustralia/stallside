@@ -17,6 +17,7 @@ export default function DomainsFlash({
   primary,
   disconnected,
   error,
+  detail,
 }: {
   purchased?: string;
   connected?: string;
@@ -24,6 +25,8 @@ export default function DomainsFlash({
   primary?: string;
   disconnected?: string;
   error?: string;
+  /** Cloudflare's own reason, shown with cloudflare_error. */
+  detail?: string;
 }) {
   return (
     <>
@@ -49,7 +52,11 @@ export default function DomainsFlash({
         <p className="text-sm text-[var(--leaf-dark)]">Domain disconnected.</p>
       ) : null}
       {error && ERROR_COPY[error] ? (
-        <p className="text-sm text-[var(--gone)]">{ERROR_COPY[error]}</p>
+        <p className="text-sm text-[var(--gone)]">
+          {error === "cloudflare_error" && detail
+            ? `Cloudflare could not add that domain: ${detail}`
+            : ERROR_COPY[error]}
+        </p>
       ) : null}
     </>
   );

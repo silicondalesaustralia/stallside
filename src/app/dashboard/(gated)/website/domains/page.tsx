@@ -41,6 +41,7 @@ export default async function WebsiteDomainsPage({
     purchased?: string;
     path?: string;
     error?: string;
+    msg?: string;
   }>;
 }) {
   const { owner } = await requireOwner();
@@ -146,6 +147,7 @@ export default async function WebsiteDomainsPage({
         primary={params.primary}
         disconnected={params.disconnected}
         error={params.error}
+        detail={params.msg}
       />
 
       {latestPurchase ? (
