@@ -21,7 +21,10 @@ How it works:
 
 - New project from the same repo, e.g. `vendl-beta`. Settings → Git → Production branch:
   `feature/social-kit`. (Crons only run on Production deployments.)
-- Domains: add `beta.vendl.app` and `fallback.vendl.app` (custom-domain traffic, step 3).
+- Domains: add `beta.vendl.app`, `fallback.vendl.app` and `customers.vendl.app` (custom-domain
+  traffic, step 3).
+- Settings → Deployment Protection: off (as on `stallside`). Middleware looks up custom domains
+  through the deployment URL (`VERCEL_URL`), which Vercel Authentication would block.
 
 ## 2. Vercel env vars (Production, `vendl-beta` project)
 
@@ -58,16 +61,16 @@ Nothing changes in the `stallside` (main) project's env.
 ## 3. Cloudflare (vendl.app zone)
 
 - DNS: `CNAME beta → cname.vercel-dns.com`, DNS only (grey cloud).
-- Custom hostnames (SSL/TLS → Custom Hostnames):
-  - Fallback origin: `fallback.vendl.app` (proxied record pointing at `cname.vercel-dns.com`).
-  - Origin rule for custom hostnames: Host header override → `fallback.vendl.app`, so Vercel
-    accepts the request.
-  - Transform rule: set request header `x-vendl-original-host` = the original host, so the app
-    knows which shop was asked for (`src/lib/tenancy/request-hostname.ts`).
-  - Mirror whatever already works for stagingv2's `customers-v2` target.
-- `customers.vendl.app` must resolve (the CNAME target customers point their `www` at).
-- Seller subdomains (`<shop>.vendl.app`) are optional during beta: a wildcard needs a Vercel
-  certificate. Without them, shops are at the custom domain or `beta.vendl.app/shop/<slug>`.
+- DNS: `CNAME fallback → cname.vercel-dns.com`, DNS only (grey cloud).
+- DNS: `CNAME * → cname.vercel-dns.com`, proxied (seller subdomains `<shop>.vendl.app`).
+- Custom hostnames (SSL/TLS → Custom Hostnames): fallback origin `customers.vendl.app` (the CNAME
+  target customers point their `www` at).
+- Origin Rules can't rewrite the Host header below Enterprise, so a Worker does it:
+  `vendl-saas-fallback` on route `*/*`. For custom domains and `<shop>.vendl.app` it fetches
+  `fallback.vendl.app` (`resolveOverride`) and sends the visitor's host in
+  `X-Vendl-Original-Host`, which the app reads (`src/lib/tenancy/request-hostname.ts`). Other
+  `vendl.app` hosts pass straight through. Its `ORIGIN_HOST` decides which app serves shops:
+  `fallback.vendl.app` follows whichever Vercel project owns that domain.
 
 ## 4. Supabase (Social), optional
 
@@ -103,8 +106,8 @@ Nothing changes in the `stallside` (main) project's env.
 1. Merge `feature/social-kit` into `main` (the beta gate is inert without `VENDL_BETA_APP`).
 2. Copy the new env vars from step 2 into the `stallside` project, except `VENDL_BETA_APP`,
    `VENDL_APP_HOST`, `VENDL_MAIN_APP_URL`, and keep `NEXT_PUBLIC_APP_URL`/`AUTH_URL` as www.
-3. Cloudflare: move `fallback.vendl.app` to the `stallside` project (Vercel domains) so custom
-   domains are served by `main`. Customers change nothing in their DNS.
+3. Vercel: move `fallback.vendl.app` and `customers.vendl.app` to the `stallside` project so the
+   Worker sends shop traffic to `main`. Customers change nothing in their DNS.
 4. Delete `BETA_APP_URL` from `stallside`, redirect `beta.vendl.app` to `www.vendl.app` and
    delete the `vendl-beta` project.
 5. Update OAuth redirect URIs from `beta.vendl.app` to `www.vendl.app`.
