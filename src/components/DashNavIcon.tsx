@@ -87,6 +87,9 @@ const ICONS: Record<string, React.ReactNode> = {
   "/dashboard/connectors": (
     <Icon d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0V8zM12 17v4" />
   ),
+  "/dashboard/business-details": (
+    <Icon d="M4 21V8l8-5 8 5v13M9 21v-6h6v6M4 21h16" />
+  ),
   "/dashboard/referrals": (
     <Icon d="M20 12v9H4v-9M2 7h20v5H2zM12 21V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z" />
   ),

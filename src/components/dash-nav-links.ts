@@ -94,6 +94,11 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
     heading: "Settings",
     links: [
       {
+        href: "/dashboard/business-details",
+        label: "Business Details",
+        alsoActiveOn: ["/dashboard/businesses"],
+      },
+      {
         href: "/dashboard/payments",
         label: "Payments",
         alsoActiveOn: ["/dashboard/settings/stripe", "/dashboard/settings/square", "/dashboard/settings/paypal"],

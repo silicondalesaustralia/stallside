@@ -74,20 +74,6 @@ export default function DashboardBusinessSelect({
           ))}
         </select>
       </label>
-      <Link
-        href={
-          selectedId
-            ? `/dashboard/businesses/${selectedId}`
-            : "/dashboard/businesses"
-        }
-        className={
-          dark
-            ? "text-xs text-[var(--ink-on-dark)]/60 underline hover:text-[var(--ink-on-dark)]"
-            : "text-[var(--muted)] underline hover:text-[var(--ink)]"
-        }
-      >
-        Manage
-      </Link>
     </div>
   );
 }
