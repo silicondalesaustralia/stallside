@@ -8,6 +8,7 @@ import { getStripe, isStripeBillingConfigured } from "@/lib/stripe";
 import { syncOwnerFromSubscription } from "@/lib/stripe-billing";
 import { sumPaidSubscriptionInvoiceCents } from "@/lib/stripe-ltv";
 import { wipeOwnerAccount } from "@/lib/wipe-owner-account";
+import { voidAffiliateCommission } from "@/lib/affiliate/record-commission";
 
 async function loadOwner(ownerId: string) {
   await requireAdmin();
@@ -79,6 +80,7 @@ export async function refundLatestSubscriptionInvoice(ownerId: string) {
       ),
     },
   });
+  if (invoice.id) await voidAffiliateCommission(invoice.id);
 
   revalidatePath(`/admin/owners/${ownerId}`);
   revalidatePath("/admin/owners");

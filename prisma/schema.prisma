@@ -321,6 +321,10 @@ model SignupIntent {
    * Meta/Google click ids + UTMs captured at signup (fbclid etc).
    */
   adAttribution Json?
+  /**
+   * Affiliate code from the vendl_ref cookie.
+   */
+  referralCode  String?
   createdAt     DateTime @default(now())
 }
 
@@ -615,8 +619,81 @@ model Owner {
   websiteGenerationJobs         WebsiteGenerationJob[]
   websiteAssets                 WebsiteAsset[]
   aiUsageEvents                 AiUsageEvent[]
+  /**
+   * Affiliate link code (/r/[code]); created on first Referrals visit while Pro.
+   */
+  referralCode                  String?                      @unique
+  /**
+   * Affiliate who referred this owner (first touch at signup, or admin override).
+   */
+  referredByOwnerId             String?
+  referredBy                    Owner?                       @relation("OwnerReferrals", fields: [referredByOwnerId], references: [id], onDelete: SetNull)
+  referredAt                    DateTime?
+  referrals                     Owner[]                      @relation("OwnerReferrals")
+  affiliateCommissionsEarned    AffiliateCommission[]        @relation("AffiliateEarner")
+  affiliateCommissionsFrom      AffiliateCommission[]        @relation("AffiliateSource")
+  affiliatePayouts              AffiliatePayout[]
+  affiliateClicks               AffiliateClick[]
 
   @@index([deletedAt])
+  @@index([referredByOwnerId])
+}
+
+enum AffiliateCommissionStatus {
+  PENDING
+  PAID
+  /**
+   * Affiliate was not on Pro when the invoice was paid - commission lost.
+   */
+  INELIGIBLE
+  VOID
+}
+
+/**
+ * 50% of a referred owner's paid SaaS invoice (ex tax), one row per invoice.
+ */
+model AffiliateCommission {
+  id                 String                    @id @default(cuid())
+  affiliateOwnerId   String
+  affiliateOwner     Owner                     @relation("AffiliateEarner", fields: [affiliateOwnerId], references: [id], onDelete: Cascade)
+  referredOwnerId    String
+  referredOwner      Owner                     @relation("AffiliateSource", fields: [referredOwnerId], references: [id], onDelete: Cascade)
+  stripeInvoiceId    String                    @unique
+  invoiceAmountCents Int
+  commissionCents    Int
+  currency           String
+  status             AffiliateCommissionStatus @default(PENDING)
+  payoutId           String?
+  payout             AffiliatePayout?          @relation(fields: [payoutId], references: [id], onDelete: SetNull)
+  earnedAt           DateTime                  @default(now())
+
+  @@index([affiliateOwnerId, status])
+  @@index([referredOwnerId])
+}
+
+/**
+ * Manual payout recorded by admin (bank transfer etc).
+ */
+model AffiliatePayout {
+  id               String                @id @default(cuid())
+  affiliateOwnerId String
+  affiliateOwner   Owner                 @relation(fields: [affiliateOwnerId], references: [id], onDelete: Cascade)
+  amountCents      Int
+  currency         String
+  note             String?
+  paidAt           DateTime              @default(now())
+  commissions      AffiliateCommission[]
+
+  @@index([affiliateOwnerId])
+}
+
+model AffiliateClick {
+  id               String   @id @default(cuid())
+  affiliateOwnerId String
+  affiliateOwner   Owner    @relation(fields: [affiliateOwnerId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+
+  @@index([affiliateOwnerId, createdAt])
 }
 
 /**

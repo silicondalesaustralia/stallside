@@ -12,6 +12,7 @@ import { salesByOwner } from "@/lib/admin-sales";
 import AdminDeleteOwnerButton from "./AdminDeleteOwnerButton";
 import AdminBetaFeatures from "./AdminBetaFeatures";
 import AdminOwnerTools from "./AdminOwnerTools";
+import AdminOwnerReferrer from "./AdminOwnerReferrer";
 import OwnerPaymentLedger from "./OwnerPaymentLedger";
 import OwnerAiUsageCard from "./OwnerAiUsageCard";
 
@@ -28,6 +29,7 @@ export default async function AdminOwnerDetailPage({
       include: {
         user: true,
         stands: { select: { id: true, name: true, slug: true } },
+        referredBy: { select: { businessName: true, referralCode: true } },
       },
     }),
     audRatesFromMarket(),
@@ -134,6 +136,11 @@ export default async function AdminOwnerDetailPage({
       />
       <OwnerAiUsageCard ownerId={owner.id} audPerUsd={fx.USD} />
       <AdminBetaFeatures ownerId={owner.id} betaFeatures={owner.betaFeatures} />
+      <AdminOwnerReferrer
+        ownerId={owner.id}
+        referrer={owner.referredBy}
+        referralCode={owner.referralCode}
+      />
       <AdminOwnerTools ownerId={owner.id} />
       <AdminDeleteOwnerButton
         ownerId={owner.id}

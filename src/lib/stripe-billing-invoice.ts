@@ -4,6 +4,7 @@ import {
   customerIdFromInvoice,
   subscriptionIdFromInvoice,
 } from "@/lib/stripe-invoice-ids";
+import { recordAffiliateCommission } from "@/lib/affiliate/record-commission";
 
 function ownerIdFromInvoiceMetadata(invoice: Stripe.Invoice): string | null {
   const fromSub = invoice.parent?.subscription_details?.metadata?.ownerId;
@@ -58,4 +59,6 @@ export async function recordSubscriptionInvoicePaid(invoice: Stripe.Invoice) {
       subscriptionStartedAt: owner.subscriptionStartedAt ?? new Date(),
     },
   });
+
+  await recordAffiliateCommission(owner, invoice);
 }

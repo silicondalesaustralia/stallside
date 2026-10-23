@@ -10,6 +10,7 @@ import {
   getOpenLifetimeInvite,
 } from "@/lib/lifetime-invite";
 import { attributionFromFormData } from "@/lib/ad-attribution";
+import { referralIntentData } from "@/lib/affiliate/ref-cookie";
 import type { Prisma } from "@/generated/prisma/client";
 
 function normalizeEmail(raw: FormDataEntryValue | null) {
@@ -43,19 +44,24 @@ export async function requestLoginCode(formData: FormData) {
   // Capture fbclid even when first contact is /login, not /signup.
   if (!existing) {
     const adAttribution = attributionFromFormData(formData);
+    const referral = await referralIntentData();
     const name = email.split("@")[0] || "My stand";
     await prisma.signupIntent.upsert({
       where: { email },
       create: {
         email,
         name,
+        ...referral,
         ...(adAttribution
           ? { adAttribution: adAttribution as Prisma.InputJsonValue }
           : {}),
       },
-      update: adAttribution
-        ? { adAttribution: adAttribution as Prisma.InputJsonValue }
-        : {},
+      update: {
+        ...referral,
+        ...(adAttribution
+          ? { adAttribution: adAttribution as Prisma.InputJsonValue }
+          : {}),
+      },
     });
   }
 
@@ -119,12 +125,14 @@ export async function requestSignup(formData: FormData) {
   }
 
   const adAttribution = attributionFromFormData(formData);
+  const referral = await referralIntentData();
 
   await prisma.signupIntent.upsert({
     where: { email },
     create: {
       email,
       name,
+      ...referral,
       ...(adAttribution
         ? { adAttribution: adAttribution as Prisma.InputJsonValue }
         : {}),
@@ -132,6 +140,7 @@ export async function requestSignup(formData: FormData) {
     update: {
       name,
       inviteToken: null,
+      ...referral,
       ...(adAttribution
         ? { adAttribution: adAttribution as Prisma.InputJsonValue }
         : {}),
@@ -177,6 +186,7 @@ export async function requestLifetimeSignup(formData: FormData) {
   }
 
   const adAttribution = attributionFromFormData(formData);
+  const referral = await referralIntentData();
 
   await prisma.signupIntent.upsert({
     where: { email },
@@ -184,6 +194,7 @@ export async function requestLifetimeSignup(formData: FormData) {
       email,
       name,
       inviteToken: token,
+      ...referral,
       ...(adAttribution
         ? { adAttribution: adAttribution as Prisma.InputJsonValue }
         : {}),
@@ -191,6 +202,7 @@ export async function requestLifetimeSignup(formData: FormData) {
     update: {
       name,
       inviteToken: token,
+      ...referral,
       ...(adAttribution
         ? { adAttribution: adAttribution as Prisma.InputJsonValue }
         : {}),

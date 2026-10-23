@@ -13,6 +13,7 @@ import {
 import { normalizeAttribution } from "@/lib/ad-attribution";
 import { Prisma } from "@/generated/prisma/client";
 import { claimSupplierInvite, hasSupplierSeat } from "@/lib/suppliers/claim-invite";
+import { attachReferrerAtSignup } from "@/lib/affiliate/attach-referrer";
 
 /** Verify email code and return the Auth.js user (creating owner on first sign-in). */
 export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
@@ -76,6 +77,12 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
       });
     }
 
+    await attachReferrerAtSignup({
+      ownerId: owner.id,
+      userId: user.id,
+      email,
+      referralCode: intent?.referralCode,
+    });
     if (intent) {
       await prisma.signupIntent.delete({ where: { email } }).catch(() => null);
     }
@@ -105,6 +112,12 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
         name: user.name || "My stand",
         email,
         adAttribution,
+      });
+      await attachReferrerAtSignup({
+        ownerId: created.id,
+        userId: user.id,
+        email,
+        referralCode: intent?.referralCode,
       });
       await sendAndMarkTrialWelcome(created.id);
     } else if (owner && intent) {

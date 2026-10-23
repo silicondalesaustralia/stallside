@@ -99,6 +99,7 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
         alsoActiveOn: ["/dashboard/settings/stripe", "/dashboard/settings/square", "/dashboard/settings/paypal"],
       },
       { href: "/dashboard/settings", label: "Account" },
+      { href: "/dashboard/referrals", label: "Referrals" },
     ],
   },
   {
