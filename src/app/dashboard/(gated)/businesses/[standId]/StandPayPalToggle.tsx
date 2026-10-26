@@ -39,7 +39,7 @@ export default function StandPayPalToggle({
               ? "You must be on Pro to take PayPal payments."
               : paypalReady
                 ? "Money goes straight to your PayPal. No Vendl fee."
-                : "Connect your PayPal account to offer PayPal at checkout."}
+                : "Add your PayPal Merchant ID to offer PayPal at checkout."}
           </span>
         </span>
       </label>

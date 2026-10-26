@@ -13,40 +13,43 @@ export default function PaymentProviderGuide({
       <ul className="list-disc space-y-2 pl-5">
         <li>
           <strong>You can connect both.</strong>{" "}
-          Pick one of them for everyday product, pre-order and deposit checkout. Subscriptions and
-          memberships can run on either.
+          Choose one for everyday checkout: products, pre-orders and deposits.
+          Subscriptions and memberships can run on either.
         </li>
         <li>
-          <strong>Stripe</strong> works outside Australia and offers pay-later.
-          The Free plan Vendl fee is 2.5%, on top of Stripe&apos;s own
-          processing fee.{weeklyPayouts ? " Stripe payouts are weekly (Mondays)." : ""}
+          <strong>Stripe</strong>{" "}
+          works outside Australia and offers pay-later options. On the Free plan,
+          Vendl charges 2.5% on top of Stripe&apos;s own processing fee.
+          {weeklyPayouts ? " Stripe pays out weekly, on Mondays." : ""}
         </li>
         <li>
-          <strong>Square</strong> has the same 2.5% Free plan Vendl fee, and
-          Square pays out on its own schedule. It also syncs stock both ways
-          with Square POS, so it suits market and in-person sellers. Sales on
-          your own Square reader never incur a Vendl fee.
+          <strong>Square</strong>{" "}
+          has the same 2.5% Vendl fee on the Free plan and pays out on its own
+          schedule. It also syncs stock both ways with Square POS, so it suits
+          market and in-person sellers. Sales on your own Square reader never
+          incur a Vendl fee.
         </li>
         <li>
-          <strong>Vendl Pro removes the Vendl fee</strong> on Square and Stripe.
-          Stripe and Square still charge their own processing fees.
+          <strong>Vendl Pro removes the Vendl fee</strong>{" "}
+          on Stripe and Square. Stripe and Square still charge their own
+          processing fees.
         </li>
         <li>
-          <strong>PayPal is a Vendl Pro extra.</strong> It shows as its own button
-          at checkout, alongside Stripe or Square, for customers who prefer to pay
-          with PayPal. To connect, go to{" "}
+          <strong>PayPal is a Vendl Pro extra.</strong>{" "}
+          It appears as its own button at checkout, alongside Stripe or Square,
+          for customers who prefer PayPal. To set it up, go to{" "}
           <Link href="/dashboard/settings/paypal" className="underline">
             Settings → PayPal
-          </Link>
-          , sign in with a PayPal <strong>Business</strong> account and approve
-          Vendl, then tick PayPal under Checkout payments below. There&apos;s
-          no Vendl fee; PayPal&apos;s own fee comes out of each sale.
+          </Link>{" "}
+          and paste the Merchant ID from your PayPal business account, then tick
+          PayPal under Checkout payments below. Vendl takes no fee; PayPal&apos;s
+          own fee comes out of each sale.
         </li>
         <li>
           <strong>Already have a Stripe or Square account?</strong>{" "}
-          Connecting takes a minute: sign in and approve Vendl. If you don&apos;t have one,
-          you&apos;ll go through their sign-up and identity checks first, which
-          can take a little longer.
+          Connecting takes a minute: sign in and approve Vendl. If you don&apos;t
+          have one, you&apos;ll go through their sign-up and identity checks
+          first, which can take a little longer.
         </li>
       </ul>
     </section>

@@ -29,7 +29,7 @@ export default function StandSquareToggle({
             {!squareReady
               ? "Connect Square, turn on Square payments and pick a location before enabling."
               : squareIsProvider
-                ? "Square card checkout for QR and website. Money to your Square account."
+                ? "Square card checkout for QR codes and your website. Money goes to your Square account."
                 : "Shown at checkout once Square is your product checkout provider (above)."}
           </span>
         </span>
