@@ -7,7 +7,7 @@ import { loadProductLinks } from "@/lib/production/load-product-links";
 import ProductionShell from "./ProductionShell";
 import ActionForm from "./ActionForm";
 import BatchFields, { type BatchRecipeOption } from "./BatchFields";
-import BatchList from "./BatchList";
+import BatchList, { BATCH_LIST_LIMIT } from "./BatchList";
 import { cardClass } from "./form-styles";
 import { loadProductionScope } from "./production-scope";
 import { createBatch } from "./batch-actions";
@@ -34,7 +34,7 @@ export default async function ProductionPage({ searchParams }: { searchParams: P
     prisma.productionBatch.findMany({
       where: { ownerId: scope.ownerId, standId: stand.id },
       orderBy: [{ madeAt: "desc" }, { createdAt: "desc" }],
-      take: 50,
+      take: BATCH_LIST_LIMIT,
       include: { product: { select: { name: true } }, lines: true },
     }),
   ]);

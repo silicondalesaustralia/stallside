@@ -1,15 +1,13 @@
-import Link from "next/link";
 import NoBusinessYet from "@/components/NoBusinessYet";
-import { costRecipe, productUnitCostCents } from "@/lib/production/batch-costing";
-import { money } from "@/lib/production/format";
+import { costRecipe } from "@/lib/production/batch-costing";
 import { loadCostContext } from "@/lib/production/load-cost-context";
 import { loadProductLinks } from "@/lib/production/load-product-links";
-import { formatPercent, marginPercent } from "@/lib/production/pricing";
 import ProductionShell from "../ProductionShell";
 import ActionForm from "../ActionForm";
-import { cardClass, inputClass, labelClass, tdClass, thClass } from "../form-styles";
+import { cardClass, inputClass, labelClass } from "../form-styles";
 import { loadProductionScope } from "../production-scope";
 import { createRecipe } from "./recipe-actions";
+import RecipesTable from "./RecipesTable";
 
 export default async function RecipesPage() {
   const scope = await loadProductionScope();
@@ -27,62 +25,11 @@ export default async function RecipesPage() {
   return (
     <ProductionShell active="recipes" subtitle="What goes into each batch, what it costs, and your margin">
       {rows.length > 0 ? (
-        <div className="overflow-x-auto rounded-xl border border-[var(--line)] bg-white">
-          <table className="w-full min-w-[44rem] text-sm">
-            <thead className="border-b border-[var(--line)]">
-              <tr>
-                <th className={thClass}>Recipe</th>
-                <th className={`${thClass} text-right`}>Batch cost</th>
-                <th className={`${thClass} text-right`}>Per unit</th>
-                <th className={thClass}>Products · unit cost · margin</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--line)]">
-              {rows.map(({ recipe, cost }) => (
-                <tr key={recipe.id} className={recipe.isActive ? "" : "opacity-60"}>
-                  <td className={tdClass}>
-                    <Link href={`/dashboard/production/recipes/${recipe.id}`} className="font-semibold hover:underline">
-                      {recipe.name}
-                    </Link>
-                    <p className="text-xs text-[var(--muted)]">
-                      Makes {recipe.yieldQuantity} {recipe.yieldLabel} · {recipe.lines.length} line(s)
-                      {cost.problems.length ? " · needs attention" : ""}
-                    </p>
-                  </td>
-                  <td className={`${tdClass} text-right tabular-nums`}>{money(cost.totalCents, currency)}</td>
-                  <td className={`${tdClass} text-right tabular-nums`}>
-                    {money(cost.totalCents / recipe.yieldQuantity, currency)}
-                  </td>
-                  <td className={tdClass}>
-                    {links
-                      .filter((l) => l.recipeId === recipe.id)
-                      .map((l) => {
-                        const unitCost = productUnitCostCents({
-                          batchTotalCents: cost.totalCents,
-                          yieldQuantity: recipe.yieldQuantity,
-                          yieldUnitsPerProduct: l.yieldUnitsPerProduct,
-                          packagingCostCents: l.packagingCostCents,
-                        });
-                        const margin = marginPercent(l.priceCents, l.priceCents - unitCost);
-                        return (
-                          <p key={l.productId}>
-                            {l.productName} · {money(unitCost, l.currency)} ·{" "}
-                            <span className={margin != null && margin < 0 ? "font-semibold text-red-700" : ""}>
-                              {formatPercent(margin)}
-                            </span>
-                          </p>
-                        );
-                      })}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <RecipesTable rows={rows} links={links} currency={currency} />
       ) : (
-        <p className="rounded-xl border border-dashed border-[var(--line)] bg-white p-6 text-center text-sm text-[var(--muted)]">
+        <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">
           No recipes yet. A recipe (or parts list) says what one batch uses and how many it makes.
-        </p>
+        </div>
       )}
 
       <section className={cardClass}>

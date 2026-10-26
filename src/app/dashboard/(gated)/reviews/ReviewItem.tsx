@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { deleteReview, emailReviewer, saveReviewReply, setReviewStatus } from "./actions";
 import { REVIEW_REPLY_MAX } from "@/lib/reviews/review-fields";
+import StatusPill, { type PillSpec } from "@/components/dashboard/ui/StatusPill";
+import { dangerButtonClass, secondaryButtonClass } from "@/components/dashboard/ui/button-styles";
 
 type Review = {
   id: string;
@@ -16,27 +18,26 @@ type Review = {
   customer: { id: string; name: string | null; email: string | null } | null;
 };
 
-const BTN = "rounded-lg border border-[var(--line)] bg-white px-3 py-1.5 text-sm font-semibold";
+const BTN = secondaryButtonClass;
 const INPUT = "w-full rounded-lg border border-[var(--line)] px-3 py-2 text-sm";
-const STATUS = {
-  PENDING: { label: "Waiting for approval", tone: "bg-amber-100 text-amber-900" },
-  APPROVED: { label: "Published", tone: "bg-green-100 text-green-900" },
-  REJECTED: { label: "Hidden", tone: "bg-gray-100 text-gray-700" },
-} as const;
+const STATUS: Record<Review["status"], PillSpec> = {
+  PENDING: { label: "Waiting for approval", tone: "attention" },
+  APPROVED: { label: "Published", tone: "success" },
+  REJECTED: { label: "Hidden", tone: "neutral" },
+};
 
 /** One review in the dashboard: approve/hide, public reply, email the reviewer, delete. */
 export default function ReviewItem({ review: r, productName, tab }: { review: Review; productName: string | null; tab: string }) {
   const name = r.authorName || r.customer?.name || "Customer";
   const email = r.authorEmail || r.customer?.email;
-  const status = STATUS[r.status];
   return (
-    <li className="flex flex-col gap-3 rounded-xl border border-[var(--line)] bg-white p-4">
+    <li className="dash-card flex flex-col gap-3 p-4">
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <span className="text-lg text-amber-500" aria-label={`${r.rating} out of 5 stars`}>
           {"★".repeat(r.rating)}
           <span className="text-gray-300">{"★".repeat(5 - r.rating)}</span>
         </span>
-        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${status.tone}`}>{status.label}</span>
+        <StatusPill {...STATUS[r.status]} />
         <span className="text-[var(--muted)]">{productName ? `on ${productName}` : "about your business"}</span>
         <span className="ml-auto text-xs text-[var(--muted)]">{r.createdAt.toLocaleDateString()}</span>
       </div>
@@ -60,7 +61,7 @@ export default function ReviewItem({ review: r, productName, tab }: { review: Re
           </form>
         ) : null}
         <form action={deleteReview.bind(null, r.id, tab)}>
-          <button type="submit" className={`${BTN} text-[var(--gone)]`}>Delete</button>
+          <button type="submit" className={dangerButtonClass}>Delete</button>
         </form>
       </div>
 

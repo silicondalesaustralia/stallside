@@ -2,11 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import DataTable, { cellClass, type DataColumn } from "@/components/dashboard/ui/DataTable";
 import { applyStockCount } from "./inventory-actions";
 
 type CountRow = { id: string; name: string; sku: string | null; stockQuantity: number };
 
-const th = "px-3 py-2 text-left text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--muted)]";
+const COLUMNS: DataColumn[] = [
+  { label: "Product" },
+  { label: "System", align: "right" },
+  { label: "Counted", align: "right" },
+  { label: "Variance", align: "right" },
+];
 
 export default function InventoryCountForm({ rows }: { rows: CountRow[] }) {
   const router = useRouter();
@@ -33,56 +39,48 @@ export default function InventoryCountForm({ rows }: { rows: CountRow[] }) {
 
   return (
     <form action={onSubmit} className="flex flex-col gap-3">
-      <div className="overflow-x-auto rounded-xl border border-[var(--line)] bg-white">
-        <table className="w-full min-w-[36rem] text-sm">
-          <thead className="border-b border-[var(--line)]">
-            <tr>
-              <th className={th}>Product</th>
-              <th className={`${th} text-right`}>System</th>
-              <th className={`${th} text-right`}>Counted</th>
-              <th className={`${th} text-right`}>Variance</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[var(--line)]">
-            {rows.map((r) => {
-              const raw = counts[r.id] ?? "";
-              const variance = raw.trim() === "" ? null : Number(raw) - r.stockQuantity;
-              return (
-                <tr key={r.id}>
-                  <td className="px-3 py-2">
-                    <p className="font-semibold">{r.name}</p>
-                    {r.sku ? <p className="text-xs text-[var(--muted)]">SKU {r.sku}</p> : null}
-                  </td>
-                  <td className="px-3 py-2 text-right tabular-nums">{r.stockQuantity}</td>
-                  <td className="px-3 py-2 text-right">
-                    <input
-                      name={`count:${r.id}`}
-                      type="number"
-                      min={0}
-                      inputMode="numeric"
-                      value={raw}
-                      onChange={(e) => setCounts((c) => ({ ...c, [r.id]: e.target.value }))}
-                      className="w-24 rounded-lg border border-[var(--line)] px-2 py-1.5 text-right tabular-nums"
-                      aria-label={`Counted quantity for ${r.name}`}
-                    />
-                  </td>
-                  <td
-                    className={`px-3 py-2 text-right font-semibold tabular-nums ${
-                      variance == null || variance === 0
-                        ? "text-[var(--muted)]"
-                        : variance < 0
-                          ? "text-red-700"
-                          : "text-[var(--leaf-dark)]"
-                    }`}
-                  >
-                    {variance == null ? "—" : variance > 0 ? `+${variance}` : variance}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      {rows.length === 0 ? (
+        <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">No products match.</div>
+      ) : (
+        <DataTable columns={COLUMNS} footer={`${rows.length} product${rows.length === 1 ? "" : "s"}`}>
+          {rows.map((r) => {
+            const raw = counts[r.id] ?? "";
+            const variance = raw.trim() === "" ? null : Number(raw) - r.stockQuantity;
+            return (
+              <tr key={r.id} className="align-middle">
+                <td className={cellClass(COLUMNS[0])}>
+                  <p className="font-semibold">{r.name}</p>
+                  {r.sku ? <p className="text-xs text-[var(--muted)]">SKU {r.sku}</p> : null}
+                </td>
+                <td className={`${cellClass(COLUMNS[1])} font-receipt whitespace-nowrap`}>{r.stockQuantity}</td>
+                <td className={cellClass(COLUMNS[2])}>
+                  <input
+                    name={`count:${r.id}`}
+                    type="number"
+                    min={0}
+                    inputMode="numeric"
+                    value={raw}
+                    onChange={(e) => setCounts((c) => ({ ...c, [r.id]: e.target.value }))}
+                    className="w-24 rounded-lg border border-[var(--line)] px-2 py-1.5 text-right tabular-nums"
+                    aria-label={`Counted quantity for ${r.name}`}
+                  />
+                </td>
+                <td
+                  className={`${cellClass(COLUMNS[3])} font-receipt whitespace-nowrap font-semibold ${
+                    variance == null || variance === 0
+                      ? "text-[var(--muted)]"
+                      : variance < 0
+                        ? "text-[var(--gone)]"
+                        : "text-[var(--leaf-dark)]"
+                  }`}
+                >
+                  {variance == null ? "—" : variance > 0 ? `+${variance}` : variance}
+                </td>
+              </tr>
+            );
+          })}
+        </DataTable>
+      )}
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="submit"

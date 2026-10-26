@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { standQrTargetUrl } from "@/lib/stand-qr";
 import { businessQrHref } from "@/lib/qr/hrefs";
+import DataTable, { cellClass, type DataColumn } from "@/components/dashboard/ui/DataTable";
+import DataTableRow from "@/components/dashboard/ui/DataTableRow";
+import QrRowActions from "./QrRowActions";
 
 export type BusinessQrRow = {
   id: string;
@@ -10,6 +13,8 @@ export type BusinessQrRow = {
   qrLinkMode: "LEGACY_STAND" | "WEBSITE_HOME" | "WEBSITE_CATEGORY";
   qrCategory: { title: string; slug: string } | null;
 };
+
+const COLUMNS: DataColumn[] = [{ label: "Business" }, { label: "Opens" }, { label: "", align: "right" }];
 
 export default function BusinessQrList({
   stands,
@@ -23,7 +28,7 @@ export default function BusinessQrList({
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Main business QR</h2>
-      <ul className="flex flex-col gap-3">
+      <DataTable columns={COLUMNS}>
         {stands.map((stand) => {
           const effectiveMode =
             stand.cartMode === "CUSTOMER_CHOICE"
@@ -49,25 +54,25 @@ export default function BusinessQrList({
                   ? `Website · ${primaryCustomHostname}`
                   : "Website home"
                 : "Shop checkout";
+          const href = businessQrHref(stand.id);
           return (
-            <li key={stand.id} className="dash-card flex flex-wrap items-center justify-between gap-3 p-4">
-              <div className="min-w-0">
-                <p className="font-semibold text-[var(--ink)]">{stand.name}</p>
-                <p className="text-sm text-[var(--muted)]">{destLabel}</p>
-                <p className="mt-1 truncate font-receipt text-xs text-[var(--muted)]">{target}</p>
-              </div>
-              <div className="flex flex-wrap gap-4 text-sm">
-                <Link href={`${businessQrHref(stand.id)}/duplicate`} className="underline">
-                  Duplicate
+            <DataTableRow key={stand.id} href={href}>
+              <td className={cellClass(COLUMNS[0])}>
+                <Link href={href} prefetch={false} className="font-semibold hover:underline">
+                  {stand.name}
                 </Link>
-                <Link href={businessQrHref(stand.id)} className="font-semibold text-[var(--leaf-dark)] underline">
-                  Edit &amp; print
-                </Link>
-              </div>
-            </li>
+              </td>
+              <td className={`${cellClass(COLUMNS[1])} max-w-[320px]`}>
+                <p>{destLabel}</p>
+                <p className="truncate font-receipt text-xs text-[var(--muted)]">{target}</p>
+              </td>
+              <td className={cellClass(COLUMNS[2])}>
+                <QrRowActions href={href} />
+              </td>
+            </DataTableRow>
           );
         })}
-      </ul>
+      </DataTable>
     </section>
   );
 }

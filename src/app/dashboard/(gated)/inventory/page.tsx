@@ -2,6 +2,9 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
+import PageHeader from "@/components/dashboard/ui/PageHeader";
+import { secondaryButtonClass } from "@/components/dashboard/ui/button-styles";
 import {
   filterInventoryRows,
   loadInventoryReport,
@@ -29,15 +32,10 @@ export default async function InventoryPage({
   const isImport = params.mode === "import";
   const base = { status, q: q || undefined };
 
-  const heading = (
-    <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-      Inventory
-    </h1>
-  );
   if (!selected) {
     return (
-      <main className="flex flex-col gap-8">
-        {heading}
+      <main className="flex flex-col gap-6">
+        <PageHeader title="Inventory" />
         <NoBusinessYet />
       </main>
     );
@@ -45,31 +43,40 @@ export default async function InventoryPage({
 
   const allRows = await loadInventoryReport({ ownerId: owner.id, standId: selected.id, q });
   const rows = filterInventoryRows(allRows, status);
+  const countHref = inventoryHref({ ...base, mode: isCount ? undefined : "count" });
 
   return (
-    <main className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          {heading}
-          <p className="mt-1 text-[var(--muted)]">
-            {isCount ? "Stock count" : isImport ? "Import stock" : "Stock report"} · {selected.name}
-            {q ? ` · “${q}”` : ""}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Link href={inventoryHref({ ...base, mode: isCount ? undefined : "count" })} className={pillClass(isCount)}>
-            {isCount ? "Exit stock count" : "Start stock count"}
-          </Link>
-          <a href={`/dashboard/inventory/export${inventoryQuery(base)}`} download className={pillClass(false)}>
-            Export CSV
-          </a>
-          <Link href={inventoryHref({ ...base, mode: isImport ? undefined : "import" })} className={pillClass(isImport)}>
-            {isImport ? "Close import" : "Import CSV"}
-          </Link>
-        </div>
-      </div>
+    <main className="flex flex-col gap-5">
+      <PageHeader
+        title="Inventory"
+        subtitle={`${isCount ? "Stock count" : isImport ? "Import stock" : "Stock report"} · ${selected.name}${
+          q ? ` · “${q}”` : ""
+        }`}
+        actions={
+          <>
+            <a href={`/dashboard/inventory/export${inventoryQuery(base)}`} download className={secondaryButtonClass}>
+              Export CSV
+            </a>
+            <Link
+              href={inventoryHref({ ...base, mode: isImport ? undefined : "import" })}
+              className={secondaryButtonClass}
+            >
+              {isImport ? "Close import" : "Import CSV"}
+            </Link>
+            {isCount ? (
+              <Link href={countHref} className={secondaryButtonClass}>
+                Exit stock count
+              </Link>
+            ) : (
+              <DashPrimaryCta href={countHref}>Start stock count</DashPrimaryCta>
+            )}
+          </>
+        }
+      />
 
       {isImport ? <InventoryImportPanel /> : null}
+
+      {!isCount ? <InventorySummaryTiles rows={allRows} /> : null}
 
       <form method="get" role="search" className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--line)] bg-white p-2">
         {status ? <input type="hidden" name="status" value={status} /> : null}
@@ -87,8 +94,6 @@ export default async function InventoryPage({
           Search
         </button>
       </form>
-
-      {!isCount ? <InventorySummaryTiles rows={allRows} /> : null}
 
       <div className="flex flex-wrap items-center gap-2">
         <Link href={inventoryHref({ ...base, status: undefined, mode: params.mode })} className={pillClass(!status)}>

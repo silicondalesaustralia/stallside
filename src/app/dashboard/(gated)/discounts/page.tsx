@@ -2,7 +2,9 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
-import DiscountList from "./DiscountList";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
+import PageHeader from "@/components/dashboard/ui/PageHeader";
+import DiscountsTable from "./DiscountsTable";
 import { loadDiscountRows } from "@/lib/discounts/load";
 
 export default async function DiscountsPage() {
@@ -15,20 +17,28 @@ export default async function DiscountsPage() {
       })
     : null;
 
-  return (
-    <main className="flex max-w-2xl flex-col gap-8">
-      <div>
-        <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">Discounts</h1>
-        {stand ? (
-          <p className="mt-1 text-sm text-[var(--muted)]">
-            Discount codes for {stand.name}, on your online store and stall checkout.
-          </p>
-        ) : null}
-      </div>
-      {stand ? (
-        <DiscountList discounts={await loadDiscountRows(owner.id, stand.id, stand.currency)} />
-      ) : (
+  if (!stand) {
+    return (
+      <main className="flex flex-col gap-6">
+        <PageHeader title="Discounts" />
         <NoBusinessYet />
+      </main>
+    );
+  }
+
+  const discounts = await loadDiscountRows(owner.id, stand.id, stand.currency);
+
+  return (
+    <main className="flex flex-col gap-5">
+      <PageHeader
+        title="Discounts"
+        subtitle={`Codes shoppers type at checkout for money off or free shipping, online and at the stall · ${stand.name}`}
+        actions={<DashPrimaryCta href="/dashboard/discounts/new">+ New discount</DashPrimaryCta>}
+      />
+      {discounts.length === 0 ? (
+        <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">No discount codes yet.</div>
+      ) : (
+        <DiscountsTable discounts={discounts} />
       )}
     </main>
   );

@@ -7,7 +7,10 @@ import {
   parseSegmentRules,
 } from "@/lib/crm/segments";
 import { STANDING_LIST_PRESET_KEYS } from "@/lib/crm/segment-rules";
-import { archiveList } from "./actions";
+import PageHeader from "@/components/dashboard/ui/PageHeader";
+import { secondaryButtonClass } from "@/components/dashboard/ui/button-styles";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
+import CustomerListsTable from "./CustomerListsTable";
 
 export default async function CustomerListsPage() {
   const { owner } = await requireOwner();
@@ -34,75 +37,36 @@ export default async function CustomerListsPage() {
   const byId = Object.fromEntries(counts.map((c) => [c.id, c]));
 
   return (
-    <main className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-sm text-[var(--muted)]">
-            <Link href="/dashboard/customers" className="underline">
-              Customers
+    <main className="flex flex-col gap-5">
+      <PageHeader
+        title="Lists"
+        backHref="/dashboard/customers"
+        backLabel="Customers"
+        subtitle="Group customers by purchases, pre-orders, or a CSV upload — then email them from Communication. Restock opt-ins live under Communication."
+        actions={
+          <>
+            <Link href="/dashboard/customers/lists/new" className={secondaryButtonClass}>
+              From rules
             </Link>
-          </p>
-          <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-            Lists
-          </h1>
-          <p className="mt-1 text-[var(--muted)]">
-            Group customers by purchases, pre-orders, or a CSV upload — then
-            email them from Communication. Restock opt-ins live under
-            Communication.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href="/dashboard/customers/lists/new"
-            className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold"
-          >
-            From rules
-          </Link>
-          <Link
-            href="/dashboard/customers/lists/upload"
-            className="rounded-full bg-[var(--leaf)] px-4 py-2 text-sm font-semibold text-white"
-          >
-            Upload CSV
-          </Link>
-        </div>
-      </div>
+            <DashPrimaryCta href="/dashboard/customers/lists/upload">Upload CSV</DashPrimaryCta>
+          </>
+        }
+      />
 
       {lists.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">
+        <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">
           No lists yet. Create one from product / pre-order rules, or upload a
           CSV of emails.
-        </p>
+        </div>
       ) : (
-        <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
-          {lists.map((list) => (
-            <li
-              key={list.id}
-              className="flex flex-wrap items-center justify-between gap-3 py-4 text-sm"
-            >
-              <div>
-                <p className="font-medium">{list.name}</p>
-                <p className="mt-1 text-[var(--muted)]">
-                  {byId[list.id]?.summary} · {byId[list.id]?.count ?? 0}{" "}
-                  contacts
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Link
-                  href={`/dashboard/communication/new?listId=${list.id}`}
-                  className="font-medium text-[var(--leaf-dark)] underline"
-                >
-                  Email
-                </Link>
-                <form action={archiveList}>
-                  <input type="hidden" name="id" value={list.id} />
-                  <button type="submit" className="text-[var(--muted)] underline">
-                    Archive
-                  </button>
-                </form>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <CustomerListsTable
+          lists={lists.map((list) => ({
+            id: list.id,
+            name: list.name,
+            summary: byId[list.id]?.summary ?? "",
+            count: byId[list.id]?.count ?? 0,
+          }))}
+        />
       )}
     </main>
   );

@@ -1,9 +1,11 @@
+import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { listOwnerCategories } from "@/lib/categories/load";
-import SortableOrderList from "@/components/SortableOrderList";
-import CategoryRowActions from "./CategoryRowActions";
-import { createCategory, deleteCategory, saveCategoryOrder, setCategoryActive } from "./actions";
+import PageHeader from "@/components/dashboard/ui/PageHeader";
+import CategoriesTable from "./CategoriesTable";
+import CategoryMenuOrder from "./CategoryMenuOrder";
+import { createCategory } from "./actions";
 import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 import { ownerSiteUrl } from "@/lib/storefront/owner-site-url";
 import { shopPagePath } from "@/lib/storefront/paths";
@@ -12,10 +14,10 @@ import SiteSlugClashNotice from "@/components/website/SiteSlugClashNotice";
 export default async function CategoriesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; published?: string; unpublished?: string; deleted?: string }>;
+  searchParams: Promise<{ error?: string; published?: string; unpublished?: string; deleted?: string; arrange?: string }>;
 }) {
   const { owner } = await requireOwner();
-  const { error, published, unpublished, deleted } = await searchParams;
+  const { error, published, unpublished, deleted, arrange } = await searchParams;
 
   const [categories, shopUrl, storefront] = await Promise.all([
     listOwnerCategories(owner.id),
@@ -23,48 +25,13 @@ export default async function CategoriesPage({
     prisma.storefront.findFirst({ where: { ownerId: owner.id }, select: { draftConfig: true } }),
   ]);
 
-  const items = categories.map((c) => ({
-    id: c.id,
-    label: c.title,
-    href: `/dashboard/categories/${c.id}`,
-    detail: [
-      `${c._count.products} product${c._count.products === 1 ? "" : "s"}`,
-      c.isActive && !c.showOnWebsite ? "Hidden from shop menu" : null,
-    ]
-      .filter(Boolean)
-      .join(" · "),
-    badge: (
-      <span
-        className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
-          c.isActive ? "bg-[var(--ok)]/15 text-[var(--ok)]" : "bg-[var(--wash)] text-[var(--muted)]"
-        }`}
-      >
-        {c.isActive ? "Published" : "Unpublished"}
-      </span>
-    ),
-    actions: (
-      <CategoryRowActions
-        title={c.title}
-        isActive={c.isActive}
-        toggleAction={setCategoryActive.bind(null, c.id, !c.isActive, "list")}
-        deleteAction={deleteCategory.bind(null, c.id)}
-      />
-    ),
-  }));
-
   return (
-    <main className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-            Categories
-          </h1>
-          <p className="mt-1 text-[var(--muted)]">
-            Group products for your shop. Categories with products show as links in your shop menu.
-          </p>
-        </div>
-        {shopUrl ? <ViewOnSiteLink href={shopUrl} label="View shop" /> : null}
-      </div>
+    <main className="flex flex-col gap-5">
+      <PageHeader
+        title="Categories"
+        subtitle="Group products for your shop. Categories with products show as links in your shop menu."
+        actions={shopUrl ? <ViewOnSiteLink href={shopUrl} label="View shop" /> : null}
+      />
 
       {storefront ? <SiteSlugClashNotice ownerId={owner.id} configRaw={storefront.draftConfig} /> : null}
 
@@ -72,7 +39,7 @@ export default async function CategoriesPage({
       {unpublished ? <p className="text-sm font-medium text-[var(--ok)]">Category unpublished.</p> : null}
       {deleted ? <p className="text-sm font-medium text-[var(--ok)]">Category deleted.</p> : null}
 
-      <form action={createCategory} className="flex flex-wrap items-end gap-2 rounded-xl border border-[var(--line)] bg-white p-4">
+      <form action={createCategory} className="dash-card flex flex-wrap items-end gap-2 p-4">
         <label className="flex min-w-[12rem] flex-1 flex-col gap-1 text-sm">
           <span className="font-semibold">New category</span>
           <input
@@ -94,15 +61,28 @@ export default async function CategoriesPage({
         ) : null}
       </form>
 
-      <section className="flex flex-col gap-2">
-        <h2 className="font-semibold">Menu order</h2>
-        <SortableOrderList
-          key={items.map((i) => i.id).join()}
-          items={items}
-          onSave={saveCategoryOrder}
-          emptyText="No categories yet. Add your first one above."
-        />
-      </section>
+      {arrange === "1" ? (
+        <CategoryMenuOrder categories={categories} />
+      ) : categories.length === 0 ? (
+        <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">
+          No categories yet. Add your first one above.
+        </div>
+      ) : (
+        <section className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-semibold">Menu order</h2>
+            {categories.length > 1 ? (
+              <Link
+                href="/dashboard/categories?arrange=1"
+                className="text-sm font-semibold text-[var(--leaf-dark)] underline"
+              >
+                Arrange menu order
+              </Link>
+            ) : null}
+          </div>
+          <CategoriesTable categories={categories} />
+        </section>
+      )}
     </main>
   );
 }

@@ -1,5 +1,8 @@
 import Link from "next/link";
-import StockStatusBadges from "@/components/inventory/StockStatusBadges";
+import DataTable, { cellClass, type DataColumn } from "@/components/dashboard/ui/DataTable";
+import DataTableRow from "@/components/dashboard/ui/DataTableRow";
+import StatusPill, { type PillTone } from "@/components/dashboard/ui/StatusPill";
+import { STOCK_STATUS_LABEL, supplyStatusLabel, type StockStatus } from "@/lib/inventory/inventory-status";
 import type { InventoryRow } from "@/lib/inventory/load-inventory-report";
 
 function shortDate(date: Date | null): string {
@@ -13,68 +16,71 @@ function coverText(days: number | null): string {
   return days < 10 ? days.toFixed(1) : String(Math.round(days));
 }
 
-const th = "px-3 py-2 text-left text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--muted)]";
-const td = "px-3 py-2.5 align-top tabular-nums";
+const STOCK_TONE: Record<StockStatus, PillTone> = { in_stock: "success", low: "warning", out: "critical" };
+
+const COLUMNS: DataColumn[] = [
+  { label: "Product" },
+  { label: "Status" },
+  { label: "On hand", align: "right" },
+  { label: "Sold 7d", align: "right", hideBelow: "md" },
+  { label: "Sold 30d", align: "right", hideBelow: "sm" },
+  { label: "Per day", align: "right", hideBelow: "lg" },
+  { label: "Days cover", align: "right", hideBelow: "sm" },
+  { label: "Last sold", hideBelow: "lg" },
+  { label: "Last counted", hideBelow: "lg" },
+];
+
+const num = "font-receipt whitespace-nowrap";
 
 export default function InventoryReportTable({ rows }: { rows: InventoryRow[] }) {
   if (rows.length === 0) {
-    return <p className="text-sm text-[var(--muted)]">No products match.</p>;
+    return (
+      <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">No products match.</div>
+    );
   }
   return (
-    <div className="overflow-x-auto rounded-xl border border-[var(--line)] bg-white">
-      <table className="w-full min-w-[56rem] text-sm">
-        <thead className="border-b border-[var(--line)]">
-          <tr>
-            <th className={th}>Product</th>
-            <th className={th}>Status</th>
-            <th className={`${th} text-right`}>On hand</th>
-            <th className={`${th} text-right`}>Sold 7d</th>
-            <th className={`${th} text-right`}>Sold 30d</th>
-            <th className={`${th} text-right`}>Per day</th>
-            <th className={`${th} text-right`}>Days cover</th>
-            <th className={th}>Last sold</th>
-            <th className={th}>Last counted</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-[var(--line)]">
-          {rows.map((r) => (
-            <tr key={r.id}>
-              <td className={td}>
-                <Link
-                  href={`/dashboard/products/${r.id}`}
-                  className="font-semibold hover:underline"
-                >
-                  {r.name}
-                </Link>
-                <p className="text-xs text-[var(--muted)]">
-                  {r.sku ? `SKU ${r.sku} · ` : ""}
-                  {r.locationName}
-                </p>
-              </td>
-              <td className={td}>
-                <StockStatusBadges
-                  stockStatus={r.stockStatus}
-                  supplyStatus={r.supplyStatus}
-                  incoming={r.incoming}
-                />
-              </td>
-              <td className={`${td} text-right font-semibold`}>{r.stockQuantity}</td>
-              <td className={`${td} text-right`}>{r.sold7}</td>
-              <td className={`${td} text-right`}>{r.sold30}</td>
-              <td className={`${td} text-right`}>{r.dailyRate.toFixed(1)}</td>
-              <td
-                className={`${td} text-right ${
-                  r.daysCover != null && r.daysCover <= 7 ? "font-semibold text-red-700" : ""
-                }`}
-              >
-                {coverText(r.daysCover)}
-              </td>
-              <td className={td}>{shortDate(r.lastSoldAt)}</td>
-              <td className={td}>{shortDate(r.lastCountedAt)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <DataTable columns={COLUMNS} footer={`${rows.length} product${rows.length === 1 ? "" : "s"}`}>
+      {rows.map((r) => {
+        const href = `/dashboard/products/${r.id}`;
+        const supply = supplyStatusLabel(r.supplyStatus);
+        return (
+          <DataTableRow key={r.id} href={href}>
+            <td className={cellClass(COLUMNS[0])}>
+              <Link href={href} prefetch={false} className="font-semibold hover:underline">
+                {r.name}
+              </Link>
+              <p className="text-xs text-[var(--muted)]">
+                {r.sku ? `SKU ${r.sku} · ` : ""}
+                {r.locationName}
+              </p>
+            </td>
+            <td className={cellClass(COLUMNS[1])}>
+              <div className="flex flex-wrap gap-1">
+                <StatusPill label={STOCK_STATUS_LABEL[r.stockStatus]} tone={STOCK_TONE[r.stockStatus]} />
+                {supply ? <StatusPill label={supply} tone="info" /> : null}
+                {r.incoming > 0 ? <StatusPill label={`${r.incoming} incoming`} tone="attention" /> : null}
+              </div>
+            </td>
+            <td className={`${cellClass(COLUMNS[2])} ${num} font-semibold`}>{r.stockQuantity}</td>
+            <td className={`${cellClass(COLUMNS[3])} ${num}`}>{r.sold7}</td>
+            <td className={`${cellClass(COLUMNS[4])} ${num}`}>{r.sold30}</td>
+            <td className={`${cellClass(COLUMNS[5])} ${num}`}>{r.dailyRate.toFixed(1)}</td>
+            <td
+              className={`${cellClass(COLUMNS[6])} ${num} ${
+                r.daysCover != null && r.daysCover <= 7 ? "font-semibold text-[var(--gone)]" : ""
+              }`}
+            >
+              {coverText(r.daysCover)}
+            </td>
+            <td className={`${cellClass(COLUMNS[7])} whitespace-nowrap text-[var(--muted)]`}>
+              {shortDate(r.lastSoldAt)}
+            </td>
+            <td className={`${cellClass(COLUMNS[8])} whitespace-nowrap text-[var(--muted)]`}>
+              {shortDate(r.lastCountedAt)}
+            </td>
+          </DataTableRow>
+        );
+      })}
+    </DataTable>
   );
 }

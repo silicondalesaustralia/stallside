@@ -1,4 +1,7 @@
 import Link from "next/link";
+import UpsellOverrideTable from "./UpsellOverrideTable";
+
+const empty = "dash-card px-4 py-6 text-center text-sm text-[var(--muted)]";
 
 export default function UpsellOverridesList({
   products,
@@ -15,21 +18,13 @@ export default function UpsellOverridesList({
           A product can offer its own extra item instead of the cart upsell above. Set it on the product.
         </p>
         {products.length === 0 ? (
-          <p className="text-sm text-[var(--muted)]">None set.</p>
+          <div className={empty}>None set.</div>
         ) : (
-          <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)] text-sm">
-            {products.map((p) => (
-              <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
-                <span>
-                  <span className="font-medium">{p.name}</span>{" "}
-                  <span className="text-[var(--muted)]">offers {p.offers}</span>
-                </span>
-                <Link href={`/dashboard/products/${p.id}`} className="text-[var(--leaf-dark)] underline">
-                  Edit
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <UpsellOverrideTable
+            label="Product"
+            noun="product"
+            rows={products.map((p) => ({ ...p, href: `/dashboard/products/${p.id}` }))}
+          />
         )}
       </div>
 
@@ -43,21 +38,18 @@ export default function UpsellOverridesList({
           .
         </p>
         {preOrderPages.length === 0 ? (
-          <p className="text-sm text-[var(--muted)]">None set.</p>
+          <div className={empty}>None set.</div>
         ) : (
-          <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)] text-sm">
-            {preOrderPages.map((p) => (
-              <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
-                <span>
-                  <span className="font-medium">{p.title}</span>{" "}
-                  <span className="text-[var(--muted)]">offers {p.addOn}</span>
-                </span>
-                <Link href={`/dashboard/pre-order-pages/${p.id}`} className="text-[var(--leaf-dark)] underline">
-                  Edit
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <UpsellOverrideTable
+            label="Pre-order page"
+            noun="pre-order page"
+            rows={preOrderPages.map((p) => ({
+              id: p.id,
+              name: p.title,
+              offers: p.addOn,
+              href: `/dashboard/pre-order-pages/${p.id}`,
+            }))}
+          />
         )}
       </div>
     </section>

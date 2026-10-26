@@ -1,11 +1,11 @@
-import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { listOwnerPreOrderPages } from "@/lib/pre-order-pages/service";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import NoBusinessYet from "@/components/NoBusinessYet";
+import PageHeader from "@/components/dashboard/ui/PageHeader";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
-import { formatCollectionLabel } from "@/lib/pre-order";
 import { standPublicLinks } from "@/lib/storefront/stand-public-links";
+import PreOrderPagesTable from "./PreOrderPagesTable";
 
 export default async function PreOrderPagesListPage() {
   const { owner } = await requireOwner();
@@ -13,10 +13,8 @@ export default async function PreOrderPagesListPage() {
 
   if (!selected) {
     return (
-      <main className="flex flex-col gap-8">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          Pre-order pages
-        </h1>
+      <main className="flex flex-col gap-6">
+        <PageHeader title="Pre-order pages" />
         <NoBusinessYet />
       </main>
     );
@@ -28,75 +26,22 @@ export default async function PreOrderPagesListPage() {
   ]);
 
   return (
-    <main className="flex flex-col gap-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            Pre-order pages
-          </h1>
-          <p className="mt-1 text-[var(--muted)]">
-            {selected.name} - one link with several products for the same
-            collection day.
-          </p>
-        </div>
-        <DashPrimaryCta href="/dashboard/pre-order-pages/new">
-          + New pre-order page
-        </DashPrimaryCta>
-      </div>
+    <main className="flex flex-col gap-5">
+      <PageHeader
+        title="Pre-order pages"
+        subtitle={`${selected.name} · one link with several products for the same collection day.`}
+        actions={<DashPrimaryCta href="/dashboard/pre-order-pages/new">+ New pre-order page</DashPrimaryCta>}
+      />
 
       {pages.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">
+        <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">
           No pre-order pages yet. Create one, pick products, share the link.
-        </p>
+        </div>
       ) : (
-        <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
-          {pages.map((page) => {
-            const publicUrl = links.preOrder(page.slug);
-            return (
-              <li
-                key={page.id}
-                className="flex flex-wrap items-center justify-between gap-3 py-4 text-sm"
-              >
-                <div>
-                  <p className="font-medium">
-                    {page.title}
-                    {!page.isActive ? (
-                      <span className="ml-2 text-[var(--muted)]">(off)</span>
-                    ) : null}
-                  </p>
-                  <p className="mt-1 text-[var(--muted)]">
-                    {formatCollectionLabel(page.collectionAt)} ·{" "}
-                    {page._count.items} products
-                  </p>
-                  <p className="mt-1 break-all text-xs text-[var(--muted)]">
-                    {publicUrl}
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href={`/dashboard/pre-order-pages/${page.id}`}
-                    className="text-[var(--leaf-dark)] underline"
-                  >
-                    Edit
-                  </Link>
-                  <Link
-                    href={`/dashboard/pre-order-pages/${page.id}/qr`}
-                    className="text-[var(--leaf-dark)] underline"
-                  >
-                    QR
-                  </Link>
-                  <Link
-                    href={publicUrl}
-                    target="_blank"
-                    className="text-[var(--leaf-dark)] underline"
-                  >
-                    Open
-                  </Link>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <PreOrderPagesTable
+          pages={pages}
+          publicUrl={Object.fromEntries(pages.map((p) => [p.id, links.preOrder(p.slug)]))}
+        />
       )}
     </main>
   );

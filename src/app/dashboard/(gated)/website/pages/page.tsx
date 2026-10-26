@@ -1,5 +1,6 @@
-import Link from "next/link";
 import WebsiteFormError from "@/components/website/WebsiteFormError";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
+import PageHeader from "@/components/dashboard/ui/PageHeader";
 import SiteSlugClashNotice from "@/components/website/SiteSlugClashNotice";
 import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
@@ -8,8 +9,7 @@ import { customPagePublicPath } from "@/lib/studio/custom-page-paths";
 import { appBaseUrl } from "@/lib/app-url";
 import { shopHomePath } from "@/lib/storefront/paths";
 import { syncBuiltinCustomPages } from "./actions";
-import PageGroup from "./PageGroup";
-import PageRow from "./PageRow";
+import PagesTable, { type PagesTableRow } from "./PagesTable";
 import { setCustomPageEnabled } from "./publish-actions";
 import { customPageStatus, liveCustomPageIds } from "./page-status";
 
@@ -43,37 +43,38 @@ export default async function WebsitePagesListPage({
     .filter((p) => p.routeKind === "custom" || ["about", "contact", "blog"].includes(p.builtinKey ?? ""))
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
-  const row = (page: StorefrontCustomPage) => (
-    <PageRow
-      key={page.id}
-      label={page.title}
-      detail={pageDetail(page)}
-      status={customPageStatus(page, liveIds)}
-      previewUrl={`${base}${customPagePublicPath(storefront.slug, page, true)}`}
-      editHref={`/dashboard/website/pages/${page.id}`}
-      toggleAction={setCustomPageEnabled.bind(null, page.id, !page.enabled, "list")}
-    />
-  );
+  const row = (page: StorefrontCustomPage, type: PagesTableRow["type"]): PagesTableRow => ({
+    id: page.id,
+    title: page.title,
+    detail: pageDetail(page),
+    type,
+    status: customPageStatus(page, liveIds),
+    previewUrl: `${base}${customPagePublicPath(storefront.slug, page, true)}`,
+    editHref: `/dashboard/website/pages/${page.id}`,
+    toggleAction: setCustomPageEnabled.bind(null, page.id, !page.enabled, "list"),
+  });
+
+  const rows: PagesTableRow[] = [
+    {
+      id: "home",
+      title: "Home",
+      detail: "/",
+      type: "Home",
+      status: storefront.isPublished ? "live" : "off",
+      previewUrl: `${base}${shopHomePath(storefront.slug, true)}`,
+      editHref: "/dashboard/website/pages/home",
+    },
+    ...contentPages.map((p) => row(p, "Content")),
+    ...policyPages.map((p) => row(p, "Policy")),
+  ];
 
   return (
-    <main className="mx-auto flex max-w-4xl flex-col gap-8 pb-12">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[var(--field)]">
-            Pages
-          </h1>
-          <p className="mt-2 max-w-2xl text-[var(--muted)]">
-            Page settings, publishing and search &amp; social. Page content, and the header and footer
-            menus, are edited right on your site.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/website/pages/new"
-          className="rounded-full bg-[var(--field)] px-5 py-2.5 text-sm font-semibold text-white"
-        >
-          Add page
-        </Link>
-      </div>
+    <main className="mx-auto flex max-w-4xl flex-col gap-5 pb-12">
+      <PageHeader
+        title="Pages"
+        subtitle="Page settings, publishing and search & social. Page content, and the header and footer menus, are edited right on your site."
+        actions={<DashPrimaryCta href="/dashboard/website/pages/new">+ Add page</DashPrimaryCta>}
+      />
 
       {params.saved ? <p className="text-sm font-medium text-[var(--ok)]">Page saved.</p> : null}
       {params.deleted ? <p className="text-sm font-medium text-[var(--ok)]">Page deleted.</p> : null}
@@ -82,30 +83,14 @@ export default async function WebsitePagesListPage({
       <WebsiteFormError error={params.error} fallback="Something went wrong." />
       <SiteSlugClashNotice ownerId={owner.id} configRaw={storefront.draftConfig} />
 
-      <PageGroup title="Home page">
-        <PageRow
-          label="Home"
-          detail="/"
-          status={storefront.isPublished ? "live" : "off"}
-          previewUrl={`${base}${shopHomePath(storefront.slug, true)}`}
-          editHref="/dashboard/website/pages/home"
-        />
-      </PageGroup>
-
-      {contentPages.length > 0 ? (
-        <PageGroup title="Content pages" description="About, contact, blog index, and custom pages.">
-          {contentPages.map(row)}
-        </PageGroup>
-      ) : null}
-
-      {policyPages.length > 0 ? (
-        <PageGroup
-          title="Policy pages"
-          description="Standard policy starters — editable placeholder text, not legal advice. Shown in footer by default."
-        >
-          {policyPages.map(row)}
-        </PageGroup>
-      ) : null}
+      <PagesTable
+        rows={rows}
+        footer={`${rows.length} page${rows.length === 1 ? "" : "s"}${
+          policyPages.length > 0
+            ? " · Policy pages are editable starters, not legal advice, and show in the footer by default."
+            : ""
+        }`}
+      />
     </main>
   );
 }

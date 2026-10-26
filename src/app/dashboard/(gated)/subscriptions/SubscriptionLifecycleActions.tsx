@@ -11,10 +11,13 @@ export default function SubscriptionLifecycleActions({
   offerId,
   offerTitle,
   isActive,
+  compact = false,
 }: {
   offerId: string;
   offerTitle: string;
   isActive: boolean;
+  /** Text-only actions for table rows. */
+  compact?: boolean;
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +50,7 @@ export default function SubscriptionLifecycleActions({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap gap-3 text-sm">
+      <div className={`flex items-center text-sm ${compact ? "justify-end gap-3 whitespace-nowrap" : "flex-wrap gap-3"}`}>
         <button
           type="button"
           disabled={pending}
@@ -61,9 +64,13 @@ export default function SubscriptionLifecycleActions({
         <button
           type="button"
           disabled={pending}
-          className="rounded-full bg-[var(--gone)]/10 px-3 py-1.5 text-sm font-semibold text-[var(--gone)] disabled:opacity-60"
+          className={
+            compact
+              ? "font-semibold text-[var(--gone)] underline disabled:opacity-60"
+              : "rounded-full bg-[var(--gone)]/10 px-3 py-1.5 text-sm font-semibold text-[var(--gone)] disabled:opacity-60"
+          }
           onClick={() => {
-                if (
+            if (
               !window.confirm(
                 `Delete “${offerTitle}”? This permanently removes the offer. Active subscribers must cancel first.`,
               )

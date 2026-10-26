@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/session";
-import { formatMoney } from "@/lib/money";
+import PageHeader from "@/components/dashboard/ui/PageHeader";
+import { secondaryButtonClass } from "@/components/dashboard/ui/button-styles";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
 import CustomersSearchForm from "./CustomersSearchForm";
+import CustomersTable from "./CustomersTable";
 import { listOwnerCustomers } from "@/lib/customers/service";
 
 export default async function CustomersPage({
@@ -16,78 +19,30 @@ export default async function CustomersPage({
   const customers = await listOwnerCustomers(owner.id, query);
 
   return (
-    <main className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-            Customers
-          </h1>
-          <p className="mt-1 text-[var(--muted)]">
-            Built from order and subscription emails. Cash without email stays
-            anonymous.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href="/dashboard/customers/lists"
-            className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold"
-          >
-            Lists
-          </Link>
-          <Link
-            href="/dashboard/communication/new"
-            className="rounded-full bg-[var(--leaf)] px-4 py-2 text-sm font-semibold text-white"
-          >
-            Send email
-          </Link>
-        </div>
-      </div>
+    <main className="flex flex-col gap-5">
+      <PageHeader
+        title="Customers"
+        subtitle="Built from order and subscription emails. Cash without email stays anonymous."
+        actions={
+          <>
+            <Link href="/dashboard/customers/lists" className={secondaryButtonClass}>
+              Lists
+            </Link>
+            <DashPrimaryCta href="/dashboard/communication/new">Send email</DashPrimaryCta>
+          </>
+        }
+      />
 
       <CustomersSearchForm initialQuery={query} />
 
       {customers.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">
+        <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">
           {query
             ? "No customers match that search."
             : "No customers yet. They appear after a paid order with a receipt email."}
-        </p>
+        </div>
       ) : (
-        <ul className="flex flex-col gap-3">
-          {customers.map((c) => {
-            const spend = c.orders.reduce((sum, o) => sum + o.totalCents, 0);
-            const currency = c.orders[0]?.currency ?? "AUD";
-            return (
-              <li key={c.id} className="dash-card px-4 py-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="font-[family-name:var(--font-display)] text-lg font-bold">
-                      {c.name || c.email || "Customer"}
-                    </p>
-                    <p className="mt-1 text-sm text-[var(--muted)]">
-                      {c.email}
-                      {c.phone ? ` · ${c.phone}` : ""}
-                    </p>
-                    <p className="mt-1 text-xs text-[var(--muted)]">
-                      {c._count.orders} order
-                      {c._count.orders === 1 ? "" : "s"}
-                      {spend > 0
-                        ? ` · ${formatMoney(spend, currency)} LTV`
-                        : ""}
-                      {c.marketingConsent ? " · marketing ok" : ""}
-                      {c.source ? ` · via ${c.source}` : ""}
-                    </p>
-                  </div>
-                  <Link
-                    href={`/dashboard/customers/${c.id}`}
-                    className="rounded-full px-3 py-1.5 text-sm font-semibold outline outline-[var(--line)]"
-                  >
-                    View
-                  </Link>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <CustomersTable customers={customers} />
       )}
     </main>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-const BUTTON = "rounded-full border border-[var(--line)] px-3 py-1 text-xs font-semibold";
+const BUTTON = "text-sm font-semibold underline";
 
 /** Publish/Unpublish and Delete for one category in the Categories list. */
 export default function CategoryRowActions({
@@ -15,9 +15,9 @@ export default function CategoryRowActions({
   deleteAction: () => Promise<void>;
 }) {
   return (
-    <div className="flex shrink-0 gap-1.5">
+    <div className="flex shrink-0 justify-end gap-3 whitespace-nowrap">
       <form action={toggleAction}>
-        <button type="submit" className={BUTTON}>
+        <button type="submit" className={`${BUTTON} text-[var(--leaf-dark)]`}>
           {isActive ? "Unpublish" : "Publish"}
         </button>
       </form>

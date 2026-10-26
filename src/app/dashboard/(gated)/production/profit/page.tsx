@@ -45,10 +45,8 @@ export default async function ProfitPage({
     <ProductionShell
       active="profit"
       subtitle={`${window.label} · ${p.orders} paid order(s) · ${stand.name}`}
-      actions={
-        <DateRangeFilter pathname="/dashboard/production/profit" activeKey={window.key} from={window.fromParam} to={window.toParam} />
-      }
     >
+      <DateRangeFilter pathname="/dashboard/production/profit" activeKey={window.key} from={window.fromParam} to={window.toParam} />
       <div className="grid gap-4 lg:grid-cols-2">
         <section className={cardClass}>
           <h2 className="mb-1 font-semibold">Profit and loss</h2>

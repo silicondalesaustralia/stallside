@@ -4,6 +4,10 @@ import {
   listOwnerCampaigns,
   listOwnerStandingLists,
 } from "@/lib/communication/load";
+import PageHeader from "@/components/dashboard/ui/PageHeader";
+import DashPrimaryCta from "@/components/DashPrimaryCta";
+import CampaignsTable from "./CampaignsTable";
+import StandingListsTable from "./StandingListsTable";
 
 export default async function CommunicationPage() {
   const { owner } = await requireOwner();
@@ -13,93 +17,40 @@ export default async function CommunicationPage() {
   ]);
 
   return (
-    <main className="flex flex-col gap-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-            Communication
-          </h1>
-          <p className="mt-1 text-[var(--muted)]">
-            Email opted-in contacts, saved lists, product buyers, or one
-            customer.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/communication/new"
-          className="rounded-full bg-[var(--leaf)] px-4 py-2 text-sm font-semibold text-white"
-        >
-          + New message
-        </Link>
-      </div>
+    <main className="flex flex-col gap-6">
+      <PageHeader
+        title="Communication"
+        subtitle="Email opted-in contacts, saved lists, product buyers, or one customer."
+        actions={<DashPrimaryCta href="/dashboard/communication/new">+ New message</DashPrimaryCta>}
+      />
 
       {standingLists.length > 0 ? (
-        <section>
-          <h2 className="text-lg font-semibold">Standing lists</h2>
-          <p className="mt-1 text-sm text-[var(--muted)]">
-            Auto-updating groups — broadcast when you restock or have news.
-          </p>
-          <ul className="mt-3 divide-y divide-[var(--line)] border-y border-[var(--line)]">
-            {standingLists.map((list) => (
-              <li
-                key={list.id}
-                className="flex flex-wrap items-center justify-between gap-3 py-4 text-sm"
-              >
-                <div>
-                  <p className="font-medium">{list.name}</p>
-                  <p className="mt-1 text-[var(--muted)]">
-                    {list.description} · {list.count} contacts
-                  </p>
-                </div>
-                <Link
-                  href={`/dashboard/communication/new?listId=${list.id}`}
-                  className="font-medium text-[var(--leaf-dark)] underline"
-                >
-                  Broadcast
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <section className="flex flex-col gap-3">
+          <div>
+            <h2 className="text-lg font-semibold">Standing lists</h2>
+            <p className="mt-1 text-sm text-[var(--muted)]">
+              Auto-updating groups — broadcast when you restock or have news.
+            </p>
+          </div>
+          <StandingListsTable lists={standingLists} />
         </section>
       ) : null}
 
-      <section>
+      <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Messages</h2>
         {campaigns.length === 0 ? (
-          <p className="mt-2 text-sm text-[var(--muted)]">
+          <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">
             No messages yet.{" "}
             <Link href="/dashboard/communication/new" className="underline">
               Compose one
             </Link>
             .
-          </p>
+          </div>
         ) : (
-          <ul className="mt-3 divide-y divide-[var(--line)] border-y border-[var(--line)]">
-            {campaigns.map((c) => (
-              <li
-                key={c.id}
-                className="flex flex-wrap items-center justify-between gap-3 py-4 text-sm"
-              >
-                <div>
-                  <Link
-                    href={`/dashboard/communication/${c.id}`}
-                    className="font-medium underline"
-                  >
-                    {c.name}
-                  </Link>
-                  <p className="mt-1 text-[var(--muted)]">
-                    {c.status} · {c.sentCount}/{c.recipientCount} sent ·{" "}
-                    {c.audienceType.replaceAll("_", " ")}
-                  </p>
-                </div>
-                <Link
-                  href={`/dashboard/communication/${c.id}`}
-                  className="text-[var(--leaf-dark)] underline"
-                >
-                  Open
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <CampaignsTable
+            campaigns={campaigns}
+            footer={`${campaigns.length} message${campaigns.length === 1 ? "" : "s"}`}
+          />
         )}
       </section>
     </main>
