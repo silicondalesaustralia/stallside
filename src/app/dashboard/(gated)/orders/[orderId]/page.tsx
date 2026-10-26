@@ -15,6 +15,7 @@ import { formatDateInTz, resolveStandTimezone } from "@/lib/stand-timezone";
 import OrderDeleteButton from "../OrderDeleteButton";
 import OrderItemsCard from "./OrderItemsCard";
 import OrderPaymentCard from "./OrderPaymentCard";
+import { taxConfig } from "@/lib/tax/config";
 import OrderTimelineCard from "./OrderTimelineCard";
 import OrderCustomerCard from "./OrderCustomerCard";
 import OrderHandoverCard from "./OrderHandoverCard";
@@ -78,7 +79,7 @@ export default async function OrderPage({ params }: { params: Promise<{ orderId:
         <div className="flex min-w-0 flex-col gap-5">
           <OrderItemsCard order={order} />
           <div id="payment" className="scroll-mt-24">
-            <OrderPaymentCard order={order} />
+            <OrderPaymentCard order={order} tax={taxConfig(owner, order.currency)} />
           </div>
           <OrderTimelineCard order={order} timeZone={timeZone} />
         </div>

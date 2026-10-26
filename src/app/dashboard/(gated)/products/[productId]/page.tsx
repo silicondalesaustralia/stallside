@@ -10,6 +10,7 @@ import { publishedWebsiteForStand, standWebsiteUrl } from "@/lib/storefront/stan
 import { productImageList } from "@/lib/product-images";
 import { parseImageAlts } from "@/lib/product-image-alts";
 import ProductGstCard from "./ProductGstCard";
+import { taxConfig } from "@/lib/tax/config";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
 import { entitySeoKey } from "@/lib/studio/seo-settings";
@@ -135,7 +136,7 @@ export default async function EditProductPage({
         initialImageError={imageError ?? null}
       />
       {owner.country === "AU" ? (
-        <ProductGstCard productId={product.id} gstFree={product.gstFree} gstRegistered={owner.gstRegistered} />
+        <ProductGstCard productId={product.id} gstFree={product.gstFree} tax={taxConfig(owner, product.currency)} />
       ) : null}
       <EntitySeoCard
         ownerId={owner.id}

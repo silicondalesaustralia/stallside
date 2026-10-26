@@ -108,7 +108,7 @@ export async function startPayPalCheckout(input: {
         platformFeeCents: trackedFee,
         receiptChannel: email ? ReceiptChannel.EMAIL : ReceiptChannel.NONE,
         receiptEmail: email || null,
-        ...orderLineFields(lineData, discountCents, stand),
+        ...orderLineFields(lineData, discountCents, loaded.taxRule),
       },
     });
 

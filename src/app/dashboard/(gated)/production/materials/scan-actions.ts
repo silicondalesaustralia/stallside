@@ -5,7 +5,7 @@ import { requireOwnerWrite } from "@/lib/session";
 import { buildReview } from "@/lib/production/invoice-scan/build-review";
 import { extractInvoice } from "@/lib/production/invoice-scan/extract";
 import type { ScanResult } from "@/lib/production/invoice-scan/schema";
-import { defaultCostBasis, taxRegionForCurrency } from "@/lib/production/invoice-scan/tax-region";
+import { defaultCostBasis, scanTaxRegion } from "@/lib/production/invoice-scan/tax-region";
 import { INVOICE_MAX_BYTES, INVOICE_TYPES, uploadInvoiceDocument } from "@/lib/production/invoice-scan/upload";
 import { recordScanUsage, scanLimitReached } from "@/lib/production/invoice-scan/usage";
 import { loadProductionScope } from "../production-scope";
@@ -31,7 +31,7 @@ export async function scanInvoice(formData: FormData): Promise<ScanResult> {
 
     const scope = await loadProductionScope();
     const currency = scope.stand?.currency ?? "AUD";
-    const region = taxRegionForCurrency(currency);
+    const region = scanTaxRegion(owner, currency);
     const base64 = Buffer.from(await file.arrayBuffer()).toString("base64");
     const [extracted, receiptUrl] = await Promise.all([
       extractInvoice({ mimeType: file.type, base64, name: file.name }, { currency, taxLabel: region.label }),

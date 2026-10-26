@@ -8,6 +8,8 @@ import {
   profitCents,
   suggestedPriceCents,
 } from "@/lib/production/pricing";
+import { taxFromInclusiveCents, taxOnTopCents } from "@/lib/gst";
+import { formatTaxRate, type TaxConfig } from "@/lib/tax/config";
 import { inputClass, labelClass } from "../../form-styles";
 
 const DEFAULT_FEE_PCT = "4.25";
@@ -26,18 +28,23 @@ export default function PricingCalculator({
   unitCostCents,
   priceCents,
   currency,
+  tax,
 }: {
   unitCostCents: number;
   priceCents: number;
   currency: string;
+  tax: TaxConfig;
 }) {
   const [margin, setMargin] = useState("50");
   const [feePct, setFeePct] = useState(DEFAULT_FEE_PCT);
   const [fixedFee, setFixedFee] = useState(DEFAULT_FIXED_FEE);
   const fees = { feePct: num(feePct), fixedFeeCents: Math.round(num(fixedFee) * 100) };
+  const inclusiveRate = tax.applies && tax.inclusive ? tax.rateBps : 0;
 
-  const suggested = suggestedPriceCents({ unitCostCents, marginPct: num(margin), ...fees });
-  const profit = profitCents({ priceCents, unitCostCents, ...fees });
+  const suggestedNet = suggestedPriceCents({ unitCostCents, marginPct: num(margin), ...fees });
+  const suggested = suggestedNet == null ? null : suggestedNet + taxOnTopCents(suggestedNet, inclusiveRate);
+  const netPrice = priceCents - taxFromInclusiveCents(priceCents, inclusiveRate);
+  const profit = profitCents({ priceCents: netPrice, unitCostCents, ...fees });
 
   return (
     <div className="flex flex-col gap-3 text-sm">
@@ -56,8 +63,12 @@ export default function PricingCalculator({
         </label>
       </div>
       <p className="text-xs text-[var(--muted)]">
-        Default fees: 2.5% Vendl fee on the Free plan plus about 1.75% + 30c card processing. Set 0 for cash sales or Pro.
-        Prices exclude GST.
+        Default fees: 2.5% Vendl fee on the Free plan plus about 1.75% + 30c card processing. Set 0 for cash sales or Pro.{" "}
+        {!tax.applies
+          ? "No sales tax applied (Settings → Sales tax)."
+          : tax.inclusive
+            ? `Prices include ${tax.name} (${formatTaxRate(tax.rateBps)}); profit uses the price after ${tax.name}.`
+            : `Prices exclude ${tax.name.toLowerCase()}; it's added at checkout.`}
       </p>
       <div className="grid gap-2 sm:grid-cols-2">
         <div className="rounded-lg bg-[var(--wash)] px-3 py-2">
@@ -75,7 +86,7 @@ export default function PricingCalculator({
             {fmt(Math.round(profit), currency)} profit
           </p>
           <p className="text-xs text-[var(--muted)]">
-            Margin {formatPercent(marginPercent(priceCents, profit))} · Markup{" "}
+            Margin {formatPercent(marginPercent(netPrice, profit))} · Markup{" "}
             {formatPercent(markupPercent(unitCostCents, profit))}
           </p>
         </div>

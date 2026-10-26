@@ -157,7 +157,7 @@ async function confirmDeclaredCheckout(
             platformFeeCents: 0,
             receiptChannel: email ? ReceiptChannel.EMAIL : ReceiptChannel.NONE,
             receiptEmail: email || null,
-            ...orderLineFields(lineData, discountCents, stand),
+            ...orderLineFields(lineData, discountCents, loaded.taxRule),
           },
         });
 

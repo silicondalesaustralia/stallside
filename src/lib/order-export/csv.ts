@@ -13,6 +13,17 @@ export function money(cents: number | null | undefined): string {
 }
 
 /** UTF-8 BOM so Excel opens the file correctly. */
+export type ExportTax = { name: string; inclusive: boolean };
+
+/** Swaps "GST" in column headings for the owner's tax name (VAT, Sales tax…). */
+export function taxHeaders(headers: readonly string[], tax: ExportTax): string[] {
+  return headers.map((h) =>
+    h === "Taxable sales (incl. GST)"
+      ? `Taxable sales (${tax.inclusive ? "incl." : "excl."} ${tax.name})`
+      : h.replace(/\bGST\b/g, tax.name),
+  );
+}
+
 export function toCsv(headers: readonly string[], rows: CsvValue[][]): string {
   const lines = rows.map((row) => row.map(cell).join(","));
   return "\uFEFF" + [headers.join(","), ...lines].join("\r\n");

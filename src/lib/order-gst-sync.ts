@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { gstApplies, lineGstCents } from "@/lib/gst";
+import { lineGstCents } from "@/lib/gst";
+import { includedTaxRule } from "@/lib/order-gst";
+import { taxRegion } from "@/lib/tax/regions";
 
 /**
  * Recompute GST on an owner's past orders from their current GST registration
@@ -11,9 +13,11 @@ export async function syncOwnerOrderGst(
 ): Promise<{ checked: number; updated: number }> {
   const owner = await prisma.owner.findUnique({
     where: { id: ownerId },
-    select: { gstRegistered: true },
+    select: { gstRegistered: true, taxCountry: true, taxRateBps: true },
   });
   if (!owner) return { checked: 0, updated: 0 };
+  // Tax added on top was charged at checkout; it can't be recomputed from today's settings.
+  if (owner.taxCountry && !taxRegion(owner.taxCountry).inclusive) return { checked: 0, updated: 0 };
 
   const orders = await prisma.order.findMany({
     where: { ownerId, ...(opts.onlyMissing ? { gstCents: 0 } : {}) },
@@ -29,7 +33,7 @@ export async function syncOwnerOrderGst(
     const gst = lineGstCents(
       lines,
       order.discountCents,
-      gstApplies(owner, order.currency),
+      includedTaxRule(owner, order.currency),
     );
     const total = gst.reduce((sum, cents) => sum + cents, 0);
     const changed =

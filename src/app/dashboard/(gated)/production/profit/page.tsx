@@ -7,6 +7,7 @@ import { formatPercent, marginPercent } from "@/lib/production/pricing";
 import ProductionShell from "../ProductionShell";
 import { cardClass } from "../form-styles";
 import { loadProductionScope } from "../production-scope";
+import { taxLabel } from "@/lib/tax/config";
 import ProfitProductTable from "./ProfitProductTable";
 
 function Line({ label, cents, currency, strong, hint }: { label: string; cents: number; currency: string; strong?: boolean; hint?: string }) {
@@ -52,7 +53,9 @@ export default async function ProfitPage({
           <h2 className="mb-1 font-semibold">Profit and loss</h2>
           <div className="flex flex-col divide-y divide-[var(--line)]">
             <Line label="Sales" cents={p.salesCents} currency={c} hint="What customers paid, including delivery and fees passed on" />
-            {p.gstCents > 0 ? <Line label="Less GST collected" cents={-p.gstCents} currency={c} /> : null}
+            {p.gstCents > 0 ? (
+              <Line label={`Less ${taxLabel(scope.tax)} collected`} cents={-p.gstCents} currency={c} />
+            ) : null}
             <Line label="Less cost of goods sold" cents={-p.cogsCents} currency={c} hint="Units sold × unit cost" />
             <Line label="Less platform and card fees" cents={-p.feesCents} currency={c} />
             <Line label="Gross profit" cents={p.grossProfitCents} currency={c} strong />

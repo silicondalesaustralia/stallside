@@ -6,17 +6,20 @@ import ActionForm from "../../ActionForm";
 import { cardClass, hintClass, inputClass, labelClass } from "../../form-styles";
 import { linkProduct, unlinkProduct } from "../recipe-line-actions";
 import PricingCalculator from "./PricingCalculator";
+import type { TaxConfig } from "@/lib/tax/config";
 
 export default function LinkedProducts({
   recipe,
   batchTotalCents,
   links,
   linkable,
+  tax,
 }: {
   recipe: { id: string; yieldQuantity: number; yieldLabel: string };
   batchTotalCents: number;
   links: ProductLink[];
   linkable: { id: string; name: string }[];
+  tax: TaxConfig;
 }) {
   return (
     <div className="flex flex-col gap-4">
@@ -43,7 +46,7 @@ export default function LinkedProducts({
                 <input type="hidden" name="productId" value={l.productId} />
               </ActionForm>
             </div>
-            <PricingCalculator unitCostCents={unitCost} priceCents={l.priceCents} currency={l.currency} />
+            <PricingCalculator unitCostCents={unitCost} priceCents={l.priceCents} currency={l.currency} tax={tax} />
           </section>
         );
       })}

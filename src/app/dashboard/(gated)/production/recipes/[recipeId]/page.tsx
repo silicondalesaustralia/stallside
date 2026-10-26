@@ -82,7 +82,7 @@ export default async function RecipePage({ params }: { params: Promise<{ recipeI
 
       <section className="flex flex-col gap-2">
         <h2 className="font-semibold">Products and pricing</h2>
-        <LinkedProducts recipe={recipe} batchTotalCents={cost.totalCents} links={links} linkable={linkable} />
+        <LinkedProducts recipe={recipe} batchTotalCents={cost.totalCents} links={links} linkable={linkable} tax={scope.tax} />
       </section>
 
       <section className={cardClass}>

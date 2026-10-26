@@ -10,7 +10,8 @@ import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
 import { isSquareIntegrationEnabled } from "@/lib/square/config";
 import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 import BusinessNameForm from "./BusinessNameForm";
-import GstSettingsForm from "./GstSettingsForm";
+import TaxSettingsForm from "./TaxSettingsForm";
+import { countryForCurrency, taxRegion } from "@/lib/tax/regions";
 import GstSyncButton from "./GstSyncButton";
 import DeleteAccountButton from "./DeleteAccountButton";
 
@@ -22,6 +23,7 @@ export default async function SettingsPage() {
     lifetimeAccess: owner.lifetimeAccess,
   });
   const billingRegion = billingRegionDisplay(owner.billingCurrency);
+  const taxCountry = owner.taxCountry ?? countryForCurrency(owner.billingCurrency) ?? owner.country;
   const showSquare =
     isSquareIntegrationEnabled() &&
     squareEligibleBillingCurrency(owner.billingCurrency);
@@ -56,18 +58,20 @@ export default async function SettingsPage() {
         </div>
       </section>
 
-      {owner.country === "AU" ? (
-        <section className="space-y-3 text-sm">
-          <h2 className="text-lg font-semibold">GST (Australia only)</h2>
-          <p className="text-[var(--muted)]">
-            For Australian businesses only. When registered, Vendl records the GST in each sale (1/11 of
-            taxable items) for your order exports. Mark GST-free products,
-            like fresh produce, on each product.
-          </p>
-          <GstSettingsForm abn={owner.abn} gstRegistered={owner.gstRegistered} />
-          <GstSyncButton />
-        </section>
-      ) : null}
+      <section className="space-y-3 text-sm">
+        <h2 className="text-lg font-semibold">Sales tax ({taxRegion(taxCountry).name})</h2>
+        <p className="text-[var(--muted)]">
+          Set where you trade and whether you&apos;re registered. Orders, receipts, exports, profit and
+          invoice scanning all use this. Mark tax-free products, like fresh produce, on each product.
+        </p>
+        <TaxSettingsForm
+          country={taxCountry}
+          rateBps={owner.taxRateBps}
+          taxId={owner.abn}
+          registered={owner.gstRegistered}
+        />
+        {taxRegion(taxCountry).inclusive ? <GstSyncButton /> : null}
+      </section>
 
       <section className="space-y-2 text-sm">
         <h2 className="text-lg font-semibold">Notifications</h2>

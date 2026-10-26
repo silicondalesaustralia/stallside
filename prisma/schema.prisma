@@ -590,8 +590,14 @@ model Owner {
   stateTerritory                String?
   suburb                        String?
   postcode                      String?
+  /// Tax ID for `taxCountry` (ABN, NZ GST number, VAT number, sales tax permit…).
   abn                           String?
+  /// Registered to collect sales tax (GST / VAT / sales tax) in `taxCountry`.
   gstRegistered                 Boolean                      @default(false)
+  /// ISO country whose tax rules apply. Null = AU when trading in AUD, otherwise tax off.
+  taxCountry                    String?
+  /// Standard rate in basis points (1000 = 10%). Null = the country's default.
+  taxRateBps                    Int?
   pricesIncludeGst              Boolean                      @default(true)
   shortDescription              String?
   /**

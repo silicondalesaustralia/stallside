@@ -34,7 +34,7 @@ const invoice = (over: Partial<ExtractedInvoice>): ExtractedInvoice => ({
 const ctx = (currency: string, gstRegistered = false) => ({
   materials: [],
   region: taxRegionForCurrency(currency),
-  costBasis: defaultCostBasis({ gstRegistered }, currency),
+  costBasis: defaultCostBasis({ gstRegistered, taxCountry: null, taxRateBps: null }, currency),
   today: "2026-10-26",
   receiptUrl: null,
   duplicateOf: null,

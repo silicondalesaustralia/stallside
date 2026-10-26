@@ -1,4 +1,4 @@
-import { money, toCsv, zonedDateTime } from "./csv";
+import { money, taxHeaders, toCsv, zonedDateTime, type ExportTax } from "./csv";
 import {
   channelName,
   paymentMethodName,
@@ -69,7 +69,7 @@ function itemsSummary(order: ExportOrder): string {
     .join("; ");
 }
 
-export function ordersToCsv(orders: ExportOrder[], timeZone: string): string {
+export function ordersToCsv(orders: ExportOrder[], timeZone: string, tax: ExportTax): string {
   const rows = orders.map((o) => {
     const a = orderAmounts(o);
     const discountLabel = [o.discountLabel, o.promotionCodeSnapshot]
@@ -125,5 +125,5 @@ export function ordersToCsv(orders: ExportOrder[], timeZone: string): string {
       o.id,
     ];
   });
-  return toCsv(HEADERS, rows);
+  return toCsv(taxHeaders(HEADERS, tax), rows);
 }

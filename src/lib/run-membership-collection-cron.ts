@@ -15,7 +15,8 @@ import { notifySale } from "@/lib/notify";
 import { notifyOrderCustomer } from "@/lib/notify-order-customer";
 import { nextCollectionAt } from "@/lib/subscription-offer";
 import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
-import { orderLineFields } from "@/lib/order-gst";
+import { includedTaxRule, orderLineFields } from "@/lib/order-gst";
+import type { TaxOwner } from "@/lib/tax/config";
 
 /** Create due weekly collection orders for active memberships. */
 export async function runMembershipCollectionCron(now = new Date()) {
@@ -28,7 +29,7 @@ export async function runMembershipCollectionCron(now = new Date()) {
       offer: { kind: SubscriptionOfferKind.MEMBERSHIP },
     },
     include: {
-      owner: { select: { gstRegistered: true } },
+      owner: { select: { gstRegistered: true, taxCountry: true, taxRateBps: true } },
       offer: {
         include: {
           fulfillmentProduct: true,
@@ -66,7 +67,7 @@ async function createMembershipCollectionOrder(
     /** Square billing still owed; keeps the membership active after its last collection. */
     nextBillingAt: Date | null;
     skipNextCycle: boolean;
-    owner: { gstRegistered: boolean };
+    owner: TaxOwner;
     offer: {
       id: string;
       title: string;
@@ -172,10 +173,7 @@ async function createMembershipCollectionOrder(
           deliveryPostcode: sub.deliveryPostcode,
           deliveryNotes: sub.deliveryNotes,
           shopperSubscriptionId: sub.id,
-          ...orderLineFields(lineCreates, 0, {
-            currency: sub.offer.currency,
-            owner: sub.owner,
-          }),
+          ...orderLineFields(lineCreates, 0, includedTaxRule(sub.owner, sub.offer.currency)),
         },
       });
 

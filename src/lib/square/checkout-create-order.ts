@@ -156,7 +156,7 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
       shippingCents,
       ...(deposit ?? {}),
       ...(deliver ? delivery : {}),
-      ...orderLineFields(lineData, discountCents, stand),
+      ...orderLineFields(lineData, discountCents, loaded.taxRule),
     },
   });
 

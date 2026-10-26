@@ -4,6 +4,7 @@ import { formatMoney } from "@/lib/money";
 import { orderItemCount, orderPaymentPill } from "@/lib/orders/order-status";
 import { orderPaymentLabel } from "@/lib/order-payment-label";
 import type { OrderDetail } from "@/lib/orders/load-order-detail";
+import { taxLabel, type TaxConfig } from "@/lib/tax/config";
 import OrderRefundSection from "../OrderRefundSection";
 
 function Row({
@@ -28,7 +29,7 @@ function Row({
 
 const DEPOSIT_ONLY = ["DEPOSIT_PAID", "BALANCE_DUE", "BALANCE_FAILED"];
 
-export default function OrderPaymentCard({ order }: { order: OrderDetail }) {
+export default function OrderPaymentCard({ order, tax }: { order: OrderDetail; tax: TaxConfig }) {
   const money = (cents: number) => formatMoney(cents, order.currency);
   const items = orderItemCount(order.items);
   const depositOnly = DEPOSIT_ONLY.includes(order.paymentStatus);
@@ -47,7 +48,9 @@ export default function OrderPaymentCard({ order }: { order: OrderDetail }) {
           />
         ) : null}
         {order.shippingCents > 0 ? <Row label="Shipping" value={money(order.shippingCents)} /> : null}
-        {order.gstCents > 0 ? <Row label="GST" note="Included" value={money(order.gstCents)} /> : null}
+        {order.gstCents > 0 ? (
+          <Row label={taxLabel(tax)} note={tax.inclusive ? "Included" : "Added"} value={money(order.gstCents)} />
+        ) : null}
         <Row label="Total" value={money(order.totalCents)} strong />
         <div className="my-2 border-t border-[var(--line)]" />
         <Row

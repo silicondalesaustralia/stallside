@@ -22,6 +22,7 @@ import {
 } from "./cart-upsell-offers";
 import { loadUpsellRules, type UpsellChannel } from "@/lib/upsells/load-rules";
 import { hasLiveDiscountCodes } from "@/lib/discounts/has-live-codes";
+import { cartAddedTax } from "@/lib/tax/cart-tax";
 
 export type StandCartCheckoutProps = Omit<ComponentProps<typeof StandCartCheckout>, "shopHref">;
 
@@ -113,6 +114,7 @@ export async function loadStandCartData(
       passFeeToCustomer: ownerPassesFeeToCustomer(stand.owner, stand.currency),
       stallsideFeeApplies: shouldChargeVendlFee(stand.owner),
       shipping: standShippingSettings(stand),
+      addedTax: cartAddedTax(stand),
       upsell: standCartUpsell(stand),
       preOrderUpsell: standPreOrderUpsell(stand),
       pagePreOrderUpsells: await standPagePreOrderUpsells(stand),

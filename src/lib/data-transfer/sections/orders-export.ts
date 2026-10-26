@@ -1,6 +1,9 @@
+import { prisma } from "@/lib/prisma";
+import type { ExportTax } from "@/lib/order-export/csv";
 import { loadExportOrders } from "@/lib/order-export/load-export-orders";
 import { ordersToCsv } from "@/lib/order-export/order-csv";
 import { orderLinesToCsv } from "@/lib/order-export/line-csv";
+import { taxConfig, taxLabel } from "@/lib/tax/config";
 import type { DataContext } from "../context";
 
 async function allOrders(ctx: DataContext) {
@@ -13,11 +16,23 @@ async function allOrders(ctx: DataContext) {
   });
 }
 
+async function exportTax(ctx: DataContext): Promise<ExportTax> {
+  const owner = await prisma.owner.findUnique({
+    where: { id: ctx.ownerId },
+    select: { gstRegistered: true, taxCountry: true, taxRateBps: true },
+  });
+  if (!owner) return { name: "Tax", inclusive: true };
+  const config = taxConfig(owner, ctx.stand.currency);
+  return { name: taxLabel(config), inclusive: config.inclusive };
+}
+
 /** Every order for the business, all statuses, so the Payment status column tells them apart. */
 export async function exportOrders(ctx: DataContext): Promise<string> {
-  return ordersToCsv(await allOrders(ctx), ctx.stand.timeZone);
+  const [orders, tax] = await Promise.all([allOrders(ctx), exportTax(ctx)]);
+  return ordersToCsv(orders, ctx.stand.timeZone, tax);
 }
 
 export async function exportOrderItems(ctx: DataContext): Promise<string> {
-  return orderLinesToCsv(await allOrders(ctx), ctx.stand.timeZone);
+  const [orders, tax] = await Promise.all([allOrders(ctx), exportTax(ctx)]);
+  return orderLinesToCsv(orders, ctx.stand.timeZone, tax);
 }

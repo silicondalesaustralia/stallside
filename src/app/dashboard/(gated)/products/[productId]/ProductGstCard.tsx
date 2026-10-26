@@ -2,16 +2,17 @@
 
 import { useState, useTransition } from "react";
 import DashFormSection from "@/components/DashFormSection";
+import type { TaxConfig } from "@/lib/tax/config";
 import { setProductGstFree } from "./product-gst-action";
 
 export default function ProductGstCard({
   productId,
   gstFree,
-  gstRegistered,
+  tax,
 }: {
   productId: string;
   gstFree: boolean;
-  gstRegistered: boolean;
+  tax: TaxConfig;
 }) {
   const [checked, setChecked] = useState(gstFree);
   const [message, setMessage] = useState<string | null>(null);
@@ -33,11 +34,13 @@ export default function ProductGstCard({
 
   return (
     <DashFormSection
-      title="GST"
+      title={tax.name}
       hint={
-        gstRegistered
-          ? "Fresh fruit, veg, eggs, meat and plain bread are usually GST-free. Use Sync in Settings → GST to update past orders."
-          : "Only used once you mark your business as GST registered in Settings."
+        tax.applies
+          ? tax.inclusive
+            ? `Fresh fruit, veg, eggs, meat and plain bread are often ${tax.name}-free or zero-rated. Use Sync in Settings → Sales tax to update past orders.`
+            : `Many states exempt groceries. Exempt items have no ${tax.name.toLowerCase()} added at checkout.`
+          : "Only used once you turn on sales tax in Settings."
       }
     >
       <label className="flex items-center gap-2 text-sm">
@@ -47,7 +50,7 @@ export default function ProductGstCard({
           disabled={pending}
           onChange={(e) => onChange(e.target.checked)}
         />
-        <span className="font-semibold">GST-free item</span>
+        <span className="font-semibold">{tax.inclusive ? `${tax.name}-free item` : `Exempt from ${tax.name.toLowerCase()}`}</span>
       </label>
       {message ? (
         <p className="text-xs text-[var(--muted)]">{message}</p>

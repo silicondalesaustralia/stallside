@@ -31,8 +31,8 @@ export default function GstSyncButton() {
         ) : null}
       </div>
       <p className="text-xs text-[var(--muted)]">
-        New orders get GST automatically. Sync updates past orders after you
-        change your GST registration or mark products GST-free.
+        New orders get tax automatically. Sync updates past orders after you
+        change your registration or rate, or mark products tax-free.
       </p>
     </div>
   );

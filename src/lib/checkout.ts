@@ -21,6 +21,9 @@ import { loadUpsellRules } from "@/lib/upsells/load-rules";
 import { pickBetterDiscount } from "@/lib/discounts/compute";
 import { resolveDiscountCode, type DiscountChannel } from "@/lib/discounts/resolve-code";
 import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
+import { lineGstCents } from "@/lib/gst";
+import { includedTaxRule } from "@/lib/order-gst";
+import { taxConfig, taxRule as taxRuleOf } from "@/lib/tax/config";
 import {
   applyLotSharesToOrderItem,
   consumeStockLots,
@@ -158,6 +161,8 @@ export async function loadCustomerChoiceCheckout(
     subtotalCents: amountCents,
     discountCents: 0,
     discountLabel: null as string | null,
+    taxRule: includedTaxRule(stand.owner, stand.currency),
+    taxAddedCents: 0,
     totalCents: amountCents,
     preOrderCart: null,
     skipStock: true as const,
@@ -537,7 +542,11 @@ export async function loadStandCart(
   const promotionId = code && (chosen.usedCode || freeShipping) ? code.promotionId : null;
   const promotionCode = promotionId ? (code?.code ?? null) : null;
 
-  const totalCents = Math.max(0, subtotalCents - discountCents);
+  const taxRule = taxRuleOf(taxConfig(stand.owner, stand.currency));
+  const taxAddedCents = taxRule?.inclusive
+    ? 0
+    : lineGstCents(lineData, discountCents, taxRule).reduce((sum, cents) => sum + cents, 0);
+  const totalCents = Math.max(0, subtotalCents - discountCents) + taxAddedCents;
 
   const stockItems = [...qtyByProduct.entries()].map(([productId, quantity]) => ({
     productId,
@@ -552,6 +561,9 @@ export async function loadStandCart(
     subtotalCents,
     discountCents,
     discountLabel,
+    taxRule,
+    /** Sales tax added on top of prices (US/CA); already inside `totalCents`. */
+    taxAddedCents,
     totalCents,
     preOrderCart,
     skipStock: false as const,

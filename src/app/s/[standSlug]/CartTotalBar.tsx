@@ -3,11 +3,14 @@ import SectionCopy from "@/components/studio/SectionCopy";
 /** Total + "Continue to payment"; fixed to the bottom of the screen unless `inline` (builder preview). */
 export default function CartTotalBar({
   totalLabel,
+  taxNote = null,
   disabled,
   onContinue,
   inline = false,
 }: {
   totalLabel: string;
+  /** e.g. "Includes sales tax $1.23 (8.25%)" when tax is added on top. */
+  taxNote?: string | null;
   disabled: boolean;
   onContinue: () => void;
   inline?: boolean;
@@ -22,6 +25,7 @@ export default function CartTotalBar({
           <SectionCopy k="total" fallback="Total" as="p" className="block text-base text-[var(--muted)]" />
           <p className="font-receipt text-3xl font-semibold tabular-nums">{totalLabel}</p>
         </div>
+        {taxNote ? <p className="-mt-2 text-right text-sm text-[var(--muted)]">{taxNote}</p> : null}
         <button
           type="button"
           disabled={disabled}

@@ -1,4 +1,4 @@
-import { money, toCsv, zonedDateTime } from "./csv";
+import { money, taxHeaders, toCsv, zonedDateTime, type ExportTax } from "./csv";
 import { paymentMethodName, statusName } from "./labels";
 import type { ExportOrder } from "./load-export-orders";
 
@@ -21,7 +21,7 @@ const HEADERS = [
   "Order ID",
 ] as const;
 
-export function orderLinesToCsv(orders: ExportOrder[], timeZone: string): string {
+export function orderLinesToCsv(orders: ExportOrder[], timeZone: string, tax: ExportTax): string {
   const rows = orders.flatMap((o) =>
     o.items.map((i) => [
       o.orderNumber,
@@ -42,5 +42,5 @@ export function orderLinesToCsv(orders: ExportOrder[], timeZone: string): string
       o.id,
     ]),
   );
-  return toCsv(HEADERS, rows);
+  return toCsv(taxHeaders(HEADERS, tax), rows);
 }

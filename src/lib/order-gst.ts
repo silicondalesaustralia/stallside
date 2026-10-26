@@ -1,4 +1,5 @@
-import { gstApplies, lineGstCents } from "@/lib/gst";
+import { lineGstCents } from "@/lib/gst";
+import { taxConfig, taxRule, type TaxOwner, type TaxRule } from "@/lib/tax/config";
 
 export type OrderLineInput = {
   productId: string;
@@ -12,17 +13,18 @@ export type OrderLineInput = {
   gstFree: boolean;
 };
 
-/** Order `gstCents` plus nested item creates carrying each line's GST snapshot. */
-export function orderLineFields(
-  lines: OrderLineInput[],
-  discountCents: number,
-  stand: { currency: string; owner: { gstRegistered: boolean } },
-) {
-  const gst = lineGstCents(
-    lines,
-    discountCents,
-    gstApplies(stand.owner, stand.currency),
-  );
+/**
+ * Tax rule for charges whose amount is fixed in advance (subscriptions, memberships, open
+ * amounts): tax is worked out of the price where prices include tax; nothing is added on top.
+ */
+export function includedTaxRule(owner: TaxOwner, currency: string): TaxRule | null {
+  const rule = taxRule(taxConfig(owner, currency));
+  return rule?.inclusive ? rule : null;
+}
+
+/** Order `gstCents` (sales tax) plus nested item creates carrying each line's tax snapshot. */
+export function orderLineFields(lines: OrderLineInput[], discountCents: number, rule: TaxRule | null) {
+  const gst = lineGstCents(lines, discountCents, rule);
   return {
     gstCents: gst.reduce((sum, cents) => sum + cents, 0),
     items: {

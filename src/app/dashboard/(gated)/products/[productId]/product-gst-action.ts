@@ -19,6 +19,6 @@ export async function setProductGstFree(
     return { ok: true };
   } catch (error) {
     console.error("setProductGstFree failed", error);
-    return { error: "Could not save GST setting." };
+    return { error: "Could not save tax setting." };
   }
 }

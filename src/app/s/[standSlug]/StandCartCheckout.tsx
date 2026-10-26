@@ -69,6 +69,8 @@ import {
 import { useAtStall } from "@/components/storefront/useAtStall";
 import { shopButtonColour } from "@/lib/storefront/shop-button-colour";
 import { shippingCostCents, type ShippingSettings } from "@/lib/shipping/shipping-cost";
+import { cartAddedTaxCents, type CartAddedTax } from "@/lib/tax/cart-tax";
+import { formatTaxRate } from "@/lib/tax/config";
 
 type LocalTransferInfo = {
   methodId: string;
@@ -125,6 +127,7 @@ export default function StandCartCheckout({
   passFeeToCustomer = false,
   stallsideFeeApplies = false,
   shipping = null,
+  addedTax = null,
   upsell = null,
   preOrderUpsell = null,
   pagePreOrderUpsells = [],
@@ -150,6 +153,8 @@ export default function StandCartCheckout({
   stallsideFeeApplies?: boolean;
   /** Shipping charged on shipped (non pre-order) carts. */
   shipping?: ShippingSettings | null;
+  /** Sales tax added on top at checkout (US/CA owners). */
+  addedTax?: CartAddedTax | null;
   /** Stand-level default; product-level upsells on PublicProductCard win when set. */
   upsell?: CartUpsellConfig | null;
   preOrderUpsell?: CartUpsellConfig | null;
@@ -339,7 +344,12 @@ export default function StandCartCheckout({
           subtotal - codeOff,
         )
       : 0;
-  const total = subtotal - codeOff + shippingCents;
+  const taxAddedCents = cartAddedTaxCents(
+    addedTax,
+    lines.map((l) => ({ productId: l.product.id, lineTotalCents: l.lineTotalCents })),
+    codeOff,
+  );
+  const total = subtotal - codeOff + taxAddedCents + shippingCents;
   const passOnApplies = stallsideFeeApplies && passFeeToCustomer && total > 0;
   const cardFeeCents = passOnApplies ? stallsidePassOnFeeCents(total) : 0;
   const cardTotalCents = total + cardFeeCents;
@@ -699,6 +709,11 @@ export default function StandCartCheckout({
       {step === "cart" ? (
         <CartTotalBar
           totalLabel={formatMoney(total, currency)}
+          taxNote={
+            addedTax && taxAddedCents > 0
+              ? `Includes ${addedTax.name.toLowerCase()} ${formatMoney(taxAddedCents, currency)} (${formatTaxRate(addedTax.rateBps)})`
+              : null
+          }
           disabled={pending || total <= 0}
           onContinue={() => {
             if (hasMixedCart) {

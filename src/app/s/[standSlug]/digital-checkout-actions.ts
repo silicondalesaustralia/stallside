@@ -26,6 +26,7 @@ import { cleanEnvSecret } from "@/lib/env";
 import { checkoutUiParams, type EmbeddedCheckoutInfo } from "@/lib/stripe-embedded-checkout";
 import { ensurePaymentMethodDomain } from "@/lib/stripe-payment-domain";
 import { stripeLineItemsFromCart } from "@/lib/stripe-cart-lines";
+import { taxConfig } from "@/lib/tax/config";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
 import { standCheckoutPaymentMethodTypes } from "@/lib/stripe-checkout-methods";
 import { getDefaultPaymentMethodConfiguration } from "@/lib/stripe-payment-method-config";
@@ -189,7 +190,7 @@ export async function startCardCheckout(input: {
           ? ReceiptChannel.EMAIL
           : ReceiptChannel.NONE,
         receiptEmail: customerEmail || null,
-        ...orderLineFields(lineData, discountCents, stand),
+        ...orderLineFields(lineData, discountCents, loaded.taxRule),
         ...(preOrderCart
           ? {
               isPreOrder: true,
@@ -227,6 +228,17 @@ export async function startCardCheckout(input: {
           lineItems[i].price_data.product_data.name += ` (${discountLabel})`;
         }
       }
+    }
+
+    if (loaded.taxAddedCents > 0) {
+      lineItems.push({
+        quantity: 1,
+        price_data: {
+          currency: stand.currency.toLowerCase(),
+          unit_amount: loaded.taxAddedCents,
+          product_data: { name: taxConfig(owner, stand.currency).name },
+        },
+      });
     }
 
     if (depositMode) {
