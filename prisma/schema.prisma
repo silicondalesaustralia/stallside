@@ -2009,6 +2009,8 @@ model Order {
   stripePaymentIntentId   String?
   paypalOrderId           String?
   paypalCaptureId         String?
+  /** Total refunded so far (synced from PayPal). Full refund also sets paymentStatus REFUNDED. */
+  refundedCents           Int?
   squarePaymentId         String?                @unique
   squareOrderId           String?
   squareLocationId        String?

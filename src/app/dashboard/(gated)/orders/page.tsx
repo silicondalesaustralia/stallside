@@ -86,6 +86,8 @@ export default async function OrdersPage({
         paymentMethod: true,
         localTransferMethodId: true,
         paymentStatus: true,
+        paypalCaptureId: true,
+        refundedCents: true,
         customerName: true,
         customerPhone: true,
         receiptEmail: true,

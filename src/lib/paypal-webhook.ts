@@ -2,6 +2,7 @@ import { paypalFetch } from "@/lib/paypal";
 import { capturePayPalOrder } from "@/lib/paypal-orders";
 import { fulfillPaidPayPalOrder } from "@/lib/fulfill-paid-order";
 import { prisma } from "@/lib/prisma";
+import { handlePayPalRefundEvent } from "@/lib/paypal-refunds";
 import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
 
 type WebhookResource = {
@@ -97,6 +98,11 @@ export async function handlePayPalWebhookEvent(rawBody: string): Promise<void> {
   const type = event.event_type;
   const resource = event.resource;
   if (!type || !resource) return;
+
+  if (type === "PAYMENT.CAPTURE.REFUNDED" || type === "PAYMENT.CAPTURE.REVERSED") {
+    await handlePayPalRefundEvent(resource);
+    return;
+  }
 
   if (type === "PAYMENT.CAPTURE.COMPLETED") {
     const order = await findPayPalOrder(resource);

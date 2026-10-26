@@ -2,12 +2,15 @@ import DashListCard from "@/components/DashListCard";
 import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
 import { formatMoney } from "@/lib/money";
 import { formatDateInTz } from "@/lib/stand-timezone";
-import { COUNTED_STATUSES, isCountedPaymentStatus } from "@/lib/order-metrics";
+import { isCountedPaymentStatus } from "@/lib/order-metrics";
+import { orderChannelBadge } from "./order-channel-badge";
 import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
 import OrderCustomerBadge from "./OrderCustomerBadge";
 import OrderDeleteButton from "./OrderDeleteButton";
 import OrderDeliveryLine, { type OrderDeliveryFields } from "./OrderDeliveryLine";
 import OrderShippingPanel, { type OrderShippingFields } from "./OrderShippingPanel";
+import PayPalRefundPanel from "./PayPalRefundPanel";
+import { paypalTransactionUrl } from "@/lib/paypal-refunds";
 
 type OrderItem = {
   quantity: number;
@@ -24,6 +27,8 @@ type OrderRow = {
   paymentMethod: PaymentMethod;
   localTransferMethodId: string | null;
   paymentStatus: PaymentStatus;
+  paypalCaptureId: string | null;
+  refundedCents: number | null;
   customerName: string | null;
   customerPhone: string | null;
   receiptEmail: string | null;
@@ -34,34 +39,6 @@ type OrderRow = {
 } & OrderDeliveryFields &
   OrderShippingFields;
 
-function channelBadge(order: OrderRow): {
-  label: string;
-  className: string;
-} {
-  if (!isCountedPaymentStatus(order.paymentStatus)) {
-    return {
-      label: "Not Paid",
-      className: "bg-[var(--warn)]/15 text-[var(--warn)]",
-    };
-  }
-  if (order.shopperSubscriptionId) {
-    return {
-      label: "Subscription",
-      className: "bg-[var(--leaf)]/15 text-[var(--leaf-dark)]",
-    };
-  }
-  if (order.isPreOrder) {
-    return {
-      label: "Pre Order",
-      className: "bg-[var(--marigold)]/20 text-[var(--field)]",
-    };
-  }
-  return {
-    label: "Paid At Stand",
-    className: "bg-[var(--wash)] text-[var(--muted)] ring-1 ring-[var(--line)]",
-  };
-}
-
 export default function OrderListRow({
   order,
   timeZone,
@@ -69,7 +46,7 @@ export default function OrderListRow({
   order: OrderRow;
   timeZone: string;
 }) {
-  const badge = channelBadge(order);
+  const badge = orderChannelBadge(order);
 
   return (
     <li>
@@ -117,6 +94,15 @@ export default function OrderListRow({
               defaultSubject={`${order.stand.name} · order ${order.orderNumber}`}
             />
             <OrderDeliveryLine order={order} />
+            {order.paymentMethod === PaymentMethod.PAYPAL && order.paypalCaptureId ? (
+              <PayPalRefundPanel
+                orderId={order.id}
+                refundUrl={paypalTransactionUrl(order.paypalCaptureId)}
+                refundedCents={order.refundedCents}
+                totalCents={order.totalCents}
+                currency={order.currency}
+              />
+            ) : null}
             {order.handoverMode === "DELIVER" && isCountedPaymentStatus(order.paymentStatus) ? (
               <OrderShippingPanel order={order} />
             ) : null}
