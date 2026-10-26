@@ -10,7 +10,6 @@ import { resolveHostname } from "@/lib/tenancy/hostname";
 import { appRedirectHost } from "@/lib/tenancy/host-mode";
 import { betaAppMainOnlyPath, betaAppSkipsCron, mainAppUrl } from "@/lib/beta-app";
 import { requestPublicHostname } from "@/lib/tenancy/request-hostname";
-import { forwardPublicHost } from "@/lib/tenancy/forwarded-host";
 import { legacyStorefrontRedirect } from "@/lib/tenancy/legacy-redirects";
 import { resolveCustomDomainSlug } from "@/lib/domains/middleware-lookup";
 
@@ -107,7 +106,6 @@ function applyTenantRewrite(
     const url = request.nextUrl.clone();
     url.pathname = rewritten;
     const requestHeaders = new Headers(request.headers);
-    forwardPublicHost(requestHeaders);
     requestHeaders.set("x-vendl-tenant-slug", slug);
     requestHeaders.set("x-stallside-pathname", rewritten);
     requestHeaders.set("x-stallside-search", request.nextUrl.search);
@@ -117,7 +115,6 @@ function applyTenantRewrite(
   }
 
   const requestHeaders = new Headers(request.headers);
-  forwardPublicHost(requestHeaders);
   requestHeaders.set("x-vendl-tenant-slug", slug);
   requestHeaders.set("x-stallside-pathname", pathname);
   requestHeaders.set("x-stallside-search", request.nextUrl.search);
