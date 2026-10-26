@@ -9,6 +9,7 @@ import { standPaymentBrands, withSquarePaymentsReady } from "@/lib/stand-payment
 import { publicApexHost } from "@/lib/tenancy/host-mode";
 import { resolvePoster } from "@/lib/qr/poster";
 import { loadPosterExtras } from "@/lib/qr/poster-extras";
+import { standPosterBrand } from "@/lib/storefront/stand-brand-source";
 import { listQrTargets } from "@/lib/qr/targets";
 import { legacyQrTarget, parseQrTarget } from "@/lib/qr/target-types";
 import QrCodeStudio from "@/components/qr/designer/QrCodeStudio";
@@ -26,7 +27,7 @@ export default async function WebsiteQrDetailPage({ params }: { params: Promise<
           id: true, name: true, description: true, locationLabel: true, qrCallout: true, qrSignMessage: true,
           posterShowCta: true, posterCtaText: true, posterShowBundles: true, posterShowFirstOrder: true,
           posterShowInstructions: true, posterShowFreshness: true, posterShowHowItWorks: true,
-          logoUrl: true, accentColor: true, secondaryColor: true,
+          slug: true, logoUrl: true, accentColor: true, secondaryColor: true,
           acceptCash: true, acceptLocalTransfer: true, acceptCard: true, acceptPayPal: true, acceptSquare: true,
           localTransferAlias: true, localTransferMethodId: true, currency: true,
         },
@@ -36,11 +37,12 @@ export default async function WebsiteQrDetailPage({ params }: { params: Promise<
   if (!qr) notFound();
 
   const qrUrl = qrShortUrl(qr.id);
-  const [qrDataUrl, options, extras, squareReady] = await Promise.all([
+  const [qrDataUrl, options, extras, squareReady, posterBrand] = await Promise.all([
     standQrDataUrl(qrUrl, 640),
     listQrTargets(owner.id),
     loadPosterExtras(qr.stand.id),
     withSquarePaymentsReady({ ...owner, user: { email: user.email, role: user.role } }),
+    standPosterBrand(qr.stand),
   ]);
   const apex = publicApexHost();
   const target = parseQrTarget(qr.targetKind, qr.targetId) ?? legacyQrTarget(qr.linkMode, qr.categoryId);
@@ -73,9 +75,7 @@ export default async function WebsiteQrDetailPage({ params }: { params: Promise<
         brand={{
           siteUrl: apex ? `https://${apex}` : `https://${APP_DOMAIN}`,
           paymentBrands: standPaymentBrands(qr.stand, squareReady),
-          logoUrl: qr.stand.logoUrl,
-          accentColor: qr.stand.accentColor,
-          secondaryColor: qr.stand.secondaryColor,
+          ...posterBrand,
         }}
         extras={extras}
       />

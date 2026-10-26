@@ -27,8 +27,8 @@ export default function StandSocialFields({
     <fieldset className="flex flex-col gap-3">
       <legend className="text-sm font-medium">Social links</legend>
       <p className="text-sm text-[var(--muted)]">
-        Paste profile or website URLs. Leave blank to hide the icon on your
-        stall.
+        Paste profile or website URLs. They show as icons on your website and
+        checkout pages. Leave blank to hide an icon.
       </p>
       {STAND_SOCIALS.map((social) => (
         <label key={social.field} className="flex flex-col gap-1.5 text-sm">

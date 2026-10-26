@@ -19,7 +19,7 @@ import { syncWebAddressToName } from "@/lib/storefront/web-address";
 import { GET_STARTED_PATH } from "@/lib/onboarding/onboarding-gate";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
 import { localTransferForCurrency } from "@/lib/local-transfer";
-import { brandingDataFromForm } from "./stand-branding-from-form";
+import { brandingDataFromForm, socialDataFromForm } from "./stand-branding-from-form";
 import { dollarsToCents } from "@/lib/money";
 import { upsertPreOrderAddonProduct } from "@/lib/preorder-upsell-addon";
 import { CartMode, HandoverMode, PaymentTiming } from "@/generated/prisma/client";
@@ -124,6 +124,14 @@ export async function updateStand(standId: string, formData: FormData) {
       where: { id: standId },
       data: brandingPatch.data,
     });
+    revalidateStandPaths(standId, existing.slug, existing.slug);
+    return { ok: true as const };
+  }
+
+  if (section === "social") {
+    const socialPatch = socialDataFromForm(formData);
+    if (!socialPatch.ok) return { error: socialPatch.error };
+    await prisma.stand.update({ where: { id: standId }, data: socialPatch.data });
     revalidateStandPaths(standId, existing.slug, existing.slug);
     return { ok: true as const };
   }

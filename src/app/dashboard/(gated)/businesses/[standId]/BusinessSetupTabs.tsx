@@ -21,16 +21,19 @@ export function isBusinessTabId(value: string | undefined): value is BusinessTab
 export default function BusinessSetupTabs({
   standId,
   active,
+  hideBranding = false,
 }: {
   standId: string;
   active: BusinessTabId;
+  hideBranding?: boolean;
 }) {
+  const tabs = hideBranding ? BUSINESS_TABS.filter((t) => t.id !== "branding") : BUSINESS_TABS;
   return (
     <nav
       className="flex gap-1 overflow-x-auto border-b border-[var(--line)]"
       aria-label="Business setup"
     >
-      {BUSINESS_TABS.map((tab) => {
+      {tabs.map((tab) => {
         const selected = tab.id === active;
         return (
           <Link

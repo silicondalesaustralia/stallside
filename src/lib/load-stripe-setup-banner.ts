@@ -7,6 +7,7 @@ import {
 import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 import { isSquareConnectEnabled } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
+import { isPayPalConnectAvailable } from "@/lib/paypal";
 
 export type StripeSetupBanner = {
   mode: "never-started" | "restricted";
@@ -19,7 +20,9 @@ export type StripeSetupBanner = {
 
 const STRIPE_SETTINGS_HREF = "/dashboard/settings/stripe";
 const SQUARE_SETTINGS_HREF = "/dashboard/settings/square";
+const PAYPAL_SETTINGS_HREF = "/dashboard/settings/paypal";
 const CHOOSE_PROVIDER_HREF = "/dashboard/knowledge/payments-overview";
+const PAYPAL_STEP = "PayPal (Pro): add a PayPal button alongside Stripe or Square";
 
 async function squareStatus(ownerId: string, billingCurrency: string | null) {
   if (!isSquareConnectEnabled() || !squareEligibleBillingCurrency(billingCurrency)) {
@@ -69,6 +72,9 @@ export async function loadStripeSetupBanner(input: {
     };
   }
 
+  const paypal = isPayPalConnectAvailable();
+  const paypalCta = paypal ? [{ label: "Connect PayPal", href: PAYPAL_SETTINGS_HREF }] : [];
+
   if (square.available) {
     return {
       mode: "never-started",
@@ -78,11 +84,13 @@ export async function loadStripeSetupBanner(input: {
         "Stripe: cards, Apple Pay / Google Pay and pay-later",
         "Square: cards plus stock sync with your Square reader at markets",
         "Both handle pre-orders, deposits, subscriptions and memberships",
+        ...(paypal ? [PAYPAL_STEP] : []),
         "Then turn on card payments on your checkout",
       ],
       ctas: [
         { label: "Connect Stripe", href: STRIPE_SETTINGS_HREF },
         { label: "Connect Square", href: SQUARE_SETTINGS_HREF },
+        ...paypalCta,
       ],
       helpHref: CHOOSE_PROVIDER_HREF,
     };
@@ -92,8 +100,8 @@ export async function loadStripeSetupBanner(input: {
     mode: "never-started",
     title: "Connect Stripe to take card payments",
     body: "Optional for cash and local bank transfer. Required for pre-orders and subscription boxes.",
-    steps: [...DEFAULT_NEVER_STARTED_STEPS],
-    ctas: [{ label: "Connect Stripe", href: STRIPE_SETTINGS_HREF }],
+    steps: [...DEFAULT_NEVER_STARTED_STEPS, ...(paypal ? [PAYPAL_STEP] : [])],
+    ctas: [{ label: "Connect Stripe", href: STRIPE_SETTINGS_HREF }, ...paypalCta],
     helpHref: null,
   };
 }

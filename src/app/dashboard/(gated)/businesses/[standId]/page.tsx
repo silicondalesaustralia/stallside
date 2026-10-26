@@ -14,6 +14,9 @@ import BusinessSetupTabs, {
   type BusinessTabId,
 } from "./BusinessSetupTabs";
 import StandBrandingForm from "./StandBrandingForm";
+import StandSocialForm from "./StandSocialForm";
+import BrandingManagedByWebsite from "./BrandingManagedByWebsite";
+import { websiteBrandForStand } from "@/lib/storefront/stand-brand-source";
 import StandDeleteButton from "./StandDeleteButton";
 import StandEditForm from "./StandEditForm";
 import PaymentsOverview from "./PaymentsOverview";
@@ -50,7 +53,11 @@ export default async function StandDetailPage({
   if (!stand) notFound();
 
   const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
-  const publicHome = await standPublicHome(stand.slug, checkoutUrl);
+  const [publicHome, websiteBrand] = await Promise.all([
+    standPublicHome(stand.slug, checkoutUrl),
+    websiteBrandForStand(stand.slug),
+  ]);
+  const brandingInWebStudio = websiteBrand !== null;
   const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
@@ -73,9 +80,21 @@ export default async function StandDetailPage({
         productCount={stand.products.length}
       />
 
-      <BusinessSetupTabs standId={stand.id} active={tab} />
+      <BusinessSetupTabs standId={stand.id} active={tab} hideBranding={brandingInWebStudio} />
 
       {tab === "details" ? <StandEditForm stand={stand} /> : null}
+      {tab === "details" ? (
+        <StandSocialForm
+          standId={stand.id}
+          social={{
+            instagramUrl: stand.instagramUrl,
+            facebookUrl: stand.facebookUrl,
+            tiktokUrl: stand.tiktokUrl,
+            youtubeUrl: stand.youtubeUrl,
+            websiteUrl: stand.websiteUrl,
+          }}
+        />
+      ) : null}
       {tab === "payments" ? (
         <BusinessPaymentsTab
           standId={stand.id}
@@ -111,7 +130,8 @@ export default async function StandDetailPage({
           overview={<PaymentsOverview owner={owner} />}
         />
       ) : null}
-      {tab === "branding" ? (
+      {tab === "branding" && brandingInWebStudio ? <BrandingManagedByWebsite /> : null}
+      {tab === "branding" && !brandingInWebStudio ? (
         <StandBrandingForm
           standId={stand.id}
           branding={{
@@ -119,11 +139,6 @@ export default async function StandDetailPage({
             ogImageUrl: stand.ogImageUrl,
             accentColor: stand.accentColor,
             secondaryColor: stand.secondaryColor,
-            instagramUrl: stand.instagramUrl,
-            facebookUrl: stand.facebookUrl,
-            tiktokUrl: stand.tiktokUrl,
-            youtubeUrl: stand.youtubeUrl,
-            websiteUrl: stand.websiteUrl,
           }}
         />
       ) : null}

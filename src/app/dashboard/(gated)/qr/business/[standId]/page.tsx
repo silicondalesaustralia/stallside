@@ -6,6 +6,7 @@ import { APP_DOMAIN } from "@/lib/constants";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import { loadPosterExtras } from "@/lib/qr/poster-extras";
+import { standPosterBrand } from "@/lib/storefront/stand-brand-source";
 import QrStudio from "@/app/dashboard/(gated)/businesses/[standId]/qr/QrStudio";
 
 export default async function BusinessQrPage({ params }: { params: Promise<{ standId: string }> }) {
@@ -15,7 +16,11 @@ export default async function BusinessQrPage({ params }: { params: Promise<{ sta
   if (!stand) notFound();
 
   const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
-  const [qrDataUrl, extras] = await Promise.all([standQrDataUrl(checkoutUrl, 640), loadPosterExtras(stand.id)]);
+  const [qrDataUrl, extras, brand] = await Promise.all([
+    standQrDataUrl(checkoutUrl, 640),
+    loadPosterExtras(stand.id),
+    standPosterBrand(stand),
+  ]);
   const paymentBrands = standPaymentBrands(stand, { ...owner, user: { email: user.email, role: user.role } });
 
   return (
@@ -53,9 +58,9 @@ export default async function BusinessQrPage({ params }: { params: Promise<{ sta
           posterShowFreshness: stand.posterShowFreshness,
           posterShowHowItWorks: stand.posterShowHowItWorks,
           slug: stand.slug,
-          logoUrl: stand.logoUrl,
-          accentColor: stand.accentColor,
-          secondaryColor: stand.secondaryColor,
+          logoUrl: brand.logoUrl,
+          accentColor: brand.accentColor,
+          secondaryColor: brand.secondaryColor,
         }}
         siteUrl={`https://${APP_DOMAIN}`}
         paymentBrands={paymentBrands}

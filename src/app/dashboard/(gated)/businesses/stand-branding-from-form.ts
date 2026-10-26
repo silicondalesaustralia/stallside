@@ -22,11 +22,6 @@ export async function brandingDataFromForm(
         ogImageUrl: string | null;
         accentColor: string | null;
         secondaryColor: string | null;
-        instagramUrl: string | null;
-        facebookUrl: string | null;
-        tiktokUrl: string | null;
-        youtubeUrl: string | null;
-        websiteUrl: string | null;
       };
     }
   | { ok: false; error: string }
@@ -87,6 +82,22 @@ export async function brandingDataFromForm(
     }
   }
 
+  return { ok: true, data: { logoUrl, ogImageUrl, accentColor, secondaryColor } };
+}
+
+/** Parse the social link fields from the business Details tab. */
+export function socialDataFromForm(formData: FormData):
+  | {
+      ok: true;
+      data: {
+        instagramUrl: string | null;
+        facebookUrl: string | null;
+        tiktokUrl: string | null;
+        youtubeUrl: string | null;
+        websiteUrl: string | null;
+      };
+    }
+  | { ok: false; error: string } {
   const socialData: Record<string, string | null> = {};
   for (const social of STAND_SOCIALS) {
     const parsed = parseSocialUrl(String(formData.get(social.field) ?? ""));
@@ -95,14 +106,9 @@ export async function brandingDataFromForm(
     }
     socialData[social.field] = parsed;
   }
-
   return {
     ok: true,
     data: {
-      logoUrl,
-      ogImageUrl,
-      accentColor,
-      secondaryColor,
       instagramUrl: socialData.instagramUrl ?? null,
       facebookUrl: socialData.facebookUrl ?? null,
       tiktokUrl: socialData.tiktokUrl ?? null,

@@ -1,7 +1,6 @@
 "use client";
 
 import FilePickButton from "@/components/FilePickButton";
-import StandSocialFields from "./StandSocialFields";
 import {
   LOGO_IMAGE_MAX_BYTES,
   PRODUCT_IMAGE_HINT,
@@ -12,11 +11,6 @@ export type StandBrandingValues = {
   ogImageUrl: string | null;
   accentColor: string | null;
   secondaryColor: string | null;
-  instagramUrl: string | null;
-  facebookUrl: string | null;
-  tiktokUrl: string | null;
-  youtubeUrl: string | null;
-  websiteUrl: string | null;
 };
 
 /** Branding inputs only - parent form owns submit. */
@@ -25,17 +19,11 @@ export default function StandBrandingFields({
   ogImageUrl,
   accentColor,
   secondaryColor,
-  instagramUrl,
-  facebookUrl,
-  tiktokUrl,
-  youtubeUrl,
-  websiteUrl,
 }: StandBrandingValues) {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-[var(--muted)]">
-        Logo, colours, link-preview image, and social links on your public stall
-        and QR poster.
+        Logo, colours and link-preview image on your checkout pages and QR poster.
       </p>
       {logoUrl ? (
         <div className="flex items-center gap-3">
@@ -120,13 +108,6 @@ export default function StandBrandingFields({
           </label>
         </div>
       </label>
-      <StandSocialFields
-        instagramUrl={instagramUrl}
-        facebookUrl={facebookUrl}
-        tiktokUrl={tiktokUrl}
-        youtubeUrl={youtubeUrl}
-        websiteUrl={websiteUrl}
-      />
     </div>
   );
 }
