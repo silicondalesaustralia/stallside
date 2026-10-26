@@ -47,7 +47,13 @@ export async function updateTaxSettings(formData: FormData): Promise<{ ok: true 
 
     await prisma.owner.update({
       where: { id: owner.id },
-      data: { taxCountry: country, taxRateBps: rateBps, gstRegistered: registered, abn: taxId || null },
+      data: {
+        taxCountry: country,
+        taxRateBps: rateBps,
+        gstRegistered: registered,
+        abn: taxId || null,
+        taxShipping: formData.get("taxShipping") === "on",
+      },
     });
     revalidatePath("/dashboard", "layout");
     return { ok: true };

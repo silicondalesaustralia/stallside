@@ -4,6 +4,7 @@ import { sendOwnerEmail } from "@/lib/notify-email";
 import { escapeHtml } from "@/lib/lifecycle-emails/html";
 import { formatCollectionLabel } from "@/lib/pre-order";
 import { prisma } from "@/lib/prisma";
+import { receiptTaxLine } from "@/lib/tax/receipt-tax-line";
 import {
   HandoverMode,
   PaymentStatus,
@@ -14,9 +15,11 @@ import {
 export async function notifyOrderCustomer(orderId: string) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { stand: true, items: true },
+    include: { stand: true, items: true, owner: true },
   });
   if (!order?.receiptEmail) return;
+  const taxText = receiptTaxLine(order.owner, order);
+  const taxLine = taxText ? `<p>${escapeHtml(taxText)}</p>` : "";
 
   const total = formatMoney(order.totalCents, order.currency);
   const lines = order.items
@@ -62,7 +65,7 @@ export async function notifyOrderCustomer(orderId: string) {
      <p>Thanks for your order at <strong>${escapeHtml(order.stand.name)}</strong>.</p>
      <p><strong>Order ${escapeHtml(order.orderNumber)}</strong> · ${escapeHtml(total)}</p>
      <ul>${lines}</ul>
-     ${collect}${address}${shippingLine}${note}${depositBit}
+     ${collect}${address}${shippingLine}${taxLine}${note}${depositBit}
      <p style="font-size:12px;color:#56684F">Keep this email for your records.</p>`,
     { kind: "order_customer" },
   );

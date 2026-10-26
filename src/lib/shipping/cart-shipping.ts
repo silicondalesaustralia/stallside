@@ -11,6 +11,7 @@ export function loadedCartShippingCents(
     byId: Map<string, { shippingCents: number | null }>;
     lineData: { productId: string; quantity: number }[];
     totalCents: number;
+    taxAddedCents?: number;
     preOrderCart: unknown;
     freeShipping?: boolean;
   },
@@ -21,5 +22,6 @@ export function loadedCartShippingCents(
     shippingCents: loaded.byId.get(line.productId)?.shippingCents ?? null,
     quantity: line.quantity,
   }));
-  return shippingCostCents(standShippingSettings(loaded.stand), lines, loaded.totalCents);
+  const goodsCents = loaded.totalCents - (loaded.taxAddedCents ?? 0);
+  return shippingCostCents(standShippingSettings(loaded.stand), lines, goodsCents);
 }

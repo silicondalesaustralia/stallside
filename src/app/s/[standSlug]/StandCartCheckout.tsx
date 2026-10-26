@@ -69,7 +69,7 @@ import {
 import { useAtStall } from "@/components/storefront/useAtStall";
 import { shopButtonColour } from "@/lib/storefront/shop-button-colour";
 import { shippingCostCents, type ShippingSettings } from "@/lib/shipping/shipping-cost";
-import { cartAddedTaxCents, type CartAddedTax } from "@/lib/tax/cart-tax";
+import { cartAddedTaxCents, cartShippingTaxCents, type CartAddedTax } from "@/lib/tax/cart-tax";
 import { formatTaxRate } from "@/lib/tax/config";
 
 type LocalTransferInfo = {
@@ -348,7 +348,7 @@ export default function StandCartCheckout({
     addedTax,
     lines.map((l) => ({ productId: l.product.id, lineTotalCents: l.lineTotalCents })),
     codeOff,
-  );
+  ) + cartShippingTaxCents(addedTax, shippingCents);
   const total = subtotal - codeOff + taxAddedCents + shippingCents;
   const passOnApplies = stallsideFeeApplies && passFeeToCustomer && total > 0;
   const cardFeeCents = passOnApplies ? stallsidePassOnFeeCents(total) : 0;

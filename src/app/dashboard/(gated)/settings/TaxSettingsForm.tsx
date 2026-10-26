@@ -12,11 +12,13 @@ export default function TaxSettingsForm({
   rateBps,
   taxId,
   registered,
+  taxShipping,
 }: {
   country: string;
   rateBps: number | null;
   taxId: string | null;
   registered: boolean;
+  taxShipping: boolean;
 }) {
   const [picked, setPicked] = useState(country);
   const [message, setMessage] = useState<string | null>(null);
@@ -72,6 +74,14 @@ export default function TaxSettingsForm({
         <span>
           Registered for {region.name}
           {region.inclusive ? ` (my prices include ${region.name})` : ` (add ${region.name.toLowerCase()} at checkout)`}
+        </span>
+      </label>
+      <label className="flex items-center gap-2">
+        <input type="checkbox" name="taxShipping" defaultChecked={taxShipping} />
+        <span>
+          {region.inclusive
+            ? `My delivery fees include ${region.name}`
+            : `Charge ${region.name.toLowerCase()} on delivery fees`}
         </span>
       </label>
       <p className="text-xs text-[var(--muted)]">

@@ -36,6 +36,7 @@ import {
 } from "@/lib/deposit-order";
 import { contactError, loadedCartHandover } from "@/lib/fulfilment/cart-handover";
 import { loadedCartShippingCents } from "@/lib/shipping/cart-shipping";
+import { shippingTax } from "@/lib/tax/shipping-tax";
 import { parseHandover, type HandoverValue } from "@/lib/fulfilment/handover-choice";
 
 export async function startCardCheckout(input: {
@@ -156,7 +157,12 @@ export async function startCardCheckout(input: {
       demoStripe?.stripeAccountId ?? owner.stripeAccountId!;
 
     const shippingCents = loadedCartShippingCents(loaded, deliver);
-    const chargeGoodsCents = depositMode ? depositCents : totalCents + shippingCents;
+    const shipTax = shippingTax(loaded.taxRule, owner.taxShipping, shippingCents);
+    const addedTaxCents = loaded.taxAddedCents + shipTax.addedCents;
+    const lineFields = orderLineFields(lineData, discountCents, loaded.taxRule);
+    const chargeGoodsCents = depositMode
+      ? depositCents
+      : totalCents + shippingCents + shipTax.addedCents;
     const {
       applicationFeeCents: applicationFee,
       chargeTotalCents: chargeTotal,
@@ -190,7 +196,8 @@ export async function startCardCheckout(input: {
           ? ReceiptChannel.EMAIL
           : ReceiptChannel.NONE,
         receiptEmail: customerEmail || null,
-        ...orderLineFields(lineData, discountCents, loaded.taxRule),
+        ...lineFields,
+        gstCents: lineFields.gstCents + shipTax.recordedCents,
         ...(preOrderCart
           ? {
               isPreOrder: true,
@@ -230,12 +237,12 @@ export async function startCardCheckout(input: {
       }
     }
 
-    if (loaded.taxAddedCents > 0) {
+    if (addedTaxCents > 0) {
       lineItems.push({
         quantity: 1,
         price_data: {
           currency: stand.currency.toLowerCase(),
-          unit_amount: loaded.taxAddedCents,
+          unit_amount: addedTaxCents,
           product_data: { name: taxConfig(owner, stand.currency).name },
         },
       });

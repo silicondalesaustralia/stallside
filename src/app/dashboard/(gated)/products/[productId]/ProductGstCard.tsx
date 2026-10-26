@@ -38,7 +38,7 @@ export default function ProductGstCard({
       hint={
         tax.applies
           ? tax.inclusive
-            ? `Fresh fruit, veg, eggs, meat and plain bread are often ${tax.name}-free or zero-rated. Use Sync in Settings → Sales tax to update past orders.`
+            ? `Fresh fruit, veg, eggs, meat and plain bread are often ${tax.name}-free or zero-rated. Use Sync in Settings → Tax to update past orders.`
             : `Many states exempt groceries. Exempt items have no ${tax.name.toLowerCase()} added at checkout.`
           : "Only used once you turn on sales tax in Settings."
       }

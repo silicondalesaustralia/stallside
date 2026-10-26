@@ -51,7 +51,7 @@ export const knowledgeCategories: KnowledgeCategory[] = [
   },
   {
     id: "gst",
-    title: "GST & exports (Australia only)",
+    title: "Tax & exports",
     articles: gstArticles,
   },
   {

@@ -27,6 +27,7 @@ import {
 import { cleanShopperDetails, planSquarePreOrder } from "@/lib/square/checkout-preorder";
 import { contactError, loadedCartHandover } from "@/lib/fulfilment/cart-handover";
 import { loadedCartShippingCents } from "@/lib/shipping/cart-shipping";
+import { shippingTax } from "@/lib/tax/shipping-tax";
 import { parseHandover, type HandoverValue } from "@/lib/fulfilment/handover-choice";
 export type SquareCheckoutCartInput = {
   standSlug: string;
@@ -116,8 +117,10 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
   if (contactProblem) return { error: contactProblem };
 
   const shippingCents = loadedCartShippingCents(loaded, deliver);
+  const shipTax = shippingTax(loaded.taxRule, stand.owner.taxShipping, shippingCents);
+  const lineFields = orderLineFields(lineData, discountCents, loaded.taxRule);
   const { applicationFeeCents, chargeTotalCents, passedOn } = computeVendlCheckoutFees(
-    plan?.chargeGoodsCents ?? totalCents + shippingCents,
+    plan?.chargeGoodsCents ?? totalCents + shippingCents + shipTax.addedCents,
     stand.owner,
     { rail: "square", currency: stand.currency },
   );
@@ -156,7 +159,8 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
       shippingCents,
       ...(deposit ?? {}),
       ...(deliver ? delivery : {}),
-      ...orderLineFields(lineData, discountCents, loaded.taxRule),
+      ...lineFields,
+      gstCents: lineFields.gstCents + shipTax.recordedCents,
     },
   });
 

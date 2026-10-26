@@ -103,6 +103,7 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
         label: "Payments",
         alsoActiveOn: ["/dashboard/settings/stripe", "/dashboard/settings/square", "/dashboard/settings/paypal"],
       },
+      { href: "/dashboard/settings/tax", label: "Tax" },
       { href: "/dashboard/settings", label: "Account" },
       { href: "/dashboard/referrals", label: "Referrals" },
     ],

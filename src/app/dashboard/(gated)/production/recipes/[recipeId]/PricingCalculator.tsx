@@ -65,7 +65,7 @@ export default function PricingCalculator({
       <p className="text-xs text-[var(--muted)]">
         Default fees: 2.5% Vendl fee on the Free plan plus about 1.75% + 30c card processing. Set 0 for cash sales or Pro.{" "}
         {!tax.applies
-          ? "No sales tax applied (Settings → Sales tax)."
+          ? "No sales tax applied (Settings → Tax)."
           : tax.inclusive
             ? `Prices include ${tax.name} (${formatTaxRate(tax.rateBps)}); profit uses the price after ${tax.name}.`
             : `Prices exclude ${tax.name.toLowerCase()}; it's added at checkout.`}

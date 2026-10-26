@@ -598,6 +598,8 @@ model Owner {
   taxCountry                    String?
   /// Standard rate in basis points (1000 = 10%). Null = the country's default.
   taxRateBps                    Int?
+  /// Delivery fees are taxable: added on top (US/CA) or counted inside the fee (GST/VAT).
+  taxShipping                   Boolean                      @default(false)
   pricesIncludeGst              Boolean                      @default(true)
   shortDescription              String?
   /**
