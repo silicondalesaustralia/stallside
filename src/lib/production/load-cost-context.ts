@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
+import type { MaterialKind } from "@/generated/prisma/client";
 import type { CostContext, CostIngredient, CostRecipe } from "./batch-costing";
 
 export type MaterialRow = CostIngredient & {
+  kind: MaterialKind;
   supplier: string | null;
   sku: string | null;
   notes: string | null;
@@ -32,6 +34,7 @@ export async function loadCostContext(ownerId: string): Promise<
   const materials: MaterialRow[] = ingredients.map((i) => ({
     id: i.id,
     name: i.name,
+    kind: i.kind,
     baseUnit: i.baseUnit,
     purchaseQuantity: Number(i.purchaseQuantity),
     purchaseUnit: i.purchaseUnit,

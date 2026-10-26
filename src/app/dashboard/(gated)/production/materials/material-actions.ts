@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { MaterialKind } from "@/generated/prisma/client";
 import { requireOwnerWrite } from "@/lib/session";
 import { convertQuantity } from "@/lib/production/unit-convert";
 import {
@@ -35,6 +36,7 @@ export async function saveMaterial(formData: FormData): Promise<ActionResult> {
 
     const data = {
       name,
+      kind: text(formData, "kind") === "PACKAGING" ? MaterialKind.PACKAGING : MaterialKind.INGREDIENT,
       baseUnit,
       purchaseUnit,
       purchaseQuantity,

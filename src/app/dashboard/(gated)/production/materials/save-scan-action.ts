@@ -7,6 +7,7 @@ import { failure, type ActionResult } from "@/lib/production/form-parse";
 import { saveInvoiceSchema, type SaveInvoiceInput } from "@/lib/production/invoice-scan/schema";
 import { purchaseUnitError, writePurchase } from "@/lib/production/record-purchase";
 import { convertQuantity, type Unit } from "@/lib/production/unit-convert";
+import { guessMaterialKind } from "@/lib/production/material-kind";
 
 type Material = { id: string; name: string; baseUnit: Unit; supplier: string | null };
 
@@ -50,6 +51,7 @@ export async function saveScannedInvoice(input: SaveInvoiceInput): Promise<Actio
                 data: {
                   ownerId: owner.id,
                   name: line.description,
+                  kind: guessMaterialKind(line.description),
                   baseUnit: line.newBaseUnit ?? line.unit,
                   purchaseQuantity: line.quantity,
                   purchaseUnit: line.unit,

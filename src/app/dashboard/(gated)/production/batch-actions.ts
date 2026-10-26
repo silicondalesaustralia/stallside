@@ -7,6 +7,7 @@ import { costRecipe, ingredientCostPerBase } from "@/lib/production/batch-costin
 import { loadCostContext } from "@/lib/production/load-cost-context";
 import { nextBatchCode } from "@/lib/production/batch-code";
 import { recordBatchStock } from "@/lib/production/batch-stock";
+import { packagingUses } from "@/lib/production/packaging";
 import {
   dateOnly,
   decimal,
@@ -40,7 +41,11 @@ export async function createBatch(formData: FormData): Promise<ActionResult> {
     const product = productId
       ? await prisma.product.findFirst({
           where: { id: productId, ownerId: owner.id, standId: selected.id, memberId: null },
-          select: { id: true, packagingCostCents: true },
+          select: {
+            id: true,
+            packagingCostCents: true,
+            packagingLines: { select: { id: true, ingredientId: true, quantity: true, unit: true } },
+          },
         })
       : null;
     if (productId && !product) return { error: "Product not found in this business." };
@@ -52,9 +57,15 @@ export async function createBatch(formData: FormData): Promise<ActionResult> {
     });
     if (clash) return { error: `Batch code ${batchCode} is already used.` };
 
-    const totalCostCents = Math.round(cost.totalCents);
+    const packaging = packagingUses(
+      (product?.packagingLines ?? []).map((p) => ({ ...p, quantity: Number(p.quantity) })),
+      ctx.ingredients,
+      unitsMade,
+    );
+    const packagingCostCents = Math.round(packaging.reduce((sum, p) => sum + p.costCents, 0));
+    const totalCostCents = Math.round(cost.totalCents) + packagingCostCents;
     const unitCostCents = unitsMade > 0 ? Math.round(totalCostCents / unitsMade) : null;
-    const lines = [...cost.requirements].map(([ingredientId, quantity]) => {
+    const recipeLines = [...cost.requirements].map(([ingredientId, quantity]) => {
       const ingredient = ctx.ingredients.get(ingredientId);
       const perBase = ingredient ? ingredientCostPerBase(ingredient) : null;
       return {
@@ -63,8 +74,20 @@ export async function createBatch(formData: FormData): Promise<ActionResult> {
         quantity,
         unit: ingredient?.baseUnit ?? "EACH",
         costCents: Math.round(quantity * (perBase ?? 0)),
+        isPackaging: false,
       };
     });
+    const lines = [
+      ...recipeLines,
+      ...packaging.map((p) => ({
+        ingredientId: p.ingredientId,
+        ingredientName: p.name,
+        quantity: p.quantity,
+        unit: p.unit,
+        costCents: Math.round(p.costCents),
+        isPackaging: true,
+      })),
+    ];
 
     await prisma.$transaction(async (tx) => {
       await tx.productionBatch.create({
@@ -82,6 +105,7 @@ export async function createBatch(formData: FormData): Promise<ActionResult> {
           materialCostCents: Math.round(cost.materialCents),
           labourCostCents: Math.round(cost.labourCents),
           overheadCostCents: Math.round(cost.overheadCents),
+          packagingCostCents,
           totalCostCents,
           unitCostCents,
           notes: optionalText(formData, "notes"),

@@ -2,13 +2,27 @@ import type { MaterialRow } from "@/lib/production/load-cost-context";
 import UnitSelect from "../UnitSelect";
 import { hintClass, inputClass, labelClass } from "../form-styles";
 
-export default function MaterialFields({ material }: { material?: MaterialRow }) {
+export default function MaterialFields({
+  material,
+  defaultKind = "INGREDIENT",
+}: {
+  material?: MaterialRow;
+  defaultKind?: MaterialRow["kind"];
+}) {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {material ? <input type="hidden" name="id" value={material.id} /> : null}
       <label className={labelClass}>
         Name
         <input name="name" required defaultValue={material?.name} placeholder="Plain flour, PLA filament, M3 bolt" className={inputClass} />
+      </label>
+      <label className={labelClass}>
+        Type
+        <select name="kind" defaultValue={material?.kind ?? defaultKind} className={inputClass}>
+          <option value="INGREDIENT">Ingredient or part (goes into recipes)</option>
+          <option value="PACKAGING">Packaging (bags, boxes, labels)</option>
+        </select>
+        <span className={hintClass}>Packaging is added per product on the recipe page, not in the recipe.</span>
       </label>
       <label className={labelClass}>
         Recipe unit

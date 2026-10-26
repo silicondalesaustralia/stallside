@@ -6,7 +6,7 @@ import { requireOwnerWrite } from "@/lib/session";
 import { wouldCreateLoop } from "@/lib/production/recipe-graph";
 import { loadCostContext } from "@/lib/production/load-cost-context";
 import { convertQuantity } from "@/lib/production/unit-convert";
-import { cents, decimal, failure, text, unit, type ActionResult } from "@/lib/production/form-parse";
+import { decimal, failure, text, unit, type ActionResult } from "@/lib/production/form-parse";
 
 /** `source` is `ing:<ingredientId>` or `rec:<componentRecipeId>`. */
 export async function addRecipeLine(formData: FormData): Promise<ActionResult> {
@@ -75,17 +75,11 @@ export async function linkProduct(formData: FormData): Promise<ActionResult> {
       prisma.product.findFirst({ where: { id: productId, ownerId: owner.id }, select: { id: true } }),
     ]);
     if (!recipe || !product) return { error: "Choose a product." };
-    await prisma.$transaction([
-      prisma.productRecipe.upsert({
-        where: { productId },
-        create: { productId, recipeId, yieldUnitsPerProduct },
-        update: { recipeId, yieldUnitsPerProduct },
-      }),
-      prisma.product.update({
-        where: { id: productId },
-        data: { packagingCostCents: cents(formData, "packaging") },
-      }),
-    ]);
+    await prisma.productRecipe.upsert({
+      where: { productId },
+      create: { productId, recipeId, yieldUnitsPerProduct },
+      update: { recipeId, yieldUnitsPerProduct },
+    });
     revalidatePath("/dashboard/production", "layout");
     return { ok: true, message: "Product linked." };
   } catch (error) {

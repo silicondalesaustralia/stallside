@@ -6,6 +6,7 @@ import ActionForm from "../../ActionForm";
 import { cardClass, hintClass, inputClass, labelClass } from "../../form-styles";
 import { linkProduct, unlinkProduct } from "../recipe-line-actions";
 import PricingCalculator from "./PricingCalculator";
+import ProductPackaging from "./ProductPackaging";
 import type { TaxConfig } from "@/lib/tax/config";
 
 export default function LinkedProducts({
@@ -13,12 +14,14 @@ export default function LinkedProducts({
   batchTotalCents,
   links,
   linkable,
+  packagingMaterials,
   tax,
 }: {
   recipe: { id: string; yieldQuantity: number; yieldLabel: string };
   batchTotalCents: number;
   links: ProductLink[];
   linkable: { id: string; name: string }[];
+  packagingMaterials: { id: string; name: string }[];
   tax: TaxConfig;
 }) {
   return (
@@ -28,7 +31,7 @@ export default function LinkedProducts({
           batchTotalCents,
           yieldQuantity: recipe.yieldQuantity,
           yieldUnitsPerProduct: l.yieldUnitsPerProduct,
-          packagingCostCents: l.packagingCostCents,
+          packagingCostCents: l.packagingUnitCents,
         });
         return (
           <section key={l.productId} className={cardClass}>
@@ -39,13 +42,14 @@ export default function LinkedProducts({
                 </Link>
                 <p className="text-xs text-[var(--muted)]">
                   {l.yieldUnitsPerProduct} {recipe.yieldLabel} per product · packaging{" "}
-                  {money(l.packagingCostCents ?? 0, l.currency)} · {l.stockQuantity} in stock
+                  {money(l.packagingUnitCents, l.currency)} · {l.stockQuantity} in stock
                 </p>
               </div>
               <ActionForm action={unlinkProduct} submitLabel="Unlink" variant="danger" className="inline-flex">
                 <input type="hidden" name="productId" value={l.productId} />
               </ActionForm>
             </div>
+            <ProductPackaging link={l} materials={packagingMaterials} />
             <PricingCalculator unitCostCents={unitCost} priceCents={l.priceCents} currency={l.currency} tax={tax} />
           </section>
         );
@@ -67,12 +71,8 @@ export default function LinkedProducts({
             {recipe.yieldLabel} per product
             <input name="yieldUnitsPerProduct" type="number" step="any" min="0" required defaultValue="1" className={inputClass} />
           </label>
-          <label className={`${labelClass} w-36`}>
-            Packaging ($/unit)
-            <input name="packaging" type="number" step="0.01" min="0" className={inputClass} />
-          </label>
           <p className={`${hintClass} w-full`}>
-            e.g. the recipe makes 12 cookies and the product is a box of 6, so enter 6.
+            e.g. the recipe makes 12 cookies and the product is a box of 6, so enter 6. Add its packaging once linked.
           </p>
         </ActionForm>
       ) : null}

@@ -14,6 +14,7 @@ type MaterialDef = {
   packCents: number;
   supplier: string;
   reorderLevel?: number;
+  packaging?: true;
   /** Week indexes (0 = oldest) with a purchase; `[week, cents]` overrides the price. */
   buys: (number | [number, number])[];
 };
@@ -28,7 +29,7 @@ export const MATERIALS: Record<MaterialKey, MaterialDef> = {
   yeast: { name: "Instant yeast", baseUnit: "G", packQty: 500, packUnit: "G", packCents: 900, supplier: WHOLESALER, buys: [0, 3] },
   rosemary: { name: "Fresh rosemary", baseUnit: "G", packQty: 200, packUnit: "G", packCents: 700, supplier: MARKET, reorderLevel: 300, buys: [0, 1, 2, 3, 4, 5] },
   saltFlakes: { name: "Sea salt flakes", baseUnit: "G", packQty: 250, packUnit: "G", packCents: 600, supplier: WHOLESALER, buys: [0, 1, 3, 5] },
-  breadBags: { name: "Bread bags", baseUnit: "EACH", packQty: 100, packUnit: "EACH", packCents: 1500, supplier: "PackRight Supplies", reorderLevel: 40, buys: [0, 3] },
+  breadBags: { name: "Bread bags", baseUnit: "EACH", packQty: 100, packUnit: "EACH", packCents: 1500, supplier: "PackRight Supplies", reorderLevel: 40, packaging: true, buys: [0, 3] },
   plainFlour: { name: "Plain flour", baseUnit: "G", packQty: 5, packUnit: "KG", packCents: 800, supplier: WHOLESALER, buys: [0, 3] },
   butter: { name: "Butter", baseUnit: "G", packQty: 2, packUnit: "KG", packCents: 2600, supplier: WHOLESALER, reorderLevel: 1000, buys: [0, 1, 2, 3, 4, 5] },
   brownSugar: { name: "Brown sugar", baseUnit: "G", packQty: 2, packUnit: "KG", packCents: 700, supplier: WHOLESALER, buys: [0, 2, 4] },
@@ -37,7 +38,7 @@ export const MATERIALS: Record<MaterialKey, MaterialDef> = {
   chocChips: { name: "Chocolate chips", baseUnit: "G", packQty: 2, packUnit: "KG", packCents: 2800, supplier: WHOLESALER, buys: [0, 1, 3, 5] },
   vanilla: { name: "Vanilla extract", baseUnit: "ML", packQty: 100, packUnit: "ML", packCents: 900, supplier: WHOLESALER, reorderLevel: 30, buys: [0] },
   bicarb: { name: "Bicarb soda", baseUnit: "G", packQty: 500, packUnit: "G", packCents: 300, supplier: WHOLESALER, buys: [0] },
-  cookieBags: { name: "Cookie bags", baseUnit: "EACH", packQty: 100, packUnit: "EACH", packCents: 1200, supplier: "PackRight Supplies", reorderLevel: 30, buys: [0] },
+  cookieBags: { name: "Cookie bags", baseUnit: "EACH", packQty: 100, packUnit: "EACH", packCents: 1200, supplier: "PackRight Supplies", reorderLevel: 30, packaging: true, buys: [0] },
 };
 
 export type MaterialRef = { id: string; name: string; baseUnit: MeasureUnit; supplier: string | null };
@@ -56,6 +57,7 @@ export async function seedMaterials(db: Db, { ownerId }: Scope): Promise<Record<
         purchasePriceCents: m.packCents,
         supplier: m.supplier,
         reorderLevel: m.reorderLevel ?? null,
+        kind: m.packaging ? "PACKAGING" : "INGREDIENT",
         notes: MARK,
       },
       select: { id: true, name: true, baseUnit: true, supplier: true },

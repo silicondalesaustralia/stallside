@@ -41,7 +41,11 @@ export default function MaterialsTable({ rows, currency }: { rows: MaterialRow[]
               <Link href={href} prefetch={false} className="font-semibold hover:underline">
                 {m.name}
               </Link>
-              {m.sku ? <p className="text-xs text-[var(--muted)]">SKU {m.sku}</p> : null}
+              {m.kind === "PACKAGING" || m.sku ? (
+                <p className="text-xs text-[var(--muted)]">
+                  {[m.kind === "PACKAGING" ? "Packaging" : null, m.sku ? `SKU ${m.sku}` : null].filter(Boolean).join(" · ")}
+                </p>
+              ) : null}
             </td>
             <td className={cellClass(COLUMNS[1])}>
               <StatusPill {...statusPill(m)} />

@@ -70,6 +70,7 @@ export async function resetMockData(db: Db, { ownerId, standId }: Scope): Promis
   const recipeIds = recipes.map((r) => r.id);
   note("recipeLinks", await db.productRecipe.deleteMany({ where: { recipeId: { in: recipeIds } } }));
   note("recipes", await db.recipe.deleteMany({ where: { id: { in: recipeIds } } }));
+  note("productPackaging", await db.productPackaging.deleteMany({ where: { ingredient: { ownerId, notes: MARK } } }));
   note("materials", await db.ingredient.deleteMany({ where: { ownerId, notes: MARK } }));
   note("categories", await db.category.deleteMany({ where: { ownerId, slug: { in: CATEGORY_SLUGS } } }));
   note("customers", await db.customer.deleteMany({ where: { ownerId, source: CUSTOMER_SOURCE } }));

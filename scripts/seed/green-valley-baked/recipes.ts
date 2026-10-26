@@ -11,7 +11,6 @@ const FOCACCIA_LINES: Line[] = [
   ["yeast", 30, "G"],
   ["rosemary", 50, "G"],
   ["saltFlakes", 40, "G"],
-  ["breadBags", 10, "EACH"],
 ];
 
 const COOKIE_LINES: Line[] = [
@@ -24,7 +23,6 @@ const COOKIE_LINES: Line[] = [
   ["vanilla", 10, "ML"],
   ["bicarb", 10, "G"],
   ["salt", 5, "G"],
-  ["cookieBags", 6, "EACH"],
 ];
 
 export type RecipeIds = { focaccia: string; cookies: string };

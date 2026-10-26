@@ -62,7 +62,7 @@ export default function RecipesTable({
                     batchTotalCents: cost.totalCents,
                     yieldQuantity: recipe.yieldQuantity,
                     yieldUnitsPerProduct: l.yieldUnitsPerProduct,
-                    packagingCostCents: l.packagingCostCents,
+                    packagingCostCents: l.packagingUnitCents,
                   });
                   const margin = marginPercent(l.priceCents, l.priceCents - unitCost);
                   return (

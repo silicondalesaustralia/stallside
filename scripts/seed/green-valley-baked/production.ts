@@ -1,4 +1,5 @@
 import { costRecipe, ingredientCostPerBase, type CostContext } from "../../../src/lib/production/batch-costing";
+import { packagingUses } from "../../../src/lib/production/packaging";
 import { convertQuantity } from "../../../src/lib/production/unit-convert";
 import { BATCH_PREFIX, MARK, at, weekStart, type Db, type Scope } from "./context";
 import { MATERIALS, type MaterialKey, type MaterialRef } from "./materials";
@@ -45,17 +46,23 @@ async function purchase(db: Db, ref: MaterialRef, key: MaterialKey, cents: numbe
   ]);
 }
 
-async function batch(db: Db, scope: Scope, recipeId: string, productId: string, units: number, packaging: number, when: Date, code: string) {
+async function batch(db: Db, scope: Scope, recipeId: string, productId: string, units: number, when: Date, code: string) {
   const ctx = await loadContext(db, scope.ownerId);
   const recipe = ctx.recipes.get(recipeId);
   if (!recipe) throw new Error("recipe missing");
   const cost = costRecipe(recipeId, ctx, 1);
-  const total = Math.round(cost.totalCents);
-  const lines = [...cost.requirements].map(([ingredientId, quantity]) => {
-    const ing = ctx.ingredients.get(ingredientId);
-    const perBase = ing ? ingredientCostPerBase(ing) : null;
-    return { ingredientId, ingredientName: ing?.name ?? "Unknown", quantity, unit: ing?.baseUnit ?? "EACH", costCents: Math.round(quantity * (perBase ?? 0)) };
-  });
+  const product = await db.product.findUniqueOrThrow({ where: { id: productId }, include: { packagingLines: true } });
+  const packaging = packagingUses(product.packagingLines.map((p) => ({ ...p, quantity: Number(p.quantity) })), ctx.ingredients, units);
+  const packagingCents = Math.round(packaging.reduce((sum, p) => sum + p.costCents, 0));
+  const total = Math.round(cost.totalCents) + packagingCents;
+  const lines = [
+    ...[...cost.requirements].map(([ingredientId, quantity]) => {
+      const ing = ctx.ingredients.get(ingredientId);
+      const perBase = ing ? ingredientCostPerBase(ing) : null;
+      return { ingredientId, ingredientName: ing?.name ?? "Unknown", quantity, unit: ing?.baseUnit ?? "EACH", costCents: Math.round(quantity * (perBase ?? 0)), isPackaging: false };
+    }),
+    ...packaging.map((p) => ({ ingredientId: p.ingredientId, ingredientName: p.name, quantity: p.quantity, unit: p.unit, costCents: Math.round(p.costCents), isPackaging: true })),
+  ];
   const unitCost = Math.round(total / units);
   await db.$transaction(async (tx) => {
     await tx.productionBatch.create({
@@ -64,7 +71,7 @@ async function batch(db: Db, scope: Scope, recipeId: string, productId: string, 
         batchCode: code, batchCount: 1, unitsMade: units, madeAt: when, createdAt: when,
         bestBefore: new Date(when.getTime() + 3 * 86400000),
         materialCostCents: Math.round(cost.materialCents), labourCostCents: Math.round(cost.labourCents),
-        overheadCostCents: Math.round(cost.overheadCents), totalCostCents: total, unitCostCents: unitCost,
+        overheadCostCents: Math.round(cost.overheadCents), packagingCostCents: packagingCents, totalCostCents: total, unitCostCents: unitCost,
         lines: { create: lines },
       },
     });
@@ -72,7 +79,7 @@ async function batch(db: Db, scope: Scope, recipeId: string, productId: string, 
       await tx.ingredient.update({ where: { id: l.ingredientId }, data: { onHandQuantity: { decrement: l.quantity } } });
     }
     const p = await tx.product.findUniqueOrThrow({ where: { id: productId }, select: { stockQuantity: true } });
-    await tx.product.update({ where: { id: productId }, data: { stockQuantity: p.stockQuantity + units, costCents: unitCost + packaging } });
+    await tx.product.update({ where: { id: productId }, data: { stockQuantity: p.stockQuantity + units, costCents: unitCost + (product.packagingCostCents ?? 0) } });
     await tx.inventoryAdjustment.create({
       data: {
         productId, ownerId: scope.ownerId, standId: scope.standId, changeQuantity: units,
@@ -85,6 +92,12 @@ async function batch(db: Db, scope: Scope, recipeId: string, productId: string, 
 
 /** Six weeks of Monday deliveries, then focaccia Wed–Fri (3 × 10) and cookies Thu–Fri (2 × 6 bags). */
 export async function seedProduction(db: Db, scope: Scope, materials: Record<MaterialKey, MaterialRef>, recipes: RecipeIds, cat: Catalogue) {
+  await db.productPackaging.createMany({
+    data: [
+      { productId: cat.focaccia.id, ingredientId: materials.breadBags.id, quantity: 1, unit: "EACH" },
+      { productId: cat.cookies.id, ingredientId: materials.cookieBags.id, quantity: 1, unit: "EACH" },
+    ],
+  });
   let batches = 0;
   for (let w = 0; w < WEEKS; w++) {
     const monday = weekStart(WEEKS - w);
@@ -96,12 +109,12 @@ export async function seedProduction(db: Db, scope: Scope, materials: Record<Mat
     }
     for (const day of [2, 3, 4]) {
       const code = `${BATCH_PREFIX}F${w + 1}${day}`;
-      await batch(db, scope, recipes.focaccia, cat.focaccia.id, 10, 0, at(monday, day, 5, 30), code);
+      await batch(db, scope, recipes.focaccia, cat.focaccia.id, 10, at(monday, day, 5, 30), code);
       batches++;
     }
     for (const day of [3, 4]) {
       const code = `${BATCH_PREFIX}C${w + 1}${day}`;
-      await batch(db, scope, recipes.cookies, cat.cookies.id, 6, 0, at(monday, day, 7, 0), code);
+      await batch(db, scope, recipes.cookies, cat.cookies.id, 6, at(monday, day, 7, 0), code);
       batches++;
     }
   }

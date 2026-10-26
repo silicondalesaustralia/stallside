@@ -19,7 +19,7 @@ export type BatchListRow = {
   totalCostCents: number;
   unitCostCents: number | null;
   notes: string | null;
-  lines: { id: string; ingredientName: string; quantity: number; unit: Unit; costCents: number }[];
+  lines: { id: string; ingredientName: string; quantity: number; unit: Unit; costCents: number; isPackaging: boolean }[];
 };
 
 const COLUMNS: DataColumn[] = [
@@ -76,7 +76,8 @@ export default function BatchList({ rows, currency, timeZone }: { rows: BatchLis
               <ul className="mt-1">
                 {b.lines.map((l) => (
                   <li key={l.id}>
-                    {l.ingredientName}: {formatQuantity(l.quantity, l.unit)} · {formatMoney(l.costCents, currency)}
+                    {l.ingredientName}
+                    {l.isPackaging ? " (packaging)" : ""}: {formatQuantity(l.quantity, l.unit)} · {formatMoney(l.costCents, currency)}
                   </li>
                 ))}
               </ul>

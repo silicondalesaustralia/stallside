@@ -1607,6 +1607,7 @@ model Product {
    * Optional link to a production recipe (Phase 6).
    */
   productRecipe               ProductRecipe?
+  packagingLines              ProductPackaging[]
   productionBatches           ProductionBatch[]
   /**
    * Optional packaging/materials cost per sellable unit (cents).
@@ -2416,6 +2417,12 @@ enum MeasureUnit {
   EACH
 }
 
+/// Ingredients go into recipes; packaging goes onto each sellable product.
+enum MaterialKind {
+  INGREDIENT
+  PACKAGING
+}
+
 enum ProductionStatus {
   PLANNED
   IN_PROGRESS
@@ -2431,6 +2438,7 @@ model Ingredient {
   owner              Owner                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   name               String
   description        String?
+  kind               MaterialKind            @default(INGREDIENT)
   /**
    * Unit recipes usually reference (e.g. G for flour).
    */
@@ -2453,11 +2461,28 @@ model Ingredient {
   costHistory        IngredientCostHistory[]
   purchases          IngredientPurchase[]
   batchLines         ProductionBatchLine[]
+  packagingLines     ProductPackaging[]
   createdAt          DateTime                @default(now())
   updatedAt          DateTime                @updatedAt
 
   @@index([ownerId, isActive])
   @@index([ownerId, name])
+}
+
+/** Packaging material used per unit of a product (e.g. 1 bag + 1 label). */
+model ProductPackaging {
+  id           String      @id @default(cuid())
+  productId    String
+  product      Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ingredientId String
+  ingredient   Ingredient  @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  quantity     Decimal     @db.Decimal(18, 6)
+  unit         MeasureUnit
+  sortOrder    Int         @default(0)
+  createdAt    DateTime    @default(now())
+
+  @@unique([productId, ingredientId])
+  @@index([ingredientId])
 }
 
 /**
@@ -2621,8 +2646,10 @@ model ProductionBatch {
   materialCostCents Int
   labourCostCents   Int
   overheadCostCents Int
+  /** Packaging materials used for the units made (included in totalCostCents). */
+  packagingCostCents Int                  @default(0)
   totalCostCents    Int
-  /** totalCostCents / unitsMade, excluding packaging. */
+  /** totalCostCents / unitsMade, excluding the product's flat "other packaging" amount. */
   unitCostCents     Int?
   notes             String?
   lines             ProductionBatchLine[]
@@ -2644,6 +2671,7 @@ model ProductionBatchLine {
   quantity       Decimal         @db.Decimal(18, 6)
   unit           MeasureUnit
   costCents      Int
+  isPackaging    Boolean         @default(false)
 
   @@index([batchId])
   @@index([ingredientId])
