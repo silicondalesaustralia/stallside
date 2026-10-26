@@ -43,7 +43,7 @@ export default function ScanInvoicePanel({ materials, currency }: { materials: S
         <div>
           <h2 className="font-semibold">Scan an invoice or receipt</h2>
           <p className="text-sm text-[var(--muted)]">
-            Snap or upload a supplier invoice, receipt or order PDF. AI reads the items, you check them, and they&apos;re
+            Snap or upload a supplier invoice, receipt or order PDF. Our system reads the items, you check them, and they&apos;re
             added to stock and costs.
           </p>
         </div>
