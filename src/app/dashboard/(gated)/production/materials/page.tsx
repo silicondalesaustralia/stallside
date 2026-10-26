@@ -9,6 +9,7 @@ import MaterialFields from "./MaterialFields";
 import PurchaseFields from "./PurchaseFields";
 import { saveMaterial } from "./material-actions";
 import { recordPurchase } from "./purchase-actions";
+import ScanInvoicePanel from "./scan/ScanInvoicePanel";
 
 export default async function MaterialsPage() {
   const scope = await loadProductionScope();
@@ -28,9 +29,14 @@ export default async function MaterialsPage() {
       active="materials"
       subtitle={`Ingredients and parts · ${active.length} active${lowCount ? ` · ${lowCount} to reorder` : ""}`}
     >
+      <ScanInvoicePanel
+        materials={active.map((m) => ({ id: m.id, name: m.name, baseUnit: m.baseUnit }))}
+        currency={scope.stand.currency}
+      />
+
       {active.length > 0 ? (
-        <details className={cardClass} open>
-          <summary className="cursor-pointer font-semibold">Record incoming supplies</summary>
+        <details className={cardClass}>
+          <summary className="cursor-pointer font-semibold">Record incoming supplies by hand</summary>
           <p className="mt-1 text-sm text-[var(--muted)]">
             Adds to stock on hand and becomes the material&apos;s current cost for recipes.
           </p>

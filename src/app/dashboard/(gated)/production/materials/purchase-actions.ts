@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireOwnerWrite } from "@/lib/session";
 import { convertQuantity, formatQuantity } from "@/lib/production/unit-convert";
+import { purchaseUnitError, writePurchase } from "@/lib/production/record-purchase";
 import {
   cents,
   dateOnly,
@@ -32,46 +33,23 @@ export async function recordPurchase(formData: FormData): Promise<ActionResult> 
       select: { id: true, name: true, baseUnit: true, supplier: true },
     });
     if (!ingredient) return { error: "Material not found." };
-    const inBase = convertQuantity(quantity, purchaseUnit, ingredient.baseUnit);
-    if (inBase == null) {
-      return { error: `${ingredient.name} is measured in ${ingredient.baseUnit}; pick a matching unit.` };
+    if (convertQuantity(quantity, purchaseUnit, ingredient.baseUnit) == null) {
+      return { error: purchaseUnitError(ingredient.name, ingredient.baseUnit) };
     }
-    const supplier = optionalText(formData, "supplier");
 
-    await prisma.$transaction([
-      prisma.ingredientPurchase.create({
-        data: {
-          ingredientId,
-          quantity,
-          unit: purchaseUnit,
-          totalCents,
-          supplier,
-          lotCode: optionalText(formData, "lotCode"),
-          expiresAt: dateOnly(formData, "expiresAt"),
-          notes: optionalText(formData, "notes"),
-          receivedAt: dateOnly(formData, "receivedAt") ?? new Date(),
-        },
+    await prisma.$transaction((tx) =>
+      writePurchase(tx, {
+        ingredient,
+        quantity,
+        unit: purchaseUnit,
+        totalCents,
+        supplier: optionalText(formData, "supplier"),
+        lotCode: optionalText(formData, "lotCode"),
+        expiresAt: dateOnly(formData, "expiresAt"),
+        notes: optionalText(formData, "notes"),
+        receivedAt: dateOnly(formData, "receivedAt") ?? new Date(),
       }),
-      prisma.ingredient.update({
-        where: { id: ingredientId },
-        data: {
-          onHandQuantity: { increment: inBase },
-          purchaseQuantity: quantity,
-          purchaseUnit,
-          purchasePriceCents: totalCents,
-          supplier: supplier ?? ingredient.supplier,
-        },
-      }),
-      prisma.ingredientCostHistory.create({
-        data: {
-          ingredientId,
-          purchaseQuantity: quantity,
-          purchaseUnit,
-          purchasePriceCents: totalCents,
-          note: "Purchase",
-        },
-      }),
-    ]);
+    );
 
     revalidatePath("/dashboard/production", "layout");
     return { ok: true, message: `Added ${formatQuantity(quantity, purchaseUnit)} of ${ingredient.name}.` };

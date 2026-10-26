@@ -13,6 +13,8 @@ export type PurchaseRow = {
   supplier: string | null;
   lotCode: string | null;
   expiresAt: Date | null;
+  invoiceNumber: string | null;
+  receiptUrl: string | null;
   receivedAt: Date;
 };
 
@@ -39,7 +41,16 @@ export default function PurchaseHistory({ rows, currency }: { rows: PurchaseRow[
               <td className={tdClass}>{formatDay(p.receivedAt)}</td>
               <td className={`${tdClass} text-right tabular-nums`}>{formatQuantity(p.quantity, p.unit)}</td>
               <td className={`${tdClass} text-right tabular-nums`}>{formatMoney(p.totalCents, currency)}</td>
-              <td className={tdClass}>{p.supplier ?? "—"}</td>
+              <td className={tdClass}>
+                {p.supplier ?? "—"}
+                {p.receiptUrl ? (
+                  <a href={p.receiptUrl} target="_blank" rel="noreferrer" className="block text-xs text-[var(--leaf-dark)] underline">
+                    {p.invoiceNumber ? `Invoice ${p.invoiceNumber}` : "View invoice"}
+                  </a>
+                ) : p.invoiceNumber ? (
+                  <span className="block text-xs text-[var(--muted)]">Invoice {p.invoiceNumber}</span>
+                ) : null}
+              </td>
               <td className={`${tdClass} text-[var(--muted)]`}>
                 {[p.lotCode, p.expiresAt ? `exp ${formatDay(p.expiresAt)}` : null].filter(Boolean).join(" · ") || "—"}
               </td>

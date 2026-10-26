@@ -23,4 +23,5 @@ export const FEATURE_LABELS: Record<string, string> = {
   website_followups: "Follow-up questions",
   website_import: "Website import",
   website_image: "Decorative images",
+  invoice_scan: "Invoice scans",
 };
