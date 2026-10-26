@@ -1,17 +1,13 @@
-import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
-import DateRangeFilter from "@/components/DateRangeFilter";
-import SalesAnalyticsPanel from "@/components/SalesAnalyticsPanel";
-import { RANGE_PRESETS, resolveDateWindow } from "@/lib/date-range";
-import {
-  COUNTED_STATUSES,
-  summarizeByChannel,
-} from "@/lib/order-metrics";
-import { buildChannelSalesSeries } from "@/lib/sales-series";
-import { ownerHasProAccess } from "@/lib/owner-trial";
 import Link from "next/link";
-import OrderListRow from "./OrderListRow";
+import { requireOwner } from "@/lib/session";
+import DateRangeFilter from "@/components/DateRangeFilter";
+import PageHeader from "@/components/dashboard/ui/PageHeader";
+import { RANGE_PRESETS, resolveDateWindow } from "@/lib/date-range";
+import { ownerHasProAccess } from "@/lib/owner-trial";
+import { loadOrdersPage, ORDERS_LIST_LIMIT } from "@/lib/orders/load-orders-page";
 import OrdersExportBar from "./OrdersExportBar";
+import OrdersStats from "./OrdersStats";
+import OrdersTable from "./OrdersTable";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { resolveStandTimezone } from "@/lib/stand-timezone";
@@ -24,17 +20,12 @@ export default async function OrdersPage({
   const { owner, user } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
   const params = await searchParams;
-  const cardTier = ownerHasProAccess(owner, {
-    email: user.email,
-    role: user.role,
-  });
+  const cardTier = ownerHasProAccess(owner, { email: user.email, role: user.role });
 
   if (!selected) {
     return (
-      <main className="flex flex-col gap-8">
-        <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-          Orders
-        </h1>
+      <main className="flex flex-col gap-6">
+        <PageHeader title="Orders" />
         <NoBusinessYet />
       </main>
     );
@@ -42,118 +33,25 @@ export default async function OrdersPage({
 
   const timeZone = resolveStandTimezone(selected.timezone);
   const window = resolveDateWindow(params, timeZone);
-  const standScope = { ownerId: owner.id, standId: selected.id };
-  const metricSelect = {
-    totalCents: true,
-    paymentMethod: true,
-    currency: true,
-    createdAt: true,
-    isPreOrder: true,
-    shopperSubscriptionId: true,
-  } as const;
-
-  const [currentOrders, previousOrders, listedOrders] = await Promise.all([
-    prisma.order.findMany({
-      where: {
-        ...standScope,
-        createdAt: { gte: window.start, lte: window.end },
-        paymentStatus: { in: COUNTED_STATUSES },
-      },
-      select: metricSelect,
-      orderBy: { createdAt: "asc" },
-    }),
-    prisma.order.findMany({
-      where: {
-        ...standScope,
-        createdAt: { gte: window.prevStart, lte: window.prevEnd },
-        paymentStatus: { in: COUNTED_STATUSES },
-      },
-      select: metricSelect,
-    }),
-    prisma.order.findMany({
-      where: {
-        ...standScope,
-        createdAt: { gte: window.start, lte: window.end },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 100,
-      select: {
-        id: true,
-        orderNumber: true,
-        totalCents: true,
-        currency: true,
-        createdAt: true,
-        paymentMethod: true,
-        localTransferMethodId: true,
-        paymentStatus: true,
-        paypalCaptureId: true,
-        stripePaymentIntentId: true,
-        squarePaymentId: true,
-        depositCents: true,
-        refundedCents: true,
-        customerName: true,
-        customerPhone: true,
-        receiptEmail: true,
-        isPreOrder: true,
-        shopperSubscriptionId: true,
-        handoverMode: true,
-        deliveryAddressLine1: true,
-        deliverySuburb: true,
-        deliveryPostcode: true,
-        deliveryNotes: true,
-        shippingCarrier: true,
-        trackingNumber: true,
-        trackingUrl: true,
-        shippedAt: true,
-        deliveredAt: true,
-        stand: { select: { name: true } },
-        items: {
-          select: {
-            quantity: true,
-            productNameSnapshot: true,
-            optionsSnapshot: true,
-          },
-        },
-      },
-    }),
-  ]);
-
-  const currentSummaries = summarizeByChannel(currentOrders);
-  const previousSummaries = summarizeByChannel(previousOrders);
-  const channels = buildChannelSalesSeries(
-    currentOrders,
-    window.start,
-    window.end,
-    timeZone,
-  );
-  const previousPoints = buildChannelSalesSeries(
-    previousOrders,
-    window.prevStart,
-    window.prevEnd,
-    timeZone,
-  ).all;
+  const data = await loadOrdersPage({ ownerId: owner.id, standId: selected.id, window });
+  const count = data.orders.length;
 
   return (
-    <main className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-          Orders
-        </h1>
-        <p className="mt-1 text-[var(--muted)]">
-          {listedOrders.length} order{listedOrders.length === 1 ? "" : "s"} ·{" "}
-          {selected.name} · {window.label}
-        </p>
-        {cardTier ? (
-          <p className="mt-2 text-sm md:hidden">
+    <main className="flex flex-col gap-5">
+      <PageHeader
+        title="Orders"
+        subtitle={`${selected.name} · ${window.label}`}
+        actions={
+          cardTier ? (
             <Link
               href="/dashboard/collections"
-              className="font-semibold text-[var(--leaf-dark)] underline"
+              className="text-sm font-semibold text-[var(--leaf-dark)] underline"
             >
               Pre-order collections
             </Link>
-          </p>
-        ) : null}
-      </div>
+          ) : null
+        }
+      />
 
       <DateRangeFilter
         pathname="/dashboard/orders"
@@ -163,30 +61,32 @@ export default async function OrdersPage({
         to={window.toParam}
       />
 
-      <OrdersExportBar
-        range={window.key}
-        from={window.fromParam}
-        to={window.toParam}
+      <OrdersStats
+        current={data.current}
+        previous={data.previous}
+        refundedCents={data.refundedCents}
+        currency={data.currency}
+        window={window}
+        timeZone={timeZone}
       />
 
-      <SalesAnalyticsPanel
-        channels={channels}
-        previousPoints={previousPoints}
-        currentSummaries={currentSummaries}
-        previousSummaries={previousSummaries}
-        chartTitle="Sales over time"
-        layout="orders"
-      />
-
-      {listedOrders.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">No orders in this range.</p>
+      {count === 0 ? (
+        <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">
+          No orders in this range.
+        </div>
       ) : (
-        <ul className="flex flex-col gap-3">
-          {listedOrders.map((order) => (
-            <OrderListRow key={order.id} order={order} timeZone={timeZone} />
-          ))}
-        </ul>
+        <OrdersTable
+          orders={data.orders}
+          timeZone={timeZone}
+          footer={
+            count === ORDERS_LIST_LIMIT
+              ? `Showing the latest ${ORDERS_LIST_LIMIT} orders. Narrow the date range or export to see more.`
+              : `${count} order${count === 1 ? "" : "s"}`
+          }
+        />
       )}
+
+      <OrdersExportBar range={window.key} from={window.fromParam} to={window.toParam} />
     </main>
   );
 }

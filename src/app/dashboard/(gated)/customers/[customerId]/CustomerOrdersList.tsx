@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { formatMoney } from "@/lib/money";
 import type { PaymentStatus } from "@/generated/prisma/client";
 import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
@@ -28,7 +29,9 @@ export default function CustomerOrdersList({ orders }: { orders: OrderRow[] }) {
           className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm"
         >
           <div>
-            <p className="font-medium">#{o.orderNumber}</p>
+            <Link href={`/dashboard/orders/${o.id}`} className="font-medium hover:underline">
+              #{o.orderNumber}
+            </Link>
             <p className="text-[var(--muted)]">
               {o.stand.name} · {o.createdAt.toLocaleDateString()} ·{" "}
               {orderPaymentLabel(o.paymentMethod, o.localTransferMethodId)}

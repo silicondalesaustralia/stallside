@@ -13,12 +13,15 @@ export default function ProductLifecycleActions({
   productName,
   isArchived,
   isSupplier = false,
+  compact = false,
 }: {
   productId: string;
   productName: string;
   isArchived: boolean;
   /** Supplier products are deleted from Suppliers, not here. */
   isSupplier?: boolean;
+  /** Text-only actions for table rows. */
+  compact?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -56,7 +59,7 @@ export default function ProductLifecycleActions({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap items-center gap-3 text-sm">
+      <div className={`flex items-center text-sm ${compact ? "justify-end gap-3 whitespace-nowrap" : "flex-wrap gap-3"}`}>
         <button type="button" disabled={pending} className={LINK} onClick={() => run(() => duplicateProduct(productId))}>
           Duplicate
         </button>
@@ -72,7 +75,11 @@ export default function ProductLifecycleActions({
           <button
             type="button"
             disabled={pending}
-            className="rounded-full bg-[var(--gone)]/10 px-3 py-1.5 text-sm font-semibold text-[var(--gone)] disabled:opacity-60"
+            className={
+              compact
+                ? "font-semibold text-[var(--gone)] underline disabled:opacity-60"
+                : "rounded-full bg-[var(--gone)]/10 px-3 py-1.5 text-sm font-semibold text-[var(--gone)] disabled:opacity-60"
+            }
             onClick={() => {
               if (!window.confirm(`Delete “${productName}” for good? This can't be undone.`)) return;
               run(async () => {

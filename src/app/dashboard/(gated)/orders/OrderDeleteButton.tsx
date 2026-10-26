@@ -2,16 +2,20 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { dangerButtonClass } from "@/components/dashboard/ui/button-styles";
 import { deleteOrder } from "./actions";
 
 export default function OrderDeleteButton({
   orderId,
   orderNumber,
   restoresStock,
+  redirectTo,
 }: {
   orderId: string;
   orderNumber: string;
   restoresStock: boolean;
+  /** Where to go after deleting (the order page itself no longer exists). */
+  redirectTo?: string;
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +36,8 @@ export default function OrderDeleteButton({
         setError(result.error);
         return;
       }
-      router.refresh();
+      if (redirectTo) router.push(redirectTo);
+      else router.refresh();
     });
   }
 
@@ -42,7 +47,7 @@ export default function OrderDeleteButton({
         type="button"
         onClick={onDelete}
         disabled={pending}
-        className="rounded-full bg-[var(--gone)]/10 px-3 py-1.5 text-sm font-semibold text-[var(--gone)] disabled:opacity-60"
+        className={dangerButtonClass}
       >
         {pending ? "Deleting…" : "Delete"}
       </button>

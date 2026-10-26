@@ -40,6 +40,7 @@ export function listStandProducts(opts: {
     select: {
       id: true,
       name: true,
+      imageUrl: true,
       isHidden: true,
       isArchived: true,
       priceCents: true,

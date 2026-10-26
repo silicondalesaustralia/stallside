@@ -2,7 +2,8 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { listStandProducts } from "@/lib/products/list";
 import ProductsTabs, { productTabFrom } from "./ProductsTabs";
-import ProductListRow from "./ProductListRow";
+import ProductsTable from "./ProductsTable";
+import PageHeader from "@/components/dashboard/ui/PageHeader";
 import ProductsSearchForm from "./ProductsSearchForm";
 import ProductShopOrder from "./ProductShopOrder";
 import NoBusinessYet from "@/components/NoBusinessYet";
@@ -31,10 +32,8 @@ export default async function ProductsPage({
 
   if (!selected) {
     return (
-      <main className="flex flex-col gap-8">
-        <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-          Products
-        </h1>
+      <main className="flex flex-col gap-6">
+        <PageHeader title="Products" />
         <NoBusinessYet />
       </main>
     );
@@ -48,19 +47,14 @@ export default async function ProductsPage({
   ]);
 
   return (
-    <main className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-            Products
-          </h1>
-          <p className="mt-1 text-[var(--muted)]">
-            {products.length} {kind === "standard" ? "" : `${kind} `}product
-            {products.length === 1 ? "" : "s"} · {selected.name}
-            {q ? ` · “${q}”` : ""}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
+    <main className="flex flex-col gap-5">
+      <PageHeader
+        title="Products"
+        subtitle={`${products.length} ${kind === "standard" ? "" : `${kind} `}product${
+          products.length === 1 ? "" : "s"
+        } · ${selected.name}${q ? ` · “${q}”` : ""}`}
+        actions={
+        <>
           {shopUrl ? <ViewOnSiteLink href={shopUrl} label="View shop" /> : null}
           <DashPrimaryCta
             href={
@@ -77,8 +71,9 @@ export default async function ProductsPage({
                 ? "+ New pre-order page"
                 : "+ Add product"}
           </DashPrimaryCta>
-        </div>
-      </div>
+        </>
+        }
+      />
 
       <ProductsSearchForm q={q} tab={tab} />
 
@@ -130,24 +125,20 @@ export default async function ProductsPage({
       {arrange ? (
         <ProductShopOrder ownerId={owner.id} standId={selected.id} />
       ) : products.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">{isDraft ? "No drafts." : `No ${kind} products yet.`}</p>
+        <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">
+          {isDraft ? "No drafts." : `No ${kind} products yet.`}
+        </div>
       ) : (
-        <ul className="flex flex-col gap-3">
-          {products.map((product) => {
+        <ProductsTable
+          products={products.map((product) => {
             const split = stockSplits.get(product.id);
-            return (
-              <ProductListRow
-                key={product.id}
-                product={{
-                  ...product,
-                  supplierName: product.member?.name ?? null,
-                  ownerUnits: split?.ownerUnits ?? null,
-                  supplierUnits: split?.supplierUnits ?? null,
-                }}
-              />
-            );
+            return {
+              ...product,
+              ownerUnits: split?.ownerUnits ?? null,
+              supplierUnits: split?.supplierUnits ?? null,
+            };
           })}
-        </ul>
+        />
       )}
     </main>
   );
