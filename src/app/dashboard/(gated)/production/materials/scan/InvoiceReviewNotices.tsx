@@ -1,6 +1,6 @@
 import { formatMoney } from "@/lib/money";
 import type { ReviewInvoice } from "@/lib/production/invoice-scan/schema";
-import { includedTotalCents } from "./review-helpers";
+import { basisLabel, includedTotalCents } from "./review-helpers";
 
 const note = "rounded-lg px-3 py-2 text-sm";
 
@@ -14,7 +14,7 @@ export default function InvoiceReviewNotices({ invoice, currency }: { invoice: R
         : invoice.totalCents;
   const mismatch = invoiceTotal != null && Math.abs(invoiceTotal - included) > Math.max(100, invoiceTotal * 0.02);
   const otherCurrency = invoice.currency && invoice.currency.toUpperCase() !== currency.toUpperCase();
-  const basis = invoice.costBasis === "ex-tax" ? "ex GST" : "inc GST";
+  const basis = basisLabel(invoice);
 
   return (
     <div className="flex flex-col gap-2">
@@ -22,8 +22,10 @@ export default function InvoiceReviewNotices({ invoice, currency }: { invoice: R
         Check each line, then record. Ticked lines add to stock and become each material&apos;s current cost, so
         recipes, margins and profit update straight away.{" "}
         {invoice.costBasis === "ex-tax"
-          ? "Costs are ex GST because you're GST-registered."
-          : "Costs include any GST paid."}
+          ? `Costs exclude ${invoice.taxLabel} because you claim it back.`
+          : invoice.taxRecoverable
+            ? `Costs include any ${invoice.taxLabel} paid.`
+            : `Costs include any ${invoice.taxLabel} paid, since it's part of what your supplies cost you.`}
       </p>
       {invoice.duplicateOf ? (
         <p className={`${note} bg-amber-50 font-semibold text-amber-900`}>

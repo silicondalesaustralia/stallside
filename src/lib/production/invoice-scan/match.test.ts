@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { matchMaterial } from "./match";
 
 const materials = [
@@ -9,13 +10,13 @@ const materials = [
 
 describe("matchMaterial", () => {
   it("matches on the material's words appearing in the line", () => {
-    expect(matchMaterial("Laucke Bread Flour 12.5kg", null, materials)).toBe("flour");
-    expect(matchMaterial("Callebaut dark choc chips 2.5KG", null, materials)).toBe("choc");
-    expect(matchMaterial("Dark Chocolate Chips 1kg x2", null, materials)).toBe("choc");
-    expect(matchMaterial("Unsalted butter 500g", null, materials)).toBe("butter");
+    assert.equal(matchMaterial("Laucke Bread Flour 12.5kg", null, materials), "flour");
+    assert.equal(matchMaterial("Callebaut dark choc chips 2.5KG", null, materials), "choc");
+    assert.equal(matchMaterial("Dark Chocolate Chips 1kg x2", null, materials), "choc");
+    assert.equal(matchMaterial("Unsalted butter 500g", null, materials), "butter");
   });
 
   it("returns null for unrelated lines", () => {
-    expect(matchMaterial("Delivery fee", null, materials)).toBe(null);
+    assert.equal(matchMaterial("Delivery fee", null, materials), null);
   });
 });

@@ -1,6 +1,6 @@
 import type { ChatCompletionContentPart } from "openai/resources/chat/completions";
 import { cleanEnvSecret } from "@/lib/env";
-import { INVOICE_SYSTEM_PROMPT, INVOICE_USER_PROMPT } from "./prompt";
+import { INVOICE_SYSTEM_PROMPT, invoiceUserPrompt } from "./prompt";
 import { scannedInvoiceSchema, scannedLineSchema, type ScannedInvoice, type ScannedLine } from "./schema";
 
 export type ExtractedInvoice = Omit<ScannedInvoice, "lines"> & { lines: ScannedLine[] };
@@ -38,7 +38,10 @@ function parseInvoice(raw: string): ExtractedInvoice | null {
 }
 
 /** Sends one invoice image or PDF to the vision model and returns validated line items. */
-export async function extractInvoice(file: { mimeType: string; base64: string; name: string }): Promise<ExtractResult> {
+export async function extractInvoice(
+  file: { mimeType: string; base64: string; name: string },
+  hint: { currency: string; taxLabel: string },
+): Promise<ExtractResult> {
   const model = invoiceScanModel();
   const apiKey = cleanEnvSecret(process.env.OPENAI_API_KEY);
   if (!apiKey) return { ok: false, error: "Invoice scanning isn't configured yet.", model, usage: null };
@@ -51,7 +54,7 @@ export async function extractInvoice(file: { mimeType: string; base64: string; n
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: INVOICE_SYSTEM_PROMPT },
-      { role: "user", content: [{ type: "text", text: INVOICE_USER_PROMPT }, documentPart(file)] },
+      { role: "user", content: [{ type: "text", text: invoiceUserPrompt(hint) }, documentPart(file)] },
     ],
   });
 

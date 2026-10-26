@@ -28,6 +28,21 @@ export function includedTotalCents(lines: ReviewLine[]): number {
   return lines.filter((l) => l.include).reduce((sum, l) => sum + l.totalCents, 0);
 }
 
+export function basisLabel(invoice: ReviewInvoice): string {
+  return `${invoice.costBasis === "ex-tax" ? "ex" : "inc"} ${invoice.taxLabel}`;
+}
+
+/** Moves every line between ex-tax and inc-tax costs, keeping any edits the owner made. */
+export function switchBasis(invoice: ReviewInvoice, basis: ReviewInvoice["costBasis"]): ReviewInvoice {
+  if (basis === invoice.costBasis) return invoice;
+  const sign = basis === "ex-tax" ? -1 : 1;
+  return {
+    ...invoice,
+    costBasis: basis,
+    lines: invoice.lines.map((l) => ({ ...l, totalCents: Math.max(0, l.totalCents + sign * l.taxCents) })),
+  };
+}
+
 export function toSaveInput(invoice: ReviewInvoice): SaveInvoiceInput {
   return {
     supplier: invoice.supplier,

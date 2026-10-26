@@ -8,7 +8,7 @@ import { inputClass, labelClass, thClass } from "../../form-styles";
 import { saveScannedInvoice } from "../save-scan-action";
 import InvoiceLineRow from "./InvoiceLineRow";
 import InvoiceReviewNotices from "./InvoiceReviewNotices";
-import { lineProblem, toSaveInput, type ScanMaterial } from "./review-helpers";
+import { basisLabel, lineProblem, switchBasis, toSaveInput, type ScanMaterial } from "./review-helpers";
 
 export default function InvoiceReview({
   initial,
@@ -68,6 +68,16 @@ export default function InvoiceReview({
       </div>
 
       <InvoiceReviewNotices invoice={invoice} currency={currency} />
+      {invoice.taxRecoverable ? (
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={invoice.costBasis === "ex-tax"}
+            onChange={(e) => setInvoice(switchBasis(invoice, e.target.checked ? "ex-tax" : "inc-tax"))}
+          />
+          I&apos;m registered for {invoice.taxLabel} and claim it back, so record costs excluding {invoice.taxLabel}
+        </label>
+      ) : null}
 
       <div className="overflow-x-auto rounded-xl border border-[var(--line)]">
         <table className="w-full min-w-[44rem] text-sm">
@@ -77,12 +87,12 @@ export default function InvoiceReview({
               <th className={thClass}>Item on invoice</th>
               <th className={thClass}>Material</th>
               <th className={thClass}>Quantity received</th>
-              <th className={thClass}>Cost ({invoice.costBasis === "ex-tax" ? "ex GST" : "inc GST"})</th>
+              <th className={thClass}>Cost ({basisLabel(invoice)})</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--line)]">
             {invoice.lines.map((line) => (
-              <InvoiceLineRow key={line.key} line={line} materials={materials} onChange={(patch) => patchLine(line.key, patch)} />
+              <InvoiceLineRow key={`${line.key}-${invoice.costBasis}`} line={line} materials={materials} onChange={(patch) => patchLine(line.key, patch)} />
             ))}
           </tbody>
         </table>

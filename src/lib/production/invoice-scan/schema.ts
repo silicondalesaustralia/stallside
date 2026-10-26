@@ -10,6 +10,7 @@ export const scannedLineSchema = z.object({
   packUnit: z.enum(MEASURE_UNITS).nullable().catch(null),
   lineTotal: z.number(),
   lineTax: money,
+  taxable: z.boolean().nullable().catch(null),
   isMaterial: z.boolean().catch(true),
   confidence: z.enum(["high", "medium", "low"]).catch("medium"),
 });
@@ -43,7 +44,10 @@ export type ReviewLine = {
   materialId: string;
   quantity: number;
   unit: (typeof MEASURE_UNITS)[number];
+  /** Cost in the invoice's current `costBasis`. */
   totalCents: number;
+  /** Tax on this line (printed, or the invoice tax shared across taxable lines). */
+  taxCents: number;
   confidence: ScannedLine["confidence"];
 };
 
@@ -57,6 +61,10 @@ export type ReviewInvoice = {
   receiptUrl: string | null;
   duplicateOf: string | null;
   costBasis: "ex-tax" | "inc-tax";
+  /** "GST", "VAT", "sales tax"… for the business's region. */
+  taxLabel: string;
+  /** Whether owners in this region can switch to ex-tax costs. */
+  taxRecoverable: boolean;
   lines: ReviewLine[];
 };
 

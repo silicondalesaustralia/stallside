@@ -5,6 +5,7 @@ import { requireOwnerWrite } from "@/lib/session";
 import { buildReview } from "@/lib/production/invoice-scan/build-review";
 import { extractInvoice } from "@/lib/production/invoice-scan/extract";
 import type { ScanResult } from "@/lib/production/invoice-scan/schema";
+import { defaultCostBasis, taxRegionForCurrency } from "@/lib/production/invoice-scan/tax-region";
 import { INVOICE_MAX_BYTES, INVOICE_TYPES, uploadInvoiceDocument } from "@/lib/production/invoice-scan/upload";
 import { recordScanUsage, scanLimitReached } from "@/lib/production/invoice-scan/usage";
 import { loadProductionScope } from "../production-scope";
@@ -28,16 +29,18 @@ export async function scanInvoice(formData: FormData): Promise<ScanResult> {
     if (file.size > INVOICE_MAX_BYTES) return { error: "That file is over 5 MB. Try a smaller photo or PDF." };
     if (await scanLimitReached(owner.id)) return { error: "You've hit this month's scan limit. Enter purchases by hand for now." };
 
+    const scope = await loadProductionScope();
+    const currency = scope.stand?.currency ?? "AUD";
+    const region = taxRegionForCurrency(currency);
     const base64 = Buffer.from(await file.arrayBuffer()).toString("base64");
     const [extracted, receiptUrl] = await Promise.all([
-      extractInvoice({ mimeType: file.type, base64, name: file.name }),
+      extractInvoice({ mimeType: file.type, base64, name: file.name }, { currency, taxLabel: region.label }),
       uploadInvoiceDocument(owner.id, file),
     ]);
     await recordScanUsage(owner.id, extracted.model, extracted.usage, extracted.ok ? "success" : "failed");
     if (!extracted.ok) return { error: extracted.error };
 
-    const [scope, materials, duplicateOf] = await Promise.all([
-      loadProductionScope(),
+    const [materials, duplicateOf] = await Promise.all([
       prisma.ingredient.findMany({
         where: { ownerId: owner.id, isActive: true },
         select: { id: true, name: true, supplier: true },
@@ -46,7 +49,8 @@ export async function scanInvoice(formData: FormData): Promise<ScanResult> {
     ]);
     const invoice = buildReview(extracted.invoice, {
       materials,
-      gstRegistered: owner.gstRegistered,
+      region,
+      costBasis: defaultCostBasis(owner, currency),
       today: scope.today,
       receiptUrl,
       duplicateOf,

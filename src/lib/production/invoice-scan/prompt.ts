@@ -18,7 +18,8 @@ Return ONLY a JSON object with exactly these keys:
       "packSize": number | null,     // size of ONE pack, e.g. 12.5 for "Flour 12.5kg"
       "packUnit": "MG" | "G" | "KG" | "ML" | "L" | "EACH" | null,
       "lineTotal": number,           // money for this line exactly as printed
-      "lineTax": number | null,      // tax for this line; 0 for tax-free items (often marked * or # on receipts)
+      "lineTax": number | null,      // tax for this line ONLY if printed per line; 0 for tax-free items
+      "taxable": boolean | null,     // true when the line is marked taxable (e.g. "T", "TX", "*", "#" per the receipt's legend), false when exempt
       "isMaterial": boolean,         // false for delivery, freight, surcharges, card fees, deposits, discounts, rounding
       "confidence": "high" | "medium" | "low"
     }
@@ -31,6 +32,10 @@ Rules:
 - Items sold by count (eggs, bags, boxes, jars) use packUnit "EACH"; a tray of 30 eggs is packSize 30, packUnit "EACH".
 - If you can't read a pack size, set packSize and packUnit to null.
 - Include discount lines as negative lineTotal with isMaterial false.
+- Tax names vary by country: GST (AU, NZ, CA, SG, IN), HST/PST (CA), VAT/MwSt/TVA/IVA (UK, EU), sales tax (US).
+- If tax is only shown as one total (common for US sales tax), leave lineTax null and use "taxable" per line.
 - Never invent lines. If a value is unreadable use null and confidence "low".`;
 
-export const INVOICE_USER_PROMPT = "Extract this invoice or receipt.";
+export function invoiceUserPrompt(hint: { currency: string; taxLabel: string }): string {
+  return `Extract this invoice or receipt. The buyer's business uses ${hint.currency}; tax on its purchases is usually called ${hint.taxLabel}.`;
+}
