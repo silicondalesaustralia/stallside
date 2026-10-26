@@ -4,6 +4,7 @@ import PaymentIconRow from "@/components/PaymentIconRow";
 import type { LocalTransferMethod } from "@/lib/local-transfer";
 import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
 import { STRIPE_CHECKOUT_METHODS_PHRASE } from "@/lib/stripe-connect-copy";
+import StandPayPalToggle from "./StandPayPalToggle";
 
 type StandPaymentTogglesProps = {
   method: LocalTransferMethod | null;
@@ -24,11 +25,11 @@ export default function StandPaymentToggles({
   acceptCash,
   acceptLocalTransfer,
   acceptCard,
-  acceptPayPal: _acceptPayPal,
+  acceptPayPal,
   cardReady,
-  paypalReady: _paypalReady,
-  paypalConnectAvailable: _paypalConnectAvailable,
-  cardTier: _cardTier,
+  paypalReady,
+  paypalConnectAvailable,
+  cardTier,
 }: StandPaymentTogglesProps) {
   return (
     <>
@@ -113,6 +114,14 @@ export default function StandPaymentToggles({
           Manage Stripe Connect
         </Link>
       </p>
+
+      {paypalConnectAvailable ? (
+        <StandPayPalToggle
+          acceptPayPal={acceptPayPal}
+          paypalReady={paypalReady}
+          proAccess={cardTier}
+        />
+      ) : null}
     </>
   );
 }
