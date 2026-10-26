@@ -82,7 +82,10 @@ export async function refundSquarePayment(input: {
   currency: string;
   idempotencyKey: string;
   reason?: string;
+  /** Share of Vendl's app fee returned with this refund. */
+  appFeeCents?: number;
 }) {
+  const currency = input.currency.toUpperCase();
   return squareFetch<{
     refund?: { id?: string; status?: string; payment_id?: string };
   }>("/v2/refunds", {
@@ -91,10 +94,10 @@ export async function refundSquarePayment(input: {
     body: {
       idempotency_key: input.idempotencyKey,
       payment_id: input.paymentId,
-      amount_money: {
-        amount: input.amountCents,
-        currency: input.currency.toUpperCase(),
-      },
+      amount_money: { amount: input.amountCents, currency },
+      ...(input.appFeeCents && input.appFeeCents > 0
+        ? { app_fee_money: { amount: input.appFeeCents, currency } }
+        : {}),
       reason: input.reason?.slice(0, 192),
     },
     idempotencyKey: input.idempotencyKey,

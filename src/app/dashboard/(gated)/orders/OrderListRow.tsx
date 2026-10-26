@@ -9,8 +9,7 @@ import OrderCustomerBadge from "./OrderCustomerBadge";
 import OrderDeleteButton from "./OrderDeleteButton";
 import OrderDeliveryLine, { type OrderDeliveryFields } from "./OrderDeliveryLine";
 import OrderShippingPanel, { type OrderShippingFields } from "./OrderShippingPanel";
-import PayPalRefundPanel from "./PayPalRefundPanel";
-import { paypalTransactionUrl } from "@/lib/paypal-refunds";
+import OrderRefundSection, { type OrderRefundFields } from "./OrderRefundSection";
 
 type OrderItem = {
   quantity: number;
@@ -27,8 +26,6 @@ type OrderRow = {
   paymentMethod: PaymentMethod;
   localTransferMethodId: string | null;
   paymentStatus: PaymentStatus;
-  paypalCaptureId: string | null;
-  refundedCents: number | null;
   customerName: string | null;
   customerPhone: string | null;
   receiptEmail: string | null;
@@ -37,7 +34,8 @@ type OrderRow = {
   stand: { name: string };
   items: OrderItem[];
 } & OrderDeliveryFields &
-  OrderShippingFields;
+  OrderShippingFields &
+  OrderRefundFields;
 
 export default function OrderListRow({
   order,
@@ -94,15 +92,7 @@ export default function OrderListRow({
               defaultSubject={`${order.stand.name} · order ${order.orderNumber}`}
             />
             <OrderDeliveryLine order={order} />
-            {order.paymentMethod === PaymentMethod.PAYPAL && order.paypalCaptureId ? (
-              <PayPalRefundPanel
-                orderId={order.id}
-                refundUrl={paypalTransactionUrl(order.paypalCaptureId)}
-                refundedCents={order.refundedCents}
-                totalCents={order.totalCents}
-                currency={order.currency}
-              />
-            ) : null}
+            <OrderRefundSection order={order} />
             {order.handoverMode === "DELIVER" && isCountedPaymentStatus(order.paymentStatus) ? (
               <OrderShippingPanel order={order} />
             ) : null}

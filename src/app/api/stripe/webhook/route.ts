@@ -24,6 +24,7 @@ import {
   handleShopperSubscriptionEvent,
 } from "@/lib/shopper-subscription-webhook";
 import { markDomainPurchasePaid } from "@/lib/domains/purchase-fulfill";
+import { syncRefundsForStripePaymentIntent } from "@/lib/refunds/sync-order-refunds";
 
 export const runtime = "nodejs";
 
@@ -127,6 +128,15 @@ export async function POST(req: NextRequest) {
     ) {
       const session = event.data.object as Stripe.Checkout.Session;
       await expirePendingCardOrder(session.metadata?.orderId);
+    }
+
+    if (event.type === "charge.refunded" && connectedAccountId) {
+      const charge = event.data.object as Stripe.Charge;
+      const pi =
+        typeof charge.payment_intent === "string"
+          ? charge.payment_intent
+          : charge.payment_intent?.id;
+      if (pi) await syncRefundsForStripePaymentIntent(pi);
     }
 
     if (event.type === "account.updated") {

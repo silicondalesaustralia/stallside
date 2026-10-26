@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { CommerceProvider } from "@/generated/prisma/client";
 import type { SquareWebhookEnvelope } from "@/lib/square/webhook-verify";
 import { applySquareInventoryCount } from "@/lib/square/apply-inventory";
+import { syncRefundsForSquarePayment } from "@/lib/refunds/sync-order-refunds";
 
 export async function persistSquareWebhookReceipt(
   envelope: SquareWebhookEnvelope,
@@ -48,7 +49,9 @@ export async function processSquareWebhookReceipt(receiptId: string) {
     if (receipt.eventType === "inventory.count.updated") {
       await processInventoryCountUpdated(envelope);
     }
-    // payment/refund/catalog handled as needed; inventory is primary v1 signal
+    if (receipt.eventType === "refund.updated") {
+      await processRefundUpdated(envelope);
+    }
     await prisma.squareWebhookReceipt.update({
       where: { id: receiptId },
       data: { processedAt: new Date(), processError: null },
@@ -62,6 +65,17 @@ export async function processSquareWebhookReceipt(receiptId: string) {
       },
     });
   }
+}
+
+/** Settled refunds (from Vendl or the Square Dashboard) update the Vendl order. */
+async function processRefundUpdated(envelope: SquareWebhookEnvelope) {
+  const obj = envelope.data?.object as
+    | { refund?: { payment_id?: string; status?: string } }
+    | undefined;
+  const refund = obj?.refund;
+  if (!refund?.payment_id) return;
+  if (refund.status !== "COMPLETED" && refund.status !== "FAILED") return;
+  await syncRefundsForSquarePayment(refund.payment_id);
 }
 
 async function processInventoryCountUpdated(envelope: SquareWebhookEnvelope) {
