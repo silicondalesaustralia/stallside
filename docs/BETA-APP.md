@@ -71,6 +71,10 @@ Nothing changes in the `stallside` (main) project's env.
   `X-Vendl-Original-Host`, which the app reads (`src/lib/tenancy/request-hostname.ts`). Other
   `vendl.app` hosts pass straight through. Its `ORIGIN_HOST` decides which app serves shops:
   `fallback.vendl.app` follows whichever Vercel project owns that domain.
+- The Worker must also rewrite `Origin` to `https://fallback.vendl.app` when it equals the visitor's
+  host. Vercel sets `x-forwarded-host` to the fallback host, and Next.js aborts every Server Action
+  (cart, cash, Stripe, Square, PayPal checkout) whose `Origin` doesn't match it. Cross-site
+  requests keep their foreign `Origin` and are still rejected.
 
 ## 4. Supabase (Social), optional
 
