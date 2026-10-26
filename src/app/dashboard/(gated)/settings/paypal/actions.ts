@@ -8,6 +8,7 @@ import {
   isPayPalConfigured,
   isPayPalConnectAvailable,
   isPayPalDirectMode,
+  isPayPalMarketplaceEnabled,
   paypalDirectMerchantId,
 } from "@/lib/paypal";
 import {
@@ -39,10 +40,17 @@ function assertPayPalConnectAvailable() {
   }
 }
 
+function assertMarketplaceEnabled() {
+  if (!isPayPalMarketplaceEnabled()) {
+    throw new Error("PayPal marketplace onboarding is not enabled.");
+  }
+}
+
 export async function startPayPalConnect() {
   const { owner, user } = await requireOwnerWrite();
   assertCardTier(owner, user);
   assertPayPalConnectAvailable();
+  assertMarketplaceEnabled();
   if (!isPayPalConfigured()) {
     throw new Error("PayPal is not configured on the server yet.");
   }
@@ -82,6 +90,7 @@ export async function connectPayPalDirect() {
   const { owner, user } = await requireOwnerWrite();
   assertCardTier(owner, user);
   assertPayPalConnectAvailable();
+  assertMarketplaceEnabled();
 
   const allowed =
     isPayPalDirectMode() ||
@@ -112,6 +121,7 @@ export async function refreshPayPalStatus(formData?: FormData) {
   const { owner, user } = await requireOwnerWrite();
   assertCardTier(owner, user);
   assertPayPalConnectAvailable();
+  assertMarketplaceEnabled();
   if (!isPayPalConfigured()) {
     redirect("/dashboard/settings/paypal");
   }

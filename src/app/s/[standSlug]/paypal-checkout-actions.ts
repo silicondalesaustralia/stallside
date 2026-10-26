@@ -14,6 +14,7 @@ import {
 import { orderLineFields } from "@/lib/order-gst";
 import { isPayPalConfigured, isPayPalConnectAvailable } from "@/lib/paypal";
 import { createPayPalCheckoutOrder } from "@/lib/paypal-orders";
+import { standOffersPayPal } from "@/lib/stand-payment-brands";
 import { checkoutSuccessUrl } from "@/lib/storefront/checkout-return-url";
 import {
   checkoutCancelledUrl,
@@ -70,10 +71,13 @@ export async function startPayPalCheckout(input: {
     if (!stand.acceptPayPal) {
       return { error: "PayPal is not enabled at this stand." };
     }
+    const ownerUser = await prisma.user.findUnique({
+      where: { id: owner.userId },
+      select: { email: true, role: true },
+    });
     if (
       !owner.paypalMerchantId ||
-      !owner.paypalOnboardingComplete ||
-      !owner.paypalPaymentsEnabled
+      !standOffersPayPal(stand, { ...owner, user: ownerUser })
     ) {
       return {
         error: "This stand cannot take PayPal yet (PayPal not connected).",

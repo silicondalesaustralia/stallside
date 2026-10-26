@@ -5,6 +5,7 @@ import {
   isPayPalConfigured,
   isPayPalConnectAvailable,
   isPayPalDirectMode,
+  isPayPalMarketplaceEnabled,
   paypalDirectMerchantId,
 } from "@/lib/paypal";
 import {
@@ -12,13 +13,10 @@ import {
   ownerHasProAccess,
 } from "@/lib/owner-trial";
 import { syncPayPalMerchantStatus } from "@/lib/paypal-sync";
-import {
-  connectPayPalDirect,
-  refreshPayPalStatus,
-  setPayPalPaymentsEnabled,
-  startPayPalConnect,
-} from "./actions";
+import { setPayPalPaymentsEnabled } from "./actions";
 import PayPalWarnings from "./PayPalWarnings";
+import PayPalMarketplacePanel from "./PayPalMarketplacePanel";
+import PayPalMerchantIdForm from "./PayPalMerchantIdForm";
 
 export default async function PayPalSettingsPage({
   searchParams,
@@ -41,9 +39,11 @@ export default async function PayPalSettingsPage({
     isPayPalDirectMode() ||
     hasComplimentaryAccess({ email: user.email, role: user.role });
   const directMerchantId = paypalDirectMerchantId();
+  const marketplace = isPayPalMarketplaceEnabled();
 
   if (
     cardTier &&
+    marketplace &&
     isPayPalConfigured() &&
     (params.return === "1" || params.merchantIdInPayPal)
   ) {
@@ -65,10 +65,6 @@ export default async function PayPalSettingsPage({
   const connectAvailable = isPayPalConnectAvailable();
   const connected = Boolean(owner.paypalMerchantId);
   const ready = owner.paypalOnboardingComplete;
-  const partnerDenied = params.partner === "denied";
-  const partnerDirectHint = params.partner === "direct";
-  const partnerError = params.partner === "error";
-  const connectedDirect = params.connected === "direct";
 
   return (
     <main className="flex w-full max-w-3xl flex-col gap-8">
@@ -91,30 +87,6 @@ export default async function PayPalSettingsPage({
         </p>
       ) : null}
 
-      {partnerDenied || partnerDirectHint ? (
-        <p className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-          {partnerDenied
-            ? "PayPal Partner Referrals is not enabled on this app yet (403 NOT_AUTHORIZED). Marketplace owner-onboarding needs PayPal partner approval."
-            : "Marketplace Connect is disabled (PAYPAL_CONNECT_MODE=direct)."}{" "}
-          Until Partner API is approved, use{" "}
-          <strong>Use platform PayPal (direct test)</strong> below - funds go to
-          the Vendl PayPal Business account linked in env.
-        </p>
-      ) : null}
-
-      {partnerError ? (
-        <p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">
-          PayPal Connect hit an error. Check live credentials and try again, or
-          use direct platform PayPal if Partner API is not approved.
-        </p>
-      ) : null}
-
-      {connectedDirect ? (
-        <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm">
-          Linked to the platform PayPal Business account for live testing.
-        </p>
-      ) : null}
-
       {!cardTier ? (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
           PayPal is on Vendl Pro. Your account does not have Pro access
@@ -126,13 +98,10 @@ export default async function PayPalSettingsPage({
 
       {!configured && connectAvailable ? (
         <p className="text-sm text-red-700">
-          Add <code className="rounded bg-black/5 px-1">PAYPAL_CLIENT_ID</code>,{" "}
-          <code className="rounded bg-black/5 px-1">PAYPAL_CLIENT_SECRET</code>,
+          Add <code className="rounded bg-black/5 px-1">PAYPAL_CLIENT_ID</code>{" "}
           and{" "}
-          <code className="rounded bg-black/5 px-1">
-            PAYPAL_PARTNER_MERCHANT_ID
-          </code>{" "}
-          (live merchant id) on the server, with{" "}
+          <code className="rounded bg-black/5 px-1">PAYPAL_CLIENT_SECRET</code>{" "}
+          on the server, with{" "}
           <code className="rounded bg-black/5 px-1">PAYPAL_MODE=live</code>.
         </p>
       ) : null}
@@ -148,46 +117,27 @@ export default async function PayPalSettingsPage({
             "Not connected"
           )}
         </p>
-        <p>Onboarding complete: {ready ? "Yes" : "No"}</p>
+        {marketplace ? (
+          <p>Onboarding complete: {ready ? "Yes" : "No"}</p>
+        ) : null}
         <p>
           Offering PayPal at checkout:{" "}
           {owner.paypalPaymentsEnabled ? "On" : "Off"}
         </p>
       </section>
 
-      {cardTier && connectAvailable ? (
-        <div className="flex flex-wrap gap-3">
-          <form action={startPayPalConnect}>
-            <button
-              type="submit"
-              disabled={!configured}
-              className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-50"
-            >
-              {connected ? "Continue marketplace Connect" : "Connect PayPal (marketplace)"}
-            </button>
-          </form>
-          {canDirect && directMerchantId ? (
-            <form action={connectPayPalDirect}>
-              <button
-                type="submit"
-                disabled={!configured}
-                className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold disabled:opacity-50"
-              >
-                Use platform PayPal (direct test)
-              </button>
-            </form>
-          ) : null}
-          {connected ? (
-            <form action={refreshPayPalStatus}>
-              <button
-                type="submit"
-                className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm font-semibold"
-              >
-                Refresh status
-              </button>
-            </form>
-          ) : null}
-        </div>
+      {cardTier && connectAvailable && configured && !marketplace ? (
+        <PayPalMerchantIdForm merchantId={owner.paypalMerchantId} />
+      ) : null}
+
+      {cardTier && connectAvailable && marketplace ? (
+        <PayPalMarketplacePanel
+          configured={configured}
+          connected={connected}
+          canDirect={canDirect && Boolean(directMerchantId)}
+          partner={params.partner}
+          connectedDirect={params.connected === "direct"}
+        />
       ) : null}
 
       {cardTier && connectAvailable && connected && ready ? (

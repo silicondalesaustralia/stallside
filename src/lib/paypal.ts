@@ -8,10 +8,25 @@ let cachedToken: PayPalToken | null = null;
 
 export function isPayPalConfigured(): boolean {
   return Boolean(
-    process.env.PAYPAL_CLIENT_ID &&
-      process.env.PAYPAL_CLIENT_SECRET &&
-      process.env.PAYPAL_PARTNER_MERCHANT_ID,
+    process.env.PAYPAL_CLIENT_ID && process.env.PAYPAL_CLIENT_SECRET,
   );
+}
+
+/**
+ * Partner Referrals onboarding needs PayPal partner approval. Until then,
+ * owners paste their Merchant Account ID and checkout sets it as payee.
+ */
+export function isPayPalMarketplaceEnabled(): boolean {
+  return (
+    process.env.PAYPAL_MARKETPLACE_ENABLED === "1" &&
+    Boolean(process.env.PAYPAL_PARTNER_MERCHANT_ID)
+  );
+}
+
+/** PayPal Merchant Account IDs are 13 uppercase letters/digits. */
+export function normalizePayPalMerchantId(raw: string): string | null {
+  const id = raw.trim().toUpperCase();
+  return /^[A-Z0-9]{13}$/.test(id) ? id : null;
 }
 
 export function isPayPalLiveMode(): boolean {

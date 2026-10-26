@@ -11,7 +11,11 @@ import {
   isSquarePaymentsEnabled,
 } from "@/lib/square/config";
 import { getSquareConnection } from "@/lib/square/connection";
-import { OnlinePaymentProvider } from "@/generated/prisma/client";
+import {
+  OnlinePaymentProvider,
+  type SubscriptionStatus,
+} from "@/generated/prisma/client";
+import { ownerHasProAccess } from "@/lib/owner-trial";
 import {
   squareCurrencyForBilling,
   squareEligibleBillingCurrency,
@@ -31,6 +35,9 @@ type StandPaymentFlags = {
 
 export type OwnerPaymentReady = {
   subscriptionPlan?: string | null;
+  subscriptionStatus?: SubscriptionStatus | string | null;
+  currentPeriodEndsAt?: Date | null;
+  lifetimeAccess?: boolean | null;
   stripeAccountId?: string | null;
   stripeChargesEnabled?: boolean;
   paypalMerchantId?: string | null;
@@ -94,12 +101,13 @@ export function standPaymentBrands(
   return brands;
 }
 
-/** PayPal at checkout - off until Connect is enabled for this environment. */
+/** PayPal at checkout - Pro only (no Vendl fee on PayPal). */
 export function standOffersPayPal(
   stand: Pick<StandPaymentFlags, "acceptPayPal">,
   owner: OwnerPaymentReady,
 ): boolean {
   if (!stand.acceptPayPal || !isPayPalConnectAvailable()) return false;
+  if (!ownerHasProAccess(owner, owner.user ?? undefined)) return false;
   return Boolean(
     owner.paypalMerchantId &&
       owner.paypalOnboardingComplete &&

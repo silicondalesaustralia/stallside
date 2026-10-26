@@ -30,9 +30,16 @@ declare global {
   }
 }
 
-function buildSdkSrc(clientId: string, currency: string, sandbox?: boolean) {
+function buildSdkSrc(
+  clientId: string,
+  merchantId: string,
+  currency: string,
+  sandbox?: boolean,
+) {
   const src = new URL("https://www.paypal.com/sdk/js");
   src.searchParams.set("client-id", clientId.trim());
+  // Required when the order payee is not the client-id's own account.
+  if (merchantId.trim()) src.searchParams.set("merchant-id", merchantId.trim());
   src.searchParams.set("currency", currency.toUpperCase());
   src.searchParams.set("intent", "capture");
   src.searchParams.set("components", "buttons");
@@ -45,6 +52,7 @@ function buildSdkSrc(clientId: string, currency: string, sandbox?: boolean) {
 
 export default function PayPalCheckoutButton({
   clientId,
+  merchantId,
   currency,
   standSlug,
   items,
@@ -187,7 +195,7 @@ export default function PayPalCheckoutButton({
   return (
     <div className={disabled ? "pointer-events-none opacity-50" : undefined}>
       <Script
-        src={buildSdkSrc(clientId, currency, sandbox)}
+        src={buildSdkSrc(clientId, merchantId, currency, sandbox)}
         strategy="afterInteractive"
         onLoad={() => {
           if (window.paypal) setSdkReady(true);
