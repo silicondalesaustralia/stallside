@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function PaymentProviderGuide({
   weeklyPayouts,
 }: {
@@ -28,6 +30,17 @@ export default function PaymentProviderGuide({
         <li>
           <strong>Vendl Pro removes the Vendl fee</strong> on Square and Stripe.
           Stripe and Square still charge their own processing fees.
+        </li>
+        <li>
+          <strong>PayPal is a Vendl Pro extra.</strong> It shows as its own button
+          at checkout, alongside Stripe or Square, for customers who prefer to pay
+          with PayPal. To connect, go to{" "}
+          <Link href="/dashboard/settings/paypal" className="underline">
+            Settings → PayPal
+          </Link>
+          , sign in with a PayPal <strong>Business</strong> account and approve
+          Vendl, then tick PayPal under Checkout payments below. There&apos;s
+          no Vendl fee; PayPal&apos;s own fee comes out of each sale.
         </li>
         <li>
           <strong>Already have a Stripe or Square account?</strong>{" "}

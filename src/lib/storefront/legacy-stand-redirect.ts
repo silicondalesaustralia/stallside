@@ -78,3 +78,25 @@ export async function redirectLegacyStandToWebsite(standSlug: string, target: Le
   }
   if (destination) redirect(destination);
 }
+
+/**
+ * The stand's live public home as owners should see it: the website (custom domain or
+ * subdomain) when `/s/{stand}` would redirect there, otherwise the stand checkout URL.
+ */
+export async function standPublicHome(
+  standSlug: string,
+  checkoutUrl: string,
+): Promise<{ url: string; label: string }> {
+  const fallback = { url: checkoutUrl, label: new URL(checkoutUrl).pathname };
+  if (!legacyStandRedirectsEnabled()) return fallback;
+  try {
+    const site = await publishedWebsiteForStand(standSlug);
+    if (!site || site.cartMode === CartMode.CUSTOMER_CHOICE) return fallback;
+    const url = standWebsiteUrl(site, "/");
+    const { host, pathname } = new URL(url);
+    return { url, label: `${host}${pathname === "/" ? "" : pathname}` };
+  } catch (err) {
+    console.error("[standPublicHome] website lookup failed; showing stand checkout", err);
+    return fallback;
+  }
+}

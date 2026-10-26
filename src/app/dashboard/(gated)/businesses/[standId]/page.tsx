@@ -3,9 +3,8 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { isPayPalConnectAvailable } from "@/lib/paypal";
-import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
-import { standPaymentBrands } from "@/lib/stand-payment-brands";
-import BusinessCheckoutStrip from "./BusinessCheckoutStrip";
+import { standCheckoutUrl } from "@/lib/stand-qr";
+import { standPublicHome } from "@/lib/storefront/legacy-stand-redirect";
 import BusinessPageHeader from "./BusinessPageHeader";
 import BusinessSetupPrompt from "./BusinessSetupPrompt";
 import BusinessPaymentsTab from "./BusinessPaymentsTab";
@@ -51,14 +50,10 @@ export default async function StandDetailPage({
   if (!stand) notFound();
 
   const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
-  const qrDataUrl = await standQrDataUrl(checkoutUrl, 240);
+  const publicHome = await standPublicHome(stand.slug, checkoutUrl);
   const cardTier = ownerHasProAccess(owner, {
     email: user.email,
     role: user.role,
-  });
-  const paymentBrands = standPaymentBrands(stand, {
-    ...owner,
-    user: { email: user.email, role: user.role },
   });
   return (
     <main className="flex flex-col gap-8">
@@ -69,15 +64,8 @@ export default async function StandDetailPage({
       <BusinessPageHeader
         standId={stand.id}
         name={stand.name}
-        slug={stand.slug}
-        checkoutUrl={checkoutUrl}
-      />
-
-      <BusinessCheckoutStrip
-        standId={stand.id}
-        standSlug={stand.slug}
-        qrDataUrl={qrDataUrl}
-        paymentBrands={paymentBrands}
+        publicUrl={publicHome.url}
+        publicLabel={publicHome.label}
       />
 
       <BusinessSetupPrompt

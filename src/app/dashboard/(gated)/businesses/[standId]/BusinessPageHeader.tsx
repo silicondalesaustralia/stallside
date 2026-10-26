@@ -4,13 +4,13 @@ import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 export default function BusinessPageHeader({
   standId,
   name,
-  slug,
-  checkoutUrl,
+  publicUrl,
+  publicLabel,
 }: {
   standId: string;
   name: string;
-  slug: string;
-  checkoutUrl: string;
+  publicUrl: string;
+  publicLabel: string;
 }) {
   return (
     <div>
@@ -25,16 +25,16 @@ export default function BusinessPageHeader({
           <p className="mt-2 text-sm text-[var(--muted)]">
             Checkout:{" "}
             <a
-              href={checkoutUrl}
+              href={publicUrl}
               className="text-[var(--leaf-dark)] underline"
               target="_blank"
             >
-              /s/{slug}
+              {publicLabel}
             </a>
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <ViewOnSiteLink href={checkoutUrl} />
+          <ViewOnSiteLink href={publicUrl} />
           <Link
             href={`/dashboard/qr/business/${standId}`}
             className="rounded-lg bg-[var(--leaf)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)]"
