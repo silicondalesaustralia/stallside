@@ -7,6 +7,7 @@ import { useToast } from '@/components/ui/Toast'
 import { InfoGuideLabel } from '@/components/ui/InfoGuide'
 import { SocialCalendarEventCard } from '@/components/social/SocialCalendarEventCard'
 import { SocialCalendarEventDrawer } from '@/components/social/SocialCalendarEventDrawer'
+import { useCalendarPostDrag } from '@/components/social/useCalendarPostDrag'
 import {
   defaultCalendarWeekStart,
   filterCalendarPostsByMode,
@@ -101,11 +102,12 @@ export function SocialCalendarTab({
   const [rescheduleOpen, setRescheduleOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const consumedInitialPostId = useRef<string | null>(null)
+  const { displayPosts, drag } = useCalendarPostDrag(posts, tz, onRefresh)
 
   const upcoming = useMemo(() => {
-    const base = filterUpcomingCalendarPosts(posts)
+    const base = filterUpcomingCalendarPosts(displayPosts)
     return filterCalendarPostsByMode(base, filter)
-  }, [posts, filter])
+  }, [displayPosts, filter])
 
   const weekDays = useMemo(() => weekDateRange(weekStart, tz), [weekStart, tz])
   const todayKey = dateKeyInTimeZone(new Date(), tz)
@@ -381,6 +383,7 @@ export function SocialCalendarTab({
             posts={monthPosts}
             selectedPostId={selectedPost?.id ?? null}
             onSelectPost={selectPost}
+            drag={drag}
           />
           {visiblePosts.length === 0 && (
             isTradiesPost ? (
@@ -451,18 +454,24 @@ export function SocialCalendarTab({
                   return (
                     <div
                       key={`${dayKey}-${hour}`}
+                      {...drag.cellProps(dayKey, hour)}
                       className={`min-w-0 overflow-hidden border-r border-[#F0EDE5] p-0.5 last:border-r-0 ${
                         isToday ? 'bg-[#FFFBEA]/20' : ''
-                      }`}
+                      } ${drag.isOver(dayKey, hour) ? '!bg-[#FFFBEA] ring-2 ring-inset ring-[#FFD700]' : ''}`}
                     >
                       {cellPosts.map((post) => (
-                        <EventCard
+                        <div
                           key={post.id}
-                          post={post}
-                          timeZone={tz}
-                          selected={selectedPost?.id === post.id}
-                          onSelect={() => selectPost(post)}
-                        />
+                          {...drag.cardProps(post)}
+                          className={drag.draggingId === post.id ? 'opacity-40' : 'cursor-grab'}
+                        >
+                          <EventCard
+                            post={post}
+                            timeZone={tz}
+                            selected={selectedPost?.id === post.id}
+                            onSelect={() => selectPost(post)}
+                          />
+                        </div>
                       ))}
                     </div>
                   )

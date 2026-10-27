@@ -1,6 +1,7 @@
 'use client'
 
 import type { SocialCalendarPost } from '@/components/social/SocialCalendarTab'
+import type { CalendarDragBindings } from '@/components/social/useCalendarPostDrag'
 import { TradiesPostCalendarEventCard } from '@/components/tradiespost/calendar/TradiesPostCalendarEventCard'
 import {
   buildMonthWeekRows,
@@ -17,6 +18,7 @@ type TradiesPostCalendarMonthGridProps = {
   posts: SocialCalendarPost[]
   selectedPostId: string | null
   onSelectPost: (post: SocialCalendarPost) => void
+  drag?: CalendarDragBindings
 }
 
 export function TradiesPostCalendarMonthGrid({
@@ -26,6 +28,7 @@ export function TradiesPostCalendarMonthGrid({
   posts,
   selectedPostId,
   onSelectPost,
+  drag,
 }: TradiesPostCalendarMonthGridProps) {
   const rows = buildMonthWeekRows(monthAnchor, timeZone)
   const allDays = rows.flat()
@@ -56,9 +59,12 @@ export function TradiesPostCalendarMonthGrid({
             return (
               <div
                 key={dayKey}
+                {...drag?.cellProps(dayKey)}
                 className={`min-h-[72px] border-r border-zinc-100 p-1 last:border-r-0 sm:min-h-[100px] sm:p-1.5 ${
                   !inMonth ? 'bg-zinc-50/80 text-zinc-400' : 'bg-white'
-                } ${isToday ? 'bg-[#FFFBEB]/60 ring-1 ring-inset ring-[#F5C518]/40' : ''}`}
+                } ${isToday ? 'bg-[#FFFBEB]/60 ring-1 ring-inset ring-[#F5C518]/40' : ''} ${
+                  drag?.isOver(dayKey) ? '!bg-[#FFFBEB] ring-2 ring-inset ring-[#F5C518]' : ''
+                }`}
               >
                 <div className="flex items-start justify-between gap-0.5">
                   <span
@@ -95,14 +101,19 @@ export function TradiesPostCalendarMonthGrid({
 
                 <div className="mt-1 hidden space-y-1 sm:block">
                   {dayPosts.slice(0, 2).map((post) => (
-                    <TradiesPostCalendarEventCard
+                    <div
                       key={post.id}
-                      post={post}
-                      timeZone={timeZone}
-                      selected={selectedPostId === post.id}
-                      mini
-                      onSelect={() => onSelectPost(post)}
-                    />
+                      {...drag?.cardProps(post)}
+                      className={drag?.draggingId === post.id ? 'opacity-40' : 'cursor-grab'}
+                    >
+                      <TradiesPostCalendarEventCard
+                        post={post}
+                        timeZone={timeZone}
+                        selected={selectedPostId === post.id}
+                        mini
+                        onSelect={() => onSelectPost(post)}
+                      />
+                    </div>
                   ))}
                   {dayPosts.length > 2 && (
                     <p className="px-0.5 text-[9px] font-semibold text-zinc-500">
