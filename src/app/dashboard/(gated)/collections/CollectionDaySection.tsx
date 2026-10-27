@@ -2,7 +2,10 @@ import type {
   CollectionStatus,
   HandoverMode,
   PaymentStatus,
+  PaymentTiming,
 } from "@/generated/prisma/client";
+import { formatMoney } from "@/lib/money";
+import { awaitingPickupPayment } from "@/lib/pay-at-pickup";
 import CollectionStatusButton from "./CollectionStatusButton";
 import CollectionDayEmailAll from "./CollectionDayEmailAll";
 import OrderCustomerEmail from "./OrderCustomerEmail";
@@ -16,11 +19,14 @@ type CollectionOrder = {
   collectionNote: string | null;
   collectionStatus: CollectionStatus | null;
   paymentStatus: PaymentStatus;
+  paymentTiming: PaymentTiming;
   handoverMode: HandoverMode;
   deliveryAddressLine1: string | null;
   deliverySuburb: string | null;
   deliveryPostcode: string | null;
   balanceCents: number | null;
+  totalCents: number;
+  currency: string;
   stand: { name: string };
   items: {
     id: string;
@@ -100,6 +106,11 @@ export default function CollectionDaySection({
                   - hold handover
                 </p>
               ) : null}
+              {awaitingPickupPayment(order) ? (
+                <p className="mt-1 text-sm font-medium text-[var(--warn)]">
+                  Pay at pickup · {formatMoney(order.totalCents, order.currency)}
+                </p>
+              ) : null}
               {order.receiptEmail ? (
                 <div className="mt-1">
                   <OrderCustomerEmail
@@ -135,6 +146,7 @@ export default function CollectionDaySection({
                 <CollectionStatusButton
                   orderId={order.id}
                   status={order.collectionStatus ?? "ORDERED"}
+                  payOnCollect={awaitingPickupPayment(order)}
                 />
               )}
             </div>

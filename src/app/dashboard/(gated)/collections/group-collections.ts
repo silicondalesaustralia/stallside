@@ -5,6 +5,7 @@ import {
   type CollectionStatus,
 } from "@/generated/prisma/client";
 import { formatCollectionLabel } from "@/lib/pre-order";
+import { awaitingPickupPayment } from "@/lib/pay-at-pickup";
 
 /** Order shape used by Collections day grouping and print sheets. */
 export type CollectionOrderView = {
@@ -59,8 +60,9 @@ export function groupCollectionDays(orders: CollectionOrderView[]) {
     const key = at.toISOString().slice(0, 10);
     const existing = groups.get(key);
     const itemCount = order.items.reduce((s, i) => s + i.quantity, 0);
-    const taken =
-      order.paymentTiming === PaymentTiming.DEPOSIT_THEN_BALANCE &&
+    const taken = awaitingPickupPayment(order)
+      ? 0
+      : order.paymentTiming === PaymentTiming.DEPOSIT_THEN_BALANCE &&
       order.paymentStatus !== PaymentStatus.PAID
         ? (order.depositCents ?? 0)
         : order.totalCents;

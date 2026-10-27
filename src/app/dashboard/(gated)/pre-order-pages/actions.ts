@@ -9,7 +9,7 @@ import {
 } from "@/generated/prisma/client";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { parsePreOrderFromForm } from "@/lib/pre-order";
+import { parsePreOrderFromForm, type PreOrderPaymentTiming } from "@/lib/pre-order";
 import { loadPreOrderCardRail, SQUARE_DEPOSIT_RECONNECT_ERROR } from "@/lib/preorder-card-rail";
 import { slugify } from "@/lib/slug";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
@@ -88,7 +88,7 @@ function scheduleFromPre(pre: {
   collectionAt: Date;
   collectionNote: string | null;
   showExactStock: boolean;
-  paymentTiming: "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE";
+  paymentTiming: PreOrderPaymentTiming;
   depositPercent: number | null;
   handoverMode: "COLLECT" | "DELIVER";
 }) {
@@ -98,10 +98,7 @@ function scheduleFromPre(pre: {
     collectionAt: pre.collectionAt,
     collectionNote: pre.collectionNote,
     showExactStock: pre.showExactStock,
-    paymentTiming:
-      pre.paymentTiming === "DEPOSIT_THEN_BALANCE"
-        ? PaymentTiming.DEPOSIT_THEN_BALANCE
-        : PaymentTiming.PAY_UPFRONT,
+    paymentTiming: PaymentTiming[pre.paymentTiming],
     depositPercent: pre.depositPercent,
     handoverMode:
       pre.handoverMode === "DELIVER"

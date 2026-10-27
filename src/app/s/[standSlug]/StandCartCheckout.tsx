@@ -50,6 +50,7 @@ import { standCatalogPath } from "@/lib/stand-seo";
 import PreOrderDetails from "./PreOrderDetails";
 import CartUpsellOffer from "./CartUpsellOffer";
 import { startCardCheckout } from "./digital-checkout-actions";
+import { placePayAtPickupOrder } from "./pay-at-pickup-actions";
 
 type LocalTransferInfo = {
   methodId: string;
@@ -136,7 +137,7 @@ export default function StandCartCheckout({
   const [step, setStep] = useState<"cart" | "pay" | "cash-confirm" | "lt-confirm">(
     "cart",
   );
-  const [paidVia, setPaidVia] = useState<"cash" | "local_transfer" | "square" | null>(null);
+  const [paidVia, setPaidVia] = useState<"cash" | "local_transfer" | "square" | "pickup" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cardTabHint, setCardTabHint] = useState(false);
   const [done, setDone] = useState(false);
@@ -301,6 +302,8 @@ export default function StandCartCheckout({
     lines.length > 0 && lines.every((l) => l.product.isPreOrder);
   const deliverOnly =
     preOrderOnly && lines.every((l) => l.product.handoverMode === "DELIVER");
+  const payAtPickup =
+    preOrderOnly && lines.every((l) => l.product.paymentTiming === "PAY_AT_PICKUP");
   const hasMixedCart =
     lines.some((l) => l.product.isPreOrder) &&
     lines.some((l) => !l.product.isPreOrder);
@@ -334,9 +337,14 @@ export default function StandCartCheckout({
     );
   }
 
-  function finishOk(via: "cash" | "local_transfer" | "square") {
+  function finishOk(via: "cash" | "local_transfer" | "square" | "pickup") {
     persist([]);
-    const sale = { standSlug, via: via === "square" ? "cash" : via, totalCents: total, currency };
+    const sale = {
+      standSlug,
+      via: via === "local_transfer" ? via : ("cash" as const),
+      totalCents: total,
+      currency,
+    };
     if (demoProduct) {
       storePendingDemoSale(sale);
       if (isEmbeddedCheckout()) {
@@ -366,6 +374,24 @@ export default function StandCartCheckout({
         return;
       }
       if ("orderNumber" in result) finishOk("cash");
+    });
+  }
+
+  function placePickupOrder() {
+    setError(null);
+    startTransition(async () => {
+      const result = await placePayAtPickupOrder({
+        standSlug,
+        items: payload,
+        customerName: customerName.trim(),
+        customerEmail: customerEmail.trim(),
+        customerPhone: customerPhone.trim(),
+      });
+      if ("error" in result) {
+        setError(result.error);
+        return;
+      }
+      finishOk("pickup");
     });
   }
 
@@ -466,9 +492,11 @@ export default function StandCartCheckout({
           <p className="mt-3 text-xl text-[var(--muted)]">
             {paidVia === "local_transfer"
               ? "Marked as paid. The owner will see this in their account shortly."
-              : paidVia === "square"
-                ? "Card payment confirmed. You're all set."
-                : "Cash payment confirmed. You're all set."}
+              : paidVia === "pickup"
+                ? "Pre-order placed. We've emailed your order details. Pay when you collect."
+                : paidVia === "square"
+                  ? "Card payment confirmed. You're all set."
+                  : "Cash payment confirmed. You're all set."}
           </p>
           {restockStandId ? (
             <RestockOptIn standId={restockStandId} inputId="restock-email-cash" />
@@ -565,6 +593,8 @@ export default function StandCartCheckout({
           showDemoCardHint={Boolean(demoProduct)}
           preOrderOnly={preOrderOnly}
           deliverOnly={deliverOnly}
+          payAtPickup={payAtPickup}
+          onPayAtPickup={placePickupOrder}
           firstOrderHint={firstOrderHint}
           customerName={customerName}
           customerEmail={customerEmail}

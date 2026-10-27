@@ -1,9 +1,10 @@
 import DashListCard from "@/components/DashListCard";
-import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
+import { PaymentMethod, PaymentStatus, PaymentTiming } from "@/generated/prisma/client";
 import { formatMoney } from "@/lib/money";
 import { formatDateInTz } from "@/lib/stand-timezone";
 import { COUNTED_STATUSES, isCountedPaymentStatus } from "@/lib/order-metrics";
 import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
+import { awaitingPickupPayment } from "@/lib/pay-at-pickup";
 import OrderCustomerBadge from "./OrderCustomerBadge";
 import OrderDeleteButton from "./OrderDeleteButton";
 
@@ -22,6 +23,7 @@ type OrderRow = {
   paymentMethod: PaymentMethod;
   localTransferMethodId: string | null;
   paymentStatus: PaymentStatus;
+  paymentTiming: PaymentTiming;
   customerName: string | null;
   customerPhone: string | null;
   receiptEmail: string | null;
@@ -98,13 +100,17 @@ export default function OrderListRow({
               </span>
             </p>
             <p className="mt-1 text-sm text-[var(--muted)]">
-              {isCountedPaymentStatus(order.paymentStatus)
+              {awaitingPickupPayment(order)
+                ? "pay at pickup · due on collection"
+                : isCountedPaymentStatus(order.paymentStatus)
                 ? orderPaymentLabel(
                     order.paymentMethod,
                     order.localTransferMethodId,
                   )
-                : order.paymentMethod.toLowerCase()}{" "}
-              · {paymentStatusNote(order.paymentStatus)}
+                : order.paymentMethod.toLowerCase()}
+              {awaitingPickupPayment(order)
+                ? null
+                : ` · ${paymentStatusNote(order.paymentStatus)}`}
             </p>
             <OrderCustomerBadge
               orderId={order.id}

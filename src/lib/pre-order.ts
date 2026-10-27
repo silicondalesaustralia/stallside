@@ -1,4 +1,4 @@
-/** Parse pre-order fields from product forms. Card-tier only. Client-safe (no Prisma). */
+/** Parse pre-order fields from product forms. Client-safe (no Prisma). */
 
 import {
   DEFAULT_TIMEZONE,
@@ -10,7 +10,10 @@ import {
 export type PaymentTimingValue =
   | "PAY_NOW"
   | "PAY_UPFRONT"
-  | "DEPOSIT_THEN_BALANCE";
+  | "DEPOSIT_THEN_BALANCE"
+  | "PAY_AT_PICKUP";
+
+export type PreOrderPaymentTiming = Exclude<PaymentTimingValue, "PAY_NOW">;
 
 export type HandoverModeValue = "COLLECT" | "DELIVER";
 
@@ -31,7 +34,7 @@ export type PreOrderParsed =
       collectionAt: Date;
       collectionNote: string | null;
       showExactStock: boolean;
-      paymentTiming: "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE";
+      paymentTiming: PreOrderPaymentTiming;
       depositPercent: number | null;
       handoverMode: HandoverModeValue;
     };
@@ -97,10 +100,21 @@ export function parsePreOrderFromForm(
     };
   }
   void cardTier;
-  if (!stripeConnected) {
+  const handoverRaw = String(formData.get("handoverMode") ?? "COLLECT");
+  const handoverMode: HandoverModeValue =
+    handoverRaw === "DELIVER" ? "DELIVER" : "COLLECT";
+  const payAtPickup = formData.get("paymentTiming") === "PAY_AT_PICKUP";
+  if (payAtPickup && handoverMode === "DELIVER") {
     return {
       ok: false,
-      error: "Connect Stripe or Square before enabling pre-orders.",
+      error: "Pay at pickup only works when customers collect. Choose Collect at a place.",
+    };
+  }
+  if (!stripeConnected && !payAtPickup) {
+    return {
+      ok: false,
+      error:
+        "Connect Stripe or Square to take card payments, or choose Pay at pickup.",
     };
   }
   const orderByAt = parseDateTimeLocal(
@@ -127,11 +141,14 @@ export function parsePreOrderFromForm(
     formData.get("preOrderShowExactStock") === "true";
 
   const depositMode =
-    formData.get("depositRequired") === "on" ||
-    formData.get("depositRequired") === "true" ||
-    formData.get("paymentTiming") === "DEPOSIT_THEN_BALANCE";
+    !payAtPickup &&
+    (formData.get("depositRequired") === "on" ||
+      formData.get("depositRequired") === "true" ||
+      formData.get("paymentTiming") === "DEPOSIT_THEN_BALANCE");
   let depositPercent: number | null = null;
-  let paymentTiming: "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE" = "PAY_UPFRONT";
+  let paymentTiming: PreOrderPaymentTiming = payAtPickup
+    ? "PAY_AT_PICKUP"
+    : "PAY_UPFRONT";
   if (depositMode) {
     const pctRaw = Number(formData.get("depositPercent") ?? 30);
     if (!Number.isFinite(pctRaw) || pctRaw < 1 || pctRaw > 99) {
@@ -140,10 +157,6 @@ export function parsePreOrderFromForm(
     depositPercent = Math.round(pctRaw);
     paymentTiming = "DEPOSIT_THEN_BALANCE";
   }
-
-  const handoverRaw = String(formData.get("handoverMode") ?? "COLLECT");
-  const handoverMode: HandoverModeValue =
-    handoverRaw === "DELIVER" ? "DELIVER" : "COLLECT";
 
   return {
     ok: true,
@@ -191,6 +204,10 @@ export const CART_MIX_TAKE_NOW_PREORDER =
 /** Shown when cart mixes pre-orders with different collection days. */
 export const CART_MIX_COLLECTION_DAYS =
   "Pre-order items in one checkout must share the same collection day.";
+
+/** Shown if a pay-at-pickup cart reaches an online payment rail. */
+export const PAY_AT_PICKUP_CART_ERROR =
+  "These pre-orders are paid at pickup. Place the order without paying online.";
 
 /** Shown when cart mixes incompatible payment/handover settings. */
 export const CART_MIX_PREORDER_SETTINGS =

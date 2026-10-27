@@ -29,7 +29,9 @@ export async function notifySale(orderId: string) {
 
   const total = formatMoney(order.totalCents, order.currency);
   const method =
-    order.paymentMethod === "CASH"
+    order.paymentTiming === "PAY_AT_PICKUP"
+      ? "Pay at pickup"
+      : order.paymentMethod === "CASH"
       ? "Cash"
       : order.paymentMethod === "PAYPAL"
         ? "PayPal"

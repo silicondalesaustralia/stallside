@@ -9,6 +9,7 @@ const COLLECTION_PAYMENT_STATUSES: PaymentStatus[] = [
   PaymentStatus.DEPOSIT_PAID,
   PaymentStatus.BALANCE_DUE,
   PaymentStatus.BALANCE_FAILED,
+  PaymentStatus.CUSTOMER_CONFIRMED,
 ];
 
 /** Upcoming forever + last 14 days (avoids full pre-order history). */

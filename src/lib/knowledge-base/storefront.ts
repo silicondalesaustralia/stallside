@@ -5,7 +5,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
     slug: "pre-orders",
     title: "Pre-orders overview",
     summary:
-      "How Vendl pre-orders work: a shared order window, card payment to reserve, then collect or deliver on the day.",
+      "How Vendl pre-orders work: a shared order window, card payment or pay at pickup, then collect or deliver on the day.",
     videoUrl: null,
     omitVideo: true,
     related: [
@@ -20,12 +20,13 @@ export const storefrontArticles: KnowledgeArticle[] = [
       { label: "Payments", href: "/dashboard/payments" },
     ],
     steps: [
-      "Pre-orders need Stripe or Square connected so buyers can pay by card to reserve. Whichever you choose as your product checkout provider takes the payment, including deposits. Available on Free and Pro.",
+      "Each pre-order page takes card payment (in full or a deposit) or Pay at pickup. Card needs Stripe or Square: whichever you choose as your product checkout provider takes the payment. Pay at pickup needs nothing connected. Available on Free and Pro.",
       "You sell from a pre-order page (one link or QR per collection or delivery day), not from a single product toggle. Mark catalogue products as Available for pre-order pages, then add them to a page.",
-      "Each page has an orders-close time, a collection or delivery time, optional note, and either pay in full or a deposit with balance due on handover.",
-      "Buyers pay by card only, enter name, email, and optional phone (or delivery address when you choose Deliver).",
+      "Each page has an orders-close time, a collection or delivery time, optional note, and and how customers pay: Pay in full now, Deposit with balance due on handover, or Pay at pickup.",
+      "Buyers enter name, email, and optional phone (or delivery address when you choose Deliver), then pay by card. On Pay at pickup pages they tap Place order, pay at pickup and pay you in person.",
       "Take-now stall items and pre-order items cannot share one checkout. Different collection days also need separate checkouts.",
-      "After payment, the buyer gets a confirmation email. You get a sale alert with their details.",
+      "The buyer gets a confirmation email. You get a sale alert with their details.",
+      "Pay at pickup orders aren't paid online, so a no-show costs you the stock. Use it for customers you know, or take a Deposit instead.",
       "Open Collections for the make list (what to produce), packing list (Ready → Collected), printable labels, and customer emails.",
     ],
   },
@@ -33,7 +34,7 @@ export const storefrontArticles: KnowledgeArticle[] = [
     slug: "pre-order-pages",
     title: "Create a pre-order page",
     summary:
-      "Build a multi-product sheet with one order window, optional deposit, cart add-on, and its own link or QR.",
+      "Build a multi-product sheet with one order window, card payment, deposit or pay at pickup, cart add-on, and its own link or QR.",
     videoUrl: null,
     omitVideo: true,
     related: ["pre-orders", "upsells", "product-options", "collections-day"],
@@ -42,11 +43,11 @@ export const storefrontArticles: KnowledgeArticle[] = [
       { label: "Products", href: "/dashboard/products" },
     ],
     steps: [
-      "Connect Stripe or Square first (Payments in the sidebar). Pre-order pages cannot go live without card payments enabled. If you connected Square before deposits were available, you'll be asked to reconnect Square once so it can save shoppers' cards.",
+      "To take payment or a deposit when customers order, connect Stripe or Square first (Payments in the sidebar). Without them, the page uses Pay at pickup. If you connected Square before deposits were available, you'll be asked to reconnect Square once so it can save shoppers' cards.",
       "On each product you want on the sheet, open the product editor and turn on Available for pre-order pages. Collection day and add-ons are set on the page, not on the product.",
       "Go to Pre-order pages → create a page. Name it (e.g. Friday bake 20 Mar). Optionally set the URL slug or leave it to auto-generate.",
       "Set Orders close and Collection (or delivery) time. Add a short note if buyers need directions or delivery timing.",
-      "Choose Handover: Collect at a place, or Deliver to an address. Choose Pay in full, or Deposit (percent now, balance on handover).",
+      "Choose Handover: Collect at a place, or Deliver to an address. Under How do customers pay?, choose Pay in full now, Deposit (percent now, balance on handover), or Pay at pickup (Collect only).",
       "Optionally show exact slots left publicly. Tick Hide on business page if these products should stay off the main stall catalogue and business QR - buyers use this page’s link or QR only.",
       "Select the products on this page. Items with options open their own product page so buyers can pick size, flavour, and so on.",
       "Optional: add a Pre-order add-on (name, price, optional % or $ off). It appears in the cart for this sheet and inherits the same collection day and payment settings.",
@@ -65,10 +66,10 @@ export const storefrontArticles: KnowledgeArticle[] = [
     steps: [
       "Open Collections after paid pre-orders start coming in. Days are grouped by collection or delivery date.",
       "Use the make list first: totals by product (and options), order count, and money taken so you know what to bake, pack, or pick.",
-      "Scroll to Pack for that day. Each order shows the buyer, items, and status. Mark Ready when packed, then Collected (or delivered) when handed over.",
+      "Scroll to Pack for that day. Each order shows the buyer, items, and status. Mark Ready when packed, then Collected (or delivered) when handed over. Pay at pickup orders show the amount due; their button says Paid & collected and also marks the order paid.",
       "Print the day list from the Collections toolbar when you want a paper run sheet. Use printable order labels when you bag or box by customer.",
       "Tap a customer email to message one buyer, or Email all on that day to reach everyone picking up (or receiving) together - see Email customers.",
-      "Collections shows upcoming paid pre-orders and the last 14 days. Older history stays under Orders.",
+      "Collections shows upcoming pre-orders and the last 14 days. Older history stays under Orders.",
     ],
   },
   {

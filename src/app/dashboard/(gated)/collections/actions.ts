@@ -5,6 +5,7 @@ import { CollectionStatus, PaymentStatus } from "@/generated/prisma/client";
 import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { orderFullyPaidForCollection } from "@/lib/deposit-order";
+import { awaitingPickupPayment } from "@/lib/pay-at-pickup";
 
 const NEXT: Partial<Record<CollectionStatus, CollectionStatus | null>> = {
   ORDERED: CollectionStatus.READY,
@@ -41,11 +42,17 @@ export async function advanceCollectionStatus(orderId: string) {
   const next = NEXT[order.collectionStatus];
   if (!next) return { error: "Already collected." };
 
+  const paidOnCollect =
+    next === CollectionStatus.COLLECTED && awaitingPickupPayment(order);
   await prisma.order.update({
     where: { id: order.id },
-    data: { collectionStatus: next },
+    data: {
+      collectionStatus: next,
+      ...(paidOnCollect ? { paymentStatus: PaymentStatus.PAID } : {}),
+    },
   });
 
   revalidatePath("/dashboard/collections");
+  if (paidOnCollect) revalidatePath("/dashboard/orders");
   return { ok: true as const };
 }

@@ -135,6 +135,8 @@ enum PaymentTiming {
   PAY_NOW
   PAY_UPFRONT
   DEPOSIT_THEN_BALANCE
+  /** Pre-order placed now, buyer pays the owner in person at collection. */
+  PAY_AT_PICKUP
 }
 
 /** How goods reach the buyer. */

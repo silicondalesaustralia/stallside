@@ -4,6 +4,7 @@ import { useState, useTransition, type FormEvent } from "react";
 import PreOrderAddonFields from "@/components/PreOrderAddonFields";
 import PreOrderFields from "../products/PreOrderFields";
 import PreOrderShareFields from "./PreOrderShareFields";
+import type { PaymentTimingValue } from "@/lib/pre-order";
 import {
   createPreOrderPage,
   updatePreOrderPage,
@@ -29,7 +30,7 @@ type PageValues = {
   collectionAt: string;
   collectionNote: string | null;
   showExactStock: boolean;
-  paymentTiming: "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE" | "PAY_NOW";
+  paymentTiming: PaymentTimingValue;
   depositPercent: number | null;
   handoverMode: "COLLECT" | "DELIVER";
   productIds: string[];
@@ -148,8 +149,10 @@ export default function PreOrderPageForm({
           defaultCollectionAt={values?.collectionAt ?? null}
           defaultCollectionNote={values?.collectionNote ?? null}
           defaultShowExactStock={values?.showExactStock ?? false}
-          defaultDepositRequired={
-            values?.paymentTiming === "DEPOSIT_THEN_BALANCE"
+          defaultPaymentTiming={
+            !values || values.paymentTiming === "PAY_NOW"
+              ? "PAY_UPFRONT"
+              : values.paymentTiming
           }
           defaultDepositPercent={values?.depositPercent ?? 30}
           defaultHandoverMode={values?.handoverMode ?? "COLLECT"}
@@ -224,7 +227,7 @@ export default function PreOrderPageForm({
         ) : null}
         <button
           type="submit"
-          disabled={pending || imageBusy || !stripeConnected}
+          disabled={pending || imageBusy}
           className="rounded-lg bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60"
         >
           {pending

@@ -3,6 +3,7 @@ import type { PreOrderCartMeta } from "@/lib/checkout";
 import { assertDepositLiabilityOk } from "@/lib/deposit-order";
 import { splitDepositBalance } from "@/lib/deposit-split";
 import { hasSquareSubscriptionScopes } from "@/lib/square/scopes";
+import { PAY_AT_PICKUP_CART_ERROR } from "@/lib/pre-order";
 
 export type SquareShopperDetails = {
   customerName: string;
@@ -55,6 +56,9 @@ export async function planSquarePreOrder(input: {
   grantedScopes: readonly string[];
 }): Promise<SquarePreOrderPlan | { error: string }> {
   const { preOrderCart: cart, shopper } = input;
+  if (cart.paymentTiming === PaymentTiming.PAY_AT_PICKUP) {
+    return { error: PAY_AT_PICKUP_CART_ERROR };
+  }
   const deliver = cart.handoverMode === HandoverMode.DELIVER;
   if (!shopper.customerName) {
     return { error: deliver ? "Enter your name for delivery." : "Enter your name for collection." };

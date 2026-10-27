@@ -86,6 +86,7 @@ export default async function OrdersPage({
         paymentMethod: true,
         localTransferMethodId: true,
         paymentStatus: true,
+        paymentTiming: true,
         customerName: true,
         customerPhone: true,
         receiptEmail: true,

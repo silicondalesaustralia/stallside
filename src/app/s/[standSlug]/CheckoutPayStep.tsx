@@ -10,6 +10,7 @@ import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import SquareWebPayButton from "./SquareWebPayButton";
 import PreOrderContactFields from "./PreOrderContactFields";
+import PayAtPickupButton from "./PayAtPickupButton";
 
 type CartItem = {
   productId: string;
@@ -45,6 +46,9 @@ type CheckoutPayStepProps = {
   /** Pre-order carts: card only + name/email/phone. */
   preOrderOnly?: boolean;
   deliverOnly?: boolean;
+  /** Pre-order cart set to pay at pickup: no online payment. */
+  payAtPickup?: boolean;
+  onPayAtPickup?: () => void;
   /** Offer first-order discount when email provided. */
   firstOrderHint?: string | null;
   customerName: string;
@@ -92,6 +96,8 @@ export default function CheckoutPayStep({
   showDemoCardHint = false,
   preOrderOnly = false,
   deliverOnly = false,
+  payAtPickup = false,
+  onPayAtPickup,
   firstOrderHint = null,
   customerName,
   customerEmail,
@@ -115,6 +121,7 @@ export default function CheckoutPayStep({
   onBack,
   backLabel = "Back to cart",
 }: CheckoutPayStepProps) {
+  const online = !payAtPickup;
   const showCash = cashEnabled && !preOrderOnly;
   const showLt = Boolean(localTransferLabel) && !preOrderOnly;
   const showPayPal =
@@ -125,7 +132,11 @@ export default function CheckoutPayStep({
   return (
     <div className="flex flex-col gap-3">
       <p className="text-xl font-semibold">
-        {preOrderOnly ? "Pay to reserve your order" : "How would you like to pay?"}
+        {payAtPickup
+          ? "Place your pre-order"
+          : preOrderOnly
+            ? "Pay to reserve your order"
+            : "How would you like to pay?"}
       </p>
       {preOrderOnly ? (
         <PreOrderContactFields
@@ -158,6 +169,14 @@ export default function CheckoutPayStep({
           />
         </label>
       ) : null}
+      {payAtPickup ? (
+        <PayAtPickupButton
+          amountLabel={formatMoney(subtotalCents, currency)}
+          pending={pending}
+          disabled={!customerName.trim() || !customerEmail.trim()}
+          onPlace={() => onPayAtPickup?.()}
+        />
+      ) : null}
       {showCash ? (
         <button
           type="button"
@@ -184,13 +203,13 @@ export default function CheckoutPayStep({
           <span>{localTransferLabel}</span>
         </button>
       ) : null}
-      {squareEnabled && squareDeposit ? (
+      {online && squareEnabled && squareDeposit ? (
         <p className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--muted)]">
           Deposit {formatMoney(squareDeposit.amountCents, currency)} now · Balance{" "}
           {formatMoney(squareDeposit.balanceCents, currency)} charged to the same card before handover
         </p>
       ) : null}
-      {squareEnabled ? (
+      {online && squareEnabled ? (
         <SquareWebPayButton
           standSlug={standSlug}
           items={customerChoiceAmountCents != null ? undefined : items}
@@ -216,7 +235,7 @@ export default function CheckoutPayStep({
           onSuccess={(orderNumber) => onSquareSuccess?.(orderNumber)}
         />
       ) : null}
-      {cardEnabled ? (
+      {online && cardEnabled ? (
         <>
           {cardFeeCents > 0 ? (
             <p className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--muted)]">
@@ -281,7 +300,7 @@ export default function CheckoutPayStep({
           onError={onPayPalError}
         />
       ) : null}
-      {!showCash && !showLt && !cardEnabled && !squareEnabled && !showPayPal ? (
+      {online && !showCash && !showLt && !cardEnabled && !squareEnabled && !showPayPal ? (
         <p className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-lg text-[var(--muted)]">
           No payment methods are available at this stand right now.
         </p>

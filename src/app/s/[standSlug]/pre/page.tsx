@@ -110,7 +110,7 @@ export default async function PublicPreOrdersIndexPage({
           <div className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
             <p className="font-medium">No pre-orders available</p>
             <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
-              Pre-orders let you pay by card for a collection or delivery day.
+              Pre-orders let you order ahead for a collection or delivery day.
               The stall packs your order; you pick it up (or they deliver) on
               that day. Nothing is listed here right now.
             </p>
