@@ -28,9 +28,15 @@ export const PLATFORM_FEE_BPS = 0;
 export const STALLSIDE_FEE_BPS = 250;
 export const LOW_STOCK_ALERT_COOLDOWN_HOURS = 6;
 /** Owner emails with free forever app access (ignore subscription status). */
-export const COMPLIMENTARY_ACCESS_EMAILS = ["jono@silicondales.com"] as const;
+export const COMPLIMENTARY_ACCESS_EMAILS = [
+  "jono@silicondales.com",
+  "jonathan@csmgdigital.com",
+] as const;
 /** Emails allowed to open platform admin (/admin). */
-export const PLATFORM_ADMIN_EMAILS = ["jono@silicondales.com"] as const;
+export const PLATFORM_ADMIN_EMAILS = [
+  "jono@silicondales.com",
+  "jonathan@csmgdigital.com",
+] as const;
 export const DEFAULT_CURRENCY = "AUD";
 
 export const CURRENCIES = [
