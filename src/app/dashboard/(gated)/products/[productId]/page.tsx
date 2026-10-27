@@ -16,7 +16,7 @@ import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
 import { entitySeoKey } from "@/lib/studio/seo-settings";
 import ProductEditForm from "./ProductEditForm";
 import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
-
+import { loadProductRecipeCost } from "@/lib/production/load-product-recipe-cost";
 /** Auth-gated; never serve a cached anonymous RSC payload for Edit links. */
 export const dynamic = "force-dynamic";
 
@@ -132,6 +132,7 @@ export default async function EditProductPage({
           upsellProductId: product.upsellProductId,
           upsellPriceCents: product.upsellPriceCents,
           siblingProducts,
+          tax: taxConfig(owner, product.currency), recipeCost: await loadProductRecipeCost(owner.id, product.id),
         }}
         initialImageError={imageError ?? null}
       />

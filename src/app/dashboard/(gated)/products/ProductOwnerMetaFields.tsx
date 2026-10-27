@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { formatMoney } from "@/lib/money";
+import type { ProductRecipeCost } from "@/lib/production/load-product-recipe-cost";
+import type { TaxConfig } from "@/lib/tax/config";
+import ProductMarginFields from "./ProductMarginFields";
 
 function parseDollars(raw: string): number | null {
   const t = raw.trim();
@@ -18,6 +20,8 @@ export default function ProductOwnerMetaFields({
   costCents,
   priceCents,
   priceFieldName = "price",
+  tax,
+  recipeCost,
 }: {
   currency: string;
   sku: string | null;
@@ -25,6 +29,8 @@ export default function ProductOwnerMetaFields({
   costCents: number | null;
   priceCents: number;
   priceFieldName?: string;
+  tax?: TaxConfig;
+  recipeCost?: ProductRecipeCost | null;
 }) {
   const [cost, setCost] = useState(
     costCents != null ? (costCents / 100).toFixed(2) : "",
@@ -45,10 +51,13 @@ export default function ProductOwnerMetaFields({
 
   const costParsed = parseDollars(cost);
   const priceParsed = parseDollars(price);
-  const profit =
-    costParsed != null && priceParsed != null
-      ? priceParsed - costParsed
-      : null;
+
+  function setFormPrice(cents: number) {
+    const input = document.querySelector(`input[name="${priceFieldName}"]`);
+    if (!(input instanceof HTMLInputElement)) return;
+    input.value = (cents / 100).toFixed(2);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -89,13 +98,15 @@ export default function ProductOwnerMetaFields({
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      <p className="text-sm text-[var(--muted)]">
-        Profit:{" "}
-        <span className="font-medium text-[var(--ink)]">
-          {profit != null ? formatMoney(profit, currency) : "—"}
-        </span>
-        <span className="ml-1">(price - cost)</span>
-      </p>
+      <ProductMarginFields
+        currency={currency}
+        costCents={costParsed}
+        priceCents={priceParsed}
+        tax={tax}
+        recipeCost={recipeCost}
+        onSetPrice={setFormPrice}
+        onUseRecipeCost={(cents) => setCost((cents / 100).toFixed(2))}
+      />
     </div>
   );
 }

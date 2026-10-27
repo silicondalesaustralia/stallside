@@ -37,6 +37,8 @@ export default function ProductPricingSection({ product }: { product: ProductFie
         upc={product.upc}
         costCents={product.costCents}
         priceCents={product.priceCents}
+        tax={product.tax}
+        recipeCost={product.recipeCost}
       />
       <ProductPriceTiersFields currency={product.currency} initial={product.priceTiers} disabled={product.hasOptions} />
     </DashFormSection>

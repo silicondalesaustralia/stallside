@@ -50,7 +50,14 @@ export default function LinkedProducts({
               </ActionForm>
             </div>
             <ProductPackaging link={l} materials={packagingMaterials} />
-            <PricingCalculator unitCostCents={unitCost} priceCents={l.priceCents} currency={l.currency} tax={tax} />
+            <PricingCalculator
+              key={`${l.priceCents}-${Math.round(unitCost)}`}
+              productId={l.productId}
+              unitCostCents={unitCost}
+              priceCents={l.priceCents}
+              currency={l.currency}
+              tax={tax}
+            />
           </section>
         );
       })}

@@ -446,6 +446,7 @@ export async function updateProduct(productId: string, formData: FormData) {
     revalidatePath(`/dashboard/products/${product.id}`);
     revalidatePath(`/dashboard/businesses/${product.standId}`);
     revalidatePath("/dashboard/pre-order-pages");
+    revalidatePath("/dashboard/production", "layout");
     revalidatePath(`/s/${product.stand.slug}`);
     revalidateTag(standCatalogTag(product.stand.slug), "max");
     revalidatePath(`/s/${product.stand.slug}/${slug}`);

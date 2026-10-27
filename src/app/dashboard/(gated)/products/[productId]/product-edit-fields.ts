@@ -2,6 +2,8 @@ import type { ProductSupplyStatus } from "@/generated/prisma/client";
 import type { PriceTier } from "@/lib/price-tiers";
 import type { FulfilmentChoiceValue } from "@/lib/fulfilment/handover-choice";
 import type { ShippingModeValue } from "@/lib/shipping/shipping-cost";
+import type { ProductRecipeCost } from "@/lib/production/load-product-recipe-cost";
+import type { TaxConfig } from "@/lib/tax/config";
 import type { SavedOptionGroup } from "./ProductOptionsEditor";
 import type { CategoryChoice } from "./ProductOrganisationSection";
 
@@ -46,4 +48,7 @@ export type ProductFields = {
   upsellProductId: string | null;
   upsellPriceCents: number | null;
   siblingProducts: { id: string; name: string; priceCents: number }[];
+  tax: TaxConfig;
+  /** Unit cost from a linked Production recipe, if any. */
+  recipeCost: ProductRecipeCost | null;
 };
