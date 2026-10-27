@@ -189,7 +189,6 @@ export async function updateStand(standId: string, formData: FormData) {
     timezone: resolveStandTimezone(
       String(formData.get("timezone") ?? existing.timezone ?? DEFAULT_TIMEZONE),
     ),
-    showExactStock: formData.get("showExactStock") === "on",
   });
   if (!parsed.success) {
     const detail = parsed.error.issues[0]?.message;
@@ -229,7 +228,6 @@ export async function updateStand(standId: string, formData: FormData) {
             acceptLocalTransfer: false,
           }
         : {}),
-      showExactStock: parsed.data.showExactStock ?? false,
     },
   });
 

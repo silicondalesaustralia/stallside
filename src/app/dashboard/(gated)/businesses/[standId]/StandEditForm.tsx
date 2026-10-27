@@ -17,7 +17,6 @@ type StandFields = {
   locationLabel: string | null;
   currency: string;
   timezone: string;
-  showExactStock: boolean;
 };
 
 export default function StandEditForm({ stand, site }: { stand: StandFields; site: BusinessSiteUrl | null }) {
@@ -106,15 +105,6 @@ export default function StandEditForm({ stand, site }: { stand: StandFields; sit
         <span className="text-[var(--muted)]">
           Pre-order order-by and collection times use this timezone.
         </span>
-      </label>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          name="showExactStock"
-          defaultChecked={stand.showExactStock}
-          className="size-4"
-        />
-        Show exact stock publicly
       </label>
       <div className="flex flex-wrap items-center gap-3 sm:col-span-2">
       {message ? (
