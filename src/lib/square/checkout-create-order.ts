@@ -24,6 +24,7 @@ import {
   squareEligibleBillingCurrency,
 } from "@/lib/commerce/payment-rail";
 import { cleanShopperDetails, planSquarePreOrder } from "@/lib/square/checkout-preorder";
+import type { CardPayTiming } from "@/lib/pre-order-pay-options";
 export type SquareCheckoutCartInput = {
   standSlug: string;
   items?: CartItemInput[];
@@ -36,6 +37,8 @@ export type SquareCheckoutCartInput = {
   deliveryPostcode?: string;
   deliveryNotes?: string;
   couponCode?: string | null;
+  /** Pre-orders: pay in full or the deposit, when the page offers both. */
+  payTiming?: CardPayTiming;
 };
 
 export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
@@ -53,6 +56,7 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
       : await loadStandCart(input.standSlug, input.items ?? [], {
           receiptEmail: shopper.customerEmail || null,
           claimFirstOrder: Boolean(shopper.customerEmail),
+          payTiming: input.payTiming,
         });
   if ("error" in loaded) return { error: loaded.error };
 

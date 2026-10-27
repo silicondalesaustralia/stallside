@@ -6,6 +6,7 @@ import {
   toDateTimeLocalInTz,
   zonedWallClockToUtc,
 } from "@/lib/stand-timezone";
+import { CARD_PAY_OPTIONS, payOptionsFromForm } from "@/lib/pre-order-pay-options";
 
 export type PaymentTimingValue =
   | "PAY_NOW"
@@ -25,6 +26,7 @@ export type PreOrderParsed =
       collectionNote: null;
       showExactStock: false;
       paymentTiming: "PAY_NOW";
+      paymentOptions: [];
       depositPercent: null;
       handoverMode: "COLLECT";
     }
@@ -34,7 +36,9 @@ export type PreOrderParsed =
       collectionAt: Date;
       collectionNote: string | null;
       showExactStock: boolean;
+      /** Default option (first of `paymentOptions`). */
       paymentTiming: PreOrderPaymentTiming;
+      paymentOptions: PreOrderPaymentTiming[];
       depositPercent: number | null;
       handoverMode: HandoverModeValue;
     };
@@ -94,6 +98,7 @@ export function parsePreOrderFromForm(
         collectionNote: null,
         showExactStock: false,
         paymentTiming: "PAY_NOW",
+        paymentOptions: [],
         depositPercent: null,
         handoverMode: "COLLECT",
       },
@@ -103,18 +108,21 @@ export function parsePreOrderFromForm(
   const handoverRaw = String(formData.get("handoverMode") ?? "COLLECT");
   const handoverMode: HandoverModeValue =
     handoverRaw === "DELIVER" ? "DELIVER" : "COLLECT";
-  const payAtPickup = formData.get("paymentTiming") === "PAY_AT_PICKUP";
-  if (payAtPickup && handoverMode === "DELIVER") {
+  const paymentOptions = payOptionsFromForm(formData);
+  if (!paymentOptions.length) {
+    return { ok: false, error: "Choose at least one way for customers to pay." };
+  }
+  if (paymentOptions.includes("PAY_AT_PICKUP") && handoverMode === "DELIVER") {
     return {
       ok: false,
       error: "Pay at pickup only works when customers collect. Choose Collect at a place.",
     };
   }
-  if (!stripeConnected && !payAtPickup) {
+  if (!stripeConnected && paymentOptions.some((o) => CARD_PAY_OPTIONS.includes(o))) {
     return {
       ok: false,
       error:
-        "Connect Stripe or Square to take card payments, or choose Pay at pickup.",
+        "Connect Stripe or Square to take card payments, or choose Pay at pickup only.",
     };
   }
   const orderByAt = parseDateTimeLocal(
@@ -140,22 +148,13 @@ export function parsePreOrderFromForm(
     formData.get("preOrderShowExactStock") === "on" ||
     formData.get("preOrderShowExactStock") === "true";
 
-  const depositMode =
-    !payAtPickup &&
-    (formData.get("depositRequired") === "on" ||
-      formData.get("depositRequired") === "true" ||
-      formData.get("paymentTiming") === "DEPOSIT_THEN_BALANCE");
   let depositPercent: number | null = null;
-  let paymentTiming: PreOrderPaymentTiming = payAtPickup
-    ? "PAY_AT_PICKUP"
-    : "PAY_UPFRONT";
-  if (depositMode) {
+  if (paymentOptions.includes("DEPOSIT_THEN_BALANCE")) {
     const pctRaw = Number(formData.get("depositPercent") ?? 30);
     if (!Number.isFinite(pctRaw) || pctRaw < 1 || pctRaw > 99) {
       return { ok: false, error: "Deposit percent must be between 1 and 99." };
     }
     depositPercent = Math.round(pctRaw);
-    paymentTiming = "DEPOSIT_THEN_BALANCE";
   }
 
   return {
@@ -166,7 +165,8 @@ export function parsePreOrderFromForm(
       collectionAt,
       collectionNote: noteRaw ? noteRaw.slice(0, 200) : null,
       showExactStock,
-      paymentTiming,
+      paymentTiming: paymentOptions[0],
+      paymentOptions,
       depositPercent,
       handoverMode,
     },

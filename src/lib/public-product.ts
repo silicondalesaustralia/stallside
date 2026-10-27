@@ -2,7 +2,9 @@ import {
   formatCollectionLabel,
   formatOrderByLabel,
   type PaymentTimingValue,
+  type PreOrderPaymentTiming,
 } from "@/lib/pre-order";
+import { payOptionsOf } from "@/lib/pre-order-pay-options";
 import type { PublicOptionGroup } from "@/lib/product-options";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
@@ -32,6 +34,8 @@ export type PublicProductCard = {
   priceTiers: { qty: number; totalCents: number }[];
   handoverMode: "COLLECT" | "DELIVER";
   paymentTiming: PaymentTimingValue;
+  /** Pre-orders: options the shopper can choose at checkout (first is the default). */
+  paymentOptions: PreOrderPaymentTiming[];
   depositPercent: number | null;
   /** When this product is in the cart, offer this product as upsell. */
   upsellProductId: string | null;
@@ -92,6 +96,7 @@ export function mapPublicProduct(
     freshnessNote?: string | null;
     priceTiers?: unknown;
     paymentTiming?: PaymentTimingValue;
+    paymentOptions?: readonly string[] | null;
     depositPercent?: number | null;
     handoverMode?: "COLLECT" | "DELIVER";
     upsellProductId?: string | null;
@@ -160,11 +165,10 @@ export function mapPublicProduct(
   const priceTiers =
     optionGroups.length > 0 ? [] : parsePriceTiers(p.priceTiers);
 
-  const paymentTiming: PaymentTimingValue = isPre
-    ? !p.paymentTiming || p.paymentTiming === "PAY_NOW"
-      ? "PAY_UPFRONT"
-      : p.paymentTiming
-    : "PAY_NOW";
+  const paymentOptions = isPre
+    ? payOptionsOf({ paymentTiming: p.paymentTiming ?? "PAY_UPFRONT", paymentOptions: p.paymentOptions })
+    : [];
+  const paymentTiming: PaymentTimingValue = paymentOptions[0] ?? "PAY_NOW";
 
   return {
     id: p.id,
@@ -185,10 +189,10 @@ export function mapPublicProduct(
     priceTiers,
     handoverMode: p.handoverMode === "DELIVER" ? "DELIVER" : "COLLECT",
     paymentTiming,
-    depositPercent:
-      paymentTiming === "DEPOSIT_THEN_BALANCE"
-        ? (p.depositPercent ?? 30)
-        : null,
+    paymentOptions,
+    depositPercent: paymentOptions.includes("DEPOSIT_THEN_BALANCE")
+      ? (p.depositPercent ?? 30)
+      : null,
     upsellProductId: p.upsellProductId ?? null,
     upsellPriceCents: p.upsellPriceCents ?? null,
     preOrderUpsellName: p.preOrderUpsellName ?? null,

@@ -10,6 +10,7 @@ export type PreOrderAddonDefaults = {
   collectionAt: Date | null;
   collectionNote: string | null;
   paymentTiming: PaymentTiming;
+  paymentOptions: PaymentTiming[];
   depositPercent: number | null;
   handoverMode: HandoverMode;
   currency: string;
@@ -57,6 +58,7 @@ export async function upsertPreOrderAddonProduct(input: {
       input.defaults.paymentTiming === PaymentTiming.PAY_NOW
         ? PaymentTiming.PAY_UPFRONT
         : input.defaults.paymentTiming,
+    paymentOptions: input.defaults.paymentOptions,
     depositPercent: input.defaults.depositPercent,
     handoverMode: input.defaults.handoverMode,
   };
@@ -100,6 +102,7 @@ export function addonDefaultsFromProduct(p: {
   collectionAt: Date | null;
   collectionNote: string | null;
   paymentTiming: PaymentTiming;
+  paymentOptions: PaymentTiming[];
   depositPercent: number | null;
   handoverMode: HandoverMode;
   currency: string;
@@ -110,6 +113,7 @@ export function addonDefaultsFromProduct(p: {
     collectionAt: p.collectionAt,
     collectionNote: p.collectionNote,
     paymentTiming: p.paymentTiming,
+    paymentOptions: p.paymentOptions,
     depositPercent: p.depositPercent,
     handoverMode: p.handoverMode,
     currency: p.currency,

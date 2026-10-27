@@ -29,6 +29,7 @@ import {
   splitDepositBalance,
 } from "@/lib/deposit-order";
 import { PAY_AT_PICKUP_CART_ERROR } from "@/lib/pre-order";
+import type { CardPayTiming } from "@/lib/pre-order-pay-options";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -41,6 +42,8 @@ export async function startCardCheckout(input: {
   deliverySuburb?: string;
   deliveryPostcode?: string;
   deliveryNotes?: string;
+  /** Pre-orders: pay in full or the deposit, when the page offers both. */
+  payTiming?: CardPayTiming;
 }) {
   try {
     const customerName = (input.customerName ?? "").trim().slice(0, 120);
@@ -67,6 +70,7 @@ export async function startCardCheckout(input: {
         : await loadStandCart(input.standSlug, input.items ?? [], {
             receiptEmail: customerEmail || null,
             claimFirstOrder: Boolean(customerEmail),
+            payTiming: input.payTiming,
           });
     if ("error" in loaded) return { error: loaded.error };
 

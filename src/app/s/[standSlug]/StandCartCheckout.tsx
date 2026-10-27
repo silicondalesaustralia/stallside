@@ -40,6 +40,7 @@ import {
 import {
   CART_MIX_COLLECTION_DAYS,
   CART_MIX_TAKE_NOW_PREORDER,
+  type PreOrderPaymentTiming,
 } from "@/lib/pre-order";
 import { cartLineKey, unitPriceWithOptions } from "@/lib/product-options";
 import {
@@ -149,6 +150,7 @@ export default function StandCartCheckout({
   const [deliverySuburb, setDeliverySuburb] = useState("");
   const [deliveryPostcode, setDeliveryPostcode] = useState("");
   const [deliveryNotes, setDeliveryNotes] = useState("");
+  const [payPick, setPayPick] = useState<PreOrderPaymentTiming | null>(null);
 
   const productIds = products.map((p) => p.id).join(",");
 
@@ -256,6 +258,13 @@ export default function StandCartCheckout({
       .filter((l): l is NonNullable<typeof l> => Boolean(l));
   }, [products, cartLines, upsell, preOrderUpsell, pagePreOrderUpsells]);
 
+  const preOrderOnly =
+    lines.length > 0 && lines.every((l) => l.product.isPreOrder);
+  const payOptions = preOrderOnly ? (lines[0]?.product.paymentOptions ?? []) : [];
+  const payTiming = payPick && payOptions.includes(payPick) ? payPick : (payOptions[0] ?? null);
+  const payAtPickup = payTiming === "PAY_AT_PICKUP";
+  const cardPayTiming =
+    payTiming === "PAY_UPFRONT" || payTiming === "DEPOSIT_THEN_BALANCE" ? payTiming : undefined;
   const subtotal = lines.reduce((sum, l) => sum + l.lineTotalCents, 0);
   const total = subtotal;
   const passOnApplies = stallsideFeeApplies && passFeeToCustomer && total > 0;
@@ -264,10 +273,7 @@ export default function StandCartCheckout({
   const squareTotalCents =
     total + (passOnApplies ? stallsidePassOnFeeCents(total) : 0);
   const depositPercent =
-    lines.length > 0 &&
-    lines.every((l) => l.product.isPreOrder && l.product.paymentTiming === "DEPOSIT_THEN_BALANCE")
-      ? (lines[0]?.product.depositPercent ?? 30)
-      : null;
+    payTiming === "DEPOSIT_THEN_BALANCE" ? (lines[0]?.product.depositPercent ?? 30) : null;
   const squareDeposit = (() => {
     if (depositPercent == null || total <= 0) return null;
     const split = splitDepositBalance(total, depositPercent);
@@ -298,12 +304,8 @@ export default function StandCartCheckout({
       ? `First visit? Enter email for ${formatMoney(firstOrder.amountCents, currency)} off`
       : `First visit? Enter email for ${firstOrder.percent}% off`
     : null;
-  const preOrderOnly =
-    lines.length > 0 && lines.every((l) => l.product.isPreOrder);
   const deliverOnly =
     preOrderOnly && lines.every((l) => l.product.handoverMode === "DELIVER");
-  const payAtPickup =
-    preOrderOnly && lines.every((l) => l.product.paymentTiming === "PAY_AT_PICKUP");
   const hasMixedCart =
     lines.some((l) => l.product.isPreOrder) &&
     lines.some((l) => !l.product.isPreOrder);
@@ -450,6 +452,7 @@ export default function StandCartCheckout({
         deliverySuburb: deliverOnly ? deliverySuburb.trim() : undefined,
         deliveryPostcode: deliverOnly ? deliveryPostcode.trim() : undefined,
         deliveryNotes: deliverOnly ? deliveryNotes.trim() : undefined,
+        payTiming: cardPayTiming,
       });
       if ("error" in result && result.error) {
         setError(result.error);
@@ -595,6 +598,17 @@ export default function StandCartCheckout({
           deliverOnly={deliverOnly}
           payAtPickup={payAtPickup}
           onPayAtPickup={placePickupOrder}
+          payChoice={
+            payTiming && payOptions.length > 1
+              ? {
+                  options: payOptions,
+                  value: payTiming,
+                  depositPercent: lines[0]?.product.depositPercent ?? null,
+                  onChange: setPayPick,
+                }
+              : null
+          }
+          cardPayTiming={cardPayTiming}
           firstOrderHint={firstOrderHint}
           customerName={customerName}
           customerEmail={customerEmail}

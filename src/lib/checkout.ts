@@ -8,7 +8,9 @@ import {
   CART_MIX_COLLECTION_DAYS,
   CART_MIX_PREORDER_SETTINGS,
   CART_MIX_TAKE_NOW_PREORDER,
+  type PreOrderPaymentTiming,
 } from "@/lib/pre-order";
+import { payOptionsKey, payOptionsOf } from "@/lib/pre-order-pay-options";
 import {
   formatOptionsSnapshot,
   unitPriceWithOptions,
@@ -46,7 +48,10 @@ export type PreOrderCartMeta = {
   isPreOrder: true;
   collectionAt: Date;
   collectionNote: string | null;
+  /** The shopper's chosen option (else the default). */
   paymentTiming: PaymentTiming;
+  /** Every option the shopper could choose for this cart. */
+  paymentOptions: PreOrderPaymentTiming[];
   depositPercent: number | null;
   handoverMode: HandoverMode;
 };
@@ -163,7 +168,12 @@ export async function loadCustomerChoiceCheckout(
 export async function loadStandCart(
   standSlug: string,
   items: CartItemInput[],
-  opts?: { receiptEmail?: string | null; claimFirstOrder?: boolean },
+  opts?: {
+    receiptEmail?: string | null;
+    claimFirstOrder?: boolean;
+    /** Pre-orders: the payment option the shopper picked. */
+    payTiming?: PreOrderPaymentTiming | null;
+  },
 ) {
   if (!items.length) {
     return { error: "Add at least one item." as const };
@@ -306,20 +316,16 @@ export async function loadStandCart(
       if (sawTakeNow) {
         return { error: CART_MIX_TAKE_NOW_PREORDER } as const;
       }
-      const timing =
-        product.paymentTiming === PaymentTiming.PAY_NOW
-          ? PaymentTiming.PAY_UPFRONT
-          : product.paymentTiming;
-      const depositPercent =
-        timing === PaymentTiming.DEPOSIT_THEN_BALANCE
-          ? (product.depositPercent ?? 30)
-          : null;
+      const payOptions = payOptionsOf(product);
+      const depositPercent = payOptions.includes("DEPOSIT_THEN_BALANCE")
+        ? (product.depositPercent ?? 30)
+        : null;
       if (preOrderCart) {
         if (preOrderCart.collectionAt.getTime() !== product.collectionAt.getTime()) {
           return { error: CART_MIX_COLLECTION_DAYS } as const;
         }
         if (
-          preOrderCart.paymentTiming !== timing ||
+          payOptionsKey(preOrderCart.paymentOptions) !== payOptionsKey(payOptions) ||
           preOrderCart.handoverMode !== product.handoverMode ||
           preOrderCart.depositPercent !== depositPercent
         ) {
@@ -330,7 +336,8 @@ export async function loadStandCart(
           isPreOrder: true,
           collectionAt: product.collectionAt,
           collectionNote: product.collectionNote,
-          paymentTiming: timing,
+          paymentTiming: PaymentTiming[payOptions[0]],
+          paymentOptions: payOptions,
           depositPercent,
           handoverMode: product.handoverMode,
         };
@@ -341,6 +348,13 @@ export async function loadStandCart(
         return { error: CART_MIX_TAKE_NOW_PREORDER } as const;
       }
     }
+  }
+
+  if (preOrderCart && opts?.payTiming) {
+    if (!preOrderCart.paymentOptions.includes(opts.payTiming)) {
+      return { error: "That payment option isn't available for these pre-orders." as const };
+    }
+    preOrderCart.paymentTiming = PaymentTiming[opts.payTiming];
   }
 
   const lineData: CartLineData[] = normalized.map((item) => {

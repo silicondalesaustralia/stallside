@@ -10,6 +10,8 @@ import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import SquareWebPayButton from "./SquareWebPayButton";
 import PreOrderContactFields from "./PreOrderContactFields";
+import PreOrderPayChoice, { type PreOrderPayChoiceValue } from "./PreOrderPayChoice";
+import type { CardPayTiming } from "@/lib/pre-order-pay-options";
 import PayAtPickupButton from "./PayAtPickupButton";
 
 type CartItem = {
@@ -49,6 +51,10 @@ type CheckoutPayStepProps = {
   /** Pre-order cart set to pay at pickup: no online payment. */
   payAtPickup?: boolean;
   onPayAtPickup?: () => void;
+  /** Set when the pre-order page offers more than one way to pay. */
+  payChoice?: PreOrderPayChoiceValue | null;
+  /** Card option the shopper picked (full or deposit). */
+  cardPayTiming?: CardPayTiming;
   /** Offer first-order discount when email provided. */
   firstOrderHint?: string | null;
   customerName: string;
@@ -98,6 +104,8 @@ export default function CheckoutPayStep({
   deliverOnly = false,
   payAtPickup = false,
   onPayAtPickup,
+  payChoice = null,
+  cardPayTiming,
   firstOrderHint = null,
   customerName,
   customerEmail,
@@ -169,6 +177,7 @@ export default function CheckoutPayStep({
           />
         </label>
       ) : null}
+      {payChoice ? <PreOrderPayChoice {...payChoice} /> : null}
       {payAtPickup ? (
         <PayAtPickupButton
           amountLabel={formatMoney(subtotalCents, currency)}
@@ -221,6 +230,7 @@ export default function CheckoutPayStep({
           deliverySuburb={deliverOnly ? deliverySuburb : undefined}
           deliveryPostcode={deliverOnly ? deliveryPostcode : undefined}
           deliveryNotes={deliverOnly ? deliveryNotes : undefined}
+          payTiming={cardPayTiming}
           depositMode={Boolean(squareDeposit)}
           amountCents={
             squareDeposit?.amountCents ||

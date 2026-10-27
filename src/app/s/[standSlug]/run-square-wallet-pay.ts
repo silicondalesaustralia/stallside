@@ -34,6 +34,7 @@ export async function runSquareWalletPay(
         deliveryPostcode: props.deliveryPostcode,
         deliveryNotes: props.deliveryNotes,
         couponCode: props.couponCode,
+        payTiming: props.payTiming,
         sourceId: token,
       });
       if ("error" in done && done.error) {

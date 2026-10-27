@@ -34,6 +34,7 @@ export async function placePayAtPickupOrder(input: {
     const loaded = await loadStandCart(input.standSlug, input.items, {
       receiptEmail: customerEmail || null,
       claimFirstOrder: Boolean(customerEmail),
+      payTiming: "PAY_AT_PICKUP",
     });
     if ("error" in loaded) return { error: loaded.error ?? "Could not place your order." };
 

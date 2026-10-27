@@ -125,6 +125,7 @@ export async function updateStand(standId: string, formData: FormData) {
           collectionAt: null,
           collectionNote: null,
           paymentTiming: PaymentTiming.PAY_UPFRONT,
+          paymentOptions: [],
           depositPercent: null,
           handoverMode: HandoverMode.COLLECT,
           currency: existing.currency,
