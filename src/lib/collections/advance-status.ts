@@ -28,6 +28,6 @@ export async function advanceOwnerCollection(
   if (!next) return { error: "Already collected." };
 
   await prisma.order.update({ where: { id: order.id }, data: { collectionStatus: next } });
-  revalidatePath("/dashboard/collections");
+  revalidatePath("/dashboard/collections", "layout");
   return { ok: true, status: next };
 }

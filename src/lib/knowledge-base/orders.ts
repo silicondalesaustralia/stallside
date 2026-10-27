@@ -38,9 +38,9 @@ export const orderArticles: KnowledgeArticle[] = [
       { label: "Orders", href: "/dashboard/orders" },
     ],
     steps: [
-      "Open the order and tap the customer's email. On Pick Ups & Delivery, tap the email on the order.",
+      "Open the order and tap the customer's email. On a Pick Ups & Delivery page, tap the email under the customer's name.",
       "Edit the Subject and write your Message, then tap Send email.",
-      "To message everyone on a pre-order page, open its card in Pick Ups & Delivery and tap Email all (N).",
+      "To message everyone on a pre-order page, open its row in Pick Ups & Delivery and tap Email all (N) above the Packing list.",
       "Emails come from Vendl on your behalf. Replies go to your email.",
     ],
     tips: [

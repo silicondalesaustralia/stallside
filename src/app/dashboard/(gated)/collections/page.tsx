@@ -1,15 +1,8 @@
 import { requireOwner } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
-import CollectionPageCard from "./CollectionPageCard";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
-import { groupCollectionPages } from "./group-collection-pages";
-import {
-  loadCollectionOrders,
-  toCollectionOrderView,
-} from "@/lib/collections/load-collections";
-import { loadStandPreOrderPages } from "./load-preorder-pages";
-import { loadStandSubscriptionOffers } from "./load-subscription-offers";
+import CollectionsTable from "./CollectionsTable";
+import { loadCollectionGroups } from "./load-collection-groups";
 
 export default async function CollectionsPage() {
   const { owner } = await requireOwner();
@@ -26,50 +19,24 @@ export default async function CollectionsPage() {
     );
   }
 
-  const [rawOrders, pages, offers, standBrand] = await Promise.all([
-    loadCollectionOrders(owner.id, selected.id),
-    loadStandPreOrderPages(owner.id, selected.id),
-    loadStandSubscriptionOffers(owner.id, selected.id),
-    prisma.stand.findFirst({
-      where: { id: selected.id, ownerId: owner.id },
-      select: { name: true, logoUrl: true },
-    }),
-  ]);
-  const orders = rawOrders.map(toCollectionOrderView);
-  const groups = groupCollectionPages(orders, pages, offers);
-  const brand = {
-    name: standBrand?.name ?? selected.name,
-    logoUrl: standBrand?.logoUrl ?? null,
-  };
+  const { groups } = await loadCollectionGroups(owner.id, selected);
 
   return (
-    <main className="flex flex-col gap-8">
-      <div className="collections-screen-only">
+    <main className="flex flex-col gap-5">
+      <div>
         <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
           Pick Ups &amp; Delivery
         </h1>
         <p className="mt-1 text-[var(--muted)]">
-          {groups.length} page{groups.length === 1 ? "" : "s"} in progress ·{" "}
-          {selected.name}
+          {groups.length} page{groups.length === 1 ? "" : "s"} in progress · {selected.name}. Open one for the make
+          list, packing list and printing.
         </p>
       </div>
 
       {groups.length === 0 ? (
-        <p className="collections-screen-only text-[var(--muted)]">
-          No paid pre-orders or subscription cycles upcoming or in the last 14
-          days.
-        </p>
+        <p className="text-[var(--muted)]">No paid pre-orders or subscription cycles upcoming or in the last 14 days.</p>
       ) : (
-        <div className="flex flex-col gap-4">
-          {groups.map((group, index) => (
-            <CollectionPageCard
-              key={group.key}
-              group={group}
-              brand={brand}
-              defaultOpen={index === 0}
-            />
-          ))}
-        </div>
+        <CollectionsTable groups={groups} />
       )}
     </main>
   );
