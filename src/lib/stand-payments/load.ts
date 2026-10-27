@@ -34,6 +34,7 @@ export async function loadOwnerStandPayments(owner: Owner, standId: string) {
       acceptCard: true,
       acceptPayPal: true,
       acceptSquare: true,
+      _count: { select: { products: { where: { isArchived: false } } } },
     },
   });
   if (!stand) return null;

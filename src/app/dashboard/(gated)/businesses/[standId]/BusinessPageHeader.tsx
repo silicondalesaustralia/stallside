@@ -23,7 +23,7 @@ export default function BusinessPageHeader({
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">{name}</h1>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Checkout:{" "}
+            Your site:{" "}
             <a
               href={publicUrl}
               className="text-[var(--leaf-dark)] underline"

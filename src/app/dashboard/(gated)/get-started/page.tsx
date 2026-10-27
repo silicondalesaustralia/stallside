@@ -59,7 +59,7 @@ export default async function GetStartedPage() {
           icon="sell"
           title="Set up checkout & payments"
           body="Connect Stripe, Square or PayPal for card payments, and choose what customers can pay with."
-          href={`/dashboard/businesses/${selected.id}?tab=payments`}
+          href="/dashboard/payments"
           cta="Set up payments"
           done={progress.payments}
         />

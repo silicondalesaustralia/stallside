@@ -7,22 +7,20 @@ import {
   STAND_TIMEZONES,
   resolveStandTimezone,
 } from "@/lib/stand-timezone";
+import type { BusinessSiteUrl } from "@/lib/storefront/business-site-url";
 import { updateStand } from "../actions";
+import StandSiteUrlField from "./StandSiteUrlField";
 
 type StandFields = {
   id: string;
   name: string;
-  slug: string;
-  description: string | null;
   locationLabel: string | null;
   currency: string;
   timezone: string;
   showExactStock: boolean;
-  showSubscriptionsOnStand: boolean;
-  isActive: boolean;
 };
 
-export default function StandEditForm({ stand }: { stand: StandFields }) {
+export default function StandEditForm({ stand, site }: { stand: StandFields; site: BusinessSiteUrl | null }) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -66,25 +64,7 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Checkout link slug</span>
-        <input
-          name="slug"
-          defaultValue={stand.slug}
-          required
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-        <span className="text-[var(--muted)]">Appears in /s/your-slug</span>
-      </label>
-      <label className="flex flex-col gap-2 text-sm sm:col-span-2">
-        <span className="font-medium">Instructions for customers</span>
-        <textarea
-          name="description"
-          defaultValue={stand.description ?? ""}
-          rows={3}
-          className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-        />
-      </label>
+      <StandSiteUrlField site={site} />
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Suburb / location</span>
         <input
@@ -135,24 +115,6 @@ export default function StandEditForm({ stand }: { stand: StandFields }) {
           className="size-4"
         />
         Show exact stock publicly
-      </label>
-      <label className="flex items-center gap-2 text-sm sm:col-span-2">
-        <input
-          type="checkbox"
-          name="showSubscriptionsOnStand"
-          defaultChecked={stand.showSubscriptionsOnStand}
-          className="size-4"
-        />
-        Show Memberships link on the stand page (with Shop / Pre-orders)
-      </label>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          name="isActive"
-          defaultChecked={stand.isActive}
-          className="size-4"
-        />
-        Public checkout enabled
       </label>
       <div className="flex flex-wrap items-center gap-3 sm:col-span-2">
       {message ? (

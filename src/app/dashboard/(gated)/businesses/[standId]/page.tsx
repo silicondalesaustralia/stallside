@@ -1,13 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ownerHasProAccess } from "@/lib/owner-trial";
-import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { standCheckoutUrl } from "@/lib/stand-qr";
 import { standPublicHome } from "@/lib/storefront/legacy-stand-redirect";
+import { businessSiteUrl } from "@/lib/storefront/business-site-url";
 import BusinessPageHeader from "./BusinessPageHeader";
 import BusinessSetupPrompt from "./BusinessSetupPrompt";
-import BusinessPaymentsTab from "./BusinessPaymentsTab";
 import BusinessSetupTabs, {
   isBusinessTabId,
   MOVED_BUSINESS_TABS,
@@ -19,9 +17,6 @@ import BrandingManagedByWebsite from "./BrandingManagedByWebsite";
 import { websiteBrandForStand } from "@/lib/storefront/stand-brand-source";
 import StandDeleteButton from "./StandDeleteButton";
 import StandEditForm from "./StandEditForm";
-import PaymentsOverview from "./PaymentsOverview";
-import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
-import { ownerSquareReady } from "@/lib/square/owner-ready";
 import SyncSelectedBusiness from "@/components/SyncSelectedBusiness";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { GET_STARTED_PATH } from "@/lib/onboarding/onboarding-gate";
@@ -39,7 +34,7 @@ export default async function StandDetailPage({
   const tab: BusinessTabId = isBusinessTabId(tabParam) ? tabParam : "details";
   if (newParam === "1") redirect(GET_STARTED_PATH);
 
-  const { owner, user } = await requireOwner();
+  const { owner } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
   const stand = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },
@@ -53,15 +48,12 @@ export default async function StandDetailPage({
   if (!stand) notFound();
 
   const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
-  const [publicHome, websiteBrand] = await Promise.all([
+  const [publicHome, websiteBrand, site] = await Promise.all([
     standPublicHome(stand.slug, checkoutUrl),
     websiteBrandForStand(stand.slug),
+    businessSiteUrl(owner.id),
   ]);
   const brandingInWebStudio = websiteBrand !== null;
-  const cardTier = ownerHasProAccess(owner, {
-    email: user.email,
-    role: user.role,
-  });
   return (
     <main className="flex flex-col gap-8">
       <SyncSelectedBusiness
@@ -82,7 +74,7 @@ export default async function StandDetailPage({
 
       <BusinessSetupTabs standId={stand.id} active={tab} hideBranding={brandingInWebStudio} />
 
-      {tab === "details" ? <StandEditForm stand={stand} /> : null}
+      {tab === "details" ? <StandEditForm stand={stand} site={site} /> : null}
       {tab === "details" ? (
         <StandSocialForm
           standId={stand.id}
@@ -93,41 +85,6 @@ export default async function StandDetailPage({
             youtubeUrl: stand.youtubeUrl,
             websiteUrl: stand.websiteUrl,
           }}
-        />
-      ) : null}
-      {tab === "payments" ? (
-        <BusinessPaymentsTab
-          standId={stand.id}
-          currency={stand.currency}
-          localTransferAlias={stand.localTransferAlias}
-          localTransferMethodId={stand.localTransferMethodId}
-          acceptCash={stand.acceptCash}
-          acceptLocalTransfer={stand.acceptLocalTransfer}
-          acceptCard={stand.acceptCard}
-          acceptPayPal={stand.acceptPayPal}
-          cardReady={Boolean(
-            owner.stripeAccountId && owner.stripeChargesEnabled,
-          )}
-          paypalReady={Boolean(
-            owner.paypalMerchantId &&
-              owner.paypalOnboardingComplete &&
-              owner.paypalPaymentsEnabled,
-          )}
-          paypalConnectAvailable={isPayPalConnectAvailable()}
-          cardTier={cardTier}
-          stripeConnected={owner.stripeChargesEnabled}
-          stripeStarted={Boolean(owner.stripeAccountId)}
-          productCount={stand.products.length}
-          square={
-            squareEligibleBillingCurrency(owner.billingCurrency)
-              ? {
-                  accept: stand.acceptSquare,
-                  ready: await ownerSquareReady(owner),
-                  isProvider: owner.onlinePaymentProvider === "SQUARE",
-                }
-              : null
-          }
-          overview={<PaymentsOverview owner={owner} />}
         />
       ) : null}
       {tab === "branding" && brandingInWebStudio ? <BrandingManagedByWebsite /> : null}

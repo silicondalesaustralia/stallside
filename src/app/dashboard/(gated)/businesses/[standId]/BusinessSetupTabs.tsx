@@ -2,7 +2,6 @@ import Link from "next/link";
 
 export const BUSINESS_TABS = [
   { id: "details", label: "Business Details" },
-  { id: "payments", label: "Checkout payments" },
   { id: "branding", label: "Branding" },
 ] as const;
 
@@ -10,6 +9,7 @@ export const BUSINESS_TABS = [
 export const MOVED_BUSINESS_TABS: Record<string, string> = {
   products: "/dashboard/products",
   upsells: "/dashboard/upsells",
+  payments: "/dashboard/payments",
 };
 
 export type BusinessTabId = (typeof BUSINESS_TABS)[number]["id"];

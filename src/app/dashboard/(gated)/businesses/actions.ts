@@ -176,7 +176,9 @@ export async function updateStand(standId: string, formData: FormData) {
   }
 
   // Always read as strings - empty must become null in Prisma (undefined = skip).
-  const description = String(formData.get("description") ?? "").trim();
+  const description = formData.has("description")
+    ? String(formData.get("description") ?? "").trim()
+    : (existing.description ?? "");
   const locationLabel = String(formData.get("locationLabel") ?? "").trim();
 
   const parsed = standSchema.safeParse({
@@ -188,9 +190,6 @@ export async function updateStand(standId: string, formData: FormData) {
       String(formData.get("timezone") ?? existing.timezone ?? DEFAULT_TIMEZONE),
     ),
     showExactStock: formData.get("showExactStock") === "on",
-    showSubscriptionsOnStand:
-      formData.get("showSubscriptionsOnStand") === "on",
-    isActive: formData.get("isActive") === "on",
   });
   if (!parsed.success) {
     const detail = parsed.error.issues[0]?.message;
@@ -231,9 +230,6 @@ export async function updateStand(standId: string, formData: FormData) {
           }
         : {}),
       showExactStock: parsed.data.showExactStock ?? false,
-      showSubscriptionsOnStand:
-        parsed.data.showSubscriptionsOnStand ?? false,
-      isActive: parsed.data.isActive ?? true,
     },
   });
 
@@ -248,6 +244,7 @@ function revalidateStandPaths(
 ) {
   revalidatePath("/dashboard/businesses");
   revalidatePath(`/dashboard/businesses/${standId}`);
+  revalidatePath("/dashboard/payments");
   revalidatePath(`/dashboard/businesses/${standId}/qr`);
   revalidatePath(`/dashboard/qr/business/${standId}`);
   revalidatePath(`/s/${slug}`);
