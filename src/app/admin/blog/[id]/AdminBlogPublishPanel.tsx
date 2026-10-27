@@ -12,6 +12,7 @@ import {
   unpublishBlogPostAction,
 } from "../actions";
 import AdminBlogAuthorSelect from "./AdminBlogAuthorSelect";
+import AdminBlogHeroImageField from "./AdminBlogHeroImageField";
 
 const fieldClass =
   "w-full rounded-[var(--radius)] border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none ring-[var(--leaf)] focus:ring-2";
@@ -80,15 +81,14 @@ export default function AdminBlogPublishPanel({
         </label>
       </section>
 
-      <section className="dash-card flex flex-col gap-3 p-4">
-        <h2 className="font-semibold text-[var(--field)]">Hero image (optional)</h2>
-        <input name="heroImageUrl" defaultValue={post.heroImageUrl ?? ""} placeholder="https://… or /news/…" className={fieldClass} />
-        <input name="heroImageAlt" defaultValue={post.heroImageAlt ?? ""} placeholder="Alt text" className={fieldClass} />
-        <div className="grid grid-cols-2 gap-2">
-          <input name="heroImageWidth" type="number" defaultValue={post.heroImageWidth ?? ""} placeholder="Width" className={fieldClass} />
-          <input name="heroImageHeight" type="number" defaultValue={post.heroImageHeight ?? ""} placeholder="Height" className={fieldClass} />
-        </div>
-      </section>
+      <AdminBlogHeroImageField
+        hero={{
+          url: post.heroImageUrl,
+          alt: post.heroImageAlt,
+          width: post.heroImageWidth,
+          height: post.heroImageHeight,
+        }}
+      />
     </div>
   );
 }
