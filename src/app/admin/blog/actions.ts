@@ -8,6 +8,7 @@ import { adminBlogPath, adminBlogPostPath } from "@/lib/blog/paths";
 import { revalidateBlogPost } from "@/lib/blog/revalidate";
 import { uniqueBlogSlug } from "@/lib/blog/slug";
 import { defaultBlogAuthorId } from "@/lib/blog/authors";
+import { uploadBlogHeroImage } from "@/lib/blog/hero-image-upload";
 
 function backTo(id: string, query: Record<string, string>): never {
   redirect(`${adminBlogPostPath(id)}?${new URLSearchParams(query)}`);
@@ -19,13 +20,21 @@ function postId(formData: FormData): string {
   return id;
 }
 
+async function heroFromUpload(postSlug: string, formData: FormData): Promise<string | undefined> {
+  const file = formData.get("heroImageFile");
+  if (!(file instanceof File) || file.size === 0) return undefined;
+  return uploadBlogHeroImage(postSlug, file);
+}
+
 /** Save editor fields. Slugs are frozen once a post has been published. */
 async function saveFromForm(id: string, formData: FormData) {
   const existing = await prisma.blogPost.findUnique({ where: { id } });
   if (!existing) throw new Error("Post not found");
   let parsed: ReturnType<typeof parseBlogPostForm>;
+  let uploadedHero: string | undefined;
   try {
     parsed = parseBlogPostForm(formData);
+    uploadedHero = await heroFromUpload(existing.slug, formData);
   } catch (error) {
     backTo(id, { error: error instanceof Error ? error.message : "Invalid form" });
   }
@@ -33,7 +42,8 @@ async function saveFromForm(id: string, formData: FormData) {
     existing.publishedAt || !parsed.slugInput || parsed.slugInput === existing.slug
       ? existing.slug
       : await uniqueBlogSlug(parsed.slugInput, id);
-  const post = await prisma.blogPost.update({ where: { id }, data: { ...parsed.data, slug } });
+  const data = { ...parsed.data, slug, heroImageUrl: uploadedHero ?? parsed.data.heroImageUrl };
+  const post = await prisma.blogPost.update({ where: { id }, data });
   if (existing.status === "PUBLISHED") {
     revalidateBlogPost(existing.section, existing.slug, existing.alsoListedIn);
     revalidateBlogPost(post.section, post.slug, post.alsoListedIn);
