@@ -20,6 +20,9 @@
 # production
 /build
 
+# blog agent product context checkout (CI)
+/.blog-context
+
 # misc
 .DS_Store
 *.pem

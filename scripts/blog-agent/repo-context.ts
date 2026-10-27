@@ -1,6 +1,6 @@
 import { execFileSync } from "child_process";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { existsSync, readFileSync } from "fs";
+import { join, resolve } from "path";
 
 const ROOT = process.cwd();
 const FACT_FILES = ["src/lib/plan-copy.ts", "src/lib/pricing-model.ts", "src/lib/constants.ts"];
@@ -9,8 +9,25 @@ function read(relative: string): string {
   return readFileSync(join(ROOT, relative), "utf8");
 }
 
+/**
+ * Checkout of the upcoming release (BLOG_AGENT_CONTEXT_DIR, e.g. feature/social-kit) that product
+ * facts and the knowledge base are read from; falls back to this checkout when it is missing.
+ */
+export function productContextRoot(): string {
+  const dir = process.env.BLOG_AGENT_CONTEXT_DIR?.trim();
+  const root = dir ? resolve(ROOT, dir) : ROOT;
+  return existsSync(join(root, "src/lib/knowledge-base/index.ts")) ? root : ROOT;
+}
+
+/** Which branch the product context came from, for source labels. */
+export function productContextLabel(): string {
+  return productContextRoot() === ROOT ? "this checkout" : process.env.BLOG_AGENT_CONTEXT_REF?.trim() || "upcoming release";
+}
+
 function labelled(relative: string): string {
-  return `===== ${relative} =====\n${read(relative)}`;
+  const fromContext = join(productContextRoot(), relative);
+  const text = existsSync(fromContext) ? readFileSync(fromContext, "utf8") : read(relative);
+  return `===== ${relative} (${productContextLabel()}) =====\n${text}`;
 }
 
 export function agentDoc(name: "PLAYBOOK" | "WRITING"): string {

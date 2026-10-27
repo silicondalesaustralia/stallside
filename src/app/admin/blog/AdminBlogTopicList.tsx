@@ -1,6 +1,7 @@
 import type { AdminBlogTopicRow } from "@/lib/blog/admin-queries";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { createManualTopicAction } from "./topic-actions";
+import AdminBlogKeywordForm from "./AdminBlogKeywordForm";
 import AdminBlogTopicActions from "./AdminBlogTopicActions";
 
 const fieldClass =
@@ -9,6 +10,7 @@ const fieldClass =
 export default function AdminBlogTopicList({ topics }: { topics: AdminBlogTopicRow[] }) {
   return (
     <div className="flex flex-col gap-4">
+      <AdminBlogKeywordForm />
       <form action={createManualTopicAction} className="dash-card flex flex-col gap-3 p-4 md:flex-row md:items-end">
         <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm">
           <span className="font-medium">Suggest a topic</span>

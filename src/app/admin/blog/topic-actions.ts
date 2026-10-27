@@ -18,6 +18,22 @@ export async function createManualTopicAction(formData: FormData) {
   redirect(adminBlogPath("topics"));
 }
 
+/** Keyword or phrase in, draft out: the writer briefs it like an evening idea, then drafts it. */
+export async function writeFromKeywordAction(formData: FormData) {
+  await requireAdmin();
+  const keyword = String(formData.get("keyword") ?? "").trim().slice(0, 200);
+  const angle = String(formData.get("angle") ?? "").trim().slice(0, 1000);
+  const section = formData.get("section") === "NEWS" ? "NEWS" : "GUIDE";
+  if (keyword.length < 5) redirect(`${adminBlogPath("topics")}&error=${encodeURIComponent("Keyword is too short")}`);
+  const topic = await prisma.blogTopic.create({
+    data: { title: keyword, angle: angle || null, section, source: "MANUAL", score: 80 },
+    select: { id: true },
+  });
+  const result = await pickBlogTopic(topic.id, { enforceLimit: false });
+  const query = result.ok ? "" : `&error=${encodeURIComponent(result.reason)}`;
+  redirect(`${adminBlogPath("topics")}${query}`);
+}
+
 export async function writeTopicNowAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");

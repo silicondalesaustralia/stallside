@@ -23,6 +23,13 @@ jobs:
         with:
           ref: ${{ vars.BLOG_AGENT_GIT_REF || 'main' }}
           fetch-depth: 0
+      # Knowledge base and pricing facts come from the upcoming release; falls back to this checkout.
+      - name: Check out upcoming release for product context
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: ${{ vars.BLOG_AGENT_CONTEXT_REF || 'feature/social-kit' }}
+          path: .blog-context
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -33,7 +40,9 @@ jobs:
         env:
           BLOG_AGENT_BASE_URL: ${{ vars.BLOG_AGENT_BASE_URL }}
           BLOG_AGENT_TOKEN: ${{ secrets.BLOG_AGENT_TOKEN }}
-          BLOG_AGENT_PREVIEW_REF: origin/feature/social-kit
+          BLOG_AGENT_PREVIEW_REF: origin/${{ vars.BLOG_AGENT_CONTEXT_REF || 'feature/social-kit' }}
+          BLOG_AGENT_CONTEXT_DIR: .blog-context
+          BLOG_AGENT_CONTEXT_REF: ${{ vars.BLOG_AGENT_CONTEXT_REF || 'feature/social-kit' }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
           DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
