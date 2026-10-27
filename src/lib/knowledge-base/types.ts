@@ -24,6 +24,8 @@ export type KnowledgeArticle = {
   summary: string;
   /** YouTube or Vimeo URL. The video block only renders when this is set. */
   videoUrl?: string;
+  /** Shows a "Video coming soon" placeholder where the video will go. */
+  videoComingSoon?: boolean;
   /** Optional illustration under the summary (public path). */
   imageSrc?: string;
   imageAlt?: string;

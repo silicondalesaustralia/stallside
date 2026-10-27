@@ -1,4 +1,5 @@
 import Image from "next/image";
+import KnowledgeVideoPlaceholder from "@/components/KnowledgeVideoPlaceholder";
 import KnowledgeVideo from "@/components/KnowledgeVideo";
 import GuideHeader from "@/components/knowledge/GuideHeader";
 import GuidePager from "@/components/knowledge/GuidePager";
@@ -43,6 +44,8 @@ export default function KnowledgeArticleView({ context }: KnowledgeArticleViewPr
 
         {article.videoUrl ? (
           <KnowledgeVideo videoUrl={article.videoUrl} title={article.title} />
+        ) : article.videoComingSoon ? (
+          <KnowledgeVideoPlaceholder />
         ) : null}
 
         {article.imageSrc ? (

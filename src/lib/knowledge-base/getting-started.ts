@@ -6,7 +6,7 @@ export const gettingStartedArticles: KnowledgeArticle[] = [
     title: "Your first sale in 10 minutes",
     summary:
       "Create a business, add a product, print a QR sign, and run a test cash checkout.",
-    videoUrl: "https://www.youtube.com/watch?v=qJeoTruQKMQ",
+    videoComingSoon: true,
     keywords: ["setup", "start", "new business", "stand", "first", "qr", "onboarding"],
     related: ["business-details", "qr-signs", "add-product", "cash-payid", "customer-payments"],
     ctas: [
