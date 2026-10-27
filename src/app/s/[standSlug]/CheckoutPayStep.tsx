@@ -212,7 +212,7 @@ export default function CheckoutPayStep({
           <span>{localTransferLabel}</span>
         </button>
       ) : null}
-      {online && squareEnabled && squareDeposit ? (
+      {online && (squareEnabled || cardEnabled) && squareDeposit ? (
         <p className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--muted)]">
           Deposit {formatMoney(squareDeposit.amountCents, currency)} now · Balance{" "}
           {formatMoney(squareDeposit.balanceCents, currency)} charged to the same card before handover
@@ -247,7 +247,7 @@ export default function CheckoutPayStep({
       ) : null}
       {online && cardEnabled ? (
         <>
-          {cardFeeCents > 0 ? (
+          {cardFeeCents > 0 && !squareDeposit ? (
             <p className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--muted)]">
               Subtotal {formatMoney(subtotalCents, currency)} · Card fee{" "}
               {formatMoney(cardFeeCents, currency)} · Total{" "}
