@@ -5,7 +5,7 @@ export const businessSetupArticles: KnowledgeArticle[] = [
     slug: "business-details",
     title: "Business details and settings",
     summary:
-      "Change your business name, location, currency, timezone and stock display, and see your site address.",
+      "Change your business name, location, currency and timezone, and see your site address.",
     keywords: ["business", "stand", "link", "url", "domain", "currency", "timezone", "delete stand"],
     related: ["first-stand", "qr-signs", "stand-branding", "cash-payid"],
     ctas: [{ label: "My Businesses", href: "/dashboard/businesses" }],
@@ -13,7 +13,6 @@ export const businessSetupArticles: KnowledgeArticle[] = [
       "Use the Business switcher at the bottom of the sidebar (More on your phone) and tap Manage. Your business opens on the Business Details tab.",
       "Edit Business name, Suburb / location, Currency and Timezone.",
       "Your site URL shows your free Vendl address, or your own domain once connected. Tap Connect a domain to add one.",
-      "Tick Show exact stock publicly to show counts instead of Available / Low stock / Sold out.",
       "Tap Save details.",
       "How shoppers pay is set on the Payments page, not here.",
     ],

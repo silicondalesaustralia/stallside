@@ -24,7 +24,7 @@ export const gettingStartedArticles: KnowledgeArticle[] = [
     ],
     tips: [
       "Sale, low-stock and sold-out emails are on from the start. To get alerts on your phone too, see Phone and email alerts.",
-      "Shoppers see Available / Low stock / Sold out rather than exact counts. Change this with Show exact stock publicly under Business Details.",
+      "Shoppers see Available / Low stock / Sold out rather than exact counts.",
       "Want card payments? Connect Stripe or Square next (see How payments work in Vendl).",
     ],
   },
