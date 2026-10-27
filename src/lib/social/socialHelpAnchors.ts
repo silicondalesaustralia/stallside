@@ -1,4 +1,3 @@
-import { socialHelpArticleHref } from '@/components/marketing/help/helpSocialContent'
 import type { SocialHelpTopicId } from '@/lib/social/socialHelpContent'
 
 export const SOCIAL_HELP_PAGE_ANCHORS = [
@@ -24,30 +23,30 @@ export function socialHelpPageHref(anchor: SocialHelpPageAnchor): string {
   return `/dashboard/social?tab=help#${anchor}`
 }
 
-/** Contextual InfoGuide → canonical /help Social articles. */
+/** Contextual InfoGuide → owner guide slugs under /dashboard/knowledge. */
 export const SOCIAL_HELP_TOPIC_ARTICLES: Partial<Record<SocialHelpTopicId, string>> = {
-  aiDesigned: 'social-ai-designed',
-  buildLayout: 'social-build-layout',
-  brief: 'social-brief',
-  createThreeVersions: 'social-renders',
-  recreate: 'social-recreate',
-  closest: 'social-recreate',
-  freshTake: 'social-recreate',
-  creativeDirection: 'social-recreate',
-  recreateGuidance: 'social-recreate',
-  logo: 'social-logo-variants',
-  logoPlacement: 'social-change-logo',
-  library: 'social-save-download',
-  caption: 'social-captions',
-  regenerateCaption: 'social-captions',
-  download: 'social-save-download',
-  publishTo: 'social-platforms',
-  postNow: 'social-publishing',
-  schedule: 'social-scheduling',
-  connectSocials: 'social-platforms',
-  scheduled: 'social-scheduling',
-  published: 'social-publishing',
-  renderBalance: 'social-renders',
+  aiDesigned: 'social-ai-images',
+  buildLayout: 'social-ai-images',
+  brief: 'social-ai-images',
+  createThreeVersions: 'social-ai-images',
+  recreate: 'social-ai-images',
+  closest: 'social-ai-images',
+  freshTake: 'social-ai-images',
+  creativeDirection: 'social-ai-images',
+  recreateGuidance: 'social-ai-images',
+  logo: 'social-brand',
+  logoPlacement: 'social-brand',
+  library: 'social-library',
+  caption: 'social-create-post',
+  regenerateCaption: 'social-create-post',
+  download: 'social-library',
+  publishTo: 'social-connections',
+  postNow: 'social-create-post',
+  schedule: 'social-posts-calendar',
+  connectSocials: 'social-connections',
+  scheduled: 'social-posts-calendar',
+  published: 'social-posts-calendar',
+  renderBalance: 'social-ai-images',
 }
 
 /** Kept so existing hash helpers still compile; InfoGuides use /help. */
@@ -78,5 +77,5 @@ export const SOCIAL_HELP_TOPIC_ANCHORS: Partial<Record<SocialHelpTopicId, Social
 
 export function socialHelpTopicHref(topic: SocialHelpTopicId): string | null {
   const articleId = SOCIAL_HELP_TOPIC_ARTICLES[topic]
-  return articleId ? socialHelpArticleHref(articleId) : null
+  return articleId ? `/dashboard/knowledge/${articleId}` : null
 }

@@ -34,9 +34,13 @@ export default function CheckoutProviderSection({
           You have {activeOfferCount} active membership
           {activeOfferCount === 1 ? "" : "s"} or subscription
           {activeOfferCount === 1 ? "" : "s"}. Customers can&apos;t sign up
-          until Stripe is connected.{" "}
+          until Stripe is connected or Square subscriptions are turned on.{" "}
           <Link href="/dashboard/settings/stripe" className="underline">
             Connect Stripe
+          </Link>{" "}
+          or{" "}
+          <Link href="/dashboard/settings/square" className="underline">
+            open Square settings
           </Link>
         </p>
       ) : null}

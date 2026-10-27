@@ -33,7 +33,7 @@ export function toSupplierDetail({ member, ledger, pendingLots }: Detail): Suppl
       unitsSold: p.unitsSold,
       stockQuantity: p.stockQuantity,
       pendingUnits: p.pendingUnits,
-      notListed: !p.linked && p.isArchived,
+      notListed: !p.linked && p.awaitingPublish,
     })),
   };
 }

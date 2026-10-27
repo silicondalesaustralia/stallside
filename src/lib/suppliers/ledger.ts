@@ -1,5 +1,6 @@
 import { PaymentStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { isAwaitingPublish, supplierProductListWhere } from "./pending-product";
 
 const PAID = [PaymentStatus.PAID, PaymentStatus.CUSTOMER_CONFIRMED];
 
@@ -7,7 +8,7 @@ export type SupplierProductRow = {
   id: string;
   name: string;
   stockQuantity: number;
-  isArchived: boolean;
+  awaitingPublish: boolean;
   priceCents: number;
   supplierUnitCents: number | null;
   currency: string;
@@ -31,13 +32,14 @@ export type SupplierLedger = {
 export async function loadSupplierLedger(memberId: string): Promise<SupplierLedger> {
   const [owned, access, added, lines, paid, lots] = await Promise.all([
     prisma.product.findMany({
-      where: { memberId, isArchived: false },
+      where: { memberId, ...supplierProductListWhere },
       orderBy: { name: "asc" },
       select: {
         id: true,
         name: true,
         stockQuantity: true,
         isArchived: true,
+        isHidden: true,
         priceCents: true,
         supplierUnitCents: true,
         currency: true,
@@ -110,7 +112,7 @@ export async function loadSupplierLedger(memberId: string): Promise<SupplierLedg
         id: row.product.id,
         name: row.product.name,
         stockQuantity: onHandByProduct.get(row.productId) ?? 0,
-        isArchived: row.product.isArchived,
+        awaitingPublish: false,
         priceCents: row.product.priceCents,
         supplierUnitCents: row.supplierUnitCents,
         currency: row.product.currency,
@@ -124,10 +126,11 @@ export async function loadSupplierLedger(memberId: string): Promise<SupplierLedg
     }),
     ...owned
       .filter((product) => !linkedIds.has(product.id))
-      .map((product) => {
+      .map(({ isArchived, isHidden, ...product }) => {
         const sold = soldByProduct.get(product.id);
         return {
           ...product,
+          awaitingPublish: isAwaitingPublish({ isArchived, isHidden }),
           unitsAdded: addedByProduct.get(product.id) ?? 0,
           unitsSold: sold?.qty ?? 0,
           owedCents: sold?.owed ?? 0,

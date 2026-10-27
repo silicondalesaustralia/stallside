@@ -1,65 +1,21 @@
 import type { KnowledgeArticle, KnowledgeCategory } from "./types";
-import { gettingStartedArticles } from "./getting-started";
-import { ordersAlertsBillingArticles } from "./orders-alerts-billing";
-import { storefrontArticles } from "./storefront";
-import { sellingMoreArticles } from "./selling-more";
-import { supplierArticles } from "./suppliers";
-import { productsInventoryArticles } from "./products-inventory";
-import { paymentArticles } from "./payments";
-import { squareArticles } from "./square";
-import { gstArticles } from "./gst";
+import { knowledgeCategories, START_HERE_SLUGS } from "./categories";
 
-export type { KnowledgeArticle, KnowledgeCategory, KnowledgeCta } from "./types";
+export type {
+  KnowledgeArticle,
+  KnowledgeCategory,
+  KnowledgeCta,
+  KnowledgeIconName,
+  KnowledgeSearchEntry,
+} from "./types";
+export { toEmbedUrl } from "./embed";
 
-export const knowledgeCategories: KnowledgeCategory[] = [
-  { id: "getting-started", title: "Getting started", articles: gettingStartedArticles },
-  {
-    id: "products-inventory",
-    title: "Products & inventory",
-    articles: productsInventoryArticles,
-  },
-  {
-    id: "storefront",
-    title: "Pre-orders & collections",
-    articles: storefrontArticles,
-  },
-  {
-    id: "selling-more",
-    title: "Selling more",
-    articles: sellingMoreArticles,
-  },
-  {
-    id: "suppliers",
-    title: "Suppliers",
-    articles: supplierArticles,
-  },
-  {
-    id: "alerts",
-    title: "Alerts",
-    articles: ordersAlertsBillingArticles.filter(
-      (a) => a.slug === "sign-in-phone" || a.slug === "alerts-push",
-    ),
-  },
-  {
-    id: "payments",
-    title: "Payments",
-    articles: [
-      ...paymentArticles,
-      ...ordersAlertsBillingArticles.filter((a) => a.slug === "customer-payments"),
-      ...squareArticles,
-    ],
-  },
-  {
-    id: "gst",
-    title: "Tax & exports",
-    articles: gstArticles,
-  },
-  {
-    id: "billing",
-    title: "Billing",
-    articles: ordersAlertsBillingArticles.filter((a) => a.slug === "billing"),
-  },
-];
+export type KnowledgeArticleContext = {
+  article: KnowledgeArticle;
+  category: KnowledgeCategory;
+  previous: KnowledgeArticle | null;
+  next: KnowledgeArticle | null;
+};
 
 const allArticles: KnowledgeArticle[] = knowledgeCategories.flatMap(
   (category) => category.articles,
@@ -73,36 +29,28 @@ export function getArticle(slug: string): KnowledgeArticle | undefined {
   return allArticles.find((article) => article.slug === slug);
 }
 
+export function getArticleContext(slug: string): KnowledgeArticleContext | null {
+  for (const category of knowledgeCategories) {
+    const index = category.articles.findIndex((article) => article.slug === slug);
+    if (index < 0) continue;
+    return {
+      article: category.articles[index],
+      category,
+      previous: category.articles[index - 1] ?? null,
+      next: category.articles[index + 1] ?? null,
+    };
+  }
+  return null;
+}
+
 export function getRelatedArticles(article: KnowledgeArticle): KnowledgeArticle[] {
   return article.related
     .map((slug) => getArticle(slug))
     .filter((item): item is KnowledgeArticle => Boolean(item));
 }
 
-/** Turn a YouTube/Vimeo watch URL into an embeddable src, or null. */
-export function toEmbedUrl(videoUrl: string | null): string | null {
-  if (!videoUrl) return null;
-  try {
-    const url = new URL(videoUrl);
-    const host = url.hostname.replace(/^www\./, "");
-
-    if (host === "youtu.be") {
-      const id = url.pathname.slice(1);
-      return id ? `https://www.youtube.com/embed/${id}` : null;
-    }
-    if (host === "youtube.com" || host === "m.youtube.com") {
-      const id = url.searchParams.get("v") || url.pathname.split("/embed/")[1];
-      return id ? `https://www.youtube.com/embed/${id}` : null;
-    }
-    if (host === "vimeo.com") {
-      const id = url.pathname.split("/").filter(Boolean)[0];
-      return id ? `https://player.vimeo.com/video/${id}` : null;
-    }
-    if (host === "player.vimeo.com") {
-      return videoUrl;
-    }
-  } catch {
-    return null;
-  }
-  return null;
+export function getStartHereArticles(): KnowledgeArticle[] {
+  return START_HERE_SLUGS.map((slug) => getArticle(slug)).filter(
+    (item): item is KnowledgeArticle => Boolean(item),
+  );
 }

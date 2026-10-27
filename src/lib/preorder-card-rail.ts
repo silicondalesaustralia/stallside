@@ -47,4 +47,4 @@ export async function loadPreOrderCardRail(
 }
 
 export const SQUARE_DEPOSIT_RECONNECT_ERROR =
-  "To take deposits with Square, reconnect Square in Settings → Square (it needs permission to save cards).";
+  "To take deposits with Square, reconnect Square in Payments → Square (it needs permission to save cards).";

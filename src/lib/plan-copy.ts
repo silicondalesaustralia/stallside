@@ -27,7 +27,7 @@ export const FREE_PLAN_FEE_BLURB =
 
 /** Absorb vs pass-on - Free only (Pro has no Vendl fee). */
 export const FREE_PLAN_PASS_FEE_FEATURE =
-  "Absorb the Vendl fee or pass it on to customers at checkout from Settings → Card / Tap & Go (outside Australia, where card surcharges aren't allowed)";
+  "Absorb the Vendl fee or pass it on to customers at checkout from Payments → Stripe (outside Australia, where card surcharges aren't allowed)";
 
 /** Free ($0/mo) blurb. */
 export function cashPlanBlurb(_currency?: BillingCurrency): string {

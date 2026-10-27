@@ -7,20 +7,30 @@ const linkClass =
 export default function PaymentConnectionLinks({
   stripeStatus,
   squareStatus,
+  paypalStatus,
 }: {
   stripeStatus: string;
-  squareStatus: string;
+  squareStatus: string | null;
+  paypalStatus: string | null;
 }) {
   return (
-    <section className="flex flex-col gap-3 text-sm sm:flex-row">
+    <section className="flex flex-col gap-3 text-sm sm:flex-row sm:flex-wrap">
       <Link href="/dashboard/settings/stripe" className={linkClass}>
         <PaymentBrandIcon brand="stripe" className="size-5" />
         Stripe · {stripeStatus}
       </Link>
-      <Link href="/dashboard/settings/square" className={linkClass}>
-        <PaymentBrandIcon brand="square" className="size-5" />
-        Square · {squareStatus}
-      </Link>
+      {squareStatus ? (
+        <Link href="/dashboard/settings/square" className={linkClass}>
+          <PaymentBrandIcon brand="square" className="size-5" />
+          Square · {squareStatus}
+        </Link>
+      ) : null}
+      {paypalStatus ? (
+        <Link href="/dashboard/settings/paypal" className={linkClass}>
+          <PaymentBrandIcon brand="paypal" className="size-5" />
+          PayPal · {paypalStatus}
+        </Link>
+      ) : null}
     </section>
   );
 }

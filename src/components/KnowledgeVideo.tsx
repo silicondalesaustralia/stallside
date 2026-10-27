@@ -1,20 +1,13 @@
 import { toEmbedUrl } from "@/lib/knowledge-base";
 
 type KnowledgeVideoProps = {
-  videoUrl: string | null;
+  videoUrl: string;
   title: string;
 };
 
 export default function KnowledgeVideo({ videoUrl, title }: KnowledgeVideoProps) {
   const embed = toEmbedUrl(videoUrl);
-
-  if (!embed) {
-    return (
-      <div className="flex aspect-video items-center justify-center rounded-2xl border border-dashed border-[var(--line)] bg-[var(--panel)] px-6 text-center text-sm text-[var(--muted)]">
-        Video coming soon - written steps below work without it.
-      </div>
-    );
-  }
+  if (!embed) return null;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-[var(--line)] bg-black shadow-sm">

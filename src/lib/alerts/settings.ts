@@ -23,4 +23,5 @@ export async function getOwnerAlertSettings(ownerId: string) {
 export async function updateOwnerAlertSettings(ownerId: string, input: AlertSettingsInput) {
   await prisma.owner.update({ where: { id: ownerId }, data: input });
   revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard/notifications");
 }

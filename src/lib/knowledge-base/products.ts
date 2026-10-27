@@ -1,0 +1,101 @@
+import type { KnowledgeArticle } from "./types";
+
+export const productArticles: KnowledgeArticle[] = [
+  {
+    slug: "add-product",
+    title: "Add a product",
+    summary: "Create a product with a photo, price, stock and low-stock alert level.",
+    keywords: ["new product", "create", "item", "photo", "sku", "cost", "price"],
+    related: ["edit-product", "product-options", "product-categories", "inventory-report"],
+    ctas: [{ label: "Add product", href: "/dashboard/products/new" }],
+    steps: [
+      "Open Products and tap + Add product.",
+      "Check the Stand, then enter a Product name. Add a Description and tap Choose image for a photo (JPEG, PNG, WebP or HEIC; large photos are resized for you).",
+      "Enter the Price. Under Owner details you can add SKU, UPC and Cost to see your profit per item. Only you see these.",
+      "Set Starting stock and a Low-stock threshold (you're alerted when stock falls to it).",
+      "Tick Available for pre-order pages only if this product will be sold on a pre-order page.",
+      "Tap Save product. The product's edit page opens so you can add options, volume prices, categories and more.",
+    ],
+    tips: [
+      "Wait for Preparing photo… to finish before saving.",
+      "Pre-order products appear under the Pre Order tab, not Standard.",
+    ],
+  },
+  {
+    slug: "edit-product",
+    title: "Edit a product and adjust stock",
+    summary: "Change details, price and photo, add a freshness note, and add or remove stock with a reason.",
+    keywords: ["edit", "stock", "restock", "adjust", "photo", "freshness", "slug", "seo"],
+    related: ["add-product", "product-lifecycle", "stock-count", "product-status"],
+    ctas: [{ label: "Products", href: "/dashboard/products" }],
+    steps: [
+      "Open Products and tap a product.",
+      "Update Product name, Freshness note (for example Laid this morning), Description or photo. Tick Remove next to the photo to delete it.",
+      "Change the Price, cost or Volume prices, the Low-stock threshold and SEO fields, then tap Save changes.",
+      "To change stock, go to the Stock card. Choose Increase by, Decrease by or Set exact, pick a reason (for example Restocked or Spoiled/damaged) and tap Apply stock change.",
+      "Use Copy link under Listing to share the product's own page.",
+    ],
+    tips: [
+      "The Stock, GST, Categories and Options cards each save on their own. Save changes only saves the cards above it.",
+      "Changing the URL slug changes the product's link.",
+      "Stock changes sync to Square when inventory sync is on.",
+    ],
+  },
+  {
+    slug: "product-lifecycle",
+    title: "Hide, duplicate or archive a product",
+    summary: "Take a product off your shop for a while, copy it as a starting point, or retire it.",
+    keywords: ["hide", "duplicate", "copy", "archive", "restore", "delete", "remove"],
+    related: ["edit-product", "product-status"],
+    ctas: [{ label: "Products", href: "/dashboard/products" }],
+    steps: [
+      "Open the product. The buttons are at the top of the page.",
+      "Hide on stand takes it off your shop page; its direct link still works. Tap Show on stand to bring it back.",
+      "Duplicate creates Name (copy) with the same details, photo, price, stock and options, and opens it.",
+      "Archive removes it from your shop and lists. Find it later under the Archived filter on Products and tap Restore.",
+    ],
+    tips: [
+      "Hidden products drop off the Standard list. Find them through the Inventory report or your business's Products tab.",
+      "Duplicate doesn't copy volume prices, freshness note, upsell, GST-free, categories or inventory status.",
+      "There's no permanent delete. Archiving keeps your order history intact.",
+    ],
+  },
+  {
+    slug: "product-options",
+    title: "Product options (variants)",
+    summary: "Add size, flavour or other choices that share one stock count, up to three groups per product.",
+    keywords: ["variant", "size", "flavour", "choice", "option"],
+    related: ["volume-prices", "pre-order-pages", "edit-product"],
+    ctas: [{ label: "Products", href: "/dashboard/products" }],
+    steps: [
+      "Open a product and scroll to Options (variants), the last card.",
+      "Tap Add option group, enter a Group name (for example Size), then Add choice for each choice (Small, Large).",
+      "With one group, each choice's Price is the full price (leave 0 to use the product price). With several groups, choice prices are added on top of the product price.",
+      "Tap Save options.",
+      "Open the product on your shop and check buyers must pick a choice before adding to cart.",
+    ],
+    tips: [
+      "Up to 3 groups, 12 choices each. Options share the product's stock; they don't have their own counts.",
+      "Options and volume prices can't be on the same product. Clear one first.",
+      "On pre-order pages, products with options show a Choose options button.",
+    ],
+  },
+  {
+    slug: "volume-prices",
+    title: "Volume / bundle prices",
+    summary: "Set exact quantity totals like 2 for $9 or 6 for $24.",
+    keywords: ["bundle", "bulk", "multi buy", "tier", "2 for"],
+    related: ["product-options", "qr-signs", "upsells"],
+    ctas: [{ label: "Products", href: "/dashboard/products" }],
+    steps: [
+      "Open a product with no options. Under Price, find Volume prices (optional).",
+      "Tap Add tier and enter the Qty and the Total for that quantity, for example 2 and $9.",
+      "Add up to 6 tiers, then tap Save changes.",
+      "Prices show on the product and on pre-order pages. Tick Bundle / volume prices on your QR sign to print them too.",
+    ],
+    tips: [
+      "Only the exact quantity gets the tier price. With a 2 for $9 tier, buying 3 is charged at 3 × the normal price.",
+      "Volume prices don't combine with options or the first-order discount.",
+    ],
+  },
+];

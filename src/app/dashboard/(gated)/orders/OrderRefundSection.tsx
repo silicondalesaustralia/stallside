@@ -3,6 +3,7 @@ import { formatMoney } from "@/lib/money";
 import { isCountedPaymentStatus } from "@/lib/order-metrics";
 import { paypalTransactionUrl } from "@/lib/paypal-refunds";
 import CardRefundPanel from "./CardRefundPanel";
+import MarkPaidPanel from "./MarkPaidPanel";
 import PayPalRefundPanel from "./PayPalRefundPanel";
 
 export type OrderRefundFields = {
@@ -32,6 +33,12 @@ function collectedCents(order: OrderRefundFields): number {
 }
 
 export default function OrderRefundSection({ order }: { order: OrderRefundFields }) {
+  if (
+    order.paymentStatus === PaymentStatus.CUSTOMER_CONFIRMED &&
+    (order.paymentMethod === PaymentMethod.CASH || order.paymentMethod === PaymentMethod.LOCAL_TRANSFER)
+  ) {
+    return <MarkPaidPanel orderId={order.id} />;
+  }
   if (order.paymentMethod === PaymentMethod.PAYPAL && order.paypalCaptureId) {
     return (
       <PayPalRefundPanel

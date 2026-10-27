@@ -1,52 +1,40 @@
-import Link from "next/link";
+import type { Metadata } from "next";
+import GuideCategoryGrid from "@/components/knowledge/GuideCategoryGrid";
+import GuideSearch from "@/components/knowledge/GuideSearch";
+import GuideStartHere from "@/components/knowledge/GuideStartHere";
+import { getStartHereArticles, listCategories } from "@/lib/knowledge-base";
+import { buildSearchIndex } from "@/lib/knowledge-base/search";
 import { requireOwner } from "@/lib/session";
-import { listCategories } from "@/lib/knowledge-base";
 
-export default async function KnowledgeIndexPage() {
+export const metadata: Metadata = { title: "Guides" };
+
+type PageProps = {
+  searchParams: Promise<{ q?: string | string[] }>;
+};
+
+export default async function KnowledgeIndexPage({ searchParams }: PageProps) {
   await requireOwner();
+  const { q } = await searchParams;
+  const initialQuery = typeof q === "string" ? q : "";
   const categories = listCategories();
+  const articleCount = categories.reduce((sum, c) => sum + c.articles.length, 0);
 
   return (
-    <main className="flex flex-col gap-10">
+    <main className="flex flex-col gap-8">
       <div className="max-w-3xl">
-        <h1 className="text-3xl font-semibold tracking-tight">Owner guides</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Guides</h1>
         <p className="mt-2 text-[var(--muted)]">
-          Short how-tos for stands, suppliers, pre-order pages, collections, upsells,
-          alerts, and billing. Videos appear as we film them - the steps work now.
+          {articleCount} step-by-step guides for every part of Vendl, from your first sale to
+          payments, pre-orders, social posts, and production costs.
         </p>
       </div>
 
-      {categories.map((category) => (
-        <section key={category.id} className="flex max-w-3xl flex-col gap-4">
-          <h2 className="text-lg font-semibold">{category.title}</h2>
-          <ul className="divide-y divide-[var(--line)] rounded-2xl border border-[var(--line)] bg-[var(--panel)]">
-            {category.articles.map((article) => (
-              <li key={article.slug}>
-                <Link
-                  href={`/dashboard/knowledge/${article.slug}`}
-                  className="flex flex-col gap-1 px-4 py-4 transition hover:bg-[var(--wash)] sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <span>
-                    <span className="font-medium text-[var(--ink)]">{article.title}</span>
-                    <span className="mt-1 block text-sm text-[var(--muted)]">
-                      {article.summary}
-                    </span>
-                  </span>
-                  <span className="mt-2 shrink-0 text-xs font-medium text-[var(--muted)] sm:mt-0">
-                    {article.comingSoon
-                      ? "Coming soon"
-                      : article.videoUrl
-                        ? "Has video"
-                        : article.omitVideo
-                          ? "Steps"
-                          : "Video soon"}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+      <GuideSearch entries={buildSearchIndex(categories)} initialQuery={initialQuery}>
+        <div className="flex flex-col gap-10">
+          <GuideStartHere articles={getStartHereArticles()} />
+          <GuideCategoryGrid categories={categories} />
+        </div>
+      </GuideSearch>
     </main>
   );
 }

@@ -56,7 +56,7 @@ export default function TermsContent() {
           no Vendl fee applies.
         </p>
         <p className="text-[var(--muted)]">
-          On Free, stall owners may choose in Settings → Card / Tap &amp; Go to pass
+          On Free, stall owners may choose in Payments → Stripe to pass
           this Vendl fee on to their customers at checkout (shown as a clear card
           fee line), or to absorb it themselves so the customer pays the listed price.
           Passing the fee on is not available to Australian accounts or on AUD

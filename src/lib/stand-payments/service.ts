@@ -50,11 +50,12 @@ export async function saveOwnerStandPayments(
   if (method) {
     acceptLocalTransfer = choices.acceptLocalTransfer;
     const alias = choices.localTransferAlias.trim();
+    const aliasName = method.aliasLabel.charAt(0).toLowerCase() + method.aliasLabel.slice(1);
     if (acceptLocalTransfer && !alias) {
-      return { error: `Enter your ${method.aliasLabel.toLowerCase()} to enable PayID.` };
+      return { error: `Enter ${aliasName} to turn it on.` };
     }
     if (alias && !method.validate(alias)) {
-      return { error: `Check ${method.aliasLabel.toLowerCase()} and try again.` };
+      return { error: `Check ${aliasName} and try again.` };
     }
     if (alias) {
       localTransferAlias = alias;

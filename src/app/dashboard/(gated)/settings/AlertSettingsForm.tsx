@@ -64,7 +64,7 @@ export default function AlertSettingsForm({
         setMessage(`Phone push failed: ${push.error}`);
         return;
       }
-      setMessage("This phone is registered for push. Run push:test to confirm.");
+      setMessage("This phone is registered for alerts.");
     });
   }
 

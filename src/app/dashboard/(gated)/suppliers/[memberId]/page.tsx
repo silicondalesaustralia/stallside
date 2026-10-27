@@ -108,7 +108,7 @@ export default async function SupplierMemberPage({
               Added {product.unitsAdded} · Sold {product.unitsSold} · Their units{" "}
               {product.stockQuantity}
               {product.pendingUnits > 0 ? ` · ${product.pendingUnits} pending` : ""}
-              {!product.linked && product.isArchived ? " · Not on the stall yet" : ""}
+              {product.awaitingPublish ? " · Not on the stall yet" : ""}
             </p>
             {product.linked ? (
               <>
@@ -131,7 +131,7 @@ export default async function SupplierMemberPage({
                   productId={product.id}
                   priceCents={product.priceCents}
                   owedCents={product.supplierUnitCents}
-                  archived={product.isArchived}
+                  archived={product.awaitingPublish}
                 />
                 <div className="mt-2">
                   <DeleteSupplierProductButton

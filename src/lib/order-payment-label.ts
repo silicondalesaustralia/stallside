@@ -10,14 +10,17 @@ export function isCustomerConfirmedMethod(method: PaymentMethod): boolean {
 export function orderPaymentLabel(
   method: PaymentMethod,
   localTransferMethodId?: string | null,
+  status?: PaymentStatus,
 ): string {
+  const confirmation =
+    status === PaymentStatus.PAID ? "received" : "customer-confirmed";
   if (method === PaymentMethod.LOCAL_TRANSFER) {
     const configured = localTransferMethodById(localTransferMethodId);
     const name = configured?.id ?? "transfer";
-    return `${name} · customer-confirmed`;
+    return `${name} · ${confirmation}`;
   }
   if (method === PaymentMethod.CASH) {
-    return "cash · customer-confirmed";
+    return `cash · ${confirmation}`;
   }
   if (method === PaymentMethod.CARD) {
     return "card · verified";

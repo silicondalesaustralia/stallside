@@ -1,5 +1,9 @@
 import { requireSupplier } from "@/lib/suppliers/access";
 import { prisma } from "@/lib/prisma";
+import {
+  isAwaitingPublish,
+  supplierProductListWhere,
+} from "@/lib/suppliers/pending-product";
 import SupplyProductForm from "./SupplyProductForm";
 import SupplyStockForm from "./SupplyStockForm";
 import SupplyDeleteProductButton from "./SupplyDeleteProductButton";
@@ -26,7 +30,7 @@ export default async function SupplyPage({
       where: {
         memberId: membership.id,
         standId: membership.standId,
-        isArchived: false,
+        ...supplierProductListWhere,
       },
       orderBy: { name: "asc" },
       select: {
@@ -34,6 +38,7 @@ export default async function SupplyPage({
         name: true,
         stockQuantity: true,
         isArchived: true,
+        isHidden: true,
       },
     }),
   ]);
@@ -126,7 +131,7 @@ export default async function SupplyPage({
                   </p>
                   <p className="text-sm text-[var(--muted)]">
                     {product.stockQuantity} on hand
-                    {product.isArchived
+                    {isAwaitingPublish(product)
                       ? " · Waiting for the owner to publish"
                       : ""}
                   </p>

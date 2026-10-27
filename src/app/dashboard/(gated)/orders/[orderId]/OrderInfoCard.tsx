@@ -20,7 +20,7 @@ export default function OrderInfoCard({ order }: { order: OrderDetail }) {
       <dl className="space-y-3 text-sm">
         <Line label="Business" value={order.stand.name} />
         <Line label="Channel" value={orderChannelLabel(order)} />
-        <Line label="Payment method" value={orderPaymentLabel(order.paymentMethod, order.localTransferMethodId)} />
+        <Line label="Payment method" value={orderPaymentLabel(order.paymentMethod, order.localTransferMethodId, order.paymentStatus)} />
         <Line label="Stripe payment" value={order.stripePaymentIntentId} />
         <Line label="Square payment" value={order.squarePaymentId} />
         <Line label="PayPal capture" value={order.paypalCaptureId} />

@@ -10,7 +10,7 @@ function toSummary(article: KnowledgeArticle): MobileGuideSummary {
     title: article.title,
     summary: article.summary,
     hasVideo: Boolean(article.videoUrl),
-    comingSoon: Boolean(article.comingSoon),
+    comingSoon: article.availability === "Coming soon",
   };
 }
 
@@ -28,7 +28,7 @@ export function toGuideResponse(article: KnowledgeArticle): GuideResponse {
   const { imageSrc, imageWidth, imageHeight } = article;
   return {
     guide: toSummary(article),
-    videoUrl: article.omitVideo ? null : article.videoUrl,
+    videoUrl: article.videoUrl ?? null,
     image: imageSrc
       ? {
           path: imageSrc,
@@ -36,7 +36,7 @@ export function toGuideResponse(article: KnowledgeArticle): GuideResponse {
           aspectRatio: imageWidth && imageHeight ? imageWidth / imageHeight : null,
         }
       : null,
-    steps: article.steps,
+    steps: [...article.steps, ...(article.tips ?? [])],
     links: article.ctas.filter((cta) => !HIDDEN_LINKS.includes(cta.href)),
     related: getRelatedArticles(article).map(toSummary),
   };

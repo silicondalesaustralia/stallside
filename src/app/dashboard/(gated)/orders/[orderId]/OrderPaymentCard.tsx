@@ -55,7 +55,7 @@ export default function OrderPaymentCard({ order, tax }: { order: OrderDetail; t
         <div className="my-2 border-t border-[var(--line)]" />
         <Row
           label={depositOnly ? "Deposit paid" : "Paid"}
-          note={orderPaymentLabel(order.paymentMethod, order.localTransferMethodId)}
+          note={orderPaymentLabel(order.paymentMethod, order.localTransferMethodId, order.paymentStatus)}
           value={money(paid)}
         />
         {depositOnly && order.balanceCents ? (

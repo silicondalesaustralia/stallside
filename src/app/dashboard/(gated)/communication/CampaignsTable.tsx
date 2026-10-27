@@ -12,6 +12,7 @@ export type CampaignRow = {
   audienceType: string;
   sentCount: number;
   recipientCount: number;
+  clickCount: number;
   createdAt: Date;
   sentAt: Date | null;
 };
@@ -22,6 +23,7 @@ const COLUMNS: DataColumn[] = [
   { label: "Audience", hideBelow: "md" },
   { label: "Date", hideBelow: "sm" },
   { label: "Sent", align: "right" },
+  { label: "Clicks", align: "right", hideBelow: "sm" },
 ];
 
 const STATUS: Record<CampaignStatus, PillSpec> = {
@@ -58,6 +60,9 @@ export default function CampaignsTable({ campaigns, footer }: { campaigns: Campa
             </td>
             <td className={`${cellClass(COLUMNS[4])} font-receipt whitespace-nowrap`}>
               {c.sentCount}/{c.recipientCount}
+            </td>
+            <td className={`${cellClass(COLUMNS[5])} font-receipt whitespace-nowrap`}>
+              {c.clickCount}
             </td>
           </DataTableRow>
         );

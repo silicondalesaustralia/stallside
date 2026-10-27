@@ -101,7 +101,7 @@ export default function StandPaymentToggles({
           <span className="mt-0.5 block text-[var(--muted)]">
             {cardReady
               ? `${STRIPE_CHECKOUT_METHODS_PHRASE}. Money to your Stripe.`
-              : "Finish Stripe setup in Settings before enabling card, pre-orders, or subscriptions."}
+              : "Finish Stripe setup in Payments before enabling card, pre-orders, or subscriptions."}
           </span>
         </span>
       </label>

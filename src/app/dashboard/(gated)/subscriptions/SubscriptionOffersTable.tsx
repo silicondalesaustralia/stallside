@@ -6,6 +6,7 @@ import { SubscriptionOfferKind } from "@/generated/prisma/client";
 import { formatMoney } from "@/lib/money";
 import { isOfferAtCapacity } from "@/lib/subscription-capacity";
 import { intervalLabel, membershipOfferReady, offerDisplayPriceCents } from "@/lib/subscription-offer";
+import { squareOfferReady } from "@/lib/square-subscriptions/rail";
 import type { OwnerOffer } from "@/lib/subscriptions/service";
 import SubscriptionLifecycleActions from "./SubscriptionLifecycleActions";
 
@@ -20,19 +21,23 @@ const COLUMNS: DataColumn[] = [
 
 const muted = "text-[var(--muted)]";
 
-function statusPills(offer: OwnerOffer): PillSpec[] {
+function statusPills(offer: OwnerOffer, squareRail: boolean): PillSpec[] {
   const pills: PillSpec[] = [offer.isActive ? { label: "Active", tone: "success" } : { label: "Paused", tone: "neutral" }];
   if (isOfferAtCapacity(offer.maxMembers, offer.holding)) pills.push({ label: "Full", tone: "attention" });
-  if (!membershipOfferReady(offer)) pills.push({ label: "Needs Stripe sync", tone: "warning" });
+  if (squareRail ? !squareOfferReady(offer) : !membershipOfferReady(offer)) {
+    pills.push({ label: squareRail ? "Needs a price" : "Needs Stripe sync", tone: "warning" });
+  }
   return pills;
 }
 
 export default function SubscriptionOffersTable({
   offers,
   publicUrl,
+  squareRail,
 }: {
   offers: OwnerOffer[];
   publicUrl: Record<string, string>;
+  squareRail: boolean;
 }) {
   return (
     <DataTable columns={COLUMNS} footer={`${offers.length} offer${offers.length === 1 ? "" : "s"}`}>
@@ -52,7 +57,7 @@ export default function SubscriptionOffersTable({
             </td>
             <td className={cellClass(COLUMNS[1])}>
               <div className="flex flex-wrap gap-1">
-                {statusPills(offer).map((pill) => (
+                {statusPills(offer, squareRail).map((pill) => (
                   <StatusPill key={pill.label} {...pill} />
                 ))}
               </div>

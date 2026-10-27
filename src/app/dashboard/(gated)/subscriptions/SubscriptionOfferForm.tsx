@@ -68,7 +68,7 @@ export default function SubscriptionOfferForm({
     <form action={onSubmit} className="grid w-full gap-4 lg:grid-cols-2">
       {!stripeConnected ? (
         <p className="rounded-lg border border-[var(--warn)]/40 bg-[var(--warn)]/10 px-3 py-2 text-sm lg:col-span-2">
-          Connect Stripe under Settings to publish card subscriptions.
+          Connect Stripe, or turn on Square subscriptions, under Payments to publish card subscriptions.
         </p>
       ) : null}
       <input type="hidden" name="kind" value="BOX" />

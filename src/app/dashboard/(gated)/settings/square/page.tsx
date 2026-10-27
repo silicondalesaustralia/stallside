@@ -42,7 +42,7 @@ export default async function SquareSettingsPage({
 
   const region = squareRegionForBilling(owner.billingCurrency);
   if (!isSquareIntegrationEnabled() || !region) {
-    redirect("/dashboard/settings");
+    redirect("/dashboard/payments");
   }
   const squareCurrency = squareRegionCurrency(region);
 
@@ -70,8 +70,8 @@ export default async function SquareSettingsPage({
   return (
     <main className="flex w-full max-w-3xl flex-col gap-8">
       <p className="text-sm text-[var(--muted)]">
-        <Link href="/dashboard/settings" className="underline">
-          Settings
+        <Link href="/dashboard/payments" className="underline">
+          Payments
         </Link>
       </p>
       <div>

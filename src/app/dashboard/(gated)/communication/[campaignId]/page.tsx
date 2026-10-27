@@ -27,6 +27,7 @@ export default async function CommunicationDetailPage({
         <p className="mt-1 text-sm text-[var(--muted)]">
           {campaign.status} · {campaign.sentCount} sent · {campaign.failedCount}{" "}
           failed · {campaign.recipientCount} recipients ·{" "}
+          {campaign.clickCount} link click{campaign.clickCount === 1 ? "" : "s"} ·{" "}
           {campaign.audienceType.replaceAll("_", " ")}
         </p>
       </div>

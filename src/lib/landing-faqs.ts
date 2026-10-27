@@ -67,7 +67,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "Is there a fee on card payments?",
     answer:
-      "On Free, Vendl charges 2.5% on card, Tap & Go (Apple Pay / Google Pay), and pay-later, whether via Stripe, Square or PayPal. Cash and PayID have no Vendl fee. Outside Australia you can absorb the Vendl fee or pass it on to customers (shown as a card fee line at checkout) in Settings → Card / Tap & Go. Card surcharges aren't allowed in Australia, so Australian sellers absorb it. On Pro there is no Vendl cut. Stripe's own processing fees still apply either way (pay-later providers usually charge more than cards).",
+      "On Free, Vendl charges 2.5% on card, Tap & Go (Apple Pay / Google Pay), and pay-later, whether via Stripe, Square or PayPal. Cash and PayID have no Vendl fee. Outside Australia you can absorb the Vendl fee or pass it on to customers (shown as a card fee line at checkout) in Payments → Stripe. Card surcharges aren't allowed in Australia, so Australian sellers absorb it. On Pro there is no Vendl cut. Stripe's own processing fees still apply either way (pay-later providers usually charge more than cards).",
   },
   {
     question: "Are cash and PayID free?",
@@ -96,7 +96,7 @@ export const LANDING_FAQS: FaqItem[] = [
   },
   {
     question: "How much does it cost?",
-    answer: `Free is $0/mo with all features; Vendl fee is 2.5% on card, Tap & Go, and pay-later via Stripe, Square or PayPal (cash and PayID stay free) - absorb it or pass it on in Settings → Card / Tap & Go. Vendl Pro is ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site and removes the Vendl platform fee. Standard Stripe processing fees apply on both plans. Pick billing currency at signup or in billing settings.`,
+    answer: `Free is $0/mo with all features; Vendl fee is 2.5% on card, Tap & Go, and pay-later via Stripe, Square or PayPal (cash and PayID stay free) - absorb it or pass it on in Payments → Stripe. Vendl Pro is ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site and removes the Vendl platform fee. Standard Stripe processing fees apply on both plans. Pick billing currency at signup or in billing settings.`,
   },
   {
     question: "Who is Vendl for?",

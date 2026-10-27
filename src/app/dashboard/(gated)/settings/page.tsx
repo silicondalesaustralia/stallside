@@ -3,12 +3,6 @@ import { isPlatformAdminEmail, requireOwner } from "@/lib/session";
 import { logout } from "@/app/login/actions";
 import { billingRegionDisplay } from "@/lib/saas-pricing";
 import { stallsideSubscriptionSummary } from "@/lib/stallside-subscription-summary";
-import { STRIPE_CHECKOUT_METHODS_PHRASE } from "@/lib/stripe-connect-copy";
-import PaymentBrandIcon from "@/components/PaymentBrandIcon";
-import PaymentIconRow from "@/components/PaymentIconRow";
-import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
-import { isSquareIntegrationEnabled } from "@/lib/square/config";
-import { squareEligibleBillingCurrency } from "@/lib/commerce/payment-rail";
 import BusinessNameForm from "./BusinessNameForm";
 import DeleteAccountButton from "./DeleteAccountButton";
 
@@ -20,9 +14,6 @@ export default async function SettingsPage() {
     lifetimeAccess: owner.lifetimeAccess,
   });
   const billingRegion = billingRegionDisplay(owner.billingCurrency);
-  const showSquare =
-    isSquareIntegrationEnabled() &&
-    squareEligibleBillingCurrency(owner.billingCurrency);
 
   return (
     <main className="flex w-full max-w-3xl flex-col gap-8">
@@ -67,13 +58,13 @@ export default async function SettingsPage() {
       <section className="space-y-2 text-sm">
         <h2 className="text-lg font-semibold">Notifications</h2>
         <p className="text-[var(--muted)]">
-          Sales and low-stock alerts live under Notifications.
+          Turn email and phone alerts on or off, and add extra alert emails.
         </p>
         <Link
-          href="/dashboard/notifications"
+          href="/dashboard/notifications#alert-settings"
           className="inline-flex text-[var(--leaf-dark)] underline"
         >
-          Open notifications
+          Alert settings
         </Link>
       </section>
 
@@ -108,57 +99,15 @@ export default async function SettingsPage() {
         </Link>
       </section>
 
-      <section id="stripe" className="space-y-3 text-sm scroll-mt-8">
-        <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
-          <PaymentBrandIcon brand="stripe" className="size-6" />
-          Card / Tap &amp; Go
-          <PaymentIconRow brands={STRIPE_CHECKOUT_BRANDS} />
-        </h2>
-        <p>
-          Status:{" "}
-          {owner.stripeChargesEnabled
-            ? "Connected · charges enabled"
-            : owner.stripeAccountId
-              ? "Connected · finish setup"
-              : "Not connected"}
-        </p>
+      <section className="space-y-2 text-sm">
+        <h2 className="text-lg font-semibold">Payments</h2>
         <p className="text-[var(--muted)]">
-          Connect Stripe for {STRIPE_CHECKOUT_METHODS_PHRASE}. Funds go to your
-          account. Free includes a 2.5% Vendl fee on card sales unless you
-          upgrade to Pro.
+          Connect Stripe, Square or PayPal and choose how shoppers pay on the Payments page.
         </p>
-        <Link
-          href="/dashboard/settings/stripe"
-          className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
-        >
-          <PaymentBrandIcon brand="stripe" className="size-5" />
-          {owner.stripeChargesEnabled
-            ? "Manage Stripe"
-            : owner.stripeAccountId
-              ? "Finish Stripe setup"
-              : "Connect Stripe"}
+        <Link href="/dashboard/payments" className="inline-flex text-[var(--leaf-dark)] underline">
+          Open Payments
         </Link>
       </section>
-
-      {showSquare ? (
-        <section id="square" className="space-y-3 text-sm scroll-mt-8">
-          <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
-            <PaymentBrandIcon brand="square" className="size-6" />
-            Square
-          </h2>
-          <p className="text-[var(--muted)]">
-            Take online card payments through your Square account instead of
-            Stripe.
-          </p>
-          <Link
-            href="/dashboard/settings/square"
-            className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold hover:bg-[var(--wash)]"
-          >
-            <PaymentBrandIcon brand="square" className="size-5" />
-            Square settings
-          </Link>
-        </section>
-      ) : null}
     </main>
   );
 }

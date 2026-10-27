@@ -7,6 +7,7 @@ import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { subscriptionOffersPath } from "@/lib/subscription-offer";
 import { standPublicLinks } from "@/lib/storefront/stand-public-links";
 import { listOwnerOffers } from "@/lib/subscriptions/service";
+import { squareSubscriptionRail } from "@/lib/square-subscriptions/rail";
 import StandSubscriptionsNavToggle from "./StandSubscriptionsNavToggle";
 import SubscriptionOffersTable from "./SubscriptionOffersTable";
 
@@ -25,19 +26,24 @@ export default async function SubscriptionsListPage() {
 
   const stand = await prisma.stand.findFirst({
     where: { id: selected.id, ownerId: owner.id },
-    select: { id: true, slug: true, showSubscriptionsOnStand: true },
+    select: { id: true, slug: true, showSubscriptionsOnStand: true, currency: true },
   });
 
-  const [offers, links] = await Promise.all([
+  const [offers, links, squareRail] = await Promise.all([
     listOwnerOffers(owner.id, selected.id),
     standPublicLinks(selected.slug),
+    squareSubscriptionRail({
+      stand: { acceptSquare: true },
+      owner,
+      offerCurrency: stand?.currency ?? "AUD",
+    }),
   ]);
 
   return (
     <main className="flex flex-col gap-5">
       <PageHeader
         title="Subscriptions"
-        subtitle={`${selected.name} · recurring boxes and fixed-term memberships via Stripe Connect.`}
+        subtitle={`${selected.name} · recurring boxes and fixed-term memberships, paid by card through ${squareRail ? "Square" : "Stripe"}.`}
         actions={<DashPrimaryCta href="/dashboard/subscriptions/new">+ New subscription</DashPrimaryCta>}
       />
 
@@ -57,6 +63,7 @@ export default async function SubscriptionsListPage() {
         <SubscriptionOffersTable
           offers={offers}
           publicUrl={Object.fromEntries(offers.map((o) => [o.id, links.offer(o.slug)]))}
+          squareRail={Boolean(squareRail)}
         />
       )}
     </main>
