@@ -16,13 +16,15 @@ import { addSearchVolumes } from "./search-volume";
 import type { Topic } from "./topic";
 
 const DEMAND_PER_SOURCE = 25;
+/** recommendationSchema maximums; longer model text is trimmed rather than failing the run. */
+const TEXT_LIMITS: Record<string, number> = { title: 200, angle: 1000, whyNow: 600, vendlTieIn: 500 };
 
 const OUTPUT_CONTRACT = `Return only a json object for ONE new post:
 {
-  "title": string, "angle": string (what the post covers and for whom),
+  "title": string (max 200 chars), "angle": string (max 1000 chars; what the post covers and for whom),
   "section": "NEWS" | "GUIDE",
-  "whyNow": string (the evidence: search demand, news date, feature commit),
-  "vendlTieIn": string (the named Vendl feature(s) from the knowledge base that solve the reader's problem, and the signup hook),
+  "whyNow": string (max 500 chars; the evidence: search demand, news date, feature commit),
+  "vendlTieIn": string (max 400 chars; the named Vendl feature(s) from the knowledge base that solve the reader's problem, and the signup hook),
   "score": integer 0-100,
   "targetQueries": [2-5 items: { "query": string }] (the owner's keyword first when it is a real search phrase; 2-5 words as typed into Google, no "Australia" suffix, no brand names; prefer exact queries from searchDemand),
   "sourceUrls": [string],
@@ -74,7 +76,11 @@ export async function briefTopic(topic: Topic): Promise<Topic> {
     webSearch: true,
     maxOutputTokens: 6_000,
   });
-  const fields = typeof raw === "object" && raw !== null ? raw : {};
+  const fields: Record<string, unknown> = typeof raw === "object" && raw !== null ? { ...raw } : {};
+  for (const [key, max] of Object.entries(TEXT_LIMITS)) {
+    const value = fields[key];
+    if (typeof value === "string" && value.length > max) fields[key] = `${value.slice(0, max - 1).trimEnd()}…`;
+  }
   const parsed = recommendationSchema.safeParse({ ...fields, source: "MANUAL", targetPostSlug: null });
   if (!parsed.success) {
     throw new Error(`Keyword brief failed validation: ${JSON.stringify(parsed.error.issues).slice(0, 1500)}`);
