@@ -70,7 +70,7 @@ async function main() {
     ...(searchDemand.length ? { searchDemand } : {}),
     ...weeklyResearch,
     commits: recentCommits(7),
-    knowledgeBase: knowledgeIndex(),
+    knowledgeBase: await knowledgeIndex(),
   });
 
   const raw = await askJson({

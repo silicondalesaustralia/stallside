@@ -1,5 +1,6 @@
 /**
- * Writer: research and draft one picked topic (new post or update) with images.
+ * Writer: research and draft one picked topic (new post or update) with images. Topics entered by
+ * the owner (a keyword or phrase, no planner research yet) are briefed first by keyword-brief.ts.
  *
  *   npx tsx scripts/blog-agent/write.ts --topic <topicId>
  *
@@ -18,11 +19,10 @@ import { relevantKnowledge } from "./knowledge-select";
 import { gatherOfficialFacts } from "./official-facts";
 import { askJson } from "./openai";
 import { agentDoc, playbookFor, todayInAdelaide, vendlFactsSource } from "./repo-context";
+import { briefTopic, needsBrief } from "./keyword-brief";
 import { buildSerpBrief } from "./serp-brief";
 import { titlesTooSimilar } from "./title-variation";
-
-type Topic = { id: string; title: string; angle: string | null; notes: string | null; featureRef: string | null; source: string; section: string | null; targetQueries: unknown; sourceUrls: unknown; targetPostSlug: string | null; expiresAt: string | null };
-type TargetPost = { id: string; slug: string; section: string; title: string; seoTitle: string; seoDescription: string; excerpt: string; bodyHtml: string; faqs: unknown };
+import type { TargetPost, Topic } from "./topic";
 
 function topicIdArg(): string {
   const index = process.argv.indexOf("--topic");
@@ -33,10 +33,11 @@ function topicIdArg(): string {
 
 async function draftArticle(topic: Topic, targetPost: TargetPost | null): Promise<AgentArticle> {
   const today = todayInAdelaide();
-  const [context, serpBrief, officialFacts] = await Promise.all([
+  const [context, serpBrief, officialFacts, knowledgeBase] = await Promise.all([
     appGet<BlogContext>("/context"),
     buildSerpBrief(topic, targetPost),
     gatherOfficialFacts(topic, today),
+    relevantKnowledge([topic.title, topic.angle, topic.featureRef, topic.notes].filter(Boolean).join(" ")),
   ]);
   const task = targetPost
     ? "Propose an update to the published post in targetPost. Return the complete revised bodyHtml and changeNotes."
@@ -56,7 +57,7 @@ async function draftArticle(topic: Topic, targetPost: TargetPost | null): Promis
       officialFacts,
       linkablePages: linkablePages(context),
       vendlFactFiles: vendlFactsSource(),
-      knowledgeBase: relevantKnowledge([topic.title, topic.angle, topic.featureRef, topic.notes].filter(Boolean).join(" ")),
+      knowledgeBase,
     })}`,
   });
   const parsed = articleSchema.safeParse(normalizeArticle(raw));
@@ -71,7 +72,9 @@ async function draftArticle(topic: Topic, targetPost: TargetPost | null): Promis
 async function main() {
   const topicId = topicIdArg();
   try {
-    const { topic, targetPost } = await appGet<{ topic: Topic; targetPost: TargetPost | null }>(`/topics/${topicId}`);
+    const loaded = await appGet<{ topic: Topic; targetPost: TargetPost | null }>(`/topics/${topicId}`);
+    const { targetPost } = loaded;
+    const topic = needsBrief(loaded.topic) ? await briefTopic(loaded.topic) : loaded.topic;
     if (topic.targetPostSlug && !targetPost) throw new Error(`Post /${topic.targetPostSlug} is no longer published`);
     const article = await fixInternalLinks(await draftArticle(topic, targetPost));
     const folder = folderFor(article, targetPost?.slug ?? null);

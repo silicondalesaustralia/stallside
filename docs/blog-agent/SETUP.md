@@ -43,7 +43,8 @@ Repository settings → Secrets and variables → Actions:
 | Secret | `BLOG_AGENT_TOKEN` | Same value as Vercel |
 | Secret | `GSC_SERVICE_ACCOUNT_JSON` | Service account key JSON (or base64 of it) |
 | Variable | `BLOG_AGENT_BASE_URL` | `https://stagingv2.vendl.app` now, `https://www.vendl.app` on `main` |
-| Variable | `BLOG_AGENT_GIT_REF` | `feature/social-kit` now, `main` later |
+| Variable | `BLOG_AGENT_GIT_REF` | Branch whose agent code runs (`main`) |
+| Variable | `BLOG_AGENT_CONTEXT_REF` | Optional. Upcoming release the knowledge base, pricing facts and "upcoming" commits are read from. Defaults to `feature/social-kit`; if that branch can't be checked out the agent uses its own checkout |
 | Variable | `GSC_SITE_URL` | `sc-domain:vendl.app` |
 | Secret | `DATAFORSEO_LOGIN`, `DATAFORSEO_PASSWORD` | Optional. DataForSEO API login and API password (not the dashboard password) |
 | Secret | `DATAFORSEO_RELAY_URL`, `DATAFORSEO_RELAY_SECRET` | Optional. A relay on a fixed IP, needed while the DataForSEO account has an IP allowlist (GitHub runners have no fixed IP) |
@@ -81,5 +82,6 @@ Open `/admin/blog`:
 - **Drafts**: edit in the editor, Preview, then Publish now or Schedule. Reject with a reason the agent will read.
 - **Updates to review**: highlighted changes (green = added, struck red = removed). Edit the proposed version if needed, then Publish update, or Discard with a reason.
 - **Topic backlog**: every evening idea lands here too. **Write now** starts the writer for any idea; add your own ideas or mark topics "Not interested".
+- **Write a post from a keyword** (top of the backlog): type a keyword or phrase and the writer runs the full process for one post. Any topic without planner research (keyword runs and your own ideas) is briefed first like an evening idea: Google AU demand around the keyword, angle, target queries, Vendl tie-in and duplicate check (`scripts/blog-agent/keyword-brief.ts`), saved on the topic, then researched and drafted as usual.
 
 Published posts appear at `/guides/{slug}` or `/farms-stand-news/{slug}`, in the section index, and in `sitemap.xml`. Scheduled posts go live within an hour of their time.

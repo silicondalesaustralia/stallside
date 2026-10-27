@@ -1,14 +1,51 @@
-import { listCategories, type KnowledgeArticle } from "../../src/lib/knowledge-base";
+import { existsSync } from "fs";
+import { join } from "path";
+import { pathToFileURL } from "url";
+import type { KnowledgeCta } from "../../src/lib/knowledge-base";
+import { productContextLabel, productContextRoot } from "./repo-context";
+
+type KnowledgeArticle = { slug: string; title: string; summary: string; steps: string[]; ctas: KnowledgeCta[]; comingSoon: boolean };
+/** Article fields across branches: newer knowledge bases use availability and tips. */
+type RawArticle = Omit<KnowledgeArticle, "comingSoon"> & { comingSoon?: boolean; availability?: string; tips?: string[] };
+type IndexModule = { listCategories: () => Array<{ articles: RawArticle[] }> };
+type ExtraModule = { ordersAlertsBillingArticles?: RawArticle[] };
+
+function normalize(a: RawArticle): KnowledgeArticle {
+  return {
+    slug: a.slug,
+    title: a.title,
+    summary: a.summary,
+    steps: [...a.steps, ...(a.tips ?? [])],
+    ctas: a.ctas,
+    comingSoon: Boolean(a.comingSoon) || a.availability === "Coming soon",
+  };
+}
 
 const FULL_ARTICLES = 5;
 const STOP_WORDS = new Set(["the", "and", "for", "with", "your", "you", "how", "what", "from", "into", "that", "this", "vendl", "are", "can", "when", "their"]);
+const EXTRA_FILE = "orders-alerts-billing.ts";
 
-function allArticles(): KnowledgeArticle[] {
-  return listCategories().flatMap((c) => c.articles);
+let loaded: Promise<KnowledgeArticle[]> | null = null;
+
+async function importArticles(): Promise<KnowledgeArticle[]> {
+  const dir = join(productContextRoot(), "src/lib/knowledge-base");
+  const index = (await import(pathToFileURL(join(dir, "index.ts")).href)) as IndexModule;
+  const extra = existsSync(join(dir, EXTRA_FILE))
+    ? ((await import(pathToFileURL(join(dir, EXTRA_FILE)).href)) as ExtraModule).ordersAlertsBillingArticles ?? []
+    : [];
+  const seen = new Set<string>();
+  const articles = [...index.listCategories().flatMap((c) => c.articles), ...extra].map(normalize).filter((a) => {
+    if (seen.has(a.slug)) return false;
+    seen.add(a.slug);
+    return true;
+  });
+  console.log(`Knowledge base: ${articles.length} articles from ${productContextLabel()}`);
+  return articles;
 }
 
-function isComingSoon(article: KnowledgeArticle): boolean {
-  return article.availability === "Coming soon";
+function allArticles(): Promise<KnowledgeArticle[]> {
+  loaded ??= importArticles();
+  return loaded;
 }
 
 function terms(text: string): Set<string> {
@@ -30,29 +67,22 @@ function overlap(article: KnowledgeArticle, wanted: Set<string>): number {
 }
 
 /** One line per knowledge base article: enough for the planner to name real features. */
-export function knowledgeIndex(): Array<{ slug: string; title: string; summary: string; comingSoon?: boolean }> {
-  return allArticles().map((a) => ({ slug: a.slug, title: a.title, summary: a.summary, ...(isComingSoon(a) ? { comingSoon: true } : {}) }));
+export async function knowledgeIndex(): Promise<Array<{ slug: string; title: string; summary: string; comingSoon?: boolean }>> {
+  return (await allArticles()).map(({ slug, title, summary, comingSoon }) => ({ slug, title, summary, ...(comingSoon ? { comingSoon } : {}) }));
 }
 
 /** Full steps for the articles that best match the topic, plus the one-line index of the rest. */
-export function relevantKnowledge(topicText: string) {
+export async function relevantKnowledge(topicText: string) {
   const wanted = terms(topicText);
-  const ranked = allArticles()
+  const ranked = (await allArticles())
     .map((article) => ({ article, score: overlap(article, wanted) }))
     .sort((a, b) => b.score - a.score);
   const full = ranked.slice(0, FULL_ARTICLES).map(({ article }) => article);
   const fullSlugs = new Set(full.map((a) => a.slug));
   console.log(`Knowledge base: full text for ${full.map((a) => a.slug).join(", ")}`);
   return {
-    source: "src/lib/knowledge-base/*.ts on origin/main (cite as src/lib/knowledge-base, article slug)",
-    relevantArticles: full.map((a) => ({
-      slug: a.slug,
-      title: a.title,
-      summary: a.summary,
-      steps: [...a.steps, ...(a.tips ?? [])],
-      ctas: a.ctas,
-      comingSoon: isComingSoon(a),
-    })),
-    otherArticles: knowledgeIndex().filter((a) => !fullSlugs.has(a.slug)),
+    source: `src/lib/knowledge-base/*.ts on ${productContextLabel()} (cite as src/lib/knowledge-base, article slug)`,
+    relevantArticles: full.map(({ slug, title, summary, steps, ctas, comingSoon }) => ({ slug, title, summary, steps, ctas, comingSoon })),
+    otherArticles: (await knowledgeIndex()).filter((a) => !fullSlugs.has(a.slug)),
   };
 }

@@ -71,6 +71,13 @@ const topicUpdate = z.object({
   status: z.enum(["IDEA", "WAITING_FOR_RELEASE", "USED", "REJECTED", "EXPIRED"]).optional(),
   score: z.number().int().min(0).max(100).optional(),
   notes: z.string().max(2000).optional(),
+  /** Keyword brief: the planner's research for an owner-entered topic. */
+  title: z.string().trim().min(5).max(200).optional(),
+  angle: z.string().max(1000).optional(),
+  section: section.optional(),
+  targetQueries: z.array(blogTargetQuerySchema).max(30).optional(),
+  sourceUrls: z.array(z.string().url()).max(20).optional(),
+  featureRef: z.string().max(500).optional(),
   /** Writer failure message; clears the pick so the topic can be picked again. */
   writeError: z.string().max(1000).optional(),
 });
