@@ -7,6 +7,7 @@ const GROUPS: { title: string; keys: CheckoutCopyKey[] }[] = [
     title: "Pre-order contact & delivery details",
     keys: ["nameLabel", "emailLabel", "phoneLabel", "deliveryHeading", "streetLabel", "suburbLabel", "postcodeLabel", "deliveryNotesLabel"],
   },
+  { title: "Pay at pickup pre-orders", keys: ["pickupHeading", "payAtPickupNote", "payAtPickupButton"] },
 ];
 
 /** Builder list of the checkout step wording so each label can be edited in place. */

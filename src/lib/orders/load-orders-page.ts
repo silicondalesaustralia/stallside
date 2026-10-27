@@ -55,6 +55,7 @@ export async function loadOrdersPage(input: {
         totalCents: true,
         currency: true,
         paymentStatus: true,
+        paymentTiming: true,
         refundedCents: true,
         shopperSubscriptionId: true,
         isPreOrder: true,

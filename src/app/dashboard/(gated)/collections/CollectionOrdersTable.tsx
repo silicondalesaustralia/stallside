@@ -4,6 +4,8 @@ import DataTable, { cellClass, type DataColumn } from "@/components/dashboard/ui
 import DataTableRow from "@/components/dashboard/ui/DataTableRow";
 import StatusPill from "@/components/dashboard/ui/StatusPill";
 import type { CollectionOrderView } from "@/lib/collections/group-collections";
+import { awaitingPickupPayment } from "@/lib/pay-at-pickup";
+import { formatMoney } from "@/lib/money";
 import CollectionStatusButton from "./CollectionStatusButton";
 import OrderCustomerEmail from "./OrderCustomerEmail";
 
@@ -35,6 +37,7 @@ export default function CollectionOrdersTable({ orders }: { orders: CollectionOr
       {orders.map((order) => {
         const href = `/dashboard/orders/${order.id}`;
         const hold = balanceHold(order.paymentStatus);
+        const payAtPickup = awaitingPickupPayment(order);
         return (
           <DataTableRow key={order.id} href={href}>
             <td className={`${cellClass(COLUMNS[0])} whitespace-nowrap align-top font-semibold`}>
@@ -71,6 +74,11 @@ export default function CollectionOrdersTable({ orders }: { orders: CollectionOr
                   label={order.paymentStatus === "BALANCE_FAILED" ? "Balance failed" : "Balance pending"}
                   tone="warning"
                 />
+              ) : payAtPickup ? (
+                <StatusPill
+                  label={`Pay at pickup · ${formatMoney(order.totalCents, order.currency)}`}
+                  tone="warning"
+                />
               ) : (
                 <StatusPill label="Paid" tone="success" />
               )}
@@ -79,7 +87,11 @@ export default function CollectionOrdersTable({ orders }: { orders: CollectionOr
               {hold ? (
                 <span className={`text-xs ${muted}`}>Hold until paid</span>
               ) : (
-                <CollectionStatusButton orderId={order.id} status={order.collectionStatus ?? "ORDERED"} />
+                <CollectionStatusButton
+                  orderId={order.id}
+                  status={order.collectionStatus ?? "ORDERED"}
+                  payOnCollect={payAtPickup}
+                />
               )}
             </td>
           </DataTableRow>

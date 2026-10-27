@@ -13,7 +13,7 @@ export default function PreOrderListBody({ data, view }: { data: PreOrderListDat
           <SectionCopy k="emptyHeading" fallback="No pre-orders available" as="p" className="font-medium" />
           <SectionCopy
             k="emptyText"
-            fallback="Pre-orders let you pay by card for a collection or delivery day. We pack your order; you pick it up (or we deliver) on that day. Nothing is listed here right now."
+            fallback="Pre-orders let you order ahead for a collection or delivery day. We pack your order; you pick it up (or we deliver) on that day. Nothing is listed here right now."
             as="p"
             className="mt-2 text-sm leading-relaxed text-[var(--muted)]"
             multiline

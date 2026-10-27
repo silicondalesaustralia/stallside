@@ -1,5 +1,6 @@
 import { PaymentStatus, PaymentTiming } from "@/generated/prisma/client";
 import { formatCollectionLabel } from "@/lib/pre-order";
+import { awaitingPickupPayment } from "@/lib/pay-at-pickup";
 import type { CollectionOrderView } from "@/lib/collections/group-collections";
 import type { CollectionSubscriptionOfferRef } from "./load-subscription-offers";
 
@@ -24,6 +25,7 @@ export type CollectionPageGroup = {
 };
 
 function takenCentsFor(order: CollectionOrderView): number {
+  if (awaitingPickupPayment(order)) return 0;
   if (
     order.paymentTiming === PaymentTiming.DEPOSIT_THEN_BALANCE &&
     order.paymentStatus !== PaymentStatus.PAID

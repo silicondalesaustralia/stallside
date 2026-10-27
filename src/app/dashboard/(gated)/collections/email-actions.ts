@@ -37,7 +37,7 @@ export async function sendOrderCustomerEmail(input: {
     where: {
       id: input.orderId,
       ownerId: owner.id,
-      paymentStatus: PaymentStatus.PAID,
+      paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.CUSTOMER_CONFIRMED] },
     },
     include: {
       stand: { select: { name: true } },
@@ -92,7 +92,7 @@ export async function sendCollectionGroupCustomerEmails(input: {
       id: { in: orderIds },
       ownerId: owner.id,
       isPreOrder: true,
-      paymentStatus: PaymentStatus.PAID,
+      paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.CUSTOMER_CONFIRMED] },
     },
     include: {
       stand: { select: { name: true } },

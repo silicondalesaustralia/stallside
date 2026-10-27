@@ -338,9 +338,9 @@ export async function loadStandCart(
         return { error: CART_MIX_TAKE_NOW_PREORDER } as const;
       }
       const timing =
-        product.paymentTiming === PaymentTiming.DEPOSIT_THEN_BALANCE
-          ? PaymentTiming.DEPOSIT_THEN_BALANCE
-          : PaymentTiming.PAY_UPFRONT;
+        product.paymentTiming === PaymentTiming.PAY_NOW
+          ? PaymentTiming.PAY_UPFRONT
+          : product.paymentTiming;
       const depositPercent =
         timing === PaymentTiming.DEPOSIT_THEN_BALANCE
           ? (product.depositPercent ?? 30)

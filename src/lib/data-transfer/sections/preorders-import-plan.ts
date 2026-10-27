@@ -23,7 +23,7 @@ export type PreOrderRow = {
   productIds?: string[];
 };
 
-const TIMINGS = ["PAY_NOW", "PAY_UPFRONT", "DEPOSIT_THEN_BALANCE"] as const;
+const TIMINGS = ["PAY_NOW", "PAY_UPFRONT", "DEPOSIT_THEN_BALANCE", "PAY_AT_PICKUP"] as const;
 const HANDOVERS = ["COLLECT", "DELIVER"] as const;
 const DATE_HINT = "a date like 2026-12-18 17:00";
 
@@ -78,6 +78,9 @@ export async function planPreOrders(rows: CsvRow[], ctx: DataContext): Promise<I
     if (data.paymentTiming === PaymentTiming.DEPOSIT_THEN_BALANCE) {
       const pct = data.depositPercent;
       if (pct === undefined || pct < 1 || pct > 99) r.errors.push("deposit_percent must be 1-99 for deposits");
+    }
+    if (data.paymentTiming === PaymentTiming.PAY_AT_PICKUP && data.handoverMode === HandoverMode.DELIVER) {
+      r.errors.push("PAY_AT_PICKUP needs handover COLLECT");
     }
     errors.push(...r.toErrors());
     planned.push({ line: row.line, existingId, label: title ?? slug, data });

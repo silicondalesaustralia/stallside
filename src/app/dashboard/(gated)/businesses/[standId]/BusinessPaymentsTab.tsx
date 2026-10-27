@@ -45,7 +45,7 @@ export default function BusinessPaymentsTab({
       {overview}
       <p className="text-sm text-[var(--muted)]">
         Choose how customers can pay at checkout. {CASH_AND_LOCAL_PAYMENTS_LABEL}{" "}
-        work without Stripe or Square. Pre-orders and subscriptions need Stripe or Square.
+        work without Stripe or Square. Subscriptions and card pre-orders need Stripe or Square.
       </p>
       {productCount > 0 ? (
         <TapAndGoSetupCard

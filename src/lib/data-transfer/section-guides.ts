@@ -38,7 +38,7 @@ export const SECTION_GUIDES: SectionGuide[] = [
     tips: [
       "Import products first; list them by slug separated by |.",
       "Dates use your business time zone in the form 2026-11-20 17:00.",
-      "payment_timing is PAY_UPFRONT or DEPOSIT_THEN_BALANCE. Deposits need deposit_percent (1-99).",
+      "payment_timing is PAY_UPFRONT, DEPOSIT_THEN_BALANCE or PAY_AT_PICKUP. Deposits need deposit_percent (1-99). PAY_AT_PICKUP needs handover COLLECT.",
     ],
   },
   {

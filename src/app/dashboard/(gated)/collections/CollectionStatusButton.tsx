@@ -7,9 +7,12 @@ import { advanceCollectionStatus } from "./actions";
 export default function CollectionStatusButton({
   orderId,
   status,
+  payOnCollect = false,
 }: {
   orderId: string;
   status: "ORDERED" | "READY" | "COLLECTED";
+  /** Pay-at-pickup order: collecting also marks it paid. */
+  payOnCollect?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -20,7 +23,12 @@ export default function CollectionStatusButton({
     );
   }
 
-  const label = status === "ORDERED" ? "Mark ready" : "Mark collected";
+  const label =
+    status === "ORDERED"
+      ? "Mark ready"
+      : payOnCollect
+        ? "Paid & collected"
+        : "Mark collected";
 
   return (
     <button

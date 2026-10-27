@@ -62,7 +62,7 @@ export const stripeArticles: KnowledgeArticle[] = [
     ],
     tips: [
       "Zip and Klarna only appear on orders above the provider's minimum, usually around $30.",
-      "Pre-orders are always card-only, so pay-later never shows on pre-order pages.",
+      "Pay-later never shows on pre-order pages.",
       "PayTo (AUD) waits for Stripe to confirm before the sale is marked paid.",
       "Pay-later providers charge higher processing fees than cards.",
     ],

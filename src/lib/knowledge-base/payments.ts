@@ -14,7 +14,7 @@ export const paymentArticles: KnowledgeArticle[] = [
     ],
     steps: [
       "Money always goes straight to you: cash in your tin, PayID to your bank, card payments to your own Stripe or Square account. Vendl never holds your funds.",
-      "Cash and PayID need nothing connected and never have a Vendl fee. PayID only shows on businesses priced in AUD. Neither can be used for pre-orders or subscriptions.",
+      "Cash and PayID need nothing connected and never have a Vendl fee. PayID only shows on businesses priced in AUD. Neither can be used for subscriptions. For pre-orders without card, use Pay at pickup on the pre-order page.",
       "Stripe takes card, Tap & Go (Apple Pay / Google Pay) and pay-later on your QR stall and shop, plus pre-order pages, deposits, subscriptions and memberships. It works in Australia, the US, the UK and Europe.",
       "Square takes card and wallet payments for the same things, and can sync products and stock both ways with your Square reader or POS. It's available in Australia and the United States.",
       "Which to pick: choose Square if you already sell with a Square reader at markets and want stock to match. Choose Stripe if you sell in the UK or Europe, or want pay-later options like Zip, Klarna and Afterpay. You can connect both.",
@@ -47,7 +47,7 @@ export const paymentArticles: KnowledgeArticle[] = [
     ],
     tips: [
       "Vendl can't see your bank account, so PayID and cash orders are confirmed by the shopper, not checked by Vendl. Check your bank or tin as usual, then open the order and tap Mark paid.",
-      "Cash and PayID can't be used for pre-orders, deposits or subscriptions. Those need Stripe or Square.",
+      "Cash and PayID can't be used for deposits or subscriptions. Those need Stripe or Square. Pre-order pages can use Pay at pickup instead.",
       "PayTo and Pay by Bank come through Stripe, not this PayID option.",
       "On Pro, if PayPal is offered, open Payments, tap the PayPal link to connect, turn on Show PayPal at checkout, then tick PayPal here. PayPal works for take-now checkout only.",
     ],

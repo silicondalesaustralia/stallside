@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { toDateTimeLocalValue } from "@/lib/pre-order";
+import { toDateTimeLocalValue, type PreOrderPaymentTiming } from "@/lib/pre-order";
 import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
+import PreOrderPaymentFields from "./PreOrderPaymentFields";
 
 type Props = {
   stripeConnected: boolean;
@@ -15,7 +16,7 @@ type Props = {
   defaultCollectionAt?: Date | string | null;
   defaultCollectionNote?: string | null;
   defaultShowExactStock?: boolean;
-  defaultDepositRequired?: boolean;
+  defaultPaymentTiming?: PreOrderPaymentTiming;
   defaultDepositPercent?: number | null;
   defaultHandoverMode?: "COLLECT" | "DELIVER";
   collectionNoun?: string;
@@ -68,13 +69,15 @@ export default function PreOrderFields({
   defaultCollectionAt = null,
   defaultCollectionNote = null,
   defaultShowExactStock = false,
-  defaultDepositRequired = false,
+  defaultPaymentTiming = "PAY_UPFRONT",
   defaultDepositPercent = 30,
   defaultHandoverMode = "COLLECT",
   collectionNoun = "Collection",
 }: Props) {
   const [on, setOn] = useState(forceOn || defaultIsPreOrder);
-  const [depositOn, setDepositOn] = useState(defaultDepositRequired);
+  const [timing, setTiming] = useState<PreOrderPaymentTiming>(
+    stripeConnected ? defaultPaymentTiming : "PAY_AT_PICKUP",
+  );
   const [handover, setHandover] = useState<"COLLECT" | "DELIVER">(
     defaultHandoverMode,
   );
@@ -114,14 +117,14 @@ export default function PreOrderFields({
       )}
       {!stripeConnected ? (
         <p className="text-sm text-[var(--muted)]">
-          Pre-orders need card payments so customers can pay to reserve.{" "}
+          Without card payments, customers pay you at pickup.{" "}
           <Link
             href="/dashboard/payments"
             className="font-medium text-[var(--leaf-dark)] underline"
           >
             Connect Stripe or Square
           </Link>{" "}
-          before enabling pre-orders.
+          to take payment or a deposit when they order.
         </p>
       ) : null}
       {on || forceOn ? (
@@ -177,13 +180,19 @@ export default function PreOrderFields({
                 />
                 Collect at a place
               </label>
-              <label className="flex items-center gap-2">
+              <label
+                className={`flex items-center gap-2 ${stripeConnected ? "" : "opacity-50"}`}
+              >
                 <input
                   type="radio"
                   name="handoverMode"
                   value="DELIVER"
                   checked={handover === "DELIVER"}
-                  onChange={() => setHandover("DELIVER")}
+                  disabled={!stripeConnected}
+                  onChange={() => {
+                    setHandover("DELIVER");
+                    if (timing === "PAY_AT_PICKUP") setTiming("PAY_UPFRONT");
+                  }}
                   className="size-4 accent-[var(--leaf)]"
                 />
                 Deliver to an address
@@ -191,46 +200,14 @@ export default function PreOrderFields({
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 text-sm">
-            <span className="font-medium">Deposit required?</span>
-            <div className="flex flex-wrap items-center gap-3">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="depositRequired"
-                  value="false"
-                  checked={!depositOn}
-                  onChange={() => setDepositOn(false)}
-                  className="size-4 accent-[var(--leaf)]"
-                />
-                Pay in full
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="depositRequired"
-                  value="true"
-                  checked={depositOn}
-                  onChange={() => setDepositOn(true)}
-                  className="size-4 accent-[var(--leaf)]"
-                />
-                Deposit
-              </label>
-              {depositOn ? (
-                <label className="flex items-center gap-1">
-                  <input
-                    name="depositPercent"
-                    type="number"
-                    min={1}
-                    max={99}
-                    defaultValue={defaultDepositPercent ?? 30}
-                    className="w-16 rounded-lg border border-[var(--line)] bg-white px-2 py-1.5"
-                  />
-                  <span>% now, balance on {collectionNoun.toLowerCase()}</span>
-                </label>
-              ) : null}
-            </div>
-          </div>
+          <PreOrderPaymentFields
+            timing={timing}
+            onTiming={setTiming}
+            cardReady={stripeConnected}
+            deliver={handover === "DELIVER"}
+            defaultDepositPercent={defaultDepositPercent}
+            collectionNoun={collectionNoun}
+          />
 
           <input
             type="hidden"

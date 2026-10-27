@@ -1,7 +1,8 @@
 import { revalidatePath } from "next/cache";
-import { CollectionStatus } from "@/generated/prisma/client";
+import { CollectionStatus, PaymentStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { orderFullyPaidForCollection } from "@/lib/deposit-order";
+import { awaitingPickupPayment } from "@/lib/pay-at-pickup";
 
 const NEXT: Partial<Record<CollectionStatus, CollectionStatus | null>> = {
   ORDERED: CollectionStatus.READY,
@@ -16,7 +17,7 @@ export async function advanceOwnerCollection(
 ): Promise<{ ok: true; status: CollectionStatus } | { error: string }> {
   const order = await prisma.order.findFirst({
     where: { id: orderId, ownerId, isPreOrder: true },
-    select: { id: true, collectionStatus: true, paymentStatus: true },
+    select: { id: true, collectionStatus: true, paymentStatus: true, paymentTiming: true },
   });
   if (!order || !order.collectionStatus) return { error: "Order not found." };
 
@@ -27,7 +28,15 @@ export async function advanceOwnerCollection(
   const next = NEXT[order.collectionStatus];
   if (!next) return { error: "Already collected." };
 
-  await prisma.order.update({ where: { id: order.id }, data: { collectionStatus: next } });
+  const paidOnCollect = next === CollectionStatus.COLLECTED && awaitingPickupPayment(order);
+  await prisma.order.update({
+    where: { id: order.id },
+    data: {
+      collectionStatus: next,
+      ...(paidOnCollect ? { paymentStatus: PaymentStatus.PAID } : {}),
+    },
+  });
+  if (paidOnCollect) revalidatePath("/dashboard/orders", "layout");
   revalidatePath("/dashboard/collections", "layout");
   return { ok: true, status: next };
 }

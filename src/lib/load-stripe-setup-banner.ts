@@ -99,7 +99,7 @@ export async function loadStripeSetupBanner(input: {
   return {
     mode: "never-started",
     title: "Connect Stripe to take card payments",
-    body: "Optional for cash and local bank transfer. Required for pre-orders and subscription boxes.",
+    body: "Optional for cash and local bank transfer. Required for card pre-orders, deposits and subscription boxes.",
     steps: [...DEFAULT_NEVER_STARTED_STEPS, ...(paypal ? [PAYPAL_STEP] : [])],
     ctas: [{ label: "Connect Stripe", href: STRIPE_SETTINGS_HREF }, ...paypalCta],
     helpHref: null,

@@ -1,6 +1,7 @@
 import {
   formatCollectionLabel,
   formatOrderByLabel,
+  type PaymentTimingValue,
 } from "@/lib/pre-order";
 import type { PublicOptionGroup } from "@/lib/product-options";
 import { parsePriceTiers } from "@/lib/price-tiers";
@@ -44,7 +45,7 @@ export type PublicProductCard = {
   fulfilment: FulfilmentChoiceValue;
   /** Per-item shipping when the stand uses custom shipping. */
   shippingCents: number | null;
-  paymentTiming: "PAY_NOW" | "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE";
+  paymentTiming: PaymentTimingValue;
   depositPercent: number | null;
   /** When this product is in the cart, offer this product as upsell. */
   upsellProductId: string | null;
@@ -109,7 +110,7 @@ export function mapPublicProduct(
     showExactStock?: boolean;
     freshnessNote?: string | null;
     priceTiers?: unknown;
-    paymentTiming?: "PAY_NOW" | "PAY_UPFRONT" | "DEPOSIT_THEN_BALANCE";
+    paymentTiming?: PaymentTimingValue;
     depositPercent?: number | null;
     handoverMode?: "COLLECT" | "DELIVER";
     fulfilment?: FulfilmentChoiceValue | null;
@@ -183,10 +184,10 @@ export function mapPublicProduct(
   const priceTiers =
     optionGroups.length > 0 ? [] : parsePriceTiers(p.priceTiers);
 
-  const paymentTiming = isPre
-    ? p.paymentTiming === "DEPOSIT_THEN_BALANCE"
-      ? "DEPOSIT_THEN_BALANCE"
-      : "PAY_UPFRONT"
+  const paymentTiming: PaymentTimingValue = isPre
+    ? !p.paymentTiming || p.paymentTiming === "PAY_NOW"
+      ? "PAY_UPFRONT"
+      : p.paymentTiming
     : "PAY_NOW";
 
   const images = productImageList(p.imageUrl, p.galleryImageUrls);

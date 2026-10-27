@@ -12,6 +12,7 @@ export function loadOwnerOrderDetail(ownerId: string, orderId: string) {
       updatedAt: true,
       paymentMethod: true,
       paymentStatus: true,
+      paymentTiming: true,
       localTransferMethodId: true,
       onlinePaymentProvider: true,
       saleOrigin: true,

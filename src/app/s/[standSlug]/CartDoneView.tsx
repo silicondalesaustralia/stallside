@@ -3,10 +3,14 @@ import RestockOptIn from "@/components/RestockOptIn";
 import SectionCopy from "@/components/studio/SectionCopy";
 import TapAndGoInterestCta from "./TapAndGoInterestCta";
 
-export type CartPaidVia = "cash" | "local_transfer" | "square";
+export type CartPaidVia = "cash" | "local_transfer" | "square" | "pickup";
 
 const PAID_COPY: Record<CartPaidVia, { k: string; fallback: string }> = {
   cash: { k: "paidCash", fallback: "Cash payment confirmed. You're all set." },
+  pickup: {
+    k: "placedPickup",
+    fallback: "Pre-order placed. We've emailed your order details. Pay when you collect.",
+  },
   square: { k: "paidCard", fallback: "Card payment confirmed. You're all set." },
   local_transfer: {
     k: "paidTransfer",

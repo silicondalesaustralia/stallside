@@ -2,6 +2,9 @@
 export const CHECKOUT_COPY = {
   payHeading: "How would you like to pay?",
   reserveHeading: "Pay to reserve your order",
+  pickupHeading: "Place your pre-order",
+  payAtPickupNote: "No payment now. Pay {amount} when you collect.",
+  payAtPickupButton: "Place order, pay at pickup",
   payCash: "Pay cash",
   cardButton: "Checkout via credit card or these options:",
   noPayment: "No payment methods are available at this stand right now.",

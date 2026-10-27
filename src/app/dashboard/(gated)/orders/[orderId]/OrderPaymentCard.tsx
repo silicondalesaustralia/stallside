@@ -3,6 +3,7 @@ import StatusPill from "@/components/dashboard/ui/StatusPill";
 import { formatMoney } from "@/lib/money";
 import { orderItemCount, orderPaymentPill } from "@/lib/orders/order-status";
 import { orderPaymentLabel } from "@/lib/order-payment-label";
+import { awaitingPickupPayment } from "@/lib/pay-at-pickup";
 import type { OrderDetail } from "@/lib/orders/load-order-detail";
 import { taxLabel, type TaxConfig } from "@/lib/tax/config";
 import OrderRefundSection from "../OrderRefundSection";
@@ -53,11 +54,15 @@ export default function OrderPaymentCard({ order, tax }: { order: OrderDetail; t
         ) : null}
         <Row label="Total" value={money(order.totalCents)} strong />
         <div className="my-2 border-t border-[var(--line)]" />
-        <Row
-          label={depositOnly ? "Deposit paid" : "Paid"}
-          note={orderPaymentLabel(order.paymentMethod, order.localTransferMethodId, order.paymentStatus)}
-          value={money(paid)}
-        />
+        {awaitingPickupPayment(order) ? (
+          <Row label="Due at pickup" note="pay at pickup" value={money(order.totalCents)} />
+        ) : (
+          <Row
+            label={depositOnly ? "Deposit paid" : "Paid"}
+            note={orderPaymentLabel(order.paymentMethod, order.localTransferMethodId, order.paymentStatus)}
+            value={money(paid)}
+          />
+        )}
         {depositOnly && order.balanceCents ? (
           <Row label="Balance due" value={money(order.balanceCents)} />
         ) : null}

@@ -3,15 +3,21 @@ import type {
   FulfilmentStatus,
   HandoverMode,
   PaymentStatus,
+  PaymentTiming,
   SaleOrigin,
 } from "@/generated/prisma/client";
 import type { PillSpec } from "@/components/dashboard/ui/StatusPill";
 import { isCountedPaymentStatus } from "@/lib/order-metrics";
+import { awaitingPickupPayment } from "@/lib/pay-at-pickup";
 
 export function orderPaymentPill(order: {
   paymentStatus: PaymentStatus;
   refundedCents: number | null;
+  paymentTiming?: PaymentTiming;
 }): PillSpec {
+  if (order.paymentTiming && awaitingPickupPayment({ ...order, paymentTiming: order.paymentTiming })) {
+    return { label: "Pay at pickup", tone: "warning" };
+  }
   switch (order.paymentStatus) {
     case "REFUNDED":
       return { label: "Refunded", tone: "neutral" };

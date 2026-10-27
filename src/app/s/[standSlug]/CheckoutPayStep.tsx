@@ -10,6 +10,7 @@ import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import SquareWebPayButton from "./SquareWebPayButton";
 import PreOrderContactFields from "./PreOrderContactFields";
+import PayAtPickupButton from "./PayAtPickupButton";
 import HandoverPicker from "./HandoverPicker";
 import type { HandoverValue } from "@/lib/fulfilment/handover-choice";
 import SectionCopy from "@/components/studio/SectionCopy";
@@ -50,6 +51,9 @@ type CheckoutPayStepProps = {
   showDemoCardHint?: boolean;
   /** Pre-order carts: card only + name/email/phone. */
   preOrderOnly?: boolean;
+  /** Pre-order page set to pay at pickup: no online payment, one place-order button. */
+  payAtPickup?: boolean;
+  onPayAtPickup?: () => void;
   /** Delivery orders: card only + contact and delivery address. */
   deliver?: boolean;
   /** Set when the cart allows both pickup and delivery. */
@@ -102,6 +106,8 @@ export default function CheckoutPayStep({
   pending,
   showDemoCardHint = false,
   preOrderOnly = false,
+  payAtPickup = false,
+  onPayAtPickup,
   deliver = false,
   handoverChoice = null,
   firstOrderHint = null,
@@ -129,6 +135,7 @@ export default function CheckoutPayStep({
   backLabel,
 }: CheckoutPayStepProps) {
   const cardOnly = preOrderOnly || deliver;
+  const online = !payAtPickup;
   const showCash = cashEnabled && !cardOnly;
   const showLt = Boolean(localTransferLabel) && !cardOnly;
   const showPayPal =
@@ -138,7 +145,9 @@ export default function CheckoutPayStep({
 
   return (
     <div className="flex flex-col gap-3">
-      {preOrderOnly ? (
+      {payAtPickup ? (
+        <SectionCopy k="pickupHeading" fallback={CHECKOUT_COPY.pickupHeading} as="p" className="block text-xl font-semibold" />
+      ) : preOrderOnly ? (
         <SectionCopy k="reserveHeading" fallback={CHECKOUT_COPY.reserveHeading} as="p" className="block text-xl font-semibold" />
       ) : (
         <SectionCopy k="payHeading" fallback={CHECKOUT_COPY.payHeading} as="p" className="block text-xl font-semibold" />
@@ -183,6 +192,14 @@ export default function CheckoutPayStep({
           />
         </label>
       ) : null}
+      {payAtPickup && onPayAtPickup ? (
+        <PayAtPickupButton
+          amountLabel={formatMoney(subtotalCents, currency)}
+          pending={pending}
+          disabled={!customerName.trim() || !customerEmail.trim()}
+          onPlace={onPayAtPickup}
+        />
+      ) : null}
       {showCash ? (
         <button
           type="button"
@@ -215,7 +232,7 @@ export default function CheckoutPayStep({
           {formatMoney(squareDeposit.balanceCents, currency)} charged to the same card before handover
         </p>
       ) : null}
-      {squareEnabled ? (
+      {squareEnabled && online ? (
         <SquareWebPayButton
           standSlug={standSlug}
           items={customerChoiceAmountCents != null ? undefined : items}
@@ -243,7 +260,7 @@ export default function CheckoutPayStep({
           onSuccess={(orderNumber) => onSquareSuccess?.(orderNumber)}
         />
       ) : null}
-      {cardEnabled ? (
+      {cardEnabled && online ? (
         <>
           {cardFeeCents > 0 ? (
             <p className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--muted)]">
@@ -307,7 +324,7 @@ export default function CheckoutPayStep({
           onError={onPayPalError}
         />
       ) : null}
-      {!showCash && !showLt && !cardEnabled && !squareEnabled && !showPayPal ? (
+      {online && !showCash && !showLt && !cardEnabled && !squareEnabled && !showPayPal ? (
         <p className="rounded-[var(--radius)] border border-dashed border-[var(--line)] bg-[var(--panel)] px-5 py-5 text-lg text-[var(--muted)]">
           <SectionCopy k="noPayment" fallback={CHECKOUT_COPY.noPayment} />
         </p>

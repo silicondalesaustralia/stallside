@@ -6,6 +6,7 @@ export { groupCollectionDays, dayMakeListMeta } from "./group-collections";
 
 const COLLECTION_PAYMENT_STATUSES: PaymentStatus[] = [
   PaymentStatus.PAID,
+  PaymentStatus.CUSTOMER_CONFIRMED,
   PaymentStatus.DEPOSIT_PAID,
   PaymentStatus.BALANCE_DUE,
   PaymentStatus.BALANCE_FAILED,

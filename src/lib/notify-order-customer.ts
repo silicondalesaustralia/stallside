@@ -50,7 +50,10 @@ export async function notifyOrderCustomer(orderId: string) {
     order.depositCents != null &&
     order.paymentStatus !== PaymentStatus.PAID
       ? `<p>Deposit paid: ${escapeHtml(formatMoney(order.depositCents, order.currency))}. Balance ${escapeHtml(formatMoney(order.balanceCents ?? 0, order.currency))} charged before handover.</p>`
-      : "";
+      : order.paymentTiming === PaymentTiming.PAY_AT_PICKUP &&
+          order.paymentStatus !== PaymentStatus.PAID
+        ? `<p><strong>Pay at pickup:</strong> ${escapeHtml(total)} is due when you collect. Nothing has been charged yet.</p>`
+        : "";
   const greet = order.customerName
     ? `Hi ${escapeHtml(order.customerName)},`
     : "Hi,";

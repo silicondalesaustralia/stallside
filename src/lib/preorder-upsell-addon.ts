@@ -54,9 +54,9 @@ export async function upsertPreOrderAddonProduct(input: {
     collectionNote: input.defaults.collectionNote,
     showExactStock: input.defaults.showExactStock,
     paymentTiming:
-      input.defaults.paymentTiming === PaymentTiming.DEPOSIT_THEN_BALANCE
-        ? PaymentTiming.DEPOSIT_THEN_BALANCE
-        : PaymentTiming.PAY_UPFRONT,
+      input.defaults.paymentTiming === PaymentTiming.PAY_NOW
+        ? PaymentTiming.PAY_UPFRONT
+        : input.defaults.paymentTiming,
     depositPercent: input.defaults.depositPercent,
     handoverMode: input.defaults.handoverMode,
   };

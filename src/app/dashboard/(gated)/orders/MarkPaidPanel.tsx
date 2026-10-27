@@ -4,7 +4,13 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { markOrderPaid } from "./mark-paid-action";
 
-export default function MarkPaidPanel({ orderId }: { orderId: string }) {
+export default function MarkPaidPanel({
+  orderId,
+  payAtPickup = false,
+}: {
+  orderId: string;
+  payAtPickup?: boolean;
+}) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -29,7 +35,9 @@ export default function MarkPaidPanel({ orderId }: { orderId: string }) {
   return (
     <div className="mt-3 flex flex-col gap-2 text-sm">
       <p className="text-[var(--muted)]">
-        The shopper said they paid. Check your tin or bank, then mark it paid.
+        {payAtPickup
+          ? "This pre-order is paid at pickup. Mark it paid once you've taken the money."
+          : "The shopper said they paid. Check your tin or bank, then mark it paid."}
       </p>
       <button
         type="button"

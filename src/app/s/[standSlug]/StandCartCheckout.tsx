@@ -57,6 +57,7 @@ import { useShopHref } from "@/components/storefront/use-cart-href";
 import PreOrderDetails from "./PreOrderDetails";
 import CartUpsellOffer from "./CartUpsellOffer";
 import { startCardCheckout } from "./digital-checkout-actions";
+import { placePayAtPickupOrder } from "./pay-at-pickup-actions";
 import StripeEmbeddedCheckout from "@/components/checkout/StripeEmbeddedCheckout";
 import type { EmbeddedCheckoutInfo } from "@/lib/stripe-embedded-checkout";
 import {
@@ -307,6 +308,8 @@ export default function StandCartCheckout({
 
   const preOrderOnly =
     lines.length > 0 && lines.every((l) => l.product.isPreOrder);
+  const payAtPickup =
+    preOrderOnly && lines.every((l) => l.product.paymentTiming === "PAY_AT_PICKUP");
   const handoverOptions = cartHandoverOptions(
     lines.filter((l) => !l.asUpsell).map((l) => l.product.fulfilment),
   );
@@ -418,9 +421,14 @@ export default function StandCartCheckout({
     );
   }
 
-  function finishOk(via: "cash" | "local_transfer" | "square") {
+  function finishOk(via: CartPaidVia) {
     persist([]);
-    const sale = { standSlug, via: via === "square" ? "cash" : via, totalCents: total, currency };
+    const sale = {
+      standSlug,
+      via: via === "square" || via === "pickup" ? "cash" : via,
+      totalCents: total,
+      currency,
+    };
     if (demoProduct) {
       storePendingDemoSale(sale);
       if (isEmbeddedCheckout()) {
@@ -470,6 +478,25 @@ export default function StandCartCheckout({
         return;
       }
       if ("orderNumber" in result) finishOk("local_transfer");
+    });
+  }
+
+  function placePickupOrder() {
+    setError(null);
+    startTransition(async () => {
+      const result = await placePayAtPickupOrder({
+        standSlug,
+        items: payload,
+        customerName: customerName.trim(),
+        customerEmail: customerEmail.trim(),
+        customerPhone: customerPhone.trim(),
+        couponCode: discount.couponCode,
+      });
+      if ("error" in result) {
+        setError(result.error);
+        return;
+      }
+      finishOk("pickup");
     });
   }
 
@@ -645,6 +672,8 @@ export default function StandCartCheckout({
           pending={pending}
           showDemoCardHint={Boolean(demoProduct)}
           preOrderOnly={preOrderOnly}
+          payAtPickup={payAtPickup}
+          onPayAtPickup={placePickupOrder}
           deliver={deliver}
           handoverChoice={
             canChooseHandover ? { value: handover, onChange: setHandoverPick } : null

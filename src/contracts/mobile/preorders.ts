@@ -33,7 +33,7 @@ export type MobilePreOrderItem = z.infer<typeof mobilePreOrderItem>;
 export const preOrderDetailResponse = z.object({
   page: mobilePreOrderPage,
   collectionNote: z.string().nullable(),
-  paymentTiming: z.enum(["PAY_NOW", "PAY_UPFRONT", "DEPOSIT_THEN_BALANCE"]),
+  paymentTiming: z.enum(["PAY_NOW", "PAY_UPFRONT", "DEPOSIT_THEN_BALANCE", "PAY_AT_PICKUP"]),
   depositPercent: z.number().int().nullable(),
   handoverMode: z.enum(["COLLECT", "DELIVER"]),
   currency: z.string(),

@@ -38,6 +38,7 @@ import { contactError, loadedCartHandover } from "@/lib/fulfilment/cart-handover
 import { loadedCartShippingCents } from "@/lib/shipping/cart-shipping";
 import { shippingTax } from "@/lib/tax/shipping-tax";
 import { parseHandover, type HandoverValue } from "@/lib/fulfilment/handover-choice";
+import { PAY_AT_PICKUP_CART_ERROR } from "@/lib/pre-order";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -101,6 +102,9 @@ export async function startCardCheckout(input: {
 
     if (!stand.acceptCard) {
       return { error: "Card is not enabled at this stand." };
+    }
+    if (preOrderCart?.paymentTiming === PaymentTiming.PAY_AT_PICKUP) {
+      return { error: PAY_AT_PICKUP_CART_ERROR };
     }
 
     const handover = loadedCartHandover(loaded, input.items, parseHandover(input.handoverMode));
