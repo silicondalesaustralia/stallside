@@ -22,7 +22,7 @@ export type CloudflareCustomHostnameResult = {
   sslTxtRecords: CloudflareSslTxtRecord[];
 };
 
-function cfHeaders(): HeadersInit {
+export function cfHeaders(): HeadersInit {
   const token = process.env.CLOUDFLARE_API_TOKEN?.trim();
   if (!token) throw new Error("CLOUDFLARE_API_TOKEN is not set");
   return {
@@ -31,7 +31,7 @@ function cfHeaders(): HeadersInit {
   };
 }
 
-function zoneBase(): string {
+export function zoneBase(): string {
   const zoneId = process.env.CLOUDFLARE_ZONE_ID?.trim();
   if (!zoneId) throw new Error("CLOUDFLARE_ZONE_ID is not set");
   return `https://api.cloudflare.com/client/v4/zones/${zoneId}/custom_hostnames`;
@@ -52,7 +52,7 @@ function mapSslTxtRecords(ssl: Record<string, unknown> | null): CloudflareSslTxt
   return out;
 }
 
-function mapResult(raw: Record<string, unknown>): CloudflareCustomHostnameResult {
+export function mapResult(raw: Record<string, unknown>): CloudflareCustomHostnameResult {
   const ssl = (raw.ssl as Record<string, unknown> | null) ?? null;
   const ownership = (raw.ownership_verification as Record<string, unknown> | null) ?? null;
   const errors = Array.isArray(raw.verification_errors)

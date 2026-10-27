@@ -14,8 +14,8 @@ import {
   normalizeDomainHostname,
 } from "./normalize";
 import { ownerCanUseCustomDomains } from "./entitlements";
+import { cloudflareEnsureCustomHostname } from "./provider/cloudflare-ensure";
 import {
-  cloudflareCreateCustomHostname,
   cloudflareDeleteCustomHostname,
   cloudflareGetCustomHostname,
   cloudflareHostnameProductionReady,
@@ -108,7 +108,7 @@ export async function connectCustomDomain(input: {
 
   if (cloudflareConfigured()) {
     try {
-      const created = await cloudflareCreateCustomHostname(hostname);
+      const created = await cloudflareEnsureCustomHostname(hostname);
       cfId = created.id;
       hostnameStatus = created.status;
       sslStatus = created.sslStatus;
