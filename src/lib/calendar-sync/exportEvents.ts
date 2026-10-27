@@ -30,7 +30,7 @@ function toInput(e: CalendarEvent, timeZone: string): ProviderEventInput {
   const lines = [
     CALENDAR_TYPE_LABEL[e.type],
     e.summary,
-    `Open in Vendl: ${hostPublicOrigin()}${e.href}`,
+    e.href ? `Open in Vendl: ${hostPublicOrigin()}${e.href}` : null,
   ].filter(Boolean);
   return {
     title: e.title,

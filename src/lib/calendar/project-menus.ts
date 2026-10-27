@@ -84,8 +84,8 @@ export async function projectMenuEvents(input: {
         status: null,
         sourceType: "menu",
         sourceId: menu.id,
-        href: `/dashboard/menus/${menu.id}`,
-        editHref: `/dashboard/menus/${menu.id}`,
+        href: "/dashboard/pre-order-pages",
+        editHref: null,
         location: null,
         summary:
           orderCount > 0

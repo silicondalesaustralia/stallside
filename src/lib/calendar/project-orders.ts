@@ -9,6 +9,8 @@ import { OPS_PAYMENT_STATUSES } from "@/lib/ops/board";
 import { dayKeyInTz } from "./range";
 import type { CalendarEvent } from "./types";
 
+const COLLECTIONS_HREF = "/dashboard/collections";
+
 const READONLY_EVENT = {
   editable: false,
   durationEditable: false,
@@ -191,8 +193,8 @@ export async function projectOrderFulfilmentEvents(input: {
       status: null,
       sourceType: "pickup_window",
       sourceId: gk,
-      href: `/dashboard/fulfilment/orders?view=today`,
-      editHref: "/dashboard/fulfilment/pickup",
+      href: COLLECTIONS_HREF,
+      editHref: null,
       location: g.location,
       summary: `${g.orders.length} orders · ${ready} ready`,
       dayKey: dk,
@@ -215,8 +217,8 @@ export async function projectOrderFulfilmentEvents(input: {
       status: null,
       sourceType: "delivery_zone",
       sourceId: gk,
-      href: `/dashboard/fulfilment/orders/print/delivery`,
-      editHref: "/dashboard/fulfilment/delivery",
+      href: COLLECTIONS_HREF,
+      editHref: null,
       location: null,
       summary: `${g.orders.length} orders · ${ready} ready`,
       dayKey: dk,
@@ -244,7 +246,7 @@ export async function projectOrderFulfilmentEvents(input: {
       status: null,
       sourceType: "packing",
       sourceId: dk,
-      href: `/dashboard/fulfilment/orders?view=today`,
+      href: COLLECTIONS_HREF,
       editHref: null,
       location: null,
       summary: `${packedOrders} / ${g.orders.length} packed`,

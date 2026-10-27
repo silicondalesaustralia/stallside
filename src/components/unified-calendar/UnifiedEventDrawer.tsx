@@ -68,9 +68,9 @@ export default function UnifiedEventDrawer({ item, timeZone, onClose, onMove }: 
             <a href={event.href} target="_blank" rel="noopener noreferrer" className={BUTTON}>
               Open in Google Calendar <ExternalLink className="h-3.5 w-3.5" />
             </a>
-          ) : (
+          ) : event.href ? (
             <Link href={event.href} className={BUTTON}>Open</Link>
-          )}
+          ) : null}
           {event.editHref && event.editHref !== event.href && (
             <Link href={event.editHref} className={BUTTON}>Edit</Link>
           )}

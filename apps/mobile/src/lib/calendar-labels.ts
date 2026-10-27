@@ -31,7 +31,7 @@ export const CATEGORY_COLOR: Record<CalendarCategory, string> = {
 
 /** Dashboard pages the app already has natively. */
 const NATIVE_PATHS: [prefix: string, route: "/orders" | "/subscriptions"][] = [
-  ["/dashboard/fulfilment/orders", "/orders"],
+  ["/dashboard/collections", "/orders"],
   ["/dashboard/subscriptions", "/subscriptions"],
 ];
 
@@ -39,6 +39,7 @@ export function openCalendarEvent(
   event: MobileCalendarEvent,
   token: string | null,
 ): void {
+  if (!event.href) return;
   if (/^https?:\/\//.test(event.href)) {
     void openLink(event.href);
     return;

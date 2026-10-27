@@ -11,15 +11,10 @@ type Props = {
 }
 
 export default function CreateSlotSheet({ slot, timeZone, onClose }: Props) {
-  const hour = String(slot.hour ?? 9).padStart(2, '0')
-  const startsAt = encodeURIComponent(`${slot.dayKey}T${hour}:00`)
   const header = formatCompactDayHeader(slot.dayKey, timeZone, false)
   const options = [
     { href: '/dashboard/social/create', label: 'Social post', hint: 'Create a post and schedule it for this day' },
-    { href: `/dashboard/events/new?startsAt=${startsAt}`, label: 'Market or event', hint: 'Timed stall, pop-up, or market day' },
-    { href: '/dashboard/menus/new', label: 'Pre-order menu / drop', hint: 'Set order-by and collection in the menu editor' },
-    { href: '/dashboard/forms/new', label: 'Custom order form', hint: 'Collect bespoke requests with a date field' },
-    { href: '/dashboard/fulfilment/pickup', label: 'Pickup window', hint: 'Add or edit recurring pickup times' },
+    { href: '/dashboard/pre-order-pages/new', label: 'Pre-order page', hint: 'Set order-by and pickup times in the pre-order editor' },
   ]
 
   return (

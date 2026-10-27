@@ -33,6 +33,7 @@ export type CalendarEvent = {
   status: string | null;
   sourceType: string;
   sourceId: string;
+  /** Empty when there is no dashboard page for the source record. */
   href: string;
   editHref: string | null;
   location: string | null;
