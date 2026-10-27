@@ -1,0 +1,42 @@
+---
+description: Keep the in-app guides (src/lib/knowledge-base) in sync with dashboard, storefront and onboarding changes
+globs: src/app/**,src/components/**,src/lib/**
+alwaysApply: false
+---
+
+# Keep guides in sync
+
+The Guides section (`/dashboard/knowledge`) is written in `src/lib/knowledge-base/*.ts`.
+Guides name exact on-screen labels, tabs, buttons and pages, so UI changes make them wrong.
+
+## When this applies
+
+Any change a user can see: renamed or removed labels, fields, checkboxes, buttons, tabs,
+sidebar items, page moves, new features, or changed behaviour (limits, defaults, fees).
+Pure refactors, styling and server-only fixes don't need guide changes.
+
+## What to do, in the same commit
+
+1. Search the guides for every old label, route and feature name you touched:
+   `rg -n "Show exact stock|tab=payments|Checkout payments" src/lib/knowledge-base`
+2. Update matching `steps`, `tips`, `summary`, `keywords` and `ctas`. Use the new label text exactly as it appears on screen.
+3. Removed a feature? Delete the step; don't leave "no longer available" notes.
+4. Moved a page? Update `ctas[].href`.
+5. New user-facing feature? Add a step to the closest article, or a new article in the matching category file with `related` links.
+6. Run `npm run test:guides` (checks links, related guides, Start here).
+
+## Report it
+
+End your summary with one line:
+- `Guides updated: business-setup.ts (Business details), getting-started.ts`
+- or `Guides: no changes needed (internal only)`
+
+## Example
+
+Removed the "Show exact stock publicly" checkbox from Business Details:
+
+```ts
+// ❌ left in business-setup.ts
+"Tick Show exact stock publicly to show counts instead of Available / Low stock / Sold out.",
+// ✅ step deleted, and the summary no longer mentions "stock display"
+```
