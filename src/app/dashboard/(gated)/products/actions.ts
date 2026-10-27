@@ -419,6 +419,7 @@ export async function updateProduct(productId: string, formData: FormData) {
               collectionAt: null,
               collectionNote: null,
               paymentTiming: "PAY_NOW" as const,
+              paymentOptions: [],
               depositPercent: null,
               handoverMode: "COLLECT" as const,
             }),

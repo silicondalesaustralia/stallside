@@ -85,6 +85,7 @@ function scheduleFromPre(pre: {
   collectionNote: string | null;
   showExactStock: boolean;
   paymentTiming: PreOrderPaymentTiming;
+  paymentOptions: PreOrderPaymentTiming[];
   depositPercent: number | null;
   handoverMode: "COLLECT" | "DELIVER";
 }) {
@@ -95,6 +96,7 @@ function scheduleFromPre(pre: {
     collectionNote: pre.collectionNote,
     showExactStock: pre.showExactStock,
     paymentTiming: PaymentTiming[pre.paymentTiming],
+    paymentOptions: pre.paymentOptions.map((o) => PaymentTiming[o]),
     depositPercent: pre.depositPercent,
     handoverMode:
       pre.handoverMode === "DELIVER"
@@ -145,6 +147,7 @@ async function resolvePageAddon(input: {
       collectionAt: input.schedule.collectionAt,
       collectionNote: input.schedule.collectionNote,
       paymentTiming: input.schedule.paymentTiming,
+      paymentOptions: input.schedule.paymentOptions,
       depositPercent: input.schedule.depositPercent,
       handoverMode: input.schedule.handoverMode,
       currency: input.currency,
@@ -185,7 +188,7 @@ export async function createPreOrderPage(formData: FormData) {
     stand.timezone,
   );
   if (!pre.ok) return { error: pre.error };
-  if (pre.data.paymentTiming === "DEPOSIT_THEN_BALANCE" && rail.squareNeedsReconnectForDeposits) {
+  if (pre.data.isPreOrder && pre.data.paymentOptions.includes("DEPOSIT_THEN_BALANCE") && rail.squareNeedsReconnectForDeposits) {
     return { error: SQUARE_DEPOSIT_RECONNECT_ERROR };
   }
   if (!pre.data.isPreOrder) {
@@ -257,6 +260,7 @@ export async function createPreOrderPage(formData: FormData) {
         collectionNote: schedule.collectionNote,
         showExactStock: schedule.showExactStock,
         paymentTiming: schedule.paymentTiming,
+        paymentOptions: schedule.paymentOptions,
         depositPercent: schedule.depositPercent,
         handoverMode: schedule.handoverMode,
         preOrderUpsellName: addon.preOrderUpsellName,
@@ -323,7 +327,7 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
     existing.stand.timezone,
   );
   if (!pre.ok) return { error: pre.error };
-  if (pre.data.paymentTiming === "DEPOSIT_THEN_BALANCE" && rail.squareNeedsReconnectForDeposits) {
+  if (pre.data.isPreOrder && pre.data.paymentOptions.includes("DEPOSIT_THEN_BALANCE") && rail.squareNeedsReconnectForDeposits) {
     return { error: SQUARE_DEPOSIT_RECONNECT_ERROR };
   }
   if (!pre.data.isPreOrder) {
@@ -413,6 +417,7 @@ export async function updatePreOrderPage(pageId: string, formData: FormData) {
         collectionNote: schedule.collectionNote,
         showExactStock: schedule.showExactStock,
         paymentTiming: schedule.paymentTiming,
+        paymentOptions: schedule.paymentOptions,
         depositPercent: schedule.depositPercent,
         handoverMode: schedule.handoverMode,
         preOrderUpsellName: addon.preOrderUpsellName,

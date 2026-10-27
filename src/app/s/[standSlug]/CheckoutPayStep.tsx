@@ -10,6 +10,8 @@ import CardInterestButton from "./CardInterestButton";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import SquareWebPayButton from "./SquareWebPayButton";
 import PreOrderContactFields from "./PreOrderContactFields";
+import PreOrderPayChoice, { type PreOrderPayChoiceValue } from "./PreOrderPayChoice";
+import type { CardPayTiming } from "@/lib/pre-order-pay-options";
 import PayAtPickupButton from "./PayAtPickupButton";
 import HandoverPicker from "./HandoverPicker";
 import type { HandoverValue } from "@/lib/fulfilment/handover-choice";
@@ -54,6 +56,10 @@ type CheckoutPayStepProps = {
   /** Pre-order page set to pay at pickup: no online payment, one place-order button. */
   payAtPickup?: boolean;
   onPayAtPickup?: () => void;
+  /** Set when the pre-order page offers more than one way to pay. */
+  payChoice?: PreOrderPayChoiceValue | null;
+  /** Card option the shopper picked (full or deposit). */
+  cardPayTiming?: CardPayTiming;
   /** Delivery orders: card only + contact and delivery address. */
   deliver?: boolean;
   /** Set when the cart allows both pickup and delivery. */
@@ -108,6 +114,8 @@ export default function CheckoutPayStep({
   preOrderOnly = false,
   payAtPickup = false,
   onPayAtPickup,
+  payChoice = null,
+  cardPayTiming,
   deliver = false,
   handoverChoice = null,
   firstOrderHint = null,
@@ -192,6 +200,7 @@ export default function CheckoutPayStep({
           />
         </label>
       ) : null}
+      {payChoice ? <PreOrderPayChoice {...payChoice} /> : null}
       {payAtPickup && onPayAtPickup ? (
         <PayAtPickupButton
           amountLabel={formatMoney(subtotalCents, currency)}
@@ -246,6 +255,7 @@ export default function CheckoutPayStep({
           deliveryNotes={deliver ? deliveryNotes : undefined}
           handoverMode={deliver ? "DELIVER" : "COLLECT"}
           couponCode={couponCode}
+          payTiming={cardPayTiming}
           depositMode={Boolean(squareDeposit)}
           amountCents={
             squareDeposit?.amountCents ||

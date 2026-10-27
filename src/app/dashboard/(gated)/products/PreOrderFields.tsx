@@ -16,7 +16,7 @@ type Props = {
   defaultCollectionAt?: Date | string | null;
   defaultCollectionNote?: string | null;
   defaultShowExactStock?: boolean;
-  defaultPaymentTiming?: PreOrderPaymentTiming;
+  defaultPaymentOptions?: PreOrderPaymentTiming[];
   defaultDepositPercent?: number | null;
   defaultHandoverMode?: "COLLECT" | "DELIVER";
   collectionNoun?: string;
@@ -69,14 +69,14 @@ export default function PreOrderFields({
   defaultCollectionAt = null,
   defaultCollectionNote = null,
   defaultShowExactStock = false,
-  defaultPaymentTiming = "PAY_UPFRONT",
+  defaultPaymentOptions = ["PAY_UPFRONT"],
   defaultDepositPercent = 30,
   defaultHandoverMode = "COLLECT",
   collectionNoun = "Collection",
 }: Props) {
   const [on, setOn] = useState(forceOn || defaultIsPreOrder);
-  const [timing, setTiming] = useState<PreOrderPaymentTiming>(
-    stripeConnected ? defaultPaymentTiming : "PAY_AT_PICKUP",
+  const [payOptions, setPayOptions] = useState<PreOrderPaymentTiming[]>(
+    stripeConnected ? defaultPaymentOptions : ["PAY_AT_PICKUP"],
   );
   const [handover, setHandover] = useState<"COLLECT" | "DELIVER">(
     defaultHandoverMode,
@@ -191,7 +191,8 @@ export default function PreOrderFields({
                   disabled={!stripeConnected}
                   onChange={() => {
                     setHandover("DELIVER");
-                    if (timing === "PAY_AT_PICKUP") setTiming("PAY_UPFRONT");
+                    const card = payOptions.filter((o) => o !== "PAY_AT_PICKUP");
+                    setPayOptions(card.length ? card : ["PAY_UPFRONT"]);
                   }}
                   className="size-4 accent-[var(--leaf)]"
                 />
@@ -201,8 +202,8 @@ export default function PreOrderFields({
           </div>
 
           <PreOrderPaymentFields
-            timing={timing}
-            onTiming={setTiming}
+            options={payOptions}
+            onOptions={setPayOptions}
             cardReady={stripeConnected}
             deliver={handover === "DELIVER"}
             defaultDepositPercent={defaultDepositPercent}

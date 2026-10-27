@@ -47,6 +47,7 @@ import {
 import {
   CART_MIX_COLLECTION_DAYS,
   CART_MIX_TAKE_NOW_PREORDER,
+  type PreOrderPaymentTiming,
 } from "@/lib/pre-order";
 import { cartLineKey, unitPriceWithOptions } from "@/lib/product-options";
 import {
@@ -188,6 +189,7 @@ export default function StandCartCheckout({
   const [deliveryPostcode, setDeliveryPostcode] = useState("");
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [handoverPick, setHandoverPick] = useState<HandoverValue>("COLLECT");
+  const [payPick, setPayPick] = useState<PreOrderPaymentTiming | null>(null);
   const atStall = useAtStall();
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -308,8 +310,11 @@ export default function StandCartCheckout({
 
   const preOrderOnly =
     lines.length > 0 && lines.every((l) => l.product.isPreOrder);
-  const payAtPickup =
-    preOrderOnly && lines.every((l) => l.product.paymentTiming === "PAY_AT_PICKUP");
+  const payOptions = preOrderOnly ? (lines[0]?.product.paymentOptions ?? []) : [];
+  const payTiming = payPick && payOptions.includes(payPick) ? payPick : (payOptions[0] ?? null);
+  const payAtPickup = payTiming === "PAY_AT_PICKUP";
+  const cardPayTiming =
+    payTiming === "PAY_UPFRONT" || payTiming === "DEPOSIT_THEN_BALANCE" ? payTiming : undefined;
   const handoverOptions = cartHandoverOptions(
     lines.filter((l) => !l.asUpsell).map((l) => l.product.fulfilment),
   );
@@ -359,10 +364,7 @@ export default function StandCartCheckout({
   const squareTotalCents =
     total + (passOnApplies ? stallsidePassOnFeeCents(total) : 0);
   const depositPercent =
-    lines.length > 0 &&
-    lines.every((l) => l.product.isPreOrder && l.product.paymentTiming === "DEPOSIT_THEN_BALANCE")
-      ? (lines[0]?.product.depositPercent ?? 30)
-      : null;
+    payTiming === "DEPOSIT_THEN_BALANCE" ? (lines[0]?.product.depositPercent ?? 30) : null;
   const squareDeposit = (() => {
     if (depositPercent == null || total <= 0) return null;
     const split = splitDepositBalance(total, depositPercent);
@@ -541,6 +543,7 @@ export default function StandCartCheckout({
         buttonColour: shopButtonColour(rootRef.current),
         embedded: !isEmbeddedCheckout(),
         couponCode: discount.couponCode,
+        payTiming: cardPayTiming,
       });
       if ("error" in result && result.error) {
         setError(result.error);
@@ -674,6 +677,17 @@ export default function StandCartCheckout({
           preOrderOnly={preOrderOnly}
           payAtPickup={payAtPickup}
           onPayAtPickup={placePickupOrder}
+          payChoice={
+            payTiming && payOptions.length > 1
+              ? {
+                  options: payOptions,
+                  value: payTiming,
+                  depositPercent: lines[0]?.product.depositPercent ?? null,
+                  onChange: setPayPick,
+                }
+              : null
+          }
+          cardPayTiming={cardPayTiming}
           deliver={deliver}
           handoverChoice={
             canChooseHandover ? { value: handover, onChange: setHandoverPick } : null

@@ -5,6 +5,7 @@ import PreOrderAddonFields from "@/components/PreOrderAddonFields";
 import PreOrderFields from "../products/PreOrderFields";
 import PreOrderShareFields from "./PreOrderShareFields";
 import type { PaymentTimingValue } from "@/lib/pre-order";
+import { payOptionsOf } from "@/lib/pre-order-pay-options";
 import {
   createPreOrderPage,
   updatePreOrderPage,
@@ -31,6 +32,7 @@ type PageValues = {
   collectionNote: string | null;
   showExactStock: boolean;
   paymentTiming: PaymentTimingValue;
+  paymentOptions: PaymentTimingValue[];
   depositPercent: number | null;
   handoverMode: "COLLECT" | "DELIVER";
   productIds: string[];
@@ -149,11 +151,7 @@ export default function PreOrderPageForm({
           defaultCollectionAt={values?.collectionAt ?? null}
           defaultCollectionNote={values?.collectionNote ?? null}
           defaultShowExactStock={values?.showExactStock ?? false}
-          defaultPaymentTiming={
-            !values || values.paymentTiming === "PAY_NOW"
-              ? "PAY_UPFRONT"
-              : values.paymentTiming
-          }
+          defaultPaymentOptions={values ? payOptionsOf(values) : ["PAY_UPFRONT"]}
           defaultDepositPercent={values?.depositPercent ?? 30}
           defaultHandoverMode={values?.handoverMode ?? "COLLECT"}
         />

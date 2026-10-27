@@ -123,6 +123,7 @@ export default async function EditPreOrderPagePage({
             collectionNote: page.collectionNote,
             showExactStock: page.showExactStock,
             paymentTiming: page.paymentTiming,
+            paymentOptions: page.paymentOptions,
             depositPercent: page.depositPercent,
             handoverMode: page.handoverMode,
             productIds: page.items.map((i) => i.productId),

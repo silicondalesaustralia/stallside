@@ -3,6 +3,7 @@ import { HandoverMode, PaymentTiming } from "@/generated/prisma/client";
 import type { Importer, ImportResult } from "../context";
 import { clearOrphanedPreOrderFlags } from "@/lib/pre-order-pages/orphans";
 import { copyImages } from "../image-copy";
+import { payOptionsOf } from "@/lib/pre-order-pay-options";
 import { planPreOrders, type PreOrderRow } from "./preorders-import-plan";
 
 export const preOrdersImporter: Importer<PreOrderRow> = {
@@ -25,14 +26,16 @@ export const preOrdersImporter: Importer<PreOrderRow> = {
           : [];
 
       const paymentTiming = d.paymentTiming ?? current?.paymentTiming ?? PaymentTiming.PAY_UPFRONT;
+      const paymentOptions = d.paymentTiming ? [] : (current?.paymentOptions ?? []);
       const schedule = {
         orderByAt: d.orderByAt ?? current!.orderByAt,
         collectionAt: d.collectionAt ?? current!.collectionAt,
         collectionNote: d.collectionNote ?? current?.collectionNote ?? null,
         showExactStock: d.showExactStock ?? current?.showExactStock ?? false,
         paymentTiming,
+        paymentOptions,
         depositPercent:
-          paymentTiming === PaymentTiming.DEPOSIT_THEN_BALANCE
+          payOptionsOf({ paymentTiming, paymentOptions }).includes("DEPOSIT_THEN_BALANCE")
             ? (d.depositPercent ?? current?.depositPercent ?? null)
             : null,
         handoverMode: d.handoverMode ?? current?.handoverMode ?? HandoverMode.COLLECT,

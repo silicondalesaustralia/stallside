@@ -34,6 +34,8 @@ export const preOrderDetailResponse = z.object({
   page: mobilePreOrderPage,
   collectionNote: z.string().nullable(),
   paymentTiming: z.enum(["PAY_NOW", "PAY_UPFRONT", "DEPOSIT_THEN_BALANCE", "PAY_AT_PICKUP"]),
+  /** Options shoppers can choose from; the first is the default. */
+  paymentOptions: z.array(z.enum(["PAY_UPFRONT", "DEPOSIT_THEN_BALANCE", "PAY_AT_PICKUP"])),
   depositPercent: z.number().int().nullable(),
   handoverMode: z.enum(["COLLECT", "DELIVER"]),
   currency: z.string(),

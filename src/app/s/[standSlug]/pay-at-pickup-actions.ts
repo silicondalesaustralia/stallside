@@ -37,6 +37,7 @@ export async function placePayAtPickupOrder(input: {
       receiptEmail: customerEmail || null,
       claimFirstOrder: Boolean(customerEmail),
       couponCode: input.couponCode,
+      payTiming: "PAY_AT_PICKUP",
     });
     if ("error" in loaded) return { error: loaded.error ?? "Could not place your order." };
 

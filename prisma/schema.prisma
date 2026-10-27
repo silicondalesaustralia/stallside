@@ -1550,6 +1550,10 @@ model Product {
    */
   paymentTiming               PaymentTiming              @default(PAY_NOW)
   /**
+   * Pre-order payment options the shopper can choose from. Empty = just paymentTiming.
+   */
+  paymentOptions              PaymentTiming[]            @default([])
+  /**
    * 1–99 when paymentTiming is DEPOSIT_THEN_BALANCE.
    */
   depositPercent              Int?
@@ -1855,6 +1859,10 @@ model PreOrderPage {
   collectionNote              String?
   showExactStock              Boolean               @default(false)
   paymentTiming               PaymentTiming         @default(PAY_UPFRONT)
+  /**
+   * Payment options shoppers can choose from. Empty = just paymentTiming.
+   */
+  paymentOptions              PaymentTiming[]       @default([])
   depositPercent              Int?
   handoverMode                HandoverMode          @default(COLLECT)
   /**

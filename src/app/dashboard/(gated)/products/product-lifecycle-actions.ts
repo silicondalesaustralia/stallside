@@ -76,6 +76,7 @@ export async function duplicateProduct(productId: string) {
       collectionNote: source.collectionNote,
       showExactStock: source.showExactStock,
       paymentTiming: source.paymentTiming,
+      paymentOptions: source.paymentOptions,
       depositPercent: source.depositPercent,
       handoverMode: source.handoverMode,
       optionGroups: {

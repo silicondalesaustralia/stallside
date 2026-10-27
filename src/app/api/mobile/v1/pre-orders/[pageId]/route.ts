@@ -9,6 +9,7 @@ import {
 } from "@/lib/pre-order-pages/service";
 import { toMobilePreOrderItems, toMobilePreOrderPage } from "@/lib/mobile/preorder-dto";
 import { standQrDataUrl } from "@/lib/stand-qr";
+import { payOptionsOf } from "@/lib/pre-order-pay-options";
 import { mobileError, mobileJson, mobileServerError, readMobileBody } from "@/lib/mobile/http";
 
 type Ctx = RouteContext<"/api/mobile/v1/pre-orders/[pageId]">;
@@ -26,6 +27,7 @@ export async function GET(request: NextRequest, ctx: Ctx) {
       page,
       collectionNote: detail.collectionNote,
       paymentTiming: detail.paymentTiming,
+      paymentOptions: payOptionsOf(detail),
       depositPercent: detail.depositPercent,
       handoverMode: detail.handoverMode,
       currency: detail.stand.currency,

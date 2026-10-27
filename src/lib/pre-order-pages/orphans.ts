@@ -16,6 +16,7 @@ export async function clearOrphanedPreOrderFlags(tx: Prisma.TransactionClient, p
         collectionAt: null,
         collectionNote: null,
         paymentTiming: PaymentTiming.PAY_NOW,
+        paymentOptions: [],
         depositPercent: null,
         handoverMode: HandoverMode.COLLECT,
       },

@@ -39,6 +39,7 @@ import { loadedCartShippingCents } from "@/lib/shipping/cart-shipping";
 import { shippingTax } from "@/lib/tax/shipping-tax";
 import { parseHandover, type HandoverValue } from "@/lib/fulfilment/handover-choice";
 import { PAY_AT_PICKUP_CART_ERROR } from "@/lib/pre-order";
+import type { CardPayTiming } from "@/lib/pre-order-pay-options";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -58,6 +59,8 @@ export async function startCardCheckout(input: {
   /** Show Stripe Checkout inside the page when possible (else redirect). */
   embedded?: boolean;
   couponCode?: string | null;
+  /** Pre-orders: pay in full or the deposit, when the page offers both. */
+  payTiming?: CardPayTiming;
 }): Promise<{ error: string } | { url: string } | { embedded: EmbeddedCheckoutInfo }> {
   try {
     const customerName = (input.customerName ?? "").trim().slice(0, 120);
@@ -85,6 +88,7 @@ export async function startCardCheckout(input: {
             receiptEmail: customerEmail || null,
             claimFirstOrder: Boolean(customerEmail),
             couponCode: input.couponCode,
+            payTiming: input.payTiming,
           });
     if ("error" in loaded) return { error: loaded.error ?? "Could not start card checkout." };
 

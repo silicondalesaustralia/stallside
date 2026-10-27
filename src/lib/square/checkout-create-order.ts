@@ -29,6 +29,7 @@ import { contactError, loadedCartHandover } from "@/lib/fulfilment/cart-handover
 import { loadedCartShippingCents } from "@/lib/shipping/cart-shipping";
 import { shippingTax } from "@/lib/tax/shipping-tax";
 import { parseHandover, type HandoverValue } from "@/lib/fulfilment/handover-choice";
+import type { CardPayTiming } from "@/lib/pre-order-pay-options";
 export type SquareCheckoutCartInput = {
   standSlug: string;
   items?: CartItemInput[];
@@ -42,6 +43,8 @@ export type SquareCheckoutCartInput = {
   deliveryNotes?: string;
   handoverMode?: HandoverValue;
   couponCode?: string | null;
+  /** Pre-orders: pay in full or the deposit, when the page offers both. */
+  payTiming?: CardPayTiming;
 };
 
 export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
@@ -58,6 +61,7 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
           receiptEmail: shopper.customerEmail || null,
           claimFirstOrder: Boolean(shopper.customerEmail),
           couponCode: input.couponCode,
+          payTiming: input.payTiming,
         });
   if ("error" in loaded) return { error: loaded.error };
 
