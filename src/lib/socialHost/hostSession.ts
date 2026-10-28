@@ -34,7 +34,7 @@ export async function getHostSession(): Promise<HostSession | null> {
     where: { userId: user.id },
     select: { id: true, deletedAt: true, contactEmail: true, betaFeatures: true },
   })
-  if (!owner || owner.deletedAt || !socialKitEnabledFor(owner)) return null
+  if (!owner || owner.deletedAt || !socialKitEnabledFor(owner, user.email)) return null
 
   const { selected } = await resolveSelectedBusiness(owner.id)
   if (!selected) return null

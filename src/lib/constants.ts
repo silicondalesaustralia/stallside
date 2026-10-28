@@ -37,6 +37,8 @@ export const PLATFORM_ADMIN_EMAILS = [
   "jono@silicondales.com",
   "jonathan@csmgdigital.com",
 ] as const;
+/** Emails that see Social and Connectors before SOCIAL_SECTION_LIVE=1, to set them up. */
+export const SOCIAL_PREVIEW_EMAILS = ["jono@silicondales.com"] as const;
 export const DEFAULT_CURRENCY = "AUD";
 
 export const CURRENCIES = [

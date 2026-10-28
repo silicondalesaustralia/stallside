@@ -35,15 +35,14 @@ describe("beta app", () => {
     assert.equal(appRedirectHost(), "vendl.app");
   });
 
-  it("skips Social crons on the beta app until Social is switched live", () => {
+  it("skips Social crons on the beta app until the Social database is configured", () => {
     process.env.VENDL_BETA_APP = "1";
-    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://x.supabase.co";
-    process.env.SUPABASE_SERVICE_ROLE_KEY = "key";
     assert.equal(betaAppSkipsCron("/api/cron/publish-due-social-posts"), true);
     assert.equal(betaAppSkipsCron("/api/cron/gbp-performance-sync"), true);
     assert.equal(betaAppSkipsCron("/api/cron/process-website-generation"), false);
     assert.equal(betaAppSkipsCron("/api/cron/calendar-sync"), false);
-    process.env.SOCIAL_SECTION_LIVE = "1";
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://x.supabase.co";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "key";
     assert.equal(betaAppSkipsCron("/api/cron/publish-due-social-posts"), false);
   });
 

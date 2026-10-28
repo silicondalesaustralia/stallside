@@ -40,22 +40,25 @@ const SOCIAL_DB_CRONS = new Set([
  * Supabase project; until then it shows as coming soon.
  */
 export function socialLive(): boolean {
+  return process.env.SOCIAL_SECTION_LIVE === "1" && socialConfigured();
+}
+
+/** The Social Supabase project is configured (needed even for an admin preview). */
+export function socialConfigured(): boolean {
   return Boolean(
-    process.env.SOCIAL_SECTION_LIVE === "1" &&
-      process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
-      process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
   );
 }
 
 /**
  * True when a cron request must be skipped: main's app already runs it, or it
- * is a Social cron and Social isn't live on the beta app.
+ * is a Social cron and the Social database isn't configured on the beta app.
  */
 export function betaAppSkipsCron(pathname: string): boolean {
   if (!isBetaApp() || !pathname.startsWith("/api/cron/")) return false;
   const name = pathname.slice("/api/cron/".length).split("/")[0] ?? "";
   if (!BETA_APP_CRONS.has(name)) return true;
-  return SOCIAL_DB_CRONS.has(name) && !socialLive();
+  return SOCIAL_DB_CRONS.has(name) && !socialConfigured();
 }
 
 /** Paths that belong to main's app (account creation), redirected from the beta app. */
