@@ -47,6 +47,7 @@ import { useAnnouncementBar } from "./useAnnouncementBar";
 import { useFooterSettings } from "./useFooterSettings";
 import { useSiteButtonColours } from "./useSiteButtonColours";
 import { useSiteLinkColour } from "./useSiteLinkColour";
+import { useSiteFavicon } from "./useSiteFavicon";
 import { useNavTextSize } from "./useNavTextSize";
 import { useBrandNameSize } from "./useBrandNameSize";
 import { useSiteStyle } from "./useSiteStyle";
@@ -148,6 +149,7 @@ export default function StudioEditorInner({
   const navTextSizeState = useNavTextSize({ initial: metadata.resolvedBranding.navTextSize, revisionRef, runExclusive });
   const brandNameSizeState = useBrandNameSize({ initial: metadata.resolvedBranding.brandNameSize, revisionRef, runExclusive });
   const siteStyleState = useSiteStyle({ initial: metadata.resolvedBranding.siteStyle, revisionRef, runExclusive });
+  const faviconState = useSiteFavicon({ initial: metadata.resolvedBranding.faviconUrl, revisionRef, runExclusive });
   const [chromeTarget, setChromeTarget] = useState<ChromeTarget>(null);
   const [siteWideOpen, setSiteWideOpen] = useState(false);
   const [siteWideTab, setSiteWideTab] = useState<SiteWideTabId>("text");
@@ -286,6 +288,7 @@ export default function StudioEditorInner({
       ...navTextSizeState,
       ...brandNameSizeState,
       ...siteStyleState,
+      ...faviconState,
       pageOptions,
       currentPage,
     }),
@@ -330,6 +333,7 @@ export default function StudioEditorInner({
       navTextSizeState,
       brandNameSizeState,
       siteStyleState,
+      faviconState,
     ],
   );
 

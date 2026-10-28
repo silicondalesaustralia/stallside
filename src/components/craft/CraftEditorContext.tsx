@@ -103,6 +103,11 @@ export type CraftEditorChrome = {
   setSitePageBackground?: (value: string | null) => void;
   sitePageBackgroundStatus?: "idle" | "saving" | "saved" | "error";
   sitePageBackgroundError?: string | null;
+  faviconUrl?: string | null;
+  uploadFavicon?: (file: File) => Promise<void>;
+  removeFavicon?: () => Promise<void>;
+  faviconStatus?: "idle" | "saving" | "saved" | "error";
+  faviconError?: string | null;
   pageOptions?: { value: string; label: string; href: string }[];
   currentPage?: string;
 };

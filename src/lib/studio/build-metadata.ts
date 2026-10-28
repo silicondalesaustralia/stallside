@@ -1,4 +1,5 @@
 import type { StorefrontContext } from "@/lib/catalogue/storefront";
+import { prisma } from "@/lib/prisma";
 import { buildPuckSpikeMetadata } from "@/lib/puck/build-metadata";
 import { loadStorefrontReviews } from "./load-reviews";
 import { loadCategoryRatings } from "./load-category-ratings";
@@ -25,6 +26,20 @@ async function loadPaymentBrands(ctx: NonNullable<StorefrontContext>): Promise<P
   }
 }
 
+async function loadActiveCustomDomain(storefrontId: string): Promise<string | null> {
+  try {
+    const domain = await prisma.storefrontDomain.findFirst({
+      where: { storefrontId, type: "CUSTOM", status: "ACTIVE" },
+      orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+      select: { hostname: true },
+    });
+    return domain?.hostname ?? null;
+  } catch (err) {
+    console.error("[studio metadata] custom domain", err);
+    return null;
+  }
+}
+
 export async function buildStudioMetadata(
   ctx: NonNullable<StorefrontContext>,
   templateId: StudioTemplateId,
@@ -32,11 +47,12 @@ export async function buildStudioMetadata(
 ): Promise<StudioMetadata> {
   const base = await buildPuckSpikeMetadata(ctx, draft);
   const shown = ctx.categories.filter((c) => c.showOnWebsite !== false);
-  const [reviews, paymentBrands, ratings, linkTargets] = await Promise.all([
+  const [reviews, paymentBrands, ratings, linkTargets, customDomain] = await Promise.all([
     loadStorefrontReviews(ctx.owner.id, 6),
     loadPaymentBrands(ctx),
     loadCategoryRatings(ctx.owner.id, shown.map((c) => c.id)),
     loadLinkTargets(ctx.stand.id),
+    draft ? loadActiveCustomDomain(ctx.storefront.id) : Promise.resolve(null),
   ]);
 
   const categories = shown.map((c) => ({
@@ -68,6 +84,7 @@ export async function buildStudioMetadata(
     fulfilmentOptions,
     standId: ctx.stand.id,
     draftRevision: ctx.storefront.draftRevision,
+    customDomain,
     customNavPages: buildStudioHeaderNav(
       pagesForNav,
       blogSettings,

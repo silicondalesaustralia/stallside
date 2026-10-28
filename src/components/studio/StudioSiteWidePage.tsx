@@ -11,6 +11,7 @@ import PageStyleSettings from "./PageStyleSettings";
 import SiteButtonSettings from "./SiteButtonSettings";
 import SiteLinkSettings from "./SiteLinkSettings";
 import SiteSharingSettings from "./SiteSharingSettings";
+import SiteFaviconSettings from "./SiteFaviconSettings";
 import SiteWideChromeLinks from "./SiteWideChromeLinks";
 import ShopBrowseSettings from "./ShopBrowseSettings";
 import SaleBadgeSettings from "./SaleBadgeSettings";
@@ -29,6 +30,7 @@ const CONTENT: Record<SiteWideTabId, ReactNode> = {
   cards: <SiteCardsEffectsSettings />,
   chrome: <SiteWideChromeLinks />,
   sharing: <SiteSharingSettings />,
+  favicon: <SiteFaviconSettings />,
   shop: (
     <>
       <ShopBrowseSettings />

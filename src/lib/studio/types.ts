@@ -55,6 +55,8 @@ export type StudioMetadata = PuckSpikeMetadata & {
   locality?: string | null;
   /** Draft revision the editor loaded; sent back on save to detect conflicts. */
   draftRevision: number;
+  /** Active custom domain hostname; only loaded for the editor (draft). */
+  customDomain?: string | null;
 };
 
 export type StudioSectionType =
