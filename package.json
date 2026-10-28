@@ -14,6 +14,7 @@
     "test:data": "npx tsx --test src/lib/data-transfer/*.test.ts",
     "test:guides": "npx tsx --test src/lib/knowledge-base/*.test.ts",
     "test:square": "npx tsx --test src/lib/square/square.test.ts src/lib/commerce/sale-origin.test.ts src/lib/square-subscriptions/schedule.test.ts src/lib/refunds/payment-state.test.ts",
+    "test:import": "npx tsx --test src/lib/data-import/data-import.test.ts src/lib/data-import/platform-formats.test.ts src/lib/product-variants/product-variants.test.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",

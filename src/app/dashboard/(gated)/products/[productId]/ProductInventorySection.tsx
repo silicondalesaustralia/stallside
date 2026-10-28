@@ -14,7 +14,11 @@ export default function ProductInventorySection({ product }: { product: ProductF
           {low ? "in stock - running low" : "in stock"}
         </span>
       </p>
-      <InventoryAdjustForm productId={product.id} />
+      {product.hasVariants ? (
+        <p className="text-sm text-[var(--muted)]">Total across variants. Change stock per variant in Variants below.</p>
+      ) : (
+        <InventoryAdjustForm productId={product.id} />
+      )}
       <label className="flex flex-col gap-1 text-sm">
         <span className="font-semibold">Low-stock alert at</span>
         <input

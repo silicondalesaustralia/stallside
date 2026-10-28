@@ -216,14 +216,22 @@ export default function StandCartCheckout({
           const choice = g.choices.find((c) => c.id === line.choiceIds[i]);
           return choice?.priceDeltaCents ?? 0;
         });
-        const labels = product.optionGroups
-          .map((g, i) => {
+        const variant = line.variantId
+          ? product.variants.find((v) => v.id === line.variantId)
+          : undefined;
+        if (product.variants.length > 0 && !variant) return null;
+        const labels = [
+          ...(variant
+            ? product.variantOptionNames.map((n, i) => `${n}: ${variant.values[i] ?? ""}`)
+            : []),
+          ...product.optionGroups.map((g, i) => {
             const choice = g.choices.find((c) => c.id === line.choiceIds[i]);
             return choice ? `${g.name}: ${choice.name}` : null;
-          })
+          }),
+        ]
           .filter(Boolean)
           .join(" · ");
-        const baseUnit = unitPriceWithOptions(product.priceCents, deltas);
+        const baseUnit = unitPriceWithOptions(variant?.priceCents ?? product.priceCents, deltas);
         const asUpsell = Boolean(line.asUpsell);
         let unitCents = baseUnit;
         let lineTotalCents = baseUnit * line.quantity;
@@ -293,8 +301,10 @@ export default function StandCartCheckout({
           }
         }
         return {
-          key: `${cartLineKey(line.productId, line.choiceIds)}${asUpsell ? "|u" : ""}`,
+          key: `${cartLineKey(line.productId, line.choiceIds, line.variantId)}${asUpsell ? "|u" : ""}`,
           product,
+          variantId: variant?.id,
+          maxStock: variant?.stockQuantity ?? product.stockQuantity,
           quantity: line.quantity,
           choiceIds: line.choiceIds,
           asUpsell,
@@ -332,6 +342,7 @@ export default function StandCartCheckout({
 
   const payload = lines.map((l) => ({
     productId: l.product.id,
+    variantId: l.variantId,
     quantity: l.quantity,
     choiceIds: l.choiceIds,
     asUpsell: l.asUpsell || undefined,
@@ -418,7 +429,8 @@ export default function StandCartCheckout({
         line.product.id,
         line.choiceIds,
         nextQty,
-        line.product.stockQuantity,
+        line.maxStock,
+        line.variantId,
       ),
     );
   }

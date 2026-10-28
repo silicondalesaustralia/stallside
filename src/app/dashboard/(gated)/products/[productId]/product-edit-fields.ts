@@ -24,6 +24,8 @@ export type ProductFields = {
   upc: string | null;
   currency: string;
   stockQuantity: number;
+  /** Stock is kept per variant; the product total is their sum. */
+  hasVariants: boolean;
   lowStockThreshold: number;
   supplyStatus: ProductSupplyStatus | null;
   isHidden: boolean;

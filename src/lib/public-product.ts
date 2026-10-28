@@ -7,6 +7,10 @@ import {
 import { payOptionsOf } from "@/lib/pre-order-pay-options";
 import type { PublicOptionGroup } from "@/lib/product-options";
 import { parsePriceTiers } from "@/lib/price-tiers";
+import {
+  mapPublicVariants,
+  type PublicVariant,
+} from "@/lib/product-variants/public-variant";
 import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
 import { productImageList } from "@/lib/product-images";
 import { imageAltList, parseImageAlts } from "@/lib/product-image-alts";
@@ -39,6 +43,9 @@ export type PublicProductCard = {
   collectionAtMs: number | null;
   preOrderDetails: PreOrderDetailsData | null;
   optionGroups: PublicOptionGroup[];
+  /** Variant option names, e.g. ["Size", "Colour"]. Empty when no variants. */
+  variantOptionNames: string[];
+  variants: PublicVariant[];
   hasOptions: boolean;
   freshnessNote: string | null;
   priceTiers: { qty: number; totalCents: number }[];
@@ -133,6 +140,10 @@ export function mapPublicProduct(
       name: string;
       choices: { id: string; name: string; priceDeltaCents: number }[];
     }[];
+    option1Name?: string | null;
+    option2Name?: string | null;
+    option3Name?: string | null;
+    variants?: Parameters<typeof mapPublicVariants>[0]["variants"];
   },
   opts: {
     showExactStock: boolean;
@@ -186,8 +197,9 @@ export function mapPublicProduct(
     })),
   }));
 
+  const { optionNames: variantOptionNames, variants } = mapPublicVariants(p, closed);
   const priceTiers =
-    optionGroups.length > 0 ? [] : parsePriceTiers(p.priceTiers);
+    optionGroups.length > 0 || variants.length > 0 ? [] : parsePriceTiers(p.priceTiers);
 
   const paymentOptions = isPre
     ? payOptionsOf({ paymentTiming: p.paymentTiming ?? "PAY_UPFRONT", paymentOptions: p.paymentOptions })
@@ -213,7 +225,9 @@ export function mapPublicProduct(
     collectionAtMs: isPre ? p.collectionAt!.getTime() : null,
     preOrderDetails,
     optionGroups,
-    hasOptions: optionGroups.length > 0,
+    variantOptionNames,
+    variants,
+    hasOptions: optionGroups.length > 0 || variants.length > 0,
     freshnessNote: p.freshnessNote?.trim() || null,
     priceTiers,
     handoverMode: p.handoverMode === "DELIVER" ? "DELIVER" : "COLLECT",

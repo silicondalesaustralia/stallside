@@ -20,6 +20,7 @@ import { CHECKOUT_COPY } from "@/lib/storefront/checkout-copy";
 
 type CartItem = {
   productId: string;
+  variantId?: string;
   quantity: number;
   choiceIds?: string[];
   asUpsell?: boolean;

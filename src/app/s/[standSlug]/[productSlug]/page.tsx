@@ -8,6 +8,7 @@ import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { productMetadata, standCatalogPath } from "@/lib/stand-seo";
 import { productLiveWhere } from "@/lib/product-visibility";
+import { publicVariantsInclude } from "@/lib/product-variants/public-variant";
 import ProductDetailActions from "../ProductDetailActions";
 import StandStoreHeader from "../StandStoreHeader";
 import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
@@ -75,6 +76,7 @@ export default async function PublicProductPage({
             orderBy: { sortOrder: "asc" },
             include: { choices: { orderBy: { sortOrder: "asc" } } },
           },
+          variants: publicVariantsInclude,
         },
       },
     },

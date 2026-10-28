@@ -38,7 +38,7 @@ export default function ProductOptionsEditor({ initial, disabled }: { initial: S
 
   return (
     <DashFormSection
-      title="Options"
+      title="Add-on options"
       hint={
         disabled
           ? "Clear volume prices on this product before adding options."

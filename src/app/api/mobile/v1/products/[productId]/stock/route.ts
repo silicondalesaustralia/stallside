@@ -3,6 +3,7 @@ import { stockUpdateBody, type StockUpdateResponse } from "@/contracts/mobile/pr
 import { requireMobileOwner } from "@/lib/mobile/require-owner";
 import { saveStockCounts } from "@/lib/inventory/save-stock-counts";
 import { findOwnerProduct } from "@/lib/products/list";
+import { productHasVariants } from "@/lib/product-variants/has-variants";
 import { mobileError, mobileJson, mobileServerError, readMobileBody } from "@/lib/mobile/http";
 
 /** Same path as the web inventory stock count: logs the change, alerts on low stock, syncs Square. */
@@ -20,6 +21,9 @@ export async function PUT(
     const { productId } = await ctx.params;
     const product = await findOwnerProduct(guard.value.owner.id, productId);
     if (!product) return mobileError(404, "Product not found.");
+    if (await productHasVariants(product.id)) {
+      return mobileError(409, "This product has variants. Change stock per variant on the web.");
+    }
 
     await saveStockCounts({
       ownerId: guard.value.owner.id,

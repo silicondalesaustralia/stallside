@@ -6,6 +6,7 @@ import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
 import { standPreOrdersPath } from "@/lib/stand-seo";
 import { productLiveWhere } from "@/lib/product-visibility";
+import { publicVariantsInclude } from "@/lib/product-variants/public-variant";
 import StandStoreHeader from "../../StandStoreHeader";
 import StandGoToCartBar from "../../StandGoToCartBar";
 import PreOrderPageContent from "./PreOrderPageContent";
@@ -43,6 +44,7 @@ export default async function PublicPreOrderPage({
             orderBy: { sortOrder: "asc" },
             include: { choices: { orderBy: { sortOrder: "asc" } } },
           },
+          variants: publicVariantsInclude,
         },
       },
     },

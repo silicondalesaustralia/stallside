@@ -60,11 +60,12 @@ export async function applySquareInventoryCount(input: {
         providerVariationId: input.catalogObjectId,
       },
     },
-    include: { product: true },
+    include: { product: { include: { _count: { select: { variants: true } } } } },
   });
   if (!mapping?.inventorySyncEnabled || !mapping.confirmedAt) {
     return "unmapped";
   }
+  if (mapping.product._count.variants > 0) return "unmapped";
 
   const product = mapping.product;
   const next = Math.max(0, Math.floor(input.quantity));

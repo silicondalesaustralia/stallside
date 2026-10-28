@@ -7,6 +7,7 @@ import { useCheckoutSuccessPath } from "@/components/storefront/use-cart-href";
 
 type CartItem = {
   productId: string;
+  variantId?: string;
   quantity: number;
   choiceIds?: string[];
   asUpsell?: boolean;

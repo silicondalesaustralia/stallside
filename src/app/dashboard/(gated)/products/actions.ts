@@ -185,8 +185,12 @@ export async function adjustInventory(formData: FormData) {
 
   const product = await prisma.product.findFirst({
     where: { id: productId, ownerId: owner.id },
+    include: { _count: { select: { variants: true } } },
   });
   if (!product) return { error: "Product not found." };
+  if (product._count.variants > 0) {
+    return { error: "This product has variants. Change stock per variant." };
+  }
 
   const previous = product.stockQuantity;
   let next = previous;

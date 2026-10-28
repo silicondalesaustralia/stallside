@@ -3,6 +3,7 @@ import { taxConfig, taxRule, type TaxOwner, type TaxRule } from "@/lib/tax/confi
 
 export type OrderLineInput = {
   productId: string;
+  variantId?: string | null;
   productNameSnapshot: string;
   optionsSnapshot: string | null;
   quantity: number;
@@ -30,6 +31,7 @@ export function orderLineFields(lines: OrderLineInput[], discountCents: number, 
     items: {
       create: lines.map((line, i) => ({
         productId: line.productId,
+        variantId: line.variantId ?? null,
         productNameSnapshot: line.productNameSnapshot,
         optionsSnapshot: line.optionsSnapshot,
         quantity: line.quantity,

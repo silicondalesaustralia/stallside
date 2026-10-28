@@ -14,6 +14,7 @@ export async function applyStockCounts(input: {
     where: {
       ownerId,
       id: { in: [...counts.keys()] },
+      variants: { none: {} },
       ...(input.standId ? { standId: input.standId } : {}),
     },
     select: { id: true, standId: true, stockQuantity: true, lowStockThreshold: true },
