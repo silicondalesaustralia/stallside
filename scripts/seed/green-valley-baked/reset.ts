@@ -7,7 +7,6 @@ import {
   LIST_NAME,
   MARK,
   OFFER_SLUGS,
-  ORDER_PREFIX,
   PICKUP_NAME,
   PREORDER_SLUGS,
   PROMO_CODES,
@@ -21,7 +20,7 @@ import {
 } from "./context";
 
 /** Deletes every row the seed created (matched by its markers). Real data is left alone. */
-export async function resetMockData(db: Db, { ownerId, standId }: Scope): Promise<void> {
+export async function resetMockData(db: Db, { ownerId, standId, orderPrefix }: Scope): Promise<void> {
   const counts: Record<string, number> = {};
   const note = (key: string, r: { count: number }) => (counts[key] = r.count);
 
@@ -31,7 +30,7 @@ export async function resetMockData(db: Db, { ownerId, standId }: Scope): Promis
   note("tags", await db.customerTag.deleteMany({ where: { ownerId, name: { in: TAG_NAMES } } }));
 
   const orders = await db.order.findMany({
-    where: { ownerId, orderNumber: { startsWith: ORDER_PREFIX } },
+    where: { ownerId, orderNumber: { startsWith: orderPrefix } },
     select: { id: true },
   });
   const orderIds = orders.map((o) => o.id);

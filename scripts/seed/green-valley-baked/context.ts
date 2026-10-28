@@ -1,6 +1,7 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../../src/generated/prisma/client";
 
+/** Defaults; override with --email=owner@example.com --stand=shop-slug. */
 export const STAND_SLUG = "green-valley-baked-goods";
 export const OWNER_EMAIL = "jono@silicondales.com";
 /** Every seeded row carries one of these markers so `reset` can find it. */
@@ -32,15 +33,25 @@ export function connect(): PrismaClient {
   return new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 }
 
-export type Scope = { ownerId: string; standId: string; currency: string };
+export type Scope = { ownerId: string; standId: string; currency: string; orderPrefix: string };
+
+function argValue(name: string): string | null {
+  const hit = process.argv.find((a) => a.startsWith(`${name}=`));
+  return hit?.slice(name.length + 1).trim() || null;
+}
 
 export async function loadScope(db: PrismaClient): Promise<Scope> {
+  const email = (argValue("--email") ?? OWNER_EMAIL).toLowerCase();
+  const slug = argValue("--stand") ?? STAND_SLUG;
   const stand = await db.stand.findFirst({
-    where: { slug: STAND_SLUG, owner: { user: { email: OWNER_EMAIL } } },
+    where: { slug, owner: { user: { email } } },
     select: { id: true, ownerId: true, currency: true },
   });
-  if (!stand) throw new Error(`${STAND_SLUG} not found for ${OWNER_EMAIL}`);
-  return { ownerId: stand.ownerId, standId: stand.id, currency: stand.currency };
+  if (!stand) throw new Error(`${slug} not found for ${email}`);
+  // Order numbers are unique across all owners, so other owners get their own prefix.
+  const orderPrefix =
+    email === OWNER_EMAIL ? ORDER_PREFIX : `${ORDER_PREFIX}${stand.ownerId.slice(-6).toUpperCase()}-`;
+  return { ownerId: stand.ownerId, standId: stand.id, currency: stand.currency, orderPrefix };
 }
 
 const DAY = 24 * 60 * 60 * 1000;

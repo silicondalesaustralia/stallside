@@ -7,7 +7,7 @@ export type Catalogue = { focaccia: ProductRef; cookies: ProductRef; draft: Prod
 const FOCACCIA_CENTS = 1050;
 const COOKIE_CENTS = 1200;
 
-/** Categories, the focaccia + a hidden draft, the existing cookie bag repriced, and recipe links. */
+/** Categories, the focaccia + a hidden draft, the cookie bag (existing, or created as mock), and recipe links. */
 export async function seedCatalogue(db: Db, scope: Scope, recipes: RecipeIds): Promise<Catalogue> {
   const { ownerId, standId, currency } = scope;
   const breads = await db.category.create({
@@ -52,11 +52,19 @@ export async function seedCatalogue(db: Db, scope: Scope, recipes: RecipeIds): P
     select: { id: true, name: true, priceCents: true },
   });
 
-  const existing = await db.product.findFirst({
-    where: { ownerId, standId, name: COOKIE_PRODUCT_NAME, isArchived: false },
-    select: { id: true },
-  });
-  if (!existing) throw new Error(`Cookie product "${COOKIE_PRODUCT_NAME}" not found`);
+  const existing =
+    (await db.product.findFirst({
+      where: { ownerId, standId, name: COOKIE_PRODUCT_NAME, isArchived: false },
+      select: { id: true },
+    })) ??
+    (await db.product.create({
+      data: {
+        ownerId, standId, currency, name: COOKIE_PRODUCT_NAME, slug: "6-choc-chip-cookies",
+        description: "Chewy dark chocolate chip cookies, bagged in sixes.", priceCents: COOKIE_CENTS,
+        sku: `${SKU_PREFIX}COOKIES`, stockQuantity: 24,
+      },
+      select: { id: true },
+    }));
   const cookies = await db.product.update({
     where: { id: existing.id },
     data: { priceCents: COOKIE_CENTS, preOrderEligible: true, primaryCategoryId: sweets.id, lowStockThreshold: 6 },

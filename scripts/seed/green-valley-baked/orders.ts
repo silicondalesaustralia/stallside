@@ -1,4 +1,4 @@
-import { MARK, ORDER_PREFIX, type Db, type Scope } from "./context";
+import { MARK, type Db, type Scope } from "./context";
 import type { Catalogue } from "./catalogue";
 import type { CustomerRef } from "./customers";
 import type { Selling } from "./selling";
@@ -20,7 +20,7 @@ export async function seedOrders(
   customers: CustomerRef[],
   selling: Selling,
 ): Promise<SeededOrder[]> {
-  const { ownerId, standId, currency } = scope;
+  const { ownerId, standId, currency, orderPrefix } = scope;
   const drafts = planOrders(cat, customers).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   const subs = await db.shopperSubscription.findMany({
     where: { ownerId, offerId: { in: [selling.weeklyOfferId, selling.clubOfferId] } },
@@ -45,7 +45,7 @@ export async function seedOrders(
     const cancelled = d.status === "CANCELLED";
     const isPreOrder = d.channel === "preorder" || d.channel === "subscription" || d.channel === "membership";
     const card = d.method === "CARD";
-    const orderNumber = `${ORDER_PREFIX}${String(i + 1).padStart(4, "0")}`;
+    const orderNumber = `${orderPrefix}${String(i + 1).padStart(4, "0")}`;
     const order = await db.order.create({
       data: {
         standId, ownerId, orderNumber, currency, createdAt: d.createdAt,

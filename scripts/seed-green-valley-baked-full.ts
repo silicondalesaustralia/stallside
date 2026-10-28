@@ -9,6 +9,7 @@
  * Usage:
  *   npx tsx scripts/seed-green-valley-baked-full.ts          # reset + seed
  *   npx tsx scripts/seed-green-valley-baked-full.ts --reset  # remove the seed only
+ *   ... --email=owner@example.com --stand=shop-slug          # seed another owner's shop
  */
 import "dotenv/config";
 import { connect, loadScope } from "./seed/green-valley-baked/context";
