@@ -19,8 +19,12 @@ export type OptionGroupInput = {
   choices: { name: string; priceDeltaCents: number }[];
 };
 
-export function cartLineKey(productId: string, choiceIds: string[]): string {
-  return `${productId}|${choiceIds.join(",")}`;
+export function cartLineKey(
+  productId: string,
+  choiceIds: string[],
+  variantId?: string,
+): string {
+  return `${productId}|${variantId ?? ""}|${choiceIds.join(",")}`;
 }
 
 export function formatOptionsSnapshot(

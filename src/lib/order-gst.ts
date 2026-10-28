@@ -2,6 +2,7 @@ import { gstApplies, lineGstCents } from "@/lib/gst";
 
 export type OrderLineInput = {
   productId: string;
+  variantId?: string | null;
   productNameSnapshot: string;
   optionsSnapshot: string | null;
   quantity: number;
@@ -28,6 +29,7 @@ export function orderLineFields(
     items: {
       create: lines.map((line, i) => ({
         productId: line.productId,
+        variantId: line.variantId ?? null,
         productNameSnapshot: line.productNameSnapshot,
         optionsSnapshot: line.optionsSnapshot,
         quantity: line.quantity,

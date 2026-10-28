@@ -7,10 +7,12 @@ export default function ProductStockCard({
   stockQuantity,
   productId,
   supplyStatus,
+  hasVariants = false,
 }: {
   stockQuantity: number;
   productId: string;
   supplyStatus: ProductSupplyStatus | null;
+  hasVariants?: boolean;
 }) {
   return (
     <DashFormSection
@@ -23,7 +25,13 @@ export default function ProductStockCard({
           in stock
         </span>
       </p>
-      <InventoryAdjustForm productId={productId} />
+      {hasVariants ? (
+        <p className="text-sm text-[var(--muted)]">
+          Total across all variants. Change stock per variant in Variants below.
+        </p>
+      ) : (
+        <InventoryAdjustForm productId={productId} />
+      )}
       <SupplyStatusSelect productId={productId} value={supplyStatus} />
     </DashFormSection>
   );

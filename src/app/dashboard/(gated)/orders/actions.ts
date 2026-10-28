@@ -5,6 +5,7 @@ import { requireOwnerWrite } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { PaymentStatus } from "@/generated/prisma/client";
 import { COUNTED_STATUSES } from "@/lib/order-metrics";
+import { restockOrderVariants } from "@/lib/product-variants/sync-product-total";
 
 const RESTORE_STATUSES = COUNTED_STATUSES as PaymentStatus[];
 
@@ -29,6 +30,7 @@ export async function deleteOrder(orderId: string) {
           data: { stockQuantity: { increment: item.quantity } },
         });
       }
+      await restockOrderVariants(tx, order.items);
     }
 
     await tx.inventoryAdjustment.deleteMany({ where: { orderId: order.id } });

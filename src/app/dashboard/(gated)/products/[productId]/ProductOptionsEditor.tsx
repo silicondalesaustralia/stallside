@@ -71,7 +71,7 @@ export default function ProductOptionsEditor({
       disabled={disabled}
       className="dash-card flex flex-col gap-3 p-5"
     >
-      <legend className="px-1 text-sm font-semibold">Options (variants)</legend>
+      <legend className="px-1 text-sm font-semibold">Add-on options</legend>
       <p className="text-sm text-[var(--muted)]">
         {disabled
           ? "Clear volume prices on this product before adding options."

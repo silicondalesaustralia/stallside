@@ -16,6 +16,7 @@ import PayAtPickupButton from "./PayAtPickupButton";
 
 type CartItem = {
   productId: string;
+  variantId?: string;
   quantity: number;
   choiceIds?: string[];
   asUpsell?: boolean;

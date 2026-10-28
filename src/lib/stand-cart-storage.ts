@@ -6,6 +6,8 @@ const PREFIX = "stallside-cart:";
 
 export type CartLine = {
   productId: string;
+  /** Set when the product has variants; stock is capped per variant. */
+  variantId?: string;
   quantity: number;
   /** One choice id per option group, in group sort order. */
   choiceIds: string[];
@@ -69,8 +71,10 @@ function normalizeLines(raw: unknown): CartLine[] {
         ? (line as CartLine).choiceIds.map(String)
         : [];
       if (!productId || !Number.isInteger(quantity) || quantity <= 0) continue;
+      const variantId = String((line as CartLine).variantId ?? "");
       out.push({
         productId,
+        ...(variantId ? { variantId } : {}),
         quantity,
         choiceIds,
         asUpsell: Boolean((line as CartLine).asUpsell),
@@ -151,19 +155,29 @@ export function productQtyInCart(lines: CartLine[], productId: string): number {
     .reduce((s, l) => s + l.quantity, 0);
 }
 
+/** Qty already in the cart that shares this line's stock pool (variant, else product). */
+export function poolQty(lines: CartLine[], productId: string, variantId?: string): number {
+  if (!variantId) return productQtyInCart(lines, productId);
+  return lines
+    .filter((l) => l.productId === productId && l.variantId === variantId)
+    .reduce((s, l) => s + l.quantity, 0);
+}
+
+function lineIndex(lines: CartLine[], key: string): number {
+  return lines.findIndex((l) => cartLineKey(l.productId, l.choiceIds, l.variantId) === key);
+}
+
 export function addToStandCart(
   standSlug: string,
   productId: string,
   delta: number,
   maxStock: number,
   choiceIds: string[] = [],
+  variantId?: string,
 ): CartLine[] {
   const lines = readStandCartLines(standSlug);
-  const k = cartLineKey(productId, choiceIds);
-  const idx = lines.findIndex(
-    (l) => cartLineKey(l.productId, l.choiceIds) === k,
-  );
-  const otherQty = productQtyInCart(lines, productId) - (idx >= 0 ? lines[idx].quantity : 0);
+  const idx = lineIndex(lines, cartLineKey(productId, choiceIds, variantId));
+  const otherQty = poolQty(lines, productId, variantId) - (idx >= 0 ? lines[idx].quantity : 0);
   const currentLineQty = idx >= 0 ? lines[idx].quantity : 0;
   const nextLineQty = Math.max(
     0,
@@ -175,7 +189,12 @@ export function addToStandCart(
   } else if (idx >= 0) {
     next[idx] = { ...next[idx], quantity: nextLineQty };
   } else {
-    next.push({ productId, quantity: nextLineQty, choiceIds: [...choiceIds] });
+    next.push({
+      productId,
+      ...(variantId ? { variantId } : {}),
+      quantity: nextLineQty,
+      choiceIds: [...choiceIds],
+    });
   }
   writeStandCartLines(standSlug, next);
   return next;
@@ -187,14 +206,12 @@ export function setCartLineQuantity(
   choiceIds: string[],
   quantity: number,
   maxStock: number,
+  variantId?: string,
 ): CartLine[] {
   const lines = readStandCartLines(standSlug);
-  const k = cartLineKey(productId, choiceIds);
-  const idx = lines.findIndex(
-    (l) => cartLineKey(l.productId, l.choiceIds) === k,
-  );
+  const idx = lineIndex(lines, cartLineKey(productId, choiceIds, variantId));
   const otherQty =
-    productQtyInCart(lines, productId) - (idx >= 0 ? lines[idx].quantity : 0);
+    poolQty(lines, productId, variantId) - (idx >= 0 ? lines[idx].quantity : 0);
   const nextQty = Math.max(0, Math.min(maxStock - otherQty, quantity));
   const next = [...lines];
   if (nextQty <= 0) {
@@ -202,7 +219,12 @@ export function setCartLineQuantity(
   } else if (idx >= 0) {
     next[idx] = { ...next[idx], quantity: nextQty };
   } else {
-    next.push({ productId, quantity: nextQty, choiceIds: [...choiceIds] });
+    next.push({
+      productId,
+      ...(variantId ? { variantId } : {}),
+      quantity: nextQty,
+      choiceIds: [...choiceIds],
+    });
   }
   writeStandCartLines(standSlug, next);
   return next;

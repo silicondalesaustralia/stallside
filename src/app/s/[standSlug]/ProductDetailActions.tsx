@@ -6,9 +6,11 @@ import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/public-product";
 import {
   addToStandCart,
-  productQtyInCart,
+  poolQty,
   readStandCartLines,
 } from "@/lib/stand-cart-storage";
+import { findVariant, initialVariantPick } from "@/lib/product-variants/pick-variant";
+import VariantPicker from "./VariantPicker";
 import {
   CART_MIX_COLLECTION_DAYS,
   CART_MIX_TAKE_NOW_PREORDER,
@@ -60,8 +62,14 @@ export default function ProductDetailActions({
   catalogProducts: PublicProductCard[];
 }) {
   const router = useRouter();
+  const hasVariants = product.variants.length > 0;
   const singleGroup =
-    product.optionGroups.length === 1 ? product.optionGroups[0] : null;
+    !hasVariants && product.optionGroups.length === 1 ? product.optionGroups[0] : null;
+  const [variantPick, setVariantPick] = useState(() => initialVariantPick(product.variants));
+  const variant = hasVariants ? findVariant(product.variants, variantPick) : null;
+  const basePriceCents = variant?.priceCents ?? product.priceCents;
+  const stockCap = hasVariants ? (variant?.stockQuantity ?? 0) : product.stockQuantity;
+  const soldOut = product.soldOut || (hasVariants && stockCap <= 0);
   const [qty, setQty] = useState(1);
   const [perChoiceQty, setPerChoiceQty] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
@@ -78,13 +86,13 @@ export default function ProductDetailActions({
     [product.optionGroups, selected],
   );
 
-  const unitCents = useMemo(() => {
-    const deltas = product.optionGroups.map((g) => {
+  const unitCents = unitPriceWithOptions(
+    basePriceCents,
+    product.optionGroups.map((g) => {
       const id = selected[g.id];
       return g.choices.find((c) => c.id === id)?.priceDeltaCents ?? 0;
-    });
-    return unitPriceWithOptions(product.priceCents, deltas);
-  }, [product, selected]);
+    }),
+  );
 
   const displayPrice = useMemo(() => {
     if (product.priceTiers.length === 0) {
@@ -120,8 +128,7 @@ export default function ProductDetailActions({
   );
 
   const remaining =
-    product.stockQuantity -
-    productQtyInCart(readStandCartLines(standSlug), product.id);
+    stockCap - poolQty(readStandCartLines(standSlug), product.id, variant?.id);
 
   function checkConflicts(extraQty: number): boolean {
     const lines = readStandCartLines(standSlug);
@@ -135,7 +142,7 @@ export default function ProductDetailActions({
         return false;
       }
     }
-    if (productQtyInCart(lines, product.id) + extraQty > product.stockQuantity) {
+    if (poolQty(lines, product.id, variant?.id) + extraQty > stockCap) {
       setError("Not enough left.");
       return false;
     }
@@ -144,7 +151,11 @@ export default function ProductDetailActions({
 
   function addAndGo(goCart: boolean) {
     setError(null);
-    if (product.soldOut) return;
+    if (soldOut) return;
+    if (hasVariants && !variant) {
+      setError("Choose an option for each group.");
+      return;
+    }
 
     if (singleGroup) {
       if (multiPickCount < 1) {
@@ -173,8 +184,9 @@ export default function ProductDetailActions({
         standSlug,
         product.id,
         qty,
-        product.stockQuantity,
+        stockCap,
         choiceIds,
+        variant?.id,
       );
     }
 
@@ -204,9 +216,17 @@ export default function ProductDetailActions({
           ) : null}
         </div>
       ) : null}
-      <p className={`font-receipt text-base ${stockTone(product.label)}`}>
-        ● {product.label}
+      <p className={`font-receipt text-base ${stockTone(soldOut ? "Sold out" : product.label)}`}>
+        ● {hasVariants && soldOut && !product.soldOut ? "Sold out" : product.label}
       </p>
+      {hasVariants ? (
+        <VariantPicker
+          optionNames={product.variantOptionNames}
+          variants={product.variants}
+          picked={variantPick}
+          onPick={setVariantPick}
+        />
+      ) : null}
 
       {singleGroup ? (
         <ProductMultiChoiceQty
@@ -251,7 +271,7 @@ export default function ProductDetailActions({
               </div>
             </fieldset>
           ))}
-          {!product.soldOut ? (
+          {!soldOut ? (
             <div className="mx-auto">
               <QtyStepper
                 value={qty}
@@ -270,7 +290,7 @@ export default function ProductDetailActions({
         <button
           type="button"
           disabled={
-            product.soldOut || (singleGroup ? multiPickCount < 1 : false)
+            soldOut || (singleGroup ? multiPickCount < 1 : false)
           }
           onClick={() => addAndGo(false)}
           className="w-full rounded-[var(--radius-pill)] border border-[var(--line)] bg-[var(--panel)] px-5 py-3 text-base font-semibold disabled:opacity-40"
@@ -280,7 +300,7 @@ export default function ProductDetailActions({
         <button
           type="button"
           disabled={
-            product.soldOut || (singleGroup ? multiPickCount < 1 : false)
+            soldOut || (singleGroup ? multiPickCount < 1 : false)
           }
           onClick={() => addAndGo(true)}
           className="w-full rounded-[var(--radius-pill)] bg-[var(--leaf)] px-5 py-3 text-base font-semibold text-white disabled:opacity-40"

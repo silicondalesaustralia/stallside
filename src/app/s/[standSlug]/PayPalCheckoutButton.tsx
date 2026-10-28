@@ -6,6 +6,7 @@ import { startPayPalCheckout } from "./paypal-checkout-actions";
 
 type CartItem = {
   productId: string;
+  variantId?: string;
   quantity: number;
   choiceIds?: string[];
   asUpsell?: boolean;

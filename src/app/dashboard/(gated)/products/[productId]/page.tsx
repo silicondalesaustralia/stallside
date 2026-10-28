@@ -11,6 +11,8 @@ import ProductStockCard from "./ProductStockCard";
 import ProductCategoriesCard from "./ProductCategoriesCard";
 import ProductGstCard from "./ProductGstCard";
 import { parsePriceTiers } from "@/lib/price-tiers";
+import { variantDraftOptions, variantDraftRows } from "@/lib/product-variants/variant-draft-load";
+import ProductVariantsCard from "./ProductVariantsCard";
 
 /** Auth-gated; never serve a cached anonymous RSC payload for Edit links. */
 export const dynamic = "force-dynamic";
@@ -39,6 +41,8 @@ export default async function EditProductPage({
         include: { choices: { orderBy: { sortOrder: "asc" } } },
       },
       categoryLinks: { select: { categoryId: true } },
+      variants: { orderBy: { sortOrder: "asc" } },
+      _count: { select: { stockLots: true } },
     },
   });
   if (!product) notFound();
@@ -127,6 +131,20 @@ export default async function EditProductPage({
         productId={product.id}
         stockQuantity={product.stockQuantity}
         supplyStatus={product.supplyStatus}
+        hasVariants={product.variants.length > 0}
+      />
+      <ProductVariantsCard
+        productId={product.id}
+        defaultPrice={(product.priceCents / 100).toFixed(2)}
+        initialOptions={variantDraftOptions(product)}
+        initialVariants={variantDraftRows(product.variants)}
+        blockedReason={
+          product.isPreOrder
+            ? "Pre-order products can't have variants yet."
+            : product._count.stockLots > 0
+              ? "Products with supplier stock can't have variants yet."
+              : null
+        }
       />
       {owner.country === "AU" ? (
         <ProductGstCard productId={product.id} gstFree={product.gstFree} gstRegistered={owner.gstRegistered} />

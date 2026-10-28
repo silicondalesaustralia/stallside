@@ -63,7 +63,7 @@ export async function planStockImport(input: {
 
   const products = await prisma.product.findMany({
     where: { ownerId: input.ownerId, standId: input.standId, isArchived: false, isPreOrder: false },
-    select: { id: true, name: true, sku: true, stockQuantity: true },
+    select: { id: true, name: true, sku: true, stockQuantity: true, _count: { select: { variants: true } } },
   });
   type P = (typeof products)[number];
   const byId = new Map(products.map((p) => [p.id, p]));
@@ -94,6 +94,10 @@ export async function planStockImport(input: {
     }
     if (!match) {
       lines.push({ ...base, issue: "No matching product in this business." });
+      return;
+    }
+    if (match._count.variants > 0) {
+      lines.push({ ...base, name: match.name, issue: "Has variants. Update its stock per variant on the product page." });
       return;
     }
     if (!/^\d+$/.test(rawQty)) {

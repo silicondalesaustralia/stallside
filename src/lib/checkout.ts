@@ -23,6 +23,9 @@ import {
   applyLotSharesToOrderItem,
   consumeStockLots,
 } from "@/lib/suppliers/lots";
+import { resolveCartVariant, variantStockShort } from "@/lib/product-variants/cart-variant";
+import { decrementOrderVariants } from "@/lib/product-variants/sync-product-total";
+import { joinSnapshots, variantSnapshot } from "@/lib/product-variants/variant-title";
 import {
   CUSTOMER_CHOICE_MAX_CENTS,
   CUSTOMER_CHOICE_MIN_CENTS,
@@ -36,6 +39,8 @@ import {
 
 export type CartItemInput = {
   productId: string;
+  /** Required when the product has variants. */
+  variantId?: string | null;
   quantity: number;
   choiceIds?: string[];
   /** Use stand upsell price (ignore tiers) for this line. */
@@ -58,6 +63,7 @@ export type PreOrderCartMeta = {
 
 export type CartLineData = {
   productId: string;
+  variantId: string | null;
   productNameSnapshot: string;
   optionsSnapshot: string | null;
   quantity: number;
@@ -136,6 +142,7 @@ export async function loadCustomerChoiceCheckout(
   const lineData: CartLineData[] = [
     {
       productId: product.id,
+      variantId: null,
       productNameSnapshot: CUSTOMER_CHOICE_PRODUCT_NAME,
       optionsSnapshot: null,
       quantity: 1,
@@ -181,6 +188,7 @@ export async function loadStandCart(
 
   const normalized = items.map((item) => ({
     productId: item.productId,
+    variantId: item.variantId ? String(item.variantId) : null,
     quantity: Number(item.quantity),
     choiceIds: Array.isArray(item.choiceIds)
       ? item.choiceIds.map(String)
@@ -209,6 +217,7 @@ export async function loadStandCart(
         orderBy: { sortOrder: "asc" },
         include: { choices: { orderBy: { sortOrder: "asc" } } },
       },
+      variants: { where: { isActive: true }, orderBy: { sortOrder: "asc" } },
     },
   });
   if (products.length !== productIds.length) {
@@ -294,6 +303,8 @@ export async function loadStandCart(
     } else if (item.choiceIds.length > 0) {
       return { error: "One or more product options are invalid." as const };
     }
+    const resolved = resolveCartVariant(product, item.variantId);
+    if ("error" in resolved) return { error: resolved.error };
   }
 
   for (const [productId, qty] of qtyByProduct) {
@@ -301,6 +312,9 @@ export async function loadStandCart(
     if (product.stockQuantity < qty) {
       return { error: "Not enough stock for one of your items." as const };
     }
+  }
+  if (variantStockShort(normalized, byId)) {
+    return { error: "Not enough stock for one of your items." as const };
   }
 
   for (const item of normalized) {
@@ -363,9 +377,17 @@ export async function loadStandCart(
       const choice = g.choices.find((c) => c.id === item.choiceIds[i])!;
       return { name: g.name, choiceName: choice.name, delta: choice.priceDeltaCents };
     });
+    const variant = product.variants.find((v) => v.id === item.variantId) ?? null;
+    const basePrice = variant?.priceCents ?? product.priceCents;
     const baseUnit = unitPriceWithOptions(
-      product.priceCents,
+      basePrice,
       picked.map((p) => p.delta),
+    );
+    const optionsSnapshot = joinSnapshots(
+      variant ? variantSnapshot(product, variant) : null,
+      formatOptionsSnapshot(
+        picked.map((p) => ({ name: p.name, choiceName: p.choiceName })),
+      ),
     );
 
     if (item.asUpsell) {
@@ -377,7 +399,7 @@ export async function loadStandCart(
           t?.preOrderUpsellProductId === item.productId
         );
       });
-      let unit = product.priceCents;
+      let unit = basePrice;
       let displayName = product.name;
       const pageOffer = pageUpsellByProductId.get(item.productId);
       if (
@@ -442,10 +464,9 @@ export async function loadStandCart(
       }
       return {
         productId: product.id,
+        variantId: variant?.id ?? null,
         productNameSnapshot: displayName,
-        optionsSnapshot: formatOptionsSnapshot(
-          picked.map((p) => ({ name: p.name, choiceName: p.choiceName })),
-        ),
+        optionsSnapshot,
         quantity: item.quantity,
         unitPriceCents: unit,
         lineTotalCents: unit * item.quantity,
@@ -457,16 +478,15 @@ export async function loadStandCart(
     }
 
     const tiers =
-      product.optionGroups.length > 0
+      product.optionGroups.length > 0 || variant
         ? []
         : parsePriceTiers(product.priceTiers);
     const priced = lineTotalWithTiers(baseUnit, item.quantity, tiers);
     return {
       productId: product.id,
+      variantId: variant?.id ?? null,
       productNameSnapshot: product.name,
-      optionsSnapshot: formatOptionsSnapshot(
-        picked.map((p) => ({ name: p.name, choiceName: p.choiceName })),
-      ),
+      optionsSnapshot,
       quantity: item.quantity,
       unitPriceCents: priced.unitPriceCents,
       lineTotalCents: priced.lineTotalCents,
@@ -547,6 +567,13 @@ export async function decrementStockForOrder(
       throw new Error("STOCK");
     }
   }
+  await decrementOrderVariants(
+    tx,
+    await tx.orderItem.findMany({
+      where: { orderId: input.orderId, variantId: { not: null } },
+      select: { variantId: true, quantity: true },
+    }),
+  );
 
   for (const item of input.items) {
     const product = input.byId.get(item.productId)!;

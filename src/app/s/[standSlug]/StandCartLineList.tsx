@@ -3,12 +3,15 @@
 import Image from "next/image";
 import type { PublicProductCard } from "@/lib/public-product";
 import { formatMoney } from "@/lib/money";
-import { productQtyInCart, type CartLine } from "@/lib/stand-cart-storage";
+import { poolQty, type CartLine } from "@/lib/stand-cart-storage";
 import PreOrderDetails from "./PreOrderDetails";
 
 export type StandCartLineView = {
   key: string;
   product: PublicProductCard;
+  variantId: string | undefined;
+  /** Stock available to this line (variant stock when it has one). */
+  maxStock: number;
   quantity: number;
   choiceIds: string[];
   asUpsell: boolean;
@@ -115,8 +118,8 @@ export default function StandCartLineList({
               <button
                 type="button"
                 disabled={
-                  productQtyInCart(cartLines, line.product.id) >=
-                  line.product.stockQuantity
+                  poolQty(cartLines, line.product.id, line.variantId) >=
+                  line.maxStock
                 }
                 onClick={() => onBump(line, 1)}
                 className="flex size-14 items-center justify-center rounded-[var(--radius-pill)] text-2xl disabled:opacity-40"

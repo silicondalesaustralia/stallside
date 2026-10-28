@@ -5,6 +5,7 @@ import {
   productLiveWhere,
 } from "@/lib/product-visibility";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
+import { publicVariantsInclude } from "@/lib/product-variants/public-variant";
 
 export { standCatalogTag } from "@/lib/stand-catalog-tag";
 
@@ -13,6 +14,7 @@ const productInclude = {
     orderBy: { sortOrder: "asc" as const },
     include: { choices: { orderBy: { sortOrder: "asc" as const } } },
   },
+  variants: publicVariantsInclude,
 };
 
 const ownerInclude = {

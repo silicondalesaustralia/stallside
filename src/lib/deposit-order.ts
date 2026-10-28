@@ -9,6 +9,7 @@ import { depositOutstandingCapCents } from "@/lib/deposit-liability";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
+import { restockOrderVariants } from "@/lib/product-variants/sync-product-total";
 export { balanceAuthUrl } from "@/lib/order-access-token";
 export { splitDepositBalance } from "@/lib/deposit-split";
 
@@ -207,5 +208,6 @@ export async function releaseStockForCancelledOrder(
       data: { stockQuantity: { increment: item.quantity } },
     });
   }
+  await restockOrderVariants(client, order.items);
 }
 
