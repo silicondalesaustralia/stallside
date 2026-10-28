@@ -31,7 +31,7 @@ import {
 
 const CONTENT_MIX_LABELS: Record<WeekPlanContentMix, string> = {
   recent_jobs: 'Featured products',
-  services: 'Services',
+  services: 'Our range',
   tips_advice: 'Tips & advice',
   promotions: 'Promotions',
   seasonal: 'Seasonal',
@@ -370,7 +370,7 @@ export function BuildMyWeekWizard({
                 value={priorityText}
                 onChange={(e) => setPriorityText(e.target.value.slice(0, WEEK_PLAN_PRIORITY_MAX_CHARS))}
                 rows={4}
-                placeholder="Push heat pump hot water. We completed two installs this week."
+                placeholder="Push our new season honey. Christmas pre-orders open Friday."
                 className="w-full rounded-xl border border-[#E0DDD5] px-3 py-2 text-sm text-[#333] focus:border-[#FFD100] focus:outline-none focus:ring-1 focus:ring-[#FFD100]"
               />
               <p className="text-[10px] text-[#AAA] text-right">

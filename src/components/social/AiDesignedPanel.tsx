@@ -543,8 +543,8 @@ export function AiDesignedPanel({
         </label>
         <p className="text-[11px] leading-relaxed text-[#888]">
           {isTradiesPost
-            ? 'Tell us the service, offer, job or message you want customers to see.'
-            : 'Tell us the service, offer, job, message or audience you want to focus on.'}
+            ? 'Tell us the product, offer or message you want customers to see.'
+            : 'Tell us the product, offer, message or audience you want to focus on.'}
         </p>
           <textarea
             id="ai-designed-brief"
@@ -635,7 +635,7 @@ export function AiDesignedPanel({
             className="w-full rounded-lg border border-[#E0DDD5] bg-white px-3 py-2 text-sm"
             data-testid="ai-designed-job"
           >
-            <option value="">{jobsLoading ? 'Loading jobs…' : 'No job selected'}</option>
+            <option value="">{jobsLoading ? 'Loading products…' : 'No product selected'}</option>
             {jobs.map((job) => (
               <option key={job.id} value={job.id}>
                 {formatDesignedJobLabel(job)}

@@ -342,7 +342,7 @@ export function VideoBrandingPanel({
           value={value.overlayText}
           maxLength={VIDEO_OVERLAY_TEXT_MAX_CHARS}
           disabled={processing || submitting}
-          placeholder="NEW PUMP INSTALLED"
+          placeholder="FRESH THIS WEEK"
           onChange={(e) =>
             setValue((prev) => ({
               ...prev,

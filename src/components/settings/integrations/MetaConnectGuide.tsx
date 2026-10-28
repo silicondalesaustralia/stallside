@@ -70,7 +70,7 @@ export function MetaConnectGuide({
       <Section id="create-page" title="B. Create a Facebook Page" highlight={initialSection === 'create-page'}>
         <ol className="list-decimal space-y-1.5 pl-4">
           <li>Open Meta&apos;s Page creation flow (link below).</li>
-          <li>Enter your <strong>business name</strong> and choose a category (e.g. Electrician, Plumber).</li>
+          <li>Enter your <strong>business name</strong> and choose a category (e.g. Farm, Bakery).</li>
           <li>Add your phone or website if you have one - optional but helps customers find you.</li>
           <li>When the Page is live, return here and tap <strong>Connect Facebook</strong>.</li>
         </ol>

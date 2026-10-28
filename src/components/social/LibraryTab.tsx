@@ -65,7 +65,7 @@ async function downloadImageUrl(url: string) {
   const ext = blob.type.includes('jpeg') || blob.type.includes('jpg') ? 'jpg' : 'webp'
   const a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
-  a.download = `stitchedup-render-${Date.now()}.${ext}`
+  a.download = `vendl-render-${Date.now()}.${ext}`
   a.click()
   URL.revokeObjectURL(a.href)
 }

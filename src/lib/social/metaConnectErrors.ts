@@ -56,7 +56,7 @@ export function getMetaConnectErrorInfo(code: MetaConnectErrorCode): MetaConnect
       return {
         title: 'Something went wrong connecting to Meta',
         message:
-          'StitchedUp could not finish the Meta connection. Check your Page setup and try again. If your Page is managed in Meta Business Suite, grant all businesses during login.',
+          'Vendl could not finish the Meta connection. Check your Page setup and try again. If your Page is managed in Meta Business Suite, grant all businesses during login.',
         guideSection: 'troubleshoot-business-suite',
       }
     case 'meta_not_enabled':

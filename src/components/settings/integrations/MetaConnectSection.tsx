@@ -315,7 +315,7 @@ export function MetaConnectSection({
           <TradiesPostProviderConnectionCard
             testId="tp-connection-facebook"
             name="Facebook"
-            benefit="Publish completed job posts to your business Page."
+            benefit="Publish product and stall posts to your business Page."
             icon={<Facebook className="h-6 w-6 text-blue-600" />}
             status={
               facebookPageId ? 'connected' : showComingSoon ? 'coming_soon' : 'not_connected'
@@ -436,7 +436,7 @@ export function MetaConnectSection({
           iconBgClassName="bg-blue-100"
           iconClassName="text-blue-600"
           title="Facebook"
-          description="Publish completed jobs and updates to Facebook."
+          description="Publish product news and stall updates to Facebook."
           badge={
             facebookPageId ? (
               <SettingsConnectedBadge>Connected</SettingsConnectedBadge>

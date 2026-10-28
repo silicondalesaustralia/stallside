@@ -57,7 +57,7 @@ export function getGmbConnectErrorInfo(code: GmbConnectErrorCode): GmbConnectErr
       return {
         title: 'Something went wrong connecting to Google',
         message:
-          'StitchedUp could not finish the Google Business connection. Check that your profile is verified and you used the owner/manager Google account.',
+          'Vendl could not finish the Google Business connection. Check that your profile is verified and you used the owner/manager Google account.',
         guideSection: 'troubleshoot-not-manager',
       }
     case 'gmb_not_enabled':

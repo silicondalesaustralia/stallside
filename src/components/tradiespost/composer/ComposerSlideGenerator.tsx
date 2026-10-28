@@ -54,7 +54,7 @@ export function ComposerSlideGenerator({ jobId, photoUrl, onDone, onCancel }: Pr
           value={topic}
           onChange={(e) => setTopic(e.target.value.slice(0, SLIDE_TOPIC_MAX))}
           rows={2}
-          placeholder="e.g. 5 signs your switchboard needs upgrading"
+          placeholder="e.g. 5 ways to enjoy our fresh-picked strawberries"
           className="mt-1 block w-full rounded-xl border border-[#E4E4E7] bg-white px-3 py-2 text-sm font-normal"
         />
       </label>

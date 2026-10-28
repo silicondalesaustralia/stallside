@@ -1355,14 +1355,14 @@ export function CreateTab({
       const ext = blob.type.includes('jpeg') || blob.type.includes('jpg') ? 'jpg' : 'png'
       const a = document.createElement('a')
       a.href = URL.createObjectURL(blob)
-      a.download = `stitchedup-post-${Date.now()}.${ext}`
+      a.download = `vendl-post-${Date.now()}.${ext}`
       a.click()
       URL.revokeObjectURL(a.href)
       toast('Image downloaded', 'success')
     } catch {
       const a = document.createElement('a')
       a.href = imageUrl
-      a.download = `stitchedup-post-${Date.now()}.png`
+      a.download = `vendl-post-${Date.now()}.png`
       a.target = '_blank'
       a.rel = 'noopener noreferrer'
       a.click()
@@ -1753,7 +1753,7 @@ export function CreateTab({
               </select>
               {jobsLoading && (
                 <p className="text-xs text-[#888] flex items-center gap-2">
-                  <Loader2 className="h-3 w-3 animate-spin" /> Loading jobs…
+                  <Loader2 className="h-3 w-3 animate-spin" /> Loading products…
                 </p>
               )}
             </div>
@@ -1802,7 +1802,7 @@ export function CreateTab({
 
             {contentFormat === 'infographic' && (
               <p className="text-xs text-[#666]">
-                Copy is generated with AI from your trade and services when you hit Generate.
+                Copy is generated with AI from your business and products when you hit Generate.
                 {infographicContentLoading ? ' Generating copy…' : ''}
               </p>
             )}
@@ -2373,7 +2373,7 @@ export function CreateTab({
               </select>
               {jobsLoading && (
                 <p className="text-xs text-[#888] flex items-center gap-2">
-                  <Loader2 className="h-3 w-3 animate-spin" /> Loading jobs…
+                  <Loader2 className="h-3 w-3 animate-spin" /> Loading products…
                 </p>
               )}
             </div>
@@ -2409,7 +2409,7 @@ export function CreateTab({
 
             {contentFormat === 'infographic' && (
               <p className="text-xs text-[#666]">
-                Copy is generated with AI from your trade and services when you hit Generate.
+                Copy is generated with AI from your business and products when you hit Generate.
                 {infographicContentLoading ? ' Generating copy…' : ''}
               </p>
             )}

@@ -7,7 +7,7 @@ import { SOCIAL_POSTS_SELECT } from '@/lib/social/socialPostsSelect'
 
 const SOCIAL_DEFAULTS = {
   social_brand_voice: 'professional',
-  social_default_cta: 'Call us for a free quote',
+  social_default_cta: 'Order online for pickup',
   social_default_platforms: ['instagram', 'facebook'],
   social_overlay_style: 'bottom_bar',
   social_auto_prompt: true,

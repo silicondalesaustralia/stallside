@@ -75,7 +75,7 @@ export async function fetchOgImageFromUrl(pageUrlRaw: string): Promise<FetchOgIm
       headers: {
         Accept: 'text/html,application/xhtml+xml',
         'User-Agent':
-          'Mozilla/5.0 (compatible; StitchedUpBot/1.0; +https://www.stitchedup.app)',
+          'Mozilla/5.0 (compatible; VendlBot/1.0; +https://www.vendl.app)',
       },
     })
 
@@ -116,7 +116,7 @@ export async function fetchImageBufferForAnalysis(
       headers: {
         Accept: 'image/*',
         'User-Agent':
-          'Mozilla/5.0 (compatible; StitchedUpBot/1.0; +https://www.stitchedup.app)',
+          'Mozilla/5.0 (compatible; VendlBot/1.0; +https://www.vendl.app)',
       },
     })
     if (!res.ok) return null

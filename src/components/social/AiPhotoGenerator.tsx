@@ -279,7 +279,7 @@ export function AiPhotoGenerator({
                 value={extraDetail}
                 maxLength={MAX_AI_IMAGE_EXTRA_DETAIL}
                 disabled={busy}
-                placeholder="e.g. show a red toolbox or include our van in the background"
+                placeholder="e.g. show our honey jars or include the farm stall in the background"
                 onChange={(e) => setExtraDetail(e.target.value.slice(0, MAX_AI_IMAGE_EXTRA_DETAIL))}
                 className="w-full rounded-lg border border-[#E0DDD5] px-3 py-2 text-xs disabled:opacity-60"
               />
@@ -327,7 +327,7 @@ export function AiPhotoGenerator({
               maxLength={MAX_AI_IMAGE_CUSTOM_PROMPT}
               disabled={busy}
               rows={4}
-              placeholder="e.g. modern kitchen renovation, white cabinets, warm lighting"
+              placeholder="e.g. fresh tomatoes in a wooden crate, warm morning light"
               onChange={(e) => setCustomPrompt(e.target.value.slice(0, MAX_AI_IMAGE_CUSTOM_PROMPT))}
               className="w-full resize-y rounded-lg border border-[#E0DDD5] px-3 py-2 text-xs leading-relaxed disabled:opacity-60 min-h-[96px]"
             />

@@ -147,7 +147,7 @@ export const SOCIAL_HELP = {
   },
   defaultCta: {
     title: 'Default call to action',
-    body: 'The action you usually want customers to take, such as Get a Quote or Book Now.',
+    body: 'The action you usually want customers to take, such as Order Online or Visit the Stall.',
   },
   autoPrompt: {
     title: 'Auto-prompt after a sale',

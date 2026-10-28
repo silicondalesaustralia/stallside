@@ -147,14 +147,14 @@ export function PostSettingsPanel({
             <input
               type="text"
               key={business.social_default_cta ?? 'default'}
-              defaultValue={business.social_default_cta || 'Call us for a free quote'}
+              defaultValue={business.social_default_cta || 'Order online for pickup'}
               onBlur={async (e) => {
                 const supabase = createClient()
                 await supabase.from('businesses').update({ social_default_cta: e.target.value }).eq('id', business.id)
                 onUpdate({ social_default_cta: e.target.value })
                 toast('Saved', 'success')
               }}
-              placeholder="e.g. Call us for a free quote"
+              placeholder="e.g. Order online for pickup"
               className="w-full rounded-lg border border-[#E0DDD5] bg-white px-3 py-2 text-sm focus:outline-none focus:border-[#FFD700]"
             />
           </div>

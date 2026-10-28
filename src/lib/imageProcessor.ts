@@ -304,7 +304,7 @@ function buildExifBytes(options: {
       [piexif.ImageIFD.ImageDescription]: `${tradeType} work completed in ${suburb} ${state}`,
       [piexif.ImageIFD.Artist]: businessName,
       [piexif.ImageIFD.Copyright]: `© ${year} ${businessName}`,
-      [piexif.ImageIFD.Software]: 'StitchedUp',
+      [piexif.ImageIFD.Software]: 'Vendl',
     },
     Exif: {
       [piexif.ExifIFD.DateTimeOriginal]: completedAt.toISOString().replace('T', ' ').split('.')[0],

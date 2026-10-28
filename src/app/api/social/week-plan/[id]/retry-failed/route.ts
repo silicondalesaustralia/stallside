@@ -69,7 +69,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
 
     const base = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
-      : process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.stitchedup.app'
+      : process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.vendl.app'
     const secret = process.env.CRON_SECRET?.trim()
     if (secret) {
       void fetch(`${base}/api/cron/process-week-plan-generation`, {

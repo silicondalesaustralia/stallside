@@ -191,8 +191,8 @@ async function callOpenRouter(
     baseURL: 'https://openrouter.ai/api/v1',
     apiKey,
     defaultHeaders: {
-      'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://stitchedup.app',
-      'X-Title': 'StitchedUp AI Agent',
+      'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://www.vendl.app',
+      'X-Title': 'Vendl AI Agent',
     },
   })
 

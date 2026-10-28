@@ -35,7 +35,7 @@ export function SceneContentFields({
           maxLength={SCENE_TAGLINE_MAX}
           onChange={(e) => onChange({ ...content, tagline: e.target.value })}
           className="w-full rounded-lg border border-[#E0DDD5] px-3 py-2 text-sm"
-          placeholder="Services or short supporting line"
+          placeholder="Products or short supporting line"
         />
       </div>
       <div>
@@ -46,7 +46,7 @@ export function SceneContentFields({
           maxLength={SCENE_CTA_MAX}
           onChange={(e) => onChange({ ...content, cta: e.target.value })}
           className="w-full rounded-lg border border-[#E0DDD5] px-3 py-2 text-sm"
-          placeholder="Call us today"
+          placeholder="Order online today"
         />
       </div>
     </div>

@@ -124,7 +124,7 @@ export function RecreateTunePanel({
   async function refinePhoto() {
     const prompt = refinePrompt.trim()
     if (!prompt) {
-      setError('Describe the photo you want - e.g. tools on a bench, no faces.')
+      setError('Describe the photo you want - e.g. honey jars on a wooden table, no faces.')
       return
     }
     setPhotoBusy(true)
@@ -272,8 +272,8 @@ export function RecreateTunePanel({
       <div>
         <p className="mb-1 text-xs font-semibold text-[#666]">Photo only (1 credit)</p>
         <p className="mb-2 text-[11px] text-[#888]">
-          Regenerates the background. Your words stay as typed. Example: “More tools on a
-          bench, no faces” or “Van in an Australian driveway”.
+          Regenerates the background. Your words stay as typed. Example: “Honey jars on a
+          wooden table, no faces” or “Roadside farm stall in the morning sun”.
         </p>
         <textarea
           value={refinePrompt}
@@ -281,7 +281,7 @@ export function RecreateTunePanel({
           rows={2}
           onChange={(e) => setRefinePrompt(e.target.value)}
           className="w-full rounded-lg border border-[#E0DDD5] px-3 py-2 text-sm"
-          placeholder="More tools on a bench, no faces"
+          placeholder="Honey jars on a wooden table, no faces"
         />
         <button
           type="button"

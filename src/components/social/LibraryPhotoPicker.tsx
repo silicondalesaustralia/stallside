@@ -76,7 +76,7 @@ export function LibraryPhotoPicker({
         <ImageIcon className="mx-auto mb-2 h-8 w-8 text-[#E0DDD5]" />
         <p className="text-xs font-semibold text-[#666] mb-1">No reusable backgrounds yet</p>
         <p className="text-[11px] text-[#888] leading-snug">
-          Images from job photos, stock, or AI Generate (Step 2) appear here after you create a
+          Images from product photos, stock, or AI Generate (Step 2) appear here after you create a
           post. Week Ahead AI-only renders may not appear until their background URL is saved.
         </p>
       </div>

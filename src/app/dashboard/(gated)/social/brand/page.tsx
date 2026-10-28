@@ -179,7 +179,7 @@ export default function TradiesPostBrandPage() {
                   id="tp-brand-area"
                   value={form.address ?? ''}
                   onChange={(e) => patchForm({ address: e.target.value })}
-                  placeholder="e.g. Parramatta and Western Sydney"
+                  placeholder="e.g. Adelaide Hills and the Barossa"
                   disabled={!canEdit}
                 />
               </div>

@@ -249,7 +249,7 @@ export function SocialCalendarTab({
               : 'jpg'
       const a = document.createElement('a')
       a.href = URL.createObjectURL(blob)
-      a.download = `stitchedup-post-${Date.now()}.${ext}`
+      a.download = `vendl-post-${Date.now()}.${ext}`
       a.click()
       URL.revokeObjectURL(a.href)
       toast('Image downloaded', 'success')

@@ -59,11 +59,11 @@ export function downloadFilenameForVideo(
   variant: 'original' | 'branded' = 'original',
 ): string {
   const slug =
-    (businessName || 'stitchedup')
+    (businessName || 'vendl')
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
-      .slice(0, 40) || 'stitchedup'
+      .slice(0, 40) || 'vendl'
   const date = createdAt.slice(0, 10)
   if (variant === 'branded') {
     return `${slug}-${date}-branded.mp4`

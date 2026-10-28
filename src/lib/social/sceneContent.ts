@@ -36,7 +36,7 @@ export function defaultSceneCta(business: {
   if (cta) return truncate(cta, SCENE_CTA_MAX)
   const phone = business.phone?.trim()
   if (phone) return truncate(formatPhoneAU(phone), SCENE_CTA_MAX)
-  return 'Call us today'
+  return 'Order online today'
 }
 
 export function buildDefaultSceneContent(business: FieldSourceBusiness & {

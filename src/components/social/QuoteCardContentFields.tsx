@@ -97,7 +97,7 @@ export function QuoteCardContentFields({
           maxLength={QUOTE_CTA_LINE_MAX}
           onChange={(e) => onChange({ ...content, ctaLine: e.target.value })}
           className="w-full rounded-lg border border-[#E0DDD5] px-3 py-2 text-sm"
-          placeholder="Call us for a free quote"
+          placeholder="Order online for pickup"
         />
       </div>
     </div>

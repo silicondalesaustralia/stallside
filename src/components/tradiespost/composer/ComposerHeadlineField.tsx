@@ -19,7 +19,7 @@ export function ComposerHeadlineField({ value, onChange }: Props) {
         value={value}
         maxLength={FACEBOOK_HEADLINE_MAX}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="e.g. Hot water system replaced in Parramatta"
+        placeholder="e.g. First strawberries of the season are in"
         className="w-full rounded-xl border border-[#E4E4E7] bg-white px-3 py-2.5 text-sm font-semibold text-[#18181B] outline-none focus:border-[#F5C518] focus:ring-1 focus:ring-[#F5C518]"
       />
       <p className="mt-1 text-[11px] text-zinc-400">
