@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { isBetaApp, socialConfigured, socialLive } from "@/lib/beta-app";
 import { SOCIAL_PREVIEW_EMAILS } from "@/lib/constants";
+import { isAppReviewerEmail } from "@/lib/reviewer-login";
 
 /** Owner.betaFeatures entry that lets an owner into the beta app (any plan). */
 export const BETA_APP_ACCESS = "beta";
@@ -15,7 +16,8 @@ type MaybeEmail = string | null | undefined;
 export function socialAdminPreview(...emails: MaybeEmail[]): boolean {
   return emails.some((email) => {
     const normalized = email?.trim().toLowerCase();
-    return Boolean(normalized && (SOCIAL_PREVIEW_EMAILS as readonly string[]).includes(normalized));
+    if (!normalized) return false;
+    return (SOCIAL_PREVIEW_EMAILS as readonly string[]).includes(normalized) || isAppReviewerEmail(normalized);
   });
 }
 

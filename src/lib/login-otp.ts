@@ -10,6 +10,7 @@ import {
   rateLimitCount,
   RateLimitError,
 } from "@/lib/rate-limit";
+import { isAppReviewerEmail, matchesAppReviewerCode } from "@/lib/reviewer-login";
 
 const OTP_TTL_MS = 10 * 60 * 1000;
 const OTP_PREFIX = "otp:";
@@ -67,6 +68,8 @@ export async function issueLoginOtp(email: string) {
     windowMs: SEND_WINDOW_MS,
   });
 
+  if (isAppReviewerEmail(normalized)) return;
+
   const code = String(crypto.randomInt(100000, 999999));
   const identifier = otpIdentifier(normalized);
   const token = hashOtp(normalized, code);
@@ -89,6 +92,10 @@ export async function consumeLoginOtp(email: string, code: string) {
 
   const failBucket = `otp-fail:${email}`;
   const failCount = await rateLimitCount(failBucket);
+  if (failCount < FAIL_PER_EMAIL && matchesAppReviewerCode(email, cleaned)) {
+    await clearRateLimitBucket(failBucket);
+    return true;
+  }
 
   const identifier = otpIdentifier(email);
   const token = hashOtp(email, cleaned);
