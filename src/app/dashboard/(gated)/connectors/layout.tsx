@@ -7,8 +7,8 @@ import { requireOwner } from '@/lib/session'
 export const dynamic = 'force-dynamic'
 
 export default async function ConnectorsLayout({ children }: { children: React.ReactNode }) {
-  const { user } = await requireOwner()
-  if (process.env.SOCIAL_SECTION_LIVE !== '1' && !socialAdminPreview(user.email)) {
+  const { user, impersonator } = await requireOwner()
+  if (process.env.SOCIAL_SECTION_LIVE !== '1' && !socialAdminPreview(user.email, impersonator?.email)) {
     return <ConnectorsComingSoon />
   }
   return (

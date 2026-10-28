@@ -9,30 +9,38 @@ export function hasBetaAppAccess(owner: { betaFeatures: string[] } | null): bool
   return Boolean(owner?.betaFeatures.includes(BETA_APP_ACCESS));
 }
 
-export function socialAdminPreview(email: string | null | undefined): boolean {
-  const normalized = email?.trim().toLowerCase();
-  return Boolean(normalized && (SOCIAL_PREVIEW_EMAILS as readonly string[]).includes(normalized));
+type MaybeEmail = string | null | undefined;
+
+/** Pass the signed-in email and, during admin login-as, the admin's email too. */
+export function socialAdminPreview(...emails: MaybeEmail[]): boolean {
+  return emails.some((email) => {
+    const normalized = email?.trim().toLowerCase();
+    return Boolean(normalized && (SOCIAL_PREVIEW_EMAILS as readonly string[]).includes(normalized));
+  });
 }
 
 /**
  * Social kit access: on the beta app (only beta owners get in) once Social is
  * switched live there; elsewhere when SOCIAL_SECTION_LIVE=1 (full release),
- * otherwise only beta owners. Platform admins get in early once Supabase is set.
+ * otherwise only beta owners. Preview emails get in early once Supabase is set.
  */
 export function socialKitEnabledFor(
   owner: { betaFeatures: string[] } | null,
-  email: string | null | undefined,
+  ...emails: MaybeEmail[]
 ): boolean {
-  if (socialAdminPreview(email) && socialConfigured()) return true;
+  if (socialAdminPreview(...emails) && socialConfigured()) return true;
   if (isBetaApp()) return socialLive();
   if (process.env.SOCIAL_SECTION_LIVE === "1") return true;
   return hasBetaAppAccess(owner);
 }
 
-export async function socialKitEnabledForOwnerId(ownerId: string): Promise<boolean> {
+export async function socialKitEnabledForOwnerId(
+  ownerId: string,
+  impersonatorEmail?: MaybeEmail,
+): Promise<boolean> {
   const owner = await prisma.owner.findUnique({
     where: { id: ownerId },
     select: { betaFeatures: true, user: { select: { email: true } } },
   });
-  return socialKitEnabledFor(owner, owner?.user.email);
+  return socialKitEnabledFor(owner, owner?.user.email, impersonatorEmail);
 }

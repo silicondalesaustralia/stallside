@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { websiteSectionEnabledFor } from "@/lib/website/access";
 import { socialKitEnabledForOwnerId } from "@/lib/beta-features";
 import type { BusinessOption } from "@/lib/selected-business";
+import { getAuthSession } from "@/lib/session";
 
 export default async function DashboardNavWithUnread({
   ownerId,
@@ -21,6 +22,7 @@ export default async function DashboardNavWithUnread({
   stripeChargesEnabled: boolean;
   variant: "sidebar" | "mobile";
 }) {
+  const session = await getAuthSession();
   const [unreadNotifications, setupAlerts, social] = await Promise.all([
     prisma.notification.count({
       where: { ownerId, status: "OPEN" },
@@ -32,7 +34,7 @@ export default async function DashboardNavWithUnread({
       stripeAccountId,
       stripeChargesEnabled,
     }),
-    socialKitEnabledForOwnerId(ownerId),
+    socialKitEnabledForOwnerId(ownerId, session?.impersonator?.email),
   ]);
   const navAccess = { website: websiteSectionEnabledFor(ownerId), social };
 

@@ -13,8 +13,8 @@ export const dynamic = 'force-dynamic'
  * Social kit the section opens with its tabs greyed out and a coming-soon page.
  */
 export default async function SocialLayout({ children }: { children: React.ReactNode }) {
-  const { owner, user } = await requireOwner()
-  if (!socialKitEnabledFor(owner, user.email)) {
+  const { owner, user, impersonator } = await requireOwner()
+  if (!socialKitEnabledFor(owner, user.email, impersonator?.email)) {
     return (
       <>
         <SocialSubnav disabled />
