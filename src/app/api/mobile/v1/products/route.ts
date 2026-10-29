@@ -2,6 +2,7 @@ import { productsQuery, type ProductsResponse } from "@/contracts/mobile/product
 import { requireMobileOwner, requireMobileStand } from "@/lib/mobile/require-owner";
 import { listStandProducts } from "@/lib/products/list";
 import { toMobileProduct } from "@/lib/mobile/product-dto";
+import { variantCountsFor } from "@/lib/product-variants/variant-counts";
 import { mobileJson, mobileServerError, readMobileQuery } from "@/lib/mobile/http";
 
 export async function GET(request: Request) {
@@ -22,7 +23,10 @@ export async function GET(request: Request) {
       tab: query.data.tab,
       q: query.data.q,
     });
-    return mobileJson<ProductsResponse>({ products: products.map(toMobileProduct) });
+    const variants = await variantCountsFor(products.map((p) => p.id));
+    return mobileJson<ProductsResponse>({
+      products: products.map((p) => toMobileProduct(p, variants.get(p.id) ?? 0)),
+    });
   } catch (error) {
     return mobileServerError("Mobile products failed", error);
   }

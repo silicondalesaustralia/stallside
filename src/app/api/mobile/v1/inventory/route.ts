@@ -2,6 +2,7 @@ import { inventoryQuery, type InventoryResponse } from "@/contracts/mobile/inven
 import { requireMobileOwner, requireMobileStand } from "@/lib/mobile/require-owner";
 import { loadInventoryReport } from "@/lib/inventory/load-inventory-report";
 import { toInventoryResponse } from "@/lib/mobile/inventory-dto";
+import { variantCountsFor } from "@/lib/product-variants/variant-counts";
 import { mobileJson, mobileServerError, readMobileQuery } from "@/lib/mobile/http";
 
 /** Same stock report as the web Inventory page. */
@@ -22,7 +23,8 @@ export async function GET(request: Request) {
       standId: stand.value.id,
       q: query.data.q,
     });
-    return mobileJson<InventoryResponse>(toInventoryResponse(rows));
+    const variants = await variantCountsFor(rows.map((row) => row.id));
+    return mobileJson<InventoryResponse>(toInventoryResponse(rows, variants));
   } catch (error) {
     return mobileServerError("Mobile inventory failed", error);
   }

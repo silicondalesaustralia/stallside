@@ -21,6 +21,7 @@ export const inventoryRow = z.object({
   sold30: z.number().int(),
   daysCover: z.number().nullable(),
   lastSoldAt: z.iso.datetime().nullable(),
+  variantCount: z.number().int(),
 });
 export type InventoryRow = z.infer<typeof inventoryRow>;
 

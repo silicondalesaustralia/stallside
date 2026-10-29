@@ -1,4 +1,13 @@
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useToken } from "@/auth/useAuth";
 import { useProduct } from "@/data/useProduct";
@@ -8,6 +17,7 @@ import ProductSummaryCard from "@/components/ProductSummaryCard";
 import ProductPhotosCard from "@/components/ProductPhotosCard";
 import ProductPriceForm from "@/components/ProductPriceForm";
 import ProductStockCard from "@/components/ProductStockCard";
+import ProductVariantsCard from "@/components/ProductVariantsCard";
 import ProductStatusCard from "@/components/ProductStatusCard";
 import ErrorMessage from "@/components/ErrorMessage";
 
@@ -34,7 +44,10 @@ export default function ProductDetailScreen() {
           <ErrorMessage error={product.error} />
         </View>
       ) : (
-        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
           <ScrollView
             style={styles.screen}
             contentContainerStyle={styles.content}
@@ -43,11 +56,26 @@ export default function ProductDetailScreen() {
           >
             <ProductSummaryCard product={detail} />
             <ProductPhotosCard product={detail} />
-            <ProductPriceForm key={`${detail.priceCents}:${detail.compareAtPriceCents}`} product={detail} />
-            <ProductStockCard product={detail} />
+            {detail.variants.length > 0 ? (
+              <ProductVariantsCard product={detail} />
+            ) : (
+              <>
+                <ProductPriceForm
+                  key={`${detail.priceCents}:${detail.compareAtPriceCents}`}
+                  product={detail}
+                />
+                <ProductStockCard product={detail} />
+              </>
+            )}
             <ProductStatusCard product={detail} />
-            <Pressable accessibilityRole="link" onPress={() => void editOnWeb(detail.webPath)} style={styles.web}>
-              <Text style={styles.webText}>Edit description, options & more on the web</Text>
+            <Pressable
+              accessibilityRole="link"
+              onPress={() => void editOnWeb(detail.webPath)}
+              style={styles.web}
+            >
+              <Text style={styles.webText}>
+                Edit description, options & more on the web
+              </Text>
             </Pressable>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -58,9 +86,19 @@ export default function ProductDetailScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  center: { flex: 1, alignItems: "center", justifyContent: "center", padding: spacing.lg, backgroundColor: colors.background },
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.lg,
+    backgroundColor: colors.background,
+  },
   screen: { backgroundColor: colors.background },
-  content: { padding: spacing.md, gap: spacing.md, paddingBottom: spacing.lg * 2 },
+  content: {
+    padding: spacing.md,
+    gap: spacing.md,
+    paddingBottom: spacing.lg * 2,
+  },
   web: { alignItems: "center", padding: spacing.md },
   webText: { color: colors.brand, fontWeight: "600", fontSize: 15 },
 });

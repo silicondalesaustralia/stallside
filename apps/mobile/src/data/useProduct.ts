@@ -47,6 +47,24 @@ export function useSaveProductPrice(productId: string) {
   });
 }
 
+export function useSetVariantStock(productId: string) {
+  const token = useToken();
+  const store = useStoreProduct(productId);
+  return useMutation({
+    mutationFn: (input: { variantId: string; quantity: number }) =>
+      apiFetch(
+        `${productPath(productId)}/variants/${encodeURIComponent(input.variantId)}/stock`,
+        {
+          method: "PUT",
+          token,
+          body: { quantity: input.quantity },
+          schema: mobileProductDetail,
+        },
+      ),
+    onSuccess: store,
+  });
+}
+
 export function useAddProductPhoto(productId: string) {
   const token = useToken();
   const store = useStoreProduct(productId);

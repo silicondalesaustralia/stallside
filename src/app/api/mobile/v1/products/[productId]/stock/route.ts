@@ -22,7 +22,7 @@ export async function PUT(
     const product = await findOwnerProduct(guard.value.owner.id, productId);
     if (!product) return mobileError(404, "Product not found.");
     if (await productHasVariants(product.id)) {
-      return mobileError(409, "This product has variants. Change stock per variant on the web.");
+      return mobileError(409, "This product has variants. Open the product to change stock per variant.");
     }
 
     await saveStockCounts({

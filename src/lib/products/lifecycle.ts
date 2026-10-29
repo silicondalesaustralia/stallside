@@ -1,6 +1,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
+import { productHasVariants } from "@/lib/product-variants/has-variants";
 
 export type ProductStatusAction = "hide" | "show" | "archive" | "restore";
 type Result = { ok: true } | { error: string };
@@ -73,6 +74,9 @@ export async function updateOwnerProductPrice(
   }
   const product = await findForUpdate(ownerId, productId);
   if (!product) return { error: "Product not found." };
+  if (await productHasVariants(product.id)) {
+    return { error: "This product has variants. Change prices per variant on the web." };
+  }
   await prisma.product.update({ where: { id: product.id }, data: { priceCents, compareAtPriceCents } });
   revalidate(product);
   return { ok: true };

@@ -5,6 +5,7 @@ import { formatCents } from "@/lib/format";
 import { openProduct } from "@/lib/navigation";
 import { colors, spacing } from "@/lib/theme";
 import StockStepper from "@/components/StockStepper";
+import VariantStockLink from "@/components/VariantStockLink";
 
 type Props = {
   product: MobileProduct;
@@ -14,14 +15,15 @@ type Props = {
 
 function stockNote(product: MobileProduct): { text: string; warn: boolean } {
   if (product.stockQuantity <= 0) return { text: "Sold out", warn: true };
-  if (product.stockQuantity <= product.lowStockThreshold) return { text: "Low stock", warn: true };
+  if (product.stockQuantity <= product.lowStockThreshold)
+    return { text: "Low stock", warn: true };
   return { text: "In stock", warn: false };
 }
 
 export default function ProductRow({ product, saving, onSaveStock }: Props) {
   const note = stockNote(product);
   const meta = [
-    formatCents(product.priceCents, product.currency),
+    `${product.variantCount > 0 ? "From " : ""}${formatCents(product.priceCents, product.currency)}`,
     product.sku ? `SKU ${product.sku}` : null,
     product.supplierName ? `Supplier: ${product.supplierName}` : null,
     product.isArchived ? "Draft" : null,
@@ -43,12 +45,19 @@ export default function ProductRow({ product, saving, onSaveStock }: Props) {
       </Pressable>
       <View style={styles.stockLine}>
         <Text style={[styles.note, note.warn && styles.warn]}>{note.text}</Text>
-        <StockStepper
-          key={product.stockQuantity}
-          value={product.stockQuantity}
-          saving={saving}
-          onSave={(quantity) => onSaveStock(product.id, quantity)}
-        />
+        {product.variantCount > 0 ? (
+          <VariantStockLink
+            productId={product.id}
+            count={product.variantCount}
+          />
+        ) : (
+          <StockStepper
+            key={product.stockQuantity}
+            value={product.stockQuantity}
+            saving={saving}
+            onSave={(quantity) => onSaveStock(product.id, quantity)}
+          />
+        )}
       </View>
     </View>
   );

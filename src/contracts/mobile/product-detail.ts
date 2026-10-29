@@ -4,6 +4,17 @@ export const PRODUCT_STATUSES = ["live", "hidden", "draft"] as const;
 export const productStatus = z.enum(PRODUCT_STATUSES);
 export type ProductStatus = z.infer<typeof productStatus>;
 
+export const mobileProductVariant = z.object({
+  id: z.string(),
+  /** e.g. "Large / Red". */
+  label: z.string(),
+  sku: z.string().nullable(),
+  priceCents: z.number().int(),
+  stockQuantity: z.number().int(),
+  isActive: z.boolean(),
+});
+export type MobileProductVariant = z.infer<typeof mobileProductVariant>;
+
 export const mobileProductDetail = z.object({
   id: z.string(),
   name: z.string(),
@@ -25,6 +36,8 @@ export const mobileProductDetail = z.object({
   hasOptions: z.boolean(),
   hasVolumePrices: z.boolean(),
   supplierName: z.string().nullable(),
+  /** When not empty, stock and price live on each variant; the product shows their totals. */
+  variants: z.array(mobileProductVariant),
   webPath: z.string(),
 });
 export type MobileProductDetail = z.infer<typeof mobileProductDetail>;

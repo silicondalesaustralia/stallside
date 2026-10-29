@@ -2,6 +2,7 @@ import type { MobileProductDetail, ProductStatus } from "@/contracts/mobile/prod
 import type { OwnerProductDetail } from "@/lib/products/detail";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import { productImageList } from "@/lib/product-images";
+import { variantLabel } from "@/lib/product-variants/variant-title";
 
 function statusOf(product: OwnerProductDetail): ProductStatus {
   if (product.isArchived) return "draft";
@@ -29,6 +30,14 @@ export function toMobileProductDetail(product: OwnerProductDetail): MobileProduc
     hasOptions: product._count.optionGroups > 0,
     hasVolumePrices: parsePriceTiers(product.priceTiers).length > 0,
     supplierName: product.member?.name ?? null,
+    variants: product.variants.map((v) => ({
+      id: v.id,
+      label: variantLabel(v),
+      sku: v.sku,
+      priceCents: v.priceCents,
+      stockQuantity: v.stockQuantity,
+      isActive: v.isActive,
+    })),
     webPath: `/dashboard/products/${product.id}`,
   };
 }

@@ -21,6 +21,8 @@ export const mobileProduct = z.object({
   lowStockThreshold: z.number().int(),
   isArchived: z.boolean(),
   supplierName: z.string().nullable(),
+  /** Stock for variant products is changed per variant on the product screen. */
+  variantCount: z.number().int(),
 });
 export type MobileProduct = z.infer<typeof mobileProduct>;
 
