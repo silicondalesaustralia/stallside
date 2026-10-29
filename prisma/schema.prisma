@@ -2406,9 +2406,30 @@ model EmailSendLog {
   resendId  String?
   error     String?
   createdAt DateTime @default(now())
+  /** Latest Resend webhook event, e.g. delivered, opened, bounced */
+  lastEvent      String?
+  deliveredAt    DateTime?
+  firstOpenedAt  DateTime?
+  openCount      Int       @default(0)
+  firstClickedAt DateTime?
+  clickCount     Int       @default(0)
+  bouncedAt      DateTime?
+  bounceType     String?
+  complainedAt   DateTime?
 
   @@index([createdAt])
   @@index([kind, createdAt])
+  @@index([resendId])
+}
+
+/** Raw Resend webhook deliveries, deduped by svix-id. */
+model ResendWebhookEvent {
+  id         String   @id
+  type       String
+  resendId   String?
+  receivedAt DateTime @default(now())
+
+  @@index([resendId])
 }
 
 enum NotificationType {
