@@ -12,19 +12,10 @@ export function escapeHtml(value: string): string {
 }
 
 export function emailReplyTo(): string {
-  const configured = cleanEnvSecret(process.env.CONTACT_EMAIL)?.toLowerCase();
-  if (
-    configured &&
-    !configured.endsWith(`@${APP_DOMAIN}`) &&
-    !configured.endsWith("@stallside.app")
-  ) {
-    return configured;
-  }
   return `${APP_NAME} <hello@${APP_DOMAIN}>`;
 }
 
-/** Personal inbox so replies reach Jono. */
-export const JONO_REPLY_TO = "jono@silicondales.com";
+export const JONO_REPLY_TO = `hello@${APP_DOMAIN}`;
 
 /** "Jono from Vendl" display name on the configured sending address. */
 export function jonoFrom(): string {
