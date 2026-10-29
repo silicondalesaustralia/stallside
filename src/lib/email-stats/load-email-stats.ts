@@ -14,6 +14,8 @@ export type EmailKindStats = {
   latestSubject: string;
   lastSentAt: Date;
   sent: number;
+  /** Sent since tracking started; the denominator for delivery-based rates. */
+  tracked: number;
   failed: number;
   delivered: number;
   opened: number;
@@ -27,6 +29,7 @@ type Row = {
   latest_subject: string;
   last_sent_at: Date;
   sent: bigint;
+  tracked: bigint;
   failed: bigint;
   delivered: bigint;
   opened: bigint;
@@ -44,15 +47,25 @@ function rangeStart(key: EmailStatsRangeKey): Date {
   return days == null ? new Date(0) : new Date(Date.now() - days * 86_400_000);
 }
 
+/** Sends just before the first event can still be tracked, so allow a small lead. */
+const TRACKING_LEAD_MS = 60_000;
+
 /** One row per email kind; local console sends are excluded. */
-export async function loadEmailStats(range: EmailStatsRangeKey): Promise<EmailKindStats[]> {
+export async function loadEmailStats(
+  range: EmailStatsRangeKey,
+  trackingStart: Date | null,
+): Promise<EmailKindStats[]> {
   const since = rangeStart(range);
+  const trackedSince = trackingStart
+    ? new Date(trackingStart.getTime() - TRACKING_LEAD_MS)
+    : new Date(8.64e15);
   const rows = await prisma.$queryRaw<Row[]>`
     SELECT
       "kind",
       (ARRAY_AGG("subject" ORDER BY "createdAt" DESC))[1] AS latest_subject,
       MAX("createdAt") AS last_sent_at,
       COUNT(*) FILTER (WHERE "status" = 'sent') AS sent,
+      COUNT(*) FILTER (WHERE "status" = 'sent' AND "createdAt" >= ${trackedSince}) AS tracked,
       COUNT(*) FILTER (WHERE "status" = 'failed') AS failed,
       COUNT("deliveredAt") AS delivered,
       COUNT("firstOpenedAt") AS opened,
@@ -69,6 +82,7 @@ export async function loadEmailStats(range: EmailStatsRangeKey): Promise<EmailKi
     latestSubject: row.latest_subject,
     lastSentAt: row.last_sent_at,
     sent: Number(row.sent),
+    tracked: Number(row.tracked),
     failed: Number(row.failed),
     delivered: Number(row.delivered),
     opened: Number(row.opened),
