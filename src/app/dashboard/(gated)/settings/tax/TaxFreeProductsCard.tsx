@@ -1,20 +1,11 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
 import DetailCard from "@/components/dashboard/ui/DetailCard";
+import { loadTaxFreeProducts } from "@/lib/tax/tax-free-products";
 
 const SHOWN = 12;
 
 export default async function TaxFreeProductsCard({ ownerId, taxName }: { ownerId: string; taxName: string }) {
-  const where = { ownerId, gstFree: true, isArchived: false };
-  const [products, total] = await Promise.all([
-    prisma.product.findMany({
-      where,
-      orderBy: { name: "asc" },
-      take: SHOWN,
-      select: { id: true, name: true, stand: { select: { name: true } } },
-    }),
-    prisma.product.count({ where }),
-  ]);
+  const { products, total } = await loadTaxFreeProducts(ownerId, SHOWN);
 
   return (
     <DetailCard title={`${taxName}-free products`}>

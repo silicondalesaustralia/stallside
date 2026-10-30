@@ -1,20 +1,14 @@
 import { requireOwner } from "@/lib/session";
 import PageHeader from "@/components/dashboard/ui/PageHeader";
 import DetailCard from "@/components/dashboard/ui/DetailCard";
-import { countryForCurrency, taxRegion } from "@/lib/tax/regions";
-import { formatTaxRate, taxConfig } from "@/lib/tax/config";
+import { loadOwnerTaxSettings } from "@/lib/tax/owner-tax-settings";
 import TaxSettingsForm from "../TaxSettingsForm";
 import GstSyncButton from "../GstSyncButton";
 import TaxFreeProductsCard from "./TaxFreeProductsCard";
 
 export default async function TaxSettingsPage() {
-  const { owner } = await requireOwner();
-  const country = owner.taxCountry ?? countryForCurrency(owner.billingCurrency) ?? owner.country;
-  const region = taxRegion(country);
-  const config = taxConfig(owner, owner.billingCurrency);
-  const status = config.applies
-    ? `${config.name} on at ${formatTaxRate(config.rateBps)}, ${config.inclusive ? "included in your prices" : "added at checkout"}.`
-    : `${region.name} is off. Orders record no tax.`;
+  const { owner: sessionOwner } = await requireOwner();
+  const { owner, country, region, status } = await loadOwnerTaxSettings(sessionOwner.id);
 
   return (
     <main className="flex w-full max-w-3xl flex-col gap-5">
@@ -34,7 +28,7 @@ export default async function TaxSettingsPage() {
         />
       </DetailCard>
 
-      <TaxFreeProductsCard ownerId={owner.id} taxName={region.name} />
+      <TaxFreeProductsCard ownerId={sessionOwner.id} taxName={region.name} />
 
       <DetailCard title="Subscriptions and memberships">
         <p className="text-sm text-[var(--muted)]">
