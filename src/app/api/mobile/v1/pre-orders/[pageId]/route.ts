@@ -1,15 +1,9 @@
 import type { NextRequest } from "next/server";
 import type { MobileOk } from "@/contracts/mobile/common";
-import { preOrderActiveBody, type PreOrderDetailResponse } from "@/contracts/mobile/preorders";
+import { preOrderActiveBody } from "@/contracts/mobile/preorders";
 import { requireMobileOwner } from "@/lib/mobile/require-owner";
-import {
-  deleteOwnerPreOrderPage,
-  getOwnerPreOrderPage,
-  setOwnerPreOrderPageActive,
-} from "@/lib/pre-order-pages/service";
-import { toMobilePreOrderItems, toMobilePreOrderPage } from "@/lib/mobile/preorder-dto";
-import { standQrDataUrl } from "@/lib/stand-qr";
-import { payOptionsOf } from "@/lib/pre-order-pay-options";
+import { deleteOwnerPreOrderPage, setOwnerPreOrderPageActive } from "@/lib/pre-order-pages/service";
+import { preOrderDetailResponse } from "@/lib/mobile/preorder-detail-response";
 import { mobileError, mobileJson, mobileServerError, readMobileBody } from "@/lib/mobile/http";
 
 type Ctx = RouteContext<"/api/mobile/v1/pre-orders/[pageId]">;
@@ -20,20 +14,7 @@ export async function GET(request: NextRequest, ctx: Ctx) {
   if (!guard.ok) return guard.response;
   try {
     const { pageId } = await ctx.params;
-    const detail = await getOwnerPreOrderPage(guard.value.owner.id, pageId);
-    if (!detail) return mobileError(404, "Pre-order page not found.");
-    const page = toMobilePreOrderPage(detail);
-    return mobileJson<PreOrderDetailResponse>({
-      page,
-      collectionNote: detail.collectionNote,
-      paymentTiming: detail.paymentTiming,
-      paymentOptions: payOptionsOf(detail),
-      depositPercent: detail.depositPercent,
-      handoverMode: detail.handoverMode,
-      currency: detail.stand.currency,
-      items: toMobilePreOrderItems(detail),
-      qrImage: await standQrDataUrl(page.url, 720),
-    });
+    return await preOrderDetailResponse(guard.value.owner, pageId);
   } catch (error) {
     return mobileServerError("Mobile pre-order page failed", error);
   }

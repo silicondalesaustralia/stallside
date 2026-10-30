@@ -2,11 +2,7 @@ import { Alert, Pressable, Share, StyleSheet, Text, View } from "react-native";
 import type { PreOrderDetailResponse } from "@contracts/mobile/preorders";
 import { useToken } from "@/auth/useAuth";
 import { useSetPreOrderActive } from "@/data/usePreOrders";
-import {
-  handoverLabel,
-  paymentLabel,
-  preOrderDeadline,
-} from "@/lib/preorder-labels";
+import { handoverLabel, preOrderDeadline } from "@/lib/preorder-labels";
 import { openOnWeb } from "@/lib/open-web";
 import { colors, spacing } from "@/lib/theme";
 import Card from "@/components/Card";
@@ -55,7 +51,6 @@ export default function PreOrderPageCard({
       <Text style={page.ordersOpen ? styles.meta : styles.closed}>
         {preOrderDeadline(page)}
       </Text>
-      <Text style={styles.meta}>{paymentLabel(detail)}</Text>
       {detail.collectionNote ? (
         <Text style={styles.meta}>{detail.collectionNote}</Text>
       ) : null}

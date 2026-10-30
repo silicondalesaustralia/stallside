@@ -6,7 +6,7 @@ import {
   toDateTimeLocalInTz,
   zonedWallClockToUtc,
 } from "@/lib/stand-timezone";
-import { CARD_PAY_OPTIONS, payOptionsFromForm } from "@/lib/pre-order-pay-options";
+import { depositPercentOf, payOptionsError, payOptionsFromForm } from "@/lib/pre-order-pay-options";
 
 export type PaymentTimingValue =
   | "PAY_NOW"
@@ -109,22 +109,12 @@ export function parsePreOrderFromForm(
   const handoverMode: HandoverModeValue =
     handoverRaw === "DELIVER" ? "DELIVER" : "COLLECT";
   const paymentOptions = payOptionsFromForm(formData);
-  if (!paymentOptions.length) {
-    return { ok: false, error: "Choose at least one way for customers to pay." };
-  }
-  if (paymentOptions.includes("PAY_AT_PICKUP") && handoverMode === "DELIVER") {
-    return {
-      ok: false,
-      error: "Pay at pickup only works when customers collect. Choose Collect at a place.",
-    };
-  }
-  if (!stripeConnected && paymentOptions.some((o) => CARD_PAY_OPTIONS.includes(o))) {
-    return {
-      ok: false,
-      error:
-        "Connect Stripe or Square to take card payments, or choose Pay at pickup only.",
-    };
-  }
+  const optionsError = payOptionsError({
+    options: paymentOptions,
+    handoverMode,
+    cardAllowed: stripeConnected,
+  });
+  if (optionsError) return { ok: false, error: optionsError };
   const orderByAt = parseDateTimeLocal(
     String(formData.get("orderByAt") ?? ""),
     timeZone,
@@ -150,11 +140,9 @@ export function parsePreOrderFromForm(
 
   let depositPercent: number | null = null;
   if (paymentOptions.includes("DEPOSIT_THEN_BALANCE")) {
-    const pctRaw = Number(formData.get("depositPercent") ?? 30);
-    if (!Number.isFinite(pctRaw) || pctRaw < 1 || pctRaw > 99) {
-      return { ok: false, error: "Deposit percent must be between 1 and 99." };
-    }
-    depositPercent = Math.round(pctRaw);
+    const pct = depositPercentOf(Number(formData.get("depositPercent") ?? 30));
+    if (!pct.ok) return { ok: false, error: pct.error };
+    depositPercent = pct.value;
   }
 
   return {

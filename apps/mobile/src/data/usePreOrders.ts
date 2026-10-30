@@ -4,6 +4,7 @@ import {
   preOrderDetailResponse,
   preOrdersResponse,
   type PreOrderDetailResponse,
+  type PreOrderPaymentBody,
   type PreOrdersResponse,
 } from "@contracts/mobile/preorders";
 import { apiFetch } from "@/lib/api";
@@ -66,6 +67,24 @@ export function useSetPreOrderActive() {
     onSettled: (_result, _error, { id }) => {
       void queryClient.invalidateQueries({ queryKey: ["pre-orders"] });
       void queryClient.invalidateQueries({ queryKey: ["pre-order", id] });
+    },
+  });
+}
+
+export function useSetPreOrderPayment(pageId: string) {
+  const token = useToken();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: PreOrderPaymentBody) =>
+      apiFetch(`${path(pageId)}/payment`, {
+        method: "PUT",
+        token,
+        body,
+        schema: preOrderDetailResponse,
+      }),
+    onSuccess: (detail) => {
+      queryClient.setQueryData(["pre-order", pageId], detail);
+      void queryClient.invalidateQueries({ queryKey: ["pre-orders"] });
     },
   });
 }

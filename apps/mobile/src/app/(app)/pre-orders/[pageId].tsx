@@ -12,6 +12,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useDeletePreOrderPage, usePreOrderPage } from "@/data/usePreOrders";
 import { colors, spacing } from "@/lib/theme";
 import PreOrderPageCard from "@/components/PreOrderPageCard";
+import PreOrderPaymentCard from "@/components/PreOrderPaymentCard";
 import PreOrderQrCard from "@/components/PreOrderQrCard";
 import PreOrderItemsCard from "@/components/PreOrderItemsCard";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -71,6 +72,10 @@ export default function PreOrderPageScreen() {
       }
     >
       <PreOrderPageCard detail={data} />
+      <PreOrderPaymentCard
+        key={`${data.paymentOptions.join()}:${data.depositPercent}`}
+        detail={data}
+      />
       <PreOrderItemsCard detail={data} />
       <PreOrderQrCard detail={data} />
       <Pressable

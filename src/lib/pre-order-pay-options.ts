@@ -51,6 +51,30 @@ export function payOptionsFromForm(formData: FormData): PreOrderPaymentTiming[] 
   return isPreOrderPayOption(single) ? [single] : [];
 }
 
+/** Rules every pre-order save follows (web forms and the app); returns an error message or null. */
+export function payOptionsError(input: {
+  options: readonly PreOrderPaymentTiming[];
+  handoverMode: "COLLECT" | "DELIVER";
+  cardAllowed: boolean;
+}): string | null {
+  if (!input.options.length) return "Choose at least one way for customers to pay.";
+  if (input.options.includes("PAY_AT_PICKUP") && input.handoverMode === "DELIVER") {
+    return "Pay at pickup only works when customers collect. Choose Collect at a place.";
+  }
+  if (!input.cardAllowed && input.options.some((o) => CARD_PAY_OPTIONS.includes(o))) {
+    return "Connect Stripe or Square to take card payments, or choose Pay at pickup only.";
+  }
+  return null;
+}
+
+/** Whole 1-99 deposit percent, or an error message. */
+export function depositPercentOf(raw: number): { ok: true; value: number } | { ok: false; error: string } {
+  if (!Number.isFinite(raw) || raw < 1 || raw > 99) {
+    return { ok: false, error: "Deposit percent must be between 1 and 99." };
+  }
+  return { ok: true, value: Math.round(raw) };
+}
+
 export function payOptionLabel(option: PreOrderPaymentTiming, depositPercent: number | null): string {
   if (option === "DEPOSIT_THEN_BALANCE") return `Pay a ${depositPercent ?? 30}% deposit now`;
   if (option === "PAY_AT_PICKUP") return "Pay at pickup";

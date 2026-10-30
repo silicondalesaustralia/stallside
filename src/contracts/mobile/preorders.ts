@@ -36,6 +36,8 @@ export const preOrderDetailResponse = z.object({
   paymentTiming: z.enum(["PAY_NOW", "PAY_UPFRONT", "DEPOSIT_THEN_BALANCE", "PAY_AT_PICKUP"]),
   /** Options shoppers can choose from; the first is the default. */
   paymentOptions: z.array(z.enum(["PAY_UPFRONT", "DEPOSIT_THEN_BALANCE", "PAY_AT_PICKUP"])),
+  /** Stripe or Square can take card payments; without one only Pay at pickup works at checkout. */
+  cardReady: z.boolean(),
   depositPercent: z.number().int().nullable(),
   handoverMode: z.enum(["COLLECT", "DELIVER"]),
   currency: z.string(),
@@ -46,3 +48,13 @@ export const preOrderDetailResponse = z.object({
 export type PreOrderDetailResponse = z.infer<typeof preOrderDetailResponse>;
 
 export const preOrderActiveBody = z.object({ isActive: z.boolean() });
+
+export const PRE_ORDER_PAY_OPTIONS = ["PAY_UPFRONT", "DEPOSIT_THEN_BALANCE", "PAY_AT_PICKUP"] as const;
+export type PreOrderPayOption = (typeof PRE_ORDER_PAY_OPTIONS)[number];
+
+export const preOrderPaymentBody = z.object({
+  paymentOptions: z.array(z.enum(PRE_ORDER_PAY_OPTIONS)).min(1, "Choose at least one way for customers to pay."),
+  /** Used when deposits are on; 1-99. */
+  depositPercent: z.number().int().nullable(),
+});
+export type PreOrderPaymentBody = z.infer<typeof preOrderPaymentBody>;
