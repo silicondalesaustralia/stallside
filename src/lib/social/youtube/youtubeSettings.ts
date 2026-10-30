@@ -1,3 +1,5 @@
+import { parseYouTubeTags } from '@/lib/social/youtube/youtubeTags'
+
 export const YOUTUBE_PRIVACY_OPTIONS = ['public', 'unlisted', 'private'] as const
 export type YouTubePrivacy = (typeof YOUTUBE_PRIVACY_OPTIONS)[number]
 
@@ -13,14 +15,17 @@ export const YOUTUBE_DESCRIPTION_MAX = 5000
 export type YouTubePostSettings = {
   title: string
   privacy: YouTubePrivacy
+  tags: string[]
 }
 
 export type YouTubeSettingsDraft = {
   title: string
   privacy: YouTubePrivacy
+  /** Comma-separated, as typed. */
+  tags: string
 }
 
-export const EMPTY_YOUTUBE_DRAFT: YouTubeSettingsDraft = { title: '', privacy: 'public' }
+export const EMPTY_YOUTUBE_DRAFT: YouTubeSettingsDraft = { title: '', privacy: 'public', tags: '' }
 
 /** YouTube rejects angle brackets in titles and descriptions. */
 function stripAngleBrackets(text: string): string {
@@ -43,12 +48,13 @@ export function defaultYouTubeTitle(caption: string): string {
 
 export function sanitizeYouTubeSettings(raw: unknown): YouTubePostSettings | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
-  const { title, privacy } = raw as Record<string, unknown>
+  const { title, privacy, tags } = raw as Record<string, unknown>
   if (typeof title !== 'string' || typeof privacy !== 'string') return null
   const cleanTitle = cleanYouTubeTitle(title)
   if (!cleanTitle) return null
   if (!(YOUTUBE_PRIVACY_OPTIONS as readonly string[]).includes(privacy)) return null
-  return { title: cleanTitle, privacy: privacy as YouTubePrivacy }
+  const tagList = Array.isArray(tags) ? tags.filter((t): t is string => typeof t === 'string') : []
+  return { title: cleanTitle, privacy: privacy as YouTubePrivacy, tags: parseYouTubeTags(tagList) }
 }
 
 export function youtubeSettingsFromDraft(
@@ -56,5 +62,5 @@ export function youtubeSettingsFromDraft(
   caption: string,
 ): YouTubePostSettings | null {
   const title = cleanYouTubeTitle(draft.title) || defaultYouTubeTitle(caption)
-  return title ? { title, privacy: draft.privacy } : null
+  return title ? { title, privacy: draft.privacy, tags: parseYouTubeTags(draft.tags) } : null
 }

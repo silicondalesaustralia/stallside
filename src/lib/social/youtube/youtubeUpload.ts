@@ -18,6 +18,7 @@ export function youtubeVideoResource(settings: YouTubePostSettings, caption: str
     snippet: {
       title: settings.title,
       description: cleanYouTubeDescription(caption),
+      ...(settings.tags.length ? { tags: settings.tags } : {}),
       categoryId: '22',
     },
     status: {

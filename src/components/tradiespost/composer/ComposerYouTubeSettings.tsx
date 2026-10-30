@@ -8,6 +8,11 @@ import {
   defaultYouTubeTitle,
   type YouTubePrivacy,
 } from '@/lib/social/youtube/youtubeSettings'
+import {
+  YOUTUBE_TAGS_MAX_CHARS,
+  parseYouTubeTags,
+  youtubeTagsLength,
+} from '@/lib/social/youtube/youtubeTags'
 
 type Props = {
   state: ComposerYouTubeState
@@ -18,6 +23,7 @@ type Props = {
 export function ComposerYouTubeSettings({ state, caption, channelTitle }: Props) {
   const { draft, setDraft } = state
   const fallbackTitle = defaultYouTubeTitle(caption)
+  const tags = parseYouTubeTags(draft.tags)
 
   return (
     <div className="space-y-4" data-testid="composer-youtube-settings">
@@ -57,6 +63,23 @@ export function ComposerYouTubeSettings({ state, caption, channelTitle }: Props)
             </option>
           ))}
         </select>
+      </label>
+
+      <label className="block text-sm font-bold text-[#18181B]">
+        Tags
+        <input
+          type="text"
+          value={draft.tags}
+          onChange={(e) => setDraft((prev) => ({ ...prev, tags: e.target.value }))}
+          placeholder="e.g. strawberries, farm stand, pick your own"
+          className="mt-1 block w-full rounded-xl border border-[#E4E4E7] bg-white px-3 py-2 text-sm font-normal"
+          data-testid="youtube-tags"
+        />
+        <span className="mt-1 block text-xs font-normal text-zinc-500">
+          {tags.length
+            ? `${tags.length} ${tags.length === 1 ? 'tag' : 'tags'} · ${youtubeTagsLength(tags)}/${YOUTUBE_TAGS_MAX_CHARS} characters`
+            : 'Optional. Separate tags with commas.'}
+        </span>
       </label>
 
       <p className="text-xs text-zinc-500">

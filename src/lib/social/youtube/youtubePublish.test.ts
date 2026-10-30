@@ -7,6 +7,7 @@ process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://abc.supabase.co'
 
 async function run() {
   const s = await import('./youtubeSettings')
+  const t = await import('./youtubeTags')
   const { youtubeVideoResource } = await import('./youtubeUpload')
   const { youtubeResultColumns, youtubePostSourceFromRow, publishYouTubeForPost } = await import(
     './publishYouTubeForPost'
@@ -18,18 +19,31 @@ async function run() {
   assert.equal(s.cleanYouTubeTitle('  New <b>honey</b>\n harvest '), 'New bhoney/b harvest')
   assert.equal(s.cleanYouTubeTitle('x'.repeat(150)).length, 100)
   assert.equal(s.defaultYouTubeTitle('\n\nFirst line here\nsecond'), 'First line here')
-  assert.deepEqual(s.youtubeSettingsFromDraft({ title: '', privacy: 'unlisted' }, 'Fresh eggs today\nmore'), {
+  assert.deepEqual(s.youtubeSettingsFromDraft({ title: '', privacy: 'unlisted', tags: 'eggs, Free range' }, 'Fresh eggs today\nmore'), {
     title: 'Fresh eggs today',
     privacy: 'unlisted',
+    tags: ['eggs', 'Free range'],
   })
-  assert.equal(s.youtubeSettingsFromDraft({ title: ' ', privacy: 'public' }, ''), null)
+  assert.equal(s.youtubeSettingsFromDraft({ title: ' ', privacy: 'public', tags: '' }, ''), null)
   assert.equal(s.sanitizeYouTubeSettings({ title: 'Ok', privacy: 'friends' }), null)
   assert.equal(s.sanitizeYouTubeSettings({ title: '<>', privacy: 'public' }), null)
-  assert.deepEqual(s.sanitizeYouTubeSettings({ title: 'Ok', privacy: 'private' }), { title: 'Ok', privacy: 'private' })
+  assert.deepEqual(s.sanitizeYouTubeSettings({ title: 'Ok', privacy: 'private' }), { title: 'Ok', privacy: 'private', tags: [] })
+  assert.deepEqual(s.sanitizeYouTubeSettings({ title: 'Ok', privacy: 'public', tags: ['a', 3, '<b>'] }), {
+    title: 'Ok', privacy: 'public', tags: ['a', 'b'],
+  })
+
+  // Tags: commas split, # and angle brackets stripped, case-insensitive dedupe, 500-char total cap.
+  assert.deepEqual(t.parseYouTubeTags(' #honey, raw  honey ,, Honey, <bees>'), ['honey', 'raw honey', 'bees'])
+  assert.equal(t.youtubeTagsLength(['honey', 'raw honey']), 5 + 11 + 1)
+  const capped = t.parseYouTubeTags(Array.from({ length: 60 }, (_, i) => `tag${String(i).padStart(6, '0')}`).join(','))
+  assert.ok(t.youtubeTagsLength(capped) <= t.YOUTUBE_TAGS_MAX_CHARS)
+  assert.equal(capped.length, 50)
 
   // videos.insert body.
-  const resource = youtubeVideoResource({ title: 'T', privacy: 'public' }, 'Desc <with> tags')
+  const resource = youtubeVideoResource({ title: 'T', privacy: 'public', tags: [] }, 'Desc <with> tags')
   assert.equal(resource.snippet.description, 'Desc with tags')
+  assert.equal('tags' in resource.snippet, false)
+  assert.deepEqual(youtubeVideoResource({ title: 'T', privacy: 'public', tags: ['eggs'] }, '').snippet.tags, ['eggs'])
   assert.equal(resource.status.privacyStatus, 'public')
   assert.equal(resource.status.selfDeclaredMadeForKids, false)
 
