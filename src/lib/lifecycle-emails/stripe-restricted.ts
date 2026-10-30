@@ -8,6 +8,7 @@ import {
   escapeHtml,
   greetName,
 } from "@/lib/lifecycle-emails/html";
+import { SKOOL_COMMUNITY_LINE } from "@/lib/lifecycle-emails/skool-community";
 import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 
 type Recipient = { to: string; name: string; missingItems?: string[] };
@@ -48,6 +49,7 @@ export function stripeRestrictedHtml(
       checkout, run pre-orders, and charge subscription boxes.</p>
       ${ctaButton(L.stripe, "Continue Stripe setup")}
       <p>Reply to this email if you get stuck. We'll sort it.</p>
+      ${SKOOL_COMMUNITY_LINE}
       ${TEAM_SIGNATURE}
     `,
     "Stripe needs one more thing from you.",

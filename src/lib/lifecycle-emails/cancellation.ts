@@ -6,6 +6,7 @@ import {
   emailShell,
   greetName,
 } from "@/lib/lifecycle-emails/html";
+import { SKOOL_COMMUNITY_LINE } from "@/lib/lifecycle-emails/skool-community";
 import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 import { sendOwnerEmail } from "@/lib/notify-email";
 
@@ -26,6 +27,7 @@ export function cancellationFeedbackHtml(name: string): string {
       ${ctaButton(L.feedback, "Send feedback")}
       ${ctaButton(L.billingPro, "Upgrade to Pro anytime")}
       <p>Upgrade anytime to waive the ${APP_NAME} card fee again.</p>
+      ${SKOOL_COMMUNITY_LINE}
       ${TEAM_SIGNATURE}
     `,
   );

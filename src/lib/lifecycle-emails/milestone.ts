@@ -8,6 +8,7 @@ import {
   greetName,
   jonoFrom,
 } from "@/lib/lifecycle-emails/html";
+import { SKOOL_COMMUNITY_LINE } from "@/lib/lifecycle-emails/skool-community";
 import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 
 export const TEN_ORDERS_SUBJECT = `Congrats on 10 orders with ${APP_NAME}`;
@@ -29,6 +30,7 @@ export function firstTenOrdersHtml(name: string): string {
       no street address required).</p>
       <p>Reply to this email if you want to tell me how it's going. I read
       everything.</p>
+      ${SKOOL_COMMUNITY_LINE}
       ${JONO_SIGNATURE}
     `,
     "Past testing. People are paying.",

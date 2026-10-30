@@ -13,6 +13,14 @@ function Metric({ value, of }: { value: number; of?: number }) {
   );
 }
 
+function NotTracked() {
+  return (
+    <td colSpan={5} className="px-3 py-3 text-center text-xs text-[var(--muted)]">
+      Not tracked (sent before tracking started)
+    </td>
+  );
+}
+
 const HEADINGS = ["Sent", "Delivered", "Opened", "Clicked", "Bounced", "Complaints", "Failed"];
 
 export default function EmailStatsTable({ rows }: { rows: EmailKindStats[] }) {
@@ -43,11 +51,17 @@ export default function EmailStatsTable({ rows }: { rows: EmailKindStats[] }) {
                 </span>
               </td>
               <Metric value={row.sent} />
-              <Metric value={row.delivered} of={row.sent} />
-              <Metric value={row.opened} of={row.delivered} />
-              <Metric value={row.clicked} of={row.delivered} />
-              <Metric value={row.bounced} of={row.sent} />
-              <Metric value={row.complained} of={row.delivered} />
+              {row.tracked === 0 ? (
+                <NotTracked />
+              ) : (
+                <>
+                  <Metric value={row.delivered} of={row.tracked} />
+                  <Metric value={row.opened} of={row.delivered} />
+                  <Metric value={row.clicked} of={row.delivered} />
+                  <Metric value={row.bounced} of={row.tracked} />
+                  <Metric value={row.complained} of={row.delivered} />
+                </>
+              )}
               <Metric value={row.failed} />
             </tr>
           ))}
