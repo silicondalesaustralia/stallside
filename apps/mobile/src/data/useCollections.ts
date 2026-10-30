@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { advanceCollectionResponse, collectionsResponse } from "@contracts/mobile/collections";
+import {
+  advanceCollectionResponse,
+  collectionEmailResponse,
+  collectionsResponse,
+  type CollectionEmailBody,
+} from "@contracts/mobile/collections";
 import { apiFetch } from "@/lib/api";
 import { useToken } from "@/auth/useAuth";
 
@@ -11,11 +16,27 @@ export function useCollections(standId: string | null) {
     queryKey: ["collections", standId],
     enabled: Boolean(token && standId),
     queryFn: () =>
-      apiFetch(`/collections?${new URLSearchParams({ standId: standId ?? "" }).toString()}`, {
-        token,
-        schema: collectionsResponse,
-      }),
+      apiFetch(
+        `/collections?${new URLSearchParams({ standId: standId ?? "" }).toString()}`,
+        {
+          token,
+          schema: collectionsResponse,
+        },
+      ),
     refetchInterval: POLL_MS,
+  });
+}
+
+export function useEmailPickupGroup() {
+  const token = useToken();
+  return useMutation({
+    mutationFn: (body: CollectionEmailBody) =>
+      apiFetch("/collections/email", {
+        method: "POST",
+        token,
+        body,
+        schema: collectionEmailResponse,
+      }),
   });
 }
 
@@ -29,6 +50,7 @@ export function useAdvanceCollection() {
         token,
         schema: advanceCollectionResponse,
       }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["collections"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["collections"] }),
   });
 }

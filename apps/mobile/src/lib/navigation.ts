@@ -25,6 +25,11 @@ export function openCategory(categoryId: string) {
   router.push({ pathname: "/categories/[categoryId]", params: { categoryId } });
 }
 
+/** Email everyone on one pick-up group (pre-order page or subscription cycle). */
+export function emailPickupGroup(groupKey: string, title: string) {
+  router.push({ pathname: "/collections/email", params: { groupKey, title } });
+}
+
 export function openPreOrderPage(pageId: string) {
   router.push({ pathname: "/pre-orders/[pageId]", params: { pageId } });
 }

@@ -3,7 +3,7 @@ import DataTable, { cellClass, type DataColumn } from "@/components/dashboard/ui
 import DataTableRow from "@/components/dashboard/ui/DataTableRow";
 import StatusPill, { type PillSpec } from "@/components/dashboard/ui/StatusPill";
 import { formatMoney } from "@/lib/money";
-import type { CollectionPageGroup } from "./group-collection-pages";
+import type { CollectionPageGroup } from "@/lib/collections/group-collection-pages";
 import { collectedCount } from "./load-collection-groups";
 
 const COLUMNS: DataColumn[] = [

@@ -99,8 +99,12 @@ export default function SignedInLayout() {
         <Stack.Screen name="qr/index" options={{ title: "QR codes" }} />
         <Stack.Screen name="qr/[kind]/[id]" options={{ title: "QR code" }} />
         <Stack.Screen
-          name="collections"
+          name="collections/index"
           options={{ title: "Pick ups & delivery" }}
+        />
+        <Stack.Screen
+          name="collections/email"
+          options={{ title: "Email customers" }}
         />
         <Stack.Screen name="customers/index" options={{ title: "Customers" }} />
         <Stack.Screen

@@ -1,4 +1,12 @@
-import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useBusiness } from "@/business/useBusiness";
 import { useAdvanceCollection, useCollections } from "@/data/useCollections";
 import { colors, spacing } from "@/lib/theme";
@@ -24,11 +32,17 @@ export default function CollectionsScreen() {
       data={collections.data?.days ?? []}
       keyExtractor={(day) => day.key}
       renderItem={({ item }) => (
-        <CollectionDayCard day={item} pendingId={pendingId} onAdvance={onAdvance} />
+        <CollectionDayCard
+          day={item}
+          pendingId={pendingId}
+          onAdvance={onAdvance}
+        />
       )}
       ListHeaderComponent={
         <View style={styles.header}>
-          {selected ? <Text style={styles.subtitle}>{selected.name}</Text> : null}
+          {selected ? (
+            <Text style={styles.subtitle}>{selected.name}</Text>
+          ) : null}
           <ErrorMessage error={collections.error} />
         </View>
       }
@@ -37,7 +51,8 @@ export default function CollectionsScreen() {
           <ActivityIndicator color={colors.brand} style={styles.loading} />
         ) : (
           <Text style={styles.empty}>
-            No paid pre-orders or subscription cycles upcoming or in the last 14 days.
+            No paid pre-orders or subscription cycles upcoming or in the last 14
+            days.
           </Text>
         )
       }

@@ -1,9 +1,6 @@
 import type { CollectionDay, CollectionOrder } from "@/contracts/mobile/collections";
-import {
-  dayMakeListMeta,
-  groupCollectionDays,
-  type CollectionOrderView,
-} from "@/lib/collections/group-collections";
+import { dayMakeListMeta, type CollectionOrderView } from "@/lib/collections/group-collections";
+import type { CollectionPageGroup } from "@/lib/collections/group-collection-pages";
 import { orderFullyPaidForCollection } from "@/lib/deposit-order";
 
 function toOrder(order: CollectionOrderView): CollectionOrder {
@@ -36,16 +33,22 @@ function toOrder(order: CollectionOrderView): CollectionOrder {
   };
 }
 
-/** Same day grouping and make-list as the web Pick Ups & Delivery page. */
-export function toCollectionDays(orders: CollectionOrderView[]): CollectionDay[] {
-  return groupCollectionDays(orders).map((day) => ({
-    key: day.key,
-    label: day.label,
-    windowClosed: day.windowClosed,
-    itemCount: day.itemCount,
-    takenCents: day.takenCents,
-    currency: day.currency,
-    makeList: dayMakeListMeta(day.orders).skus,
-    orders: day.orders.map(toOrder),
-  }));
+/** Same page grouping, make list and deliveries as the web Pick Ups & Delivery page. */
+export function toCollectionDays(groups: CollectionPageGroup[]): CollectionDay[] {
+  return groups.map((group) => {
+    const { skus, suburbs } = dayMakeListMeta(group.orders);
+    return {
+      key: group.key,
+      title: group.title,
+      label: group.collectionLabel,
+      deliveries: suburbs,
+      emailableCount: group.orders.filter((order) => order.receiptEmail).length,
+      windowClosed: group.windowClosed,
+      itemCount: group.itemCount,
+      takenCents: group.takenCents,
+      currency: group.currency,
+      makeList: skus,
+      orders: group.orders.map(toOrder),
+    };
+  });
 }
