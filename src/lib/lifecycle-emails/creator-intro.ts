@@ -6,6 +6,7 @@ import {
   greetName,
   jonoFrom,
 } from "@/lib/lifecycle-emails/html";
+import { SKOOL_COMMUNITY_LINE } from "@/lib/lifecycle-emails/skool-community";
 
 type Recipient = { to: string; name: string; showPaymentNudge?: boolean };
 
@@ -34,6 +35,7 @@ export function creatorDay3Html(name: string, showPaymentNudge = false): string 
       improving for how you work, reply to this email and tell me. I read every
       reply personally, and we ship updates every week, so if it's a real need,
       it usually gets built.</p>
+      ${SKOOL_COMMUNITY_LINE}
       <p>Regards,</p>
       <p>Jono @ ${APP_NAME}</p>
     `,

@@ -8,6 +8,7 @@ import {
   greetName,
   textLink,
 } from "@/lib/lifecycle-emails/html";
+import { SKOOL_COMMUNITY_LINE } from "@/lib/lifecycle-emails/skool-community";
 import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 
 type Recipient = { to: string; name: string };
@@ -35,6 +36,7 @@ export function proWelcomeHtml(name: string): string {
       <p>Guides: ${textLink(L.customerPayments, "Customer payments")} ·
       ${textLink(L.billingGuide, "Billing")}</p>
       <p>Anything odd during setup? Reply to this email.</p>
+      ${SKOOL_COMMUNITY_LINE}
       ${TEAM_SIGNATURE}
     `,
     `No ${APP_NAME} transaction fees. Let's set up payments.`,

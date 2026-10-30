@@ -7,6 +7,7 @@ import {
   emailShell,
   greetName,
 } from "@/lib/lifecycle-emails/html";
+import { SKOOL_COMMUNITY_LINE } from "@/lib/lifecycle-emails/skool-community";
 import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 
 type Recipient = { to: string; name: string };
@@ -36,6 +37,7 @@ export function stripeNeverStartedHtml(name: string): string {
       <p>One thing worth flagging: card payments via Square or Stripe are
       required for <strong>pre-orders and subscription boxes</strong>. Connect
       first if you plan to use those.</p>
+      ${SKOOL_COMMUNITY_LINE}
       ${TEAM_SIGNATURE}
     `,
     "Square, Stripe, or just cash. Your call.",

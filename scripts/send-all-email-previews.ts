@@ -1,6 +1,6 @@
 /**
  * Audit + send every outbound email template for brand review.
- * Usage: npx tsx scripts/send-all-email-previews.ts [email]
+ * Usage: npx tsx scripts/send-all-email-previews.ts [email] [--only=kind1,kind2]
  *
  * Sends via Resend directly (skips owner-active filter) with [PREVIEW] subject prefix.
  */
@@ -342,7 +342,11 @@ async function main() {
   if (!process.env.NEXT_PUBLIC_APP_URL) {
     process.env.NEXT_PUBLIC_APP_URL = `https://${APP_DOMAIN}`;
   }
-  const jobs = buildJobs();
+  const only = process.argv
+    .find((arg) => arg.startsWith("--only="))
+    ?.slice("--only=".length)
+    .split(",");
+  const jobs = buildJobs().filter((job) => !only || only.includes(job.kind));
   console.log(`Email audit: ${jobs.length} templates → ${to}`);
   console.log(`From fallback domain: ${APP_DOMAIN}`);
   console.log(`App base URL: ${appBaseUrl()}`);
