@@ -73,6 +73,12 @@ export default function ProductionScreen() {
       </Text>
       <Text
         style={styles.link}
+        onPress={() => router.push("/production/profit")}
+      >
+        Profit & loss
+      </Text>
+      <Text
+        style={styles.link}
         onPress={() => void openOnWeb("/dashboard/production/recipes", token)}
       >
         Recipes on the web

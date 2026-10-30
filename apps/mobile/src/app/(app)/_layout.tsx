@@ -112,6 +112,10 @@ export default function SignedInLayout() {
           options={{ title: "Record a batch" }}
         />
         <Stack.Screen
+          name="production/profit"
+          options={{ title: "Profit & loss" }}
+        />
+        <Stack.Screen
           name="production/materials/index"
           options={{ title: "Materials" }}
         />
