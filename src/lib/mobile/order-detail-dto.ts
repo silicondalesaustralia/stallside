@@ -3,6 +3,7 @@ import type { OwnerOrderDetail } from "@/lib/orders/detail";
 import { isCountedPaymentStatus } from "@/lib/order-metrics";
 import { orderPaymentLabel, paymentStatusNote } from "@/lib/order-payment-label";
 import { SHIPPING_CARRIERS } from "@/lib/shipping/carriers";
+import { orderPaymentAction } from "@/lib/orders/payment-action";
 
 function channelLabel(order: OwnerOrderDetail): string {
   if (order.shopperSubscriptionId) return "Subscription";
@@ -37,6 +38,7 @@ export function toMobileOrderDetail(order: OwnerOrderDetail): MobileOrderDetail 
     paymentLabel: orderPaymentLabel(order.paymentMethod, order.localTransferMethodId),
     paymentStatusLabel: paymentStatusNote(order.paymentStatus),
     restoresStockOnDelete: isCountedPaymentStatus(order.paymentStatus),
+    paymentAction: orderPaymentAction(order),
     customer: {
       name: order.customerName,
       phone: order.customerPhone,

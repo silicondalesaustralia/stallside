@@ -1,5 +1,28 @@
 import { z } from "zod";
 
+/** What the owner can do about the order's money; null when nothing applies. */
+export const orderPaymentAction = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("mark_paid"), payAtPickup: z.boolean() }),
+  z.object({ kind: z.literal("paypal"), refundUrl: z.string(), refundedCents: z.number().int() }),
+  z.object({
+    kind: z.literal("card"),
+    provider: z.enum(["Stripe", "Square"]),
+    remainingCents: z.number().int(),
+    refundedCents: z.number().int(),
+  }),
+]);
+export type OrderPaymentAction = z.infer<typeof orderPaymentAction>;
+
+export const refundOrderBody = z.object({
+  amountCents: z.number().int().min(1).max(100_000_000),
+  /** Only applied when the refund leaves nothing on the order. */
+  restock: z.boolean(),
+});
+export type RefundOrderBody = z.infer<typeof refundOrderBody>;
+
+export const orderPaymentMessage = z.object({ message: z.string() });
+export type OrderPaymentMessage = z.infer<typeof orderPaymentMessage>;
+
 export const mobileOrderDetail = z.object({
   id: z.string(),
   orderNumber: z.string(),
@@ -11,6 +34,7 @@ export const mobileOrderDetail = z.object({
   paymentLabel: z.string(),
   paymentStatusLabel: z.string(),
   restoresStockOnDelete: z.boolean(),
+  paymentAction: orderPaymentAction.nullable(),
   customer: z.object({
     name: z.string().nullable(),
     phone: z.string().nullable(),
