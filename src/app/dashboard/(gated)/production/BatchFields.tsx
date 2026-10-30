@@ -1,17 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import type { BatchRecipeOption } from "@/lib/production/batch-form-data";
 import { hintClass, inputClass, labelClass } from "./form-styles";
-
-export type BatchRecipeOption = {
-  id: string;
-  name: string;
-  yieldQuantity: number;
-  yieldLabel: string;
-  batchCostCents: number;
-  productId: string | null;
-  yieldUnitsPerProduct: number | null;
-};
 
 function expectedUnits(recipe: BatchRecipeOption | undefined, count: number, productId: string): number {
   if (!recipe || !productId) return 0;

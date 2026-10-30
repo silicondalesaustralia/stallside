@@ -1,12 +1,9 @@
 import Link from "next/link";
 import NoBusinessYet from "@/components/NoBusinessYet";
-import { prisma } from "@/lib/prisma";
-import { costRecipe } from "@/lib/production/batch-costing";
-import { isLowMaterial, loadCostContext } from "@/lib/production/load-cost-context";
-import { loadProductLinks } from "@/lib/production/load-product-links";
+import { loadBatchFormData } from "@/lib/production/batch-form-data";
 import ProductionShell from "./ProductionShell";
 import ActionForm from "./ActionForm";
-import BatchFields, { type BatchRecipeOption } from "./BatchFields";
+import BatchFields from "./BatchFields";
 import BatchList, { BATCH_LIST_LIMIT } from "./BatchList";
 import { cardClass } from "./form-styles";
 import { loadProductionScope } from "./production-scope";
@@ -23,43 +20,17 @@ export default async function ProductionPage({ searchParams }: { searchParams: P
     );
   }
   const stand = scope.stand;
-  const [ctx, links, products, batches] = await Promise.all([
-    loadCostContext(scope.ownerId),
-    loadProductLinks(scope.ownerId),
-    prisma.product.findMany({
-      where: { ownerId: scope.ownerId, standId: stand.id, isArchived: false, memberId: null },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true },
-    }),
-    prisma.productionBatch.findMany({
-      where: { ownerId: scope.ownerId, standId: stand.id },
-      orderBy: [{ madeAt: "desc" }, { createdAt: "desc" }],
-      take: BATCH_LIST_LIMIT,
-      include: { product: { select: { name: true } }, lines: true },
-    }),
-  ]);
-
-  const recipes: BatchRecipeOption[] = ctx.recipeRows
-    .filter((r) => r.isActive)
-    .map((r) => {
-      const link = links.find((l) => l.recipeId === r.id && l.standId === stand.id);
-      return {
-        id: r.id,
-        name: r.name,
-        yieldQuantity: r.yieldQuantity,
-        yieldLabel: r.yieldLabel,
-        batchCostCents: costRecipe(r.id, ctx).totalCents,
-        productId: link?.productId ?? null,
-        yieldUnitsPerProduct: link?.yieldUnitsPerProduct ?? null,
-      };
-    });
-  const low = ctx.materials.filter((m) => m.isActive && isLowMaterial(m));
+  const { recipes, products, lowMaterials, batches } = await loadBatchFormData(
+    scope.ownerId,
+    stand.id,
+    BATCH_LIST_LIMIT,
+  );
 
   return (
     <ProductionShell active="batches" subtitle={`Production runs · ${stand.name}`}>
-      {low.length > 0 ? (
+      {lowMaterials.length > 0 ? (
         <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800">
-          <strong>Reorder soon:</strong> {low.map((m) => m.name).join(", ")}.{" "}
+          <strong>Reorder soon:</strong> {lowMaterials.join(", ")}.{" "}
           <Link href="/dashboard/production/materials" className="underline">Materials</Link>
         </p>
       ) : null}
@@ -94,12 +65,7 @@ export default async function ProductionPage({ searchParams }: { searchParams: P
         <BatchList
           currency={stand.currency}
           timeZone={stand.timezone}
-          rows={batches.map((b) => ({
-            ...b,
-            batchCount: Number(b.batchCount),
-            productName: b.product?.name ?? null,
-            lines: b.lines.map((l) => ({ ...l, quantity: Number(l.quantity) })),
-          }))}
+          rows={batches}
         />
       </section>
     </ProductionShell>

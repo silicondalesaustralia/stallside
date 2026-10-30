@@ -106,6 +106,11 @@ export default function SignedInLayout() {
           name="collections/email"
           options={{ title: "Email customers" }}
         />
+        <Stack.Screen name="production/index" options={{ title: "Batches" }} />
+        <Stack.Screen
+          name="production/new"
+          options={{ title: "Record a batch" }}
+        />
         <Stack.Screen name="customers/index" options={{ title: "Customers" }} />
         <Stack.Screen
           name="customers/[customerId]"
