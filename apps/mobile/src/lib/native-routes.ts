@@ -25,6 +25,7 @@ export const NATIVE_ROUTES: Record<string, Href> = {
   settings: "/account",
   knowledge: "/guides",
   production: "/production",
+  "production/materials": "/production/materials",
 };
 
 /** Opens a dashboard path in the app when there's a matching screen, otherwise on the web. */

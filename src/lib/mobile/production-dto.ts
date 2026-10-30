@@ -1,7 +1,6 @@
 import type { ProductionResponse } from "@/contracts/mobile/production";
-import { prisma } from "@/lib/prisma";
-import { toDateInputValue } from "@/lib/date-range";
 import { loadBatchFormData } from "@/lib/production/batch-form-data";
+import { loadStandLocale } from "./stand-locale";
 
 const BATCH_LIMIT = 30;
 
@@ -10,13 +9,12 @@ export async function loadProductionResponse(
   ownerId: string,
   stand: { id: string; timezone: string },
 ): Promise<ProductionResponse> {
-  const [data, row] = await Promise.all([
+  const [data, locale] = await Promise.all([
     loadBatchFormData(ownerId, stand.id, BATCH_LIMIT),
-    prisma.stand.findUnique({ where: { id: stand.id }, select: { currency: true } }),
+    loadStandLocale(stand),
   ]);
   return {
-    currency: row?.currency ?? "AUD",
-    today: toDateInputValue(new Date(), stand.timezone),
+    ...locale,
     recipes: data.recipes,
     products: data.products,
     lowMaterials: data.lowMaterials,

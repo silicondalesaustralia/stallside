@@ -111,6 +111,22 @@ export default function SignedInLayout() {
           name="production/new"
           options={{ title: "Record a batch" }}
         />
+        <Stack.Screen
+          name="production/materials/index"
+          options={{ title: "Materials" }}
+        />
+        <Stack.Screen
+          name="production/materials/[ingredientId]"
+          options={{ title: "Material" }}
+        />
+        <Stack.Screen
+          name="production/materials/purchase"
+          options={{ title: "Record a purchase" }}
+        />
+        <Stack.Screen
+          name="production/materials/scan"
+          options={{ title: "Check the invoice" }}
+        />
         <Stack.Screen name="customers/index" options={{ title: "Customers" }} />
         <Stack.Screen
           name="customers/[customerId]"

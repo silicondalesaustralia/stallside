@@ -67,9 +67,15 @@ export default function ProductionScreen() {
       ) : null}
       <Text
         style={styles.link}
+        onPress={() => router.push("/production/materials")}
+      >
+        Materials & invoice scanning
+      </Text>
+      <Text
+        style={styles.link}
         onPress={() => void openOnWeb("/dashboard/production/recipes", token)}
       >
-        Materials & recipes on the web
+        Recipes on the web
       </Text>
       {data && data.batches.length > 0 ? (
         <Text style={styles.section}>Recent batches</Text>

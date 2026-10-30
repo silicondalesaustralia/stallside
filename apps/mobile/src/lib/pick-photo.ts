@@ -13,6 +13,10 @@ const OPTIONS: ImagePicker.ImagePickerOptions = {
 /** Asks for camera or library access, then returns the chosen photo, or null if the user backed out. */
 export async function pickPhoto(
   source: "camera" | "library",
+  {
+    purpose = "add product photos",
+    maxBytes = PRODUCT_PHOTO_UPLOAD_MAX_BYTES,
+  }: { purpose?: string; maxBytes?: number } = {},
 ): Promise<PickedPhoto | null> {
   const permission =
     source === "camera"
@@ -21,7 +25,7 @@ export async function pickPhoto(
   if (!permission.granted) {
     Alert.alert(
       source === "camera" ? "Camera access is off" : "Photo access is off",
-      "Turn it on for Vendl in your phone's Settings to add product photos.",
+      `Turn it on for Vendl in your phone's Settings to ${purpose}.`,
     );
     return null;
   }
@@ -32,7 +36,7 @@ export async function pickPhoto(
       : await ImagePicker.launchImageLibraryAsync(OPTIONS);
   const asset = result.canceled ? null : result.assets[0];
   if (!asset) return null;
-  if (asset.fileSize && asset.fileSize > PRODUCT_PHOTO_UPLOAD_MAX_BYTES) {
+  if (asset.fileSize && asset.fileSize > maxBytes) {
     Alert.alert("Photo too large", "Try a different photo, or take a new one.");
     return null;
   }
