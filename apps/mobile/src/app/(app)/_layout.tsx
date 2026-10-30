@@ -131,6 +131,7 @@ export default function SignedInLayout() {
           name="production/materials/scan"
           options={{ title: "Check the invoice" }}
         />
+        <Stack.Screen name="referrals" options={{ title: "Referrals" }} />
         <Stack.Screen name="customers/index" options={{ title: "Customers" }} />
         <Stack.Screen
           name="customers/[customerId]"

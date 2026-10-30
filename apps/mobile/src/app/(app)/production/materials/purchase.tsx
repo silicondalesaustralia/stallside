@@ -1,62 +1,16 @@
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
 } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import type { MaterialsResponse } from "@contracts/mobile/materials";
+import { useLocalSearchParams } from "expo-router";
 import { useBusiness } from "@/business/useBusiness";
-import { useMaterials, useRecordPurchase } from "@/data/useMaterials";
-import { usePurchaseForm } from "@/lib/usePurchaseForm";
+import { useMaterials } from "@/data/useMaterials";
 import { colors, spacing } from "@/lib/theme";
 import ErrorMessage from "@/components/ErrorMessage";
-import PrimaryButton from "@/components/PrimaryButton";
-import PurchaseFormFields from "@/components/PurchaseFormFields";
-
-function PurchaseForm({
-  data,
-  ingredientId,
-}: {
-  data: MaterialsResponse;
-  ingredientId?: string;
-}) {
-  const active = data.materials.filter((m) => m.status !== "archived");
-  const form = usePurchaseForm(active, data.today, ingredientId);
-  const record = useRecordPurchase();
-
-  function submit() {
-    const problem = form.problem();
-    if (problem) {
-      Alert.alert("Check the purchase", problem);
-      return;
-    }
-    record.mutate(form.body(), {
-      onSuccess: (result) => {
-        Alert.alert("Recorded", result.message);
-        router.back();
-      },
-      onError: (error) => Alert.alert("Couldn't record", error.message),
-    });
-  }
-
-  return (
-    <>
-      <PurchaseFormFields
-        materials={active}
-        form={form}
-        fixedMaterial={Boolean(ingredientId)}
-      />
-      <PrimaryButton
-        label="Record purchase"
-        loading={record.isPending}
-        onPress={submit}
-      />
-    </>
-  );
-}
+import RecordPurchaseForm from "@/components/RecordPurchaseForm";
 
 /** Adds stock and makes this the material's current price for recipes. */
 export default function RecordPurchaseScreen() {
@@ -76,7 +30,10 @@ export default function RecordPurchaseScreen() {
       >
         <ErrorMessage error={materials.error} />
         {materials.data ? (
-          <PurchaseForm data={materials.data} ingredientId={ingredientId} />
+          <RecordPurchaseForm
+            data={materials.data}
+            ingredientId={ingredientId}
+          />
         ) : materials.isPending ? (
           <ActivityIndicator color={colors.brand} />
         ) : null}

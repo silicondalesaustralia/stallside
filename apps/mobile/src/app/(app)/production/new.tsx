@@ -1,59 +1,16 @@
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
 } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import type { ProductionResponse } from "@contracts/mobile/production";
+import { useLocalSearchParams } from "expo-router";
 import { useBusiness } from "@/business/useBusiness";
-import { useProduction, useRecordBatch } from "@/data/useProduction";
-import { useBatchForm } from "@/lib/useBatchForm";
+import { useProduction } from "@/data/useProduction";
 import { colors, spacing } from "@/lib/theme";
-import BatchFormFields from "@/components/BatchFormFields";
 import ErrorMessage from "@/components/ErrorMessage";
-import PrimaryButton from "@/components/PrimaryButton";
-
-function RecordBatchForm({
-  data,
-  standId,
-  recipeId,
-}: {
-  data: ProductionResponse;
-  standId: string;
-  recipeId?: string;
-}) {
-  const form = useBatchForm(data, recipeId);
-  const record = useRecordBatch();
-
-  function submit() {
-    const problem = form.problem();
-    if (problem) {
-      Alert.alert("Check the batch", problem);
-      return;
-    }
-    record.mutate(form.body(standId), {
-      onSuccess: (result) => {
-        Alert.alert("Recorded", result.message);
-        router.back();
-      },
-      onError: (error) => Alert.alert("Couldn't record", error.message),
-    });
-  }
-
-  return (
-    <>
-      <BatchFormFields data={data} form={form} />
-      <PrimaryButton
-        label="Record batch"
-        loading={record.isPending}
-        onPress={submit}
-      />
-    </>
-  );
-}
+import RecordBatchForm from "@/components/RecordBatchForm";
 
 /** Takes the recipe's materials out of stock and adds the finished units to the product. */
 export default function RecordBatchScreen() {
