@@ -9,6 +9,7 @@ import {
   textLink,
 } from "@/lib/lifecycle-emails/html";
 import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
+import { skoolWelcomeSection } from "@/lib/lifecycle-emails/skool-community";
 
 type Recipient = { to: string; name: string; businessName?: string };
 
@@ -57,6 +58,9 @@ export function trialWelcomeHtml(name: string): string {
       to this email and I'll tell you honestly whether it's on the roadmap, and
       how soon. No support tickets. No canned responses. Just me and the team.</p>
       <p>And if something breaks? Reply to this email. We fix it.</p>
+      ${DIVIDER}
+      ${skoolWelcomeSection()}
+      ${DIVIDER}
       <p><strong>Ready to go?</strong></p>
       <p>→ ${textLink(L.dashboard, "Open your dashboard")} |
       → ${textLink(L.gallerySubmit, "See other producers' shops")}</p>

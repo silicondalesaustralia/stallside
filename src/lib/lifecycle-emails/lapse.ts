@@ -7,6 +7,7 @@ import {
   emailShell,
   greetName,
 } from "@/lib/lifecycle-emails/html";
+import { SKOOL_COMMUNITY_LINE } from "@/lib/lifecycle-emails/skool-community";
 import { lifecycleLinks } from "@/lib/lifecycle-emails/links";
 
 type Recipient = { to: string; name: string; businessName?: string };
@@ -31,6 +32,7 @@ export async function sendProLapseDay23(r: Recipient) {
       still apply.</p>
       ${ctaButton(L.billingPro, `See ${APP_NAME} Pro`)}
       <p>Questions? <strong>hello@${APP_DOMAIN}</strong></p>
+      ${SKOOL_COMMUNITY_LINE}
       ${TEAM_SIGNATURE}
     `,
   );
@@ -65,6 +67,7 @@ export async function sendProLapseDay45(
       <p>A quick check-in from ${APP_NAME}.</p>
       ${statsLine}
       ${ctaButton(L.billingPro, `See ${APP_NAME} Pro`)}
+      ${SKOOL_COMMUNITY_LINE}
       ${TEAM_SIGNATURE}
     `,
   );
