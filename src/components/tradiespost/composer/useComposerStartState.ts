@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import type { ComposerMedia } from '@/components/tradiespost/composer/useComposerMedia'
+import { useVideoAssetFromQuery } from '@/components/tradiespost/composer/useVideoAssetFromQuery'
 import type { SocialWorkspaceBusiness, SocialWorkspacePost } from '@/lib/social/useSocialWorkspace'
 import {
   defaultLibrarySelectedPlatforms,
@@ -12,7 +13,7 @@ import {
 import { mediaFromSavedPost } from '@/lib/tradiespost/composer/composerSlides'
 import { postImageUrl } from '@/lib/tradiespost/posts/derivePostOutcome'
 
-/** One-time composer setup: default platforms once the business loads, and `?fromPost=` duplication. */
+/** One-time composer setup: default platforms, `?fromPost=` duplication and `?videoAssetId=` clips. */
 export function useComposerStartState(params: {
   business: SocialWorkspaceBusiness | null
   posts: SocialWorkspacePost[]
@@ -41,4 +42,6 @@ export function useComposerStartState(params: {
     setCaption(source.caption ?? '')
     setMedia(mediaFromSavedPost(postImageUrl(source), source.processed_photo_urls))
   }, [searchParams, posts, setCaption, setMedia])
+
+  useVideoAssetFromQuery(setMedia)
 }

@@ -25,7 +25,13 @@ Async FFmpeg worker for Social Video Phase 3 branding. **Do not run FFmpeg on Ve
 | `SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Service role key (**worker only — never expose to browser**) |
 | `VIDEO_PROCESSOR_POLL_MS` | No | Poll interval ms (default `3000`) |
-| `VIDEO_PROCESSOR_WORKER_ID` | No | Identifier logged on job claims |
+| `VIDEO_PROCESSOR_WORKER_ID` | No | Identifier logged on job claims (keep fixed - used for stale-job recovery) |
+| `OPENAI_API_KEY` | Yes (clips) | Whisper transcription + moment picking |
+| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_VIDEO_SOURCES_BUCKET` | Yes (clips) | R2 bucket holding raw source uploads |
+| `VIDEO_CLIP_TRANSCRIBE_MODEL`, `VIDEO_CLIP_LLM_MODEL` | No | Model overrides |
+| `VIDEO_CLIP_CONCURRENCY`, `VIDEO_FFMPEG_THREADS`, `VIDEO_SINGLE_PASS_CAPTIONS` | No | Render tuning |
+
+Clip jobs (`social_video_clip_jobs`) and caption re-renders (`social_video_caption_jobs`) need **2 GB RAM** and a single instance. Requires `supabase/social/011_video_clips.sql`.
 
 ## Requirements
 

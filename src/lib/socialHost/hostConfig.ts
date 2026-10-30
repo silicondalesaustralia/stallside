@@ -26,6 +26,7 @@ export const SOCIAL_BASE_PATH = '/dashboard/social'
 export const SOCIAL_PATHS = {
   create: `${SOCIAL_BASE_PATH}/create`,
   library: `${SOCIAL_BASE_PATH}/library`,
+  videos: `${SOCIAL_BASE_PATH}/videos`,
   planner: `${SOCIAL_BASE_PATH}/planner`,
   posts: `${SOCIAL_BASE_PATH}/posts`,
   calendar: `${SOCIAL_BASE_PATH}/calendar`,

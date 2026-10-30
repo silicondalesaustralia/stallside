@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { purgeStaleMediaAssetUploads } from '@/lib/social/purgeStaleMediaAssetUploads'
+import { purgeStaleVideoSourceUploads } from '@/lib/social/videoClips/purgeStaleVideoSourceUploads'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -16,10 +17,12 @@ export async function GET(req: NextRequest) {
   const db = await createServiceClient()
   try {
     const result = await purgeStaleMediaAssetUploads(db)
-    console.log('[Cron media-asset-upload-cleanup]', result)
+    const sources = await purgeStaleVideoSourceUploads(db)
+    console.log('[Cron media-asset-upload-cleanup]', { result, sources })
     return NextResponse.json({
       ok: true,
       ...result,
+      staleVideoSources: sources,
       timestamp: new Date().toISOString(),
     })
   } catch (err) {

@@ -3,9 +3,12 @@ import type {
   DesignedCaptionJob,
 } from '@/lib/social/designedCaptionContext'
 import { VENDL_SOCIAL_AUDIENCE } from '@/lib/socialHost/socialAudience'
+import { SCRIPT_PROMPT_MAX_CHARS } from '@/lib/social/videoClips/clipScript'
 
 export type VideoCaptionContext = {
   aboutText: string | null
+  /** Auto-transcribed speech from the video (clips made in Videos). */
+  script?: string | null
   business: DesignedCaptionBusiness
   job: DesignedCaptionJob | null
   businessId?: string | null
@@ -24,6 +27,7 @@ export function buildVideoCaptionPrompt(params: VideoCaptionContext): {
   const jobSuburb = job?.suburb?.trim() || null
   const jobState = job?.state?.trim() || null
   const bizSuburb = business.suburb?.trim() || null
+  const script = params.script?.trim().slice(0, SCRIPT_PROMPT_MAX_CHARS) || null
 
   const system = [
     `You write ready-to-post social captions for ${VENDL_SOCIAL_AUDIENCE}`,
@@ -31,6 +35,7 @@ export function buildVideoCaptionPrompt(params: VideoCaptionContext): {
     'You have NOT watched or analysed the video. Write from the supplied text context only.',
     'Never claim to have seen the video or describe specific on-screen actions unless the user wrote them in their description.',
     'Do not use phrases like "as you can see in the video" or "watch as we".',
+    'When a video script (transcript of what is said) is supplied, base the caption on what is said in it: its main point, offer or tips. You may paraphrase or briefly quote it. It is auto-transcribed, so fix obvious mis-heard words and never copy it verbatim as the caption.',
     'Do not invent reviews, ratings, awards, years in business, certifications, discounts, prices, collection dates, ingredients, phone numbers, websites, or customer testimonials unless they appear in the trusted context below.',
     'Short natural paragraphs. Useful hook. Customer-focused. One clear CTA. 3 to 6 relevant hashtags. About 60-140 words.',
     'Avoid generic AI filler such as "top-notch", "another great job", or "we\'re thrilled" unless the context genuinely supports it.',
@@ -41,12 +46,16 @@ export function buildVideoCaptionPrompt(params: VideoCaptionContext): {
   lines.push('Write a social caption for an uploaded video library post.')
   lines.push('Use this priority order (highest first):')
   lines.push('1. User video description (about text)')
-  lines.push('2. Related product / offer context')
-  lines.push('3. Trusted business context')
-  lines.push('4. Generic fallback only if none of the above exist')
+  lines.push('2. Video script (what is said in the video)')
+  lines.push('3. Related product / offer context')
+  lines.push('4. Trusted business context')
+  lines.push('5. Generic fallback only if none of the above exist')
   lines.push('')
   lines.push('USER VIDEO DESCRIPTION:')
-  lines.push(aboutText?.trim() || '(none - infer carefully from product/business only)')
+  lines.push(aboutText?.trim() || '(none - infer carefully from the script/product/business only)')
+  lines.push('')
+  lines.push('VIDEO SCRIPT (auto-transcribed speech):')
+  lines.push(script || '(none)')
   lines.push('')
   lines.push('RELATED PRODUCT / OFFER CONTEXT:')
   if (job && (job.title?.trim() || job.description?.trim() || jobSuburb)) {
@@ -75,7 +84,7 @@ export function buildVideoCaptionPrompt(params: VideoCaptionContext): {
   }
   lines.push('')
   lines.push('IMPORTANT:')
-  lines.push('You have not seen the video. Do not describe visuals.')
+  lines.push('You have not seen the video. Do not describe visuals; you only know what is said in the script.')
   lines.push('If the user description conflicts with product context, follow the user description.')
 
   return { system, user: lines.join('\n') }

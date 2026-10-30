@@ -1,5 +1,4 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { createServiceClient } from '@/lib/supabase/server'
 import {
   normalizeAiUsageFeature,
   normalizeAiUsageStatus,
@@ -158,7 +157,8 @@ export async function recordAiUsageEvent(
       return { ok: true }
     }
 
-    const client = db ?? (await createServiceClient())
+    // Lazy so the video worker (always passes db) never loads the Next.js session stack.
+    const client = db ?? (await (await import('@/lib/supabase/server')).createServiceClient())
     const { error } = await client.from('ai_usage_events').insert(row)
     if (error) {
       if (error.code === '23505') {

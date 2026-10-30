@@ -9,26 +9,26 @@ import {
   computeLogoDimensions,
   FFMPEG_VIDEO_CRF,
   FFMPEG_VIDEO_PRESET,
-} from '../../../lib/social/videoBranding/ffmpegPlan'
-import type { VideoProcessingJobRow } from '../../../lib/social/videoBranding/types'
-import { resolveLogoChoiceForWorker, requireProcessedPublicUrl } from '../../../lib/social/videoBranding/createProcessingJob'
-import { markBrandingJobFailed } from '../../../lib/social/videoBranding/jobFailure'
+} from '../../../src/lib/social/videoBranding/ffmpegPlan'
+import type { VideoProcessingJobRow } from '../../../src/lib/social/videoBranding/types'
+import { resolveLogoChoiceForWorker, requireProcessedPublicUrl } from '../../../src/lib/social/videoBranding/createProcessingJob'
+import { markBrandingJobFailed } from '../../../src/lib/social/videoBranding/jobFailure'
 import {
   probeLogoDimensions,
   probeVideoDisplay,
-} from '../../../lib/social/videoBranding/processBrandingLocally'
-import { runFfmpeg, FfmpegTimeoutError } from '../../../lib/social/videoBranding/runFfmpeg'
-import { VideoBrandingJobTimer } from '../../../lib/social/videoBranding/processJobTiming'
-import { writeOverlayTextFiles } from '../../../lib/social/videoBranding/writeOverlayTextFiles'
-import { brandingConfigFromJson } from '../../../lib/social/videoBranding/validation'
+} from '../../../src/lib/social/videoBranding/processBrandingLocally'
+import { runFfmpeg, FfmpegTimeoutError } from '../../../src/lib/social/videoBranding/runFfmpeg'
+import { VideoBrandingJobTimer } from '../../../src/lib/social/videoBranding/processJobTiming'
+import { writeOverlayTextFiles } from '../../../src/lib/social/videoBranding/writeOverlayTextFiles'
+import { brandingConfigFromJson } from '../../../src/lib/social/videoBranding/validation'
 import {
   mergeBrandingConfigWithDefaults,
   resolveVideoHeadlineStyle,
   videoHeadlineFontSizePx,
-} from '../../../lib/social/videoBranding/headlineStyle'
-import type { VideoBrandingConfig } from '../../../lib/social/videoBranding/types'
+} from '../../../src/lib/social/videoBranding/headlineStyle'
+import type { VideoBrandingConfig } from '../../../src/lib/social/videoBranding/types'
 import { BUSINESS_ASSETS_BUCKET, SOCIAL_VIDEO_BUCKET } from './supabase'
-import { removeStoragePaths } from '../../../lib/social/mediaAssetStorage'
+import { removeStoragePaths } from '../../../src/lib/social/mediaAssetStorage'
 import { writeFile } from 'node:fs/promises'
 
 async function downloadStorageObject(

@@ -49,6 +49,10 @@ export async function GET(req: NextRequest) {
   if (status !== 'all') {
     query = query.eq('status', status)
   }
+  const idFilter = req.nextUrl.searchParams.get('id')?.trim()
+  if (idFilter) {
+    query = query.eq('id', idFilter)
+  }
 
   const { data: rows, error: listErr } = await query
 

@@ -15,6 +15,7 @@ import { generateDesignedCaption } from '@/lib/social/generateDesignedCaption'
 import { loadSafeCaptionJob } from '@/lib/social/mediaAssetJob'
 import { generateVideoCaption } from '@/lib/social/generateVideoCaption'
 import { VIDEO_CAPTION_USES_RENDER_CREDITS } from '@/lib/social/videoCaptionContext'
+import { clipScriptText } from '@/lib/social/videoClips/clipScript'
 import { consumeAiCredits, refundAiCredits } from '@/lib/billing/consumeAiCredits'
 import { createServiceClient } from '@/lib/supabase/server'
 
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
     if (typeof assetId === 'string' && UUID_RE.test(assetId.trim())) {
       const { data: assetRow, error: assetErr } = await db
         .from('social_media_assets')
-        .select('id, about_text, job_id, status, media_type')
+        .select('id, about_text, job_id, status, media_type, captions')
         .eq('id', assetId.trim())
         .eq('business_id', businessId)
         .maybeSingle()
@@ -86,10 +87,12 @@ export async function POST(req: NextRequest) {
       const job = await loadSafeCaptionJob(db, businessId, assetRow.job_id)
       const aboutText =
         typeof assetRow.about_text === 'string' ? assetRow.about_text.trim() || null : null
+      const script = assetRow.captions ? clipScriptText(assetRow.captions) || null : null
 
       const caption = await generateVideoCaption({
         businessId,
         aboutText,
+        script,
         business: {
           name: business.name || 'Our Business',
           services:
@@ -115,6 +118,7 @@ export async function POST(req: NextRequest) {
         assetId,
         usesRenderCredits: VIDEO_CAPTION_USES_RENDER_CREDITS,
         hasAboutText: Boolean(aboutText),
+        scriptChars: script?.length ?? 0,
         hasJob: Boolean(job),
       })
       return NextResponse.json({ captions: [caption], source: 'video_library' })

@@ -13,5 +13,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*", "../../src/lib/social/videoBranding/**/*"]
+  "include": ["src/**/*", "../../src/lib/social/videoBranding/**/*", "../../src/lib/social/videoClips/**/*", "../../src/types/next-auth.d.ts"]
 }

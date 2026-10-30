@@ -7,6 +7,7 @@ import { SOCIAL_PATHS } from '@/lib/socialHost/hostConfig'
 const TABS = [
   { href: SOCIAL_PATHS.create, label: 'Create' },
   { href: SOCIAL_PATHS.library, label: 'Library' },
+  { href: SOCIAL_PATHS.videos, label: 'Videos' },
   { href: SOCIAL_PATHS.planner, label: 'Planner' },
   { href: SOCIAL_PATHS.posts, label: 'Posts' },
   { href: SOCIAL_PATHS.calendar, label: 'Calendar' },

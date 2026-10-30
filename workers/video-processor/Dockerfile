@@ -30,6 +30,9 @@ COPY workers/video-processor/src workers/video-processor/src
 WORKDIR /app/workers/video-processor
 RUN npm install
 
+# Shared src/lib modules resolve packages from their own path (/app/src/lib/...), not from
+# this worker directory, so point NODE_PATH at the worker's install.
+ENV NODE_PATH=/app/workers/video-processor/node_modules
 ENV VIDEO_FONTS_ROOT=/app/src/lib/social/fonts
 
 CMD ["npm", "start"]
