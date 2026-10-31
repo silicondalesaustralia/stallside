@@ -30,13 +30,13 @@ export function standPreOrderPagePath(standSlug: string, pageSlug: string) {
   return `/s/${standSlug}/pre/${pageSlug}`;
 }
 
-/** Business share image wins; then page image; then logo. */
+/** Page image wins; then business share image; then logo. */
 export function resolveStandShareImage(input: {
   ogImageUrl?: string | null;
   logoUrl?: string | null;
   pageImageUrl?: string | null;
 }): string | null {
-  return input.ogImageUrl || input.pageImageUrl || input.logoUrl || null;
+  return input.pageImageUrl || input.ogImageUrl || input.logoUrl || null;
 }
 
 function pageMeta(input: {
