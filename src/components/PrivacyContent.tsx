@@ -4,10 +4,13 @@ import {
   LEGAL_EMAIL,
   LEGAL_ENTITY,
 } from "@/lib/legal";
+import PrivacyDataProtection from "@/components/PrivacyDataProtection";
+import PrivacyGoogleUserData from "@/components/PrivacyGoogleUserData";
 
 export default function PrivacyContent() {
   return (
     <article className="prose-marketing space-y-8 text-[var(--ink)]">
+      <p className="text-sm text-[var(--muted)]">Last updated: 1 November 2026</p>
       <section className="space-y-3">
         <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
           Who we are
@@ -31,6 +34,10 @@ export default function PrivacyContent() {
           <li>Payment-related identifiers when you connect Stripe or PayPal (handled by those providers).</li>
           <li>Device and usage data needed to run the service (e.g. push notification tokens on the owner app).</li>
           <li>Messages you send via our contact form (name, email, message).</li>
+          <li>
+            OAuth tokens and basic profile details for social accounts you choose to connect (for
+            example YouTube), used only to publish content you request.
+          </li>
         </ul>
       </section>
 
@@ -56,6 +63,10 @@ export default function PrivacyContent() {
           apply.
         </p>
       </section>
+
+      <PrivacyDataProtection />
+
+      <PrivacyGoogleUserData />
 
       <section className="space-y-3">
         <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--field)]">
