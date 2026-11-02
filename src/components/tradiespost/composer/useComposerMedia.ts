@@ -8,6 +8,8 @@ export type ComposerMedia = {
   renderId: string | null
   aiGenerated: boolean
   video?: { url: string; durationSeconds: number | null } | null
+  /** Library video asset id, so "Write with AI" can use the clip's script, on-screen text and name. */
+  assetId?: string | null
   /** Ordered TikTok photo slides (includes the first). Absent = TikTok gets `url` only. */
   slides?: string[] | null
   /** 'photos': `url` tracks the first slide. 'ai': `url` is a separate 4:5 feed cover. */

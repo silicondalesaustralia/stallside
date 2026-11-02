@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
+  cleanYouTubeTitle,
   EMPTY_YOUTUBE_DRAFT,
   youtubeSettingsFromDraft,
   type YouTubeSettingsDraft,
@@ -12,7 +13,12 @@ export function useComposerYouTubeGate(active: boolean, caption: string) {
   const [draft, setDraft] = useState<YouTubeSettingsDraft>(EMPTY_YOUTUBE_DRAFT)
   const settings = active ? youtubeSettingsFromDraft(draft, caption) : null
   const blockReason = active && !settings ? 'Add a YouTube title.' : null
-  return { draft, setDraft, active, settings, blockReason }
+  /** Fills the title from "Write with AI" without overwriting one the seller typed. */
+  const prefillTitle = useCallback((title: string) => {
+    const clean = cleanYouTubeTitle(title)
+    if (clean) setDraft((d) => (d.title.trim() ? d : { ...d, title: clean }))
+  }, [])
+  return { draft, setDraft, active, settings, blockReason, prefillTitle }
 }
 
 export type ComposerYouTubeState = ReturnType<typeof useComposerYouTubeGate>

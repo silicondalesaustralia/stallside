@@ -18,6 +18,7 @@ export function composerMediaFromAsset(asset: SocialMediaAssetListItem): Compose
     renderId: null,
     aiGenerated: false,
     video: { url: videoUrl, durationSeconds: asset.durationSeconds },
+    assetId: asset.id,
   }
 }
 

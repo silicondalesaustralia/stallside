@@ -4,6 +4,11 @@ import {
   type VideoCaptionContext,
 } from '@/lib/social/videoCaptionContext'
 import { recordOpenAiChatUsage } from '@/lib/aiUsage/recordOpenAiChat'
+import {
+  fallbackVideoPostTitle,
+  parseVideoCaptionResponse,
+  type VideoCaptionResult,
+} from '@/lib/social/videoCaptionTitle'
 
 export type VideoCaptionTextFn = (system: string, user: string) => Promise<string>
 
@@ -20,7 +25,8 @@ async function defaultVideoCaptionText(
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const response = await client.chat.completions.create({
     model: 'gpt-4o-mini',
-    max_tokens: 500,
+    max_tokens: 600,
+    response_format: { type: 'json_object' },
     messages: [
       { role: 'system', content: system },
       { role: 'user', content: user },
@@ -43,18 +49,23 @@ async function defaultVideoCaptionText(
   return text
 }
 
-/** Text-only. Never charged against render credits. */
+/** Caption plus a short post title from one model call. Text-only; never charged against render credits. */
 export async function generateVideoCaption(
   input: VideoCaptionContext,
   generateText: VideoCaptionTextFn = (system, user) =>
     defaultVideoCaptionText(system, user, input.businessId),
-): Promise<string> {
+): Promise<VideoCaptionResult> {
   const { system, user } = buildVideoCaptionPrompt(input)
+  let result: VideoCaptionResult | null = null
   try {
-    const text = (await generateText(system, user)).trim()
-    if (text) return text
-  } catch {
-    // Demo / missing key / empty model
+    result = parseVideoCaptionResponse(await generateText(system, user))
+  } catch (err) {
+    if (!(err instanceof Error && err.message === 'demo')) {
+      console.warn('[VideoCaption] Model call failed, using fallback', err instanceof Error ? err.message : err)
+    }
   }
-  return mockVideoCaption(input)
+  return {
+    caption: result?.caption || mockVideoCaption(input),
+    title: result?.title || fallbackVideoPostTitle(input),
+  }
 }

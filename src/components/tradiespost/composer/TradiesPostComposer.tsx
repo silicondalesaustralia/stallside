@@ -65,8 +65,9 @@ export function TradiesPostComposer() {
   if (ctx.loading && !ctx.business) return <SocialTabLoading variant="tradiespost" />
 
   const writeForMe = () =>
-    void captionState.generate({ jobId, renderId: media?.renderId ?? null, platform: platforms[0] }).then((written) => {
-      if (written && pinterest.active) void pinterest.writeTitle(written, jobId)
+    void captionState.generate({ jobId, renderId: media?.renderId ?? null, assetId: media?.assetId ?? null, platform: platforms[0] }).then((written) => {
+      if (written && pinterest.active) void pinterest.writeTitle(written.caption, jobId)
+      if (written?.title) youtube.prefillTitle(written.title)
     })
 
   return (
