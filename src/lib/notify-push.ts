@@ -3,6 +3,7 @@ import { sendApns } from "@/lib/notify-apns";
 import { sendFcm } from "@/lib/notify-fcm";
 import { sendWebPush } from "@/lib/notify-web-push";
 import { pushTargets } from "@/lib/push-devices";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 
 type PushPayload = {
   title: string;
@@ -11,9 +12,13 @@ type PushPayload = {
 };
 
 export async function sendOwnerPush(ownerId: string, payload: PushPayload) {
-  const devices = await prisma.pushDevice.findMany({ where: { ownerId } });
+  const [devices, pro] = await Promise.all([
+    prisma.pushDevice.findMany({ where: { ownerId } }),
+    ownerIdHasProAccess(ownerId),
+  ]);
+  const targets = pushTargets(devices.filter((device) => pro || device.platform === "web"));
   await Promise.all(
-    pushTargets(devices).map(async (device) => {
+    targets.map(async (device) => {
       try {
         if (device.platform === "web") {
           await sendWebPush(device.token, payload);

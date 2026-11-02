@@ -9,6 +9,7 @@ import {
   cashPlanExtraBlurb,
   starterPlanFeatures,
 } from "@/lib/plan-copy";
+import { PRO_PLAN_PERKS } from "@/lib/pro-plan-perks";
 
 export default function PlanFeatureBlock({
   plan,
@@ -26,7 +27,7 @@ export default function PlanFeatureBlock({
       <div className="space-y-2">
         <PaymentIconRow brands={cardPaymentBrands(currency)} />
         <p className="text-sm text-[var(--muted)]">
-          Every Vendl feature, with no monthly fee.
+          Everything you need to sell, with no monthly fee.
         </p>
         <p className="text-sm font-semibold text-[var(--marigold)]">
           {FREE_PLAN_FEE_BLURB}
@@ -55,6 +56,11 @@ export default function PlanFeatureBlock({
         {CARD_PLAN_HARDWARE_BLURB}
       </p>
       <p className="text-sm text-[var(--muted)]">{CARD_PLAN_BILLING_BLURB}</p>
+      <ul className="list-disc space-y-1.5 pl-4 text-sm text-[var(--muted)]">
+        {PRO_PLAN_PERKS.map((perk) => (
+          <li key={perk}>{perk}</li>
+        ))}
+      </ul>
     </div>
   );
 }

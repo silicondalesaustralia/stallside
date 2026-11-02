@@ -2,6 +2,8 @@ import { requireOwner } from "@/lib/session";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { getOwnerShippingSettings } from "@/lib/shipping/settings";
 import NoBusinessYet from "@/components/NoBusinessYet";
+import ProGateCard from "@/components/dashboard/ProGateCard";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import FulfilmentDefaultCard from "./FulfilmentDefaultCard";
 import ShippingRatesCard from "./ShippingRatesCard";
 
@@ -12,7 +14,10 @@ export default async function ShippingPage({
 }) {
   const { fulfilment, rates } = await searchParams;
   const { owner } = await requireOwner();
-  const { selected } = await resolveSelectedBusiness(owner.id);
+  const [{ selected }, isPro] = await Promise.all([
+    resolveSelectedBusiness(owner.id),
+    ownerIdHasProAccess(owner.id),
+  ]);
   const shipping = selected ? await getOwnerShippingSettings(owner.id, selected.id) : null;
   const stand = selected && shipping ? { id: selected.id, name: selected.name, ...shipping } : null;
 
@@ -29,14 +34,18 @@ export default async function ShippingPage({
       {stand ? (
         <>
           <FulfilmentDefaultCard standId={stand.id} value={stand.settings.fulfilmentDefault} status={fulfilment} />
-          <ShippingRatesCard
-            standId={stand.id}
-            mode={stand.settings.shippingMode}
-            flat={stand.settings.flat}
-            freeOver={stand.settings.freeOver}
-            currency={stand.currency}
-            status={rates}
-          />
+          {isPro ? (
+            <ShippingRatesCard
+              standId={stand.id}
+              mode={stand.settings.shippingMode}
+              flat={stand.settings.flat}
+              freeOver={stand.settings.freeOver}
+              currency={stand.currency}
+              status={rates}
+            />
+          ) : (
+            <ProGateCard feature="shipping" />
+          )}
         </>
       ) : (
         <NoBusinessYet />

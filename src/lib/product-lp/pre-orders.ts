@@ -98,7 +98,7 @@ export const PRE_ORDERS_HUB: ProductLpContent = {
     "Unique QR per pre-order page",
     "Cart add-ons on the same collection day",
   ],
-  proofNote: "Every feature is included on Free. Pro only changes the Vendl card fee.",
+  proofNote: "Pre-orders are included on Free. Pro removes the Vendl card fee.",
   proofPanelTitle: "Example make list",
   proofPanelSubtitle: "Friday bake",
   proofStats: [

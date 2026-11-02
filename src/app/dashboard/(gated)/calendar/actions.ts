@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { syncCalendarExports } from "@/lib/calendar-sync/export";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import {
   rescheduleCalendarEvent,
   type RescheduleResult,
@@ -18,7 +18,7 @@ export async function rescheduleCalendarEventAction(input: {
   allDay: boolean;
   metadata?: Record<string, string | number | boolean | null>;
 }): Promise<RescheduleResult> {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
 
   const startsAt = new Date(input.startsAt);
   if (Number.isNaN(startsAt.getTime())) {

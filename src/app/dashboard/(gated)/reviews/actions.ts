@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import {
   REVIEW_STATUSES,
   deleteOwnerReview,
@@ -20,26 +20,26 @@ function back(tab: string, done: string): never {
 
 export async function setReviewStatus(reviewId: string, status: Status, tab: string) {
   if (!REVIEW_STATUSES.includes(status)) back(tab, "missing");
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   if (!(await setOwnerReviewStatus(owner.id, reviewId, status))) back(tab, "missing");
   back(tab, status === "APPROVED" ? "approved" : status === "REJECTED" ? "hidden" : "pending");
 }
 
 export async function deleteReview(reviewId: string, tab: string) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   if (!(await deleteOwnerReview(owner.id, reviewId))) back(tab, "missing");
   back(tab, "deleted");
 }
 
 export async function saveReviewReply(reviewId: string, tab: string, formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   const reply = String(formData.get("reply") ?? "");
   if (!(await saveOwnerReviewReply(owner.id, reviewId, reply))) back(tab, "missing");
   back(tab, reply.trim() ? "replied" : "reply-removed");
 }
 
 export async function emailReviewer(reviewId: string, tab: string, formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   const result = await emailOwnerReviewer(owner, reviewId, {
     subject: String(formData.get("subject") ?? ""),
     message: String(formData.get("message") ?? ""),

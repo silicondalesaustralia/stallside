@@ -10,7 +10,8 @@ import { demoProductForStandSlug, isDemoStandSlug } from "@/lib/demo";
 import { isRestockAlertsEnabled } from "@/lib/restock-alerts";
 import { mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
-import { standShippingSettings } from "@/lib/shipping/shipping-cost";
+import { FREE_SHIPPING, standShippingSettings } from "@/lib/shipping/shipping-cost";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import {
   ownerPassesFeeToCustomer,
   shouldChargeVendlFee,
@@ -76,6 +77,7 @@ export async function loadStandCartData(
   );
   const branded = publicStandBranding(stand, stand.owner);
   const squareConn = isSquarePaymentsEnabled() ? await getSquareConnection(stand.ownerId) : null;
+  const ownerIsPro = await ownerIdHasProAccess(stand.ownerId);
   const ownerForPay = {
     ...stand.owner,
     user: stand.owner.user,
@@ -113,12 +115,12 @@ export async function loadStandCartData(
       restockStandId: !demoProduct && isRestockAlertsEnabled() ? stand.id : null,
       passFeeToCustomer: ownerPassesFeeToCustomer(stand.owner, stand.currency),
       stallsideFeeApplies: shouldChargeVendlFee(stand.owner),
-      shipping: standShippingSettings(stand),
+      shipping: ownerIsPro ? standShippingSettings(stand) : FREE_SHIPPING,
       addedTax: cartAddedTax(stand),
       upsell: standCartUpsell(stand),
       preOrderUpsell: standPreOrderUpsell(stand),
       pagePreOrderUpsells: await standPagePreOrderUpsells(stand),
-      upsellRules: await loadUpsellRules(stand.id, channel),
+      upsellRules: ownerIsPro ? await loadUpsellRules(stand.id, channel) : [],
       discountChannel: (await hasLiveDiscountCodes(stand.ownerId, stand.id, channel))
         ? channel
         : null,

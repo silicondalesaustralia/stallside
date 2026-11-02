@@ -1,6 +1,6 @@
 "use server";
 
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import {
   cents,
   decimal,
@@ -14,7 +14,7 @@ import { createOwnerRecipe, saveOwnerRecipe, setOwnerRecipeActive } from "@/lib/
 
 export async function createRecipe(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     const result = await createOwnerRecipe(owner.id, {
       name: text(formData, "name"),
       yieldQuantity: decimal(formData, "yieldQuantity", true),
@@ -29,7 +29,7 @@ export async function createRecipe(formData: FormData): Promise<ActionResult> {
 
 export async function saveRecipe(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     return await saveOwnerRecipe(owner.id, text(formData, "id"), {
       name: text(formData, "name"),
       yieldQuantity: decimal(formData, "yieldQuantity", true),
@@ -47,7 +47,7 @@ export async function saveRecipe(formData: FormData): Promise<ActionResult> {
 
 export async function setRecipeActive(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     return await setOwnerRecipeActive(owner.id, text(formData, "id"), text(formData, "isActive") === "true");
   } catch (error) {
     return failure("setRecipeActive failed", error);

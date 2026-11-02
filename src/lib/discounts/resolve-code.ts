@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { PaymentStatus } from "@/generated/prisma/client";
 import { formatMoney } from "@/lib/money";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import {
   computeCodeDiscount,
   normalizeDiscountCode,
@@ -38,6 +39,7 @@ export async function resolveDiscountCode(
 ): Promise<ResolvedCode | { error: string }> {
   const code = normalizeDiscountCode(input.rawCode);
   if (!code) return { error: INVALID };
+  if (!(await ownerIdHasProAccess(input.ownerId))) return { error: INVALID };
   const promo = await prisma.promotion.findUnique({
     where: { ownerId_code: { ownerId: input.ownerId, code } },
   });

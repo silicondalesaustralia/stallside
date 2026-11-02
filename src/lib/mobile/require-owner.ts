@@ -5,6 +5,7 @@ import type { MobileApiError } from "@/contracts/mobile/common";
 import type { BusinessOption } from "@/lib/selected-business";
 import { bearerToken, findActiveMobileSession } from "@/lib/mobile/session-token";
 import { mobileError } from "@/lib/mobile/http";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 
 export type MobileOwnerContext = {
   sessionId: string;
@@ -14,8 +15,14 @@ export type MobileOwnerContext = {
 
 type Guard<T> = { ok: true; value: T } | { ok: false; response: NextResponse<MobileApiError> };
 
-/** Bearer-token equivalent of requireOwner(): same soft-delete and owner checks as the web session. */
-export async function requireMobileOwner(request: Request): Promise<Guard<MobileOwnerContext>> {
+export const MOBILE_PRO_REQUIRED =
+  "The Vendl app is included with Vendl Pro. Upgrade in your dashboard on the web, or keep using Vendl in your browser.";
+
+/** Bearer-token equivalent of requireOwner(), plus Pro: the app is a Pro feature (logout passes `allowFree`). */
+export async function requireMobileOwner(
+  request: Request,
+  opts?: { allowFree?: boolean },
+): Promise<Guard<MobileOwnerContext>> {
   const token = bearerToken(request);
   if (!token) return { ok: false, response: mobileError(401, "Please sign in.") };
 
@@ -31,6 +38,9 @@ export async function requireMobileOwner(request: Request): Promise<Guard<Mobile
   }
 
   const { owner, ...rest } = user;
+  if (!opts?.allowFree && !(await ownerIdHasProAccess(owner.id))) {
+    return { ok: false, response: mobileError(403, MOBILE_PRO_REQUIRED) };
+  }
   return { ok: true, value: { sessionId: session.id, user: rest, owner } };
 }
 

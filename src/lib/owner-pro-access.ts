@@ -15,3 +15,9 @@ export const ownerIdHasProAccess = cache(async (ownerId: string): Promise<boolea
     lifetimeAccess: owner.lifetimeAccess,
   });
 });
+
+/** Pro access for a signed-in user; false when they have no business yet. */
+export async function userIdHasProAccess(userId: string): Promise<boolean> {
+  const owner = await prisma.owner.findUnique({ where: { userId }, select: { id: true } });
+  return owner ? ownerIdHasProAccess(owner.id) : false;
+}

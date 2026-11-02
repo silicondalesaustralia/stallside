@@ -7,7 +7,7 @@ import { mobileJson, mobileServerError, readMobileBody } from "@/lib/mobile/http
 
 /** Revokes this device's token and, if given, stops pushes to it. */
 export async function POST(request: Request) {
-  const guard = await requireMobileOwner(request);
+  const guard = await requireMobileOwner(request, { allowFree: true });
   if (!guard.ok) return guard.response;
 
   const body = await readMobileBody(request, logoutBody);

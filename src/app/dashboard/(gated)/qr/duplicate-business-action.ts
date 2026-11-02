@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { prisma } from "@/lib/prisma";
 import { posterFromStand } from "@/lib/qr/poster";
 import { legacyLinkFields, validateQrTarget } from "@/lib/qr/validate-target";
@@ -17,7 +17,7 @@ const schema = z.object({
 
 /** New QR code for another page, starting from the business's main poster design. */
 export async function duplicateBusinessQr(standId: string, input: z.infer<typeof schema>): Promise<QrActionResult> {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   const parsed = schema.safeParse(input);
   if (!parsed.success) return { error: "Give the copy a name and pick a page." };
   const stand = await prisma.stand.findFirst({ where: { id: standId, ownerId: owner.id } });

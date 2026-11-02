@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import { assertRateLimit, clientIpFromHeaders, RateLimitError } from "@/lib/rate-limit";
 import { reviewSubmissionError, reviewSubmissionSchema, type ReviewSubmitResult } from "./review-fields";
 import { notifyOwnerOfReview } from "./notify-owner-review";
@@ -22,6 +23,7 @@ export async function submitReview(input: unknown): Promise<ReviewSubmitResult> 
     });
     if (!storefront) return { ok: false, error: "This shop couldn't be found." };
     const ownerId = storefront.ownerId;
+    if (!(await ownerIdHasProAccess(ownerId))) return { ok: false, error: "This shop isn't taking reviews right now." };
 
     let productId: string | null = null;
     if (data.productId) {

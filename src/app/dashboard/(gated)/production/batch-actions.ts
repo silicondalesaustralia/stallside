@@ -1,6 +1,6 @@
 "use server";
 
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { recordOwnerBatch } from "@/lib/production/record-batch";
 import {
@@ -15,7 +15,7 @@ import {
 
 export async function createBatch(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     const { selected } = await resolveSelectedBusiness(owner.id);
     if (!selected) return { error: "Create a business first." };
     const batchCount = decimal(formData, "batchCount", true);

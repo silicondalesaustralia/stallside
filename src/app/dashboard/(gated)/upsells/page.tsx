@@ -3,6 +3,8 @@ import { resolveSelectedBusiness } from "@/lib/selected-business";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import PageHeader from "@/components/dashboard/ui/PageHeader";
+import ProGateCard from "@/components/dashboard/ProGateCard";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import StandUpsellsForm from "@/app/dashboard/(gated)/businesses/[standId]/StandUpsellsForm";
 import { listOwnerUpsellRows } from "@/lib/upsells/load";
 import { loadUpsellOverview } from "@/lib/upsells/overview";
@@ -24,14 +26,15 @@ export default async function UpsellsPage() {
   }
 
   const { stand, products } = overview;
-  const upsellRows = await listOwnerUpsellRows(owner.id, stand.id);
+  const isPro = await ownerIdHasProAccess(owner.id);
+  const upsellRows = isPro ? await listOwnerUpsellRows(owner.id, stand.id) : [];
 
   return (
     <main className="flex flex-col gap-5">
       <PageHeader
         title="Upsells & offers"
         subtitle={`Extra sales at checkout for ${stand.name}, on your online store cart and your stall checkout.`}
-        actions={<DashPrimaryCta href="/dashboard/upsells/new">+ New upsell</DashPrimaryCta>}
+        actions={isPro ? <DashPrimaryCta href="/dashboard/upsells/new">+ New upsell</DashPrimaryCta> : null}
       />
 
       <section className="flex flex-col gap-2">
@@ -39,7 +42,9 @@ export default async function UpsellsPage() {
         <p className="text-sm text-[var(--muted)]">
           Offer an extra item in the cart: everywhere, for certain categories, or for certain products.
         </p>
-        {upsellRows.length === 0 ? (
+        {!isPro ? (
+          <ProGateCard feature="upsells" />
+        ) : upsellRows.length === 0 ? (
           <div className="dash-card px-4 py-10 text-center text-sm text-[var(--muted)]">No upsells yet.</div>
         ) : (
           <UpsellsTable upsells={upsellRows} />

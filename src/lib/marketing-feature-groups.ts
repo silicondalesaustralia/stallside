@@ -72,7 +72,7 @@ export const MARKETING_FEATURE_GROUPS: readonly MarketingFeatureGroup[] = [
       "Notifications inbox for orders, low stock and failed payments",
       "Sale alerts by email and push to your phone",
       "Sales by channel - stall, pre-orders, subscriptions - vs last period",
-      "Multiple businesses under one login",
+      "Add Vendl to your Home Screen for push alerts - no App Store install",
       "QR poster editor with live preview, printed at A4, half or quarter A4",
       "Step-by-step guides for every feature",
     ],

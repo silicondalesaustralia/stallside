@@ -33,7 +33,7 @@ export default function DashboardSidebar({
   navAccess: NavAccess;
 }) {
   const pathname = usePathname();
-  const groups = visibleNavGroups(navAccess.website, navAccess.social);
+  const groups = visibleNavGroups(navAccess.website, navAccess.social, navAccess.pro);
   const activeHref = activeNavHref(pathname, groups.flatMap((g) => g.links));
   return (
     <aside
@@ -91,6 +91,7 @@ export default function DashboardSidebar({
                   collapsed={collapsed}
                   active={link.href === activeHref}
                   badge={setupNavBadge(link.href, setupAlerts, unreadNotifications)}
+                  proLocked={link.proLocked}
                 />
               )
             }

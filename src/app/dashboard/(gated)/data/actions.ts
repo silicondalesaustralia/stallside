@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { loadSelectedDataContext } from "@/lib/data-transfer/selected-context";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { readUpload } from "@/lib/data-transfer/read-upload";
 import { DATA_SECTIONS } from "@/lib/data-transfer/registry";
 import type { ApplyState, PreviewState, SectionPreview } from "./import-types";
@@ -10,6 +11,7 @@ import type { ApplyState, PreviewState, SectionPreview } from "./import-types";
 const NEEDS_PRODUCTS = new Set(["preorders", "subscriptions"]);
 
 export async function previewImport(_prev: PreviewState | null, formData: FormData): Promise<PreviewState> {
+  await requireProOwnerWrite();
   try {
     const ctx = await loadSelectedDataContext();
     if (!ctx) return { ok: false, error: "Select a business first." };
@@ -36,6 +38,7 @@ export async function previewImport(_prev: PreviewState | null, formData: FormDa
 }
 
 export async function applyImport(_prev: ApplyState | null, formData: FormData): Promise<ApplyState> {
+  await requireProOwnerWrite();
   const results: Extract<ApplyState, { ok: true }>["results"] = [];
   try {
     const ctx = await loadSelectedDataContext();

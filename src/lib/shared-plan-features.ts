@@ -33,7 +33,7 @@ const AFTER = [
   "Your own online shop with categories, shop layout, and custom product order",
   "Customer list, smart lists, and branded email campaigns",
   "Supplier logins with shared stock and a record of what you owe",
-  "Notifications inbox, sales by channel, and multiple businesses",
+  "Notifications inbox and sales by channel",
   "QR poster editor with live preview",
   "Stall branding - logo, colours, social and website links",
 ] as const;

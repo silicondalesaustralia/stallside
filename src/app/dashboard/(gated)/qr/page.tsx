@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import NoBusinessYet from "@/components/NoBusinessYet";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import PageHeader from "@/components/dashboard/ui/PageHeader";
+import ProGateCard from "@/components/dashboard/ProGateCard";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
 import { listOwnerQrCodes } from "@/lib/qr/owner-codes";
 import BusinessQrList from "./BusinessQrList";
@@ -11,7 +13,7 @@ import QrCodeList from "./QrCodeList";
 export default async function WebsiteQrListPage() {
   const { owner } = await requireOwner();
 
-  const [stands, storefront, codes] = await Promise.all([
+  const [stands, storefront, codes, isPro] = await Promise.all([
     prisma.stand.findMany({
       where: { ownerId: owner.id, isActive: true },
       orderBy: { name: "asc" },
@@ -26,6 +28,7 @@ export default async function WebsiteQrListPage() {
     }),
     prisma.storefront.findUnique({ where: { ownerId: owner.id }, select: { id: true, slug: true } }),
     listOwnerQrCodes(owner.id),
+    ownerIdHasProAccess(owner.id),
   ]);
 
   if (stands.length === 0) {
@@ -48,7 +51,7 @@ export default async function WebsiteQrListPage() {
             product, a menu or your checkout. Each QR code gets its own poster.
           </>
         }
-        actions={<DashPrimaryCta href="/dashboard/qr/new">+ New QR code</DashPrimaryCta>}
+        actions={isPro ? <DashPrimaryCta href="/dashboard/qr/new">+ New QR code</DashPrimaryCta> : null}
       />
 
       <BusinessQrList
@@ -56,7 +59,7 @@ export default async function WebsiteQrListPage() {
         storefrontSlug={storefront?.slug ?? null}
         primaryCustomHostname={primaryCustomHostname}
       />
-      <QrCodeList codes={codes} />
+      {isPro ? <QrCodeList codes={codes} /> : <ProGateCard feature="qrCodes" />}
     </main>
   );
 }

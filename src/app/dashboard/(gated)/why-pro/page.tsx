@@ -8,7 +8,8 @@ import { cardPlanCents, isBillingCurrency } from "@/lib/saas-pricing";
 import { requireOwner } from "@/lib/session";
 import ProBenefitCards from "./ProBenefitCards";
 import ProComparisonTable from "./ProComparisonTable";
-import { FREE_INCLUDES } from "./pro-benefits";
+import ProFaq from "./ProFaq";
+import { FREE_INCLUDES } from "./free-includes";
 
 const BILLING_PATH = "/dashboard/settings/billing";
 
@@ -27,7 +28,7 @@ export default async function WhyProPage() {
         subtitle={
           isPro
             ? "Thanks for being on Pro. Here's everything your plan includes."
-            : "Everything on Free, plus your own website, zero Vendl fees and the tools to grow."
+            : "Everything on Free, plus zero Vendl fees, your own website, production costing, the Vendl app and more."
         }
         actions={
           <Link href={BILLING_PATH} className={dashCtaClass}>
@@ -64,13 +65,21 @@ export default async function WhyProPage() {
       </section>
 
       <section className="dash-card p-5">
-        <h2 className="font-semibold">Still included on Free</h2>
+        <h2 className="font-semibold">Still free, forever</h2>
         <ul className="mt-3 grid gap-x-6 gap-y-1.5 text-sm text-[var(--muted)] sm:grid-cols-2">
           {FREE_INCLUDES.map((item) => (
             <li key={item}>✓ {item}</li>
           ))}
         </ul>
       </section>
+
+      <ProFaq />
+
+      {isPro ? null : (
+        <Link href={BILLING_PATH} className={`${dashCtaClass} self-start`}>
+          Upgrade to Pro for {price} / month
+        </Link>
+      )}
     </main>
   );
 }

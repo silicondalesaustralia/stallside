@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireOwnerWrite } from '@/lib/session'
+import { requireProOwnerWrite } from '@/lib/require-pro-owner'
 import { parseOAuthReturnPath } from '@/lib/products/productRoutes'
 import { isGoogleCalendarConnectEnabled } from '@/lib/calendar-sync/google/config'
 import { googleCalendarAuthUrl } from '@/lib/calendar-sync/google/oauth'
@@ -7,7 +7,7 @@ import { encodeCalendarOAuthState } from '@/lib/calendar-sync/oauthState'
 import { calendarReturnUrl } from '@/lib/calendar-sync/paths'
 
 export async function GET(req: NextRequest) {
-  const { owner } = await requireOwnerWrite()
+  const { owner } = await requireProOwnerWrite()
   const returnPath = parseOAuthReturnPath(req.nextUrl.searchParams.get('returnPath'))
   const back = calendarReturnUrl(req.url, returnPath)
 

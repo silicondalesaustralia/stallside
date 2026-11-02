@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import { APP_DOMAIN } from "@/lib/constants";
 import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
@@ -16,10 +17,11 @@ export default async function BusinessQrPage({ params }: { params: Promise<{ sta
   if (!stand) notFound();
 
   const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
-  const [qrDataUrl, extras, brand] = await Promise.all([
+  const [qrDataUrl, extras, brand, isPro] = await Promise.all([
     standQrDataUrl(checkoutUrl, 640),
     loadPosterExtras(stand.id),
     standPosterBrand(stand),
+    ownerIdHasProAccess(owner.id),
   ]);
   const paymentBrands = standPaymentBrands(stand, { ...owner, user: { email: user.email, role: user.role } });
 
@@ -33,9 +35,11 @@ export default async function BusinessQrPage({ params }: { params: Promise<{ sta
           {" · "}
           {stand.name} (main QR)
         </p>
-        <Link href={`/dashboard/qr/business/${stand.id}/duplicate`} className="text-sm underline">
-          Duplicate for another page
-        </Link>
+        {isPro ? (
+          <Link href={`/dashboard/qr/business/${stand.id}/duplicate`} className="text-sm underline">
+            Duplicate for another page
+          </Link>
+        ) : null}
       </div>
       <p className="text-sm text-[var(--muted)] print:hidden">
         This is your business&apos;s main QR code. Posters already printed with it keep working.

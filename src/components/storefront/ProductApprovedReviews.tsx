@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import ReviewCard from "@/components/storefront/reviews/ReviewCard";
 import ReviewForm from "@/components/storefront/reviews/ReviewForm";
 import SectionCopy from "@/components/studio/SectionCopy";
@@ -19,6 +20,7 @@ export async function ProductApprovedReviews({
   /** Space above the divider line. */
   className?: string;
 }) {
+  if (!(await ownerIdHasProAccess(ownerId))) return null;
   const reviews = await prisma.review.findMany({
     where: {
       ownerId,

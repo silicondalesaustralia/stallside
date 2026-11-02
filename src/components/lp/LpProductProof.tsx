@@ -28,7 +28,7 @@ export default function LpProductProof({
   headline = "Know what sold, what is left and when to restock.",
   body = "Every confirmed sale appears in your Vendl dashboard. Stock counts fall automatically, and low-stock alerts help you restock before the next customer arrives.",
   benefits = [...DEFAULT_BENEFITS],
-  note = "Every feature is included on Free. Pro only changes the Vendl card fee.",
+  note = "Everything you need to sell is included on Free. Pro removes the Vendl card fee.",
   panelTitle = "Example dashboard",
   panelSubtitle = "Green Valley Eggs",
   stats = [

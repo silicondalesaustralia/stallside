@@ -1,5 +1,6 @@
 import Link from "next/link";
 import DashNavIcon from "@/components/DashNavIcon";
+import ProNavChip from "@/components/ProNavChip";
 
 /** One clickable sidebar link with its icon and optional alert badge. */
 export default function SidebarNavItem({
@@ -8,12 +9,14 @@ export default function SidebarNavItem({
   collapsed,
   active,
   badge,
+  proLocked,
 }: {
   href: string;
   label: string;
   collapsed: boolean;
   active: boolean;
   badge?: number;
+  proLocked?: boolean;
 }) {
   return (
     <Link
@@ -36,6 +39,7 @@ export default function SidebarNavItem({
       {collapsed ? null : (
         <span className="flex flex-1 items-center justify-between gap-2">
           <span className="truncate text-sm">{label}</span>
+          {proLocked ? <ProNavChip /> : null}
           {badge && badge > 0 ? (
             <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
               {badge > 9 ? "9+" : badge}

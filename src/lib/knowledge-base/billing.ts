@@ -5,17 +5,17 @@ export const billingArticles: KnowledgeArticle[] = [
     slug: "billing",
     title: "Free and Vendl Pro",
     summary:
-      "Free forever with every feature, or Pro to remove the Vendl card fee. The dashboard never locks.",
+      "Free forever with everything you need to sell, or Pro to remove the Vendl card fee and add your own website, production costing, the Vendl app and more.",
     keywords: ["pro", "plan", "price", "upgrade", "cancel", "subscription", "fee"],
     related: ["billing-region", "pass-card-fee", "payments-overview"],
     ctas: [{ label: "Vendl billing", href: "/dashboard/settings/billing" }],
     steps: [
       "Your Vendl plan is separate from the payments your customers make to you.",
-      "Free is $0 a month with every feature. Vendl adds a 2.5% fee to card, Tap & Go and pay-later sales on Stripe, Square or PayPal. Cash and PayID are always free.",
-      "Vendl Pro removes the Vendl fee. It costs A$19.99, US$14.99, £11.99 or €14.99 a month, depending on your billing region.",
+      "Free is $0 a month with products, orders, customers, pre-orders, subscriptions, memberships and payments. Vendl adds a 2.5% fee to card, Tap & Go and pay-later sales on Stripe or Square. Cash and PayID are always free.",
+      "Vendl Pro removes the Vendl fee and adds PayPal, your own website, discount codes, reviews, shipping rates, production costing, the calendar, the Vendl app and more. See Why Upgrade To PRO in the menu for the full list. It costs A$19.99, US$14.99, £11.99 or €14.99 a month, depending on your billing region.",
       "To upgrade, open Settings → Vendl subscription → Manage subscription. On Vendl billing, check the Currency and tap Upgrade to Pro, then pay in Stripe Checkout. Promo codes are accepted there.",
       "To change your card or cancel, tap Manage payment method / cancel on the same page.",
-      "If you cancel, you keep Pro until the end of the paid period, then return to Free and the card fee applies again. Your data stays.",
+      "If you cancel, you keep Pro until the end of the paid period, then return to Free: the card fee applies again and Pro tools pause. Your data stays.",
     ],
     tips: [
       "Stripe and Square processing fees apply on both plans. Those go to Stripe or Square, not Vendl.",

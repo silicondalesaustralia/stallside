@@ -6,6 +6,8 @@ export type ShippingSettings = {
   freeOverCents: number | null;
 };
 
+export const FREE_SHIPPING: ShippingSettings = { mode: "FREE", flatCents: 0, freeOverCents: null };
+
 export const SHIPPING_MODE_LABELS: Record<ShippingModeValue, string> = {
   FREE: "Free shipping",
   FLAT: "Flat rate",

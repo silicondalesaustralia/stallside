@@ -1,6 +1,6 @@
 "use server";
 
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { decimal, failure, text, unit, type ActionResult } from "@/lib/production/form-parse";
 import {
   addOwnerRecipeLine,
@@ -13,7 +13,7 @@ import {
 /** `source` is `ing:<ingredientId>` or `rec:<componentRecipeId>`. */
 export async function addRecipeLine(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     const [kind, sourceId = ""] = text(formData, "source").split(":");
     if (kind !== "ing" && kind !== "rec") return { error: "Choose a material or recipe." };
     const source: RecipeLineSource =
@@ -26,7 +26,7 @@ export async function addRecipeLine(formData: FormData): Promise<ActionResult> {
 
 export async function removeRecipeLine(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     return await removeOwnerRecipeLine(owner.id, text(formData, "id"));
   } catch (error) {
     return failure("removeRecipeLine failed", error);
@@ -35,7 +35,7 @@ export async function removeRecipeLine(formData: FormData): Promise<ActionResult
 
 export async function linkProduct(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     return await linkOwnerProduct(
       owner.id,
       text(formData, "recipeId"),
@@ -49,7 +49,7 @@ export async function linkProduct(formData: FormData): Promise<ActionResult> {
 
 export async function unlinkProduct(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     return await unlinkOwnerProduct(owner.id, text(formData, "productId"));
   } catch (error) {
     return failure("unlinkProduct failed", error);

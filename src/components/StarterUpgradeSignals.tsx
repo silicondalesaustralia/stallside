@@ -29,10 +29,10 @@ export default function StarterUpgradeSignals({
             .
           </p>
           <Link
-            href="/dashboard/settings/billing"
+            href="/dashboard/payments"
             className="mt-3 inline-flex text-sm font-semibold text-[var(--leaf-dark)] underline"
           >
-            Upgrade to Pro for Tap &amp; Go
+            Turn on card and Tap &amp; Go
           </Link>
         </div>
       ) : null}

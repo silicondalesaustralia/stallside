@@ -9,7 +9,7 @@ const COPY: Record<Placement, { heading: string; body: string }> = {
   },
   end: {
     heading: "Sell from your stall, kitchen or market with Vendl",
-    body: "QR payments at the stand, pre-orders with pickup times, and an online shop, all in one place. Free is $0 a month with every feature.",
+    body: "QR payments at the stand, pre-orders with pickup times, and an online shop, all in one place. Free is $0 a month with everything you need to sell.",
   },
 };
 

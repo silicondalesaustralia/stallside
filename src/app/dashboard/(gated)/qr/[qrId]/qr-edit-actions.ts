@@ -1,8 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { unstable_rethrow } from "next/navigation";
 import { z } from "zod";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { prisma } from "@/lib/prisma";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
 import { qrPosterSchema } from "@/lib/qr/poster";
@@ -10,7 +11,7 @@ import { legacyLinkFields, validateQrTarget } from "@/lib/qr/validate-target";
 import type { QrActionResult } from "../actions";
 
 async function ownedQr(qrId: string) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   const qr = await prisma.qrCode.findFirst({ where: { id: qrId, ownerId: owner.id }, select: { id: true } });
   return { owner, qr };
 }
@@ -34,6 +35,7 @@ export async function setQrTarget(qrId: string, targetKind: string, targetId: st
     refresh(qr.id);
     return { ok: true };
   } catch (err) {
+    unstable_rethrow(err);
     console.error("[qr] set target failed", err instanceof Error ? err.message : err);
     return { error: "Could not change the page. Please try again." };
   }
@@ -65,6 +67,7 @@ export async function saveQrDesign(qrId: string, input: z.infer<typeof saveSchem
     refresh(qr.id);
     return { ok: true };
   } catch (err) {
+    unstable_rethrow(err);
     console.error("[qr] save design failed", err instanceof Error ? err.message : err);
     return { error: "Could not save. Please try again." };
   }

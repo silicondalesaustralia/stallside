@@ -1,6 +1,6 @@
 "use server";
 
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { deleteOwnerPurchase, recordOwnerPurchase } from "@/lib/production/purchases";
 import {
   cents,
@@ -16,7 +16,7 @@ import {
 /** Incoming supplies: adds stock and makes this the ingredient's current price. */
 export async function recordPurchase(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     const ingredientId = text(formData, "ingredientId");
     const quantity = decimal(formData, "quantity", true);
     const purchaseUnit = unit(formData, "unit");
@@ -43,7 +43,7 @@ export async function recordPurchase(formData: FormData): Promise<ActionResult> 
 
 export async function deletePurchase(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     return await deleteOwnerPurchase(owner.id, text(formData, "id"));
   } catch (error) {
     return failure("deletePurchase failed", error);

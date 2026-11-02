@@ -37,8 +37,8 @@ export default function TermsContent() {
         </h2>
         <p className="text-[var(--muted)]">
           Paid plans are billed as described at signup or in your dashboard. Free is
-          $0/mo with all features. Vendl Pro removes the Vendl card fee for a
-          monthly subscription. You are responsible for applicable taxes.
+          $0/mo. Vendl Pro removes the Vendl card fee and adds the Pro features
+          listed in your dashboard, for a monthly subscription. You are responsible for applicable taxes.
           Refunds are handled case-by-case unless required by Australian Consumer Law.
         </p>
       </section>

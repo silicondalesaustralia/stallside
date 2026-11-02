@@ -28,8 +28,8 @@ export function trialWelcomeHtml(name: string): string {
       small food businesses duct-tape together Shopify or other platforms, a
       pre-order app, an inventory tool, and a subscription plugin, then pay
       $60+/month for the privilege of doing that admin work themselves.
-      That's broken. So we built the whole thing in one place, and we include
-      every feature on the free plan. No paywalls on the basics. Ever.</p>
+      That's broken. So we built the whole thing in one place, and the free
+      plan has everything you need to sell. No paywalls on the basics. Ever.</p>
       <p><strong>Here's the fastest way to start making money:</strong></p>
       <p><strong>Connect your payment provider.</strong></p>
       <p>If you're in Australia and already use Square, connect it now. Your

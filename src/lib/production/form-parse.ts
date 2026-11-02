@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import { isUnit, type Unit } from "./unit-convert";
 
 export type ActionResult = { ok: true; message?: string; redirectTo?: string } | { error: string };
@@ -45,6 +46,7 @@ export function dateOnly(formData: FormData, key: string): Date | null {
 }
 
 export function failure(context: string, error: unknown): { error: string } {
+  unstable_rethrow(error);
   console.error(context, error);
   return { error: error instanceof Error ? error.message : "Something went wrong." };
 }

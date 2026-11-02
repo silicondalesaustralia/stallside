@@ -2,7 +2,7 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import { formatMoney } from "@/lib/money";
 import { failure, text, wholeNumber, type ActionResult } from "@/lib/production/form-parse";
@@ -10,7 +10,7 @@ import { failure, text, wholeNumber, type ActionResult } from "@/lib/production/
 /** Saves a calculator price (and the recipe unit cost) onto the product. */
 export async function saveProductPricing(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     const productId = text(formData, "productId");
     const priceCents = wholeNumber(formData, "priceCents");
     const costCents = wholeNumber(formData, "costCents");

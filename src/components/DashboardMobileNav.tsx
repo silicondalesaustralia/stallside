@@ -83,7 +83,7 @@ export default function DashboardMobileNav({
               {navAccess.pro ? null : (
                 <UpgradeNavLink active={pathname.startsWith(WHY_PRO_PATH)} onNavigate={() => setOpen(false)} />
               )}
-              {visibleNavGroups(navAccess.website, navAccess.social).map((group, index) => (
+              {visibleNavGroups(navAccess.website, navAccess.social, navAccess.pro).map((group, index) => (
                 <div key={group.heading ?? `group-${index}`} className={index > 0 ? "mt-2" : undefined}>
                   {group.heading ? (
                     <p className="px-2 pb-0.5 pt-1 text-[11px] font-bold uppercase tracking-wide text-[var(--marigold)]/85">

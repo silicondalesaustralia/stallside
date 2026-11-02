@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import type { DiscountChannel } from "./resolve-code";
 
 /** True when the shopper should see a discount code box at this business. */
@@ -7,6 +8,7 @@ export async function hasLiveDiscountCodes(
   standId: string,
   channel: DiscountChannel,
 ): Promise<boolean> {
+  if (!(await ownerIdHasProAccess(ownerId))) return false;
   const now = new Date();
   const found = await prisma.promotion.findFirst({
     where: {

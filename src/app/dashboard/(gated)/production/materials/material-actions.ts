@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { MaterialKind } from "@/generated/prisma/client";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { convertQuantity } from "@/lib/production/unit-convert";
 import {
   cents,
@@ -18,7 +18,7 @@ import {
 /** Create (no `id`) or update an ingredient / part. */
 export async function saveMaterial(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     const id = text(formData, "id");
     const name = text(formData, "name");
     const baseUnit = unit(formData, "baseUnit");
@@ -79,7 +79,7 @@ export async function saveMaterial(formData: FormData): Promise<ActionResult> {
 
 export async function setMaterialActive(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     const id = text(formData, "id");
     const isActive = text(formData, "isActive") === "true";
     const result = await prisma.ingredient.updateMany({ where: { id, ownerId: owner.id }, data: { isActive } });

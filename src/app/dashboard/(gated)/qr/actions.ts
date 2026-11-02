@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import type { Prisma } from "@/generated/prisma/client";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { prisma } from "@/lib/prisma";
 import { legacyLinkFields, validateQrTarget } from "@/lib/qr/validate-target";
 
@@ -21,7 +21,7 @@ const createSchema = z.object({
 export type CreateQrInput = z.infer<typeof createSchema>;
 
 export async function createQrCode(input: CreateQrInput): Promise<QrActionResult> {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   const parsed = createSchema.safeParse(input);
   if (!parsed.success) return { error: "Give the QR code a name and pick a page." };
   const stand = await prisma.stand.findFirst({ where: { id: parsed.data.standId, ownerId: owner.id }, select: { id: true } });
@@ -52,7 +52,7 @@ const duplicateSchema = z.object({
 
 /** New QR code with its own address, copying the poster set-up but opening another page. */
 export async function duplicateQrCode(sourceId: string, input: z.infer<typeof duplicateSchema>): Promise<QrActionResult> {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   const parsed = duplicateSchema.safeParse(input);
   if (!parsed.success) return { error: "Give the copy a name and pick a page." };
   const source = await prisma.qrCode.findFirst({
@@ -80,7 +80,7 @@ export async function duplicateQrCode(sourceId: string, input: z.infer<typeof du
 }
 
 export async function updateQrCode(qrId: string, formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   const qr = await prisma.qrCode.findFirst({ where: { id: qrId, ownerId: owner.id }, select: { id: true } });
   if (!qr) return { error: "QR not found." };
   const name = String(formData.get("name") ?? "").trim();
@@ -92,7 +92,7 @@ export async function updateQrCode(qrId: string, formData: FormData) {
 }
 
 export async function deleteQrCode(qrId: string) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   const qr = await prisma.qrCode.findFirst({
     where: { id: qrId, ownerId: owner.id },
     select: { id: true },

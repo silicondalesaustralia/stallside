@@ -96,7 +96,7 @@ export const LANDING_FAQS: FaqItem[] = [
   },
   {
     question: "How much does it cost?",
-    answer: `Free is $0/mo with all features; Vendl fee is 2.5% on card, Tap & Go, and pay-later via Stripe, Square or PayPal (cash and PayID stay free) - absorb it or pass it on in Payments → Stripe. Vendl Pro is ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site and removes the Vendl platform fee. Standard Stripe processing fees apply on both plans. Pick billing currency at signup or in billing settings.`,
+    answer: `Free is $0/mo with everything you need to sell; Vendl fee is 2.5% on card, Tap & Go, and pay-later via Stripe or Square (cash and PayID stay free) - absorb it or pass it on in Payments → Stripe. Vendl Pro is ${formatMoney(CARD_PLAN_BY_CURRENCY.AUD, "AUD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.USD, "USD")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.GBP, "GBP")} / ${formatMoney(CARD_PLAN_BY_CURRENCY.EUR, "EUR")} per month per site, removes the Vendl platform fee and adds your own website, discount codes, production costing, the Vendl app and more. Standard Stripe processing fees apply on both plans. Pick billing currency at signup or in billing settings.`,
   },
   {
     question: "Who is Vendl for?",

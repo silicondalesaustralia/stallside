@@ -20,6 +20,7 @@ import { productLiveWhere } from "@/lib/product-visibility";
 import { resolveAddonPricing } from "@/lib/preorder-upsell-pricing";
 import { ruleUpsellUnitCents } from "@/lib/cart-upsell";
 import { loadUpsellRules } from "@/lib/upsells/load-rules";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import { pickBetterDiscount } from "@/lib/discounts/compute";
 import { resolveDiscountCode, type DiscountChannel } from "@/lib/discounts/resolve-code";
 import { supplierLineSnapshot } from "@/lib/suppliers/snapshot";
@@ -271,7 +272,8 @@ export async function loadStandCart(
       .map((p) => [p.preOrderUpsellProductId!, p]),
   );
 
-  const upsellRules = normalized.some((n) => n.asUpsell) ? await loadUpsellRules(stand.id) : [];
+  const ownerIsPro = await ownerIdHasProAccess(stand.ownerId);
+  const upsellRules = ownerIsPro && normalized.some((n) => n.asUpsell) ? await loadUpsellRules(stand.id) : [];
   const ruleUpsellCents = (offerProductId: string) =>
     ruleUpsellUnitCents({
       cartLines: normalized,
@@ -598,7 +600,8 @@ export async function loadStandCart(
     totalCents,
     preOrderCart,
     skipStock: false as const,
-    freeShipping,
+    /** Shipping rates are Pro; Free stores never charge shipping. */
+    freeShipping: freeShipping || !ownerIsPro,
     promotionId,
     promotionCode,
   };

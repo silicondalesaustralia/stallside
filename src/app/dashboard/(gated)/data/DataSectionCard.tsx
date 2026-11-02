@@ -4,7 +4,7 @@ import ImportForm from "./ImportForm";
 const linkClass =
   "rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-medium text-[var(--field)] hover:bg-[var(--paper)]";
 
-export default function DataSectionCard({ guide }: { guide: SectionGuide }) {
+export default function DataSectionCard({ guide, canImport }: { guide: SectionGuide; canImport: boolean }) {
   const base = `/dashboard/data/export/${guide.id}`;
   return (
     <section className="dash-card flex flex-col gap-3 p-4">
@@ -32,7 +32,7 @@ export default function DataSectionCard({ guide }: { guide: SectionGuide }) {
           </a>
         ) : null}
       </div>
-      {guide.importable ? <ImportForm section={guide.id} /> : null}
+      {guide.importable && canImport ? <ImportForm section={guide.id} /> : null}
     </section>
   );
 }

@@ -12,7 +12,7 @@ const OWNER_FREE = [
 
 const OWNER_PRO = [
   CARD_PLAN_HARDWARE_BLURB,
-  "Same features as Free - no Vendl card fee",
+  "Everything on Free, plus your own website, production costing and the Vendl app - no Vendl card fee",
   "Paid straight to your Stripe or Square account (Square currently Australia only): no cash box to empty, count, or bank",
   "Connect your existing Stripe or Square account, or create one in minutes",
 ] as const;
@@ -108,8 +108,9 @@ export default function FeatureColumns() {
           What you get
         </h2>
         <p className="mt-3 max-w-2xl pl-3 text-base text-[var(--muted)] sm:text-lg">
-          Free and Pro share every feature. The only difference is the Vendl
-          card fee. Shoppers get a simple scan-and-pay stall.
+          Free has everything you need to sell. Pro removes the Vendl card fee
+          and adds your own website, production costing and the Vendl app.
+          Shoppers get a simple scan-and-pay stall.
         </p>
       </div>
 

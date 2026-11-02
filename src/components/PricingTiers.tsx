@@ -137,7 +137,7 @@ export default function PricingTiers() {
 
       <div className="mt-10">
         <p className="text-sm font-semibold text-[var(--field)]">
-          Every feature is included on Free and Pro.
+          Included on Free and Pro.
         </p>
         <ul className="mt-3 grid list-disc gap-1.5 pl-5 text-sm text-[var(--muted)] sm:grid-cols-2">
           {sharedPlanFeatures(currency).map((feature) => (

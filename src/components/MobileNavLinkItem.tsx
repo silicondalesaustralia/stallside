@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { DashNavLink } from "@/components/dash-nav-links";
+import ProNavChip from "@/components/ProNavChip";
 
 /** One entry in the mobile "More" menu; a "Soon" entry is greyed with a tag. */
 export default function MobileNavLinkItem({
@@ -25,6 +26,7 @@ export default function MobileNavLinkItem({
           Soon
         </span>
       ) : null}
+      {link.proLocked ? <ProNavChip /> : null}
       {badge && badge > 0 ? (
         <span className="flex size-5 items-center justify-center rounded-full bg-[var(--gone)] text-[10px] font-bold text-white">
           {badge > 9 ? "9+" : badge}

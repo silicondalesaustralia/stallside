@@ -3,6 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { loadSelectedDataContext } from "@/lib/data-transfer/selected-context";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { standCatalogTag } from "@/lib/stand-catalog-tag";
 import {
   importCustomerSchema,
@@ -49,6 +50,7 @@ async function runChunk<T>(
 }
 
 export async function importProductsChunk(raw: unknown): Promise<ChunkResult> {
+  await requireProOwnerWrite();
   const parsed = productsInput.safeParse(raw);
   if (!parsed.success) return { error: "Some rows are not valid. Check the mapping and try again." };
   const ctx = await loadSelectedDataContext();
@@ -59,6 +61,7 @@ export async function importProductsChunk(raw: unknown): Promise<ChunkResult> {
 }
 
 export async function importCustomersChunk(raw: unknown): Promise<ChunkResult> {
+  await requireProOwnerWrite();
   const parsed = customersInput.safeParse(raw);
   if (!parsed.success) return { error: "Some rows are not valid. Check the mapping and try again." };
   const ctx = await loadSelectedDataContext();
@@ -68,6 +71,7 @@ export async function importCustomersChunk(raw: unknown): Promise<ChunkResult> {
 }
 
 export async function importStockChunk(raw: unknown): Promise<ChunkResult> {
+  await requireProOwnerWrite();
   const parsed = stockInput.safeParse(raw);
   if (!parsed.success) return { error: "Some rows are not valid. Check the mapping and try again." };
   const ctx = await loadSelectedDataContext();

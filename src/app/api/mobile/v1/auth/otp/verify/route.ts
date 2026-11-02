@@ -1,6 +1,8 @@
 import { otpVerifyBody, type OtpVerifyResponse } from "@/contracts/mobile/auth";
 import { authorizeEmailOtp } from "@/lib/auth-otp-user";
 import { createMobileSession } from "@/lib/mobile/session-token";
+import { MOBILE_PRO_REQUIRED } from "@/lib/mobile/require-owner";
+import { userIdHasProAccess } from "@/lib/owner-pro-access";
 import { mobileError, mobileJson, mobileServerError, readMobileBody } from "@/lib/mobile/http";
 
 /** Same code check (and first-sign-in account creation) as the web login, but returns a bearer token. */
@@ -13,6 +15,7 @@ export async function POST(request: Request) {
     if (!user) {
       return mobileError(401, "That code didn't work. Check it or request a new one.");
     }
+    if (!(await userIdHasProAccess(user.id))) return mobileError(403, MOBILE_PRO_REQUIRED);
 
     const { token, expiresAt } = await createMobileSession({
       userId: user.id,

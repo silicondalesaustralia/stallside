@@ -88,7 +88,7 @@ export const STALL_HUB: ProductLpContent = {
     "Stock counts and spreadsheet stock import",
     "Restock notifications for regular customers",
   ],
-  proofNote: "Every feature is included on Free. Pro only changes the Vendl card fee.",
+  proofNote: "Everything you need to sell is included on Free. Pro removes the Vendl card fee.",
   proofPanelTitle: "Example dashboard",
   proofPanelSubtitle: "Green Valley Eggs",
   proofStats: [

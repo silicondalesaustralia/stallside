@@ -2,13 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { convertQuantity } from "@/lib/production/unit-convert";
 import { cents, decimal, failure, text, unit, type ActionResult } from "@/lib/production/form-parse";
 
 export async function addProductPackaging(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     const productId = text(formData, "productId");
     const ingredientId = text(formData, "ingredientId");
     const quantity = decimal(formData, "quantity", true);
@@ -43,7 +43,7 @@ export async function addProductPackaging(formData: FormData): Promise<ActionRes
 
 export async function removeProductPackaging(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     const result = await prisma.productPackaging.deleteMany({
       where: { id: text(formData, "id"), product: { ownerId: owner.id } },
     });
@@ -57,7 +57,7 @@ export async function removeProductPackaging(formData: FormData): Promise<Action
 
 export async function saveOtherPackaging(formData: FormData): Promise<ActionResult> {
   try {
-    const { owner } = await requireOwnerWrite();
+    const { owner } = await requireProOwnerWrite();
     const result = await prisma.product.updateMany({
       where: { id: text(formData, "productId"), ownerId: owner.id },
       data: { packagingCostCents: cents(formData, "packaging") },
