@@ -15,6 +15,7 @@ import AdminOwnerTools from "./AdminOwnerTools";
 import AdminOwnerReferrer from "./AdminOwnerReferrer";
 import OwnerPaymentLedger from "./OwnerPaymentLedger";
 import OwnerAiUsageCard from "./OwnerAiUsageCard";
+import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
 
 export default async function AdminOwnerDetailPage({
   params,
@@ -75,12 +76,12 @@ export default async function AdminOwnerDetailPage({
             ? ` · moved via ${owner.pricingModelReason.replace("_", " ")}`
             : ""}
           {owner.pricingModelChangedAt
-            ? ` on ${owner.pricingModelChangedAt.toLocaleDateString()}`
+            ? ` on ${owner.pricingModelChangedAt.toLocaleDateString("en-AU", { timeZone: DEFAULT_TIMEZONE })}`
             : ""}
         </p>
         {owner.lifetimeEndedAt ? (
           <p className="text-red-700">
-            Lifetime ended {owner.lifetimeEndedAt.toLocaleDateString()}
+            Lifetime ended {owner.lifetimeEndedAt.toLocaleDateString("en-AU", { timeZone: DEFAULT_TIMEZONE })}
           </p>
         ) : null}
         <p>

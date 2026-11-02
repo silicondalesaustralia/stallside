@@ -13,6 +13,7 @@ export default async function AdminSalesSection({
   prevStart,
   prevEnd,
   compare,
+  timeZone,
 }: {
   windowLabel: string;
   start: Date;
@@ -20,11 +21,14 @@ export default async function AdminSalesSection({
   prevStart: Date;
   prevEnd: Date;
   compare: boolean;
+  timeZone: string;
 }) {
   const fx = await audRatesFromMarket();
   const [sales, prev] = await Promise.all([
-    getAdminSalesWindow(start, end, fx),
-    compare ? getAdminSalesWindow(prevStart, prevEnd, fx) : Promise.resolve(null),
+    getAdminSalesWindow(start, end, fx, timeZone),
+    compare
+      ? getAdminSalesWindow(prevStart, prevEnd, fx, timeZone)
+      : Promise.resolve(null),
   ]);
   const money = (cents: number) => formatMoney(cents, DEFAULT_CURRENCY);
 

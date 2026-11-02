@@ -1,3 +1,5 @@
+import { addDays, startOfDay, zonedYmd } from "@/lib/zoned-day";
+
 export type SaasMetricKey = "owners" | "demos" | "invites";
 
 export type SaasSeriesPoint = {
@@ -22,7 +24,20 @@ export function buildSaasSeries(
   events: { at: Date; metric: SaasMetricKey }[],
   start: Date,
   end: Date,
+  timeZone?: string,
 ): SaasSeriesPoint[] {
+  const ymd = (d: Date) =>
+    timeZone
+      ? zonedYmd(d, timeZone)
+      : { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(), hour: d.getHours() };
+  const dayIndex = (d: Date) => {
+    const p = ymd(d);
+    return Date.UTC(p.year, p.month - 1, p.day) / (24 * 60 * 60 * 1000);
+  };
+  const dayLabel = (d: Date) => {
+    const p = ymd(d);
+    return `${p.day}/${p.month}`;
+  };
   const spanMs = end.getTime() - start.getTime();
   const dayMs = 24 * 60 * 60 * 1000;
   const empty = (): Omit<SaasSeriesPoint, "label"> => ({
@@ -37,59 +52,34 @@ export function buildSaasSeries(
       ...empty(),
     }));
     for (const event of events) {
-      buckets[event.at.getHours()][event.metric] += 1;
+      buckets[ymd(event.at).hour][event.metric] += 1;
     }
     return buckets;
   }
 
+  const origin = dayIndex(start);
   if (spanMs <= 45 * dayMs) {
     const days = Math.max(1, Math.ceil(spanMs / dayMs));
     const buckets: SaasSeriesPoint[] = [];
     for (let i = 0; i < days; i++) {
-      const day = new Date(start);
-      day.setDate(start.getDate() + i);
-      buckets.push({
-        label: `${day.getDate()}/${day.getMonth() + 1}`,
-        ...empty(),
-      });
+      buckets.push({ label: dayLabel(addDays(start, i, timeZone)), ...empty() });
     }
     for (const event of events) {
-      const idx = Math.floor(
-        (startOfLocalDay(event.at).getTime() - startOfLocalDay(start).getTime()) /
-          dayMs,
-      );
+      const idx = dayIndex(event.at) - origin;
       if (idx >= 0 && idx < buckets.length) buckets[idx][event.metric] += 1;
     }
     return buckets;
   }
 
   const weeks: SaasSeriesPoint[] = [];
-  let cursor = startOfLocalDay(start);
+  let cursor = startOfDay(start, timeZone);
   while (cursor <= end) {
-    weeks.push({
-      label: `${cursor.getDate()}/${cursor.getMonth() + 1}`,
-      ...empty(),
-    });
-    cursor = addDays(cursor, 7);
+    weeks.push({ label: dayLabel(cursor), ...empty() });
+    cursor = addDays(cursor, 7, timeZone);
   }
   for (const event of events) {
-    const idx = Math.floor(
-      (startOfLocalDay(event.at).getTime() - startOfLocalDay(start).getTime()) /
-        (7 * dayMs),
-    );
+    const idx = Math.floor((dayIndex(event.at) - origin) / 7);
     if (idx >= 0 && idx < weeks.length) weeks[idx][event.metric] += 1;
   }
   return weeks;
-}
-
-function startOfLocalDay(d: Date) {
-  const next = new Date(d);
-  next.setHours(0, 0, 0, 0);
-  return next;
-}
-
-function addDays(d: Date, days: number) {
-  const next = new Date(d);
-  next.setDate(next.getDate() + days);
-  return next;
 }

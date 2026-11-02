@@ -23,6 +23,7 @@ export type LtvWindow = {
 export async function getLtvWindow(
   start: Date,
   end: Date,
+  timeZone?: string,
   rates?: AudRates,
 ): Promise<LtvWindow> {
   const fx = rates ?? (await audRatesFromMarket());
@@ -54,7 +55,7 @@ export async function getLtvWindow(
   }
 
   return {
-    points: buildSalesSeries(payments, start, end),
+    points: buildSalesSeries(payments, start, end, timeZone),
     totalAudCents: fees.totalAudCents + subscriptionAudCents,
     feeAudCents: fees.totalAudCents,
     stripeFeeAudCents: fees.stripe.audCents,
