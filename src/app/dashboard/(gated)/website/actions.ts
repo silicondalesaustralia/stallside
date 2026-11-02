@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { prisma } from "@/lib/prisma";
 import {
   ensureStorefront,
@@ -35,7 +35,7 @@ function removeFlag(formData: FormData, name: string): boolean {
 }
 
 export async function saveStorefrontDetails(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const headline = String(formData.get("headline") ?? "").trim().slice(0, 120);
   const subheadline =
     String(formData.get("subheadline") ?? "").trim().slice(0, 240) || null;
@@ -95,7 +95,7 @@ export async function saveStorefrontDetails(formData: FormData) {
 }
 
 export async function saveStorefrontBranding(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const removeHero = removeFlag(formData, "removeHero");
   const removeLogo = removeFlag(formData, "removeLogo");
   const removeFavicon = removeFlag(formData, "removeFavicon");
@@ -199,7 +199,7 @@ export async function saveStorefrontBranding(formData: FormData) {
 }
 
 export async function publishStorefrontAction() {
-  const { owner, user } = await requireWebsiteOwner();
+  const { owner, user } = await requireWebsiteProOwner();
   const sf = await ensureStorefront(owner.id, owner.businessName);
   if (publishLockedForAssistant(owner.id, sf)) redirect(webStudioPath("details", { error: "no_site" }));
   const published = await tryPublishStorefront(owner.id, user.id);
@@ -212,7 +212,7 @@ export async function publishStorefrontAction() {
 }
 
 export async function unpublishStorefrontAction() {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const sf = await prisma.storefront.findUniqueOrThrow({
     where: { ownerId: owner.id },
   });
@@ -225,7 +225,7 @@ export async function unpublishStorefrontAction() {
 }
 
 export async function saveStorefrontDomain(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const customDomain =
     String(formData.get("customDomain") ?? "")
       .trim()

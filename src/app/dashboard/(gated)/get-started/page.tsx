@@ -8,6 +8,7 @@ import { assistantEnabledFor } from "@/lib/website-ai/assistant/access";
 import { ASSISTANT_PATH } from "@/lib/website/readiness";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import GetStartedCard from "./GetStartedCard";
+import StoreChoiceCard from "./StoreChoiceCard";
 import { finishOnboarding } from "./actions";
 
 export default async function GetStartedPage() {
@@ -45,20 +46,24 @@ export default async function GetStartedPage() {
             { href: "/dashboard/pre-order-pages/new", label: "Pre-order page" },
           ]}
         />
-        <GetStartedCard
-          number={2}
-          icon="website"
-          title="Build your website"
-          body="Your online store, ready to share. Your farm stand QR code works alongside it."
-          href={websiteHref}
-          cta="Build my website"
-          done={progress.website}
-        />
+        {progress.pro ? (
+          <GetStartedCard
+            number={2}
+            icon="website"
+            title="Build your website"
+            body="Your online store, ready to share. Your farm stand QR code works alongside it."
+            href={websiteHref}
+            cta="Build my website"
+            done={progress.website}
+          />
+        ) : (
+          <StoreChoiceCard number={2} standId={selected.id} />
+        )}
         <GetStartedCard
           number={3}
           icon="sell"
           title="Set up checkout & payments"
-          body="Connect Stripe, Square or PayPal for card payments, and choose what customers can pay with."
+          body={`Connect ${progress.pro ? "Stripe, Square or PayPal" : "Stripe or Square"} for card payments, and choose what customers can pay with.`}
           href="/dashboard/payments"
           cta="Set up payments"
           done={progress.payments}

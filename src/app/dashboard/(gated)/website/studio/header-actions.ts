@@ -1,6 +1,6 @@
 "use server";
 
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { writeDraftConfigKey, type DraftKeyResult } from "@/lib/website/persistence/draft-key";
 import { headerMenuProblem, headerMenuSchema, type HeaderMenu } from "@/lib/studio/header-menu";
 import { announcementBarProblem, announcementBarSchema, type AnnouncementBar } from "@/lib/studio/announcement-bar";
@@ -11,7 +11,7 @@ export async function saveStorefrontHeaderMenu(input: {
   menu: unknown;
   expectedRevision: number;
 }): Promise<DraftKeyResult> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   let menu: HeaderMenu | null = null;
   if (input.menu !== null) {
     const parsed = headerMenuSchema.safeParse(input.menu);
@@ -33,7 +33,7 @@ export async function saveStorefrontAnnouncementBar(input: {
   bar: unknown;
   expectedRevision: number;
 }): Promise<DraftKeyResult> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const parsed = announcementBarSchema.safeParse(input.bar);
   if (!parsed.success) return { ok: false, error: "Check the announcement text and link." };
   const bar: AnnouncementBar = parsed.data;
@@ -52,7 +52,7 @@ export async function saveStorefrontFooter(input: {
   footer: unknown;
   expectedRevision: number;
 }): Promise<DraftKeyResult> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   let footer: FooterSettings | null = null;
   if (input.footer !== null) {
     const parsed = footerSettingsSchema.safeParse(input.footer);

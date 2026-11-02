@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@/generated/prisma/client";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 import { patchLiveConfig } from "@/lib/website/persistence/live-patch";
@@ -19,7 +19,7 @@ import {
  * `back: "list"` returns to the Pages list instead of the page's settings.
  */
 export async function setCustomPageEnabled(pageId: string, enabled: boolean, back: "page" | "list" = "page") {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const path = `/dashboard/website/pages/${pageId}`;
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const pages = ensureCustomPages(storefront.draftConfig);

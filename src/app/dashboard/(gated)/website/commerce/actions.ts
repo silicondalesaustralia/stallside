@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import {
   DRAFT_CONFLICT_MESSAGE,
@@ -77,7 +77,7 @@ export async function saveCommerceLayoutDraft(
 ): Promise<EditorSaveResult> {
   const kind = commerceKindFromParam(kindParam);
   if (!kind) redirect("/dashboard/website/commerce?error=kind");
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const nodes = parseNodesJson(nodesJson, kind);
   const invalid = craftPageSaveErrors(nodes, kind);
   if (invalid.length > 0) return invalidResult(invalid);
@@ -103,7 +103,7 @@ export async function publishCommerceLayoutDraft(
 ): Promise<EditorSaveResult> {
   const kind = commerceKindFromParam(kindParam);
   if (!kind) redirect("/dashboard/website/commerce?error=kind");
-  const { owner, user } = await requireWebsiteOwner();
+  const { owner, user } = await requireWebsiteProOwner();
   const nodes = parseNodesJson(nodesJson, kind);
   const invalid = craftPageSaveErrors(nodes, kind);
   if (invalid.length > 0) return invalidResult(invalid);

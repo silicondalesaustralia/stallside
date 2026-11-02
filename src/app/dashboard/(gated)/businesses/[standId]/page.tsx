@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { standCheckoutUrl } from "@/lib/stand-qr";
 import { standPublicHome } from "@/lib/storefront/legacy-stand-redirect";
 import { businessSiteUrl } from "@/lib/storefront/business-site-url";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import BusinessPageHeader from "./BusinessPageHeader";
 import BusinessSetupPrompt from "./BusinessSetupPrompt";
 import BusinessSetupTabs, {
@@ -48,11 +49,15 @@ export default async function StandDetailPage({
   if (!stand) notFound();
 
   const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
-  const [publicHome, websiteBrand, site] = await Promise.all([
-    standPublicHome(stand.slug, checkoutUrl),
+  const [isPro, websiteBrand, site] = await Promise.all([
+    ownerIdHasProAccess(owner.id),
     websiteBrandForStand(stand.slug),
     businessSiteUrl(owner.id),
   ]);
+  const checkout = new URL(checkoutUrl);
+  const publicHome = isPro
+    ? await standPublicHome(stand.slug, checkoutUrl)
+    : { url: checkoutUrl, label: `${checkout.host}${checkout.pathname}` };
   const brandingInWebStudio = websiteBrand !== null;
   return (
     <main className="flex flex-col gap-8">
@@ -74,7 +79,7 @@ export default async function StandDetailPage({
 
       <BusinessSetupTabs standId={stand.id} active={tab} hideBranding={brandingInWebStudio} />
 
-      {tab === "details" ? <StandEditForm stand={stand} site={site} /> : null}
+      {tab === "details" ? <StandEditForm stand={stand} site={site} isPro={isPro} storeLink={publicHome} /> : null}
       {tab === "details" ? (
         <StandSocialForm
           standId={stand.id}

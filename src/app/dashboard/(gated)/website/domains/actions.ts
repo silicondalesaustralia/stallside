@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { prisma } from "@/lib/prisma";
 import {
@@ -19,7 +19,7 @@ function redirectError(code: string, detail?: string) {
 }
 
 export async function connectDomainAction(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const hostname = String(formData.get("hostname") ?? "");
   const ownerRow = await prisma.owner.findUniqueOrThrow({
@@ -48,7 +48,7 @@ export async function connectDomainAction(formData: FormData) {
 }
 
 export async function checkDomainAction(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const domainId = String(formData.get("domainId") ?? "");
 
@@ -67,7 +67,7 @@ export async function checkDomainAction(formData: FormData) {
 }
 
 export async function makePrimaryDomainAction(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const domainId = String(formData.get("domainId") ?? "");
 
@@ -86,7 +86,7 @@ export async function makePrimaryDomainAction(formData: FormData) {
 }
 
 export async function disconnectDomainAction(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const domainId = String(formData.get("domainId") ?? "");
 

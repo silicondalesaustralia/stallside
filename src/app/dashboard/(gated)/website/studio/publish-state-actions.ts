@@ -1,13 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { prisma } from "@/lib/prisma";
 import { storefrontPublicPath, unpublishStorefront } from "@/lib/catalogue/storefront";
 
 /** Takes the site offline from inside the editor; the draft is kept, so publishing again restores it. */
 export async function unpublishFromEditor(): Promise<{ ok: true } | { ok: false; error: string }> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   try {
     const sf = await prisma.storefront.findUnique({ where: { ownerId: owner.id }, select: { slug: true } });
     if (!sf) return { ok: false, error: "No website found." };

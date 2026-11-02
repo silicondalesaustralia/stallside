@@ -1,6 +1,7 @@
 import DashboardMobileNav from "@/components/DashboardMobileNav";
 import DashboardNav from "@/components/DashboardNav";
 import { loadDashboardSetupAlerts } from "@/lib/load-dashboard-setup-alerts";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import { prisma } from "@/lib/prisma";
 import { websiteSectionEnabledFor } from "@/lib/website/access";
 import { socialKitEnabledForOwnerId } from "@/lib/beta-features";
@@ -23,7 +24,7 @@ export default async function DashboardNavWithUnread({
   variant: "sidebar" | "mobile";
 }) {
   const session = await getAuthSession();
-  const [unreadNotifications, setupAlerts, social] = await Promise.all([
+  const [unreadNotifications, setupAlerts, social, pro] = await Promise.all([
     prisma.notification.count({
       where: { ownerId, status: "OPEN" },
     }),
@@ -35,8 +36,9 @@ export default async function DashboardNavWithUnread({
       stripeChargesEnabled,
     }),
     socialKitEnabledForOwnerId(ownerId, session?.impersonator?.email),
+    ownerIdHasProAccess(ownerId),
   ]);
-  const navAccess = { website: websiteSectionEnabledFor(ownerId), social };
+  const navAccess = { website: websiteSectionEnabledFor(ownerId), social, pro };
 
   if (variant === "mobile") {
     return (

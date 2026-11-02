@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { patchLiveConfig } from "@/lib/website/persistence/live-patch";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
@@ -89,7 +89,7 @@ async function syncPublishedPost(ownerId: string, post: StorefrontBlogPost, draf
 }
 
 export async function syncBlogDefaults() {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const sf = await loadStorefront(owner.id, owner.businessName);
   let draftConfig: import("@/generated/prisma/client").Prisma.InputJsonValue =
     sf.draftConfig as import("@/generated/prisma/client").Prisma.InputJsonValue;
@@ -116,7 +116,7 @@ export async function syncBlogDefaults() {
 }
 
 export async function updateBlogSettings(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const sf = await loadStorefront(owner.id, owner.businessName);
   const settings: StorefrontBlogSettings = {
     enabled: formData.get("enabled") === "on",
@@ -136,7 +136,7 @@ export async function updateBlogSettings(formData: FormData) {
 }
 
 export async function createBlogPost(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const sf = await loadStorefront(owner.id, owner.businessName);
   const title = String(formData.get("title") ?? "").trim().slice(0, 120);
   const slug = slugifyBlogSlug(String(formData.get("slug") ?? title));
@@ -152,7 +152,7 @@ export async function createBlogPost(formData: FormData) {
 }
 
 export async function updateBlogPost(postId: string, formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const sf = await loadStorefront(owner.id, owner.businessName);
   const posts = extractBlogPosts(sf.draftConfig);
   const post = findBlogPostById(posts, postId);
@@ -209,7 +209,7 @@ export async function updateBlogPost(postId: string, formData: FormData) {
 }
 
 export async function publishBlogPost(postId: string) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const sf = await loadStorefront(owner.id, owner.businessName);
   const posts = extractBlogPosts(sf.draftConfig);
   const post = findBlogPostById(posts, postId);
@@ -236,7 +236,7 @@ export async function publishBlogPost(postId: string) {
 }
 
 export async function unpublishBlogPost(postId: string) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const sf = await loadStorefront(owner.id, owner.businessName);
   const posts = extractBlogPosts(sf.draftConfig);
   const post = findBlogPostById(posts, postId);
@@ -261,7 +261,7 @@ export async function unpublishBlogPost(postId: string) {
 }
 
 export async function deleteBlogPost(postId: string) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const sf = await loadStorefront(owner.id, owner.businessName);
   const posts = extractBlogPosts(sf.draftConfig);
   const post = findBlogPostById(posts, postId);

@@ -3,14 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
 import { withWebsiteStandId } from "@/lib/storefront/website-stand";
 import { patchSiteConfig } from "@/lib/website/persistence/site-redirect-patch";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 
 export async function setWebsiteStandAction(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const standId = String(formData.get("standId") ?? "");
   const stand = await prisma.stand.findFirst({
     where: { id: standId, ownerId: owner.id },

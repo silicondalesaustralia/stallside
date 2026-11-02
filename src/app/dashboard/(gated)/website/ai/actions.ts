@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import type { Prisma } from "@/generated/prisma/client";
 import {
   ensureStorefront,
@@ -85,7 +85,7 @@ export async function scaffoldAiWebsiteDraft(
   _prev: AiGenerateState,
   formData: FormData,
 ): Promise<AiGenerateState> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   if (!canUseAiWebsiteBuilder(owner.id)) {
     return { ok: false, error: "AI website builder is not enabled for this account." };
   }
@@ -149,7 +149,7 @@ export async function buildAiWebsiteDraft(
   _prev: AiGenerateState,
   formData: FormData,
 ): Promise<AiGenerateState> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   if (!canUseAiWebsiteBuilder(owner.id)) {
     return { ok: false, error: "AI website builder is not enabled for this account." };
   }
@@ -298,7 +298,7 @@ export async function generateAiWebsiteDraft(
 }
 
 export async function publishAiWebsiteDraft() {
-  const { owner, user } = await requireWebsiteOwner();
+  const { owner, user } = await requireWebsiteProOwner();
   if (!canUseAiWebsiteBuilder(owner.id)) {
     redirect(webStudioPath("studio"));
   }

@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
 import { randomUUID } from "crypto";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import type { Prisma } from "@/generated/prisma/client";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import {
@@ -72,7 +72,7 @@ async function loadDraftConfig(ownerId: string, businessName: string) {
 
 /** Persist merged builtin pages (about, contact, policy) when missing from draft config. */
 export async function syncBuiltinCustomPages() {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const storefront = await loadDraftConfig(owner.id, owner.businessName);
   if (!customPagesNeedSync(storefront.draftConfig)) return;
 
@@ -88,7 +88,7 @@ export async function syncBuiltinCustomPages() {
 }
 
 export async function createCustomPage(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const template = parseTemplateId(String(formData.get("template") ?? ""));
   const title = String(formData.get("title") ?? "").trim().slice(0, 80);
   const slugInput = slugifyPageSlug(String(formData.get("slug") ?? title));
@@ -130,7 +130,7 @@ export async function createCustomPage(formData: FormData) {
 }
 
 export async function updateCustomPageMeta(pageId: string, formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const storefront = await loadDraftConfig(owner.id, owner.businessName);
   const pages = ensureCustomPages(storefront.draftConfig);
   const page = findCustomPageById(pages, pageId);
@@ -182,7 +182,7 @@ export async function updateCustomPageMeta(pageId: string, formData: FormData) {
 }
 
 export async function deleteCustomPage(pageId: string) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const storefront = await loadDraftConfig(owner.id, owner.businessName);
   const pages = ensureCustomPages(storefront.draftConfig);
   const page = findCustomPageById(pages, pageId);
@@ -240,7 +240,7 @@ export async function saveCustomPageDraft(
   expectedRevision: number,
   returnTo?: string,
 ): Promise<EditorSaveResult> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const nodes = parseNodesJson(nodesJson);
   const invalid = craftPageSaveErrors(nodes, "content");
   if (invalid.length > 0) return invalidResult(invalid);
@@ -265,7 +265,7 @@ export async function publishCustomPageDraft(
   expectedRevision: number,
   returnTo?: string,
 ): Promise<EditorSaveResult> {
-  const { owner, user } = await requireWebsiteOwner();
+  const { owner, user } = await requireWebsiteProOwner();
   const nodes = parseNodesJson(nodesJson);
   const invalid = craftPageSaveErrors(nodes, "content");
   if (invalid.length > 0) return invalidResult(invalid);
@@ -287,7 +287,7 @@ export async function publishCustomPageDraft(
 }
 
 export async function reorderCustomPages(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const orderRaw = String(formData.get("order") ?? "");
   const ids = orderRaw.split(",").map((s) => s.trim()).filter(Boolean);
   const storefront = await loadDraftConfig(owner.id, owner.businessName);

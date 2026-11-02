@@ -9,7 +9,7 @@ import {
 } from "@/lib/stand-timezone";
 import type { BusinessSiteUrl } from "@/lib/storefront/business-site-url";
 import { updateStand } from "../actions";
-import StandSiteUrlField from "./StandSiteUrlField";
+import StandSiteUrlField, { type StoreLink } from "./StandSiteUrlField";
 
 type StandFields = {
   id: string;
@@ -19,7 +19,17 @@ type StandFields = {
   timezone: string;
 };
 
-export default function StandEditForm({ stand, site }: { stand: StandFields; site: BusinessSiteUrl | null }) {
+export default function StandEditForm({
+  stand,
+  site,
+  isPro,
+  storeLink,
+}: {
+  stand: StandFields;
+  site: BusinessSiteUrl | null;
+  isPro: boolean;
+  storeLink: StoreLink;
+}) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -63,7 +73,7 @@ export default function StandEditForm({ stand, site }: { stand: StandFields; sit
           className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
         />
       </label>
-      <StandSiteUrlField site={site} />
+      <StandSiteUrlField site={site} isPro={isPro} storeLink={storeLink} />
       <label className="flex flex-col gap-2 text-sm">
         <span className="font-medium">Suburb / location</span>
         <input

@@ -7,7 +7,7 @@ import { normalizeBusinessMode } from "@/lib/business-mode";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { parseStorefrontConfig } from "@/lib/storefront/config";
 import { writeStorefrontDraft } from "@/lib/website/persistence/draft-store";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { instantiateTemplate } from "@/lib/website/templates/instantiate";
 import { findTemplatePackage } from "@/lib/website/templates/packages";
 import { applyTemplateToDraft, undoTemplateOnDraft } from "@/lib/website/templates/restore-point";
@@ -32,7 +32,7 @@ function revalidateWebsite() {
 
 /** Replaces the homepage and shop layouts in the draft; the old ones are kept for undo. */
 export async function applyTemplatePackage(packageId: string) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const mode = normalizeBusinessMode(owner.businessMode);
   const pkg = findTemplatePackage(packageId);
   if (!pkg || !pkg.businessModes.includes(mode)) redirect(`${TEMPLATES_PATH}?error=invalid`);
@@ -59,7 +59,7 @@ export async function applyTemplatePackage(packageId: string) {
 }
 
 export async function undoTemplatePackage() {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const draft = undoTemplateOnDraft(storefront.draftConfig);
   if (!draft) redirect(TEMPLATES_PATH);

@@ -8,7 +8,7 @@ import {
   type LayoutSaveResult,
   type LayoutTarget,
 } from "@/lib/website/persistence/layout-save";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 
 export type AutosaveResult = LayoutSaveResult | { ok: false; error: "failed"; message: string };
 
@@ -51,7 +51,7 @@ export async function autosaveWebsiteLayout(
   nodesJson: string,
   expectedRevision: number,
 ): Promise<AutosaveResult> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const target = parseTarget(targetInput);
   const nodes = parseNodes(nodesJson);
   if (!target || !nodes || !Number.isInteger(expectedRevision)) return INVALID;

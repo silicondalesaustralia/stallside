@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import {
   extractBlogPosts,
@@ -27,7 +27,7 @@ function fail(message: string): never {
 }
 
 async function load() {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const sf = await ensureStorefront(owner.id, owner.businessName);
   return { owner, sf, topics: withDefaultBlogTopic(extractBlogTopics(sf.draftConfig)) };
 }

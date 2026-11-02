@@ -5,13 +5,13 @@ import { redirect } from "next/navigation";
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { webStudioPath } from "@/lib/website/web-studio-nav";
 import { profileFromForm } from "@/lib/seo/business-profile-form";
 
 /** Saves the Google & search profile. It goes live straight away (it isn't part of the page draft). */
 export async function saveBusinessProfile(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const result = profileFromForm(formData);
   if (!result.ok) {
     redirect(`${webStudioPath("details", { profile_error: result.error.slice(0, 200) })}#search-profile`);

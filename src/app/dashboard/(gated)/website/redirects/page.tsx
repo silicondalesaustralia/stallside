@@ -1,6 +1,8 @@
 import WebsiteFormError from "@/components/website/WebsiteFormError";
 import PageHeader from "@/components/dashboard/ui/PageHeader";
 import { secondaryButtonClass } from "@/components/dashboard/ui/button-styles";
+import ProUpgradeCard from "@/components/dashboard/ProUpgradeCard";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import { requireOwner } from "@/lib/session";
 import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { extractStorefrontRedirects } from "@/lib/studio/redirects";
@@ -20,6 +22,17 @@ export default async function WebsiteSeoRedirectsPage({
 }) {
   const { owner } = await requireOwner();
   const sp = await searchParams;
+  if (!(await ownerIdHasProAccess(owner.id))) {
+    return (
+      <main className="mx-auto flex max-w-4xl flex-col gap-5 pb-12">
+        <PageHeader title="URL redirects" />
+        <ProUpgradeCard eyebrow="URL redirects">
+          Send old links to new pages when you rename a product or page, so customers and Google never hit a dead
+          end. Included with Vendl Pro.
+        </ProUpgradeCard>
+      </main>
+    );
+  }
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const redirects = extractStorefrontRedirects(storefront.draftConfig);
   const published = extractStorefrontRedirects(storefront.publishedConfig);

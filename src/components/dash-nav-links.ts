@@ -120,7 +120,9 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
 ];
 
 /** Which beta nav links the signed-in owner can see. */
-export type NavAccess = { website: boolean; social: boolean };
+export type NavAccess = { website: boolean; social: boolean; pro: boolean };
+
+export const WHY_PRO_PATH = "/dashboard/why-pro";
 
 /** Groups for the owner's access: Website-beta links removed, Social "Soon"; empty groups dropped. */
 export function visibleNavGroups(showWebsite: boolean, showSocial = false): DashNavGroup[] {

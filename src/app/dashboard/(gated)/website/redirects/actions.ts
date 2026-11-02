@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
 import { patchLiveConfig } from "@/lib/website/persistence/live-patch";
 import {
@@ -18,8 +19,15 @@ import { writeDraftOrRedirect } from "@/lib/website/persistence/draft-redirect";
 
 const REDIRECTS_PATH = "/dashboard/website/redirects";
 
+/** Website owner gate plus Pro; non-Pro owners land back on the page's upgrade card. */
+async function requireRedirectsOwner() {
+  const session = await requireWebsiteOwner();
+  if (!(await ownerIdHasProAccess(session.owner.id))) redirect(REDIRECTS_PATH);
+  return session;
+}
+
 export async function addStorefrontRedirect(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireRedirectsOwner();
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const existing = extractStorefrontRedirects(storefront.draftConfig);
   const next = sanitizeRedirectInput({
@@ -50,7 +58,7 @@ export async function addStorefrontRedirect(formData: FormData) {
 }
 
 export async function deleteStorefrontRedirect(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireRedirectsOwner();
   const id = String(formData.get("id") ?? "");
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const existing = extractStorefrontRedirects(storefront.draftConfig);
@@ -69,7 +77,7 @@ export async function deleteStorefrontRedirect(formData: FormData) {
 }
 
 export async function toggleStorefrontRedirect(formData: FormData) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireRedirectsOwner();
   const id = String(formData.get("id") ?? "");
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const existing = extractStorefrontRedirects(storefront.draftConfig);
@@ -91,7 +99,7 @@ export async function toggleStorefrontRedirect(formData: FormData) {
 
 /** Makes only the redirect list live; other draft changes wait for "Publish website". */
 export async function publishStorefrontRedirects() {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireRedirectsOwner();
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const redirects = extractStorefrontRedirects(storefront.draftConfig);
   const applied = await patchLiveConfig(

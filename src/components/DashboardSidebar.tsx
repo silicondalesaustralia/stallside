@@ -7,7 +7,8 @@ import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
 import SidebarNavGroup from "@/components/SidebarNavGroup";
 import SidebarNavItem from "@/components/SidebarNavItem";
 import SidebarSoonItem from "@/components/SidebarSoonItem";
-import { activeNavHref, visibleNavGroups, type NavAccess } from "@/components/dash-nav-links";
+import UpgradeNavLink from "@/components/UpgradeNavLink";
+import { activeNavHref, visibleNavGroups, WHY_PRO_PATH, type NavAccess } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
   type DashboardSetupAlerts,
@@ -62,6 +63,9 @@ export default function DashboardSidebar({
         </button>
       </div>
       <nav className="flex-1 overflow-y-auto px-2 py-3">
+        {navAccess.pro ? null : (
+          <UpgradeNavLink collapsed={collapsed} active={pathname.startsWith(WHY_PRO_PATH)} />
+        )}
         {groups.map((group, index) => (
           <SidebarNavGroup
             key={group.heading ?? `group-${index}`}

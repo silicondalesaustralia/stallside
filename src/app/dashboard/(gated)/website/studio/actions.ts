@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SerializedNodes } from "@craftjs/core";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import type { Prisma } from "@/generated/prisma/client";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import {
@@ -80,7 +80,7 @@ export async function saveWebsiteStudioDraft(
   expectedRevision: number,
   returnTo?: string,
 ): Promise<EditorSaveResult> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const templateId = parseTemplateId(templateIdRaw);
   const nodes = parseNodesJson(nodesJson);
   const invalid = craftPageSaveErrors(nodes, "home");
@@ -106,7 +106,7 @@ export async function publishWebsiteStudioDraft(
   expectedRevision: number,
   returnTo?: string,
 ): Promise<EditorSaveResult> {
-  const { owner, user } = await requireWebsiteOwner();
+  const { owner, user } = await requireWebsiteProOwner();
   const templateId = parseTemplateId(templateIdRaw);
   const nodes = parseNodesJson(nodesJson);
   const invalid = craftPageSaveErrors(nodes, "home");
@@ -129,7 +129,7 @@ export async function publishWebsiteStudioDraft(
 }
 
 export async function applyWebsiteStudioTemplate(templateIdRaw: string) {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   const templateId = parseTemplateId(templateIdRaw);
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const existing = extractWebsiteStudio(storefront.draftConfig);
@@ -160,7 +160,7 @@ export async function saveStorefrontHeaderStyle(input: {
   logoHeight?: number;
   expectedRevision: number;
 }): Promise<{ ok: true; revision: number } | { ok: false; error: string }> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   try {
     const storefront = await ensureStorefront(owner.id, owner.businessName);
     const base = parseStorefrontConfig(storefront.draftConfig);

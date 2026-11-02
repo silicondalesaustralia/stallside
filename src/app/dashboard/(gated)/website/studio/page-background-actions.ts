@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import type { Prisma } from "@/generated/prisma/client";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import { DRAFT_CONFLICT_MESSAGE, writeStorefrontDraft } from "@/lib/website/persistence/draft-store";
@@ -31,7 +31,7 @@ async function writeThemeOverrides(
   expectedRevision: number,
   logLabel: string,
 ): Promise<SaveResult> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   try {
     const storefront = await ensureStorefront(owner.id, owner.businessName);
     const raw =

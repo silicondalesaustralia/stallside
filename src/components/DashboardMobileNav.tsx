@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import BrandLockup from "@/components/BrandLockup";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
 import MobileNavLinkItem from "@/components/MobileNavLinkItem";
-import { dashLinkActive, mobileTabs, visibleNavGroups, type NavAccess } from "@/components/dash-nav-links";
+import UpgradeNavLink from "@/components/UpgradeNavLink";
+import { dashLinkActive, mobileTabs, visibleNavGroups, WHY_PRO_PATH, type NavAccess } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
   type DashboardSetupAlerts,
@@ -79,6 +80,9 @@ export default function DashboardMobileNav({
               needsBusiness={setupAlerts.needsBusiness}
             />
             <nav className="mt-3 max-h-[70vh] overflow-y-auto border-t border-white/10 pt-3">
+              {navAccess.pro ? null : (
+                <UpgradeNavLink active={pathname.startsWith(WHY_PRO_PATH)} onNavigate={() => setOpen(false)} />
+              )}
               {visibleNavGroups(navAccess.website, navAccess.social).map((group, index) => (
                 <div key={group.heading ?? `group-${index}`} className={index > 0 ? "mt-2" : undefined}>
                   {group.heading ? (

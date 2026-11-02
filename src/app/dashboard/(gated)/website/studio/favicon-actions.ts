@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import type { Prisma } from "@/generated/prisma/client";
-import { requireWebsiteOwner } from "@/lib/website/require-website-owner";
+import { requireWebsiteProOwner } from "@/lib/website/require-website-owner";
 import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefront";
 import { DRAFT_CONFLICT_MESSAGE, parseExpectedRevision, writeStorefrontDraft } from "@/lib/website/persistence/draft-store";
 import { uploadStorefrontFavicon } from "@/lib/storefront/brand-asset-upload";
@@ -13,7 +13,7 @@ export type FaviconSaveResult =
 
 /** Uploads (`favicon` file) or clears (`remove=1`) the site favicon in the draft. */
 export async function saveStorefrontFavicon(formData: FormData): Promise<FaviconSaveResult> {
-  const { owner } = await requireWebsiteOwner();
+  const { owner } = await requireWebsiteProOwner();
   try {
     const expectedRevision = parseExpectedRevision(formData.get("expectedRevision"));
     if (expectedRevision === null) return { ok: false, error: "Reload the editor and try again." };
