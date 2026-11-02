@@ -1,12 +1,13 @@
 /**
  * Draft keys with their own publish flow (blog posts publish individually,
- * redirects publish on their own). Restoring an old site snapshot keeps the
+ * redirects and tags & pixels publish on their own). Restoring an old site snapshot keeps the
  * current values so deleted posts don't come back and new ones aren't lost.
  */
 export const INDEPENDENTLY_PUBLISHED_KEYS = [
   "blogPosts",
   "blogTopics",
   "storefrontRedirects",
+  "storefrontTracking",
 ] as const;
 
 function asRecord(raw: unknown): Record<string, unknown> {

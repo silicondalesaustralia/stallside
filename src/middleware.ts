@@ -183,6 +183,8 @@ export async function middleware(request: NextRequest) {
   }
 
   const requestHeaders = new Headers(request.headers);
+  // Only applyTenantRewrite may set this; it switches seller tags on and Vendl's off.
+  requestHeaders.delete("x-vendl-tenant-slug");
   requestHeaders.set("x-stallside-pathname", pathname);
   requestHeaders.set("x-stallside-search", request.nextUrl.search);
 

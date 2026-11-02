@@ -22,6 +22,7 @@ import {
 import { computeVendlCheckoutFees } from "@/lib/stallside-fee";
 import { loadedCartHandover } from "@/lib/fulfilment/cart-handover";
 import { DELIVERY_NEEDS_CARD } from "@/lib/fulfilment/handover-choice";
+import { captureTrackingAttribution } from "@/lib/website/tracking/server/attribution";
 
 export async function startPayPalCheckout(input: {
   standSlug: string;
@@ -87,11 +88,13 @@ export async function startPayPalCheckout(input: {
       { rail: "paypal", currency: stand.currency },
     );
 
+    const trackingAttribution = await captureTrackingAttribution(stand.ownerId);
     const order = await prisma.order.create({
       data: {
         standId: stand.id,
         ownerId: stand.ownerId,
         orderNumber,
+        trackingAttribution,
         paymentMethod: PaymentMethod.PAYPAL,
         paymentStatus: PaymentStatus.PENDING,
         subtotalCents,

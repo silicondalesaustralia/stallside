@@ -11,6 +11,7 @@ import { notifyOrderCustomer } from "@/lib/notify-order-customer";
 import { decrementStockForOrder } from "@/lib/checkout";
 import { syncSaleToSquare } from "@/lib/square/sync-stock";
 import { syncOrderProcessorFees } from "@/lib/order-fees/sync-order-fees";
+import { sendServerConversions } from "@/lib/website/tracking/server/send-conversions";
 
 export async function fulfillPaidCardOrder(
   orderId: string,
@@ -168,6 +169,9 @@ async function fulfillPaidOnlineOrder(
       : syncSaleToSquare({ ownerId: order.ownerId, orderId, items }),
     syncOrderProcessorFees(orderId).catch((error) => {
       console.error("Processor fee sync failed", error);
+    }),
+    sendServerConversions(orderId).catch((error) => {
+      console.error("Server conversions failed", error);
     }),
     (async () => {
       try {

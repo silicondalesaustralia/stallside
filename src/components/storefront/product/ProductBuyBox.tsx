@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { trackViewItem } from "@/lib/website/tracking/emit-commerce";
 import ProductDetailActions from "@/app/s/[standSlug]/ProductDetailActions";
 import { useSectionText } from "@/components/studio/SectionStyleContext";
 import type { PublicProductCard } from "@/lib/public-product";
@@ -34,6 +35,10 @@ export default function ProductBuyBox({
   const cartLabel = useSectionText("addToCart", "Add to cart");
   const checkoutLabel = useSectionText("addAndCheckout", "Add & checkout");
   const addLabel = buttons === "checkout" ? checkoutLabel : cartLabel;
+  const { id, name, priceCents } = product;
+  useEffect(() => {
+    trackViewItem({ id, name }, priceCents, currency);
+  }, [id, name, priceCents, currency]);
   return (
     <>
       <div ref={actionsRef} className="mt-8">

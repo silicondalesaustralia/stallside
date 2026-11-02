@@ -36,6 +36,7 @@ import {
 import { contactError, loadedCartHandover } from "@/lib/fulfilment/cart-handover";
 import { loadedCartShippingCents } from "@/lib/shipping/cart-shipping";
 import { parseHandover, type HandoverValue } from "@/lib/fulfilment/handover-choice";
+import { captureTrackingAttribution } from "@/lib/website/tracking/server/attribution";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -168,11 +169,13 @@ export async function startCardCheckout(input: {
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
 
+    const trackingAttribution = await captureTrackingAttribution(stand.ownerId);
     const order = await prisma.order.create({
       data: {
         standId: stand.id,
         ownerId: stand.ownerId,
         orderNumber,
+        trackingAttribution,
         paymentMethod: PaymentMethod.CARD,
         paymentStatus: PaymentStatus.PENDING,
         subtotalCents,

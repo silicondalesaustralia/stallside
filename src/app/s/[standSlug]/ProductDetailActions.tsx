@@ -24,6 +24,7 @@ import PreOrderDetails from "./PreOrderDetails";
 import QtyStepper from "./QtyStepper";
 import ProductActionButtons from "@/components/storefront/product/ProductActionButtons";
 import type { ProductButtons } from "@/lib/studio/product-buttons";
+import { trackAddToCart } from "@/lib/website/tracking/emit-commerce";
 
 function stockTone(label: string) {
   if (label.startsWith("Sold out") || label.startsWith("Orders closed")) {
@@ -184,6 +185,7 @@ export default function ProductDetailActions({
         choiceIds,
       );
     }
+    trackAddToCart(product, singleGroup ? product.priceCents : unitCents, singleGroup ? multiPickCount : qty, currency);
 
     if (goCart) router.push(cartHref);
    

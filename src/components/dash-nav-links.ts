@@ -87,6 +87,7 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
         alsoActiveOn: WEB_STUDIO_PREFIXES,
       },
       { href: "/dashboard/website/redirects", label: "Redirects", websiteOnly: true },
+      { href: "/dashboard/website/tags-pixels", label: "Tags & Pixels", websiteOnly: true },
       { href: "/dashboard/website/domains", label: "Domains", websiteOnly: true },
     ],
   },

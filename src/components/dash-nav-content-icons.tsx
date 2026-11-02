@@ -17,6 +17,9 @@ export const CONTENT_NAV_ICONS: Record<string, React.ReactNode> = {
   "/dashboard/website/redirects": (
     <Icon d="M4 7h11l-3-3M15 7l-3 3M20 17H9l3 3M9 17l3-3" />
   ),
+  "/dashboard/website/tags-pixels": (
+    <Icon d="M8 8l-5 4 5 4M16 8l5 4-5 4M14 4l-4 16" />
+  ),
   "/dashboard/website/domains": (
     <Icon d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1" />
   ),

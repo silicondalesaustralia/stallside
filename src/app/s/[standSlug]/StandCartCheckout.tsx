@@ -68,6 +68,7 @@ import {
 } from "@/lib/fulfilment/handover-choice";
 import { useAtStall } from "@/components/storefront/useAtStall";
 import { shopButtonColour } from "@/lib/storefront/shop-button-colour";
+import { trackBeginCheckout, trackPurchase } from "@/lib/website/tracking/emit-commerce";
 import { shippingCostCents, type ShippingSettings } from "@/lib/shipping/shipping-cost";
 
 type LocalTransferInfo = {
@@ -408,7 +409,8 @@ export default function StandCartCheckout({
     );
   }
 
-  function finishOk(via: "cash" | "local_transfer" | "square") {
+  function finishOk(via: "cash" | "local_transfer" | "square", orderNumber?: string) {
+    if (orderNumber) trackPurchase(orderNumber, lines, total, currency);
     persist([]);
     const sale = { standSlug, via: via === "square" ? "cash" : via, totalCents: total, currency };
     if (demoProduct) {
@@ -440,7 +442,7 @@ export default function StandCartCheckout({
         setError(result.error);
         return;
       }
-      if ("orderNumber" in result) finishOk("cash");
+      if ("orderNumber" in result) finishOk("cash", result.orderNumber);
     });
   }
 
@@ -459,7 +461,7 @@ export default function StandCartCheckout({
         setError(result.error);
         return;
       }
-      if ("orderNumber" in result) finishOk("local_transfer");
+      if ("orderNumber" in result) finishOk("local_transfer", result.orderNumber);
     });
   }
 
@@ -658,8 +660,8 @@ export default function StandCartCheckout({
           onCash={() => setStep("cash-confirm")}
           onLocalTransfer={() => setStep("lt-confirm")}
           onCard={payCard}
-          onSquareSuccess={() => {
-            finishOk("square");
+          onSquareSuccess={(orderNumber) => {
+            finishOk("square", orderNumber);
           }}
           onPayPalError={setError}
           onBack={() => setStep("cart")}
@@ -710,6 +712,7 @@ export default function StandCartCheckout({
               return;
             }
             setError(null);
+            trackBeginCheckout(lines, total, currency);
             setStep("pay");
           }}
         />
