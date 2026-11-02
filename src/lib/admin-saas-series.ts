@@ -11,6 +11,7 @@ import {
 export async function getSaasSeries(
   start: Date,
   end: Date,
+  timeZone?: string,
 ): Promise<SaasSeriesPoint[]> {
   const demoSlugs = [...demoStandSlugs()];
 
@@ -41,5 +42,5 @@ export async function getSaasSeries(
     ...invites.map((row) => ({ at: row.createdAt, metric: "invites" as const })),
   ];
 
-  return buildSaasSeries(events, start, end);
+  return buildSaasSeries(events, start, end, timeZone);
 }

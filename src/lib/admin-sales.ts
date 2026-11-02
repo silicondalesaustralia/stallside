@@ -62,6 +62,7 @@ export async function getAdminSalesWindow(
   start: Date,
   end: Date,
   rates: AudRates,
+  timeZone?: string,
 ): Promise<AdminSalesWindow> {
   const orders = await prisma.order.findMany({
     where: { ...countedSalesWhere(), createdAt: { gte: start, lte: end } },
@@ -86,7 +87,7 @@ export async function getAdminSalesWindow(
       noFee: order.platformFeeCents <= 0,
     });
   }
-  return { ...totals, points: buildSalesSeries(payments, start, end) };
+  return { ...totals, points: buildSalesSeries(payments, start, end, timeZone) };
 }
 
 /** Gross counted sales per owner, grouped by currency. */

@@ -4,6 +4,7 @@ import { inviteHasSeats, lifetimeInviteUrl } from "@/lib/lifetime-invite";
 import { createLifetimeInviteAction } from "./actions";
 import InviteCopyLink from "@/components/InviteCopyLink";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
+import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
 
 export default async function AdminInvitesPage({
   searchParams,
@@ -131,7 +132,7 @@ export default async function AdminInvitesPage({
                       {invite.note || "-"}
                     </td>
                     <td className="py-3 text-[var(--muted)]">
-                      {invite.createdAt.toLocaleDateString()}
+                      {invite.createdAt.toLocaleDateString("en-AU", { timeZone: DEFAULT_TIMEZONE })}
                     </td>
                   </tr>
                 );

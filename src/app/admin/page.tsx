@@ -7,6 +7,7 @@ import { getLtvWindow } from "@/lib/admin-ltv-window";
 import { getVendorSalesTotals } from "@/lib/admin-vendor-sales";
 import { RANGE_PRESETS, resolveDateWindow } from "@/lib/date-range";
 import { isStripeBillingConfigured } from "@/lib/stripe";
+import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
 import DashPrimaryCta from "@/components/DashPrimaryCta";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import AdminMedianLiveLine from "./AdminMedianLiveLine";
@@ -21,20 +22,19 @@ export default async function AdminOverviewPage({
 }) {
   await requireAdmin();
   const params = await searchParams;
-  const window = resolveDateWindow({
-    range: params.range ?? "30d",
-    from: params.from,
-    to: params.to,
-  });
+  const window = resolveDateWindow(
+    { range: params.range ?? "30d", from: params.from, to: params.to },
+    DEFAULT_TIMEZONE,
+  );
 
   const compare = window.key !== "all";
   const [saas, series, ltv, ltvPrev, vendorSales, vendorSalesAllTime] =
     await Promise.all([
       getSaasStats(),
-      getSaasSeries(window.start, window.end),
-      getLtvWindow(window.start, window.end),
+      getSaasSeries(window.start, window.end, DEFAULT_TIMEZONE),
+      getLtvWindow(window.start, window.end, DEFAULT_TIMEZONE),
       compare
-        ? getLtvWindow(window.prevStart, window.prevEnd)
+        ? getLtvWindow(window.prevStart, window.prevEnd, DEFAULT_TIMEZONE)
         : Promise.resolve(null),
       getVendorSalesTotals({ start: window.start, end: window.end }),
       getVendorSalesTotals(),
@@ -121,6 +121,7 @@ export default async function AdminOverviewPage({
         prevStart={window.prevStart}
         prevEnd={window.prevEnd}
         compare={compare}
+        timeZone={DEFAULT_TIMEZONE}
       />
 
       <Suspense
