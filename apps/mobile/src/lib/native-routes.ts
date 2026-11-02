@@ -29,6 +29,7 @@ export const NATIVE_ROUTES: Record<string, Href> = {
   "production/profit": "/production/profit",
   referrals: "/referrals",
   "settings/tax": "/settings/tax",
+  "business-details": "/business-details",
 };
 
 /** Opens a dashboard path in the app when there's a matching screen, otherwise on the web. */

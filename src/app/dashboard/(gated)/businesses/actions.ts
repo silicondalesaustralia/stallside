@@ -18,7 +18,8 @@ import { ensureStorefront } from "@/lib/catalogue/storefront";
 import { syncWebAddressToName } from "@/lib/storefront/web-address";
 import { GET_STARTED_PATH } from "@/lib/onboarding/onboarding-gate";
 import { sanitizeSignHtml } from "@/lib/sanitize-sign-html";
-import { localTransferForCurrency } from "@/lib/local-transfer";
+import { revalidateStandPaths } from "@/lib/stand/revalidate-stand-paths";
+import { updateOwnerStandDetails } from "@/lib/stand/stand-details";
 import { brandingDataFromForm, socialDataFromForm } from "./stand-branding-from-form";
 import { dollarsToCents } from "@/lib/money";
 import { upsertPreOrderAddonProduct } from "@/lib/preorder-upsell-addon";
@@ -176,82 +177,15 @@ export async function updateStand(standId: string, formData: FormData) {
     return { ok: true as const };
   }
 
-  // Always read as strings - empty must become null in Prisma (undefined = skip).
-  const description = formData.has("description")
-    ? String(formData.get("description") ?? "").trim()
-    : (existing.description ?? "");
-  const locationLabel = String(formData.get("locationLabel") ?? "").trim();
-
-  const parsed = standSchema.safeParse({
-    name: formData.get("name"),
-    description: description || undefined,
-    locationLabel: locationLabel || undefined,
-    currency: formData.get("currency") ?? existing.currency,
-    timezone: resolveStandTimezone(
-      String(formData.get("timezone") ?? existing.timezone ?? DEFAULT_TIMEZONE),
-    ),
+  const result = await updateOwnerStandDetails(owner.id, standId, {
+    name: String(formData.get("name") ?? ""),
+    locationLabel: String(formData.get("locationLabel") ?? ""),
+    currency: String(formData.get("currency") ?? existing.currency),
+    timezone: String(formData.get("timezone") ?? existing.timezone ?? DEFAULT_TIMEZONE),
+    description: formData.has("description") ? String(formData.get("description") ?? "") : undefined,
+    slug: String(formData.get("slug") ?? ""),
   });
-  if (!parsed.success) {
-    const detail = parsed.error.issues[0]?.message;
-    return {
-      error: detail
-        ? `Check business details (${detail}).`
-        : "Check business details and try again.",
-    };
-  }
-
-  let slug = existing.slug;
-  const requestedSlug = String(formData.get("slug") ?? "").trim().toLowerCase();
-  if (requestedSlug && requestedSlug !== existing.slug) {
-    const taken = await prisma.stand.findFirst({
-      where: { slug: requestedSlug, NOT: { id: standId } },
-    });
-    if (taken) return { error: "That slug is already taken." };
-    slug = requestedSlug;
-  }
-
-  const method = localTransferForCurrency(parsed.data.currency);
-  const clearLocal = !method;
-
-  await prisma.stand.update({
-    where: { id: standId },
-    data: {
-      name: parsed.data.name,
-      slug,
-      description: description || null,
-      locationLabel: locationLabel || null,
-      currency: parsed.data.currency,
-      timezone: parsed.data.timezone,
-      ...(clearLocal
-        ? {
-            localTransferAlias: null,
-            localTransferMethodId: null,
-            acceptLocalTransfer: false,
-          }
-        : {}),
-    },
-  });
-
-  revalidateStandPaths(standId, slug, existing.slug);
-  return { ok: true as const };
-}
-
-function revalidateStandPaths(
-  standId: string,
-  slug: string,
-  previousSlug: string,
-) {
-  revalidatePath("/dashboard/businesses");
-  revalidatePath(`/dashboard/businesses/${standId}`);
-  revalidatePath("/dashboard/payments");
-  revalidatePath(`/dashboard/businesses/${standId}/qr`);
-  revalidatePath(`/dashboard/qr/business/${standId}`);
-  revalidatePath(`/s/${slug}`);
-  revalidateTag(standCatalogTag(slug), "max");
-  if (slug !== previousSlug) {
-    revalidatePath(`/s/${previousSlug}`);
-    revalidateTag(standCatalogTag(previousSlug), "max");
-  }
+  return "error" in result ? result : { ok: true as const };
 }
 
 async function parseConversionPatch(

@@ -32,6 +32,7 @@ const NATIVE_HREFS = new Set([
   "/dashboard/production/profit",
   "/dashboard/referrals",
   "/dashboard/settings/tax",
+  "/dashboard/business-details",
 ]);
 
 function featureId(href: string): string {

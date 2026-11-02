@@ -1,6 +1,6 @@
 import { parseAccentColor } from "@/lib/stand-brand";
 import { uploadStandLogo, uploadStandOgImage } from "@/lib/stand-logo-upload";
-import { parseSocialUrl, STAND_SOCIALS } from "@/lib/stand-social";
+import { parseStandSocialLinks } from "@/lib/stand/stand-details";
 
 type StandBrandRow = {
   id: string;
@@ -98,22 +98,5 @@ export function socialDataFromForm(formData: FormData):
       };
     }
   | { ok: false; error: string } {
-  const socialData: Record<string, string | null> = {};
-  for (const social of STAND_SOCIALS) {
-    const parsed = parseSocialUrl(String(formData.get(social.field) ?? ""));
-    if (parsed && typeof parsed === "object" && "error" in parsed) {
-      return { ok: false, error: `${social.label}: ${parsed.error}` };
-    }
-    socialData[social.field] = parsed;
-  }
-  return {
-    ok: true,
-    data: {
-      instagramUrl: socialData.instagramUrl ?? null,
-      facebookUrl: socialData.facebookUrl ?? null,
-      tiktokUrl: socialData.tiktokUrl ?? null,
-      youtubeUrl: socialData.youtubeUrl ?? null,
-      websiteUrl: socialData.websiteUrl ?? null,
-    },
-  };
+  return parseStandSocialLinks((field) => String(formData.get(field) ?? ""));
 }

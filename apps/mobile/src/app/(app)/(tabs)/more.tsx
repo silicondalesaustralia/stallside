@@ -6,11 +6,10 @@ import {
   Text,
   View,
 } from "react-native";
-import { router } from "expo-router";
 import type { MobileFeature } from "@contracts/mobile/me";
 import { useAuth, useToken } from "@/auth/useAuth";
 import { useMe } from "@/data/useMe";
-import { NATIVE_ROUTES } from "@/lib/native-routes";
+import { openDashboardPath } from "@/lib/native-routes";
 import { openOnWeb } from "@/lib/open-web";
 import { colors, spacing } from "@/lib/theme";
 import FeatureRow from "@/components/FeatureRow";
@@ -31,8 +30,7 @@ export default function MoreScreen() {
   const me = useMe();
 
   function openFeature(feature: MobileFeature) {
-    const route = feature.native ? NATIVE_ROUTES[feature.id] : undefined;
-    if (route) router.navigate(route);
+    if (feature.native) openDashboardPath(feature.webPath, token);
     else void openOnWeb(feature.webPath, token);
   }
 

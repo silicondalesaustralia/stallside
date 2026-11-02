@@ -27,6 +27,13 @@ const FEATURE_ICONS: Record<string, IoniconName> = {
   qr: "qr-code-outline",
   payments: "card-outline",
   settings: "person-circle-outline",
+  "business-details": "business-outline",
+  production: "flask-outline",
+  "production.materials": "layers-outline",
+  "production.recipes": "document-text-outline",
+  "production.profit": "trending-up-outline",
+  referrals: "people-circle-outline",
+  "settings.tax": "calculator-outline",
 };
 
 export function featureIcon(id: string): IoniconName {
