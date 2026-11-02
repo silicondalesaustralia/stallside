@@ -145,6 +145,7 @@ export default function SignedInLayout() {
         />
         <Stack.Screen name="referrals" options={{ title: "Referrals" }} />
         <Stack.Screen name="settings/tax" options={{ title: "Tax" }} />
+        <Stack.Screen name="social" options={{ title: "Social" }} />
         <Stack.Screen
           name="business-details"
           options={{ title: "Business details" }}

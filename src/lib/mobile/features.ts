@@ -34,6 +34,7 @@ const NATIVE_HREFS = new Set([
   "/dashboard/referrals",
   "/dashboard/settings/tax",
   "/dashboard/business-details",
+  "/dashboard/social",
 ]);
 
 function featureId(href: string): string {
@@ -42,8 +43,8 @@ function featureId(href: string): string {
 }
 
 /** Built from the web dashboard nav, so a new web section shows up in the app with no app release. */
-export function buildMobileFeatures(): MobileFeature[] {
-  return visibleNavGroups(false).flatMap((group) =>
+export function buildMobileFeatures(showSocial: boolean): MobileFeature[] {
+  return visibleNavGroups(false, showSocial).flatMap((group) =>
     group.links
       .filter((link) => !WEB_ONLY_HREFS.has(link.href))
       .map((link) => ({

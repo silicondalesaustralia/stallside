@@ -1,6 +1,7 @@
 import type { MeResponse } from "@/contracts/mobile/me";
 import { requireMobileOwner } from "@/lib/mobile/require-owner";
 import { buildMobileFeatures } from "@/lib/mobile/features";
+import { socialKitEnabledFor } from "@/lib/beta-features";
 import { listOwnerBusinesses } from "@/lib/selected-business";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { MOBILE_MIN_APP_VERSION, mobileJson, mobileServerError } from "@/lib/mobile/http";
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
         onboardingComplete: owner.onboardingCompletedAt !== null,
       },
       businesses,
-      features: buildMobileFeatures(),
+      features: buildMobileFeatures(socialKitEnabledFor(owner, user.email)),
       minAppVersion: MOBILE_MIN_APP_VERSION,
     });
   } catch (error) {
