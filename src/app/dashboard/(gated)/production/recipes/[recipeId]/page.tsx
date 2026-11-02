@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import NoBusinessYet from "@/components/NoBusinessYet";
-import { prisma } from "@/lib/prisma";
+import { loadLinkableProducts } from "@/lib/production/linkable-products";
 import { costRecipe } from "@/lib/production/batch-costing";
 import { loadCostContext } from "@/lib/production/load-cost-context";
 import { loadProductLinks } from "@/lib/production/load-product-links";
@@ -32,17 +32,7 @@ export default async function RecipePage({ params }: { params: Promise<{ recipeI
   const recipe = ctx.recipeRows.find((r) => r.id === recipeId);
   if (!recipe) notFound();
 
-  const linkable = await prisma.product.findMany({
-    where: {
-      ownerId: scope.ownerId,
-      standId: scope.stand.id,
-      isArchived: false,
-      memberId: null,
-      productRecipe: null,
-    },
-    orderBy: { name: "asc" },
-    select: { id: true, name: true },
-  });
+  const linkable = await loadLinkableProducts(scope.ownerId, scope.stand.id);
   const cost = costRecipe(recipe.id, ctx);
   const currency = scope.stand.currency;
 

@@ -30,6 +30,7 @@ const NATIVE_HREFS = new Set([
   "/dashboard/production",
   "/dashboard/production/materials",
   "/dashboard/production/profit",
+  "/dashboard/production/recipes",
   "/dashboard/referrals",
   "/dashboard/settings/tax",
   "/dashboard/business-details",

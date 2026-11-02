@@ -108,6 +108,18 @@ export default function SignedInLayout() {
         />
         <Stack.Screen name="production/index" options={{ title: "Batches" }} />
         <Stack.Screen
+          name="production/recipes/index"
+          options={{ title: "Recipes & costing" }}
+        />
+        <Stack.Screen
+          name="production/recipes/new"
+          options={{ title: "New recipe" }}
+        />
+        <Stack.Screen
+          name="production/recipes/[recipeId]"
+          options={{ title: "Recipe" }}
+        />
+        <Stack.Screen
           name="production/new"
           options={{ title: "Record a batch" }}
         />

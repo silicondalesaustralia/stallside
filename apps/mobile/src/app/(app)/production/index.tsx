@@ -10,9 +10,7 @@ import {
 import { router } from "expo-router";
 import type { ProductionBatchDto } from "@contracts/mobile/production";
 import { useBusiness } from "@/business/useBusiness";
-import { useToken } from "@/auth/useAuth";
 import { useProduction, useUndoBatch } from "@/data/useProduction";
-import { openOnWeb } from "@/lib/open-web";
 import { colors, spacing } from "@/lib/theme";
 import BatchRow from "@/components/BatchRow";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -20,7 +18,6 @@ import PrimaryButton from "@/components/PrimaryButton";
 
 export default function ProductionScreen() {
   const { selected } = useBusiness();
-  const token = useToken();
   const production = useProduction(selected?.id ?? null);
   const undo = useUndoBatch();
   const data = production.data;
@@ -61,8 +58,7 @@ export default function ProductionScreen() {
       ) : null}
       {data && data.recipes.length === 0 ? (
         <Text style={styles.empty}>
-          Add your materials and build a recipe on the web first, then record
-          batches here.
+          Add your materials and build a recipe first, then record batches here.
         </Text>
       ) : null}
       <Text
@@ -79,9 +75,9 @@ export default function ProductionScreen() {
       </Text>
       <Text
         style={styles.link}
-        onPress={() => void openOnWeb("/dashboard/production/recipes", token)}
+        onPress={() => router.push("/production/recipes")}
       >
-        Recipes on the web
+        Recipes & costing
       </Text>
       {data && data.batches.length > 0 ? (
         <Text style={styles.section}>Recent batches</Text>

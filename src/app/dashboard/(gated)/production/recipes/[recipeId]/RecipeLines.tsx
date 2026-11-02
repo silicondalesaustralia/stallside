@@ -1,20 +1,13 @@
 import Link from "next/link";
-import { ingredientCostPerBase, type CostContext } from "@/lib/production/batch-costing";
+import type { CostContext } from "@/lib/production/batch-costing";
 import { money } from "@/lib/production/format";
+import { recipeLineCostCents } from "@/lib/production/line-cost";
 import type { RecipeRow } from "@/lib/production/load-cost-context";
-import { convertQuantity, formatQuantity } from "@/lib/production/unit-convert";
+import { formatQuantity } from "@/lib/production/unit-convert";
 import ActionForm from "../../ActionForm";
 import UnitSelect from "../../UnitSelect";
 import { inputClass, labelClass, tdClass, thClass } from "../../form-styles";
 import { addRecipeLine, removeRecipeLine } from "../recipe-line-actions";
-
-function lineCost(line: RecipeRow["lines"][number], ctx: CostContext, wasteFactor: number): number | null {
-  if (!line.ingredientId || !line.unit) return null;
-  const ingredient = ctx.ingredients.get(line.ingredientId);
-  const perBase = ingredient ? ingredientCostPerBase(ingredient) : null;
-  const base = ingredient ? convertQuantity(line.quantity, line.unit, ingredient.baseUnit) : null;
-  return perBase == null || base == null ? null : perBase * base * wasteFactor;
-}
 
 export default function RecipeLines({
   recipe,
@@ -49,7 +42,7 @@ export default function RecipeLines({
                 ? ctx.recipeRows.find((r) => r.id === line.componentRecipeId)
                 : undefined;
               const ingredient = line.ingredientId ? ctx.ingredients.get(line.ingredientId) : undefined;
-              const cost = lineCost(line, ctx, wasteFactor);
+              const cost = recipeLineCostCents(line, ctx, wasteFactor);
               return (
                 <tr key={line.id}>
                   <td className={tdClass}>

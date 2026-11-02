@@ -27,6 +27,7 @@ export const NATIVE_ROUTES: Record<string, Href> = {
   production: "/production",
   "production/materials": "/production/materials",
   "production/profit": "/production/profit",
+  "production/recipes": "/production/recipes",
   referrals: "/referrals",
   "settings/tax": "/settings/tax",
   "business-details": "/business-details",
