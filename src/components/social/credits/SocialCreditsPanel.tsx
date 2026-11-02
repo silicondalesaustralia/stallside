@@ -1,6 +1,5 @@
 'use client'
 
-import { TradiesPostCard } from '@/components/tradiespost/ui'
 import type { SocialCreditsView } from '@/lib/socialCredits/creditsView'
 import { SOCIAL_CREDIT_KINDS, SOCIAL_CREDIT_LABELS, SOCIAL_CREDIT_PACKS } from '@/lib/socialCredits/packs'
 import SocialCreditBalance from './SocialCreditBalance'
@@ -18,24 +17,28 @@ export default function SocialCreditsPanel({ view }: Props) {
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
         {SOCIAL_CREDIT_KINDS.map((kind) => (
-          <TradiesPostCard key={kind} padding="md" className="space-y-4">
-            <h2 className="text-sm font-black uppercase tracking-wide text-tradiespost-text-muted">
-              {SOCIAL_CREDIT_LABELS[kind].title}
-            </h2>
+          <section
+            key={kind}
+            className="overflow-hidden rounded-2xl border border-tradiespost-border bg-tradiespost-surface-raised shadow-elevation-rest"
+          >
             <SocialCreditBalance kind={kind} balance={view.summary[kind]} />
-            <div className="space-y-2">
-              {SOCIAL_CREDIT_PACKS.filter((p) => p.kind === kind).map((pack) => (
+            <div className="space-y-2 p-4">
+              <p className="px-1 text-xs font-bold uppercase tracking-wide text-tradiespost-text-muted">
+                Top up {SOCIAL_CREDIT_LABELS[kind].many}
+              </p>
+              {SOCIAL_CREDIT_PACKS.filter((p) => p.kind === kind).map((pack, i) => (
                 <SocialCreditPackButton
                   key={pack.id}
                   pack={pack}
                   currency={view.currency}
+                  popular={i === 1}
                   busy={busyPackId === pack.id}
                   disabled={busyPackId !== null}
                   onBuy={buy}
                 />
               ))}
             </div>
-          </TradiesPostCard>
+          </section>
         ))}
       </div>
       <p className="text-xs text-tradiespost-text-muted">
