@@ -19,7 +19,7 @@ export default function SocialCreditsPanel({ view }: Props) {
         {SOCIAL_CREDIT_KINDS.map((kind) => (
           <section
             key={kind}
-            className="overflow-hidden rounded-2xl border border-tradiespost-border bg-tradiespost-surface-raised shadow-elevation-rest"
+            className="overflow-hidden rounded-[16px] border border-tradiespost-border bg-tradiespost-surface-raised shadow-elevation-rest"
           >
             <SocialCreditBalance kind={kind} balance={view.summary[kind]} />
             <div className="space-y-2 p-4">
