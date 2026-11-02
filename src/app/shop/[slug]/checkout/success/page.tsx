@@ -7,6 +7,8 @@ import { COMMERCE_SUCCESS_KEY } from "@/lib/studio/commerce-pages";
 import CommerceLayoutView from "@/lib/storefront/views/CommerceLayoutView";
 import StudioOrderConfirmationBlock from "@/components/studio/blocks/StudioOrderConfirmationBlock";
 import OrderConfirmationCard from "@/components/checkout/OrderConfirmationCard";
+import TrackStorefrontEvent from "@/components/storefront/tracking/TrackStorefrontEvent";
+import { purchaseEventForSuccessPage } from "@/lib/website/tracking/server/order-purchase";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -33,25 +35,29 @@ export default async function StorefrontCheckoutSuccessPage({ params, searchPara
   const ctx = await loadStorefrontPage(slug, draft);
   const state = await resolveCheckoutSuccess(payment);
   const basePath = await currentStorefrontBasePath(ctx.storefront.slug);
+  const purchase = draft ? null : await purchaseEventForSuccessPage(payment);
 
   return (
-    <CommerceLayoutView
-      ctx={ctx}
-      draft={draft}
-      activePage="checkout"
-      pageKey={COMMERCE_SUCCESS_KEY}
-      commerceContext={{ kind: "success", ownerId: ctx.owner.id, success: state }}
-      renderBlock={(metadata) => <StudioOrderConfirmationBlock metadata={metadata} />}
-      fallback={
-        <div className="storefront-page-content storefront-page-content--narrow py-8">
-          <OrderConfirmationCard
-            state={state}
-            backHref={shopHomePath(ctx.storefront.slug, draft, basePath)}
-            backLabel="Back to shop"
-            siteButtons
-          />
-        </div>
-      }
-    />
+    <>
+      {purchase ? <TrackStorefrontEvent event={purchase} /> : null}
+      <CommerceLayoutView
+        ctx={ctx}
+        draft={draft}
+        activePage="checkout"
+        pageKey={COMMERCE_SUCCESS_KEY}
+        commerceContext={{ kind: "success", ownerId: ctx.owner.id, success: state }}
+        renderBlock={(metadata) => <StudioOrderConfirmationBlock metadata={metadata} />}
+        fallback={
+          <div className="storefront-page-content storefront-page-content--narrow py-8">
+            <OrderConfirmationCard
+              state={state}
+              backHref={shopHomePath(ctx.storefront.slug, draft, basePath)}
+              backLabel="Back to shop"
+              siteButtons
+            />
+          </div>
+        }
+      />
+    </>
   );
 }

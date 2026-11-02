@@ -83,9 +83,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = (await headers()).get("x-stallside-pathname") ?? "";
+  const requestHeaders = await headers();
+  const pathname = requestHeaders.get("x-stallside-pathname") ?? "";
+  // Seller subdomains and custom domains run the seller's own tags instead (see StorefrontTags).
+  const sellerHost = Boolean(requestHeaders.get("x-vendl-tenant-slug"));
   const loadTracking =
-    !pathname.startsWith("/dashboard") && !pathname.startsWith("/admin");
+    !sellerHost && !pathname.startsWith("/dashboard") && !pathname.startsWith("/admin");
 
   return (
     <html

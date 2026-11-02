@@ -19,6 +19,7 @@ import type { BuiltinPageKey } from "@/lib/studio/custom-pages";
 import { POLICY_STATIC_FALLBACK } from "@/lib/studio/policy-content";
 import StudioContactFormBlock from "@/components/studio/blocks/StudioContactFormBlock";
 import { simplePageSeo } from "@/lib/seo/simple-page-seo";
+import TrackingPrivacyNotice from "@/components/storefront/tracking/TrackingPrivacyNotice";
 
 type StorefrontCtx = Awaited<ReturnType<typeof loadStorefrontPage>>;
 
@@ -270,7 +271,16 @@ export async function BuiltinContactPage({ slug, draft }: { slug: string; draft:
 
 export async function BuiltinPrivacyPage({ slug, draft }: { slug: string; draft: boolean }) {
   const ctx = await loadStorefrontPage(slug, draft);
-  return builtinPageShell(slug, draft, "privacy", await renderBuiltinPolicy(ctx, "privacy", "privacy", draft));
+  const policy = await renderBuiltinPolicy(ctx, "privacy", "privacy", draft);
+  return builtinPageShell(
+    slug,
+    draft,
+    "privacy",
+    <>
+      {policy}
+      <TrackingPrivacyNotice slug={ctx.storefront.slug} businessName={ctx.branding.businessName} />
+    </>,
+  );
 }
 
 export async function BuiltinTermsPage({ slug, draft }: { slug: string; draft: boolean }) {

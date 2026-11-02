@@ -30,6 +30,7 @@ import { loadedCartShippingCents } from "@/lib/shipping/cart-shipping";
 import { shippingTax } from "@/lib/tax/shipping-tax";
 import { parseHandover, type HandoverValue } from "@/lib/fulfilment/handover-choice";
 import type { CardPayTiming } from "@/lib/pre-order-pay-options";
+import { captureTrackingAttribution } from "@/lib/website/tracking/server/attribution";
 export type SquareCheckoutCartInput = {
   standSlug: string;
   items?: CartItemInput[];
@@ -131,11 +132,13 @@ export async function createPendingSquareOrder(input: SquareCheckoutCartInput) {
   const saleOrigin = SaleOrigin.VENDL_WEB;
   const platformFeeCents = saleOriginIncursVendlFee(saleOrigin) ? applicationFeeCents : 0;
   const deposit = plan?.deposit ?? null;
+  const trackingAttribution = await captureTrackingAttribution(stand.ownerId);
 
   const order = await prisma.order.create({
     data: {
       standId: stand.id,
       ownerId: stand.ownerId,
+      trackingAttribution,
       orderNumber: `FS-${Date.now().toString(36).toUpperCase()}`,
       paymentMethod: PaymentMethod.SQUARE,
       paymentStatus: PaymentStatus.PENDING,

@@ -40,6 +40,7 @@ import { shippingTax } from "@/lib/tax/shipping-tax";
 import { parseHandover, type HandoverValue } from "@/lib/fulfilment/handover-choice";
 import { PAY_AT_PICKUP_CART_ERROR } from "@/lib/pre-order";
 import type { CardPayTiming } from "@/lib/pre-order-pay-options";
+import { captureTrackingAttribution } from "@/lib/website/tracking/server/attribution";
 
 export async function startCardCheckout(input: {
   standSlug: string;
@@ -183,11 +184,13 @@ export async function startCardCheckout(input: {
 
     const orderNumber = `FS-${Date.now().toString(36).toUpperCase()}`;
 
+    const trackingAttribution = await captureTrackingAttribution(stand.ownerId);
     const order = await prisma.order.create({
       data: {
         standId: stand.id,
         ownerId: stand.ownerId,
         orderNumber,
+        trackingAttribution,
         paymentMethod: PaymentMethod.CARD,
         paymentStatus: PaymentStatus.PENDING,
         subtotalCents,

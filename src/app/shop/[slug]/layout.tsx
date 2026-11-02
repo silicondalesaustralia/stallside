@@ -2,12 +2,13 @@ import { applyStorefrontRedirects } from "@/lib/studio/apply-redirects";
 import { applyPreferredOriginRedirect } from "@/lib/domains/preferred-redirect";
 import { redirectStorefrontSlugAlias } from "@/lib/storefront/slug-alias-redirect";
 import StallVisitMarker from "@/components/storefront/StallVisitMarker";
+import StorefrontTags from "@/components/storefront/tracking/StorefrontTags";
+import { storefrontTrackingMetadata } from "@/lib/website/tracking/metadata";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 
 /** The seller's favicon on every store page (cart, checkout and the rest), instead of Vendl's. */
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
+async function faviconMetadata(slug: string): Promise<Metadata> {
   try {
     const storefront = await prisma.storefront.findFirst({
       where: { slug: decodeURIComponent(slug).trim().toLowerCase(), isPublished: true },
@@ -19,6 +20,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     console.error("[shop layout] favicon", err);
     return {};
   }
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const [favicon, tracking] = await Promise.all([faviconMetadata(slug), storefrontTrackingMetadata(slug)]);
+  return { ...tracking, ...favicon };
 }
 
 export default async function ShopSlugLayout({
@@ -40,6 +47,7 @@ export default async function ShopSlugLayout({
   return (
     <div className="storefront-cq">
       <StallVisitMarker />
+      <StorefrontTags slug={slug} />
       {children}
     </div>
   );

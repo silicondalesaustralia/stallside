@@ -1122,6 +1122,11 @@ model Storefront {
    */
   businessProfile     Json?
   /**
+   * Encrypted server-side conversion tokens (Meta CAPI, TikTok Events API, GA4 API secret).
+   * Saved live, never in draft/published config; see src/lib/website/tracking/secrets.ts.
+   */
+  trackingSecrets     Json?
+  /**
    * Legacy single field; prefer StorefrontDomain rows (Phase 9).
    */
   customDomain        String?
@@ -2071,6 +2076,10 @@ model Order {
   squareLocationId        String?
   receiptEmail            String?
   receiptChannel          ReceiptChannel         @default(NONE)
+  /**
+   * Website ad attribution at checkout (click ids, pixel cookies, IP, UA, consent) for server-side conversions.
+   */
+  trackingAttribution     Json?
   customerId              String?
   customer                Customer?              @relation(fields: [customerId], references: [id], onDelete: SetNull)
   isPreOrder              Boolean                @default(false)
