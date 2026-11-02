@@ -1,15 +1,30 @@
 /**
- * HOST INTEGRATION POINT #4 - usage billing (business model TBD).
+ * HOST INTEGRATION POINT #4 - usage billing (lib/socialCredits).
  *
  * Every paid AI action in the social code funnels through these three hooks:
- *   kind 'render' - an AI image/design render (gpt-image, hybrid, recreate, slides background)
- *   kind 'ai'     - an AI text action (caption, week-plan copy, analysis)
+ *   kind 'render' - an AI image/design render (gpt-image, hybrid, recreate, slides background) -> design credits
+ *   kind 'clip'   - a video clip -> clip credits
+ *   kind 'ai'     - an AI text action (caption, week-plan copy, analysis) -> unmetered
  *
- * Default: unlimited and free (logs only). To charge, implement against
- * Vendl's own credits/wallet. Throwing from hostConsumeCredits blocks the
- * action with a 402 "payment required" response.
+ * Throwing from hostConsumeCredits blocks the action with a 402 "payment required" response.
  */
-export type CreditKind = 'render' | 'ai'
+import { socialDb } from '@/lib/socialHost/socialDb'
+import { creditOwnerForSocialBusiness } from '@/lib/socialCredits/creditOwner'
+import {
+  SocialCreditsExhaustedError,
+  consumeSocialCredits,
+  loadSocialCreditSummary,
+  refundSocialCredits,
+} from '@/lib/socialCredits/ledger'
+import type { SocialCreditKind } from '@/lib/socialCredits/packs'
+
+export type CreditKind = 'render' | 'clip' | 'ai'
+
+function ledgerKind(kind: CreditKind): SocialCreditKind | null {
+  if (kind === 'render') return 'design'
+  if (kind === 'clip') return 'clip'
+  return null
+}
 
 export type CreditContext = {
   /** Social DB business id (uuid). */
@@ -34,10 +49,12 @@ export class HostCreditsExhaustedError extends Error {
  * badge in the UI (GET /api/renders/credits) and the pre-flight checks.
  */
 export async function hostCreditBalance(socialBusinessId: string, kind: CreditKind): Promise<number | null> {
-  void socialBusinessId
-  void kind
-  // TODO(vendl): externalAccountIdFor(socialBusinessId) gives Vendl's account id; return its balance.
-  return null
+  const ledger = ledgerKind(kind)
+  if (!ledger) return null
+  const owner = await creditOwnerForSocialBusiness(socialBusinessId)
+  if (!owner) return 0
+  const summary = await loadSocialCreditSummary(socialDb(), owner.ownerId, owner.isPro)
+  return summary[ledger].available
 }
 
 export async function hostHasCredits(socialBusinessId: string, kind: CreditKind, count = 1): Promise<boolean> {
@@ -47,12 +64,28 @@ export async function hostHasCredits(socialBusinessId: string, kind: CreditKind,
 
 /** Charge after a successful generation. Throw HostCreditsExhaustedError to refuse. */
 export async function hostConsumeCredits(ctx: CreditContext): Promise<void> {
-  // TODO(vendl): debit Vendl's ledger idempotently on ctx.actionId.
-  console.info('[socialHost][credits] consume', ctx)
+  const ledger = ledgerKind(ctx.kind)
+  if (!ledger) return
+  const owner = await creditOwnerForSocialBusiness(ctx.socialBusinessId)
+  if (!owner) throw new HostCreditsExhaustedError()
+  try {
+    await consumeSocialCredits(socialDb(), {
+      ownerId: owner.ownerId,
+      businessId: ctx.socialBusinessId,
+      isPro: owner.isPro,
+      kind: ledger,
+      actionId: ctx.actionId,
+      count: ctx.count,
+    })
+  } catch (err) {
+    if (err instanceof SocialCreditsExhaustedError) throw new HostCreditsExhaustedError(err.message)
+    throw err
+  }
 }
 
-/** Undo a charge when generation failed after charging. Must be idempotent. */
+/** Undo a charge when generation failed after charging. Idempotent. */
 export async function hostRefundCredits(ctx: Pick<CreditContext, 'socialBusinessId' | 'kind' | 'actionId'>): Promise<void> {
-  // TODO(vendl): reverse the debit for ctx.actionId if one exists.
-  console.info('[socialHost][credits] refund', ctx)
+  const ledger = ledgerKind(ctx.kind)
+  if (!ledger) return
+  await refundSocialCredits(socialDb(), ledger, ctx.actionId)
 }

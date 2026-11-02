@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requirePaidBusinessAccess } from '@/lib/billing/requirePaidBusinessAccess'
 import { VIDEO_SOURCE_ERRORS, isVideoSourceExpired } from '@/lib/social/videoClips/limits'
 import { clipJobDurationError, parseClipJobOptions } from '@/lib/social/videoClips/validation'
+import { clipJobCreditActionId } from '@/lib/socialCredits/clipJobCredits'
+import { HostCreditsExhaustedError, hostConsumeCredits, hostRefundCredits } from '@/lib/socialHost/hostCredits'
 
 export const runtime = 'nodejs'
 
@@ -50,6 +52,21 @@ export async function POST(req: NextRequest, context: RouteContext<'/api/social/
   if (durationError) return NextResponse.json({ error: durationError }, { status: 400 })
 
   const jobId = randomUUID()
+  const credit = {
+    socialBusinessId: ctx.businessId,
+    kind: 'clip' as const,
+    actionId: clipJobCreditActionId(jobId),
+  }
+  try {
+    await hostConsumeCredits({ ...credit, count: options.clipCount, feature: 'video_clip' })
+  } catch (err) {
+    if (err instanceof HostCreditsExhaustedError) {
+      return NextResponse.json({ error: err.message, code: 'credits_exhausted' }, { status: 402 })
+    }
+    console.error('[VideoClips] clip credit charge failed', err)
+    return NextResponse.json({ error: 'Could not start clipping' }, { status: 500 })
+  }
+
   const { data: job, error: insertErr } = await ctx.db
     .from('social_video_clip_jobs')
     .insert({
@@ -67,6 +84,9 @@ export async function POST(req: NextRequest, context: RouteContext<'/api/social/
     .single()
 
   if (insertErr) {
+    await hostRefundCredits(credit).catch((err: unknown) =>
+      console.error('[VideoClips] clip credit refund failed', jobId, err),
+    )
     const full = options.clipLength === 'full'
     if (insertErr.code === '23505') {
       return NextResponse.json(

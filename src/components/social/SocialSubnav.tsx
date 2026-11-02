@@ -13,6 +13,7 @@ const TABS = [
   { href: SOCIAL_PATHS.calendar, label: 'Calendar' },
   { href: SOCIAL_PATHS.connections, label: 'Connections' },
   { href: SOCIAL_PATHS.brand, label: 'Brand' },
+  { href: SOCIAL_PATHS.credits, label: 'Credits' },
 ] as const
 
 export default function SocialSubnav({ disabled = false }: { disabled?: boolean }) {

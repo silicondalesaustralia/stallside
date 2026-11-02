@@ -9,6 +9,7 @@ import { extractAudioArgs } from '../../../src/lib/social/videoClips/clipFfmpegA
 import { runFfmpeg } from '../../../src/lib/social/videoBranding/runFfmpeg'
 import { probeVideoDisplay } from '../../../src/lib/social/videoBranding/processBrandingLocally'
 import { recordVideoClipJobUsageEstimate } from '../../../src/lib/social/videoClips/recordVideoClipUsage'
+import { refundUnmadeClips } from '../../../src/lib/socialCredits/clipJobCredits'
 import { downloadSourceToFile } from './sourceDownload'
 import { updateClipJob } from './clipJobQueue'
 import { fetchBrandColor } from './captionRender'
@@ -17,7 +18,6 @@ import { runWithConcurrency } from './runWithConcurrency'
 import { selectClipJobMoments, type MomentSelection } from './clipJobMoments'
 
 const EMPTY_TRANSCRIPT: Transcript = { text: '', segments: [], words: [] }
-
 /** Clips rendered at once. Default 1 fits small (0.5 GB) instances; raise to 2–3 on 4 GB+ machines. */
 const CLIP_CONCURRENCY = Math.min(4, Math.max(1, Number(process.env.VIDEO_CLIP_CONCURRENCY) || 1))
 
@@ -46,7 +46,6 @@ export async function processClipJob(
     renderedDurationSeconds,
     workerDurationMs: Date.now() - workerStartedAt,
   })
-
   try {
     const { data: source, error: sourceErr } = await db
       .from('social_video_sources')
@@ -145,6 +144,7 @@ export async function processClipJob(
     }
     throw err
   } finally {
+    await refundUnmadeClips(db, { ...job, clips_created: clipsCreated })
     await rm(workDir, { recursive: true, force: true }).catch(() => undefined)
   }
 }

@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { refundUnmadeClips } from '../../../src/lib/socialCredits/clipJobCredits'
 
 /** Long sources take a while: transcription + several encodes. */
 export const STALE_CLIP_JOB_MINUTES = 45
@@ -31,9 +32,12 @@ export async function requeueInterruptedClipJobs(db: SupabaseClient, workerId: s
     })
     .eq('status', 'processing')
     .eq('worker_id', workerId)
-    .select('id')
+    .select('id, clip_count, clips_created')
   if (failErr) console.error('[VideoClips] fail interrupted failed', failErr.message)
-  for (const row of interrupted ?? []) console.warn('[VideoClips] failed interrupted clip job', row.id)
+  for (const row of interrupted ?? []) {
+    console.warn('[VideoClips] failed interrupted clip job', row.id)
+    await refundUnmadeClips(db, row)
+  }
   for (const row of requeued ?? []) console.warn('[VideoClips] requeued interrupted clip job', row.id)
   return requeued?.length ?? 0
 }
@@ -53,7 +57,7 @@ export async function recoverStaleClipJobs(db: SupabaseClient, now = Date.now())
     })
     .eq('status', 'processing')
     .lt('claimed_at', cutoff)
-    .select('id, clips_created')
+    .select('id, clip_count, clips_created')
 
   if (error) {
     console.error('[VideoClips] stale recovery failed', error.message)
@@ -61,6 +65,7 @@ export async function recoverStaleClipJobs(db: SupabaseClient, now = Date.now())
   }
   for (const row of data ?? []) {
     console.warn('[VideoClips] recovered stale clip job', row.id, { delivered: row.clips_created })
+    await refundUnmadeClips(db, row)
   }
   return data?.length ?? 0
 }

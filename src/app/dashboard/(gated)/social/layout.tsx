@@ -3,7 +3,9 @@ import { ToastProvider } from '@/components/ui/Toast'
 import SocialComingSoon from '@/components/social/SocialComingSoon'
 import SocialSubnav from '@/components/social/SocialSubnav'
 import { TradiesPostSocialWorkspaceProvider } from '@/components/tradiespost/TradiesPostSocialWorkspaceProvider'
+import SocialCreditsPaywall from '@/components/social/credits/SocialCreditsPaywall'
 import { socialKitEnabledFor } from '@/lib/beta-features'
+import { loadOwnerSocialAccess, withSavedCard } from '@/lib/socialCredits/creditsView'
 import { requireOwner } from '@/lib/session'
 
 export const dynamic = 'force-dynamic'
@@ -22,12 +24,14 @@ export default async function SocialLayout({ children }: { children: React.React
       </>
     )
   }
+  const access = await loadOwnerSocialAccess(owner.id)
+  const paywall = access.canUseSocial ? null : await withSavedCard(access)
   return (
     <ToastProvider>
       <TradiesPostSocialWorkspaceProvider>
         <SocialSubnav />
         <div data-tp-theme className="min-h-full text-tradiespost-text">
-          {children}
+          {paywall ? <SocialCreditsPaywall view={paywall} locked /> : children}
         </div>
       </TradiesPostSocialWorkspaceProvider>
     </ToastProvider>

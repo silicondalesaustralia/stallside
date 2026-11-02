@@ -32,6 +32,7 @@ export const SOCIAL_PATHS = {
   calendar: `${SOCIAL_BASE_PATH}/calendar`,
   connections: `${SOCIAL_BASE_PATH}/connections`,
   brand: `${SOCIAL_BASE_PATH}/brand`,
+  credits: `${SOCIAL_BASE_PATH}/credits`,
 } as const
 
 /** Sidebar page listing every connector (same view as Social → Connections). */

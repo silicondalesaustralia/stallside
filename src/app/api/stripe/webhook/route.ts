@@ -25,6 +25,7 @@ import {
 } from "@/lib/shopper-subscription-webhook";
 import { markDomainPurchasePaid } from "@/lib/domains/purchase-fulfill";
 import { syncRefundsForStripePaymentIntent } from "@/lib/refunds/sync-order-refunds";
+import { handleSocialCreditWebhook } from "@/lib/socialCredits/fulfil";
 
 export const runtime = "nodejs";
 
@@ -106,6 +107,10 @@ export async function POST(req: NextRequest) {
     typeof event.account === "string" ? event.account : undefined;
 
   try {
+    if (await handleSocialCreditWebhook(event)) {
+      return NextResponse.json({ received: true });
+    }
+
     if (event.type === "checkout.session.completed") {
       await handleCheckoutCompleted(
         event.data.object as Stripe.Checkout.Session,

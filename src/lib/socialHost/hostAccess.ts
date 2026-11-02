@@ -1,14 +1,16 @@
 import type { HostRole } from '@/lib/socialHost/hostSession'
+import { creditOwnerForAccount } from '@/lib/socialCredits/creditOwner'
+import { loadSocialAccess } from '@/lib/socialCredits/socialAccess'
 
 /**
  * HOST INTEGRATION POINT #3 - plan gating and team permissions.
- * Return false to block the social features for an account (e.g. not on a plan
- * that includes social). Routes then respond 403 { code: 'capability_required' }.
+ * Pro always; Free only while the owner holds bought credits (connections stay
+ * connected either way). Routes respond 403 { code: 'capability_required' } otherwise.
  */
 export async function hostCanUseSocial(accountId: string): Promise<boolean> {
-  void accountId
-  // TODO(vendl): check the account's plan/entitlement in Vendl's DB.
-  return true
+  const owner = await creditOwnerForAccount(accountId)
+  if (!owner) return false
+  return (await loadSocialAccess(owner)).canUseSocial
 }
 
 /** Who may connect/disconnect social accounts and edit the brand kit. */
