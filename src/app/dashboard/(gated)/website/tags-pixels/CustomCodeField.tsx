@@ -1,11 +1,10 @@
 import { CUSTOM_HEAD_MAX_CHARS } from "@/lib/website/tracking/custom-code";
-import { tagsCardClass, tagsInputClass } from "./tags-styles";
+import { tagsInputClass } from "./tags-styles";
 
 export default function CustomCodeField({ value }: { value: string }) {
   return (
-    <section className={tagsCardClass}>
-      <h2 className="font-semibold text-[var(--field)]">Custom code</h2>
-      <p className="mt-1 text-sm text-[var(--muted)]">
+    <section>
+      <p className="text-sm text-[var(--muted)]">
         For any other tool. Paste its <code>&lt;script&gt;</code> or <code>&lt;meta&gt;</code> tags; anything else is
         ignored. Scripts must load over https and only run on your own website address (your vendl.app subdomain or
         custom domain), after cookie consent where it&apos;s required.

@@ -1,5 +1,5 @@
 import type { TrackingConsentMode } from "@/lib/website/tracking/types";
-import { tagsCardClass, tagsInputClass } from "./tags-styles";
+import { tagsInputClass } from "./tags-styles";
 
 export default function ConsentFields({
   consentMode,
@@ -9,9 +9,8 @@ export default function ConsentFields({
   privacyNotice: boolean;
 }) {
   return (
-    <section className={tagsCardClass}>
-      <h2 className="font-semibold text-[var(--field)]">Cookie consent & privacy</h2>
-      <p className="mt-1 text-sm text-[var(--muted)]">
+    <section>
+      <p className="text-sm text-[var(--muted)]">
         Visitors who see the banner aren&apos;t tracked by ad pixels until they press Accept. Google tags use Consent
         Mode v2, so they only send cookieless pings until then.
       </p>

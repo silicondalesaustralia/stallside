@@ -1,10 +1,10 @@
 import { TRACKING_FIELD_BY_KEY } from "@/lib/website/tracking/fields";
 import type { TrackingIdKey, TrackingIds } from "@/lib/website/tracking/types";
-import { publishTrackingLive } from "./actions";
 import InstallCheckButton from "./InstallCheckButton";
-import { tagsCardClass, tagsPrimaryButton, tagsSecondaryButton } from "./tags-styles";
+import { liveStatusText } from "./tags-data";
+import { tagsCardClass, tagsSecondaryButton } from "./tags-styles";
 
-export default function TagsGoLiveCard({
+export default function TagsValidateCard({
   sitePublished,
   inSync,
   liveIds,
@@ -20,23 +20,8 @@ export default function TagsGoLiveCard({
     .filter((f): f is NonNullable<typeof f> => Boolean(f?.checkUrl));
   return (
     <section className={tagsCardClass}>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="font-semibold text-[var(--field)]">Go live & validate</h2>
-          <p className="mt-1 text-sm text-[var(--muted)]">
-            {!sitePublished
-              ? "Publish your website first. Tags only run on your live site."
-              : inSync
-                ? "Your live website has the latest saved tags."
-                : "You have saved changes that aren't live yet."}
-          </p>
-        </div>
-        <form action={publishTrackingLive}>
-          <button type="submit" disabled={!sitePublished || inSync} className={tagsPrimaryButton}>
-            Make tags live
-          </button>
-        </form>
-      </div>
+      <h2 className="font-semibold text-[var(--field)]">Validate your tags</h2>
+      <p className="mt-1 text-sm text-[var(--muted)]">{liveStatusText(sitePublished, inSync)}</p>
       <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm">
         <li>
           <span className="font-medium">Check installation.</span> Vendl loads your homepage and confirms each tag is there.

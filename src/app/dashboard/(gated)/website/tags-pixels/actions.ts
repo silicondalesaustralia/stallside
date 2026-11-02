@@ -7,46 +7,55 @@ import { ensureStorefront, storefrontPublicPath } from "@/lib/catalogue/storefro
 import { requireTagsPixelsOwner } from "./require-tags-owner";
 import { patchLiveConfig } from "@/lib/website/persistence/live-patch";
 import { writeStorefrontDraft, DRAFT_CONFLICT_MESSAGE } from "@/lib/website/persistence/draft-store";
+import { tagItemBySlug } from "@/lib/website/tracking/catalog";
 import { extractStorefrontTracking, mergeStorefrontTrackingIntoRaw } from "@/lib/website/tracking/config";
 import { parseCustomHeadCode } from "@/lib/website/tracking/custom-code";
 import { normalizeTrackingIds } from "@/lib/website/tracking/normalize";
-import { TRACKING_ID_KEYS, type TrackingConsentMode, type TrackingIdKey } from "@/lib/website/tracking/types";
+import type { StorefrontTracking, TrackingIdKey } from "@/lib/website/tracking/types";
 import { TAGS_PATH, type TagsSaveState } from "./tags-state";
 
-function formValues(formData: FormData): Record<string, string> {
-  const values: Record<string, string> = {};
-  for (const key of [...TRACKING_ID_KEYS, "consentMode", "customHead"]) {
-    values[key] = String(formData.get(key) ?? "");
+type Applied = { next: StorefrontTracking } | { error: string; errors?: TagsSaveState["errors"] };
+
+function applyItem(slug: string, formData: FormData, current: StorefrontTracking): Applied {
+  const item = tagItemBySlug(slug);
+  if (!item) return { error: "Unknown tag." };
+  const remove = formData.get("intent") === "remove";
+  if (item.kind === "consent") {
+    const mode = String(formData.get("consentMode") ?? "");
+    const consentMode = mode === "off" || mode === "all" ? mode : "eu";
+    return { next: { ...current, consentMode, privacyNotice: Boolean(formData.get("privacyNotice")) } };
   }
-  values.privacyNotice = formData.get("privacyNotice") ? "1" : "";
-  return values;
+  if (item.kind === "custom") {
+    const customHead = remove ? "" : String(formData.get("customHead") ?? "").trim();
+    if (customHead && customHead !== current.customHead && !formData.get("customAck")) {
+      return { error: "Tick the box to confirm you trust the custom code before saving it." };
+    }
+    return { next: { ...current, customHead } };
+  }
+  const input: Partial<Record<TrackingIdKey, string>> = {};
+  for (const key of item.keys) input[key] = remove ? "" : String(formData.get(key) ?? "");
+  const { ids, errors } = normalizeTrackingIds(input);
+  if (Object.keys(errors).length > 0) return { error: "Check the highlighted field. Nothing was saved.", errors };
+  const kept = { ...current.ids };
+  for (const key of item.keys) delete kept[key];
+  return { next: { ...current, ids: { ...kept, ...ids } } };
 }
 
-export async function saveTrackingSettings(_prev: TagsSaveState, formData: FormData): Promise<TagsSaveState> {
+export async function saveTagItem(_prev: TagsSaveState, formData: FormData): Promise<TagsSaveState> {
   const { owner } = await requireTagsPixelsOwner();
-  const values = formValues(formData);
-  const idInput: Partial<Record<TrackingIdKey, string>> = {};
-  for (const key of TRACKING_ID_KEYS) idInput[key] = values[key];
-  const { ids, errors } = normalizeTrackingIds(idInput);
-  const fail = (message: string): TagsSaveState => ({ status: "error", message, errors, values, warnings: [] });
-  if (Object.keys(errors).length > 0) return fail("Some IDs need fixing. Nothing was saved.");
-
-  const customHead = values.customHead.trim();
-  const parsed = parseCustomHeadCode(customHead);
+  const values: Record<string, string> = {};
+  for (const [key, value] of formData.entries()) if (typeof value === "string") values[key] = value;
+  const removing = formData.get("intent") === "remove";
   const storefront = await ensureStorefront(owner.id, owner.businessName);
-  const current = extractStorefrontTracking(storefront.draftConfig);
-  if (customHead && customHead !== current.customHead && !formData.get("customAck")) {
-    return fail("Tick the box to confirm you trust the custom code before saving it.");
+  const applied = applyItem(String(formData.get("slug") ?? ""), formData, extractStorefrontTracking(storefront.draftConfig));
+  if ("error" in applied) {
+    return { status: "error", message: applied.error, errors: applied.errors ?? {}, values, warnings: [] };
   }
-  const consentMode: TrackingConsentMode =
-    values.consentMode === "off" || values.consentMode === "all" ? values.consentMode : "eu";
+  const fail = (message: string): TagsSaveState => ({ status: "error", message, errors: {}, values, warnings: [] });
 
   try {
     const next = mergeStorefrontTrackingIntoRaw(storefront.draftConfig, {
-      ids,
-      consentMode,
-      privacyNotice: values.privacyNotice === "1",
-      customHead,
+      ...applied.next,
       updatedAt: new Date().toISOString(),
     });
     const saved = await writeStorefrontDraft({
@@ -60,21 +69,25 @@ export async function saveTrackingSettings(_prev: TagsSaveState, formData: FormD
     return fail("Couldn't save. Please try again.");
   }
 
-  revalidatePath(TAGS_PATH);
-  return { status: "saved", message: "Saved. Make tags live to use them on your website.", errors: {}, values: {}, warnings: parsed.warnings };
+  revalidatePath(TAGS_PATH, "layout");
+  const warnings = parseCustomHeadCode(applied.next.customHead).warnings;
+  const message = removing ? "Removed. Make tags live to update your website." : "Saved. Make tags live to use it on your website.";
+  return { status: "saved", message, errors: {}, values: {}, warnings: formData.has("customHead") ? warnings : [] };
 }
 
 /** Makes only the tags & pixels live; other draft edits wait for "Publish website". */
-export async function publishTrackingLive() {
+export async function publishTrackingLive(formData: FormData) {
   const { owner } = await requireTagsPixelsOwner();
+  const item = tagItemBySlug(String(formData.get("slug") ?? ""));
+  const back = item ? `${TAGS_PATH}/${item.slug}` : TAGS_PATH;
   const storefront = await ensureStorefront(owner.id, owner.businessName);
   const tracking = extractStorefrontTracking(storefront.draftConfig);
   const applied = await patchLiveConfig(
     owner.id,
     (publishedConfig) => mergeStorefrontTrackingIntoRaw(publishedConfig, tracking) as Prisma.InputJsonValue,
   );
-  if (!applied) redirect(`${TAGS_PATH}?error=not_published`);
-  revalidatePath(TAGS_PATH);
+  if (!applied) redirect(`${back}?error=not_published`);
+  revalidatePath(TAGS_PATH, "layout");
   revalidatePath(storefrontPublicPath(storefront.slug), "layout");
-  redirect(`${TAGS_PATH}?published=1`);
+  redirect(`${back}?published=1`);
 }

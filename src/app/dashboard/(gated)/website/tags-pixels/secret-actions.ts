@@ -37,6 +37,7 @@ export async function saveTrackingSecrets(_prev: ActionMessage, formData: FormDa
     else if (value) problems.push(`${LABELS[key]} doesn't look right. Copy it again from the platform.`);
   }
   for (const key of TRACKING_TEST_CODE_KEYS) {
+    if (!formData.has(key)) continue;
     const value = String(formData.get(key) ?? "").trim().toUpperCase();
     if (value && !validTestCode(key, value)) problems.push(`${LABELS[key]} should look like TEST12345.`);
     else update.testCodes[key] = value || null;
