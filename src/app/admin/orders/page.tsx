@@ -5,6 +5,7 @@ import { shouldChargeVendlFee } from "@/lib/stallside-fee";
 import { paymentProviderLabel, paymentTypeLabel } from "@/lib/payment-rail";
 import { isCountedPaymentStatus } from "@/lib/order-metrics";
 import { paymentStatusNote } from "@/lib/order-payment-label";
+import { DEFAULT_TIMEZONE } from "@/lib/stand-timezone";
 
 export default async function AdminOrdersPage() {
   await requireAdmin();
@@ -52,7 +53,7 @@ export default async function AdminOrdersPage() {
                   <p>{formatMoney(order.totalCents, order.currency)}</p>
                 </div>
                 <p className="mt-1 text-[var(--muted)]">
-                  {order.createdAt.toLocaleString()} · {order.owner.businessName}{" "}
+                  {order.createdAt.toLocaleString("en-AU", { timeZone: DEFAULT_TIMEZONE })} · {order.owner.businessName}{" "}
                   · {provider} · {paymentTypeLabel(order)} ·{" "}
                   {paymentStatusNote(order.paymentStatus)}
                   {feeCents > 0
