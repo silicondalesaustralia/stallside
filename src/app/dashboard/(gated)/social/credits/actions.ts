@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { requireOwner } from '@/lib/session'
 import { socialKitEnabledFor } from '@/lib/beta-features'
 import { SOCIAL_BASE_PATH } from '@/lib/socialHost/hostConfig'
-import { findSocialCreditPack } from '@/lib/socialCredits/packs'
+import { creditCurrency, findSocialCreditPack } from '@/lib/socialCredits/packs'
 import {
   confirmSocialCreditCheckout,
   purchaseSocialCreditPack,
@@ -27,6 +27,7 @@ export async function buySocialCreditPack(packId: string, requestId: string): Pr
     const result = await purchaseSocialCreditPack(
       {
         id: owner.id,
+        currency: creditCurrency(owner.billingCurrency),
         email: user.email ?? owner.contactEmail ?? undefined,
         name: owner.businessName,
         stripeCustomerId: owner.stripeCustomerId,

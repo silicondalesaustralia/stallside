@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { findSocialCreditPack, formatAud, socialCreditPackName, socialCreditPeriodKey } from './packs'
+import {
+  creditCurrency,
+  findSocialCreditPack,
+  formatPackPrice,
+  socialCreditPackName,
+  socialCreditPeriodKey,
+} from './packs'
 import { loadSocialCreditSummary } from './ledger'
 import { socialAccessFromSummary } from './socialAccess'
 import { clipJobCreditActionId, refundUnmadeClips } from './clipJobCredits'
@@ -18,11 +24,17 @@ function fakeDb(data: unknown, calls: RpcCall[] = []): SupabaseClient {
 }
 
 async function main() {
-  assert.equal(formatAud(2500), 'A$25')
-  assert.equal(formatAud(2999), 'A$29.99')
-  assert.equal(findSocialCreditPack('clip_15')?.priceCents, 1900)
+  const clip15 = findSocialCreditPack('clip_15')
+  assert.ok(clip15)
+  assert.equal(formatPackPrice(clip15, 'AUD'), 'A$19')
+  assert.equal(formatPackPrice(clip15, 'USD'), 'US$14')
+  assert.equal(formatPackPrice(clip15, 'GBP'), '£11')
+  assert.equal(formatPackPrice(clip15, 'EUR'), '€14')
   assert.equal(findSocialCreditPack('nope'), null)
-  assert.equal(socialCreditPackName(findSocialCreditPack('design_10')!), '10 designs')
+  assert.equal(socialCreditPackName(clip15), '15 clips')
+  assert.equal(creditCurrency('usd'), 'USD')
+  assert.equal(creditCurrency('NZD'), 'AUD')
+  assert.equal(creditCurrency(null), 'AUD')
 
   // Adelaide is UTC+10:30 in November: 31 Oct 14:00 UTC is already 1 Nov there.
   assert.equal(socialCreditPeriodKey(new Date('2026-10-31T14:00:00Z')), '2026-11')

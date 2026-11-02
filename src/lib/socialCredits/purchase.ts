@@ -4,10 +4,12 @@ import { ensureStripeCustomerForOwner } from '@/lib/domains/stripe-customer'
 import { SOCIAL_PATHS } from '@/lib/socialHost/hostConfig'
 import { fulfilSocialCreditPayment, socialCreditMetadata } from './fulfil'
 import { findSavedCard } from './stripeSavedCard'
-import { SOCIAL_CREDIT_CURRENCY, socialCreditPackName, type SocialCreditPack } from './packs'
+import type { BillingCurrency } from '@/lib/saas-pricing'
+import { socialCreditPackName, type SocialCreditPack } from './packs'
 
 export type PurchaseOwner = {
   id: string
+  currency: BillingCurrency
   email: string | undefined
   name: string
   stripeCustomerId: string | null
@@ -25,8 +27,8 @@ async function chargeSavedCard(owner: PurchaseOwner, pack: SocialCreditPack, req
   try {
     const intent = await getStripe().paymentIntents.create(
       {
-        amount: pack.priceCents,
-        currency: SOCIAL_CREDIT_CURRENCY,
+        amount: pack.prices[owner.currency],
+        currency: owner.currency.toLowerCase(),
         customer: owner.stripeCustomerId,
         payment_method: card.paymentMethodId,
         off_session: true,
@@ -62,8 +64,8 @@ async function startCheckout(owner: PurchaseOwner, pack: SocialCreditPack): Prom
       {
         quantity: 1,
         price_data: {
-          currency: SOCIAL_CREDIT_CURRENCY,
-          unit_amount: pack.priceCents,
+          currency: owner.currency.toLowerCase(),
+          unit_amount: pack.prices[owner.currency],
           product_data: { name: description(pack), description: 'Credits never expire.' },
         },
       },

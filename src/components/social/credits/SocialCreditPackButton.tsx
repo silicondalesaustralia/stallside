@@ -1,14 +1,16 @@
 import { TradiesPostButton } from '@/components/tradiespost/ui'
-import { formatAud, socialCreditPackName, type SocialCreditPack } from '@/lib/socialCredits/packs'
+import type { BillingCurrency } from '@/lib/saas-pricing'
+import { formatPackPrice, socialCreditPackName, type SocialCreditPack } from '@/lib/socialCredits/packs'
 
 type Props = {
   pack: SocialCreditPack
+  currency: BillingCurrency
   busy: boolean
   disabled: boolean
   onBuy: (pack: SocialCreditPack) => void
 }
 
-export default function SocialCreditPackButton({ pack, busy, disabled, onBuy }: Props) {
+export default function SocialCreditPackButton({ pack, currency, busy, disabled, onBuy }: Props) {
   return (
     <TradiesPostButton
       type="button"
@@ -19,7 +21,7 @@ export default function SocialCreditPackButton({ pack, busy, disabled, onBuy }: 
       className="w-full justify-between"
     >
       <span>{socialCreditPackName(pack)}</span>
-      <span className="font-black">{busy ? 'Processing…' : formatAud(pack.priceCents)}</span>
+      <span className="font-black">{busy ? 'Processing…' : formatPackPrice(pack, currency)}</span>
     </TradiesPostButton>
   )
 }

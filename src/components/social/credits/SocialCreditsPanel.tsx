@@ -12,7 +12,7 @@ type Props = { view: SocialCreditsView }
 
 export default function SocialCreditsPanel({ view }: Props) {
   useCreditCheckoutReturn()
-  const { buy, busyPackId } = useBuySocialCredits(view.savedCard)
+  const { buy, busyPackId } = useBuySocialCredits(view.savedCard, view.currency)
 
   return (
     <div className="space-y-4">
@@ -28,6 +28,7 @@ export default function SocialCreditsPanel({ view }: Props) {
                 <SocialCreditPackButton
                   key={pack.id}
                   pack={pack}
+                  currency={view.currency}
                   busy={busyPackId === pack.id}
                   disabled={busyPackId !== null}
                   onBuy={buy}
@@ -41,7 +42,7 @@ export default function SocialCreditsPanel({ view }: Props) {
         {view.savedCard
           ? `Packs are charged to the card on your Vendl subscription (•••• ${view.savedCard.last4}).`
           : 'You will be taken to secure Stripe checkout. Your card is saved for faster top-ups.'}{' '}
-        Prices in AUD. Bought credits never expire.
+        Prices in {view.currency}. Bought credits never expire.
       </p>
     </div>
   )

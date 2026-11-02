@@ -1,4 +1,5 @@
 import type Stripe from 'stripe'
+import { isBillingCurrency } from '@/lib/saas-pricing'
 import { getStripe } from '@/lib/stripe'
 import { socialDb } from '@/lib/socialHost/socialDb'
 import { grantSocialCreditPack } from './ledger'
@@ -26,8 +27,10 @@ export async function fulfilSocialCreditPayment(
     return false
   }
   if (expectedOwnerId && expectedOwnerId !== ownerId) return false
-  if (intent.amount_received < pack.priceCents) {
-    console.error('[socialCredits] payment amount below pack price', { id: intent.id, amount: intent.amount_received })
+  const currency = intent.currency.toUpperCase()
+  const expected = isBillingCurrency(currency) ? pack.prices[currency] : null
+  if (expected === null || intent.amount_received < expected) {
+    console.error('[socialCredits] payment below pack price', { id: intent.id, amount: intent.amount_received, currency })
     return false
   }
   await grantSocialCreditPack(socialDb(), {

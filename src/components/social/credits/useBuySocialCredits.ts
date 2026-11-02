@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/Toast'
 import { buySocialCreditPack } from '@/app/dashboard/(gated)/social/credits/actions'
-import { formatAud, socialCreditPackName, type SocialCreditPack } from '@/lib/socialCredits/packs'
+import type { BillingCurrency } from '@/lib/saas-pricing'
+import { formatPackPrice, socialCreditPackName, type SocialCreditPack } from '@/lib/socialCredits/packs'
 
 type SavedCard = { brand: string; last4: string } | null
 
@@ -13,14 +14,14 @@ function cardLabel(card: NonNullable<SavedCard>): string {
 }
 
 /** Saved card first (after a confirm), Stripe Checkout otherwise. */
-export function useBuySocialCredits(savedCard: SavedCard) {
+export function useBuySocialCredits(savedCard: SavedCard, currency: BillingCurrency) {
   const router = useRouter()
   const { toast } = useToast()
   const [busyPackId, setBusyPackId] = useState<string | null>(null)
 
   async function buy(pack: SocialCreditPack) {
     const name = socialCreditPackName(pack)
-    const price = formatAud(pack.priceCents)
+    const price = formatPackPrice(pack, currency)
     if (savedCard && !window.confirm(`Buy ${name} for ${price}? We'll charge your ${cardLabel(savedCard)}.`)) return
     setBusyPackId(pack.id)
     try {
