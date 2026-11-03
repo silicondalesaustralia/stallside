@@ -25,5 +25,21 @@ export function useLibraryBlur(initial: VideoBlurRegion[]) {
     setSelectedId((current) => (current === id ? null : current))
   }
 
-  return { regions, selectedId, setSelectedId, add, update, remove, canAdd: regions.length < VIDEO_BLUR_MAX_REGIONS }
+  /** Stretch the selected blur over the whole video. */
+  function fillSelected(duration: number) {
+    if (!selectedId || duration <= 0) return
+    setRegions((list) => list.map((r) => (r.id === selectedId ? { ...r, start: 0, end: duration } : r)))
+  }
+
+  return {
+    regions,
+    selectedId,
+    setSelectedId,
+    add,
+    update,
+    remove,
+    fillSelected,
+    canAdd: regions.length < VIDEO_BLUR_MAX_REGIONS,
+    hasSelection: regions.some((r) => r.id === selectedId),
+  }
 }

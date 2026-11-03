@@ -110,6 +110,8 @@ export function LibraryVideoEditorModal({ assetId, title, brandingConfig, busine
                   disabled={busy}
                   canAddBlur={blur.canAdd}
                   onAddBlur={() => blur.add(ed.time, ed.duration)}
+                  canFillBlur={blur.hasSelection}
+                  onFillBlur={() => blur.fillSelected(ed.duration)}
                   hasTranscript={captions.hasTranscript}
                   transcribing={captions.transcribing}
                   startingCaptions={captions.starting}

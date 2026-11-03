@@ -6,8 +6,6 @@ import { TimelineRuler } from '@/components/tradiespost/videos/TimelineRuler'
 import { TimelineTransport } from '@/components/tradiespost/videos/TimelineTransport'
 import type { VideoBlurRegion } from '@/lib/social/videoBranding/types'
 
-const PX_PER_SECOND = 24
-
 type Props = {
   regions: VideoBlurRegion[]
   selectedId: string | null
@@ -81,7 +79,7 @@ export function BlurTimeline(props: Props) {
           onPointerUp={endScrub}
           onPointerCancel={endScrub}
           className="relative cursor-pointer touch-none space-y-1.5 select-none"
-          style={{ width: `calc(max(100%, ${Math.ceil(duration * PX_PER_SECOND)}px) * ${zoom})` }}
+          style={{ width: `${zoom * 100}%` }}
         >
           <TimelineRuler duration={duration} zoom={zoom} />
           {regions.length === 0 ? (

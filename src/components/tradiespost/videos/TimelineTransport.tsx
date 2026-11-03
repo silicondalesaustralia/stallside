@@ -1,8 +1,7 @@
 'use client'
 
 import { Pause, Play, ZoomIn, ZoomOut } from 'lucide-react'
-
-export const TIMELINE_ZOOM_LEVELS = [1, 1.5, 2, 3, 4, 6, 8]
+import { timelineZoomLevels } from '@/lib/social/videoClips/timelineZoom'
 
 type Props = {
   time: number
@@ -20,7 +19,8 @@ function timecode(seconds: number): string {
 
 /** Play/pause, current time and zoom for the timeline. */
 export function TimelineTransport({ time, duration, playing, zoom, onTogglePlay, onZoom }: Props) {
-  const level = TIMELINE_ZOOM_LEVELS.indexOf(zoom)
+  const levels = timelineZoomLevels(duration)
+  const level = levels.indexOf(zoom)
   const iconBtn = 'rounded-lg p-1.5 text-zinc-600 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40'
 
   return (
@@ -37,22 +37,22 @@ export function TimelineTransport({ time, duration, playing, zoom, onTogglePlay,
         {timecode(time)} / {timecode(duration)}
       </span>
       <div className="ml-auto flex items-center gap-1">
-        <button type="button" onClick={() => onZoom(TIMELINE_ZOOM_LEVELS[level - 1])} disabled={level <= 0} className={iconBtn} aria-label="Zoom out">
+        <button type="button" onClick={() => onZoom(levels[level - 1])} disabled={level <= 0} className={iconBtn} aria-label="Zoom out">
           <ZoomOut className="h-4 w-4" aria-hidden />
         </button>
         <input
           type="range"
           min={0}
-          max={TIMELINE_ZOOM_LEVELS.length - 1}
+          max={levels.length - 1}
           value={Math.max(0, level)}
-          onChange={(e) => onZoom(TIMELINE_ZOOM_LEVELS[Number(e.target.value)])}
+          onChange={(e) => onZoom(levels[Number(e.target.value)])}
           className="w-20 accent-black sm:w-28"
           aria-label="Timeline zoom"
         />
         <button
           type="button"
-          onClick={() => onZoom(TIMELINE_ZOOM_LEVELS[level + 1])}
-          disabled={level >= TIMELINE_ZOOM_LEVELS.length - 1}
+          onClick={() => onZoom(levels[level + 1])}
+          disabled={level >= levels.length - 1}
           className={iconBtn}
           aria-label="Zoom in"
         >

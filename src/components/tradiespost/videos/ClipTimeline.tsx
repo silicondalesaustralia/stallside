@@ -32,8 +32,6 @@ type Props = {
   children?: ReactNode
 }
 
-const PX_PER_SECOND = 24
-
 /** Ruler + video, voice, caption and text tracks with a shared playhead. Click or drag to scrub. */
 export function ClipTimeline(props: Props) {
   const { duration, time, playing, segments, cues, activeIndex, disabled, onSeek, onCues } = props
@@ -91,7 +89,7 @@ export function ClipTimeline(props: Props) {
           onPointerUp={endScrub}
           onPointerCancel={endScrub}
           className="relative cursor-pointer touch-none space-y-1.5 select-none"
-          style={{ width: `calc(max(100%, ${Math.ceil(duration * PX_PER_SECOND)}px) * ${zoom})` }}
+          style={{ width: `${zoom * 100}%` }}
         >
           <TimelineRuler duration={duration} zoom={zoom} />
           <div className="relative h-8 rounded-lg bg-[repeating-linear-gradient(45deg,#e4e4e7_0_6px,#f4f4f5_6px_12px)]">
