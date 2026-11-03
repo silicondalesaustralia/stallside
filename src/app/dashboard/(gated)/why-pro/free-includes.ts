@@ -10,7 +10,7 @@ export const FREE_INCLUDES = [
   "First-order discount, cart upsells and email campaigns",
   "Sales tax: GST, VAT and US sales tax",
   "Data export, notifications and guides",
-  "Social posts with pay-as-you-go credit packs",
+  "Social posts, video clips and the video editor with pay-as-you-go credit packs",
 ];
 
 export const PRO_FAQ = [

@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRightLeft, BadgePercent, Banknote, Bell, BellRing, BookOpen, Boxes, CalendarClock, CalendarDays,
-  ChartPie, Check, ClipboardList, Coins, CreditCard, Download, FlaskConical, Gift, Globe, Handshake, Landmark,
+  ChartPie, Check, Clapperboard, ClipboardList, Coins, CreditCard, Download, Film, FlaskConical, Gift, Globe, Handshake, Landmark,
   LayoutTemplate, Link, Mail, MessagesSquare, Nfc, Package, Printer, QrCode, Receipt, Repeat, Route, ScanLine,
   ShoppingBasket, ShoppingCart, Smartphone, Sparkles, Star, Store, Tags, Truck, Undo2, Users, Wallet,
 } from "lucide-react";
@@ -10,8 +10,11 @@ import { PRO_BENEFIT_GROUPS } from "@/app/dashboard/(gated)/why-pro/pro-benefits
 export type PlanFeature = { label: string; icon: LucideIcon };
 export type PlanFeatureGroup = { heading: string; items: PlanFeature[] };
 
-const SOCIAL_PAYG = "Social posts with pay-as-you-go credit packs";
+const SOCIAL_PAYG = "Social posts, video clips and the video editor with pay-as-you-go credit packs";
 const SOCIAL_PRO = "Social credits every month";
+const VIDEO_CLIPS_PRO = "AI video clips";
+const VIDEO_EDITOR_PRO = "Video editor";
+const SOCIAL_PRO_TITLES = [SOCIAL_PRO, VIDEO_CLIPS_PRO, VIDEO_EDITOR_PRO];
 
 const PAYMENT_TYPES: PlanFeature[] = [
   { label: "Visa, Mastercard and Amex", icon: CreditCard },
@@ -97,6 +100,8 @@ const PRO_ICONS: Record<string, LucideIcon> = {
   "More QR codes": QrCode,
   "Data import": ArrowRightLeft,
   [SOCIAL_PRO]: Sparkles,
+  [VIDEO_CLIPS_PRO]: Clapperboard,
+  [VIDEO_EDITOR_PRO]: Film,
   "Earn from referrals": Link,
 };
 
@@ -110,7 +115,7 @@ export function freePlanFeatures(showSocial: boolean): PlanFeatureGroup[] {
 export function proPlanFeatures(showSocial: boolean): PlanFeatureGroup[] {
   const groups = PRO_BENEFIT_GROUPS.map((group) => {
     const items = group.items
-      .filter((item) => showSocial || item.title !== SOCIAL_PRO)
+      .filter((item) => showSocial || !SOCIAL_PRO_TITLES.includes(item.title))
       .map((item) => ({ label: item.title, icon: PRO_ICONS[item.title] ?? Check }));
     const withoutSocial = items.length < group.items.length;
     return { heading: withoutSocial ? "Referrals" : group.heading, items };

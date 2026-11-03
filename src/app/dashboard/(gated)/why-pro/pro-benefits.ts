@@ -108,6 +108,18 @@ export const PRO_BENEFIT_GROUPS: ProBenefitGroup[] = [
         pro: "5 designs + 5 clips monthly",
       },
       {
+        title: "AI video clips",
+        body: "Upload a tour, bake day or product explainer up to 30 minutes long and Vendl finds the best moments, cutting them into short captioned clips for Reels, TikTok and Shorts.",
+        free: "With credit packs",
+        pro: "Included",
+      },
+      {
+        title: "Video editor",
+        body: "Trim and cut, mute sections, change the speed, add auto captions and text, blur faces or number plates, and add your logo and a headline, then download the finished video.",
+        free: "With credit packs",
+        pro: "Included",
+      },
+      {
         title: "Earn from referrals",
         body: "Earn 50% of every Pro payment from businesses you refer, for as long as they stay on Pro.",
         free: "—",
