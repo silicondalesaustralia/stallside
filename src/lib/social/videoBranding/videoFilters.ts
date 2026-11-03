@@ -1,6 +1,6 @@
 import type { VideoBlurRegion } from '@/lib/social/videoBranding/types'
 
-/** Long edge cap for rendered output - keeps 20 min encodes and file sizes manageable. */
+/** Long edge cap for rendered output - keeps 30 min encodes and file sizes manageable. */
 export const VIDEO_OUTPUT_MAX_LONG_EDGE = 1920
 
 const BLUR_MIN_PX = 16

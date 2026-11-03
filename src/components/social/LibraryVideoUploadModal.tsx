@@ -245,7 +245,7 @@ export function LibraryVideoUploadModal({
           <>
             <div className="overflow-y-auto px-4 py-4">
               <p className="mb-4 text-sm text-[#666]">
-                Upload an MP4 or MOV video, portrait or landscape, up to 20 minutes. We&apos;ll
+                Upload an MP4 or MOV video, portrait or landscape, up to 30 minutes. We&apos;ll
                 add it to your Library ready for captions, download and social posting.
               </p>
 

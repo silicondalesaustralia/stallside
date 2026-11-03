@@ -10,7 +10,7 @@ Async FFmpeg worker for Social Video Phase 3 branding. **Do not run FFmpeg on Ve
 | Dockerfile | `workers/video-processor/Dockerfile` (build context = repo root) |
 | Start command | Default `CMD ["npm", "start"]` |
 | Replicas | **1** |
-| CPU | **2 vCPU** (20 min sources take roughly 10-25 min to encode at 1080p) |
+| CPU | **2 vCPU** (30 min sources take roughly 15-40 min to encode at 1080p) |
 | Memory | **2 GB** (originals are streamed to disk, not buffered) |
 | Ephemeral disk headroom | **≥ 10 GB** (4 GB original + 1080p encode output) |
 | Persistent volume | **No** |
