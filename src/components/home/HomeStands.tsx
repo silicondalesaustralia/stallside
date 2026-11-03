@@ -3,7 +3,7 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import { BellRing, Boxes, Printer, QrCode, Smartphone, type LucideIcon } from "lucide-react";
 import HomeStandPoster from "@/components/home/HomeStandPoster";
-import { HOME_BUTTON, HOME_EYEBROW, HOME_H2, HOME_PLAN_TAG, HOME_TEXT_LINK, HOME_WRAP } from "@/components/home/home-styles";
+import { HOME_BUTTON, HOME_EYEBROW, HOME_H2, HOME_PLAN_TAG, HOME_WRAP } from "@/components/home/home-styles";
 import { websiteDemoStandSlug } from "@/lib/demo/green-valley/constants";
 import { standCheckoutUrl } from "@/lib/stand-qr";
 
@@ -62,14 +62,9 @@ export default async function HomeStands() {
             </li>
           ))}
         </ul>
-        <div className="flex flex-wrap items-center gap-5">
-          <Link href="/signup" className={HOME_BUTTON}>
-            Start free <span aria-hidden>↗</span>
-          </Link>
-          <a href={standUrl} className={HOME_TEXT_LINK}>
-            Try the demo stand →
-          </a>
-        </div>
+        <Link href="/signup" className={HOME_BUTTON}>
+          Start free <span aria-hidden>↗</span>
+        </Link>
       </div>
     </section>
   );

@@ -12,7 +12,7 @@ export default function HomeStandPoster({ qrSrc }: { qrSrc: string | null }) {
       <p className="mt-1 text-[10px] text-[var(--muted)]">Scan to browse and pay at this stand.</p>
       {qrSrc ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={qrSrc} alt="QR code for the Green Valley demo stand" className="mx-auto mt-3 size-[120px] sm:size-[140px]" />
+        <img src={qrSrc} alt="QR code to scan and pay at the stand" className="mx-auto mt-3 size-[120px] sm:size-[140px]" />
       ) : (
         <div className="mx-auto mt-3 size-[120px] rounded bg-[var(--wash)] sm:size-[140px]" />
       )}
