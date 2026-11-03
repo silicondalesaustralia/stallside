@@ -6,7 +6,7 @@ const STORIES = "/testimonials-and-gallery";
 
 export default function HomeMakers() {
   return (
-    <section id="makers" className={`${HOME_WRAP} scroll-mt-6 pb-16 md:pb-[100px]`}>
+    <section id="makers" className={`${HOME_WRAP} scroll-mt-6 py-16 md:py-[100px]`}>
       <div className="mb-7 items-end justify-between gap-9 md:mb-10 md:flex">
         <div>
           <p className={HOME_EYEBROW}>THE PEOPLE BEHIND THE PRODUCTS</p>

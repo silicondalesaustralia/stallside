@@ -16,7 +16,6 @@ import HomePayments from "@/components/home/HomePayments";
 import HomeSelling from "@/components/home/HomeSelling";
 import HomeStands from "@/components/home/HomeStands";
 import HomeSwitch from "@/components/home/HomeSwitch";
-import { socialLive } from "@/lib/beta-app";
 import { APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
 import { HOME_FAQS } from "@/lib/home-faqs";
 import { homeGraphSchema } from "@/lib/schema";
@@ -28,7 +27,7 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  const showSocial = socialLive();
+  const showSocial = true;
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col bg-[#faf9f5] text-[var(--field)]">
