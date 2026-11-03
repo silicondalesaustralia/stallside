@@ -170,14 +170,6 @@ export function parseVideoBrandingRequest(input: {
     return { ok: false, error: blurParsed.error, status: 400 }
   }
 
-  if (logoChoice === 'none' && !overlayText && !blurParsed.regions.length) {
-    return {
-      ok: false,
-      error: 'Add a logo, video headline or blur area to edit this video',
-      status: 400,
-    }
-  }
-
   const styleDefaults = newVideoHeadlineStyleDefaults(input.businessDefaults)
   const brandColor = input.businessDefaults?.brandColor
 

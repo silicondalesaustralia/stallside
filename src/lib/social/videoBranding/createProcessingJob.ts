@@ -37,7 +37,8 @@ export async function createVideoProcessingJob(
     fallbackLogoUrl?: string | null
   },
 ): Promise<CreateVideoProcessingJobResult> {
-  const { businessId, assetId, config } = input
+  const { businessId, assetId } = input
+  let config = input.config
 
   const { data: asset, error: assetErr } = await db
     .from('social_media_assets')
@@ -84,7 +85,7 @@ export async function createVideoProcessingJob(
   } else if (config.logoChoice === 'primary') {
     const rows = await listBrandLogoRows(db, businessId)
     if (!rows.length && !input.fallbackLogoUrl?.trim()) {
-      return { ok: false, error: 'No business logo available', status: 400 }
+      config = { ...config, logoChoice: 'none', logoAssetId: null }
     }
   }
 

@@ -44,6 +44,28 @@ export function clampBlurGeometry(region: VideoBlurRegion): VideoBlurRegion {
   }
 }
 
+const MIN_BLUR_SECONDS = 0.2
+
+/** Timeline drag: move the whole bar, or drag its start/end edge. */
+export function dragBlurTime(
+  region: VideoBlurRegion,
+  mode: 'move' | 'start' | 'end',
+  delta: number,
+  duration: number,
+): VideoBlurRegion {
+  let { start, end } = region
+  if (mode === 'move') {
+    const len = end - start
+    start = clamp(start + delta, 0, Math.max(0, duration - len))
+    end = start + len
+  } else if (mode === 'start') {
+    start = clamp(start + delta, 0, end - MIN_BLUR_SECONDS)
+  } else {
+    end = clamp(end + delta, start + MIN_BLUR_SECONDS, duration)
+  }
+  return { ...region, start: Math.round(start * 100) / 100, end: Math.round(end * 100) / 100 }
+}
+
 export function isBlurActiveAt(region: VideoBlurRegion, time: number): boolean {
   return time >= region.start && time <= region.end
 }
