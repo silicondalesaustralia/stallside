@@ -314,6 +314,68 @@ html.nav-busy * {
   animation: flow-dash 0.9s linear infinite;
 }
 
+@keyframes try-it-draw {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 1;
+  }
+  45%,
+  80% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes try-it-head {
+  0%,
+  38% {
+    opacity: 0;
+  }
+  45%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes try-it-pulse {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.1;
+  }
+}
+
+.try-it-line {
+  stroke-dasharray: 1;
+  animation: try-it-draw 2.8s ease-in-out infinite;
+}
+
+.try-it-head {
+  animation: try-it-head 2.8s ease-in-out infinite;
+}
+
+.try-it-label {
+  animation: try-it-pulse 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .try-it-line,
+  .try-it-head,
+  .try-it-label {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}
+
 /* Sign HTML (QR print) - keep in sync with sign-html-content-style.ts */
 .safe-sign-html {
   font-size: 1em;
