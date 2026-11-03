@@ -8,11 +8,14 @@ import { DEFAULT_CAPTION_SETTINGS, type CaptionSettings } from '@/lib/social/vid
 import { MAX_OVERLAYS, newOverlayAt, type TextOverlay } from '@/lib/social/videoClips/textOverlays'
 import type { ClipSegment } from '@/lib/social/videoClips/timeline'
 import { cueIndexAt } from '@/lib/social/videoClips/timelineEdits'
-import { fetchClipCaptions, saveClipCaptions } from './captionsApi'
+import { fetchClipCaptions, saveClipCaptions, type ClipCaptions, type ClipEdit } from './captionsApi'
 import { useClipPlayback } from './useClipPlayback'
 
-/** Editor state for one clip. All times are seconds of the caption-free clip. */
-export function useClipEditor(clipId: string) {
+/**
+ * Editor state for one clip. All times are seconds of the caption-free clip.
+ * `load` must be stable (module-level or memoised) - it re-runs whenever it changes.
+ */
+export function useClipEditor(clipId: string, load: (id: string) => Promise<ClipCaptions> = fetchClipCaptions) {
   const { toast } = useToast()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [loading, setLoading] = useState(true)
@@ -32,7 +35,7 @@ export function useClipEditor(clipId: string) {
 
   useEffect(() => {
     let cancelled = false
-    fetchClipCaptions(clipId)
+    load(clipId)
       .then((data) => {
         if (cancelled) return
         setCues(data.cues)
@@ -50,7 +53,7 @@ export function useClipEditor(clipId: string) {
     return () => {
       cancelled = true
     }
-  }, [clipId, toast])
+  }, [clipId, load, toast])
 
   useEffect(() => {
     if (videoRef.current) videoRef.current.playbackRate = speed
@@ -75,10 +78,12 @@ export function useClipEditor(clipId: string) {
     setSelectedOverlayId(null)
   }
 
+  const edit: ClipEdit = { cues, settings, segments, overlays, speed, audioMutes: audioMutesFrom(audioParts) }
+
   async function save(): Promise<boolean> {
     setSaving(true)
     try {
-      await saveClipCaptions(clipId, { cues, settings, segments, overlays, speed, audioMutes: audioMutesFrom(audioParts) })
+      await saveClipCaptions(clipId, edit)
       toast('Updating clip — the new version will appear in a minute', 'success')
       return true
     } catch (err) {
@@ -116,6 +121,7 @@ export function useClipEditor(clipId: string) {
     setAudioParts,
     ...playback,
     activeIndex: cueIndexAt(cues, time),
+    edit,
     save,
   }
 }

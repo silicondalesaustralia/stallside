@@ -33,6 +33,8 @@ type Props = {
   audioParts: AudioPart[]
   onAudioParts: (next: AudioPart[]) => void
   onAddText: () => void
+  /** Extra tool rows below Text (e.g. Library blur + auto captions). */
+  children?: ReactNode
 }
 
 type Action = { label: string; icon: ReactNode; result: unknown[] | null; apply: () => void }
@@ -120,6 +122,7 @@ export function ClipEditorToolbar(props: Props) {
           disabled={disabled}
         />
       </div>
+      {props.children}
     </div>
   )
 }

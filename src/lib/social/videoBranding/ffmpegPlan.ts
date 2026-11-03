@@ -25,6 +25,9 @@ import type {
   VideoTextPosition,
 } from '@/lib/social/videoBranding/types'
 import { buildPreBrandingFilters } from '@/lib/social/videoBranding/videoFilters'
+import type { LibraryEditGraph } from '@/lib/social/videoBranding/libraryEditPlan'
+import { buildEditFilterGraph } from '@/lib/social/videoClips/editFfmpegArgs'
+import { assFilter } from '@/lib/social/videoClips/clipFfmpegArgs'
 
 /** libx264 speed preset - social V1 favours latency over compression efficiency. */
 export const FFMPEG_VIDEO_PRESET = 'veryfast'
@@ -44,11 +47,20 @@ export type FfmpegBrandingInput = {
   /** Set when the source must be downscaled; videoWidth/videoHeight are then the scaled size. */
   scaleTo?: { width: number; height: number } | null
   blurRegions?: VideoBlurRegion[] | null
+  /** Cuts/speed/voice mutes applied first, in the same encode. */
+  edit?: (LibraryEditGraph & { hasAudio: boolean }) | null
+  /** Captions + text overlays (.ass in output time and size), burned on top of everything. */
+  assPath?: string | null
+  fontsDir?: string | null
 }
 
 export type FfmpegBrandingPlan = {
   filterComplex: string
   logoInputIndex: number | null
+  /** Filter output to map; defaults to `v_out`. */
+  videoLabel?: string
+  /** Edited audio label; null maps the source audio track. */
+  audioLabel?: string | null
 }
 
 export function computeLogoDimensions(params: {
@@ -66,15 +78,24 @@ export function computeLogoDimensions(params: {
 }
 
 export function buildFfmpegBrandingPlan(input: FfmpegBrandingInput): FfmpegBrandingPlan {
-  const { videoWidth, videoHeight } = input
+  const { videoWidth, videoHeight, edit } = input
   const pre = buildPreBrandingFilters({
-    sourceLabel: '0:v',
+    sourceLabel: edit ? 'vout' : '0:v',
     scaleTo: input.scaleTo ?? null,
     frameWidth: videoWidth,
     frameHeight: videoHeight,
     blurRegions: input.blurRegions ?? [],
   })
-  const filters: string[] = [...pre.filters]
+  const editGraph = edit
+    ? buildEditFilterGraph({
+        segments: edit.segments,
+        hasAudio: edit.hasAudio,
+        assPath: null,
+        speed: edit.speed,
+        audioMutes: edit.audioMutes,
+      })
+    : null
+  const filters: string[] = editGraph ? [editGraph, ...pre.filters] : [...pre.filters]
   let currentLabel = pre.label
   let logoInputIndex: number | null = null
 
@@ -133,8 +154,14 @@ export function buildFfmpegBrandingPlan(input: FfmpegBrandingInput): FfmpegBrand
       )
       currentLabel = outLabel
     })
-  } else if (filters.length) {
+  } else if (filters.length || input.assPath) {
     filters.push(`[${currentLabel}]null[v_out]`)
+  }
+
+  let videoLabel = 'v_out'
+  if (input.assPath) {
+    filters.push(`[v_out]${assFilter(input.assPath, input.fontsDir ?? null)}[v_ass]`)
+    videoLabel = 'v_ass'
   }
 
   const filterComplex = filters.length > 0 ? filters.join(';') : 'null'
@@ -142,6 +169,8 @@ export function buildFfmpegBrandingPlan(input: FfmpegBrandingInput): FfmpegBrand
   return {
     filterComplex,
     logoInputIndex,
+    videoLabel,
+    audioLabel: edit?.hasAudio ? 'aout' : null,
   }
 }
 
@@ -160,12 +189,14 @@ export function buildFfmpegArgs(params: {
   }
 
   if (params.plan.filterComplex && params.plan.filterComplex !== 'null') {
-    args.push('-filter_complex', params.plan.filterComplex, '-map', '[v_out]')
+    args.push('-filter_complex', params.plan.filterComplex, '-map', `[${params.plan.videoLabel ?? 'v_out'}]`)
   } else {
     args.push('-map', '0:v:0')
   }
 
-  if (params.hasAudio) {
+  if (params.plan.audioLabel) {
+    args.push('-map', `[${params.plan.audioLabel}]`, '-c:a', 'aac', '-b:a', '128k')
+  } else if (params.hasAudio) {
     args.push('-map', '0:a:0?', '-c:a', 'aac', '-b:a', '128k')
   }
 

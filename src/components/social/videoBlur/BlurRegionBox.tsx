@@ -79,7 +79,7 @@ export function BlurRegionBox({
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') onSelect()
       }}
-      className={`absolute touch-none select-none border-2 ${visual} ${
+      className={`pointer-events-auto absolute touch-none select-none border-2 ${visual} ${
         selected ? 'ring-2 ring-[#FFD700]' : ''
       } ${disabled ? 'cursor-default' : 'cursor-move'}`}
       style={{

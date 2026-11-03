@@ -8,6 +8,7 @@ import {
   createVideoProcessingJob,
   parseBrandingRequestBody,
 } from '@/lib/social/videoBranding/createProcessingJob'
+import { saveLibraryEdit } from '@/lib/social/libraryEditDoc'
 
 export const runtime = 'nodejs'
 
@@ -41,6 +42,16 @@ export async function POST(req: NextRequest, context: RouteContext) {
   })
   if (!parsed.ok) {
     return NextResponse.json({ error: parsed.error }, { status: parsed.status })
+  }
+
+  if (body.edit !== undefined) {
+    try {
+      const editError = await saveLibraryEdit(ctx.db, ctx.businessId, id, body.edit)
+      if (editError) return NextResponse.json({ error: editError }, { status: 409 })
+    } catch (err) {
+      console.error('[LibraryEdit] save failed', err instanceof Error ? err.message : err)
+      return NextResponse.json({ error: 'Could not save your edits' }, { status: 500 })
+    }
   }
 
   const result = await createVideoProcessingJob(ctx.db, {

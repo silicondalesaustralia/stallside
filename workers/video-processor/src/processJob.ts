@@ -37,6 +37,7 @@ import {
 } from './storageTransfer'
 import { downloadSourceToFile } from './sourceDownload'
 import { uploadFileToR2 } from './r2Upload'
+import { prepareLibraryEdit } from './libraryEditRender'
 import { isLibraryR2Path } from '../../../src/lib/social/libraryVideoR2'
 
 export async function processVideoJob(
@@ -55,7 +56,7 @@ export async function processVideoJob(
     timer.beginStage('asset_fetch')
     const { data: asset, error: assetErr } = await db
       .from('social_media_assets')
-      .select('id, business_id, storage_path, mime_type, branding_config')
+      .select('id, business_id, storage_path, mime_type, branding_config, captions')
       .eq('id', job.asset_id)
       .single()
 
@@ -154,11 +155,26 @@ export async function processVideoJob(
       align: headlineStyle.align,
     })
 
+    const libraryEdit = await prepareLibraryEdit({
+      db,
+      businessId: job.business_id,
+      captions: asset.captions,
+      blurRegions: brandingConfig.blurRegions ?? [],
+      durationSeconds: probe.duration ?? 0,
+      hasAudio: probe.hasAudio,
+      outWidth: out.width,
+      outHeight: out.height,
+      workDir,
+    })
+
     const plan = buildFfmpegBrandingPlan({
       videoWidth: out.width,
       videoHeight: out.height,
       scaleTo: out.scaled ? out : null,
-      blurRegions: brandingConfig.blurRegions ?? [],
+      blurRegions: libraryEdit.blurRegions,
+      edit: libraryEdit.edit,
+      assPath: libraryEdit.assPath,
+      fontsDir: libraryEdit.fontsDir,
       hasLogo,
       logoWidth,
       logoHeight,

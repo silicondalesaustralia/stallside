@@ -14,6 +14,9 @@ import {
 } from '../../../src/lib/social/socialVideoStorage'
 import { fetchBrandColor, renderCaptionedClip } from './captionRender'
 import { uploadFile } from './clipJobStorage'
+import { transcribeLibraryAsset } from './libraryTranscribe'
+import { refundSocialCredits } from '../../../src/lib/socialCredits/ledger'
+import { libraryCaptionsCreditActionId } from '../../../src/lib/social/libraryCaptionsCredit'
 
 const TABLE = 'social_video_caption_jobs'
 
@@ -60,10 +63,16 @@ export async function processCaptionJob(db: SupabaseClient, job: CaptionJobRow):
   try {
     const { data: asset, error } = await db
       .from('social_media_assets')
-      .select('id, business_id, storage_path, captions')
+      .select('id, business_id, storage_path, mime_type, captions, source_video_id')
       .eq('id', job.asset_id)
       .single()
     if (error || !asset) throw new Error('caption_asset_missing')
+
+    if (!asset.source_video_id) {
+      await transcribeLibraryAsset(db, asset, workDir)
+      await updateJob(db, job.id, { status: 'completed', completed_at: new Date().toISOString(), error_message: null })
+      return
+    }
 
     const doc = parseCaptionsDoc(asset.captions)
     const cleanPath = doc.cleanPath ?? asset.storage_path
@@ -110,6 +119,9 @@ export async function processCaptionJob(db: SupabaseClient, job: CaptionJobRow):
     const message = err instanceof Error ? err.message : 'caption_job_failed'
     console.error('[VideoCaptions] job failed', { jobId: job.id, error: message })
     await updateJob(db, job.id, { status: 'failed', error_message: message.slice(0, 500), completed_at: new Date().toISOString() })
+    await refundSocialCredits(db, 'clip', libraryCaptionsCreditActionId(job.id)).catch((refundErr: unknown) =>
+      console.error('[VideoCaptions] captions credit refund failed', job.id, refundErr),
+    )
   } finally {
     await rm(workDir, { recursive: true, force: true }).catch(() => undefined)
   }

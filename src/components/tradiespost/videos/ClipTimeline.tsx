@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react'
 import type { AudioPart } from '@/lib/social/videoClips/audioEdits'
 import type { CaptionCue } from '@/lib/social/videoClips/captionCues'
 import type { ClipSegment } from '@/lib/social/videoClips/timeline'
@@ -28,6 +28,8 @@ type Props = {
   selectedOverlayId: string | null
   onOverlays: (next: TextOverlay[]) => void
   onSelectOverlay: (id: string) => void
+  /** Extra track rows below the text track (e.g. Library blur rows). */
+  children?: ReactNode
 }
 
 const PX_PER_SECOND = 24
@@ -114,6 +116,7 @@ export function ClipTimeline(props: Props) {
               onSeek(seekTo)
             }}
           />
+          {props.children}
           <div className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-red-500" style={{ left: pct(time) }}>
             <span className="absolute -top-0.5 left-1/2 h-3 w-3 -translate-x-1/2 rounded-full bg-red-500 shadow" />
           </div>

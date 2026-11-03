@@ -14,7 +14,7 @@ import {
   X,
 } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
-import { VideoBrandingPanel } from '@/components/social/VideoBrandingPanel'
+import { LibraryVideoEditorModal } from '@/components/social/libraryEditor/LibraryVideoEditorModal'
 import { VideoExpiryNote } from '@/components/social/VideoExpiryNote'
 import {
   downloadFilenameForVideo,
@@ -117,10 +117,10 @@ export function VideoLibraryCard({
         if (nextStatus === 'processing') {
           window.setTimeout(poll, 4000)
         } else if (nextStatus === 'processed') {
-          toast('Branded video ready', 'success')
+          toast('Edited video ready', 'success')
           setShowBrandingPanel(false)
         } else if (nextStatus === 'processing_failed') {
-          toast("We couldn't create the branded video. Try again.", 'error')
+          toast("We couldn't create the edited video. Try again.", 'error')
         }
       } catch {
         if (!cancelled) window.setTimeout(poll, 4000)
@@ -239,7 +239,7 @@ export function VideoLibraryCard({
         return
       }
       await downloadVideoUrl(url, filename)
-      toast(variant === 'branded' ? 'Branded video downloaded' : 'Video downloaded', 'success')
+      toast(variant === 'branded' ? 'Edited video downloaded' : 'Video downloaded', 'success')
     } catch {
       toast('Download failed', 'error')
     }
@@ -252,10 +252,10 @@ export function VideoLibraryCard({
       body: JSON.stringify(payload),
     })
     const json = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(json.error || 'Could not start branding')
+    if (!res.ok) throw new Error(json.error || 'Could not save your edits')
     setProcessingStatus('processing')
     onAssetUpdated?.({ id: asset.id, processingStatus: 'processing' })
-    toast('Preparing branded video…', 'success')
+    toast('Saving your edited video…', 'success')
   }
 
   async function handleDelete() {
@@ -333,7 +333,7 @@ export function VideoLibraryCard({
                       : 'bg-black/60 text-white'
                   }`}
                 >
-                  Branded
+                  Edited
                 </button>
                 <button
                   type="button"
@@ -401,7 +401,7 @@ export function VideoLibraryCard({
         ) : null}
         {hasBranded && !expanded ? (
           <span className="pointer-events-none absolute bottom-2 left-2 rounded-md bg-indigo-600/90 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-            Branded
+            Edited
           </span>
         ) : null}
       </div>
@@ -520,7 +520,7 @@ export function VideoLibraryCard({
 
             {processingStatus === 'processing_failed' ? (
               <p className="text-xs font-medium text-red-600">
-                We couldn&apos;t create the branded video. Try again.
+                We couldn&apos;t create the edited video. Try again.
               </p>
             ) : null}
 
@@ -536,7 +536,7 @@ export function VideoLibraryCard({
                   data-testid={`library-video-edit-branding-${asset.id}`}
                 >
                   <Palette className="h-3.5 w-3.5" />
-                  Edit branding
+                  Edit video
                 </button>
                 <button
                   type="button"
@@ -548,7 +548,7 @@ export function VideoLibraryCard({
                   className="inline-flex min-h-[44px] items-center gap-1 rounded-xl border border-[#EDEAE2] px-3 py-2 text-xs font-semibold text-[#555]"
                 >
                   <Play className="h-3.5 w-3.5" />
-                  Preview branded video
+                  Preview edited video
                 </button>
                 <button
                   type="button"
@@ -557,7 +557,7 @@ export function VideoLibraryCard({
                   data-testid={`library-video-download-branded-${asset.id}`}
                 >
                   <Download className="h-3.5 w-3.5" />
-                  Download branded video
+                  Download edited video
                 </button>
               </div>
             ) : null}
@@ -570,7 +570,7 @@ export function VideoLibraryCard({
                 data-testid={`library-video-retry-brand-${asset.id}`}
               >
                 <Palette className="h-3.5 w-3.5" />
-                Retry branding
+                Retry edit
               </button>
             ) : null}
 
@@ -582,16 +582,15 @@ export function VideoLibraryCard({
                 data-testid={`library-video-brand-${asset.id}`}
               >
                 <Palette className="h-3.5 w-3.5" />
-                Brand video
+                Edit video
               </button>
             ) : null}
 
             {showBrandingPanel ? (
-              <VideoBrandingPanel
+              <LibraryVideoEditorModal
                 assetId={asset.id}
-                initialConfig={brandingConfig}
-                previewImageUrl={asset.thumbnailUrl}
-                videoUrl={asset.originalUrl}
+                title={asset.jobTitle?.trim() || 'Library video'}
+                brandingConfig={brandingConfig}
                 businessDefaults={videoHeadlineDefaults}
                 processing={isProcessing}
                 suggestContext={{
@@ -631,11 +630,7 @@ export function VideoLibraryCard({
               }
             >
               <Palette className="h-3.5 w-3.5" />
-              {hasBranded
-                ? 'Edit branding'
-                : processingStatus === 'processing_failed'
-                  ? 'Retry branding'
-                  : 'Brand video'}
+              {processingStatus === 'processing_failed' ? 'Retry edit' : 'Edit video'}
             </button>
           ) : null}
           {!expanded && isProcessing ? (
@@ -653,7 +648,7 @@ export function VideoLibraryCard({
             className="inline-flex min-h-[44px] items-center gap-1 rounded-xl border border-[#EDEAE2] px-3 py-2 text-xs font-semibold text-[#555]"
           >
             <Download className="h-3.5 w-3.5" />
-            {hasBranded ? 'Download branded' : 'Download'}
+            {hasBranded ? 'Download edited' : 'Download'}
           </button>
           {hasBranded ? (
             <button

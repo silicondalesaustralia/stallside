@@ -1,21 +1,23 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { CaptionCueList } from './CaptionCueList'
 import { CaptionStylePanel } from './CaptionStylePanel'
 import { ClipSpeedField } from './ClipSpeedField'
 import { TextOverlayPanel } from './TextOverlayPanel'
 import type { useClipEditor } from './useClipEditor'
 
-type Props = { ed: ReturnType<typeof useClipEditor> }
+type Props = { ed: ReturnType<typeof useClipEditor>; children?: ReactNode }
 
 /** Settings beside the preview: selected text overlay, speed, caption style and caption list. */
-export function ClipEditorSidebar({ ed }: Props) {
+export function ClipEditorSidebar({ ed, children }: Props) {
   const { busy, selectedOverlay } = ed
   return (
     <aside className="min-w-0 space-y-4 lg:max-h-[74vh] lg:overflow-y-auto lg:pr-1">
       {ed.rendering ? (
-        <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800">This clip is updating — you can edit again once that finishes.</p>
+        <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800">This video is updating — you can edit again once that finishes.</p>
       ) : null}
+      {children}
       {selectedOverlay ? (
         <TextOverlayPanel
           overlay={selectedOverlay}

@@ -138,6 +138,8 @@ export function VideoBrandingPanel({
   businessDefaults,
   suggestContext,
   processing,
+  submitLabel,
+  videoDimensions,
   onSubmit,
   onClose,
 }: {
@@ -152,6 +154,9 @@ export function VideoBrandingPanel({
     jobSuburb?: string | null
   }
   processing?: boolean
+  submitLabel?: string
+  /** Source size when the panel has no video of its own (headline wrap warning). */
+  videoDimensions?: VideoDimensions | null
   onSubmit: (payload: Record<string, unknown>) => Promise<void>
   onClose?: () => void
 }) {
@@ -160,7 +165,8 @@ export function VideoBrandingPanel({
   )
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [videoDims, setVideoDims] = useState<VideoDimensions>(PORTRAIT_FALLBACK)
+  const [ownVideoDims, setVideoDims] = useState<VideoDimensions>(PORTRAIT_FALLBACK)
+  const videoDims = videoDimensions ?? ownVideoDims
 
   useEffect(() => {
     setValue(defaultBrandingFormValue(initialConfig, businessDefaults))
@@ -553,12 +559,12 @@ export function VideoBrandingPanel({
         {submitting || processing ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            Preparing branded video…
+            {submitLabel ? 'Saving…' : 'Preparing branded video…'}
           </>
         ) : (
           <>
             <Sparkles className="h-4 w-4" />
-            {hasProcessed ? 'Update branded video' : 'Create branded video'}
+            {submitLabel ?? (hasProcessed ? 'Update branded video' : 'Create branded video')}
           </>
         )}
       </button>
