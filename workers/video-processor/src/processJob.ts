@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, stat } from 'node:fs/promises'
+import { mkdir, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { randomUUID } from 'node:crypto'
@@ -27,36 +27,14 @@ import {
   videoHeadlineFontSizePx,
 } from '../../../src/lib/social/videoBranding/headlineStyle'
 import type { VideoBrandingConfig } from '../../../src/lib/social/videoBranding/types'
+import { videoOutputDimensions } from '../../../src/lib/social/videoBranding/videoFilters'
 import { BUSINESS_ASSETS_BUCKET, SOCIAL_VIDEO_BUCKET } from './supabase'
 import { removeStoragePaths } from '../../../src/lib/social/mediaAssetStorage'
-import { writeFile } from 'node:fs/promises'
-
-async function downloadStorageObject(
-  db: SupabaseClient,
-  bucket: string,
-  path: string,
-  destPath: string,
-): Promise<number> {
-  const { data, error } = await db.storage.from(bucket).download(path)
-  if (error || !data) throw new Error(`download failed: ${error?.message || bucket}/${path}`)
-  const buf = Buffer.from(await data.arrayBuffer())
-  await writeFile(destPath, buf)
-  return buf.length
-}
-
-async function uploadProcessedVideo(
-  db: SupabaseClient,
-  path: string,
-  filePath: string,
-): Promise<number> {
-  const body = await readFile(filePath)
-  const { error } = await db.storage.from(SOCIAL_VIDEO_BUCKET).upload(path, body, {
-    contentType: 'video/mp4',
-    upsert: false,
-  })
-  if (error) throw new Error(`upload failed: ${error.message}`)
-  return body.length
-}
+import {
+  downloadStorageObject,
+  downloadUrlToFile,
+  uploadProcessedVideo,
+} from './storageTransfer'
 
 export async function processVideoJob(
   db: SupabaseClient,
@@ -113,6 +91,7 @@ export async function processVideoJob(
       rotation: probe.rotation,
     })
 
+    const out = videoOutputDimensions(probe.displayWidth, probe.displayHeight)
     let logoPath: string | null = null
     let logoWidth = 0
     let logoHeight = 0
@@ -136,12 +115,8 @@ export async function processVideoJob(
           logoPath,
         )
       } else if (logoResolved.fetchUrl) {
-        const res = await fetch(logoResolved.fetchUrl)
-        if (!res.ok) throw new Error('logo_fetch_failed')
         logoPath = join(workDir, 'logo.webp')
-        const buf = Buffer.from(await res.arrayBuffer())
-        await writeFile(logoPath, buf)
-        logoBytes = buf.length
+        logoBytes = await downloadUrlToFile(logoResolved.fetchUrl, logoPath)
       } else {
         throw new Error('logo_unavailable')
       }
@@ -149,7 +124,7 @@ export async function processVideoJob(
 
       const logoProbe = await probeLogoDimensions(logoPath)
       const dims = computeLogoDimensions({
-        videoWidth: probe.displayWidth,
+        videoWidth: out.width,
         logoSourceWidth: logoProbe.width,
         logoSourceHeight: logoProbe.height,
         logoSize: job.logo_size ?? 'medium',
@@ -171,17 +146,19 @@ export async function processVideoJob(
 
     const brandingConfig: VideoBrandingConfig = mergeBrandingConfigWithDefaults(storedConfig)
     const headlineStyle = resolveVideoHeadlineStyle(brandingConfig)
-    const headlineFontSize = videoHeadlineFontSizePx(headlineStyle.size, probe.displayHeight)
+    const headlineFontSize = videoHeadlineFontSizePx(headlineStyle.size, out.height)
 
     const textFilePaths = await writeOverlayTextFiles(workDir, job.overlay_text, {
-      videoWidth: probe.displayWidth,
+      videoWidth: out.width,
       fontSize: headlineFontSize,
       align: headlineStyle.align,
     })
 
     const plan = buildFfmpegBrandingPlan({
-      videoWidth: probe.displayWidth,
-      videoHeight: probe.displayHeight,
+      videoWidth: out.width,
+      videoHeight: out.height,
+      scaleTo: out.scaled ? out : null,
+      blurRegions: brandingConfig.blurRegions ?? [],
       hasLogo,
       logoWidth,
       logoHeight,
@@ -201,7 +178,13 @@ export async function processVideoJob(
     })
 
     timer.beginStage('ffmpeg')
-    timer.log('ffmpeg start', { preset: FFMPEG_VIDEO_PRESET, crf: FFMPEG_VIDEO_CRF })
+    timer.log('ffmpeg start', {
+      preset: FFMPEG_VIDEO_PRESET,
+      crf: FFMPEG_VIDEO_CRF,
+      outWidth: out.width,
+      outHeight: out.height,
+      blurRegions: brandingConfig.blurRegions?.length ?? 0,
+    })
     await runFfmpeg(ffmpegArgs)
     const outputBytes = (await stat(outputPath)).size
     timer.log('ffmpeg complete', { bytes: outputBytes, preset: FFMPEG_VIDEO_PRESET, crf: FFMPEG_VIDEO_CRF })

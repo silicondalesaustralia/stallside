@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 /** Jobs claimed longer than this are treated as stale (worker crash / hang). */
-export const STALE_PROCESSING_MINUTES = 10
+export const STALE_PROCESSING_MINUTES = 90
 
 export const STALE_PROCESSING_ERROR_CODE = 'stale_processing_job'
 

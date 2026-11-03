@@ -10,9 +10,14 @@ import {
   useVideoFileMetadata,
   validateVideoFileClient,
 } from '@/components/social/VideoLibraryCard'
+import { uploadSocialVideoFile } from '@/components/social/uploadSocialVideoFile'
 import { SocialJobPicker } from '@/components/social/SocialJobPicker'
 import { formatVideoDuration } from '@/lib/social/libraryMediaViewModel'
-import { SOCIAL_VIDEO_ERRORS } from '@/lib/social/videoUploadLimits'
+import {
+  SOCIAL_VIDEO_ERRORS,
+  SOCIAL_VIDEO_LIMITS_LABEL,
+  SOCIAL_VIDEO_MAX_DURATION_SECONDS,
+} from '@/lib/social/videoUploadLimits'
 
 type UploadPhase = 'idle' | 'uploading' | 'preparing' | 'done'
 
@@ -90,7 +95,7 @@ export function LibraryVideoUploadModal({
       return
     }
 
-    if (duration != null && duration > 60) {
+    if (duration != null && duration > SOCIAL_VIDEO_MAX_DURATION_SECONDS) {
       toast(SOCIAL_VIDEO_ERRORS.tooLong, 'error')
       return
     }
@@ -120,7 +125,16 @@ export function LibraryVideoUploadModal({
         throw new Error(SOCIAL_VIDEO_ERRORS.uploadFailed)
       }
 
-      await uploadFileWithProgress(signedUrl, file, file.type, setProgress)
+      await uploadSocialVideoFile(
+        file,
+        {
+          signedUrl,
+          token: String(urlJson.token ?? ''),
+          bucket: String(urlJson.bucket ?? ''),
+          path: String(urlJson.path ?? ''),
+        },
+        setProgress,
+      )
 
       setPhase('preparing')
       setProgress(0)
@@ -175,7 +189,7 @@ export function LibraryVideoUploadModal({
   }
 
   const busy = phase === 'uploading' || phase === 'preparing'
-  const durationTooLong = duration != null && duration > 60
+  const durationTooLong = duration != null && duration > SOCIAL_VIDEO_MAX_DURATION_SECONDS
 
   return (
     <div
@@ -231,8 +245,8 @@ export function LibraryVideoUploadModal({
           <>
             <div className="overflow-y-auto px-4 py-4">
               <p className="mb-4 text-sm text-[#666]">
-                Upload an MP4 or MOV video up to 60 seconds. We&apos;ll add it to your Library
-                ready for captions, download and social posting.
+                Upload an MP4 or MOV video, portrait or landscape, up to 20 minutes. We&apos;ll
+                add it to your Library ready for captions, download and social posting.
               </p>
 
               <input
@@ -251,7 +265,7 @@ export function LibraryVideoUploadModal({
                 >
                   <Upload className="h-8 w-8 text-[#888]" />
                   <span className="text-sm font-bold text-black">Choose video</span>
-                  <span className="text-xs text-[#888]">MP4 or MOV · max 60 sec · max 250 MB</span>
+                  <span className="text-xs text-[#888]">MP4 or MOV · {SOCIAL_VIDEO_LIMITS_LABEL}</span>
                 </button>
               ) : (
                 <div className="space-y-3 rounded-2xl border border-[#EDEAE2] bg-[#FAFAF8] p-3">

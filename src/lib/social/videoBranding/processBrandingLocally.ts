@@ -9,6 +9,7 @@ import {
 } from '@/lib/social/videoBranding/ffmpegPlan'
 import { runFfmpeg, runProcessCapture } from '@/lib/social/videoBranding/runFfmpeg'
 import { writeOverlayTextFiles } from '@/lib/social/videoBranding/writeOverlayTextFiles'
+import { videoOutputDimensions } from '@/lib/social/videoBranding/videoFilters'
 import {
   ffprobeLogoArgs,
   ffprobeVideoArgs,
@@ -67,6 +68,7 @@ export async function processBrandingLocally(
     throw new Error('invalid_video_dimensions')
   }
 
+  const out = videoOutputDimensions(probe.displayWidth, probe.displayHeight)
   const hasLogo = Boolean(input.inputLogoPath?.trim())
   let logoWidth = 0
   let logoHeight = 0
@@ -74,7 +76,7 @@ export async function processBrandingLocally(
   if (hasLogo && input.inputLogoPath) {
     const logoProbe = await probeLogoDimensions(input.inputLogoPath)
     const dims = computeLogoDimensions({
-      videoWidth: probe.displayWidth,
+      videoWidth: out.width,
       logoSourceWidth: logoProbe.width,
       logoSourceHeight: logoProbe.height,
       logoSize: input.logoSize ?? 'medium',
@@ -95,16 +97,18 @@ export async function processBrandingLocally(
       },
       undefined,
     )
-    const fontSize = videoHeadlineFontSizePx(headlineStyle.size, probe.displayHeight)
+    const fontSize = videoHeadlineFontSizePx(headlineStyle.size, out.height)
     const textFilePaths = await writeOverlayTextFiles(workDir, input.overlayText, {
-      videoWidth: probe.displayWidth,
+      videoWidth: out.width,
       fontSize,
       align: headlineStyle.align,
     })
 
     const plan = buildFfmpegBrandingPlan({
-      videoWidth: probe.displayWidth,
-      videoHeight: probe.displayHeight,
+      videoWidth: out.width,
+      videoHeight: out.height,
+      scaleTo: out.scaled ? out : null,
+      blurRegions: input.brandingConfig?.blurRegions ?? [],
       hasLogo,
       logoWidth,
       logoHeight,
@@ -127,8 +131,8 @@ export async function processBrandingLocally(
 
     return {
       outputPath,
-      displayWidth: probe.displayWidth,
-      displayHeight: probe.displayHeight,
+      displayWidth: out.width,
+      displayHeight: out.height,
       hasAudio: probe.hasAudio,
     }
   } finally {

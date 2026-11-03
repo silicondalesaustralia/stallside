@@ -22,7 +22,7 @@ import {
 import { formatRelatedJobLabel } from '@/lib/social/mediaAssetJob'
 import type { SocialMediaAssetListItem } from '@/lib/social/mediaAssetTypes'
 import { designedCaptionUiState } from '@/lib/social/designedCaptionContext'
-import { SOCIAL_VIDEO_ERRORS } from '@/lib/social/videoUploadLimits'
+import { SOCIAL_VIDEO_ERRORS, SOCIAL_VIDEO_MAX_BYTES } from '@/lib/social/videoUploadLimits'
 import type { VideoBrandingConfig } from '@/lib/social/videoBranding/types'
 import type { VideoHeadlineBusinessDefaults } from '@/lib/social/videoBranding/headlineStyle'
 
@@ -89,7 +89,8 @@ export function VideoLibraryCard({
 
     let cancelled = false
     let attempts = 0
-    const maxAttempts = 120
+    // ~80 min at 4s - long videos can take most of an hour on the worker.
+    const maxAttempts = 1200
 
     const poll = async () => {
       if (cancelled || attempts >= maxAttempts) return
@@ -583,6 +584,7 @@ export function VideoLibraryCard({
                 assetId={asset.id}
                 initialConfig={brandingConfig}
                 previewImageUrl={asset.thumbnailUrl}
+                videoUrl={asset.originalUrl}
                 businessDefaults={videoHeadlineDefaults}
                 processing={isProcessing}
                 suggestContext={{
@@ -820,7 +822,7 @@ export function validateVideoFileClient(file: File): string | null {
   if (!allowed.has(file.type)) {
     return SOCIAL_VIDEO_ERRORS.unsupported
   }
-  if (file.size > 250 * 1024 * 1024) {
+  if (file.size > SOCIAL_VIDEO_MAX_BYTES) {
     return SOCIAL_VIDEO_ERRORS.tooLarge
   }
   return null

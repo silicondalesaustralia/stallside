@@ -9,7 +9,7 @@ export const DEFAULT_SOCIAL_CREATION_MODE: SocialCreationMode = 'images'
 
 export const CREATE_VIDEO_BULLETS = [
   'Upload MP4 or MOV',
-  'Up to 60 seconds',
+  'Up to 20 minutes, portrait or landscape',
   'Add job context',
   'Generate a caption',
   'Save to your Library',

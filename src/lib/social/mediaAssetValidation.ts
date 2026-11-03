@@ -1,6 +1,7 @@
 import {
   SOCIAL_VIDEO_MAX_BYTES,
   SOCIAL_VIDEO_MAX_DURATION_SECONDS,
+  SOCIAL_VIDEO_ERRORS,
   isAllowedSocialVideoMime,
   type SocialVideoMime,
 } from '@/lib/social/videoUploadLimits'
@@ -30,7 +31,7 @@ export function validateSocialVideoUploadRequest(input: {
   if (size > SOCIAL_VIDEO_MAX_BYTES) {
     return {
       ok: false,
-      error: 'This video is too large. Upload a video under 250 MB.',
+      error: SOCIAL_VIDEO_ERRORS.tooLarge,
       status: 400,
     }
   }
@@ -69,7 +70,7 @@ export function validateSocialVideoFinalizeRequest(input: {
   if (durationSeconds > SOCIAL_VIDEO_MAX_DURATION_SECONDS) {
     return {
       ok: false,
-      error: 'Videos can currently be up to 60 seconds.',
+      error: SOCIAL_VIDEO_ERRORS.tooLong,
       status: 400,
       markFailed: true,
     }

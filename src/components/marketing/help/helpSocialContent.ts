@@ -18,7 +18,7 @@ const SOCIAL_P0_QUESTIONS: readonly HelpFaqQuestion[] = [
     id: 'social-first-post',
     q: 'How do I create my first post?',
     keywords: ['first post', 'getting started', 'create', 'ai designed', 'recreate', 'video'],
-    a: 'Go to Social → Create.\n\nFor images, pick Start from scratch or Recreate.\n\nStart from scratch:\n- AI Designed is available now and is the usual first choice. Write what the post is about, optionally attach a recent job for suburb and job-type context, pick a logo, then create designs.\n- Build a layout if you already have a photo and want to set the wording and layout yourself.\n\nRecreate if you have an example post or ad to upload as inspiration.\n\nFor video, switch to Create Video, upload an MP4 or MOV (up to 60 seconds), add a logo or headline if you want, generate a caption, and save to Library.\n\nAfter you like a result, save it. Then download it, publish to a connected account, or schedule it. Saving does not publish.',
+    a: 'Go to Social → Create.\n\nFor images, pick Start from scratch or Recreate.\n\nStart from scratch:\n- AI Designed is available now and is the usual first choice. Write what the post is about, optionally attach a recent job for suburb and job-type context, pick a logo, then create designs.\n- Build a layout if you already have a photo and want to set the wording and layout yourself.\n\nRecreate if you have an example post or ad to upload as inspiration.\n\nFor video, switch to Create Video, upload an MP4 or MOV (portrait or landscape, up to 20 minutes), add a logo, headline or blur boxes if you want, generate a caption, and save to Library.\n\nAfter you like a result, save it. Then download it, publish to a connected account, or schedule it. Saving does not publish.',
   },
   {
     id: 'social-ai-designed',
@@ -102,7 +102,7 @@ const SOCIAL_P0_QUESTIONS: readonly HelpFaqQuestion[] = [
     id: 'social-troubleshooting',
     q: 'How do I troubleshoot a failed render?',
     keywords: ['troubleshooting', 'failed render', 'retry', 'usage'],
-    a: 'If AI Designed fails completely, wait a moment and try again. A run with zero usable versions should return the render. If one or two versions work, the render stays used - pick from what you have.\n\nCheck the brief is clear, the optional job is the right one, and you still have included or purchased renders on Billing.\n\nFor Recreate, a failed preview does not spend a render. Try a sharper inspiration image, or Build a layout with your own photo.\n\nUnsupported or broken files will not generate. Use a normal photo for Build a layout, and MP4 or MOV up to 60 seconds for video.\n\nStitchedUp does not refund a render when at least one AI Designed version succeeded.',
+    a: 'If AI Designed fails completely, wait a moment and try again. A run with zero usable versions should return the render. If one or two versions work, the render stays used - pick from what you have.\n\nCheck the brief is clear, the optional job is the right one, and you still have included or purchased renders on Billing.\n\nFor Recreate, a failed preview does not spend a render. Try a sharper inspiration image, or Build a layout with your own photo.\n\nUnsupported or broken files will not generate. Use a normal photo for Build a layout, and MP4 or MOV up to 20 minutes for video.\n\nStitchedUp does not refund a render when at least one AI Designed version succeeded.',
   },
 ]
 
@@ -141,7 +141,7 @@ const SOCIAL_P1_QUESTIONS: readonly HelpFaqQuestion[] = [
     id: 'social-video',
     q: 'How do I create a video post?',
     keywords: ['video', 'mp4', 'mov'],
-    a: 'In Social → Create, switch to Create Video. Upload an MP4 or MOV up to 60 seconds, add optional job notes, place your logo or a headline if you want, generate a caption, and save to Library.\n\nVideo captions are free. You can download the branded clip or publish/schedule it the same way as an image post once it is in Library.',
+    a: 'In Social → Create, switch to Create Video. Upload an MP4 or MOV up to 20 minutes (portrait or landscape), add optional job notes, place your logo or a headline, blur any part of the screen for any stretch of time if you want, generate a caption, and save to Library.\n\nVideo captions are free. You can download the branded clip or publish/schedule it the same way as an image post once it is in Library.',
   },
   {
     id: 'social-save-download',

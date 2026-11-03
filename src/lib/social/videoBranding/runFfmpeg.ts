@@ -1,6 +1,7 @@
 import { spawn, type ChildProcess } from 'node:child_process'
 
-export const FFMPEG_TIMEOUT_MS = 10 * 60 * 1000
+/** Sized for 20 min sources on a small worker; keep below STALE_PROCESSING_MINUTES. */
+export const FFMPEG_TIMEOUT_MS = 60 * 60 * 1000
 
 export class FfmpegTimeoutError extends Error {
   constructor() {

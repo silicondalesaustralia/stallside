@@ -10,12 +10,15 @@ export function VideoHeadlinePreview({
   style,
   logoPosition,
   hasLogo,
+  aspectRatio = 9 / 16,
 }: {
   imageUrl: string | null
   headline: string
   style: ResolvedVideoHeadlineStyle
   logoPosition?: VideoLogoPosition | null
   hasLogo?: boolean
+  /** width / height of the source video */
+  aspectRatio?: number
 }) {
   if (!headline.trim()) return null
 
@@ -24,7 +27,10 @@ export function VideoHeadlinePreview({
   return (
     <div className="space-y-1.5" data-testid="video-headline-preview">
       <p className="text-[11px] font-semibold uppercase tracking-wide text-[#888]">Preview</p>
-      <div className="relative aspect-[9/16] max-h-72 w-full overflow-hidden rounded-xl border border-[#EDEAE2] bg-[#111]">
+      <div
+        className="relative mx-auto overflow-hidden rounded-xl border border-[#EDEAE2] bg-[#111]"
+        style={{ aspectRatio: `${aspectRatio}`, width: `min(100%, calc(18rem * ${aspectRatio}))` }}
+      >
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />

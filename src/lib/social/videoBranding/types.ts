@@ -64,6 +64,17 @@ export type VideoJobStatus = (typeof VIDEO_JOB_STATUSES)[number]
 
 export type VideoLogoChoiceKind = 'none' | 'primary' | 'asset'
 
+/** Fixed rectangle blurred between `start` and `end` seconds. Geometry is 0-1 of the frame. */
+export type VideoBlurRegion = {
+  id: string
+  x: number
+  y: number
+  width: number
+  height: number
+  start: number
+  end: number
+}
+
 export type VideoBrandingConfig = {
   logoChoice: VideoLogoChoiceKind
   logoAssetId: string | null
@@ -77,6 +88,7 @@ export type VideoBrandingConfig = {
   overlayTextWeight?: VideoHeadlineWeight | null
   overlayTextAlign?: VideoHeadlineAlign | null
   overlayTextBackground?: VideoHeadlineBackground | null
+  blurRegions?: VideoBlurRegion[] | null
 }
 
 export type VideoProcessingJobRow = {

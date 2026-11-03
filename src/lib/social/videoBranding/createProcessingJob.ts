@@ -195,6 +195,7 @@ export function parseBrandingRequestBody(
     overlayTextWeight: body.overlayTextWeight,
     overlayTextAlign: body.overlayTextAlign,
     overlayTextBackground: body.overlayTextBackground,
+    blurRegions: body.blurRegions,
     defaultLogoCorner,
     businessDefaults,
   })

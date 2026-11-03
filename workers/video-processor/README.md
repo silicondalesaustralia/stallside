@@ -10,9 +10,9 @@ Async FFmpeg worker for Social Video Phase 3 branding. **Do not run FFmpeg on Ve
 | Dockerfile | `workers/video-processor/Dockerfile` (build context = repo root) |
 | Start command | Default `CMD ["npm", "start"]` |
 | Replicas | **1** |
-| CPU | **1 vCPU** |
-| Memory | **1 GB minimum**, **2 GB preferred** |
-| Ephemeral disk headroom | **≥ 2 GB** (250 MB upload + encode temp) |
+| CPU | **2 vCPU** (20 min sources take roughly 10-25 min to encode at 1080p) |
+| Memory | **2 GB** (originals are streamed to disk, not buffered) |
+| Ephemeral disk headroom | **≥ 10 GB** (4 GB original + 1080p encode output) |
 | Persistent volume | **No** |
 | Public domain | **No** |
 | Health endpoint | **Not required** (restart on process exit) |
@@ -52,9 +52,9 @@ npm start
 ## Flow
 
 1. Vercel API creates `social_video_processing_jobs` row (`pending`) and sets asset `processing_status = processing`.
-2. Worker recovers stale `processing` jobs older than **10 minutes** on startup and every ~60s.
+2. Worker recovers stale `processing` jobs older than **90 minutes** on startup and every ~60s.
 3. Worker atomically claims one `pending` job (`UPDATE … WHERE status = 'pending'`).
-4. Worker downloads original + logo from Supabase Storage, runs FFmpeg (10 min max), uploads processed MP4.
+4. Worker streams original + logo from Supabase Storage to disk, runs FFmpeg (60 min max; output capped at 1920px long edge; applies timed blur boxes, logo and headline), uploads the processed MP4 with resumable (TUS) chunks.
 5. Worker updates asset `processed_url`, `processing_status = processed`.
 6. Frontend polls `GET …/processing-status` every ~4s while card is open.
 

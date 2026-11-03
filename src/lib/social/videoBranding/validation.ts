@@ -31,6 +31,10 @@ import {
   type VideoHeadlineBusinessDefaults,
 } from '@/lib/social/videoBranding/headlineStyle'
 import { isVideoHeadlineFontId } from '@/lib/social/videoBranding/videoHeadlineFontCatalog'
+import {
+  blurRegionsFromJson,
+  parseBlurRegionsInput,
+} from '@/lib/social/videoBranding/blurRegions'
 
 export const VIDEO_OVERLAY_TEXT_MAX_CHARS = 80
 
@@ -94,6 +98,7 @@ export function parseVideoBrandingRequest(input: {
   overlayTextWeight?: unknown
   overlayTextAlign?: unknown
   overlayTextBackground?: unknown
+  blurRegions?: unknown
   defaultLogoCorner?: string | null
   businessDefaults?: VideoHeadlineBusinessDefaults
 }):
@@ -160,10 +165,15 @@ export function parseVideoBrandingRequest(input: {
     textPosition = input.textPosition
   }
 
-  if (logoChoice === 'none' && !overlayText) {
+  const blurParsed = parseBlurRegionsInput(input.blurRegions)
+  if (!blurParsed.ok) {
+    return { ok: false, error: blurParsed.error, status: 400 }
+  }
+
+  if (logoChoice === 'none' && !overlayText && !blurParsed.regions.length) {
     return {
       ok: false,
-      error: 'Add a logo or video headline to brand this video',
+      error: 'Add a logo, video headline or blur area to edit this video',
       status: 400,
     }
   }
@@ -250,6 +260,7 @@ export function parseVideoBrandingRequest(input: {
     overlayTextWeight,
     overlayTextAlign,
     overlayTextBackground,
+    blurRegions: blurParsed.regions,
   }
 
   return {
@@ -385,5 +396,6 @@ export function brandingConfigFromJson(
       HEADLINE_BACKGROUND_SET.has(raw.overlayTextBackground)
         ? (raw.overlayTextBackground as VideoHeadlineBackground)
         : null,
+    blurRegions: blurRegionsFromJson(raw.blurRegions),
   }
 }

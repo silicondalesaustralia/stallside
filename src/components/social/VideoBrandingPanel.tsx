@@ -47,6 +47,10 @@ import {
   type VideoHeadlineBusinessDefaults,
 } from '@/lib/social/videoBranding/headlineStyle'
 import { VideoHeadlineFontSelect } from '@/components/social/VideoHeadlineFontSelect'
+import { VideoBlurEditor } from '@/components/social/videoBlur/VideoBlurEditor'
+import type { VideoDimensions } from '@/components/social/videoBlur/useVideoPlayback'
+import { videoOutputDimensions } from '@/lib/social/videoBranding/videoFilters'
+import type { VideoBlurRegion } from '@/lib/social/videoBranding/types'
 
 export type VideoBrandingFormValue = RecreateLogoSelection & {
   logoPosition: VideoLogoPosition
@@ -59,7 +63,10 @@ export type VideoBrandingFormValue = RecreateLogoSelection & {
   overlayTextWeight: VideoHeadlineWeight
   overlayTextAlign: VideoHeadlineAlign
   overlayTextBackground: VideoHeadlineBackground
+  blurRegions: VideoBlurRegion[]
 }
+
+const PORTRAIT_FALLBACK: VideoDimensions = { width: 720, height: 1280 }
 
 const DOT_CLASS: Record<VideoLogoPosition, string> = {
   top_left: 'top-0.5 left-0.5',
@@ -90,6 +97,7 @@ export function defaultBrandingFormValue(
     overlayTextWeight: style.weight,
     overlayTextAlign: style.align,
     overlayTextBackground: style.background,
+    blurRegions: config?.blurRegions ?? [],
   }
 }
 
@@ -126,6 +134,7 @@ export function VideoBrandingPanel({
   assetId,
   initialConfig,
   previewImageUrl,
+  videoUrl,
   businessDefaults,
   suggestContext,
   processing,
@@ -135,6 +144,7 @@ export function VideoBrandingPanel({
   assetId: string
   initialConfig?: VideoBrandingConfig | null
   previewImageUrl?: string | null
+  videoUrl?: string | null
   businessDefaults?: VideoHeadlineBusinessDefaults
   suggestContext?: {
     aboutText?: string | null
@@ -150,6 +160,7 @@ export function VideoBrandingPanel({
   )
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [videoDims, setVideoDims] = useState<VideoDimensions>(PORTRAIT_FALLBACK)
 
   useEffect(() => {
     setValue(defaultBrandingFormValue(initialConfig, businessDefaults))
@@ -193,13 +204,14 @@ export function VideoBrandingPanel({
 
   const wrapWarning = useMemo(() => {
     if (!value.overlayText.trim()) return null
-    const fontSize = videoHeadlineFontSizePx(value.overlayTextSize, 1280)
+    const out = videoOutputDimensions(videoDims.width, videoDims.height)
+    const fontSize = videoHeadlineFontSizePx(value.overlayTextSize, out.height)
     return wrapVideoHeadlineLines(value.overlayText, {
-      videoWidth: 720,
+      videoWidth: out.width,
       fontSize,
       align: value.overlayTextAlign,
     }).warning
-  }, [value.overlayText, value.overlayTextSize, value.overlayTextAlign])
+  }, [value.overlayText, value.overlayTextSize, value.overlayTextAlign, videoDims])
 
   async function handleSubmit() {
     setSubmitting(true)
@@ -222,6 +234,7 @@ export function VideoBrandingPanel({
         overlayTextWeight: value.overlayText.trim() ? value.overlayTextWeight : undefined,
         overlayTextAlign: value.overlayText.trim() ? value.overlayTextAlign : undefined,
         overlayTextBackground: value.overlayText.trim() ? value.overlayTextBackground : undefined,
+        blurRegions: value.blurRegions,
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not start branding')
@@ -257,6 +270,16 @@ export function VideoBrandingPanel({
           </button>
         ) : null}
       </div>
+
+      {videoUrl ? (
+        <VideoBlurEditor
+          videoUrl={videoUrl}
+          regions={value.blurRegions}
+          disabled={processing || submitting}
+          onChange={(blurRegions) => setValue((prev) => ({ ...prev, blurRegions }))}
+          onDimensions={setVideoDims}
+        />
+      ) : null}
 
       <RecreateLogoPicker
         value={value}
@@ -510,6 +533,7 @@ export function VideoBrandingPanel({
           style={previewStyle}
           logoPosition={noLogo ? null : value.logoPosition}
           hasLogo={!noLogo}
+          aspectRatio={videoDims.width / videoDims.height}
         />
       ) : (
         <p className="text-[10px] leading-relaxed text-[#AAA]">

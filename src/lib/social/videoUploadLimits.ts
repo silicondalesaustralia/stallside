@@ -1,5 +1,10 @@
-export const SOCIAL_VIDEO_MAX_BYTES = 250 * 1024 * 1024 // 250 MB
-export const SOCIAL_VIDEO_MAX_DURATION_SECONDS = 60
+export const SOCIAL_VIDEO_MAX_BYTES = 4 * 1024 * 1024 * 1024 // 4 GB
+export const SOCIAL_VIDEO_MAX_DURATION_SECONDS = 20 * 60
+
+/** Files above this go through resumable (TUS) upload instead of a single PUT. */
+export const SOCIAL_VIDEO_RESUMABLE_THRESHOLD_BYTES = 50 * 1024 * 1024
+
+export const SOCIAL_VIDEO_LIMITS_LABEL = 'max 20 min · max 4 GB'
 
 export const SOCIAL_VIDEO_ALLOWED_MIMES = [
   'video/mp4',
@@ -16,8 +21,8 @@ export const SOCIAL_VIDEO_MIME_EXTENSIONS: Record<SocialVideoMime, string> = {
 export const SOCIAL_VIDEO_BUCKET = 'social-posts'
 
 export const SOCIAL_VIDEO_ERRORS = {
-  tooLarge: 'This video is too large. Upload a video under 250 MB.',
-  tooLong: 'Videos can currently be up to 60 seconds.',
+  tooLarge: 'This video is too large. Upload a video under 4 GB.',
+  tooLong: 'Videos can currently be up to 20 minutes.',
   unsupported: 'Upload an MP4 or MOV video.',
   uploadFailed: "We couldn't upload this video. Please try again.",
   finalizeFailed: "We couldn't prepare this video for your Library.",

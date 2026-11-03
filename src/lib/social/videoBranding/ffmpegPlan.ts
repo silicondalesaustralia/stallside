@@ -18,7 +18,13 @@ import {
   videoSafeMarginPx,
   videoTextBoxY,
 } from '@/lib/social/videoBranding/safeZones'
-import type { VideoLogoPosition, VideoLogoSize, VideoTextPosition } from '@/lib/social/videoBranding/types'
+import type {
+  VideoBlurRegion,
+  VideoLogoPosition,
+  VideoLogoSize,
+  VideoTextPosition,
+} from '@/lib/social/videoBranding/types'
+import { buildPreBrandingFilters } from '@/lib/social/videoBranding/videoFilters'
 
 /** libx264 speed preset - social V1 favours latency over compression efficiency. */
 export const FFMPEG_VIDEO_PRESET = 'veryfast'
@@ -35,6 +41,9 @@ export type FfmpegBrandingInput = {
   headlineStyle: ResolvedVideoHeadlineStyle
   /** One UTF-8 textfile path per overlay line (already written to disk). */
   textFilePaths: string[]
+  /** Set when the source must be downscaled; videoWidth/videoHeight are then the scaled size. */
+  scaleTo?: { width: number; height: number } | null
+  blurRegions?: VideoBlurRegion[] | null
 }
 
 export type FfmpegBrandingPlan = {
@@ -58,8 +67,15 @@ export function computeLogoDimensions(params: {
 
 export function buildFfmpegBrandingPlan(input: FfmpegBrandingInput): FfmpegBrandingPlan {
   const { videoWidth, videoHeight } = input
-  const filters: string[] = []
-  let currentLabel = '0:v'
+  const pre = buildPreBrandingFilters({
+    sourceLabel: '0:v',
+    scaleTo: input.scaleTo ?? null,
+    frameWidth: videoWidth,
+    frameHeight: videoHeight,
+    blurRegions: input.blurRegions ?? [],
+  })
+  const filters: string[] = [...pre.filters]
+  let currentLabel = pre.label
   let logoInputIndex: number | null = null
 
   if (input.hasLogo && input.logoPosition && input.logoWidth > 0 && input.logoHeight > 0) {
@@ -171,7 +187,11 @@ export function buildFfmpegArgs(params: {
 }
 
 export function brandingConfigHasWork(config: VideoBrandingConfig): boolean {
-  return config.logoChoice !== 'none' || Boolean(config.overlayText?.trim())
+  return (
+    config.logoChoice !== 'none' ||
+    Boolean(config.overlayText?.trim()) ||
+    Boolean(config.blurRegions?.length)
+  )
 }
 
 export function resolveHeadlineStyleForRender(
