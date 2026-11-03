@@ -5,7 +5,6 @@ const FEATURES = [
   { href: "/stall", label: "Stall payments", body: "QR code payments at your roadside or market stall." },
   { href: "/pre-orders", label: "Pre-orders", body: "Take paid orders with pickup times and a make list." },
   { href: "/#pricing", label: "Pricing", body: "Free is $0 a month with everything you need to sell." },
-  { href: "/demo", label: "Try the demo", body: "See a working stand before you sign up." },
 ] as const;
 
 export default function SidebarFeatureLinks() {

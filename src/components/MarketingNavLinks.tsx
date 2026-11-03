@@ -4,7 +4,6 @@ const LINKS = [
   { href: "/lp/home-producers", label: "Start Your Own" },
   { href: "/pre-orders", label: "Pre-orders" },
   { href: "/#pricing", label: "Pricing" },
-  { href: "/demo", label: "Demo" },
 ] as const;
 
 export default function MarketingNavLinks({

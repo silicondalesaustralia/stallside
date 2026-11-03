@@ -40,8 +40,8 @@ export default async function DemoWebsiteTemplatePage({
           Seed the Green Valley demo first:{" "}
           <code className="text-xs">npm run seed:green-valley-demo</code>
         </p>
-        <Link href="/demo" className="mt-6 inline-block underline">
-          Back to Demo
+        <Link href="/" className="mt-6 inline-block underline">
+          Back to Vendl
         </Link>
       </main>
     );

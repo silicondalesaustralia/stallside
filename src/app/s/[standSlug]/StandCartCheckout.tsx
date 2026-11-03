@@ -17,7 +17,6 @@ import {
 import {
   isEmbeddedCheckout,
   notifyDemoSale,
-  storePendingDemoSale,
 } from "@/lib/demo-sale-message";
 import type { DemoProduct } from "@/lib/demo";
 import {
@@ -445,13 +444,8 @@ export default function StandCartCheckout({
       totalCents: total,
       currency,
     };
-    if (demoProduct) {
-      storePendingDemoSale(sale);
-      if (isEmbeddedCheckout()) {
-        notifyDemoSale(sale);
-        return;
-      }
-      window.location.href = `/demo/owner?product=${demoProduct}`;
+    if (demoProduct && isEmbeddedCheckout()) {
+      notifyDemoSale(sale);
       return;
     }
     setPaidVia(via);
