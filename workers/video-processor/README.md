@@ -28,6 +28,7 @@ Async FFmpeg worker for Social Video Phase 3 branding. **Do not run FFmpeg on Ve
 | `VIDEO_PROCESSOR_WORKER_ID` | No | Identifier logged on job claims (keep fixed - used for stale-job recovery) |
 | `OPENAI_API_KEY` | Yes (clips) | Whisper transcription + moment picking |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_VIDEO_SOURCES_BUCKET` | Yes (clips) | R2 bucket holding raw source uploads |
+| `R2_PUBLIC_BASE_URL` | Yes (Library) | Public custom domain of that bucket, e.g. `https://media.vendl.app`. Library videos under `library/` and their branded outputs are stored there and served from it |
 | `VIDEO_CLIP_TRANSCRIBE_MODEL`, `VIDEO_CLIP_LLM_MODEL` | No | Model overrides |
 | `VIDEO_CLIP_CONCURRENCY`, `VIDEO_FFMPEG_THREADS`, `VIDEO_SINGLE_PASS_CAPTIONS` | No | Render tuning |
 

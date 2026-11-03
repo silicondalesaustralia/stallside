@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { resolveEffectiveBusinessId } from '@/lib/utils/impersonation'
 import { mapMediaAssetRow, type SocialMediaAssetRow } from '@/lib/social/mediaAssetTypes'
+import { LIBRARY_R2_PREFIX, libraryR2ExpiryCutoff } from '@/lib/social/libraryVideoR2'
 
 export const runtime = 'nodejs'
 
@@ -43,6 +44,9 @@ export async function GET(req: NextRequest) {
     )
     .eq('business_id', businessId)
     .eq('media_type', 'video')
+    .or(
+      `storage_path.is.null,storage_path.not.like.${LIBRARY_R2_PREFIX}*,created_at.gte.${libraryR2ExpiryCutoff()}`,
+    )
     .order('created_at', { ascending: false })
     .limit(limit)
 

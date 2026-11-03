@@ -119,22 +119,12 @@ export function LibraryVideoUploadModal({
         throw new Error(urlJson.error || SOCIAL_VIDEO_ERRORS.uploadFailed)
       }
 
-      const assetId = urlJson.assetId as string
-      const signedUrl = urlJson.signedUrl as string
-      if (!assetId || !signedUrl) {
+      const assetId = typeof urlJson.assetId === 'string' ? urlJson.assetId : ''
+      if (!assetId) {
         throw new Error(SOCIAL_VIDEO_ERRORS.uploadFailed)
       }
 
-      await uploadSocialVideoFile(
-        file,
-        {
-          signedUrl,
-          token: String(urlJson.token ?? ''),
-          bucket: String(urlJson.bucket ?? ''),
-          path: String(urlJson.path ?? ''),
-        },
-        setProgress,
-      )
+      const { uploadId } = await uploadSocialVideoFile(file, urlJson, setProgress)
 
       setPhase('preparing')
       setProgress(0)
@@ -169,6 +159,7 @@ export function LibraryVideoUploadModal({
         body: JSON.stringify({
           durationSeconds: duration,
           hasThumbnail,
+          uploadId,
         }),
       })
       const finalizeJson = await finalizeRes.json().catch(() => ({}))

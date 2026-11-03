@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import { VideoBrandingPanel } from '@/components/social/VideoBrandingPanel'
+import { VideoExpiryNote } from '@/components/social/VideoExpiryNote'
 import {
   downloadFilenameForVideo,
   formatVideoDuration,
@@ -39,6 +40,7 @@ type Props = {
 
 async function downloadVideoUrl(url: string, filename: string) {
   const res = await fetch(url)
+  if (!res.ok) throw new Error(`download failed (${res.status})`)
   const blob = await res.blob()
   const a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
@@ -231,6 +233,11 @@ export function VideoLibraryCard({
         asset.createdAt,
         variant,
       )
+      if (asset.expiresAt) {
+        const params = new URLSearchParams({ variant, filename })
+        window.location.assign(`/api/social/media-assets/${asset.id}/download?${params}`)
+        return
+      }
       await downloadVideoUrl(url, filename)
       toast(variant === 'branded' ? 'Branded video downloaded' : 'Video downloaded', 'success')
     } catch {
@@ -696,6 +703,7 @@ export function VideoLibraryCard({
             minute: '2-digit',
           })}
         </p>
+        <VideoExpiryNote expiresAt={asset.expiresAt} />
       </div>
     </article>
   )

@@ -13,6 +13,8 @@ import {
 import { validateSocialVideoUploadRequest } from '@/lib/social/mediaAssetValidation'
 import { resolveMediaAssetJobId } from '@/lib/social/mediaAssetJob'
 import { SOCIAL_VIDEO_ERRORS } from '@/lib/social/videoUploadLimits'
+import { buildLibraryR2OriginalKey } from '@/lib/social/libraryVideoR2'
+import { isLibraryR2Enabled, presignLibraryR2Upload } from '@/lib/social/libraryR2Upload'
 
 export const runtime = 'nodejs'
 
@@ -33,11 +35,10 @@ export async function POST(req: NextRequest) {
   }
 
   const assetId = randomUUID()
-  const path = buildSocialVideoOriginalPath(
-    ctx.businessId,
-    assetId,
-    validated.mimeType,
-  )
+  const useR2 = isLibraryR2Enabled()
+  const path = useR2
+    ? buildLibraryR2OriginalKey(ctx.businessId, assetId, validated.mimeType)
+    : buildSocialVideoOriginalPath(ctx.businessId, assetId, validated.mimeType)
   const aboutText =
     typeof body.aboutText === 'string' ? body.aboutText.trim().slice(0, 2000) : null
 
@@ -68,6 +69,17 @@ export async function POST(req: NextRequest) {
     }
     console.error('[MediaAssets] insert failed', insertErr.message)
     return NextResponse.json({ error: SOCIAL_VIDEO_ERRORS.uploadFailed }, { status: 500 })
+  }
+
+  if (useR2) {
+    try {
+      const target = await presignLibraryR2Upload(path, validated.mimeType, validated.size)
+      return NextResponse.json({ ok: true, assetId, storage: 'r2', ...target })
+    } catch (err) {
+      await ctx.db.from('social_media_assets').update({ status: 'failed' }).eq('id', assetId)
+      console.error('[MediaAssets] R2 presign failed', err instanceof Error ? err.message : err)
+      return NextResponse.json({ error: SOCIAL_VIDEO_ERRORS.uploadFailed }, { status: 500 })
+    }
   }
 
   const { data, error } = await ctx.db.storage

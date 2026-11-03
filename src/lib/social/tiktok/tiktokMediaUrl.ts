@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import { requireTikTokCredentials, tiktokMediaOrigin } from '@/lib/social/tiktok/tiktokConfig'
+import { isLibraryR2PublicUrl } from '@/lib/social/libraryVideoR2'
 
 function mediaSignature(postId: string, index: number): string {
   const { clientSecret } = requireTikTokCredentials()
@@ -21,8 +22,9 @@ export function verifyTikTokMediaSignature(postId: string, index: number, sig: s
   return expected.length === actual.length && timingSafeEqual(expected, actual)
 }
 
-/** Only proxy files from this project's Supabase Storage (prevents SSRF via stored URLs). */
+/** Only proxy files from this project's Supabase Storage or R2 public domain (prevents SSRF via stored URLs). */
 export function isProxyableStorageUrl(raw: string): boolean {
+  if (isLibraryR2PublicUrl(raw)) return true
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   if (!supabaseUrl) return false
   try {

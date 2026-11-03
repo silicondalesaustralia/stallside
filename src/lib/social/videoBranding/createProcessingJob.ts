@@ -7,6 +7,12 @@ import {
   type RecreateLogoChoice,
 } from '@/lib/brand/businessBrandLogos'
 import { buildSocialVideoProcessedPath, requirePublicSocialPostsUrl, resolvePublicSocialPostsUrl } from '@/lib/social/socialVideoStorage'
+import {
+  buildLibraryR2ProcessedKey,
+  isLibraryR2Path,
+  libraryR2PublicBaseUrl,
+  libraryR2PublicUrl,
+} from '@/lib/social/libraryVideoR2'
 import type { VideoBrandingConfig, VideoProcessingJobRow } from '@/lib/social/videoBranding/types'
 import {
   BRANDING_IN_PROGRESS_ERROR,
@@ -89,7 +95,9 @@ export async function createVideoProcessingJob(
 
   const outputVersion = (count ?? 0) + 1
   const jobId = randomUUID()
-  const outputPath = buildSocialVideoProcessedPath(businessId, assetId, jobId)
+  const outputPath = isLibraryR2Path(asset.storage_path)
+    ? buildLibraryR2ProcessedKey(businessId, assetId, jobId)
+    : buildSocialVideoProcessedPath(businessId, assetId, jobId)
   const previousProcessedPath = asset.processed_storage_path?.trim() || null
 
   const jobFields = brandingConfigToJobFields(config)
@@ -171,10 +179,14 @@ export async function resolveLogoChoiceForWorker(
 }
 
 export function processedPublicUrl(storagePath: string, db?: SupabaseClient): string {
+  if (isLibraryR2Path(storagePath)) {
+    return libraryR2PublicBaseUrl() ? libraryR2PublicUrl(storagePath) : ''
+  }
   return resolvePublicSocialPostsUrl(db, storagePath)
 }
 
 export function requireProcessedPublicUrl(storagePath: string, db?: SupabaseClient): string {
+  if (isLibraryR2Path(storagePath)) return libraryR2PublicUrl(storagePath)
   return requirePublicSocialPostsUrl(db, storagePath)
 }
 

@@ -35,6 +35,9 @@ import {
   downloadUrlToFile,
   uploadProcessedVideo,
 } from './storageTransfer'
+import { downloadSourceToFile } from './sourceDownload'
+import { uploadFileToR2 } from './r2Upload'
+import { isLibraryR2Path } from '../../../src/lib/social/libraryVideoR2'
 
 export async function processVideoJob(
   db: SupabaseClient,
@@ -70,12 +73,9 @@ export async function processVideoJob(
     const inputPath = join(workDir, `input.${ext}`)
 
     timer.beginStage('original_download')
-    const originalBytes = await downloadStorageObject(
-      db,
-      SOCIAL_VIDEO_BUCKET,
-      asset.storage_path,
-      inputPath,
-    )
+    const originalBytes = isLibraryR2Path(asset.storage_path)
+      ? await downloadSourceToFile(asset.storage_path, inputPath)
+      : await downloadStorageObject(db, SOCIAL_VIDEO_BUCKET, asset.storage_path, inputPath)
     timer.log('original downloaded', { bytes: originalBytes })
 
     timer.beginStage('ffprobe')
@@ -190,7 +190,9 @@ export async function processVideoJob(
     timer.log('ffmpeg complete', { bytes: outputBytes, preset: FFMPEG_VIDEO_PRESET, crf: FFMPEG_VIDEO_CRF })
 
     timer.beginStage('upload')
-    const uploadedBytes = await uploadProcessedVideo(db, job.output_storage_path, outputPath)
+    const uploadedBytes = isLibraryR2Path(job.output_storage_path)
+      ? await uploadFileToR2(job.output_storage_path, outputPath, 'video/mp4')
+      : await uploadProcessedVideo(db, job.output_storage_path, outputPath)
     uploadedOutputPath = job.output_storage_path
     timer.log('upload complete', { bytes: uploadedBytes })
 

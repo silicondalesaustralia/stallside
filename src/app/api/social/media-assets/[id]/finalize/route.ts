@@ -11,9 +11,23 @@ import {
 } from '@/lib/social/socialVideoStorage'
 import { validateSocialVideoFinalizeRequest } from '@/lib/social/mediaAssetValidation'
 import { storageObjectMeta } from '@/lib/social/mediaAssetStorage'
-import { SOCIAL_VIDEO_ERRORS } from '@/lib/social/videoUploadLimits'
+import { SOCIAL_VIDEO_ERRORS, SOCIAL_VIDEO_MAX_BYTES } from '@/lib/social/videoUploadLimits'
+import { deleteR2Object } from '@/lib/social/videoClips/r2'
+import { isLibraryR2Path, libraryR2PublicUrl } from '@/lib/social/libraryVideoR2'
+import { finalizeLibraryR2Upload } from '@/lib/social/libraryR2Upload'
 
 export const runtime = 'nodejs'
+
+async function r2ObjectMeta(key: string, uploadIdRaw: unknown, declaredSize: number) {
+  const uploadId =
+    typeof uploadIdRaw === 'string' && uploadIdRaw.length <= 1024 ? uploadIdRaw : null
+  const size = await finalizeLibraryR2Upload(key, uploadId, declaredSize)
+  if (size != null && size > SOCIAL_VIDEO_MAX_BYTES) {
+    await deleteR2Object(key)
+    return { exists: false, size: null }
+  }
+  return { exists: size != null && size > 0, size }
+}
 
 type RouteContext = { params: Promise<{ id: string }> }
 
@@ -31,6 +45,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     width?: number
     height?: number
     hasThumbnail?: boolean
+    uploadId?: unknown
   }
   try {
     body = await req.json()
@@ -80,7 +95,16 @@ export async function POST(req: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: SOCIAL_VIDEO_ERRORS.finalizeFailed }, { status: 400 })
   }
 
-  const objectMeta = await storageObjectMeta(ctx.db, storagePath)
+  const declaredSize = asset.file_size_bytes != null ? Number(asset.file_size_bytes) : 0
+  let objectMeta: { exists: boolean; size: number | null }
+  try {
+    objectMeta = isLibraryR2Path(storagePath)
+      ? await r2ObjectMeta(storagePath, body.uploadId, declaredSize)
+      : await storageObjectMeta(ctx.db, storagePath)
+  } catch (err) {
+    console.error('[MediaAssets] finalize R2 failed', err instanceof Error ? err.message : err)
+    return NextResponse.json({ error: SOCIAL_VIDEO_ERRORS.finalizeFailed }, { status: 500 })
+  }
   if (!objectMeta.exists) {
     await ctx.db
       .from('social_media_assets')
@@ -98,7 +122,9 @@ export async function POST(req: NextRequest, context: RouteContext) {
     }
   }
 
-  const originalUrl = publicSocialPostsUrl(storagePath)
+  const originalUrl = isLibraryR2Path(storagePath)
+    ? libraryR2PublicUrl(storagePath)
+    : publicSocialPostsUrl(storagePath)
   const fileSize =
     objectMeta.size ??
     (asset.file_size_bytes != null ? Number(asset.file_size_bytes) : null)

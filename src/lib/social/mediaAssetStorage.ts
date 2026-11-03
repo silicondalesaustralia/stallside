@@ -1,5 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { SOCIAL_VIDEO_BUCKET } from '@/lib/social/socialVideoStorage'
+import { isLibraryR2Path } from '@/lib/social/libraryVideoR2'
+import { deleteR2Object } from '@/lib/social/videoClips/r2'
 
 export async function storageObjectMeta(
   db: SupabaseClient,
@@ -40,7 +42,16 @@ export async function removeStoragePaths(
   db: SupabaseClient,
   paths: (string | null | undefined)[],
 ): Promise<void> {
-  const unique = [...new Set(paths.filter((p): p is string => !!p?.trim()))]
+  const all = [...new Set(paths.filter((p): p is string => !!p?.trim()))]
+  const r2Keys = all.filter(isLibraryR2Path)
+  const unique = all.filter((p) => !isLibraryR2Path(p))
+  for (const key of r2Keys) {
+    try {
+      await deleteR2Object(key)
+    } catch (err) {
+      console.warn('[MediaAssets] R2 remove failed', key, err instanceof Error ? err.message : err)
+    }
+  }
   if (!unique.length) return
   const { error } = await db.storage.from(SOCIAL_VIDEO_BUCKET).remove(unique)
   if (error) {

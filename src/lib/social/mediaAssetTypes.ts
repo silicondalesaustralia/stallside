@@ -1,3 +1,5 @@
+import { isLibraryR2Path, libraryR2ExpiresAt } from '@/lib/social/libraryVideoR2'
+
 export type SocialMediaAssetStatus = 'uploading' | 'ready' | 'failed' | 'deleted'
 
 export type VideoProcessingStatus = 'none' | 'processing' | 'processed' | 'processing_failed'
@@ -43,6 +45,8 @@ export type SocialMediaAssetListItem = {
   jobSuburb: string | null
   brandingConfig: Record<string, unknown> | null
   createdAt: string
+  /** Set for videos stored in R2, which its lifecycle rule deletes. */
+  expiresAt: string | null
 }
 
 export function mapMediaAssetRow(
@@ -71,5 +75,8 @@ export function mapMediaAssetRow(
       typeof job?.site_suburb === 'string' ? job.site_suburb.trim() || null : null,
     brandingConfig: row.branding_config ?? null,
     createdAt: row.created_at,
+    expiresAt: isLibraryR2Path(row.storage_path)
+      ? libraryR2ExpiresAt(row.created_at).toISOString()
+      : null,
   }
 }
