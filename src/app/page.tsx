@@ -1,25 +1,24 @@
 import type { Metadata } from "next";
-import BusinessToolsSection from "@/components/BusinessToolsSection";
-import CardDemandProof from "@/components/CardDemandProof";
-import CartTypeSection from "@/components/CartTypeSection";
-import FeatureColumns from "@/components/FeatureColumns";
-import HowItWorksFlow from "@/components/HowItWorksFlow";
 import JsonLd from "@/components/JsonLd";
-import LandingFaq from "@/components/LandingFaq";
 import LandingFooter from "@/components/LandingFooter";
-import LandingHero from "@/components/LandingHero";
-import LandingPaymentMethods from "@/components/LandingPaymentMethods";
-import LandingRegionsSection from "@/components/LandingRegionsSection";
-import MarketingDashboardSection from "@/components/MarketingDashboardSection";
-import NetworkVision from "@/components/NetworkVision";
-import PricingTiers from "@/components/PricingTiers";
-import ProductFork from "@/components/ProductFork";
-import RestockCustomersSection from "@/components/RestockCustomersSection";
-import StandBrandingSection from "@/components/StandBrandingSection";
-import TrustSection from "@/components/TrustSection";
-import UseCaseGrid from "@/components/UseCaseGrid";
+import HomeAudienceStrip from "@/components/home/HomeAudienceStrip";
+import HomeCommunity from "@/components/home/HomeCommunity";
+import HomeFaq from "@/components/home/HomeFaq";
+import HomeFinalCta from "@/components/home/HomeFinalCta";
+import HomeHeader from "@/components/home/HomeHeader";
+import HomeHero from "@/components/home/HomeHero";
+import HomeMakers from "@/components/home/HomeMakers";
+import HomeMarketing from "@/components/home/HomeMarketing";
+import HomePlatform from "@/components/home/HomePlatform";
+import HomePricing from "@/components/home/HomePricing";
+import HomeProduction from "@/components/home/HomeProduction";
+import HomePayments from "@/components/home/HomePayments";
+import HomeSelling from "@/components/home/HomeSelling";
+import HomeStands from "@/components/home/HomeStands";
+import HomeSwitch from "@/components/home/HomeSwitch";
+import { socialLive } from "@/lib/beta-app";
 import { APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
-import { LANDING_FAQS } from "@/lib/landing-faqs";
+import { HOME_FAQS } from "@/lib/home-faqs";
 import { homeGraphSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -29,27 +28,29 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
+  const showSocial = socialLive();
+
   return (
-    <main className="relative flex min-h-full flex-1 flex-col">
-      <JsonLd data={homeGraphSchema(LANDING_FAQS)} />
-      <LandingHero />
-      <ProductFork />
-      <TrustSection />
-      <HowItWorksFlow />
-      <CartTypeSection />
-      <MarketingDashboardSection />
-      <BusinessToolsSection />
-      <UseCaseGrid />
-      <LandingPaymentMethods />
-      <LandingRegionsSection />
-      <RestockCustomersSection />
-      <StandBrandingSection />
-      <FeatureColumns />
-      <CardDemandProof />
-      <PricingTiers />
-      <NetworkVision />
-      <LandingFaq />
+    <div className="relative flex min-h-full flex-1 flex-col bg-[#faf9f5] text-[var(--field)]">
+      <JsonLd data={homeGraphSchema(HOME_FAQS)} />
+      <HomeHeader />
+      <main>
+        <HomeHero />
+        <HomeAudienceStrip />
+        <HomePlatform showSocial={showSocial} />
+        <HomeProduction />
+        <HomeSelling showSocial={showSocial} />
+        <HomeMarketing showSocial={showSocial} />
+        <HomeStands />
+        <HomePayments />
+        <HomeMakers />
+        <HomeSwitch />
+        <HomeCommunity />
+        <HomePricing showSocial={showSocial} />
+        <HomeFaq />
+        <HomeFinalCta />
+      </main>
       <LandingFooter />
-    </main>
+    </div>
   );
 }

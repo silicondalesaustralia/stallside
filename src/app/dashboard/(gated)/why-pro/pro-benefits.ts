@@ -92,7 +92,7 @@ export const PRO_BENEFIT_GROUPS: ProBenefitGroup[] = [
       },
       {
         title: "Data import",
-        body: "Bring products, customers, pages and subscriptions across from Shopify, WooCommerce, Squarespace, Wix, Square or another Vendl business.",
+        body: "Bring products (with stock) and customers across from Shopify, WooCommerce, Squarespace, Wix, Square or any spreadsheet.",
         free: "Export only",
         pro: "Import and export",
       },

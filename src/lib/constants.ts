@@ -9,11 +9,10 @@ export const APP_POSITIONING =
 export const APP_HERO_SUPPORT =
   "Live in a minute. Cash and card from the start - plus every payment method in your region.";
 /** Browser tab + search title for the homepage */
-export const APP_SEO_TITLE =
-  "Vendl · Make more money from your stall. Shop included, no website needed.";
+export const APP_SEO_TITLE = "Vendl · Make it. Sell it. Know what you earn.";
 /** Meta description (~155 chars) */
 export const APP_SEO_DESCRIPTION =
-  "QR checkout for unattended stalls, pre-orders, and subscriptions. Stock tools, cash and card - plus your own online shop, no website needed.";
+  "Your online shop, product costs, stock and orders in one place. Built for makers, home producers, growers and farm shops. Start free, add your website with Pro.";
 
 
 /** @deprecated legacy Cash tier list price - prefer cashPlanCents(currency) */
