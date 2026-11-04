@@ -3,9 +3,9 @@
 import { useCallback, useState } from 'react'
 import type { SocialPublishPlatform } from '@/lib/social/libraryPublish'
 
-type CaptionResponse = { captions?: string[]; title?: string | null; error?: string }
+type CaptionResponse = { captions?: string[]; title?: string | null; tags?: string[]; error?: string }
 
-export type WrittenCaption = { caption: string; title: string | null }
+export type WrittenCaption = { caption: string; title: string | null; tags: string[] }
 
 export function useComposerCaption(initial = '') {
   const [caption, setCaption] = useState(initial)
@@ -41,7 +41,8 @@ export function useComposerCaption(initial = '') {
         setAlternatives(captions)
         setAltIndex(0)
         setCaption(captions[0])
-        return { caption: captions[0], title: json.title?.trim() || null }
+        const tags = Array.isArray(json.tags) ? json.tags.filter((t) => typeof t === 'string' && t.trim()) : []
+        return { caption: captions[0], title: json.title?.trim() || null, tags }
       } catch (err) {
         setCaptionError(err instanceof Error ? err.message : 'Could not write a caption')
         return null

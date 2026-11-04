@@ -68,6 +68,7 @@ export function TradiesPostComposer() {
     void captionState.generate({ jobId, renderId: media?.renderId ?? null, assetId: media?.assetId ?? null, platform: platforms[0] }).then((written) => {
       if (written && pinterest.active) void pinterest.writeTitle(written.caption, jobId)
       if (written?.title) youtube.prefillTitle(written.title)
+      if (written?.tags.length) youtube.prefillTags(written.tags)
     })
 
   return (

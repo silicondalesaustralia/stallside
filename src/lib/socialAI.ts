@@ -10,7 +10,7 @@ import {
   getPostSubtypeDefinition,
   type PostSubtypeId,
 } from '@/lib/social/postTaxonomy'
-import { VENDL_SOCIAL_AUDIENCE } from '@/lib/socialHost/socialAudience'
+import { CAPTION_HASHTAGS, captionFrameworkSystem } from '@/lib/social/captionFramework'
 
 export type SocialPlatform = 'instagram' | 'facebook' | 'gmb' | 'linkedin'
 export type BrandVoice = 'professional' | 'casual' | 'punchy'
@@ -138,17 +138,18 @@ export async function generateSocialCaption(options: CaptionOptions): Promise<st
   }
 
   const platformReqs: Record<SocialPlatform, string> = {
-    instagram: '150-220 chars + 15-20 relevant hashtags. Start with a hook. End with CTA. Then hashtags on a new line.',
-    facebook: '100-200 chars, conversational, 3-5 hashtags only, include location.',
-    gmb: '100-150 chars, local SEO focused. Include suburb + state + what you sell. No hashtags.',
-    linkedin: '150-250 chars, professional, focus on quality, provenance and care, 5-8 hashtags.',
+    instagram: `Follow the structure and style rules. ${CAPTION_HASHTAGS.min}-${CAPTION_HASHTAGS.max} hashtags on their own line.`,
+    facebook: `Follow the structure and style rules. ${CAPTION_HASHTAGS.min}-${CAPTION_HASHTAGS.max} hashtags on their own line, include location.`,
+    gmb: 'Google Business Profile: 60-120 words, local SEO focused. Include suburb + state + what you sell. No hashtags and no emojis.',
+    linkedin: `Professional take on the same structure, focus on quality, provenance and care. ${CAPTION_HASHTAGS.min}-${CAPTION_HASHTAGS.max} hashtags.`,
   }
 
   const userPrompt = `${angleBrief}
 
 Occasion: ${occasion.label} (${postSubtype}).${testimonialBlock}
 
-Write 3 different ${platform} captions for ${businessName}, a ${tradeType} based in ${suburb} ${state}.
+BUSINESS CONTEXT: ${businessName}, a ${tradeType} based in ${suburb} ${state}.
+Write 3 different ${platform} captions for ${businessName}.
 
 What the post is about: ${jobTitle}
 Details: ${jobDescription || 'Fresh, locally made products'}
@@ -167,11 +168,15 @@ Return EXACTLY 3 captions separated by ---VARIATION--- with no extra text.`
 
   const response = await client.chat.completions.create({
     model: 'gpt-4o-mini',
-    max_tokens: 800,
+    max_tokens: 1600,
     messages: [
       {
         role: 'system',
-        content: `You are a social media expert for ${VENDL_SOCIAL_AUDIENCE} Write warm, authentic, local captions that turn followers into orders. Sound like a proud small producer, not a marketing agency.`,
+        content: [
+          ...captionFrameworkSystem(),
+          'OPTIONS:',
+          '- This request asks for 3 alternative captions. Each one follows every rule above on its own; vary the hook and angle between them.',
+        ].join('\n'),
       },
       { role: 'user', content: userPrompt },
     ],

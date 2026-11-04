@@ -69,7 +69,12 @@ export async function POST(req: NextRequest) {
         captionRefund = null
         return NextResponse.json({ error: video.error }, { status: video.status })
       }
-      return NextResponse.json({ captions: [video.caption], title: video.title, source: 'video_library' })
+      return NextResponse.json({
+        captions: [video.caption],
+        title: video.title,
+        tags: video.tags,
+        source: 'video_library',
+      })
     }
 
     let renderContent: unknown = null

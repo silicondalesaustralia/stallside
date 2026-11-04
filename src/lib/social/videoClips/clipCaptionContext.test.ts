@@ -52,11 +52,14 @@ const bare = buildVideoCaptionPrompt({ aboutText: null, business, job: null })
 assert.ok(bare.user.includes('ON-SCREEN TEXT (added by the seller, in order):\n(none)'), 'empty overlays say none')
 assert.ok(bare.user.includes('VIDEO NAME:\n(none)'), 'empty names say none')
 
+assert.ok(prompt.system.includes('"tags"'), 'model is asked for YouTube tags')
+assert.ok(prompt.system.includes('HOOK'), 'shared copywriting framework is in the prompt')
+
 assert.deepEqual(
-  parseVideoCaptionResponse('{"caption":"Fresh berries!","title":"Pick your own strawberries"}'),
-  { caption: 'Fresh berries!', title: 'Pick your own strawberries' },
+  parseVideoCaptionResponse('{"caption":"Fresh berries!","title":"Pick your own strawberries","tags":"berries, Hill Farm, #berries"}'),
+  { caption: 'Fresh berries!', title: 'Pick your own strawberries', tags: ['berries', 'Hill Farm'] },
 )
-assert.deepEqual(parseVideoCaptionResponse('Plain caption text'), { caption: 'Plain caption text', title: null })
+assert.deepEqual(parseVideoCaptionResponse('Plain caption text'), { caption: 'Plain caption text', title: null, tags: [] })
 assert.equal(parseVideoCaptionResponse('{"title":"No caption"}'), null, 'JSON without caption is rejected')
 assert.equal(cleanVideoPostTitle('"Fresh berries #local"'), 'Fresh berries')
 assert.ok((cleanVideoPostTitle('word '.repeat(40)) ?? '').length <= 70, 'titles are capped')
@@ -68,7 +71,7 @@ assert.equal(fallbackVideoPostTitle({}), null)
 
 async function run() {
   const ai = await generateVideoCaption(ctx, async () => '{"caption":"Come pick!","title":"Strawberry season is here"}')
-  assert.deepEqual(ai, { caption: 'Come pick!', title: 'Strawberry season is here' })
+  assert.deepEqual(ai, { caption: 'Come pick!', title: 'Strawberry season is here', tags: [] })
   const noTitle = await generateVideoCaption(ctx, async () => '{"caption":"Come pick!"}')
   assert.equal(noTitle.title, 'Strawberry picking day', 'missing title falls back to the seller name')
   const failed = await generateVideoCaption(ctx, async () => {

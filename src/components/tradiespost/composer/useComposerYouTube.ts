@@ -18,7 +18,11 @@ export function useComposerYouTubeGate(active: boolean, caption: string) {
     const clean = cleanYouTubeTitle(title)
     if (clean) setDraft((d) => (d.title.trim() ? d : { ...d, title: clean }))
   }, [])
-  return { draft, setDraft, active, settings, blockReason, prefillTitle }
+  /** Same rule for tags: only fills an empty tags box. */
+  const prefillTags = useCallback((tags: string[]) => {
+    if (tags.length) setDraft((d) => (d.tags.trim() ? d : { ...d, tags: tags.join(', ') }))
+  }, [])
+  return { draft, setDraft, active, settings, blockReason, prefillTitle, prefillTags }
 }
 
 export type ComposerYouTubeState = ReturnType<typeof useComposerYouTubeGate>

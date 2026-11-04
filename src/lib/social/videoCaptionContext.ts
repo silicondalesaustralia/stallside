@@ -2,9 +2,10 @@ import type {
   DesignedCaptionBusiness,
   DesignedCaptionJob,
 } from '@/lib/social/designedCaptionContext'
-import { VENDL_SOCIAL_AUDIENCE } from '@/lib/socialHost/socialAudience'
+import { captionFrameworkSystem } from '@/lib/social/captionFramework'
 import { SCRIPT_PROMPT_MAX_CHARS } from '@/lib/social/videoClips/clipScript'
 import { VIDEO_POST_TITLE_MAX } from '@/lib/social/videoCaptionTitle'
+import { YOUTUBE_TAGS_MAX_CHARS } from '@/lib/social/youtube/youtubeTags'
 
 export type VideoCaptionContext = {
   aboutText: string | null
@@ -40,20 +41,16 @@ export function buildVideoCaptionPrompt(params: VideoCaptionContext): {
   const clipTitle = params.clipTitle?.trim() || null
 
   const system = [
-    `You write ready-to-post social captions for ${VENDL_SOCIAL_AUDIENCE}`,
-    'Return JSON only, shaped {"caption": string, "title": string}.',
-    'caption: ONE ready-to-post caption. Do not number options. Do not use markdown headings.',
-    `title: a short, specific post title under ${VIDEO_POST_TITLE_MAX} characters for YouTube or a video library. No hashtags, no emojis, no quotes, no clickbait.`,
-    'On-screen text, when supplied, is the seller\'s own wording added to the video, usually their offer or call to action. Repeat its offer or call to action in the caption and never contradict it.',
-    'You have NOT watched or analysed the video. Write from the supplied text context only.',
-    'Never claim to have seen the video or describe specific on-screen actions unless the user wrote them in their description.',
-    'Do not use phrases like "as you can see in the video" or "watch as we".',
-    'When a video script (transcript of what is said) is supplied, base the caption on what is said in it: its main point, offer or tips. You may paraphrase or briefly quote it. It is auto-transcribed, so fix obvious mis-heard words and never copy it verbatim as the caption.',
-    'Do not invent reviews, ratings, awards, years in business, certifications, discounts, prices, collection dates, ingredients, phone numbers, websites, or customer testimonials unless they appear in the trusted context below.',
-    'Short natural paragraphs. Useful hook. Customer-focused. One clear CTA. 3 to 6 relevant hashtags. About 60-140 words.',
-    'Avoid generic AI filler such as "top-notch", "another great job", or "we\'re thrilled" unless the context genuinely supports it.',
-    'Use specific product wording from the product or business context when available.',
-  ].join(' ')
+    ...captionFrameworkSystem(),
+    'VIDEO POSTS:',
+    '- Return JSON only, shaped {"caption": string, "title": string, "tags": string}.',
+    '- caption: the social post, following everything above.',
+    `- title: one clear, engaging YouTube title that accurately reflects the video, under ${VIDEO_POST_TITLE_MAX} characters. No hashtags, emojis, quotes or misleading clickbait.`,
+    `- tags: YouTube tags as ONE plain comma-separated line (no hashtags, bullets or quotation marks), under ${YOUTUBE_TAGS_MAX_CHARS} characters in total. Include the business name, the main topic and phrases people would search for.`,
+    '- On-screen text, when supplied, is the seller\'s own wording added to the video, usually their offer or call to action. Repeat its offer or call to action and never contradict it.',
+    '- You have NOT watched the video. Write only from the supplied text. Never describe on-screen actions the seller did not write down, and never use phrases like "as you can see in the video" or "watch as we".',
+    '- The script is auto-transcribed speech: use it as the source for the main point, offer or tips, fix mis-heard words, and never copy it verbatim.',
+  ].join('\n')
 
   const lines: string[] = []
   lines.push('Write a social caption for an uploaded video library post.')

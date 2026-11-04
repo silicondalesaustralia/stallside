@@ -29,7 +29,7 @@ async function defaultDesignedCaptionText(
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const response = await client.chat.completions.create({
     model: 'gpt-4o-mini',
-    max_tokens: 500,
+    max_tokens: 800,
     messages: [
       { role: 'system', content: system },
       { role: 'user', content: user },

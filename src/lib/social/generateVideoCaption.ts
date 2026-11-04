@@ -25,7 +25,7 @@ async function defaultVideoCaptionText(
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const response = await client.chat.completions.create({
     model: 'gpt-4o-mini',
-    max_tokens: 600,
+    max_tokens: 1000,
     response_format: { type: 'json_object' },
     messages: [
       { role: 'system', content: system },
@@ -49,7 +49,7 @@ async function defaultVideoCaptionText(
   return text
 }
 
-/** Caption plus a short post title from one model call. Text-only; never charged against render credits. */
+/** Caption, post title and YouTube tags from one model call. Text-only; never charged against render credits. */
 export async function generateVideoCaption(
   input: VideoCaptionContext,
   generateText: VideoCaptionTextFn = (system, user) =>
@@ -67,5 +67,6 @@ export async function generateVideoCaption(
   return {
     caption: result?.caption || mockVideoCaption(input),
     title: result?.title || fallbackVideoPostTitle(input),
+    tags: result?.tags ?? [],
   }
 }

@@ -8,7 +8,7 @@ import {
   RECREATE_MESSAGE_ANGLE_LABELS,
   type RecreateMessageAngle,
 } from '@/lib/social/recreateMessageAngles'
-import { VENDL_SOCIAL_AUDIENCE } from '@/lib/socialHost/socialAudience'
+import { captionFrameworkSystem } from '@/lib/social/captionFramework'
 
 export type DesignedCaptionMeta = {
   userBrief: string | null
@@ -127,15 +127,13 @@ export function buildDesignedCaptionPrompt(params: {
   const bizSuburb = business.suburb?.trim() || null
 
   const system = [
-    `You write ready-to-post social captions for ${VENDL_SOCIAL_AUDIENCE}`,
-    'Return ONE caption only. Do not number options. Do not use markdown headings.',
-    'Write about the requested subject. Do not replace it with generic business assumptions.',
-    'Do not invent reviews, ratings, awards, years in business, certifications, discounts, prices, dates, or guarantees unless they appear in the original brief or trusted product/business data.',
-    'Complement the image. Do not repeat a full headline stack word-for-word.',
-    'Short natural paragraphs. Avoid generic AI filler such as "top-notch", "another great job", or "we\'re thrilled".',
-    'One natural CTA. 3 to 6 relevant hashtags. No huge hashtag blocks.',
-    'About 60-140 words depending on angle. Do not pad.',
-  ].join(' ')
+    ...captionFrameworkSystem(),
+    'IMAGE POSTS:',
+    '- This caption goes under a designed image. Complement the image; do not repeat its headline stack word-for-word.',
+    '- Write about the requested subject. Do not replace it with generic business assumptions.',
+    '- Do not invent reviews, ratings, awards, years in business or certifications.',
+    '- Return ONE caption only: no numbered options, no markdown.',
+  ].join('\n')
 
   const lines: string[] = []
   lines.push('Write a caption using this priority order (highest first):')

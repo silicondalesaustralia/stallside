@@ -1,6 +1,9 @@
+import { parseYouTubeTags } from '@/lib/social/youtube/youtubeTags'
+
 export const VIDEO_POST_TITLE_MAX = 70
 
-export type VideoCaptionResult = { caption: string; title: string | null }
+/** `tags` are YouTube tags, already deduplicated and capped at YouTube's limit. */
+export type VideoCaptionResult = { caption: string; title: string | null; tags: string[] }
 
 export function cleanVideoPostTitle(raw: string | null | undefined): string | null {
   const text = (raw ?? '')
@@ -36,21 +39,25 @@ export function fallbackVideoPostTitle(input: {
   )
 }
 
-/** Model output is `{"caption": "...", "title": "..."}`; plain text is treated as the caption alone. */
+/** Model output is `{"caption": "...", "title": "...", "tags": "a, b"}`; plain text is treated as the caption alone. */
 export function parseVideoCaptionResponse(raw: string): VideoCaptionResult | null {
   const text = raw.trim().replace(/^```(?:json)?\s*|\s*```$/g, '')
   if (!text) return null
   try {
     const parsed: unknown = JSON.parse(text)
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-      const { caption, title } = parsed as Record<string, unknown>
+      const { caption, title, tags } = parsed as Record<string, unknown>
       if (typeof caption === 'string' && caption.trim()) {
-        return { caption: caption.trim(), title: typeof title === 'string' ? cleanVideoPostTitle(title) : null }
+        return {
+          caption: caption.trim(),
+          title: typeof title === 'string' ? cleanVideoPostTitle(title) : null,
+          tags: typeof tags === 'string' ? parseYouTubeTags(tags) : [],
+        }
       }
       return null
     }
   } catch {
     // Not JSON: older-style plain caption.
   }
-  return text.startsWith('{') ? null : { caption: text, title: null }
+  return text.startsWith('{') ? null : { caption: text, title: null, tags: [] }
 }

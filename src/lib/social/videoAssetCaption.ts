@@ -6,7 +6,7 @@ import { clipScriptText } from '@/lib/social/videoClips/clipScript'
 import { clipOverlayTexts } from '@/lib/social/videoClips/clipOverlayText'
 
 type Result =
-  | { ok: true; caption: string; title: string | null }
+  | { ok: true; caption: string; title: string | null; tags: string[] }
   | { ok: false; status: number; error: string }
 
 const text = (v: unknown): string | null => (typeof v === 'string' ? v.trim() || null : null)
@@ -92,5 +92,5 @@ export async function captionForVideoAsset(
     hasTitle: Boolean(result.title),
     hasJob: Boolean(job),
   })
-  return { ok: true, caption: result.caption, title: result.title }
+  return { ok: true, caption: result.caption, title: result.title, tags: result.tags }
 }
