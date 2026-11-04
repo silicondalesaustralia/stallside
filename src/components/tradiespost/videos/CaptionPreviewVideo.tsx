@@ -49,7 +49,10 @@ export function CaptionPreviewVideo({ src, videoRef, text, progress, settings, o
         />
       ) : null}
       {showText ? (
-        <div className={`pointer-events-none absolute inset-x-[8%] ${captionPlacementClass(settings)} text-center`}>
+        <div
+          className={`pointer-events-none absolute ${captionPlacementClass(settings)} text-center`}
+          style={{ left: `${settings.sideMargin}%`, right: `${settings.sideMargin}%` }}
+        >
           <span style={captionPreviewCss(settings)}>
             {highlightIndex < 0
               ? text

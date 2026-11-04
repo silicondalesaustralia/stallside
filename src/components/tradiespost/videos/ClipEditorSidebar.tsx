@@ -22,6 +22,8 @@ export function ClipEditorSidebar({ ed, children }: Props) {
         <TextOverlayPanel
           overlay={selectedOverlay}
           disabled={busy}
+          snap={ed.snap}
+          onSnap={ed.setSnap}
           onChange={(patch) => ed.updateOverlay(selectedOverlay.id, patch)}
           onRemove={() => ed.removeOverlay(selectedOverlay.id)}
           onClose={() => ed.setSelectedOverlayId(null)}

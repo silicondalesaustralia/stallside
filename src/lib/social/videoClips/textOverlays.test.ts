@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { buildAssSubtitles } from './captionAss'
 import { DEFAULT_CAPTION_SETTINGS, parseCaptionSettings } from './captionStyles'
+import { overlayPosition, overlaySizeFromDrag, overlayWidthFromPointer } from './overlayLayout'
 import { dragOverlayTime, newOverlayAt, sanitizeOverlays } from './textOverlays'
 import { mapTimedToOutput } from './timeline'
 
@@ -42,6 +43,30 @@ assert.ok(line.includes('\\c&H00D1FF&') && line.includes('\\3c&H332211&'), 'colo
 for (const style of ass.split('\n').filter((l) => l.startsWith('Style:'))) {
   assert.equal(style.split(',').length, 23, `style has 23 fields: ${style}`)
 }
+assert.ok(line.includes('OverlayBox,,54,54,0,'), 'default 90% width leaves 5% each side')
+
+assert.equal(sanitizeOverlays([{ ...overlay, width: 5 }], 10)[0].width, 20, 'width clamped')
+assert.equal(sanitizeOverlays([{ ...overlay, width: undefined }], 10)[0].width, 90, 'older overlays get 90% width')
+const narrow = buildAssSubtitles({
+  cues: [],
+  words: [],
+  settings: { ...DEFAULT_CAPTION_SETTINGS, sideMargin: 0 },
+  highlightColor: '#FFD100',
+  width: 1080,
+  height: 1920,
+  overlays: [{ ...clean, width: 60 }],
+})
+assert.ok(narrow.includes(',OverlayLine,,216,216,0,'), '60% width wraps inside 216px margins')
+const captionStyle = narrow.split('\n').find((l) => l.startsWith('Style: Caption,'))?.split(',') ?? []
+assert.deepEqual(captionStyle.slice(19, 21), ['0', '0'], 'side space 0 lets captions reach the edges')
+assert.equal(parseCaptionSettings({}).sideMargin, 8, 'older captions keep 8% side space')
+assert.equal(parseCaptionSettings({ sideMargin: 50 }).sideMargin, 20, 'side space clamped')
+
+assert.equal(overlayPosition(0.49, true), 0.5, 'snaps to the centre line')
+assert.equal(overlayPosition(0.49, false), 0.49, 'free placement without snap')
+assert.equal(overlayWidthFromPointer(0.9, 0.5, true), 80, 'width from handle distance, snapped to 5%')
+assert.equal(overlaySizeFromDrag(9, 100, 200), 18, 'dragging twice as far doubles the size')
+assert.equal(overlaySizeFromDrag(9, 100, 10), 3, 'size clamped to the minimum')
 
 const noCaptions = buildAssSubtitles({
   cues: [{ s: 0, e: 1, text: 'hidden' }],

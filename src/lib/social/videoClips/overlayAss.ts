@@ -46,6 +46,7 @@ export function overlayEvents(input: {
     ].join('')
     const text = o.text.replace(/[{}\\]/g, '').replace(/\s+/g, ' ').trim()
     const style = box ? 'OverlayBox' : 'OverlayLine'
-    return `Dialogue: 1,${input.assTime(o.s)},${input.assTime(o.e)},${style},,0,0,0,,{${tags}}${text}`
+    const side = Math.max(0, Math.round((input.width * (100 - o.width)) / 200))
+    return `Dialogue: 1,${input.assTime(o.s)},${input.assTime(o.e)},${style},,${side},${side},0,,{${tags}}${text}`
   })
 }

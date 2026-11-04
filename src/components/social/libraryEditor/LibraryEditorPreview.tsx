@@ -38,8 +38,9 @@ export function LibraryEditorPreview({ ed, blur, disabled }: Props) {
         time={ed.time}
         selectedId={ed.selectedOverlay?.id ?? null}
         disabled={disabled}
+        snap={ed.snap}
         onSelect={ed.setSelectedOverlayId}
-        onMove={(id, x, y) => ed.updateOverlay(id, { x, y })}
+        onChange={ed.updateOverlay}
       />
     </CaptionPreviewVideo>
   )

@@ -15,6 +15,8 @@ export type TextOverlay = {
   font: VideoHeadlineFontId
   /** Font size as a percentage of the frame's shorter side. */
   size: number
+  /** Widest the text runs before wrapping, % of the frame width. */
+  width: number
   bold: boolean
   color: string
   /** Outline colour for 'outline', box colour for 'box'. */
@@ -25,6 +27,8 @@ export type TextOverlay = {
 export const MAX_OVERLAYS = 20
 export const MAX_OVERLAY_CHARS = 120
 export const OVERLAY_SIZE_RANGE = { min: 3, max: 18 }
+export const OVERLAY_WIDTH_RANGE = { min: 20, max: 100 }
+const DEFAULT_OVERLAY_WIDTH = 90
 const MIN_OVERLAY_SECONDS = 0.2
 const NEW_OVERLAY_SECONDS = 3
 
@@ -48,6 +52,7 @@ export function newOverlayAt(t: number, duration: number): TextOverlay {
     y: 0.3,
     font: 'anton',
     size: 9,
+    width: DEFAULT_OVERLAY_WIDTH,
     bold: true,
     color: '#FFFFFF',
     accent: '#000000',
@@ -63,6 +68,7 @@ function parseOverlay(raw: unknown, maxSeconds: number, index: number): TextOver
   const e = clamp(Number(r.e), 0, maxSeconds)
   if (!text || !Number.isFinite(s) || !Number.isFinite(e) || e - s < MIN_OVERLAY_SECONDS) return null
   const size = Number(r.size)
+  const width = Number(r.width)
   const x = Number(r.x)
   const y = Number(r.y)
   const style = OVERLAY_STYLE_OPTIONS.some((o) => o.id === r.style) ? (r.style as TextOverlayStyle) : 'outline'
@@ -75,6 +81,7 @@ function parseOverlay(raw: unknown, maxSeconds: number, index: number): TextOver
     y: Number.isFinite(y) ? clamp(y, 0, 1) : 0.3,
     font: parseVideoFont(r.font),
     size: Number.isFinite(size) ? clamp(size, OVERLAY_SIZE_RANGE.min, OVERLAY_SIZE_RANGE.max) : 9,
+    width: Number.isFinite(width) ? Math.round(clamp(width, OVERLAY_WIDTH_RANGE.min, OVERLAY_WIDTH_RANGE.max)) : DEFAULT_OVERLAY_WIDTH,
     bold: r.bold !== false,
     color: normalizeHexColor(r.color) ?? '#FFFFFF',
     accent: normalizeHexColor(r.accent) ?? '#000000',

@@ -6,6 +6,7 @@ import {
   MAX_OVERLAY_CHARS,
   OVERLAY_SIZE_RANGE,
   OVERLAY_STYLE_OPTIONS,
+  OVERLAY_WIDTH_RANGE,
   type TextOverlay,
   type TextOverlayStyle,
 } from '@/lib/social/videoClips/textOverlays'
@@ -14,6 +15,8 @@ import { VideoFontSelect } from './VideoFontSelect'
 type Props = {
   overlay: TextOverlay
   disabled?: boolean
+  snap: boolean
+  onSnap: (snap: boolean) => void
   onChange: (patch: Partial<TextOverlay>) => void
   onRemove: () => void
   onClose: () => void
@@ -23,7 +26,7 @@ const labelClass = 'flex items-center gap-2 text-xs font-semibold text-zinc-600'
 const colorClass = 'h-8 w-10 cursor-pointer rounded border border-tradiespost-border'
 
 /** Settings for the selected text overlay. Position it by dragging on the preview. */
-export function TextOverlayPanel({ overlay, disabled, onChange, onRemove, onClose }: Props) {
+export function TextOverlayPanel({ overlay, disabled, snap, onSnap, onChange, onRemove, onClose }: Props) {
   return (
     <div className="space-y-3 rounded-xl border border-sky-200 bg-sky-50/60 p-3">
       <div className="flex items-center justify-between">
@@ -59,6 +62,25 @@ export function TextOverlayPanel({ overlay, disabled, onChange, onRemove, onClos
           className="flex-1 accent-tradiespost-gold"
         />
       </label>
+      <label className={labelClass}>
+        Width
+        <input
+          type="range"
+          min={OVERLAY_WIDTH_RANGE.min}
+          max={OVERLAY_WIDTH_RANGE.max}
+          step={1}
+          value={overlay.width}
+          disabled={disabled}
+          onChange={(e) => onChange({ width: Number(e.target.value) })}
+          className="flex-1 accent-tradiespost-gold"
+          aria-label="Text box width"
+        />
+        <span className="w-9 text-right tabular-nums">{overlay.width}%</span>
+      </label>
+      <label className={labelClass}>
+        <input type="checkbox" checked={snap} onChange={(e) => onSnap(e.target.checked)} />
+        Snap to grid
+      </label>
       <div className="flex flex-wrap items-center gap-3">
         <label className={labelClass}>
           Style
@@ -90,7 +112,7 @@ export function TextOverlayPanel({ overlay, disabled, onChange, onRemove, onClos
           </label>
         ) : null}
       </div>
-      <p className="text-[11px] text-zinc-500">Drag the text on the preview to position it, and its blue block on the timeline to set when it shows.</p>
+      <p className="text-[11px] text-zinc-500">Drag the text on the preview to place it. Drag the side handle to set how wide it runs before wrapping and the corner handle to resize it. Drag its blue block on the timeline to set when it shows.</p>
     </div>
   )
 }

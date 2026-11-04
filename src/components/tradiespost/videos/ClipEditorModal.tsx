@@ -53,8 +53,9 @@ export function ClipEditorModal({ clipId, clipTitle, onClose, onSaved }: Props) 
                   time={ed.time}
                   selectedId={ed.selectedOverlay?.id ?? null}
                   disabled={busy}
+                  snap={ed.snap}
                   onSelect={ed.setSelectedOverlayId}
-                  onMove={(id, x, y) => ed.updateOverlay(id, { x, y })}
+                  onChange={ed.updateOverlay}
                 />
               </CaptionPreviewVideo>
               <ClipTimeline

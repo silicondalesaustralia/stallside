@@ -27,6 +27,7 @@ export function useClipEditor(clipId: string, load: (id: string) => Promise<Clip
   const [segments, setSegments] = useState<ClipSegment[]>([])
   const [overlays, setOverlays] = useState<TextOverlay[]>([])
   const [selectedOverlayId, setSelectedOverlayId] = useState<string | null>(null)
+  const [snap, setSnap] = useState(true)
   const [settings, setSettings] = useState<CaptionSettings>(DEFAULT_CAPTION_SETTINGS)
   const [speed, setSpeed] = useState(1)
   const [audioParts, setAudioParts] = useState<AudioPart[]>([])
@@ -113,6 +114,8 @@ export function useClipEditor(clipId: string, load: (id: string) => Promise<Clip
     addOverlay,
     updateOverlay,
     removeOverlay,
+    snap,
+    setSnap,
     settings,
     setSettings,
     speed,

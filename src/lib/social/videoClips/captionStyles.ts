@@ -26,9 +26,11 @@ export type CaptionSettings = {
   boxOpacity: number
   /** Colour each word as it is spoken. */
   wordHighlight: boolean
+  /** Space kept clear on the left and right, % of the frame width. */
+  sideMargin: number
 }
 
-type CaptionDetails = Omit<CaptionSettings, 'style' | 'position' | 'highlightColor' | 'font'>
+type CaptionDetails = Omit<CaptionSettings, 'style' | 'position' | 'highlightColor' | 'font' | 'sideMargin'>
 
 const PRESET_DETAILS: Record<Exclude<CaptionStyleId, 'none'>, CaptionDetails> = {
   bold: { size: 8.5, bold: true, uppercase: true, textColor: '#FFFFFF', accentColor: '#000000', look: 'outline', boxOpacity: 65, wordHighlight: true },
@@ -41,6 +43,8 @@ export function captionPresetDetails(style: CaptionStyleId): CaptionDetails {
 }
 
 export const CAPTION_SIZE_RANGE = { min: 3, max: 14 }
+export const CAPTION_SIDE_MARGIN_RANGE = { min: 0, max: 20 }
+const DEFAULT_SIDE_MARGIN = 8
 
 export const CAPTION_LOOK_OPTIONS: { id: CaptionLook; label: string }[] = [
   { id: 'outline', label: 'Outline' },
@@ -77,6 +81,7 @@ export const DEFAULT_CAPTION_SETTINGS: CaptionSettings = {
   highlightColor: null,
   font: 'inter',
   ...PRESET_DETAILS.bold,
+  sideMargin: DEFAULT_SIDE_MARGIN,
 }
 
 export const FALLBACK_HIGHLIGHT_COLOR = '#FFD100'
@@ -121,6 +126,7 @@ export function parseCaptionSettings(input: unknown): CaptionSettings {
     look: CAPTION_LOOK_OPTIONS.some((o) => o.id === raw.look) ? (raw.look as CaptionLook) : base.look,
     boxOpacity: clampNumber(raw.boxOpacity, 10, 100, base.boxOpacity),
     wordHighlight: bool(raw.wordHighlight, base.wordHighlight),
+    sideMargin: clampNumber(raw.sideMargin, CAPTION_SIDE_MARGIN_RANGE.min, CAPTION_SIDE_MARGIN_RANGE.max, DEFAULT_SIDE_MARGIN),
   }
 }
 

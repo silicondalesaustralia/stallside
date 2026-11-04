@@ -3,6 +3,7 @@
 import {
   CAPTION_LOOK_OPTIONS,
   CAPTION_PLACEMENT_OPTIONS,
+  CAPTION_SIDE_MARGIN_RANGE,
   CAPTION_SIZE_RANGE,
   CAPTION_STYLE_OPTIONS,
   captionPresetDetails,
@@ -66,6 +67,21 @@ export function CaptionStylePanel({ value, disabled, onChange }: Props) {
               onChange={(e) => set({ size: Number(e.target.value) })}
               className="flex-1 accent-tradiespost-gold"
             />
+          </label>
+          <label className={labelClass}>
+            Side space
+            <input
+              type="range"
+              min={CAPTION_SIDE_MARGIN_RANGE.min}
+              max={CAPTION_SIDE_MARGIN_RANGE.max}
+              step={1}
+              value={value.sideMargin}
+              disabled={disabled}
+              onChange={(e) => set({ sideMargin: Number(e.target.value) })}
+              className="flex-1 accent-tradiespost-gold"
+              aria-label="Space between captions and the sides of the video"
+            />
+            <span className="w-8 text-right tabular-nums">{value.sideMargin}%</span>
           </label>
           <div className="flex flex-wrap items-center gap-3">
             <label className={labelClass}>

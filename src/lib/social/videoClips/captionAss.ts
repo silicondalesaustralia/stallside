@@ -35,7 +35,7 @@ function hexToAssStyleColor(hex: string, opacityPercent = 100): string {
 
 function styleLine(settings: CaptionSettings, width: number, height: number): string {
   const minDim = Math.min(width, height)
-  const marginLR = Math.round(width * 0.08)
+  const marginLR = Math.round((width * settings.sideMargin) / 100)
   const edge = Math.round(height * (height > width ? 0.16 : 0.08))
   const alignment = settings.position === 'middle' ? 5 : settings.position === 'top' ? 8 : 2
   const marginV = settings.position === 'middle' ? 0 : settings.position === 'top' ? Math.round(height * 0.1) : edge
