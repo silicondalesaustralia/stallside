@@ -15,9 +15,9 @@ const BUTTON_MOTION =
 
 const BUTTON_BASE = `${BUTTON_MOTION} gap-8 px-6 py-4 text-[15px]`;
 
-export const HOME_BUTTON = `${BUTTON_BASE} bg-[var(--field)] text-white hover:bg-[var(--leaf)]`;
+export const HOME_BUTTON = `${BUTTON_BASE} bg-[var(--leaf)] text-white hover:bg-[var(--leaf-dark)]`;
 
-export const HOME_BUTTON_SMALL = `${BUTTON_MOTION} gap-5 px-4 py-2.5 text-sm bg-[var(--field)] text-white hover:bg-[var(--leaf)]`;
+export const HOME_BUTTON_SMALL = `${BUTTON_MOTION} gap-5 px-4 py-2.5 text-sm bg-[var(--leaf)] text-white hover:bg-[var(--leaf-dark)]`;
 
 export const HOME_BUTTON_GOLD = `${BUTTON_BASE} bg-[var(--marigold)] text-[var(--field)] hover:brightness-105`;
 
