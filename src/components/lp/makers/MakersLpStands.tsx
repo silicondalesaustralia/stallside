@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
 import QRCode from "qrcode";
 import { BellRing, Boxes, Printer, QrCode, Smartphone, type LucideIcon } from "lucide-react";
 import MakersLpStandPoster from "@/components/lp/makers/MakersLpStandPoster";
@@ -62,9 +62,9 @@ export default async function MakersLpStands() {
             </li>
           ))}
         </ul>
-        <Link href="/signup" className={HOME_BUTTON}>
+        <MakersLpSignupLink placement="stands" className={HOME_BUTTON}>
           Start free <span aria-hidden>↗</span>
-        </Link>
+        </MakersLpSignupLink>
       </div>
     </section>
   );

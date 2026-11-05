@@ -1,4 +1,4 @@
-import Link from "next/link";
+import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
 import { HOME_EYEBROW, HOME_H2, HOME_H3, HOME_TEXT_LINK, HOME_WRAP } from "@/components/lp/makers/makers-lp-styles";
 import { homeSellingItems } from "@/lib/makers-lp-page-copy";
 
@@ -21,9 +21,9 @@ export default function MakersLpSelling({ showSocial }: { showSocial: boolean })
             Social uses credits. Pro includes a monthly allowance; extra packs are available.
           </p>
         ) : null}
-        <Link href="/signup" className={HOME_TEXT_LINK}>
+        <MakersLpSignupLink placement="selling" className={HOME_TEXT_LINK}>
           Start building your customer base →
-        </Link>
+        </MakersLpSignupLink>
       </div>
       <div>
         {homeSellingItems(showSocial).map((item, i) => (

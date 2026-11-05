@@ -1,4 +1,4 @@
-import Link from "next/link";
+import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
 import { HOME_BUTTON, HOME_EYEBROW, HOME_HEADING_FONT } from "@/components/lp/makers/makers-lp-styles";
 
 export default function MakersLpFinalCta() {
@@ -10,9 +10,9 @@ export default function MakersLpFinalCta() {
         <br />
         Backed by Vendl.
       </h2>
-      <Link href="/signup" className={HOME_BUTTON}>
+      <MakersLpSignupLink placement="final" className={HOME_BUTTON}>
         Start free <span aria-hidden>↗</span>
-      </Link>
+      </MakersLpSignupLink>
     </section>
   );
 }

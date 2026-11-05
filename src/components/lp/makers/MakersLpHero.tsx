@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
 import MakersLpHeroCostNote from "@/components/lp/makers/MakersLpHeroCostNote";
 import { HOME_BUTTON, HOME_EYEBROW, HOME_HEADING_FONT, HOME_WRAP } from "@/components/lp/makers/makers-lp-styles";
 
@@ -22,9 +22,9 @@ export default function MakersLpHero() {
           Paying too much for Shopify, Wix or Square? Vendl gives makers more for less.
         </p>
         <div className="mb-3.5 mt-7 flex flex-wrap items-center gap-4 sm:gap-6">
-          <Link href="/signup" className={HOME_BUTTON}>
+          <MakersLpSignupLink placement="hero" className={HOME_BUTTON}>
             Start free <span aria-hidden>↗</span>
-          </Link>
+          </MakersLpSignupLink>
         </div>
         <p className="text-xs text-[var(--muted)]">Free selling tools. Website and production tools with Pro.</p>
       </div>

@@ -15,10 +15,11 @@ import MakersLpPayments from "@/components/lp/makers/MakersLpPayments";
 import MakersLpSelling from "@/components/lp/makers/MakersLpSelling";
 import MakersLpStands from "@/components/lp/makers/MakersLpStands";
 import MakersLpSwitch from "@/components/lp/makers/MakersLpSwitch";
+import LpCtaClickTracker from "@/components/lp/LpCtaClickTracker";
+import LpCtaParamScript from "@/components/lp/LpCtaParamScript";
 import { APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
+import { MAKERS_LP_CAMPAIGN, MAKERS_LP_PATH } from "@/lib/makers-lp";
 import { DEFAULT_OG_IMAGE } from "@/lib/og-image";
-
-const MAKERS_LP_PATH = "/lp/makers";
 
 export const metadata: Metadata = {
   title: { absolute: APP_SEO_TITLE },
@@ -55,6 +56,8 @@ export default function MakersLpPage() {
         <MakersLpFinalCta />
       </main>
       <LandingFooter />
+      <LpCtaParamScript />
+      <LpCtaClickTracker campaign={MAKERS_LP_CAMPAIGN} />
     </div>
   );
 }

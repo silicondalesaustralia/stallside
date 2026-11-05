@@ -1,4 +1,4 @@
-import Link from "next/link";
+import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
 import { HOME_BUTTON_GOLD, HOME_HEADING_FONT, HOME_WRAP } from "@/components/lp/makers/makers-lp-styles";
 import { HOME_COMMUNITY_POINTS, HOME_SKOOL_URL } from "@/lib/makers-lp-page-copy";
 
@@ -16,9 +16,9 @@ export default function MakersLpCommunity() {
           <p className="my-6 text-[#bdcbb7]">
             Join a community of makers learning, sharing ideas and working things out together.
           </p>
-          <Link href="/signup" className={HOME_BUTTON_GOLD}>
+          <MakersLpSignupLink placement="community" className={HOME_BUTTON_GOLD}>
             Start free & join us <span aria-hidden>↗</span>
-          </Link>
+          </MakersLpSignupLink>
           <a
             href={HOME_SKOOL_URL}
             target="_blank"

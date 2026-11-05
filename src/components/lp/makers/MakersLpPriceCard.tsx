@@ -1,4 +1,4 @@
-import Link from "next/link";
+import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
 import { ListChecks } from "lucide-react";
 import { HOME_BUTTON_GOLD, HOME_BUTTON_OUTLINE, HOME_EYEBROW, HOME_H3, HOME_HEADING_FONT } from "@/components/lp/makers/makers-lp-styles";
 
@@ -47,9 +47,9 @@ export default function MakersLpPriceCard({ plan, title, price, summary, perks, 
         See all features
       </button>
       <p className="max-w-[390px] text-xs text-[var(--muted)] md:min-h-[60px]">{fee}</p>
-      <Link href="/signup" className={`${featured ? HOME_BUTTON_GOLD : HOME_BUTTON_OUTLINE} mt-6`}>
+      <MakersLpSignupLink placement="pricing" className={`${featured ? HOME_BUTTON_GOLD : HOME_BUTTON_OUTLINE} mt-6`}>
         {cta} <span aria-hidden>↗</span>
-      </Link>
+      </MakersLpSignupLink>
     </article>
   );
 }

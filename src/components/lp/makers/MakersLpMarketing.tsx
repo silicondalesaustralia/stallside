@@ -1,4 +1,4 @@
-import Link from "next/link";
+import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
 import MakersLpEmailShot from "@/components/lp/makers/MakersLpEmailShot";
 import MakersLpMarketingTools from "@/components/lp/makers/MakersLpMarketingTools";
 import MakersLpSocialCreateShot from "@/components/lp/makers/MakersLpSocialCreateShot";
@@ -35,9 +35,9 @@ export default function MakersLpMarketing({ showSocial }: { showSocial: boolean 
             Email is included on Free and Pro.
             {showSocial ? " Social uses credits: Pro includes 5 designs and 5 video clips a month, and anyone can buy packs." : null}
           </p>
-          <Link href="/signup" className={HOME_BUTTON}>
+          <MakersLpSignupLink placement="marketing" className={HOME_BUTTON}>
             Start free <span aria-hidden>↗</span>
-          </Link>
+          </MakersLpSignupLink>
         </div>
         <div className="relative min-w-0 sm:pb-10">
           {showSocial ? <MakersLpSocialCreateShot /> : <MakersLpEmailShot />}

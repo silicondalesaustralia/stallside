@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
 import { HOME_BUTTON, HOME_EYEBROW, HOME_H2, HOME_HEADING_FONT, HOME_WRAP } from "@/components/lp/makers/makers-lp-styles";
 import { HOME_IMPORT_SOURCES } from "@/lib/makers-lp-page-copy";
 
@@ -27,9 +27,9 @@ export default function MakersLpSwitch() {
           </li>
         ))}
       </ul>
-      <Link href="/signup" className={HOME_BUTTON}>
+      <MakersLpSignupLink placement="switch" className={HOME_BUTTON}>
         Start free <span aria-hidden>↗</span>
-      </Link>
+      </MakersLpSignupLink>
       <p className="mx-auto mt-4 max-w-[470px] text-xs text-[var(--muted)]">
         Imports bring across your data, not your website design. Check each import before you go live.
       </p>

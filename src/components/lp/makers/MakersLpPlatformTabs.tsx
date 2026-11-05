@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import Link from "next/link";
+import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
 import { HOME_H3, HOME_PLAN_TAG, HOME_SCREEN_CAPTION, HOME_TEXT_LINK } from "@/components/lp/makers/makers-lp-styles";
 import { HOME_TABS } from "@/lib/makers-lp-page-copy";
 
@@ -62,9 +62,9 @@ export default function MakersLpPlatformTabs({ previews }: { previews: ReactNode
           <span className={HOME_PLAN_TAG}>{tab.plan}</span>
           <h3 className={`${HOME_H3} mb-4 mt-3.5 text-[28px] lg:text-[34px]`}>{tab.title}</h3>
           <p className="mb-6 text-sm text-[var(--muted)] md:max-w-[280px]">{tab.copy}</p>
-          <Link href="/signup" className={HOME_TEXT_LINK}>
+          <MakersLpSignupLink placement="platform" className={HOME_TEXT_LINK}>
             Make yourself at home →
-          </Link>
+          </MakersLpSignupLink>
         </div>
         <div className="min-w-0 self-center md:pr-9">
           {previews[active]}

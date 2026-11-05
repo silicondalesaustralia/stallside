@@ -1,4 +1,4 @@
-import Link from "next/link";
+import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
 import BrandLockup from "@/components/BrandLockup";
 import OwnerAuthLink from "@/components/OwnerAuthLink";
 import { HOME_BUTTON_SMALL } from "@/components/lp/makers/makers-lp-styles";
@@ -25,9 +25,9 @@ export default function MakersLpHeader() {
         <span className="hidden md:inline-flex">
           <OwnerAuthLink variant="marketing" />
         </span>
-        <Link href="/signup" className={HOME_BUTTON_SMALL}>
+        <MakersLpSignupLink placement="header" className={HOME_BUTTON_SMALL}>
           Start free <span aria-hidden>↗</span>
-        </Link>
+        </MakersLpSignupLink>
       </div>
     </header>
   );
