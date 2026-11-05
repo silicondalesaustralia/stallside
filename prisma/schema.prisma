@@ -545,6 +545,7 @@ model Owner {
   fulfilmentOptions             FulfilmentOption[]
   ingredients                   Ingredient[]
   recipes                       Recipe[]
+  lifecycleSends                LifecycleEmailSend[]
   productionPlans               ProductionPlan[]
   productionBatches             ProductionBatch[]
   customerTags                  CustomerTag[]
@@ -586,6 +587,10 @@ model Owner {
    */
   welcomeChoice                 String?
   welcomeChoiceAt               DateTime?
+  /**
+   * Start of the Pro onboarding email journey: first Pro activation only, never reset on renewal.
+   */
+  proOnboardingStartedAt        DateTime?
   /**
    * Onboarding preset: FARM_STAND | FOOD_BUSINESS | BOTH.
    * Configures checklist/nav emphasis only — not a separate account type.
@@ -2403,6 +2408,21 @@ model RestockNotification {
 /**
  * Audit log for outbound emails (Resend + local console fallback).
  */
+/// One row per owner per lifecycle journey email (sent or deliberately skipped), so each sends at most once.
+model LifecycleEmailSend {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  /** Stable email id, e.g. free_d03, recovery_d14, pro_d00 */
+  emailKey  String
+  /** sent | skipped */
+  status    String
+  createdAt DateTime @default(now())
+
+  @@unique([ownerId, emailKey])
+  @@index([ownerId, createdAt])
+}
+
 model EmailSendLog {
   id        String   @id @default(cuid())
   /**

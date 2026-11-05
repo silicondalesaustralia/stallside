@@ -7,6 +7,8 @@ import {
   sendTrialWelcome,
 } from "@/lib/lifecycle-emails";
 import { APP_NAME } from "@/lib/constants";
+import { journeysEnabled } from "./journeys/config";
+import { sendFreeJourneyWelcome, startProJourneyById } from "./journeys/start";
 
 function recipientEmail(owner: {
   contactEmail: string;
@@ -17,6 +19,14 @@ function recipientEmail(owner: {
 }
 
 export async function sendAndMarkTrialWelcome(ownerId: string) {
+  if (journeysEnabled()) {
+    try {
+      if (await sendFreeJourneyWelcome(ownerId)) return;
+    } catch (error) {
+      console.error(`[${APP_NAME}] journey welcome failed`, ownerId, error);
+      return;
+    }
+  }
   const owner = await prisma.owner.findUnique({
     where: { id: ownerId },
     include: { user: { select: { email: true, name: true } } },
@@ -41,6 +51,14 @@ export async function sendAndMarkTrialWelcome(ownerId: string) {
 
 /** Pro welcome after paid subscribe (cardWelcomeSentAt). */
 export async function sendAndMarkCardWelcome(ownerId: string) {
+  if (journeysEnabled()) {
+    try {
+      if (await startProJourneyById(ownerId)) return;
+    } catch (error) {
+      console.error(`[${APP_NAME}] Pro journey start failed`, ownerId, error);
+      return;
+    }
+  }
   const owner = await prisma.owner.findUnique({
     where: { id: ownerId },
     include: { user: { select: { email: true, name: true } } },

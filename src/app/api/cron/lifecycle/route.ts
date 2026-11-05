@@ -5,6 +5,8 @@ import {
   runStripeNeverStartedNudgeCron,
   runStripeRestrictedNudgeCron,
 } from "@/lib/lifecycle-emails/run-stripe-nudges-cron";
+import { journeysEnabled } from "@/lib/lifecycle-emails/journeys/config";
+import { runJourneysCron } from "@/lib/lifecycle-emails/journeys/run-journeys-cron";
 
 export const runtime = "nodejs";
 
@@ -14,21 +16,24 @@ function authorized(req: NextRequest): boolean {
   return req.headers.get("authorization") === `Bearer ${secret}`;
 }
 
-/** Daily: Day 3 creator intro + Pro lapse Day 23 / Day 45. */
+/** Daily: Day 3 creator intro (or v2 journeys when enabled) + Pro lapse Day 23 / Day 45 + Stripe nudges. */
 export async function GET(req: NextRequest) {
   if (!authorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const now = new Date();
-  const [creator, lapse, stripeRestricted, stripeNeverStarted] = await Promise.all([
-    runCreatorDay3Cron(now),
+  const v2 = journeysEnabled();
+  const [creator, journeys, lapse, stripeRestricted, stripeNeverStarted] = await Promise.all([
+    v2 ? Promise.resolve({ checked: 0, sent: 0 }) : runCreatorDay3Cron(now),
+    v2 ? runJourneysCron(now) : Promise.resolve(null),
     runProLapseCron(now),
     runStripeRestrictedNudgeCron(now),
     runStripeNeverStartedNudgeCron(now),
   ]);
 
   return NextResponse.json({
+    journeys,
     checkedCreatorDay3: creator.checked,
     checkedProLapse: lapse.checked,
     checkedStripeRestricted: stripeRestricted.checked,
