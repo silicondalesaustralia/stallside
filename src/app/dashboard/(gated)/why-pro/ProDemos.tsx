@@ -2,6 +2,7 @@ import ProDemoCosting from "./ProDemoCosting";
 import ProDemoSocial from "./ProDemoSocial";
 import ProFeeCalculator from "./ProFeeCalculator";
 import ProUpgradeLink from "./ProUpgradeLink";
+import ContinueWithFreeLink from "./ContinueWithFreeLink";
 import { PRO_GOLD_CTA } from "./why-pro-copy";
 
 type Props = {
@@ -28,9 +29,12 @@ export default function ProDemos({ currency, feeBps, monthlyCents, annualCents, 
       <ProDemoCosting currency={currency} />
       <ProDemoSocial socialReady={socialReady} />
       <ProFeeCalculator currency={currency} feeBps={feeBps} monthlyCents={monthlyCents} annualCents={annualCents} />
-      <ProUpgradeLink href={checkoutHref} placement="demos" className={`${PRO_GOLD_CTA} self-start`}>
-        Upgrade to Pro
-      </ProUpgradeLink>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <ProUpgradeLink href={checkoutHref} placement="demos" className={PRO_GOLD_CTA}>
+          Upgrade to Pro
+        </ProUpgradeLink>
+        <ContinueWithFreeLink placement="demos" />
+      </div>
     </section>
   );
 }

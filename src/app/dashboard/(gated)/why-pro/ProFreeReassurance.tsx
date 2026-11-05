@@ -1,3 +1,4 @@
+import ContinueWithFreeLink from "./ContinueWithFreeLink";
 import { FREE_INCLUDES } from "./free-includes";
 
 export default function ProFreeReassurance({ socialReady }: { socialReady: boolean }) {
@@ -8,7 +9,7 @@ export default function ProFreeReassurance({ socialReady }: { socialReady: boole
         Your Free Plan Is Still Here
       </h2>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        Keep using Vendl Free for your shop, products, stock, orders and included marketing tools. Upgrade when you
+        Keep using Vendl Free for your shop, products, stock, orders and customers. Upgrade when you
         want Pro&apos;s additional capabilities. Card payments on Free carry the 2.5% Vendl fee.
       </p>
       <details className="group mt-3">
@@ -24,6 +25,7 @@ export default function ProFreeReassurance({ socialReady }: { socialReady: boole
           ))}
         </ul>
       </details>
+      <ContinueWithFreeLink placement="free_reassurance" />
     </section>
   );
 }

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import PageHeader from "@/components/dashboard/ui/PageHeader";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
-import { socialKitEnabledFor } from "@/lib/beta-features";
 import { STALLSIDE_FEE_BPS } from "@/lib/constants";
 import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import { annualPlanCents, cardPlanCents, isBillingCurrency } from "@/lib/saas-pricing";
@@ -22,9 +21,10 @@ import { proBenefitGroups } from "./pro-benefits";
 import { BILLING_PATH, OPENING_CARDS, WEBSITE_OPENING_CARD, formatProMoney, proCheckoutHref } from "./why-pro-copy";
 
 export default async function WhyProPage() {
-  const { owner, user } = await requireOwner();
+  const { owner } = await requireOwner();
   const isPro = await ownerIdHasProAccess(owner.id);
-  const socialReady = socialKitEnabledFor(owner, user.email);
+  // Social designs and AI video clips launch with Pro, so they're presented as included for every owner.
+  const socialReady = true;
   const currency = isBillingCurrency(owner.billingCurrency) ? owner.billingCurrency : "AUD";
   const monthlyCents = cardPlanCents(currency);
   const annualCents = listProAnnualCurrencies().includes(currency) ? annualPlanCents(currency) : null;

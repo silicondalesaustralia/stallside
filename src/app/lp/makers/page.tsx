@@ -12,6 +12,7 @@ import MakersLpHeader from "@/components/lp/makers/MakersLpHeader";
 import MakersLpHero from "@/components/lp/makers/MakersLpHero";
 import MakersLpMakers from "@/components/lp/makers/MakersLpMakers";
 import MakersLpMarketing from "@/components/lp/makers/MakersLpMarketing";
+import MakersLpMobileApps from "@/components/lp/makers/MakersLpMobileApps";
 import MakersLpPayments from "@/components/lp/makers/MakersLpPayments";
 import MakersLpPlatform from "@/components/lp/makers/MakersLpPlatform";
 import MakersLpPricing from "@/components/lp/makers/MakersLpPricing";
@@ -67,6 +68,7 @@ export default async function MakersLpPage() {
           <MakersLpPayments />
           <MakersLpRiskReversal />
           <MakersLpFaq />
+          <MakersLpMobileApps />
           <MakersLpFinalCta />
         </main>
         <LandingFooter />

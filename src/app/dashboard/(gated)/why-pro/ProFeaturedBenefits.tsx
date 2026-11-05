@@ -1,3 +1,4 @@
+import ContinueWithFreeLink from "./ContinueWithFreeLink";
 import ProUpgradeLink from "./ProUpgradeLink";
 import { FEATURED_BENEFITS, PRO_GOLD_CTA } from "./why-pro-copy";
 
@@ -31,9 +32,12 @@ export default function ProFeaturedBenefits({ socialReady, checkoutHref }: Props
         })}
       </ul>
       {checkoutHref ? (
-        <ProUpgradeLink href={checkoutHref} placement="featured" className={`${PRO_GOLD_CTA} self-start`}>
-          Upgrade to Pro
-        </ProUpgradeLink>
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <ProUpgradeLink href={checkoutHref} placement="featured" className={PRO_GOLD_CTA}>
+            Upgrade to Pro
+          </ProUpgradeLink>
+          <ContinueWithFreeLink placement="featured" />
+        </div>
       ) : null}
     </section>
   );

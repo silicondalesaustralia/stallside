@@ -1,3 +1,4 @@
+import ContinueWithFreeLink from "./ContinueWithFreeLink";
 import ProUpgradeLink from "./ProUpgradeLink";
 import { PRO_GOLD_CTA, type ProCard } from "./why-pro-copy";
 
@@ -27,6 +28,7 @@ export default function ProUpgradeHero({ cards, monthlyPrice, checkoutHref }: Pr
         <ProUpgradeLink href={checkoutHref} placement="hero" className={PRO_GOLD_CTA}>
           Upgrade to Pro
         </ProUpgradeLink>
+        <ContinueWithFreeLink placement="hero" onDark />
         <div>
           <p className="font-[family-name:var(--font-display)] text-2xl font-bold">
             {monthlyPrice}

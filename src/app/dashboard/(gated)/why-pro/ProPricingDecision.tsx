@@ -2,6 +2,7 @@
 
 import { Check } from "lucide-react";
 import { useState } from "react";
+import ContinueWithFreeLink from "./ContinueWithFreeLink";
 import ProUpgradeLink from "./ProUpgradeLink";
 import { trackProUpgrade } from "@/lib/pro-upgrade-track";
 import { DECISION_REMINDERS, PRO_GOLD_CTA, formatProMoney, proCheckoutHref } from "./why-pro-copy";
@@ -63,9 +64,12 @@ export default function ProPricingDecision({ currency, monthlyCents, annualCents
           </li>
         ))}
       </ul>
-      <ProUpgradeLink href={proCheckoutHref(currency, yearly ? "year" : "month")} placement="decision" className={`${PRO_GOLD_CTA} mt-6`}>
-        Upgrade to Pro
-      </ProUpgradeLink>
+      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+        <ProUpgradeLink href={proCheckoutHref(currency, yearly ? "year" : "month")} placement="decision" className={PRO_GOLD_CTA}>
+          Upgrade to Pro
+        </ProUpgradeLink>
+        <ContinueWithFreeLink placement="decision" onDark />
+      </div>
       <p className="mt-3 text-sm opacity-85">
         Cancel anytime. Pro access continues until the end of the paid subscription period. Payment provider fees still
         apply.

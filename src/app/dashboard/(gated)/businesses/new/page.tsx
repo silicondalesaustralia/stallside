@@ -8,6 +8,9 @@ import FormField from "@/components/FormField";
 import CreateStandSubmitButton from "./CreateStandSubmitButton";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import BusinessNameAddressField from "@/components/onboarding/BusinessNameAddressField";
+import FounderVideoSection from "@/components/FounderVideoSection";
+import { dashCtaClass } from "@/components/DashPrimaryCta";
+import { WELCOME_VIDEO } from "@/lib/founder-videos";
 
 export default async function NewStandPage() {
   const { owner, user } = await requireOwner();
@@ -18,7 +21,19 @@ export default async function NewStandPage() {
     <main className="flex flex-col gap-6">
       <h1 className="text-3xl font-semibold tracking-tight">New Business</h1>
       <OnboardingFlow />
-      <form action={createStand} className="mt-8 flex flex-col gap-4">
+      <FounderVideoSection
+        heading="A Quick Hello from the Person Behind Vendl"
+        description="A personal welcome and a quick introduction to getting started with Vendl."
+        video={WELCOME_VIDEO}
+        eventPrefix="welcome"
+        variant="compact"
+        action={
+          <a href="#new-business-form" className={dashCtaClass}>
+            Set up your business
+          </a>
+        }
+      />
+      <form id="new-business-form" action={createStand} className="mt-2 flex scroll-mt-6 flex-col gap-4">
         <input type="hidden" name="intent" value="create" />
         <BusinessNameAddressField />
         <FormField
