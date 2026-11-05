@@ -1,63 +1,75 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import LandingFooter from "@/components/LandingFooter";
-import MakersLpAudienceStrip from "@/components/lp/makers/MakersLpAudienceStrip";
+import MakersLpBenefits from "@/components/lp/makers/MakersLpBenefits";
 import MakersLpCommunity from "@/components/lp/makers/MakersLpCommunity";
+import MakersLpCurrencyProvider from "@/components/lp/makers/MakersLpCurrencyProvider";
 import MakersLpFaq from "@/components/lp/makers/MakersLpFaq";
+import MakersLpFeatures from "@/components/lp/makers/MakersLpFeatures";
 import MakersLpFinalCta from "@/components/lp/makers/MakersLpFinalCta";
 import MakersLpHeader from "@/components/lp/makers/MakersLpHeader";
 import MakersLpHero from "@/components/lp/makers/MakersLpHero";
 import MakersLpMakers from "@/components/lp/makers/MakersLpMakers";
 import MakersLpMarketing from "@/components/lp/makers/MakersLpMarketing";
+import MakersLpPayments from "@/components/lp/makers/MakersLpPayments";
 import MakersLpPlatform from "@/components/lp/makers/MakersLpPlatform";
 import MakersLpPricing from "@/components/lp/makers/MakersLpPricing";
+import MakersLpProUpgrade from "@/components/lp/makers/MakersLpProUpgrade";
 import MakersLpProduction from "@/components/lp/makers/MakersLpProduction";
-import MakersLpPayments from "@/components/lp/makers/MakersLpPayments";
-import MakersLpSelling from "@/components/lp/makers/MakersLpSelling";
+import MakersLpRiskReversal from "@/components/lp/makers/MakersLpRiskReversal";
 import MakersLpStands from "@/components/lp/makers/MakersLpStands";
 import MakersLpSwitch from "@/components/lp/makers/MakersLpSwitch";
 import LpCtaClickTracker from "@/components/lp/LpCtaClickTracker";
 import LpCtaParamScript from "@/components/lp/LpCtaParamScript";
-import { APP_SEO_DESCRIPTION, APP_SEO_TITLE } from "@/lib/constants";
 import { MAKERS_LP_CAMPAIGN, MAKERS_LP_PATH } from "@/lib/makers-lp";
+import { lpCurrencyFromRequest } from "@/lib/makers-lp-price";
 import { DEFAULT_OG_IMAGE } from "@/lib/og-image";
 
+const title = "Vendl for Makers | Selling Software That Understands How Makers Work";
+const description =
+  "From making and pricing your products to managing stock, orders and online sales, Vendl brings your business together in one place. Start free.";
+
 export const metadata: Metadata = {
-  title: { absolute: APP_SEO_TITLE },
-  description: APP_SEO_DESCRIPTION,
+  title: { absolute: title },
+  description,
   robots: { index: false, follow: true },
-  openGraph: {
-    title: APP_SEO_TITLE,
-    description: APP_SEO_DESCRIPTION,
-    url: MAKERS_LP_PATH,
-    images: [DEFAULT_OG_IMAGE],
-  },
+  openGraph: { title, description, url: MAKERS_LP_PATH, images: [DEFAULT_OG_IMAGE] },
 };
 
-export default function MakersLpPage() {
+export default async function MakersLpPage() {
   const showSocial = true;
+  const requestHeaders = await headers();
+  const initialCurrency = lpCurrencyFromRequest(
+    requestHeaders.get("x-vercel-ip-country"),
+    requestHeaders.get("accept-language"),
+  );
 
   return (
-    <div className="relative flex min-h-full flex-1 flex-col bg-[#faf9f5] text-[var(--field)]">
-      <MakersLpHeader />
-      <main>
-        <MakersLpHero />
-        <MakersLpAudienceStrip />
-        <MakersLpPlatform showSocial={showSocial} />
-        <MakersLpProduction />
-        <MakersLpSelling showSocial={showSocial} />
-        <MakersLpMarketing showSocial={showSocial} />
-        <MakersLpStands />
-        <MakersLpPayments />
-        <MakersLpMakers />
-        <MakersLpSwitch />
-        <MakersLpCommunity />
-        <MakersLpPricing showSocial={showSocial} />
-        <MakersLpFaq />
-        <MakersLpFinalCta />
-      </main>
-      <LandingFooter />
-      <LpCtaParamScript />
-      <LpCtaClickTracker campaign={MAKERS_LP_CAMPAIGN} />
-    </div>
+    <MakersLpCurrencyProvider initial={initialCurrency}>
+      <div className="relative flex min-h-full flex-1 flex-col overflow-x-clip bg-[#faf9f5] text-[var(--field)]">
+        <MakersLpHeader />
+        <main>
+          <MakersLpHero />
+          <MakersLpBenefits />
+          <MakersLpFeatures />
+          <MakersLpStands />
+          <MakersLpSwitch />
+          <MakersLpPlatform showSocial={showSocial} />
+          <MakersLpProduction />
+          <MakersLpMakers />
+          <MakersLpCommunity />
+          <MakersLpMarketing showSocial={showSocial} />
+          <MakersLpProUpgrade />
+          <MakersLpPricing showSocial={showSocial} />
+          <MakersLpPayments />
+          <MakersLpRiskReversal />
+          <MakersLpFaq />
+          <MakersLpFinalCta />
+        </main>
+        <LandingFooter />
+        <LpCtaParamScript />
+        <LpCtaClickTracker campaign={MAKERS_LP_CAMPAIGN} />
+      </div>
+    </MakersLpCurrencyProvider>
   );
 }

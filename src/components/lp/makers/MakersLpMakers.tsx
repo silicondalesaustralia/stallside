@@ -8,13 +8,12 @@ export default function MakersLpMakers() {
   return (
     <section id="makers" className={`${HOME_WRAP} scroll-mt-6 py-16 md:py-[100px]`}>
       <div className="mb-7 items-end justify-between gap-9 md:mb-10 md:flex">
-        <div>
+        <div className="max-w-[720px]">
           <p className={HOME_EYEBROW}>THE PEOPLE BEHIND THE PRODUCTS</p>
-          <h2 className={HOME_H2}>
-            Built for businesses
-            <br />
-            like yours.
-          </h2>
+          <h2 className={HOME_H2}>Made for Makers. Backed by Their Experiences.</h2>
+          <p className="mt-5 text-base text-[var(--muted)]">
+            See how makers are using Vendl, explore real shops and get a closer look at the tools behind the platform.
+          </p>
         </div>
         <Link href={STORIES} className={`${HOME_TEXT_LINK} mt-5 inline-block md:mt-0`}>
           Meet our makers ↗
@@ -54,6 +53,9 @@ export default function MakersLpMakers() {
             “Thank you for making a great platform we can use to make payments easier.”
           </blockquote>
           <p className="text-xs text-[var(--muted)]">Jacaranda Hill Farm · Fairbridge, WA</p>
+          <Link href={`${STORIES}#jacaranda-hill`} className={`${HOME_TEXT_LINK} mt-4 inline-block`}>
+            Read their story ↗
+          </Link>
         </article>
       </div>
     </section>

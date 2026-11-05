@@ -7,14 +7,15 @@ export default function MakersLpCommunity() {
     <section id="community" className="scroll-mt-6 bg-[var(--field)] py-14 text-[#faf9f5] md:py-20">
       <div className={`${HOME_WRAP} grid gap-10 md:grid-cols-[1.2fr_1fr] md:gap-24`}>
         <div>
-          <p className="mb-5 text-[11px] font-bold tracking-[0.15em] text-[var(--marigold)]">INCLUDED WITH FREE & PRO</p>
+          <p className="mb-5 text-[11px] font-bold tracking-[0.15em] text-[var(--marigold)]">COMMUNITY ACCESS ON FREE & PRO</p>
           <h2 className={`${HOME_HEADING_FONT} text-[34px] leading-[1.1] sm:text-[clamp(34px,3.8vw,52px)]`}>
             You make the products.
             <br />
             Let’s build the business.
           </h2>
           <p className="my-6 text-[#bdcbb7]">
-            Join a community of makers learning, sharing ideas and working things out together.
+            Every Vendl account includes our Skool community of makers learning, sharing ideas and working things out
+            together. Pro adds gated resources on top.
           </p>
           <MakersLpSignupLink placement="community" className={HOME_BUTTON_GOLD}>
             Start free & join us <span aria-hidden>↗</span>

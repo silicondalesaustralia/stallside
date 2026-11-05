@@ -121,5 +121,16 @@ export function proPlanFeatures(showSocial: boolean): PlanFeatureGroup[] {
     return { heading: withoutSocial ? "Referrals" : group.heading, items };
   }).filter((group) => group.items.length > 0);
   const [keepMore, ...rest] = groups;
-  return [keepMore, { heading: "Payment types", items: PAYMENT_TYPES }, ...rest];
+  return [keepMore, { heading: "Payment types", items: PAYMENT_TYPES }, ...rest, SKOOL_PRO_GROUP];
 }
+
+const SKOOL_PRO_GROUP: PlanFeatureGroup = {
+  heading: "Skool community",
+  items: [
+    { label: "Community access (also on Free)", icon: MessagesSquare },
+    { label: "Gated Pro sections with advanced tutorials", icon: BookOpen },
+    { label: "Templates and guides", icon: LayoutTemplate },
+    { label: "Private discussions", icon: Users },
+    { label: "Live workshops, coaching and Q&A where available", icon: CalendarDays },
+  ],
+};

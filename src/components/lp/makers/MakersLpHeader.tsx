@@ -4,10 +4,11 @@ import OwnerAuthLink from "@/components/OwnerAuthLink";
 import { HOME_BUTTON_SMALL } from "@/components/lp/makers/makers-lp-styles";
 
 const NAV = [
-  { href: "#platform", label: "The platform" },
+  { href: "#features", label: "Features" },
+  { href: "#platform", label: "See it in action" },
   { href: "#makers", label: "Our makers" },
-  { href: "#community", label: "Community" },
   { href: "#pricing", label: "Pricing" },
+  { href: "#faq", label: "FAQ" },
 ] as const;
 
 export default function MakersLpHeader() {

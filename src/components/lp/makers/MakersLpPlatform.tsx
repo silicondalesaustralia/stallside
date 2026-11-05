@@ -11,18 +11,11 @@ export default function MakersLpPlatform({ showSocial }: { showSocial: boolean }
       <div className="mb-7 items-end gap-16 md:mb-10 md:flex lg:gap-28">
         <div>
           <p className={HOME_EYEBROW}>YOUR BUSINESS, ALL TOGETHER</p>
-          <h2 className={HOME_H2}>
-            From the workbench
-            <br />
-            to the checkout.
-          </h2>
+          <h2 className={HOME_H2}>See Vendl in Action</h2>
         </div>
-        <p className="mt-5 border-l-2 border-[var(--leaf)] pl-5 text-[15px] leading-relaxed text-[var(--muted)] md:mt-0 md:text-[19px] lg:text-[21px]">
-          Make something worth buying.
-          <br />
-          Give it a place to sell.
-          <br />
-          Keep the details under control.
+        <p className="mt-5 border-l-2 border-[var(--leaf)] pl-5 text-[15px] leading-relaxed text-[var(--muted)] md:mt-0 md:text-[17px]">
+          Illustrative previews of Vendl: a maker’s website, the business dashboard with products, stock and orders, and
+          the calendar. Below, try the production costing and pricing tools yourself.
         </p>
       </div>
       <MakersLpPlatformTabs

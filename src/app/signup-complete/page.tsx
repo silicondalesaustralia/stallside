@@ -6,13 +6,29 @@ import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
 import { normalizeAttribution } from "@/lib/ad-attribution";
+import { isBillingCurrency } from "@/lib/saas-pricing";
 
 export const metadata: Metadata = {
   title: "Welcome",
   robots: { index: false, follow: false },
 };
 
-export default async function SignupCompletePage() {
+const BUTTON_CLASS =
+  "mt-8 inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]";
+
+function proBillingHref(currency: string | undefined): string {
+  const qs = new URLSearchParams({ plan: "pro" });
+  if (currency && isBillingCurrency(currency)) qs.set("currency", currency);
+  return `/dashboard/settings/billing?${qs.toString()}`;
+}
+
+export default async function SignupCompletePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ plan?: string; currency?: string }>;
+}) {
+  const params = await searchParams;
+  const wantsPro = params.plan === "pro";
   const user = await requireUser();
   let email = (user.email ?? "").trim().toLowerCase();
   let adAttribution = null as ReturnType<typeof normalizeAttribution>;
@@ -42,15 +58,18 @@ export default async function SignupCompletePage() {
         You&apos;re in
       </h1>
       <p className="mt-2 text-[var(--muted)]">
-        Your account is ready. Set up your stand, print a QR, and start taking
-        payments from your phone.
+        {wantsPro
+          ? "Your account is ready. Continue to checkout to start Vendl Pro."
+          : "Your account is ready. Set up your stand, print a QR, and start taking payments from your phone."}
       </p>
-      <Link
-        href="/dashboard"
-        className="mt-8 inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]"
-      >
-        Go to dashboard
+      <Link href={wantsPro ? proBillingHref(params.currency) : "/dashboard"} className={BUTTON_CLASS}>
+        {wantsPro ? "Continue to Vendl Pro" : "Go to dashboard"}
       </Link>
+      {wantsPro ? (
+        <Link href="/dashboard" className="mt-4 text-center text-sm text-[var(--muted)] underline">
+          Skip for now and stay on Free
+        </Link>
+      ) : null}
       <p className="mt-6 text-xs text-[var(--muted)]">{APP_NAME.toLowerCase()}.app</p>
     </main>
   );

@@ -31,6 +31,7 @@ export default async function BillingSettingsPage({
     plan?: string;
     error?: string;
     region?: string;
+    currency?: string;
   }>;
 }) {
   const { owner, user } = await requireOwner();
@@ -66,6 +67,7 @@ export default async function BillingSettingsPage({
       ? 0
       : owner.monthlyFeeCents || cardPlanCents(billingCurrency);
   const showPlanForms = !freeForever && !isPaidPro;
+  const planCurrency = params.currency && isBillingCurrency(params.currency) ? params.currency : billingCurrency;
 
   return (
     <main className="flex w-full max-w-3xl flex-col gap-8">
@@ -119,7 +121,7 @@ export default async function BillingSettingsPage({
       {showPlanForms ? (
         <BillingPlanForms
           key={billingCurrency}
-          billingCurrency={billingCurrency}
+          billingCurrency={planCurrency}
           proPrices={listConfiguredProPlanPrices()}
           showPro
           proConfigured={proConfigured}

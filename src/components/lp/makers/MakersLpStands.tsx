@@ -1,7 +1,7 @@
 import Image from "next/image";
 import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
 import QRCode from "qrcode";
-import { BellRing, Boxes, Printer, QrCode, Smartphone, type LucideIcon } from "lucide-react";
+import { BellRing, Printer, QrCode, Smartphone, type LucideIcon } from "lucide-react";
 import MakersLpStandPoster from "@/components/lp/makers/MakersLpStandPoster";
 import { HOME_BUTTON, HOME_EYEBROW, HOME_H2, HOME_PLAN_TAG, HOME_WRAP } from "@/components/lp/makers/makers-lp-styles";
 import { websiteDemoStandSlug } from "@/lib/demo/green-valley/constants";
@@ -12,7 +12,6 @@ const POINTS: { icon: LucideIcon; text: string }[] = [
   { icon: Smartphone, text: "Customers scan, choose and pay on their own phone. No card reader or cash tin needed." },
   { icon: Printer, text: "Print a ready-made poster with your business name and the ways people can pay." },
   { icon: BellRing, text: "Get a sale alert the moment someone pays, even when you’re not there." },
-  { icon: Boxes, text: "Stock counts update as you sell, at the stand and online." },
 ];
 
 async function demoQrSrc(url: string): Promise<string | null> {
@@ -30,7 +29,7 @@ export default async function MakersLpStands() {
   const qrSrc = await demoQrSrc(standUrl);
 
   return (
-    <section id="stands" className={`${HOME_WRAP} scroll-mt-6 grid items-center gap-14 py-16 md:grid-cols-2 md:gap-20 md:py-[100px]`}>
+    <section id="stands" className={`${HOME_WRAP} scroll-mt-6 grid items-center gap-14 border-t border-[var(--line)] py-14 md:grid-cols-2 md:gap-20 md:py-20`}>
       <div className="relative mr-6 sm:mr-10">
         <Image
           src="/lp/green-valley-eggs-stallside-stand.jpg"

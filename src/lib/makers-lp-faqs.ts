@@ -1,50 +1,45 @@
 import type { FaqItem } from "@/lib/schema";
-import { formatMoney } from "@/lib/money";
-import { CARD_PLAN_BY_CURRENCY } from "@/lib/saas-pricing";
 
-const proPrices = (["AUD", "USD", "GBP", "EUR"] as const)
-  .map((c) => formatMoney(CARD_PLAN_BY_CURRENCY[c], c))
-  .join(" / ");
-
-/** Home page FAQ; also feeds the FAQPage structured data. */
+/** Approved landing-page FAQ (VENDL_LANDING_PAGE_BUILD.md section 12). */
 export const HOME_FAQS: FaqItem[] = [
   {
-    question: "Is Vendl just for food businesses?",
+    question: "Can I really start selling with Vendl for free?",
     answer:
-      "No. Vendl is for people who make products from ingredients, materials or parts, as well as growers and farm shops. That includes soap, candles, jewellery, woodwork and 3D-printed products.",
+      "Yes. Vendl Free costs $0 per month and includes a shareable online shop, product listings, stock and order management, email marketing and access to the Skool community. A 2.5% Vendl fee applies to eligible payments, in addition to payment-provider fees.",
   },
   {
-    question: "Do I need to build a website to start?",
+    question: "Do I need a website to start selling?",
     answer:
-      "No. Free includes a shop link you can share. Pro adds the website builder and custom domain connection when you want your own full website.",
+      "No. Vendl Free gives you a shareable shop link so customers can discover and purchase your products without you building a full website. If you want a more complete branded website, Vendl Pro includes Web Studio and custom domain support.",
   },
   {
-    question: "Can I import my existing products?",
+    question: "What's the difference between Vendl Free and Pro?",
     answer:
-      "Yes, with Pro. Import products (with stock) and customers from Shopify, Wix, WooCommerce, Squarespace, Square or any spreadsheet, mapping your columns as you go. Pages, subscriptions and website designs don't transfer, so review your catalogue after importing.",
+      "Free includes the essentials for selling and managing products, stock and orders. Pro adds production costing and pricing, website-building tools, advanced marketing, additional business-management features and exclusive Skool resources. Pro also removes Vendl's transaction fee, although payment-provider fees still apply.",
   },
   {
-    question: "Can I keep my current website?",
+    question: "How does Vendl help me calculate product costs and set prices?",
     answer:
-      "Yes. You can keep your website and share links to your Vendl shop or selling pages. You can build a Vendl website later if you choose.",
+      "Vendl Pro helps you account for ingredients, materials, packaging, labour and overheads when calculating production costs. Its costing and pricing tools help you understand what products cost to make and set prices with your target margins in mind.",
   },
   {
-    question: "Is the community included on Free?",
+    question: "What payment methods can my customers use?",
     answer:
-      "Yes. Both Free and Pro members get access to the maker community for learning, questions and sharing ideas.",
+      "Vendl supports a range of payment methods, including major cards, digital wallets, Tap & Go, supported pay-later services and region-specific payment options. Availability depends on your country, payment setup and applicable provider requirements.",
   },
   {
-    question: "How do payments work?",
+    question: "Are there transaction fees or other charges?",
     answer:
-      "Connect Stripe or Square, or PayPal on Pro. Customers can pay by card, Apple Pay, Google Pay, pay-later and local methods such as PayID, with cash for in-person sales. Available methods depend on your region. Free has a 2.5% Vendl fee on card, Tap & Go and pay-later payments; Pro has none. Your provider's processing fees apply on both plans.",
+      "Vendl Free has a 2.5% Vendl fee on eligible payments, plus payment-provider fees. Vendl Pro has no Vendl transaction fee, but payment-provider fees still apply. Pro subscription prices are displayed in your selected currency.",
   },
   {
-    question: "How much does Vendl Pro cost?",
-    answer: `Vendl Pro is ${proPrices} a month and removes the Vendl transaction fee. Free stays $0 a month. Domain purchases cost extra.`,
+    question: "What training and community support do I get?",
+    answer:
+      "Both Free and Pro users can access Vendl's Skool community. Pro subscribers also unlock gated sections with advanced training, tutorials, templates, guides, private discussions and live sessions. Additional resources may be added over time.",
   },
   {
-    question: "Can I run more than one business?",
+    question: "Can I cancel or change my subscription?",
     answer:
-      "Each Vendl account runs one business, with its own shop, products, customers and payment settings.",
+      "You can cancel Pro anytime without a cancellation penalty. Your Pro access continues until the end of your paid billing period. Subscription payments are generally non-refundable for unused time, subject to applicable consumer protection laws.",
   },
 ];

@@ -29,7 +29,7 @@ export default function MakersLpProduction() {
         </div>
         <MakersLpCostingCalculator />
         <span className={HOME_SCREEN_CAPTION}>
-          Change any quantity, pack price, labour or margin. It’s the same costing maths Vendl Pro uses for your recipes.
+          Interactive example with sample figures. Change any quantity, pack price, labour or margin. It’s the same costing maths Vendl Pro uses for your recipes.
         </span>
       </div>
     </section>

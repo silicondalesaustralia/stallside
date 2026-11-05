@@ -2,14 +2,6 @@
 
 export const HOME_SKOOL_URL = "https://www.skool.com/vendl-9093/about";
 
-export const HOME_AUDIENCE = [
-  "Bakers & food producers",
-  "Soap & candle makers",
-  "Growers & farm shops",
-  "Woodworkers & 3D makers",
-  "Anyone who makes stuff and sells it",
-] as const;
-
 export type MakersLpTab = {
   id: string;
   label: string;
@@ -26,7 +18,7 @@ export const HOME_TABS: MakersLpTab[] = [
     plan: "PRO",
     title: "A proper home for what you make.",
     copy: "Build your website, use your own domain and let customers shop your products, pre-orders and memberships.",
-    caption: "Inside Vendl · website editor, with the Fletcherbrook Small Farm site",
+    caption: "Illustrative preview · the website editor, styled on the Fletcherbrook Small Farm site",
   },
   {
     id: "orders",
@@ -34,7 +26,7 @@ export const HOME_TABS: MakersLpTab[] = [
     plan: "FREE & PRO",
     title: "A clear view of your business.",
     copy: "Keep products, stock and orders together. See sales across your selling channels and stay on top of low stock.",
-    caption: "Inside Vendl · business dashboard with sales, orders and low stock",
+    caption: "Illustrative preview · business dashboard with sales, orders and low stock (sample data)",
   },
   {
     id: "calendar",
@@ -42,25 +34,9 @@ export const HOME_TABS: MakersLpTab[] = [
     plan: "PRO",
     title: "See what’s coming up.",
     copy: "Bring pick-ups, pre-orders and production into one calendar, with two-way Google Calendar sync.",
-    caption: "Inside Vendl · calendar with pick-ups and production days",
+    caption: "Illustrative preview · calendar with pick-ups and production days (sample data)",
   },
 ];
-
-export type MakersLpSellingItem = { title: string; body: string };
-
-export function homeSellingItems(showSocial: boolean): MakersLpSellingItem[] {
-  return [
-    { title: "Sell ahead", body: "Pre-orders with order windows and collection days." },
-    { title: "Make it a regular thing", body: "Subscriptions and memberships for repeat customers." },
-    {
-      title: "Keep showing up",
-      body: showSocial
-        ? "Email, social posts and video clips for your next release."
-        : "Email campaigns and restock alerts for your next release.",
-    },
-    { title: "Take the shop with you", body: "QR checkout for your stall or in-person selling." },
-  ];
-}
 
 export const HOME_IMPORT_SOURCES = [
   { name: "Shopify", icon: "/brand/platforms/shopify.svg" },
@@ -81,24 +57,34 @@ export const HOME_COMMUNITY_POINTS = [
     title: "A place to ask and contribute.",
     body: "Bring your questions, share what’s working and meet other producers.",
   },
+  {
+    label: "03 / PRO ONLY",
+    title: "Extra resources on Pro.",
+    body: "Pro unlocks gated sections with advanced tutorials, templates and guides, private discussions, and live workshops, coaching and Q&A where available.",
+  },
 ] as const;
 
-export const HOME_FREE_PERKS = [
-  "Products, stock and orders",
-  "Pre-orders, subscriptions & memberships",
-  "QR checkout for stands & markets",
-  "Customer lists, email campaigns & restock alerts",
-  "Maker community access",
+export const MAKERS_LP_FREE_PERKS = [
+  "Shareable shop link",
+  "Product listings",
+  "Stock management",
+  "Order management",
+  "Email marketing and newsletters",
+  "Skool community access",
 ] as const;
 
-export function homeProPerks(showSocial: boolean): string[] {
-  const social = showSocial
-    ? ["Social posts, scheduling & publishing", "Video clips with captions", "5 design + 5 video credits every month"]
-    : ["Discount codes, upsell rules & shipping rates"];
-  return [
-    "Your website & custom domain connection",
-    "Production, costing & pricing tools",
-    ...social,
-    "Product imports & the Vendl mobile app",
-  ];
-}
+export const MAKERS_LP_PRO_PERKS = [
+  "Everything in Free",
+  "Production costing and pricing",
+  "Recipes, materials, and batches",
+  "Web Studio and custom domain",
+  "Advanced marketing and social tools",
+  "Additional selling and business-management features",
+  "Exclusive Skool community resources",
+  "No Vendl transaction fee",
+] as const;
+
+export const MAKERS_LP_FREE_FEE =
+  "2.5% Vendl fee on eligible card, tap, and pay-later transactions. Some other payment methods have no Vendl fee. Payment-provider fees may still apply.";
+
+export const MAKERS_LP_PRO_FEE = "No Vendl transaction fee. Payment-provider fees still apply. Domain purchases cost extra.";

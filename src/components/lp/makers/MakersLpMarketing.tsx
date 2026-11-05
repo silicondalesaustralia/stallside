@@ -8,11 +8,11 @@ import { homeMarketingPoints } from "@/lib/makers-lp-marketing-copy";
 
 export default function MakersLpMarketing({ showSocial }: { showSocial: boolean }) {
   return (
-    <section id="marketing" className={`${HOME_WRAP} scroll-mt-6 py-16 md:py-[100px]`}>
-      <div className="grid items-center gap-14 md:grid-cols-2 md:gap-20">
+    <section id="marketing" className="scroll-mt-6 border-y border-[#b0bc9f] bg-[#edf0e6] py-16 md:py-[100px]">
+      <div className={`${HOME_WRAP} grid items-center gap-14 md:grid-cols-2 md:gap-20`}>
         <div>
-          <p className={HOME_EYEBROW}>MARKETING</p>
-          <span className={HOME_PLAN_TAG}>FREE &amp; PRO</span>
+          <p className={HOME_EYEBROW}>MARKETING &amp; SOCIAL</p>
+          <span className={HOME_PLAN_TAG}>{showSocial ? "EMAIL ON FREE · SOCIAL ON PRO" : "FREE & PRO"}</span>
           <h2 className={`${HOME_H2} mb-6 mt-4`}>
             {showSocial ? "One product." : "Bring them back."}
             <br />
@@ -44,7 +44,11 @@ export default function MakersLpMarketing({ showSocial }: { showSocial: boolean 
           {showSocial ? <MakersLpSocialPostShot /> : null}
         </div>
       </div>
-      {showSocial ? <MakersLpMarketingTools /> : null}
+      {showSocial ? (
+        <div className={HOME_WRAP}>
+          <MakersLpMarketingTools />
+        </div>
+      ) : null}
     </section>
   );
 }

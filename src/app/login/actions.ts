@@ -11,6 +11,7 @@ import {
 } from "@/lib/lifetime-invite";
 import { attributionFromFormData } from "@/lib/ad-attribution";
 import { referralIntentData } from "@/lib/affiliate/ref-cookie";
+import { isBillingCurrency } from "@/lib/saas-pricing";
 import type { Prisma } from "@/generated/prisma/client";
 
 function normalizeEmail(raw: FormDataEntryValue | null) {
@@ -154,8 +155,17 @@ export async function requestSignup(formData: FormData) {
   }
 
   redirect(
-    `/login/code?email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent("/signup-complete")}`,
+    `/login/code?email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent(signupCompleteUrl(formData))}`,
   );
+}
+
+/** Pro signups land on the welcome page with a "Continue to Pro" step. */
+function signupCompleteUrl(formData: FormData): string {
+  if (formData.get("plan") !== "pro") return "/signup-complete";
+  const qs = new URLSearchParams({ plan: "pro" });
+  const currency = String(formData.get("currency") ?? "");
+  if (isBillingCurrency(currency)) qs.set("currency", currency);
+  return `/signup-complete?${qs.toString()}`;
 }
 
 /** Free for Life invite: name + email → claim invite, then email code. */

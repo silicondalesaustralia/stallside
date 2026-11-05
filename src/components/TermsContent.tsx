@@ -39,7 +39,9 @@ export default function TermsContent() {
           Paid plans are billed as described at signup or in your dashboard. Free is
           $0/mo. Vendl Pro removes the Vendl card fee and adds the Pro features
           listed in your dashboard, for a monthly subscription. You are responsible for applicable taxes.
-          Refunds are handled case-by-case unless required by Australian Consumer Law.
+          You can cancel Pro anytime without a cancellation penalty, and Pro features stay available until the end of
+          your paid billing period. Subscription payments are non-refundable for unused time, except where a refund is
+          required by applicable consumer protection laws, including the Australian Consumer Law.
         </p>
       </section>
 
