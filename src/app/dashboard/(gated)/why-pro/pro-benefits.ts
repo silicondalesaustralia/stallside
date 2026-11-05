@@ -61,6 +61,12 @@ const MARKETING: ProBenefit[] = [
     pro: "Subdomain or custom domain",
   },
   included("Tags & Pixels", "Connect Google Analytics, Search Console, Google Ads, Meta, TikTok, Pinterest and more, with server-side purchase tracking, a cookie banner and an automatic privacy notice."),
+  {
+    title: "Email marketing",
+    body: "Send branded email campaigns and newsletters to saved lists, past buyers or one customer, with sent and click counts, and email your restock list when you're back in stock.",
+    free: "Restock sign-ups only",
+    pro: "Campaigns & newsletters",
+  },
   included("Reviews", "Collect product reviews on your website, approve them before they show, and reply publicly."),
   included("URL redirects", "Rename a product or page without breaking old links, so customers and Google never hit a dead end."),
   {

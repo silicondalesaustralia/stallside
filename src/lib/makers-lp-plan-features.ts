@@ -65,8 +65,7 @@ const FREE_GROUPS: PlanFeatureGroup[] = [
     heading: "Grow your customers",
     items: [
       { label: "Customer list and smart lists", icon: Users },
-      { label: "Branded email campaigns with click tracking", icon: Mail },
-      { label: "Restock alerts customers can opt in to", icon: BellRing },
+      { label: "Restock sign-ups customers can opt in to", icon: BellRing },
       { label: "First-order discount and cart upsells", icon: Gift },
       { label: SOCIAL_PAYG, icon: Sparkles },
     ],
@@ -88,6 +87,7 @@ const PRO_ICONS: Record<string, LucideIcon> = {
   "Tags & Pixels": ScanLine,
   Reviews: Star,
   "URL redirects": Route,
+  "Email marketing": Mail,
   "Discount codes": Tags,
   "Cart upsell rules": ShoppingBasket,
   "Shipping rates": Truck,

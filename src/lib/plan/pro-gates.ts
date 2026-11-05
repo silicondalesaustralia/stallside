@@ -15,6 +15,11 @@ export const PRO_GATES = {
     eyebrow: "Customer reviews",
     body: "Collect product reviews on your website, approve them before they go live, reply publicly and email reviewers.",
   },
+  communication: {
+    title: "Communications",
+    eyebrow: "Email marketing",
+    body: "Send branded email campaigns and newsletters to saved lists, past buyers or one customer, see sent and click counts, and email your restock list when you're back in stock. Restock sign-ups keep collecting on Free.",
+  },
   production: {
     title: "Production",
     eyebrow: "Production & costing",

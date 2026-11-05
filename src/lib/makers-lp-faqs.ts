@@ -5,7 +5,7 @@ export const HOME_FAQS: FaqItem[] = [
   {
     question: "Can I really start selling with Vendl for free?",
     answer:
-      "Yes. Vendl Free costs $0 per month and includes a shareable online shop, product listings, stock and order management, email marketing and access to the Skool community. A 2.5% Vendl fee applies to eligible payments, in addition to payment-provider fees.",
+      "Yes. Vendl Free costs $0 per month and includes a shareable online shop, product listings, stock and order management, a customer list and access to the Skool community. Email marketing and newsletters are included with Pro. A 2.5% Vendl fee applies to eligible payments, in addition to payment-provider fees.",
   },
   {
     question: "Do I need a website to start selling?",

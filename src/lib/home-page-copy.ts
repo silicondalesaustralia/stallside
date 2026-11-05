@@ -87,7 +87,7 @@ export const HOME_FREE_PERKS = [
   "Products, stock and orders",
   "Pre-orders, subscriptions & memberships",
   "QR checkout for stands & markets",
-  "Customer lists, email campaigns & restock alerts",
+  "Customer lists & restock sign-ups",
   "Maker community access",
 ] as const;
 
@@ -96,6 +96,7 @@ export function homeProPerks(showSocial: boolean): string[] {
     ? ["Social posts, scheduling & publishing", "Video clips with captions", "5 design + 5 video credits every month"]
     : ["Discount codes, upsell rules & shipping rates"];
   return [
+    "Email marketing & newsletters",
     "Your website & custom domain connection",
     "Production, costing & pricing tools",
     ...social,

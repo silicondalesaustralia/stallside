@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import type { AudienceType, CommunicationAudience } from "@/contracts/mobile/communication";
-import { requireOwnerWrite } from "@/lib/session";
+import { requireProOwnerWrite } from "@/lib/require-pro-owner";
 import { countOwnerAudience } from "@/lib/communication/audience";
 import { sendOwnerCommunication } from "@/lib/communication/send";
 
@@ -25,7 +25,7 @@ function audienceFromForm(fd: FormData): CommunicationAudience {
 }
 
 export async function createAndSendCommunication(formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   const result = await sendOwnerCommunication(owner.id, {
     ...audienceFromForm(formData),
     subject: text(formData, "subject").slice(0, 200),
@@ -39,7 +39,7 @@ export async function createAndSendCommunication(formData: FormData) {
 }
 
 export async function previewCommunicationAudience(formData: FormData) {
-  const { owner } = await requireOwnerWrite();
+  const { owner } = await requireProOwnerWrite();
   const result = await countOwnerAudience(owner.id, { ...audienceFromForm(formData), recipientEmails: [] });
   return { count: "error" in result ? 0 : result.count };
 }

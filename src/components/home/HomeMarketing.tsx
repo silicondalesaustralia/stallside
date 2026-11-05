@@ -12,7 +12,7 @@ export default function HomeMarketing({ showSocial }: { showSocial: boolean }) {
       <div className="grid items-center gap-14 md:grid-cols-2 md:gap-20">
         <div>
           <p className={HOME_EYEBROW}>MARKETING</p>
-          <span className={HOME_PLAN_TAG}>FREE &amp; PRO</span>
+          <span className={HOME_PLAN_TAG}>PRO</span>
           <h2 className={`${HOME_H2} mb-6 mt-4`}>
             {showSocial ? "One product." : "Bring them back."}
             <br />
@@ -32,7 +32,7 @@ export default function HomeMarketing({ showSocial }: { showSocial: boolean }) {
             ))}
           </ul>
           <p className="mb-8 text-xs text-[var(--muted)]">
-            Email is included on Free and Pro.
+            Email marketing is included with Pro.
             {showSocial ? " Social uses credits: Pro includes 5 designs and 5 video clips a month, and anyone can buy packs." : null}
           </p>
           <Link href="/signup" className={HOME_BUTTON}>

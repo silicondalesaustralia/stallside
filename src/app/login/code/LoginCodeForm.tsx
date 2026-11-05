@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { HOME_BUTTON, HOME_TEXT_LINK } from "@/components/home/home-styles";
 import { requestLoginCode, verifyLoginCode } from "../actions";
 
 type LoginCodeFormProps = {
@@ -60,7 +61,7 @@ export default function LoginCodeForm({
         <input type="hidden" name="email" value={email} />
         <input type="hidden" name="callbackUrl" value={callbackUrl} />
         <label className="flex flex-col gap-2 text-sm">
-          <span className="font-medium text-[var(--ink)]">6-digit code</span>
+          <span className="font-semibold text-[var(--field)]">6-digit code</span>
           <input
             type="text"
             name="code"
@@ -70,16 +71,12 @@ export default function LoginCodeForm({
             maxLength={6}
             required
             placeholder="123456"
-            className="rounded-[var(--radius)] border border-[var(--line)] bg-white px-3 py-2.5 text-center text-2xl tracking-[0.3em] outline-none ring-[var(--leaf)] focus:ring-2"
+            className="rounded-md border border-[var(--line)] bg-white px-3.5 py-3 text-center text-2xl tracking-[0.3em] text-[var(--field)] outline-none ring-[var(--leaf)] focus:ring-2"
           />
         </label>
         {message ? <p className="text-sm text-red-700">{message}</p> : null}
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded-[var(--radius-pill)] bg-[var(--leaf)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--leaf-dark)] disabled:opacity-60"
-        >
-          {pending ? "Signing in…" : "Sign in"}
+        <button type="submit" disabled={pending} className={`${HOME_BUTTON} mt-2 w-full disabled:opacity-60`}>
+          {pending ? "Signing in…" : "Sign in"} <span aria-hidden>↗</span>
         </button>
       </form>
       <form action={onResend}>
@@ -88,7 +85,7 @@ export default function LoginCodeForm({
         <button
           type="submit"
           disabled={pending}
-          className="text-sm font-medium text-[var(--leaf-dark)] underline disabled:opacity-60"
+          className={`${HOME_TEXT_LINK} disabled:opacity-60`}
         >
           Resend code
         </button>

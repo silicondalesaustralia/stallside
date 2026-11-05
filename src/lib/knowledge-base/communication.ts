@@ -18,6 +18,7 @@ export const communicationArticles: KnowledgeArticle[] = [
       "Tap Send. Sending starts straight away and the message page shows how many were sent, any that failed, and how many times the button link was clicked.",
     ],
     tips: [
+      "Email campaigns are part of Vendl Pro.",
       "Up to 500 recipients per message. Large sends finish in the background; refresh after a minute.",
       "Every email has an unsubscribe link, and unsubscribed people are skipped automatically.",
       "There are no drafts or scheduled sends, so check before you tap Send.",
@@ -37,6 +38,7 @@ export const communicationArticles: KnowledgeArticle[] = [
       "Tap Send.",
     ],
     tips: [
+      "Sign-ups collect on every plan; sending the restock email needs Vendl Pro.",
       "Restock alerts collects sign-ups from all your businesses in one list.",
       "People who opt in also appear in Customers as happy to get marketing.",
     ],

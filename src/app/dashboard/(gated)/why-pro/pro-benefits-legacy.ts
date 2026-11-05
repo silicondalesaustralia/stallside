@@ -7,7 +7,7 @@ const LEGACY_GROUPS: { heading: string; titles: string[] }[] = [
     heading: "Your own website",
     titles: ["Web Studio, pages & blog", "Your own web address", "Tags & Pixels", "Reviews", "URL redirects"],
   },
-  { heading: "Sell more", titles: ["Discount codes", "Cart upsell rules", "Shipping rates"] },
+  { heading: "Sell more", titles: ["Email marketing", "Discount codes", "Cart upsell rules", "Shipping rates"] },
   {
     heading: "Run your kitchen",
     titles: ["Batches & materials", "Recipes, costing & pricing", "AI invoice scanning", "Profit & loss"],

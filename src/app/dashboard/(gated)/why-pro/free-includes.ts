@@ -7,7 +7,7 @@ export const FREE_INCLUDES = [
   "Your store page and main QR code",
   "Cash, PayID and local bank payments with no Vendl fee",
   "Card payments through Stripe and Square (2.5% Vendl fee)",
-  "First-order discount, cart upsells and email campaigns",
+  "First-order discount, cart upsells and restock sign-ups",
   "Sales tax: GST, VAT and US sales tax",
   "Data export, notifications and guides",
   "Social posts, video clips and the video editor with pay-as-you-go credit packs",
@@ -16,7 +16,7 @@ export const FREE_INCLUDES = [
 export const PRO_FAQ = [
   {
     q: "What happens if I go back to Free?",
-    a: "Nothing is deleted. Pro tools lock until you upgrade again: discount codes, upsell rules and shipping rates stop applying at checkout, and the Vendl app stops working. Upgrade again and everything is where you left it.",
+    a: "Nothing is deleted. Pro tools lock until you upgrade again: email campaigns stop, discount codes, upsell rules and shipping rates stop applying at checkout, and the Vendl app stops working. Upgrade again and everything is where you left it.",
   },
   {
     q: "Do Stripe and Square fees still apply on Pro?",

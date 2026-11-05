@@ -12,7 +12,7 @@ const LIST = "space-y-3 text-base leading-relaxed text-[var(--muted)]";
 export default function MakersLpHero() {
   const [first, second, third, fourth] = MAKERS_LP_HERO_BULLETS;
   return (
-    <section className={`${HOME_WRAP} grid gap-x-12 gap-y-8 pb-12 pt-8 md:grid-cols-2 md:pb-[90px] md:pt-11`}>
+    <section className={`${HOME_WRAP} grid gap-x-12 gap-y-8 pb-12 md:gap-y-3 pt-8 md:grid-cols-2 md:pb-[90px] md:pt-11`}>
       <div className="md:col-start-1 md:row-start-1">
         <p className={HOME_EYEBROW}>FOR PEOPLE WHO MAKE THINGS.</p>
         <h1 className={`${HOME_HEADING_FONT} mb-5 text-[38px] leading-[1.05] text-[var(--field)] sm:text-[clamp(40px,4.4vw,60px)]`}>

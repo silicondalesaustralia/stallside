@@ -23,7 +23,7 @@ const ALWAYS_FREE = [
 describe("Pro sidebar chips", () => {
   it("chips Pro-only sections for Free owners", () => {
     const hrefs = locked(false);
-    for (const href of ["/dashboard/discounts", "/dashboard/reviews", "/dashboard/calendar", "/dashboard/production"]) {
+    for (const href of ["/dashboard/discounts", "/dashboard/communication", "/dashboard/reviews", "/dashboard/calendar", "/dashboard/production"]) {
       assert.ok(hrefs.includes(href), `${href} should be Pro`);
     }
     assert.ok(hrefs.some((h) => h.startsWith("/dashboard/website/")));

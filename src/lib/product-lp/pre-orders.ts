@@ -152,7 +152,7 @@ export const PRE_ORDERS_HUB: ProductLpContent = {
     "Buyer confirmation emails",
     "Printable order labels",
     "Your own shop with categories",
-    "Customer lists and email campaigns",
+    "Customer lists and restock sign-ups",
   ],
   pricingFullHref: "/#pricing",
   closingHeadline: "Orders in. Guesswork out.",

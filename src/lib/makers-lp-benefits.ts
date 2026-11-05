@@ -27,7 +27,7 @@ export const MAKERS_LP_HERO_BULLETS: MakersLpHeroBullet[] = [
   },
   {
     lead: "Keep customers connected",
-    rest: "with email marketing and newsletters on Free, with additional promotional tools on Pro.",
+    rest: "with email marketing, newsletters and promotional tools on Pro.",
   },
 ];
 
@@ -39,7 +39,7 @@ export const MAKERS_LP_CORE_BENEFITS: MakersLpBenefit[] = [
   { title: "Price with confidence", body: "Set prices using target margins.", icon: Coins, tag: "PRO" },
   { title: "Keep stock and orders organised", body: "Manage the selling side of your business.", icon: Boxes, tag: "FREE & PRO" },
   { title: "Sell online with ease", body: "Start with a shareable shop.", icon: Store, tag: "FREE & PRO" },
-  { title: "Market your products", body: "Access email, promotions, and social marketing tools.", icon: Megaphone, tag: "FREE & PRO" },
+  { title: "Market your products", body: "Access email, promotions, and social marketing tools.", icon: Megaphone, tag: "PRO" },
   { title: "Keep more of what you earn", body: "Start Free; Pro has no Vendl transaction fee.", icon: PiggyBank, tag: "FREE & PRO" },
 ];
 
@@ -105,9 +105,9 @@ export const MAKERS_LP_FEATURES: MakersLpFeature[] = [
   },
   {
     title: "Email marketing and newsletters",
-    body: "Stay connected with customers using email tools available on Free. Pro adds discounts, promotions, retention tools and social marketing features.",
+    body: "Stay connected with customers using branded email campaigns and newsletters, alongside discounts, promotions, retention tools and social marketing features.",
     icon: Mail,
-    tag: "FREE & PRO",
+    tag: "PRO",
     group: "growth",
   },
   {

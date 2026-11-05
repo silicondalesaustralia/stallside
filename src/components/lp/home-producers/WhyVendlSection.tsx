@@ -25,7 +25,7 @@ const REASONS = [
   },
   {
     title: "Keep customers coming back.",
-    body: "Send branded emails and let customers opt in for restock alerts.",
+    body: "Let customers opt in for restock alerts, then send branded emails with Pro.",
   },
   {
     title: "Start with no monthly subscription.",

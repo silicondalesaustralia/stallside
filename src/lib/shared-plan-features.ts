@@ -31,7 +31,7 @@ const AFTER = [
   "Cart upsells, pre-order add-ons, and first-order discounts",
   "Collections - Ready and Collected, buyer messaging",
   "Your own online shop with categories, shop layout, and custom product order",
-  "Customer list, smart lists, and branded email campaigns",
+  "Customer list and smart lists",
   "Supplier logins with shared stock and a record of what you owe",
   "Notifications inbox and sales by channel",
   "QR poster editor with live preview",

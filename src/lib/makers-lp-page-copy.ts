@@ -69,7 +69,7 @@ export const MAKERS_LP_FREE_PERKS = [
   "Product listings",
   "Stock management",
   "Order management",
-  "Email marketing and newsletters",
+  "Customer list and restock sign-ups",
   "Skool community access",
 ] as const;
 
@@ -78,7 +78,7 @@ export const MAKERS_LP_PRO_PERKS = [
   "Production costing and pricing",
   "Recipes, materials, and batches",
   "Web Studio and custom domain",
-  "Advanced marketing and social tools",
+  "Email marketing, newsletters and social tools",
   "Additional selling and business-management features",
   "Exclusive Skool community resources",
   "No Vendl transaction fee",

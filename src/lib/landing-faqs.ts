@@ -12,7 +12,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: `What is ${APP_NAME}?`,
     answer:
-      "Vendl is QR self-checkout and inventory for unattended stalls of any kind: produce, firewood, flowers, car parks and more. Shoppers scan a printed QR, pick what they're taking, and pay, while you track stock and sales from your phone. It also includes your own online shop, pre-orders, subscriptions and memberships, a customer list with email campaigns, and supplier logins.",
+      "Vendl is QR self-checkout and inventory for unattended stalls of any kind: produce, firewood, flowers, car parks and more. Shoppers scan a printed QR, pick what they're taking, and pay, while you track stock and sales from your phone. It also includes your own online shop, pre-orders, subscriptions and memberships, a customer list, supplier logins, and email campaigns on Pro.",
   },
   {
     question: "Do I get an online shop?",
@@ -27,7 +27,7 @@ export const LANDING_FAQS: FaqItem[] = [
   {
     question: "Can I email my customers?",
     answer:
-      "Yes. Vendl builds a customer list from your orders, with lifetime spend and notes. Make smart lists (for example, everyone who bought eggs in the last 30 days) or upload your own, then send branded email campaigns and see sent and click counts. Unsubscribes and marketing consent are handled for you.",
+      "Yes, with Vendl Pro. Vendl builds a customer list from your orders, with lifetime spend and notes. Make smart lists (for example, everyone who bought eggs in the last 30 days) or upload your own, then send branded email campaigns and see sent and click counts. Unsubscribes and marketing consent are handled for you.",
   },
   {
     question: "Can I sell stock from other producers?",
