@@ -22,6 +22,7 @@ import {
   type WebStudioTabId,
 } from "@/lib/website/web-studio-nav";
 import WebStudioShell from "@/components/website/WebStudioShell";
+import DfyBuildCard from "@/components/website/DfyBuildCard";
 import WebStudioDetailsPanel from "@/components/website/WebStudioDetailsPanel";
 import WebsiteStandPicker from "@/components/website/WebsiteStandPicker";
 import WebStudioBrandingPanel from "@/components/website/WebStudioBrandingPanel";
@@ -213,6 +214,9 @@ export default async function WebStudioPage({
           />
         }
       />
+      <div className="mx-auto max-w-2xl pb-12">
+        <DfyBuildCard currency={owner.billingCurrency} />
+      </div>
     </main>
   );
 }

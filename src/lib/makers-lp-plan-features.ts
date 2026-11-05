@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRightLeft, BadgePercent, Banknote, Bell, BellRing, BookOpen, Boxes, CalendarClock, CalendarDays,
-  ChartPie, Check, Clapperboard, ClipboardList, Coins, CreditCard, Download, Film, FlaskConical, Gift, Globe, Handshake, Landmark,
+  ChartPie, Check, Clapperboard, ClipboardList, Coins, CreditCard, Download, Film, FlaskConical, Gift, Globe, Hammer, Handshake, Landmark,
   LayoutTemplate, Link, Mail, MessagesSquare, Nfc, Package, Printer, QrCode, Receipt, Repeat, Route, ScanLine,
   ShoppingBasket, ShoppingCart, Smartphone, Sparkles, Star, Store, Tags, Truck, Undo2, Users, Wallet,
 } from "lucide-react";
@@ -105,11 +105,17 @@ const PRO_ICONS: Record<string, LucideIcon> = {
   "Earn from referrals": Link,
 };
 
+const ADD_ON_GROUP: PlanFeatureGroup = {
+  heading: "Optional add-on",
+  items: [{ label: "Done-for-you website build and domain setup (one-off fee)", icon: Hammer }],
+};
+
 export function freePlanFeatures(showSocial: boolean): PlanFeatureGroup[] {
-  return FREE_GROUPS.map((group) => ({
+  const groups = FREE_GROUPS.map((group) => ({
     ...group,
     items: group.items.filter((item) => showSocial || item.label !== SOCIAL_PAYG),
   }));
+  return [...groups, ADD_ON_GROUP];
 }
 
 export function proPlanFeatures(showSocial: boolean): PlanFeatureGroup[] {
@@ -121,7 +127,7 @@ export function proPlanFeatures(showSocial: boolean): PlanFeatureGroup[] {
     return { heading: withoutSocial ? "Referrals" : group.heading, items };
   }).filter((group) => group.items.length > 0);
   const [keepMore, ...rest] = groups;
-  return [keepMore, { heading: "Payment types", items: PAYMENT_TYPES }, ...rest, SKOOL_PRO_GROUP];
+  return [keepMore, { heading: "Payment types", items: PAYMENT_TYPES }, ...rest, SKOOL_PRO_GROUP, ADD_ON_GROUP];
 }
 
 const SKOOL_PRO_GROUP: PlanFeatureGroup = {

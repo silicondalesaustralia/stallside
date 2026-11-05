@@ -8,9 +8,12 @@ import { requireOwner } from "@/lib/session";
 export default async function ProFeatureGate({
   feature,
   children,
+  freeExtra,
 }: {
   feature: ProGateKey;
   children: React.ReactNode;
+  /** Shown under the upgrade card for Free owners. */
+  freeExtra?: React.ReactNode;
 }) {
   const { owner } = await requireOwner();
   if (await ownerIdHasProAccess(owner.id)) return <>{children}</>;
@@ -18,6 +21,7 @@ export default async function ProFeatureGate({
     <main className="flex max-w-3xl flex-col gap-5">
       <PageHeader title={PRO_GATES[feature].title} />
       <ProGateCard feature={feature} />
+      {freeExtra}
     </main>
   );
 }

@@ -16,6 +16,7 @@ import ProPricingDecision from "./ProPricingDecision";
 import ProUpgradeHero from "./ProUpgradeHero";
 import ProUpgradePageView from "./ProUpgradePageView";
 import FounderVideoSection from "@/components/FounderVideoSection";
+import DfyBuildCard from "@/components/website/DfyBuildCard";
 import { PRO_VIDEO } from "@/lib/founder-videos";
 import { proBenefitGroups } from "./pro-benefits";
 import { BILLING_PATH, OPENING_CARDS, WEBSITE_OPENING_CARD, formatProMoney, proCheckoutHref } from "./why-pro-copy";
@@ -56,6 +57,7 @@ export default async function WhyProPage() {
         <ProFeaturedBenefits socialReady={socialReady} checkoutHref={null} />
         <ProFeatureAccordions groups={groups} />
         {comparison}
+        <DfyBuildCard currency={currency} />
         <ProFaq />
       </main>
     );
@@ -87,6 +89,7 @@ export default async function WhyProPage() {
       <ProFeaturedBenefits socialReady={socialReady} checkoutHref={checkoutHref} />
       <ProFeatureAccordions groups={groups} />
       {comparison}
+      <DfyBuildCard currency={currency} />
       <ProFreeReassurance socialReady={socialReady} />
       <ProPricingDecision currency={currency} monthlyCents={monthlyCents} annualCents={annualCents} />
       <ProFaq />

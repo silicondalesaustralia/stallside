@@ -6,7 +6,7 @@ export const businessSetupArticles: KnowledgeArticle[] = [
     title: "Business details and settings",
     summary:
       "Change your business name, location, currency and timezone, and see your site address.",
-    keywords: ["business", "stand", "link", "url", "domain", "currency", "timezone", "delete stand"],
+    keywords: ["business", "stand", "link", "url", "domain", "currency", "timezone", "delete stand", "website build", "done for you"],
     related: ["first-stand", "qr-signs", "stand-branding", "cash-payid"],
     ctas: [{ label: "My Businesses", href: "/dashboard/businesses" }],
     steps: [
@@ -21,6 +21,7 @@ export const businessSetupArticles: KnowledgeArticle[] = [
       "Timezone sets when pre-order windows open and close.",
       "Delete this stand permanently deletes its products, orders and history. It can't be undone.",
       "You can run as many businesses as you like on any plan. Switch between them with the Business switcher.",
+      "Want us to build your website and connect your domain? Tap Book a Done-For-You Build in Web Studio or on the Upgrade to Pro page. It's a one-off US$400 or the equivalent in your currency.",
     ],
   },
   {

@@ -13,6 +13,11 @@ export const HOME_FAQS: FaqItem[] = [
       "No. Vendl Free gives you a shareable shop link so customers can discover and purchase your products without you building a full website. If you want a more complete branded website, Vendl Pro includes Web Studio and custom domain support.",
   },
   {
+    question: "Can you build my website for me?",
+    answer:
+      "Yes. Our done-for-you website build is a one-off US$400 (or the equivalent in your currency, such as A$599, £319 or €369). We build your Vendl website from your products, branding and business details, connect your own domain if you have one, and publish it. You can book it from your dashboard on Free or Pro; your website and custom domain go live on Pro.",
+  },
+  {
     question: "What's the difference between Vendl Free and Pro?",
     answer:
       "Free includes the essentials for selling and managing products, stock and orders. Pro adds production costing and pricing, website-building tools, advanced marketing, additional business-management features and exclusive Skool resources. Pro also removes Vendl's transaction fee, although payment-provider fees still apply.",

@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
+import MakersLpDfyPrice from "@/components/lp/makers/MakersLpDfyPrice";
 import MakersLpFeatureCard from "@/components/lp/makers/MakersLpFeatureCard";
 import MakersLpPlanPrice from "@/components/lp/makers/MakersLpPlanPrice";
 import { HOME_EYEBROW, HOME_H2, HOME_WRAP } from "@/components/lp/makers/makers-lp-styles";
 import {
+  MAKERS_LP_DFY_FEATURE,
   MAKERS_LP_FEATURE_GROUPS,
   MAKERS_LP_FEATURES,
   MAKERS_LP_PLANS_FEATURE,
@@ -33,6 +35,15 @@ function groupCards(id: MakersLpFeatureGroupId): ReactNode[] {
         Get started for <MakersLpPlanPrice plan="free" /> per month, then upgrade to Pro for{" "}
         <MakersLpPlanPrice plan="pro" /> per month when you need additional tools and no Vendl transaction fee.
         Payment-provider fees still apply.
+      </MakersLpFeatureCard>,
+      <MakersLpFeatureCard
+        key="dfy"
+        title={MAKERS_LP_DFY_FEATURE.title}
+        icon={MAKERS_LP_DFY_FEATURE.icon}
+        tag="FREE & PRO"
+        className="sm:col-span-2 lg:col-span-3"
+      >
+        {MAKERS_LP_DFY_FEATURE.body} One-off <MakersLpDfyPrice />.
       </MakersLpFeatureCard>,
     );
   }

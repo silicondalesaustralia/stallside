@@ -26,6 +26,7 @@ import {
 import { markDomainPurchasePaid } from "@/lib/domains/purchase-fulfill";
 import { syncRefundsForStripePaymentIntent } from "@/lib/refunds/sync-order-refunds";
 import { handleSocialCreditWebhook } from "@/lib/socialCredits/fulfil";
+import { handleDfyBuildPaid } from "@/lib/website/dfy-build-notify";
 
 export const runtime = "nodejs";
 
@@ -49,6 +50,8 @@ async function handleCheckoutCompleted(
     );
     return;
   }
+
+  if (await handleDfyBuildPaid(session)) return;
 
   if (session.mode === "subscription") {
     const shopper = await handleShopperCheckoutCompleted(

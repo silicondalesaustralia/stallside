@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  Boxes, Calculator, ClipboardList, Coins, Globe, LayoutGrid, Mail, Megaphone, PiggyBank, Store, Tags, Wallet,
+  Boxes, Calculator, ClipboardList, Coins, Globe, Hammer, LayoutGrid, Mail, Megaphone, PiggyBank, Store, Tags, Wallet,
 } from "lucide-react";
 
 /** Approved landing-page copy (VENDL_LANDING_PAGE_BUILD.md). Plan facts must match why-pro/pro-benefits.ts. */
@@ -120,3 +120,10 @@ export const MAKERS_LP_FEATURES: MakersLpFeature[] = [
 ];
 
 export const MAKERS_LP_PLANS_FEATURE = { title: "Free and Pro selling plans", icon: Wallet } as const;
+
+/** Price is localized and appended by the features section. */
+export const MAKERS_LP_DFY_FEATURE = {
+  title: "Done-for-you website build",
+  body: "Rather not build it yourself? Our team builds your Vendl website from your products and branding, and connects your own domain if you have one.",
+  icon: Hammer,
+} as const;
