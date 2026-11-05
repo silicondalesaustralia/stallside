@@ -49,7 +49,8 @@ export async function handleDfyBuildPaid(session: Stripe.Checkout.Session): Prom
     `<div ${WRAP}>
       <p style="font-size:18px;font-weight:600">Thanks, ${escapeHtml(owner.businessName)}!</p>
       <p>We've received your payment of ${escapeHtml(paid)} for a ${DFY_BUILD_TITLE.toLowerCase()}.</p>
-      <p>We'll be in touch within 2 business days to gather your details and get started.</p>
+      <p>Within 2 business days we'll email you a list of what we need: your logo and branding, any styling requests, and information about your business.</p>
+      <p>Builds take 1 to 2 weeks from when we have your details, depending on how many builds we have going.</p>
     </div>`,
     { kind: "dfy_build_receipt" },
   ).catch((error) => console.error(`[${APP_NAME}] Done-for-you owner email failed`, error));

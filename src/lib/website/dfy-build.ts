@@ -24,6 +24,25 @@ export const DFY_BUILD_INCLUDES = [
   "Full access to edit everything yourself afterwards",
 ] as const;
 
+export const DFY_BUILD_STEPS = [
+  {
+    title: "Book your build",
+    body: "Pay the one-off fee below. Add your domain if you already own one.",
+  },
+  {
+    title: "Send us your details",
+    body: "We'll email you a short list of what we need: your logo and branding, any styling requests or sites you like, your business information and the story behind your business.",
+  },
+  {
+    title: "We build your website",
+    body: "Builds take 1 to 2 weeks from when we have your details, depending on how many builds we have going.",
+  },
+  {
+    title: "Review and go live",
+    body: "We share your site for feedback, make your changes, connect your domain and publish it.",
+  },
+] as const;
+
 export const DFY_BUILD_FREE_NOTE = "Your website and custom domain go live on Vendl Pro.";
 
 export function dfyBuildCurrency(value: string | null | undefined): BillingCurrency {

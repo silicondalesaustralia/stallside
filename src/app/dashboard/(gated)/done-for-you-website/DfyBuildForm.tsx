@@ -23,7 +23,7 @@ export default function DfyBuildForm({ price, isPro }: Props) {
         Book My Website Build · {price}
       </button>
       <p className="text-xs text-[var(--muted)]">
-        One-off payment, charged securely by Stripe. We&apos;ll be in touch within 2 business days.
+        One-off payment, charged securely by Stripe. We&apos;ll email you what we need within 2 business days.
       </p>
     </form>
   );

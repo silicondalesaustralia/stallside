@@ -10,6 +10,7 @@ import {
 } from "@/lib/website/dfy-build";
 import { isDfyBuildSessionPaid } from "@/lib/website/dfy-build-checkout";
 import DfyBuildForm from "./DfyBuildForm";
+import DfyBuildSteps from "./DfyBuildSteps";
 
 const ERRORS: Record<string, string> = {
   domain: "That domain doesn't look right. Use something like www.yourbusiness.com, or leave it blank.",
@@ -44,7 +45,7 @@ export default async function DoneForYouWebsitePage({
       <PageHeader title={DFY_BUILD_TITLE} subtitle={DFY_BUILD_SUMMARY} />
       {paid ? (
         <p role="status" className="dash-card p-4 text-sm font-semibold text-[var(--leaf-dark)]">
-          Thanks, your website build is booked. We&apos;ve emailed your receipt and will be in touch within 2 business days.
+          Thanks, your website build is booked. Within 2 business days we&apos;ll email you a list of what we need from you to get started.
         </p>
       ) : null}
       {sp.cancelled === "1" ? (
@@ -70,9 +71,11 @@ export default async function DoneForYouWebsitePage({
           ))}
         </ul>
         <p className="text-xs text-[var(--muted)]">
-          Buying a new domain is separate. You can buy one in Website → Domains or from any registrar.
+          Connecting a domain you already own is included. Domains can&apos;t be bought through Vendl yet, so if you
+          don&apos;t have one, buy it from any domain registrar and we&apos;ll connect it for you.
         </p>
       </section>
+      <DfyBuildSteps />
       {paid ? null : <DfyBuildForm price={price} isPro={isPro} />}
     </main>
   );

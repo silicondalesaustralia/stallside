@@ -15,7 +15,7 @@ export const HOME_FAQS: FaqItem[] = [
   {
     question: "Can you build my website for me?",
     answer:
-      "Yes. Our done-for-you website build is a one-off US$400 (or the equivalent in your currency, such as A$599, £319 or €369). We build your Vendl website from your products, branding and business details, connect your own domain if you have one, and publish it. You can book it from your dashboard on Free or Pro; your website and custom domain go live on Pro.",
+      "Yes. Our done-for-you website build is a one-off US$400 (or the equivalent in your currency, such as A$599, £319 or €369). We build your Vendl website from your products, branding and business details, connect your own domain if you have one, and publish it. Builds take 1 to 2 weeks once we have your details. You can book it from your dashboard on Free or Pro; your website and custom domain go live on Pro.",
   },
   {
     question: "What's the difference between Vendl Free and Pro?",
