@@ -12,7 +12,7 @@ export const PRO_EMAILS_1: JourneyEmail[] = [
       "Jono here from Vendl!",
       "First of all, thanks for upgrading to Vendl Pro.",
       "It means a lot to us that you've chosen Vendl to help with your business.",
-      "We built Pro for makers who want a little more help with the business side of what they do — from understanding their costs and pricing products to building a website and creating marketing content.",
+      "We built Pro for makers who want a little more help with the business side of what they do, from understanding their costs and pricing products to building a website and creating marketing content.",
       "**You've now got access to a whole new set of tools to explore.**",
       "With Vendl Pro, you can:",
       {

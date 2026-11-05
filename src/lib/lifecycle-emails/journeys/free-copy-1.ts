@@ -67,7 +67,7 @@ export const FREE_EMAILS_1: JourneyEmail[] = [
   {
     key: "free_d10",
     day: 10,
-    subject: "Your own shop link and QR code — included with Vendl Free",
+    subject: "Your own shop link and QR code, included with Vendl Free",
     cta: { label: "Set up your free shop", path: "/dashboard/businesses" },
     body: [
       "Hi {name},",

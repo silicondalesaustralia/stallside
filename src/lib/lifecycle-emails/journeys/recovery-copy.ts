@@ -15,7 +15,7 @@ export const RECOVERY_EMAILS: JourneyEmail[] = [
       "If you haven't had a chance to get started yet, no worries.",
       "**You only need to add one product to get things moving.**",
       { button: true },
-      "And if something's holding you back — whether it's a question, a setup issue or something you wish Vendl could do — just reply to this email.",
+      "And if something's holding you back, whether it's a question, a setup issue or something you wish Vendl could do, just reply to this email.",
       "I'm happy to help.",
       "Happy making!",
     ],
@@ -23,7 +23,7 @@ export const RECOVERY_EMAILS: JourneyEmail[] = [
   {
     key: "recovery_d14",
     day: 14,
-    subject: "Your first product on Vendl — just a few steps",
+    subject: "Your first product on Vendl: just a few steps",
     cta: { label: "Add your first product", path: "/dashboard/products/new" },
     body: [
       "Hi {name},",
@@ -78,7 +78,7 @@ export const RECOVERY_EMAILS: JourneyEmail[] = [
       "**What's the main thing holding you back from getting started with Vendl?**",
       "Maybe you haven't had the time, something was confusing, or there's a feature you need that you couldn't find.",
       "Whatever it is, I'd genuinely appreciate hearing about it.",
-      "Just hit reply and let me know — even a quick sentence would be helpful.",
+      "Just hit reply and let me know. Even a quick sentence would be helpful.",
       "We're always looking for ways to make Vendl better for the people who use it.",
       "And if you decide to give it another go later, your Free account will still be there.",
       "Thanks again for giving Vendl a try.",
