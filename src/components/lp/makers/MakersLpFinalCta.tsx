@@ -15,7 +15,7 @@ export default function MakersLpFinalCta() {
       <MakersLpSignupLink placement="final" className={HOME_BUTTON}>
         Start free <span aria-hidden>↗</span>
       </MakersLpSignupLink>
-      <p className="mt-4 text-xs text-[var(--muted)]">Free plan available · Upgrade when you&apos;re ready · Cancel Pro anytime</p>
+      <p className="mt-4 text-sm text-[var(--muted)]">Free plan available · Upgrade when you&apos;re ready · Cancel Pro anytime</p>
     </section>
   );
 }

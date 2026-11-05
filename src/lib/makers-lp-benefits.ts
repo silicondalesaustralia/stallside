@@ -35,15 +35,29 @@ export type MakersLpBenefit = { title: string; body: string; icon: LucideIcon; t
 
 export const MAKERS_LP_CORE_BENEFITS: MakersLpBenefit[] = [
   { title: "Run everything in one place", body: "Less switching between disconnected tools.", icon: LayoutGrid, tag: "FREE & PRO" },
-  { title: "Know what your products cost", body: "Understand materials, labour, and overheads.", icon: Calculator, tag: "PRO" },
+  { title: "Know your product costs", body: "Understand materials, labour, and overheads.", icon: Calculator, tag: "PRO" },
   { title: "Price with confidence", body: "Set prices using target margins.", icon: Coins, tag: "PRO" },
-  { title: "Keep stock and orders organized", body: "Manage the selling side of your business.", icon: Boxes, tag: "FREE & PRO" },
+  { title: "Keep stock and orders organised", body: "Manage the selling side of your business.", icon: Boxes, tag: "FREE & PRO" },
   { title: "Sell online with ease", body: "Start with a shareable shop.", icon: Store, tag: "FREE & PRO" },
-  { title: "Market products and grow sales", body: "Access email, promotions, and social marketing tools.", icon: Megaphone, tag: "FREE & PRO" },
+  { title: "Market your products", body: "Access email, promotions, and social marketing tools.", icon: Megaphone, tag: "FREE & PRO" },
   { title: "Keep more of what you earn", body: "Start Free; Pro has no Vendl transaction fee.", icon: PiggyBank, tag: "FREE & PRO" },
 ];
 
-export type MakersLpFeature = { title: string; body: string; icon: LucideIcon; tag: MakersLpPlanTag };
+export type MakersLpFeatureGroupId = "selling" | "tools" | "growth";
+
+export const MAKERS_LP_FEATURE_GROUPS: { id: MakersLpFeatureGroupId; label: string }[] = [
+  { id: "selling", label: "Everyday selling" },
+  { id: "tools", label: "Maker business tools" },
+  { id: "growth", label: "Growth & plans" },
+];
+
+export type MakersLpFeature = {
+  title: string;
+  body: string;
+  icon: LucideIcon;
+  tag: MakersLpPlanTag;
+  group: MakersLpFeatureGroupId;
+};
 
 /** Blocks 1-8; block 9 (plans and prices) is localized and rendered by the features section. */
 export const MAKERS_LP_FEATURES: MakersLpFeature[] = [
@@ -52,48 +66,56 @@ export const MAKERS_LP_FEATURES: MakersLpFeature[] = [
     body: "Manage your product listings, inventory and customer orders from one system, so you spend less time switching between tools and more time making and selling.",
     icon: LayoutGrid,
     tag: "FREE & PRO",
+    group: "selling",
   },
   {
     title: "Shareable online shop",
     body: "Start selling with a shop link you can send to customers. You don't need to build a complete website before you can take orders.",
     icon: Store,
     tag: "FREE & PRO",
+    group: "selling",
   },
   {
     title: "Stock management",
     body: "Keep track of the products you have available, helping you stay organised as orders come in.",
     icon: Boxes,
     tag: "FREE & PRO",
+    group: "selling",
   },
   {
     title: "Order management",
     body: "See and manage customer purchases alongside your products and stock, making the selling side of your business easier to handle.",
     icon: ClipboardList,
     tag: "FREE & PRO",
+    group: "selling",
   },
   {
     title: "Production costing",
     body: "Account for materials, ingredients, packaging, labour and overheads to understand what your products cost to make before you set your selling prices.",
     icon: Calculator,
     tag: "PRO",
+    group: "tools",
   },
   {
     title: "Pricing tools",
     body: "Use your production costs and target margins to make more informed pricing decisions instead of relying on guesswork.",
     icon: Tags,
     tag: "PRO",
+    group: "tools",
   },
   {
     title: "Email marketing and newsletters",
     body: "Stay connected with customers using email tools available on Free. Pro adds discounts, promotions, retention tools and social marketing features.",
     icon: Mail,
     tag: "FREE & PRO",
+    group: "growth",
   },
   {
     title: "Website builder and custom domain",
     body: "Move beyond a shareable shop link with a more complete branded online presence as your business grows.",
     icon: Globe,
     tag: "PRO",
+    group: "growth",
   },
 ];
 

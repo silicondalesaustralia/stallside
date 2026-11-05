@@ -55,7 +55,7 @@ export default function MakersLpPriceCard({
         <ListChecks aria-hidden className="size-4 text-[var(--leaf)]" />
         {seeAllLabel}
       </button>
-      <p className="max-w-[390px] text-xs text-[var(--muted)] md:min-h-[60px]">{fee}</p>
+      <p className="max-w-[420px] text-sm text-[var(--muted)] md:min-h-[60px]">{fee}</p>
       <div className="mt-6">{action}</div>
     </article>
   );

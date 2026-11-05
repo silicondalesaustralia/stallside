@@ -44,7 +44,7 @@ export default function MakersLpPlatformTabs({ previews }: { previews: ReactNode
             tabIndex={i === active ? 0 : -1}
             onClick={() => setActive(i)}
             onKeyDown={(e) => onKeyDown(e, i)}
-            className={`cursor-pointer border-b-[3px] py-3.5 text-[11px] font-semibold sm:py-[18px] sm:text-sm ${
+            className={`cursor-pointer border-b-[3px] py-3.5 text-xs font-semibold sm:py-[18px] sm:text-sm ${
               i === active ? "border-[var(--field)] text-[var(--field)]" : "border-transparent text-[var(--muted)]"
             }`}
           >

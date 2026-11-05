@@ -71,7 +71,7 @@ export default function MakersLpPricing({ showSocial }: { showSocial: boolean })
           }
         />
       </div>
-      <p className="mt-6 max-w-[720px] text-xs text-[var(--muted)]">
+      <p className="mt-6 max-w-[760px] text-sm text-[var(--muted)]">
         Fixed prices for your region, billed monthly in the currency shown. Payment-provider fees (Stripe, Square or
         PayPal) are charged by your provider on both plans and are separate from Vendl’s fee.
       </p>

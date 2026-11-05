@@ -7,7 +7,7 @@ import { BILLING_CURRENCIES, isBillingCurrency } from "@/lib/saas-pricing";
 export default function MakersLpCurrencySelect() {
   const { currency, setCurrency } = useMakersLpCurrency();
   return (
-    <label className="mt-6 flex items-center gap-3 text-xs text-[var(--field)] md:mt-0">
+    <label className="mt-6 flex items-center gap-3 text-sm text-[var(--field)] md:mt-0">
       Show prices in
       <select
         value={currency}

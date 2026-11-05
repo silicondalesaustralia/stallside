@@ -4,6 +4,7 @@ import LandingFooter from "@/components/LandingFooter";
 import MakersLpBenefits from "@/components/lp/makers/MakersLpBenefits";
 import MakersLpCommunity from "@/components/lp/makers/MakersLpCommunity";
 import MakersLpCurrencyProvider from "@/components/lp/makers/MakersLpCurrencyProvider";
+import MakersLpDecision from "@/components/lp/makers/MakersLpDecision";
 import MakersLpFaq from "@/components/lp/makers/MakersLpFaq";
 import MakersLpFeatures from "@/components/lp/makers/MakersLpFeatures";
 import MakersLpFinalCta from "@/components/lp/makers/MakersLpFinalCta";
@@ -46,7 +47,7 @@ export default async function MakersLpPage() {
 
   return (
     <MakersLpCurrencyProvider initial={initialCurrency}>
-      <div className="relative flex min-h-full flex-1 flex-col overflow-x-clip bg-[#faf9f5] text-[var(--field)]">
+      <div className="relative flex min-h-full flex-1 flex-col overflow-x-clip bg-[#faf9f5] text-[var(--field)] [--muted:#46573f]">
         <MakersLpHeader />
         <main>
           <MakersLpHero />
@@ -60,6 +61,7 @@ export default async function MakersLpPage() {
           <MakersLpCommunity />
           <MakersLpMarketing showSocial={showSocial} />
           <MakersLpProUpgrade />
+          <MakersLpDecision />
           <MakersLpPricing showSocial={showSocial} />
           <MakersLpPayments />
           <MakersLpRiskReversal />

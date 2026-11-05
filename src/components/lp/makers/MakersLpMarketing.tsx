@@ -31,7 +31,7 @@ export default function MakersLpMarketing({ showSocial }: { showSocial: boolean 
               </li>
             ))}
           </ul>
-          <p className="mb-8 text-xs text-[var(--muted)]">
+          <p className="mb-8 text-sm text-[var(--muted)]">
             Email is included on Free and Pro.
             {showSocial ? " Social uses credits: Pro includes 5 designs and 5 video clips a month, and anyone can buy packs." : null}
           </p>

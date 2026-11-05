@@ -27,6 +27,6 @@ export const HOME_TEXT_LINK =
   "border-b border-current pb-0.5 text-sm font-semibold text-[var(--field)] hover:text-[var(--leaf)]";
 
 export const HOME_PLAN_TAG =
-  "inline-block rounded-[3px] border border-[#a1af9a] px-2 py-0.5 text-[10px] font-bold tracking-[0.12em] text-[var(--field)]";
+  "inline-block rounded-[3px] border border-[#a1af9a] px-2 py-0.5 text-[11px] font-bold tracking-[0.12em] text-[var(--field)]";
 
-export const HOME_SCREEN_CAPTION = "mt-3 block text-[10px] text-[var(--muted)]";
+export const HOME_SCREEN_CAPTION = "mt-3 block text-xs text-[var(--muted)] sm:text-[13px]";

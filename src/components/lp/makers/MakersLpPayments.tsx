@@ -41,7 +41,7 @@ export default function MakersLpPayments() {
             </ul>
           </div>
         </div>
-        <p className="mt-8 max-w-[640px] text-xs text-[var(--muted)]">
+        <p className="mt-8 max-w-[680px] text-sm text-[var(--muted)]">
           Available methods depend on your country and provider. Card, Tap &amp; Go and pay-later sales carry a 2.5% Vendl
           fee on Free and none on Pro. Stripe, Square and PayPal processing fees apply separately.
         </p>

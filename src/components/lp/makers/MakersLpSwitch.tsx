@@ -30,7 +30,7 @@ export default function MakersLpSwitch() {
       <MakersLpSignupLink placement="switch" className={HOME_BUTTON}>
         Start free <span aria-hidden>↗</span>
       </MakersLpSignupLink>
-      <p className="mx-auto mt-4 max-w-[470px] text-xs text-[var(--muted)]">
+      <p className="mx-auto mt-4 max-w-[520px] text-sm text-[var(--muted)]">
         Imports bring across your data, not your website design. Check each import before you go live.
       </p>
     </section>

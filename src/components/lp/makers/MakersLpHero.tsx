@@ -6,7 +6,7 @@ import MakersLpPlanPrice from "@/components/lp/makers/MakersLpPlanPrice";
 import { HOME_BUTTON, HOME_EYEBROW, HOME_HEADING_FONT, HOME_WRAP } from "@/components/lp/makers/makers-lp-styles";
 import { MAKERS_LP_HERO_BULLETS } from "@/lib/makers-lp-benefits";
 
-const LIST = "space-y-3 text-[15px] leading-relaxed text-[var(--muted)]";
+const LIST = "space-y-3 text-base leading-relaxed text-[var(--muted)]";
 
 /** Mobile order: copy, CTA, three bullets, product visual, last two bullets. Desktop: copy left, visual right. */
 export default function MakersLpHero() {
@@ -27,7 +27,7 @@ export default function MakersLpHero() {
             Start free <span aria-hidden>↗</span>
           </MakersLpSignupLink>
         </div>
-        <p className="text-xs text-[var(--muted)]">Free plan available · No website needed</p>
+        <p className="text-sm text-[var(--muted)]">Free plan available · No website needed</p>
         <p className="mb-4 mt-8 text-sm font-semibold text-[var(--field)]">Here are just a few qualities of Vendl:</p>
         <ul className={LIST}>
           {[first, second, third].map((b) => (
@@ -36,7 +36,7 @@ export default function MakersLpHero() {
         </ul>
       </div>
       <div className="relative ml-5 pb-14 md:col-start-2 md:row-span-2 md:row-start-1 md:ml-0 md:self-center md:pb-[70px] md:pl-8">
-        <p className="mb-3 text-[9px] tracking-[0.14em] text-[var(--field)]">MADE BY THE FLETCHERS · WESTERN AUSTRALIA</p>
+        <p className="mb-3 text-[11px] tracking-[0.14em] text-[var(--field)]">MADE BY THE FLETCHERS · WESTERN AUSTRALIA</p>
         <Image
           src="/gallery/fletchers-artisan-soaps.jpg"
           alt="Fletcherbrook handmade goat’s milk soaps and farm shop display"
@@ -48,7 +48,7 @@ export default function MakersLpHero() {
           className="h-[340px] w-full rounded-[70px_6px_6px_6px] object-cover sm:h-[410px] md:h-[440px] md:rounded-[100px_7px_7px_7px] lg:h-[525px]"
         />
         <MakersLpHeroCostNote />
-        <p className="absolute bottom-2 right-0 text-[10px] text-[var(--field)] md:bottom-6 md:text-xs">
+        <p className="absolute bottom-2 right-0 text-xs text-[var(--field)] md:bottom-6 md:text-[13px]">
           Small batches. Real businesses. Yours.
         </p>
       </div>

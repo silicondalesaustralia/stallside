@@ -18,7 +18,7 @@ export default function MakersLpFaq() {
                 +
               </span>
             </summary>
-            <p className="mt-4 text-sm text-[var(--muted)]">{faq.answer}</p>
+            <p className="mt-4 text-[15px] leading-relaxed text-[var(--muted)]">{faq.answer}</p>
           </details>
         ))}
       </div>
