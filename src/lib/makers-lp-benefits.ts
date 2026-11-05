@@ -7,19 +7,19 @@ import {
 
 export type MakersLpPlanTag = "FREE & PRO" | "PRO";
 
-export type MakersLpHeroBullet = { lead: string; rest: string; dash?: boolean };
+export type MakersLpHeroBullet = { lead: string; rest: string; sep?: string };
 
 /** Bullets 1-4; bullet 5 carries the localized price and is rendered by the hero. */
 export const MAKERS_LP_HERO_BULLETS: MakersLpHeroBullet[] = [
   {
     lead: "Run your making business in one place",
     rest: "with products, stock, orders and selling tools working together.",
-    dash: true,
+    sep: ", ",
   },
   {
     lead: "You don't need a full website to start selling",
     rest: "Vendl Free gives you a shop link you can share.",
-    dash: true,
+    sep: ". ",
   },
   {
     lead: "Know what each product really costs",

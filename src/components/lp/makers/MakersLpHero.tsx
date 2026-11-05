@@ -31,7 +31,7 @@ export default function MakersLpHero() {
         <p className="mb-4 mt-8 text-sm font-semibold text-[var(--field)]">Here are just a few qualities of Vendl:</p>
         <ul className={LIST}>
           {[first, second, third].map((b) => (
-            <MakersLpHeroBullet key={b.lead} lead={b.lead} rest={b.rest} dash={b.dash} />
+            <MakersLpHeroBullet key={b.lead} lead={b.lead} rest={b.rest} sep={b.sep} />
           ))}
         </ul>
       </div>
@@ -53,7 +53,7 @@ export default function MakersLpHero() {
         </p>
       </div>
       <ul className={`${LIST} md:col-start-1 md:row-start-2`}>
-        <MakersLpHeroBullet lead={fourth.lead} rest={fourth.rest} dash={fourth.dash} />
+        <MakersLpHeroBullet lead={fourth.lead} rest={fourth.rest} sep={fourth.sep} />
         <MakersLpHeroBullet
           lead={
             <>

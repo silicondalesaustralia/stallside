@@ -76,7 +76,7 @@ export default function MakersLpCostingMaterials({ lines, ctx, wasteFactor, onQu
                     </span>
                   </span>
                 </td>
-                <td className="text-right font-semibold tabular-nums sm:px-3 sm:py-1.5 sm:font-normal">{cents == null ? "—" : formatAud(cents)}</td>
+                <td className="text-right font-semibold tabular-nums sm:px-3 sm:py-1.5 sm:font-normal">{cents == null ? "-" : formatAud(cents)}</td>
               </tr>
             );
           })}

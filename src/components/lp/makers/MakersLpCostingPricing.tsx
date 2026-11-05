@@ -82,8 +82,8 @@ export default function MakersLpCostingPricing({ unitCostCents, startPriceCents 
       </div>
       <div className="grid grid-cols-2 gap-2">
         <Stat label="Cost to make" value={formatAud(unitCostCents)} />
-        <Stat label="Fees" value={result ? formatAud(result.feesCents) : "—"} />
-        <Stat label="Profit each" value={result ? formatAud(result.profitCents) : "—"} tone={loss ? "loss" : "good"} />
+        <Stat label="Fees" value={result ? formatAud(result.feesCents) : "-"} />
+        <Stat label="Profit each" value={result ? formatAud(result.profitCents) : "-"} tone={loss ? "loss" : "good"} />
         <Stat label="Margin" value={formatPercent(result?.marginPct ?? null)} tone={loss ? "loss" : undefined} />
       </div>
       <p className="text-xs text-[var(--muted)]">
