@@ -16,16 +16,17 @@ export const metadata: Metadata = {
 const BUTTON_CLASS =
   "mt-8 inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]";
 
-function proBillingHref(currency: string | undefined): string {
+function proBillingHref(currency: string | undefined, interval: string | undefined): string {
   const qs = new URLSearchParams({ plan: "pro" });
   if (currency && isBillingCurrency(currency)) qs.set("currency", currency);
+  if (interval === "year") qs.set("interval", "year");
   return `/dashboard/settings/billing?${qs.toString()}`;
 }
 
 export default async function SignupCompletePage({
   searchParams,
 }: {
-  searchParams: Promise<{ plan?: string; currency?: string }>;
+  searchParams: Promise<{ plan?: string; currency?: string; interval?: string }>;
 }) {
   const params = await searchParams;
   const wantsPro = params.plan === "pro";
@@ -62,7 +63,7 @@ export default async function SignupCompletePage({
           ? "Your account is ready. Continue to checkout to start Vendl Pro."
           : "Your account is ready. Set up your stand, print a QR, and start taking payments from your phone."}
       </p>
-      <Link href={wantsPro ? proBillingHref(params.currency) : "/dashboard"} className={BUTTON_CLASS}>
+      <Link href={wantsPro ? proBillingHref(params.currency, params.interval) : "/dashboard"} className={BUTTON_CLASS}>
         {wantsPro ? "Continue to Vendl Pro" : "Go to dashboard"}
       </Link>
       {wantsPro ? (

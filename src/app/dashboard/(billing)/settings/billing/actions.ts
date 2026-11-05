@@ -10,7 +10,8 @@ import {
   isStripeProBillingConfigured,
   parseBillingCurrencyParam,
 } from "@/lib/stripe";
-import { cardPlanCents } from "@/lib/saas-pricing";
+import { annualMonthlyEquivalentCents, cardPlanCents } from "@/lib/saas-pricing";
+import { tryProAnnualPriceId } from "@/lib/stripe-pro-annual";
 async function ensureStripeCustomer(ownerId: string, email: string | null) {
   const owner = await prisma.owner.findUniqueOrThrow({ where: { id: ownerId } });
   if (owner.stripeCustomerId) {
@@ -41,7 +42,10 @@ export async function startProPlanCheckout(formData: FormData) {
   }
 
   const currency = parseBillingCurrencyParam(formData.get("currency"), "pro");
-  const priceId = getProPlanPriceId(currency);
+  const annualPriceId =
+    formData.get("interval") === "year" ? tryProAnnualPriceId(currency) : null;
+  const priceId = annualPriceId ?? getProPlanPriceId(currency);
+  const interval = annualPriceId ? "year" : "month";
   const customerId = await ensureStripeCustomer(owner.id, user.email ?? null);
   const base = appBaseUrl();
 
@@ -49,7 +53,9 @@ export async function startProPlanCheckout(formData: FormData) {
     where: { id: owner.id },
     data: {
       billingCurrency: currency,
-      monthlyFeeCents: cardPlanCents(currency),
+      monthlyFeeCents: annualPriceId
+        ? annualMonthlyEquivalentCents(currency)
+        : cardPlanCents(currency),
     },
   });
 
@@ -65,6 +71,7 @@ export async function startProPlanCheckout(formData: FormData) {
       purpose: "saas_subscription",
       saasPlan: "pro",
       billingCurrency: currency,
+      billingInterval: interval,
     },
     subscription_data: {
       metadata: {
@@ -72,6 +79,7 @@ export async function startProPlanCheckout(formData: FormData) {
         purpose: "saas_subscription",
         saasPlan: "pro",
         billingCurrency: currency,
+        billingInterval: interval,
       },
     },
   });

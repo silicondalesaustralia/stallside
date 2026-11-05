@@ -32,11 +32,12 @@ export function billingFromSubscription(subscription: Stripe.Subscription): {
   const item = subscription.items.data[0];
   const raw = (item?.price.currency ?? "aud").toUpperCase();
   const currency: BillingCurrency = isBillingCurrency(raw) ? raw : "AUD";
-  const monthlyFeeCents =
-    typeof item?.price.unit_amount === "number"
-      ? item.price.unit_amount
-      : cardPlanCents(currency);
-  return { currency, monthlyFeeCents };
+  const unit = item?.price.unit_amount;
+  if (typeof unit !== "number") {
+    return { currency, monthlyFeeCents: cardPlanCents(currency) };
+  }
+  const yearly = item.price.recurring?.interval === "year";
+  return { currency, monthlyFeeCents: yearly ? Math.round(unit / 12) : unit };
 }
 
 export function periodEndFromSubscription(

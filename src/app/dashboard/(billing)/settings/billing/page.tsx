@@ -1,15 +1,9 @@
 import Link from "next/link";
 import { logout } from "@/app/login/actions";
 import { requireOwner } from "@/lib/session";
-import {
-  cardPlanCents,
-  isBillingCurrency,
-  type BillingCurrency,
-} from "@/lib/saas-pricing";
-import {
-  listConfiguredProPlanPrices,
-  isStripeProBillingConfigured,
-} from "@/lib/stripe";
+import { cardPlanCents, isBillingCurrency, type BillingCurrency } from "@/lib/saas-pricing";
+import { listConfiguredProPlanPrices, isStripeProBillingConfigured } from "@/lib/stripe";
+import { listProAnnualCurrencies } from "@/lib/stripe-pro-annual";
 import {
   hasComplimentaryAccess,
   normalizeSubscriptionPlan,
@@ -32,6 +26,7 @@ export default async function BillingSettingsPage({
     error?: string;
     region?: string;
     currency?: string;
+    interval?: string;
   }>;
 }) {
   const { owner, user } = await requireOwner();
@@ -123,6 +118,8 @@ export default async function BillingSettingsPage({
           key={billingCurrency}
           billingCurrency={planCurrency}
           proPrices={listConfiguredProPlanPrices()}
+          annualCurrencies={listProAnnualCurrencies()}
+          initialInterval={params.interval === "year" ? "year" : "month"}
           showPro
           proConfigured={proConfigured}
         />

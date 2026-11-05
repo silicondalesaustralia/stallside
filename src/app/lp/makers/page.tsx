@@ -25,6 +25,7 @@ import LpCtaParamScript from "@/components/lp/LpCtaParamScript";
 import { MAKERS_LP_CAMPAIGN, MAKERS_LP_PATH } from "@/lib/makers-lp";
 import { lpCurrencyFromRequest } from "@/lib/makers-lp-price";
 import { DEFAULT_OG_IMAGE } from "@/lib/og-image";
+import { listProAnnualCurrencies } from "@/lib/stripe-pro-annual";
 
 const title = "Vendl for Makers | Selling Software That Understands How Makers Work";
 const description =
@@ -62,7 +63,7 @@ export default async function MakersLpPage() {
           <MakersLpMarketing showSocial={showSocial} />
           <MakersLpProUpgrade />
           <MakersLpDecision />
-          <MakersLpPricing showSocial={showSocial} />
+          <MakersLpPricing showSocial={showSocial} annualCurrencies={listProAnnualCurrencies()} />
           <MakersLpPayments />
           <MakersLpRiskReversal />
           <MakersLpFaq />

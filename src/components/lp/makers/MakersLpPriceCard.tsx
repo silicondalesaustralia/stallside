@@ -6,6 +6,8 @@ type MakersLpPriceCardProps = {
   plan: string;
   title: string;
   price: string;
+  period?: "month" | "year";
+  priceNote?: string;
   perks: readonly string[];
   fee: string;
   seeAllLabel: string;
@@ -18,6 +20,8 @@ export default function MakersLpPriceCard({
   plan,
   title,
   price,
+  period = "month",
+  priceNote,
   perks,
   fee,
   seeAllLabel,
@@ -35,8 +39,9 @@ export default function MakersLpPriceCard({
       <h3 className={`${HOME_H3} text-[28px] md:text-[30px]`}>{title}</h3>
       <div className="mb-2 mt-6 flex items-baseline gap-2 text-[var(--field)]">
         <strong className={`${HOME_HEADING_FONT} text-[44px] leading-none md:text-[48px]`}>{price}</strong>
-        <span className="text-[13px]">/ month</span>
+        <span className="text-[13px]">/ {period}</span>
       </div>
+      {priceNote ? <p className="text-sm font-medium text-[var(--leaf)]">{priceNote}</p> : null}
       <ul className="my-6 text-sm text-[var(--field)]">
         {perks.map((perk) => (
           <li key={perk} className="flex gap-3 py-2">

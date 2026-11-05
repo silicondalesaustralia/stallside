@@ -6,15 +6,16 @@ import { makersLpSignupHref } from "@/lib/makers-lp";
 
 const noSubscription = () => () => {};
 
-type Props = { placement: string; className?: string; children: ReactNode };
+type Props = { placement: string; className?: string; yearly?: boolean; children: ReactNode };
 
 /** Signup with plan=pro and the selected currency, so new accounts continue to Pro checkout. */
-export default function MakersLpChooseProLink({ placement, className, children }: Props) {
+export default function MakersLpChooseProLink({ placement, className, yearly = false, children }: Props) {
   const { currency } = useMakersLpCurrency();
   const search = useSyncExternalStore(noSubscription, () => window.location.search, () => "");
+  const extra: Record<string, string> = yearly ? { plan: "pro", currency, interval: "year" } : { plan: "pro", currency };
   return (
     <a
-      href={makersLpSignupHref(search, { plan: "pro", currency })}
+      href={makersLpSignupHref(search, extra)}
       suppressHydrationWarning
       data-lp-cta
       data-placement={placement}

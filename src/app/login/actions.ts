@@ -165,6 +165,7 @@ function signupCompleteUrl(formData: FormData): string {
   const qs = new URLSearchParams({ plan: "pro" });
   const currency = String(formData.get("currency") ?? "");
   if (isBillingCurrency(currency)) qs.set("currency", currency);
+  if (formData.get("interval") === "year") qs.set("interval", "year");
   return `/signup-complete?${qs.toString()}`;
 }
 

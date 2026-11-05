@@ -1,4 +1,9 @@
-import { billingCurrencyFromLocale, cardPlanCents, type BillingCurrency } from "@/lib/saas-pricing";
+import {
+  annualPlanCents,
+  billingCurrencyFromLocale,
+  cardPlanCents,
+  type BillingCurrency,
+} from "@/lib/saas-pricing";
 
 const PREFIX: Record<BillingCurrency, string> = { AUD: "A$", USD: "US$", EUR: "€", GBP: "£" };
 
@@ -16,6 +21,18 @@ export function formatLpPrice(cents: number, currency: BillingCurrency): string 
 
 export function lpProMonthly(currency: BillingCurrency): string {
   return formatLpPrice(cardPlanCents(currency), currency);
+}
+
+export function lpProAnnual(currency: BillingCurrency): string {
+  return formatLpPrice(annualPlanCents(currency), currency);
+}
+
+/** e.g. "Works out to A$16.67 a month. Save A$39.89 a year." */
+export function lpAnnualNote(currency: BillingCurrency): string {
+  const annual = annualPlanCents(currency);
+  const perMonth = formatLpPrice(Math.round(annual / 12), currency);
+  const saving = formatLpPrice(cardPlanCents(currency) * 12 - annual, currency);
+  return `Works out to ${perMonth} a month. Save ${saving} a year.`;
 }
 
 /** Visitor country (CDN header) first, then the browser language; non-AU/NZ visitors never default to AUD. */

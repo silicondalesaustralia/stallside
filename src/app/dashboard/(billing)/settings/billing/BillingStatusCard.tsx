@@ -1,6 +1,8 @@
 import { formatMoney } from "@/lib/money";
 import {
+  annualPlanCents,
   billingRegionDisplay,
+  proIntervalFromMonthlyFee,
   type BillingCurrency,
 } from "@/lib/saas-pricing";
 
@@ -27,6 +29,8 @@ export default function BillingStatusCard({
 }) {
   const lifetime = planLabel.startsWith("Lifetime FREE");
   const region = billingRegionDisplay(billingCurrency);
+  const yearly =
+    feeCents > 0 && proIntervalFromMonthlyFee(feeCents, billingCurrency) === "year";
 
   return (
     <section className="space-y-2 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
@@ -35,8 +39,11 @@ export default function BillingStatusCard({
       ) : (
         <>
           <p>
-            Plan: {planLabel} · {formatMoney(feeCents, billingCurrency)}/mo (
-            {billingCurrency})
+            Plan: {planLabel} ·{" "}
+            {yearly
+              ? `${formatMoney(annualPlanCents(billingCurrency), billingCurrency)}/yr`
+              : `${formatMoney(feeCents, billingCurrency)}/mo`}{" "}
+            ({billingCurrency})
           </p>
           <p>Status: {STATUS_LABEL[subscriptionStatus] ?? subscriptionStatus}</p>
         </>

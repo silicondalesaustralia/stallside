@@ -12,7 +12,7 @@ const INPUT_CLASS =
 export default async function SignupPage({
   searchParams,
 }: {
-  searchParams: Promise<{ plan?: string; currency?: string }>;
+  searchParams: Promise<{ plan?: string; currency?: string; interval?: string }>;
 }) {
   const params = await searchParams;
   const wantsPro = params.plan === "pro";
@@ -36,6 +36,7 @@ export default async function SignupPage({
           <AdAttributionFields />
           {wantsPro ? <input type="hidden" name="plan" value="pro" /> : null}
           {wantsPro && currency ? <input type="hidden" name="currency" value={currency} /> : null}
+          {wantsPro && params.interval === "year" ? <input type="hidden" name="interval" value="year" /> : null}
           <label className="flex flex-col gap-2 text-sm">
             <span className="font-semibold text-[var(--field)]">Name</span>
             <input

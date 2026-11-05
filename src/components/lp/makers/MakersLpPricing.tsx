@@ -3,6 +3,7 @@
 import { useState } from "react";
 import MakersLpChooseProLink from "@/components/lp/makers/MakersLpChooseProLink";
 import MakersLpCurrencySelect from "@/components/lp/makers/MakersLpCurrencySelect";
+import MakersLpIntervalToggle from "@/components/lp/makers/MakersLpIntervalToggle";
 import MakersLpPlanFeaturesModal from "@/components/lp/makers/MakersLpPlanFeaturesModal";
 import MakersLpPriceCard from "@/components/lp/makers/MakersLpPriceCard";
 import MakersLpSignupLink from "@/components/lp/makers/MakersLpSignupLink";
@@ -16,19 +17,31 @@ import {
   MAKERS_LP_PRO_PERKS,
 } from "@/lib/makers-lp-page-copy";
 import { freePlanFeatures, proPlanFeatures } from "@/lib/makers-lp-plan-features";
-import { formatLpPrice, lpProMonthly } from "@/lib/makers-lp-price";
+import { formatLpPrice, lpAnnualNote, lpProAnnual, lpProMonthly } from "@/lib/makers-lp-price";
+import type { BillingCurrency, BillingInterval } from "@/lib/saas-pricing";
 
 type Plan = "free" | "pro";
 
-export default function MakersLpPricing({ showSocial }: { showSocial: boolean }) {
+type Props = { showSocial: boolean; annualCurrencies: readonly BillingCurrency[] };
+
+export default function MakersLpPricing({ showSocial, annualCurrencies }: Props) {
   const { currency } = useMakersLpCurrency();
   const [featuresPlan, setFeaturesPlan] = useState<Plan | null>(null);
+  const [interval, setBillingInterval] = useState<BillingInterval>("month");
+  const showAnnual = annualCurrencies.includes(currency);
+  const yearly = showAnnual && interval === "year";
   const freePrice = formatLpPrice(0, currency);
-  const proPrice = lpProMonthly(currency);
+  const proPrice = yearly ? lpProAnnual(currency) : lpProMonthly(currency);
+  const proPeriod = yearly ? "year" : "month";
 
   function openFeatures(plan: Plan) {
     setFeaturesPlan(plan);
     trackMakersLpEvent("lp_compare_open", { plan });
+  }
+
+  function changeInterval(next: BillingInterval) {
+    setBillingInterval(next);
+    trackMakersLpEvent("lp_billing_toggle", { interval: next, currency });
   }
 
   return (
@@ -38,7 +51,10 @@ export default function MakersLpPricing({ showSocial }: { showSocial: boolean })
           <p className={HOME_EYEBROW}>PRICING</p>
           <h2 className={HOME_H2}>Start Free. Grow with Vendl Pro.</h2>
         </div>
-        <MakersLpCurrencySelect />
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          {showAnnual ? <MakersLpIntervalToggle interval={interval} onChange={changeInterval} /> : null}
+          <MakersLpCurrencySelect />
+        </div>
       </div>
       <div className="grid gap-6 md:grid-cols-2">
         <MakersLpPriceCard
@@ -59,20 +75,22 @@ export default function MakersLpPricing({ showSocial }: { showSocial: boolean })
           plan="VENDL PRO"
           title="Run more of your business"
           price={proPrice}
+          period={proPeriod}
+          priceNote={yearly ? lpAnnualNote(currency) : undefined}
           perks={MAKERS_LP_PRO_PERKS}
           fee={MAKERS_LP_PRO_FEE}
           seeAllLabel="See everything in Pro"
           featured
           onSeeAll={() => openFeatures("pro")}
           action={
-            <MakersLpChooseProLink placement="pricing-pro" className={HOME_BUTTON_GOLD}>
+            <MakersLpChooseProLink placement="pricing-pro" yearly={yearly} className={HOME_BUTTON_GOLD}>
               Choose Pro <span aria-hidden>↗</span>
             </MakersLpChooseProLink>
           }
         />
       </div>
       <p className="mt-6 max-w-[760px] text-sm text-[var(--muted)]">
-        Fixed prices for your region, billed monthly in the currency shown. Payment-provider fees (Stripe, Square or
+        Fixed prices for your region, billed {showAnnual ? "monthly or yearly" : "monthly"} in the currency shown. Payment-provider fees (Stripe, Square or
         PayPal) are charged by your provider on both plans and are separate from Vendl’s fee.
       </p>
       <MakersLpPlanFeaturesModal
@@ -88,7 +106,7 @@ export default function MakersLpPricing({ showSocial }: { showSocial: boolean })
         onClose={() => setFeaturesPlan(null)}
         plan="VENDL PRO"
         title="Everything in Pro"
-        intro={`Every Free feature, plus all of this for ${proPrice} a month.`}
+        intro={`Every Free feature, plus all of this for ${proPrice} a ${proPeriod}.`}
         groups={proPlanFeatures(showSocial)}
       />
     </section>

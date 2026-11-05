@@ -5,22 +5,29 @@ import PlanFeatureBlock from "@/components/PlanFeatureBlock";
 import { formatMoney } from "@/lib/money";
 import {
   BILLING_CURRENCIES,
+  annualPlanCents,
   cardPlanCents,
   isBillingCurrency,
   type BillingCurrency,
+  type BillingInterval,
 } from "@/lib/saas-pricing";
 import { startProPlanCheckout } from "./actions";
+import BillingIntervalToggle from "./BillingIntervalToggle";
 
 type PriceRow = { currency: BillingCurrency };
 
 export default function BillingPlanForms({
   billingCurrency,
   proPrices,
+  annualCurrencies,
+  initialInterval,
   showPro,
   proConfigured,
 }: {
   billingCurrency: BillingCurrency;
   proPrices: PriceRow[];
+  annualCurrencies: BillingCurrency[];
+  initialInterval: BillingInterval;
   showPro: boolean;
   proConfigured: boolean;
   /** @deprecated ignored - Cash is free forever */
@@ -42,6 +49,9 @@ export default function BillingPlanForms({
   const [currency, setCurrency] = useState<BillingCurrency>(() =>
     codes.includes(billingCurrency) ? billingCurrency : codes[0] ?? "AUD",
   );
+  const [interval, setBillingInterval] = useState<BillingInterval>(initialInterval);
+  const annualAvailable = annualCurrencies.includes(currency);
+  const yearly = annualAvailable && interval === "year";
 
   if (!showPro) return null;
 
@@ -53,10 +63,13 @@ export default function BillingPlanForms({
       >
         <p className="text-sm font-semibold text-[var(--leaf)]">Vendl Pro</p>
         <p className="font-receipt text-2xl font-semibold text-[var(--marigold)]">
-          From {formatMoney(cardPlanCents(currency), currency)}
-          <span className="text-sm font-normal text-[var(--muted)]"> /mo</span>
+          {formatMoney(yearly ? annualPlanCents(currency) : cardPlanCents(currency), currency)}
+          <span className="text-sm font-normal text-[var(--muted)]"> {yearly ? "/yr" : "/mo"}</span>
         </p>
         <PlanFeatureBlock plan="pro" currency={currency} />
+        {annualAvailable ? (
+          <BillingIntervalToggle currency={currency} interval={interval} onChange={setBillingInterval} />
+        ) : null}
         <div className="flex flex-wrap items-end gap-3 pt-1">
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-medium text-[var(--ink)]">Currency</span>

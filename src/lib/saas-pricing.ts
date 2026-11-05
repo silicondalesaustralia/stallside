@@ -43,6 +43,38 @@ export const CARD_PLAN_BY_CURRENCY: Record<BillingCurrency, number> = {
   EUR: 1499,
 };
 
+/** Pro billed yearly. Fixed list prices, not live FX. */
+export const ANNUAL_PLAN_BY_CURRENCY: Record<BillingCurrency, number> = {
+  AUD: 19999,
+  USD: 14999,
+  GBP: 11999,
+  EUR: 14999,
+};
+
+export const BILLING_INTERVALS = ["month", "year"] as const;
+
+export type BillingInterval = (typeof BILLING_INTERVALS)[number];
+
+export function isBillingInterval(value: string): value is BillingInterval {
+  return (BILLING_INTERVALS as readonly string[]).includes(value);
+}
+
+export function annualPlanCents(currency: BillingCurrency): number {
+  return ANNUAL_PLAN_BY_CURRENCY[currency];
+}
+
+/** Owner.monthlyFeeCents for yearly subscribers, so MRR and commission estimates stay monthly. */
+export function annualMonthlyEquivalentCents(currency: BillingCurrency): number {
+  return Math.round(ANNUAL_PLAN_BY_CURRENCY[currency] / 12);
+}
+
+export function proIntervalFromMonthlyFee(
+  monthlyFeeCents: number,
+  currency: BillingCurrency,
+): BillingInterval {
+  return monthlyFeeCents === annualMonthlyEquivalentCents(currency) ? "year" : "month";
+}
+
 const REGION_TO_BILLING: Record<string, BillingCurrency> = {
   AU: "AUD",
   NZ: "AUD",

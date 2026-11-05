@@ -6,6 +6,7 @@ import {
   type BillingCurrency,
   isBillingCurrency,
 } from "@/lib/saas-pricing";
+import { tryProAnnualPriceId } from "@/lib/stripe-pro-annual";
 
 export { appBaseUrl, cleanEnvSecret };
 
@@ -186,6 +187,7 @@ export function saasPlanFromSubscription(subscription: {
   if (priceId) {
     for (const currency of BILLING_CURRENCIES) {
       if (tryProPlanPriceId(currency) === priceId) return "pro";
+      if (tryProAnnualPriceId(currency) === priceId) return "pro";
       if (tryCashPlanPriceId(currency) === priceId) return "free";
     }
   }
