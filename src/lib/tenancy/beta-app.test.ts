@@ -65,6 +65,8 @@ describe("beta app", () => {
     assert.equal(betaAppMainOnlyPath("/signup"), true);
     assert.equal(betaAppMainOnlyPath("/onboarding/business"), true);
     assert.equal(betaAppMainOnlyPath("/dashboard"), false);
+    assert.equal(betaAppMainOnlyPath("/signup", "?utm_content=ad-1&lp=makers&plan=pro"), false);
+    assert.equal(betaAppMainOnlyPath("/signup", "?utm_content=lp-makers"), true);
     assert.equal(mainAppUrl(), "https://www.vendl.app");
     process.env.VENDL_MAIN_APP_URL = "https://www.vendl.app/";
     assert.equal(mainAppUrl(), "https://www.vendl.app");

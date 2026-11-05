@@ -61,8 +61,12 @@ export function betaAppSkipsCron(pathname: string): boolean {
   return SOCIAL_DB_CRONS.has(name) && !socialConfigured();
 }
 
-/** Paths that belong to main's app (account creation), redirected from the beta app. */
-export function betaAppMainOnlyPath(pathname: string): boolean {
+/**
+ * Paths that belong to main's app (account creation), redirected from the beta app.
+ * Signups from the makers landing page (lp=makers) stay on the beta app.
+ */
+export function betaAppMainOnlyPath(pathname: string, search = ""): boolean {
   if (!isBetaApp()) return false;
+  if (pathname === "/signup" && new URLSearchParams(search).get("lp") === "makers") return false;
   return ["/signup", "/onboarding"].some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }

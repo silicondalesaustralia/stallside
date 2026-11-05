@@ -129,7 +129,7 @@ export async function middleware(request: NextRequest) {
   if (betaAppSkipsCron(pathname)) {
     return NextResponse.json({ skipped: "not run on the beta app" });
   }
-  if (betaAppMainOnlyPath(pathname)) {
+  if (betaAppMainOnlyPath(pathname, request.nextUrl.search)) {
     return NextResponse.redirect(`${mainAppUrl()}${pathname}${request.nextUrl.search}`, 307);
   }
 

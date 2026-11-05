@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import MakersLpChooseProLink from "@/components/lp/makers/MakersLpChooseProLink";
-import MakersLpCurrencySelect from "@/components/lp/makers/MakersLpCurrencySelect";
 import MakersLpIntervalToggle from "@/components/lp/makers/MakersLpIntervalToggle";
 import MakersLpPlanFeaturesModal from "@/components/lp/makers/MakersLpPlanFeaturesModal";
 import MakersLpPriceCard from "@/components/lp/makers/MakersLpPriceCard";
@@ -51,10 +50,11 @@ export default function MakersLpPricing({ showSocial, annualCurrencies }: Props)
           <p className={HOME_EYEBROW}>PRICING</p>
           <h2 className={HOME_H2}>Start Free. Grow with Vendl Pro.</h2>
         </div>
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          {showAnnual ? <MakersLpIntervalToggle interval={interval} onChange={changeInterval} /> : null}
-          <MakersLpCurrencySelect />
-        </div>
+        {showAnnual ? (
+          <div className="mt-6 md:mt-0">
+            <MakersLpIntervalToggle interval={interval} onChange={changeInterval} />
+          </div>
+        ) : null}
       </div>
       <div className="grid gap-6 md:grid-cols-2">
         <MakersLpPriceCard

@@ -11,6 +11,7 @@ import {
   type BillingCurrency,
   type BillingInterval,
 } from "@/lib/saas-pricing";
+import { trackProUpgrade } from "@/lib/pro-upgrade-track";
 import { startProPlanCheckout } from "./actions";
 import BillingIntervalToggle from "./BillingIntervalToggle";
 
@@ -59,6 +60,9 @@ export default function BillingPlanForms({
     <div className="space-y-6">
       <form
         action={startProPlanCheckout}
+        onSubmit={() =>
+          trackProUpgrade("pro_upgrade_checkout_started", { interval: yearly ? "year" : "month", currency })
+        }
         className="space-y-3 rounded-2xl border-2 border-[var(--leaf)] bg-[var(--panel)] p-4"
       >
         <p className="text-sm font-semibold text-[var(--leaf)]">Vendl Pro</p>

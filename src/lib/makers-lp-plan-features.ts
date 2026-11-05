@@ -5,7 +5,7 @@ import {
   LayoutTemplate, Link, Mail, MessagesSquare, Nfc, Package, Printer, QrCode, Receipt, Repeat, Route, ScanLine,
   ShoppingBasket, ShoppingCart, Smartphone, Sparkles, Star, Store, Tags, Truck, Undo2, Users, Wallet,
 } from "lucide-react";
-import { PRO_BENEFIT_GROUPS } from "@/app/dashboard/(gated)/why-pro/pro-benefits";
+import { PRO_BENEFIT_GROUPS } from "@/app/dashboard/(gated)/why-pro/pro-benefits-legacy";
 
 export type PlanFeature = { label: string; icon: LucideIcon };
 export type PlanFeatureGroup = { heading: string; items: PlanFeature[] };

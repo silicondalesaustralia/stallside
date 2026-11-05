@@ -10,6 +10,19 @@ export function hasBetaAppAccess(owner: { betaFeatures: string[] } | null): bool
   return Boolean(owner?.betaFeatures.includes(BETA_APP_ACCESS));
 }
 
+/** Accounts created through the beta app's own signup get beta access, so they stay on it. */
+export async function grantBetaAppAccessOnBeta(ownerId: string): Promise<void> {
+  if (!isBetaApp()) return;
+  try {
+    await prisma.owner.update({
+      where: { id: ownerId },
+      data: { betaFeatures: { push: BETA_APP_ACCESS } },
+    });
+  } catch (error) {
+    console.error("Could not grant beta app access to new owner", { ownerId, error });
+  }
+}
+
 type MaybeEmail = string | null | undefined;
 
 /** Pass the signed-in email and, during admin login-as, the admin's email too. */

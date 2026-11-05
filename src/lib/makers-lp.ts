@@ -1,12 +1,13 @@
 export const MAKERS_LP_PATH = "/lp/makers";
 export const MAKERS_LP_CAMPAIGN = "makers";
-export const MAKERS_LP_SIGNUP_HREF = "/signup?utm_content=lp-makers";
+/** lp=makers is not a utm_ key, so ad params never overwrite it; the beta app keeps these signups. */
+export const MAKERS_LP_SIGNUP_HREF = "/signup?utm_content=lp-makers&lp=makers";
 
 const FORWARD_KEYS = new Set(["fbclid", "gclid", "ttclid", "msclkid", "li_fat_id"]);
 
 /** Signup href with the page's ad params (utm_*, click ids) plus any extra params such as plan=pro. */
 export function makersLpSignupHref(search: string, extra: Record<string, string> = {}): string {
-  const out = new URLSearchParams({ utm_content: "lp-makers", ...extra });
+  const out = new URLSearchParams({ utm_content: "lp-makers", lp: "makers", ...extra });
   new URLSearchParams(search).forEach((value, key) => {
     const lower = key.toLowerCase();
     if (value && (FORWARD_KEYS.has(lower) || lower.startsWith("utm_"))) out.set(key, value);

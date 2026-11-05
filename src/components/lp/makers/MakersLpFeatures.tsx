@@ -54,11 +54,11 @@ export default function MakersLpFeatures() {
       </div>
       <div className="grid gap-x-5 gap-y-8 lg:grid-cols-5">
         {MAKERS_LP_FEATURE_GROUPS.map(({ id, label }) => (
-          <div key={id} className={SPAN[id]}>
+          <div key={id} className={`flex flex-col ${SPAN[id]}`}>
             <h3 className="mb-3 border-b border-[var(--line)] pb-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--field)]">
               {label}
             </h3>
-            <ul className={`grid gap-4 ${GRID[id]}`}>{groupCards(id)}</ul>
+            <ul className={`grid flex-1 gap-4 ${GRID[id]}`}>{groupCards(id)}</ul>
           </div>
         ))}
       </div>

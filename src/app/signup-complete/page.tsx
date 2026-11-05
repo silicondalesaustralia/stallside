@@ -7,6 +7,9 @@ import { prisma } from "@/lib/prisma";
 import { APP_NAME } from "@/lib/constants";
 import { normalizeAttribution } from "@/lib/ad-attribution";
 import { isBillingCurrency } from "@/lib/saas-pricing";
+import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
+import { redirect } from "next/navigation";
+import WelcomeChoiceCards from "./WelcomeChoiceCards";
 
 export const metadata: Metadata = {
   title: "Welcome",
@@ -14,14 +17,7 @@ export const metadata: Metadata = {
 };
 
 const BUTTON_CLASS =
-  "mt-8 inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]";
-
-function proBillingHref(currency: string | undefined, interval: string | undefined): string {
-  const qs = new URLSearchParams({ plan: "pro" });
-  if (currency && isBillingCurrency(currency)) qs.set("currency", currency);
-  if (interval === "year") qs.set("interval", "year");
-  return `/dashboard/settings/billing?${qs.toString()}`;
-}
+  "mt-6 inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-[var(--leaf)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--leaf-dark)]";
 
 export default async function SignupCompletePage({
   searchParams,
@@ -33,19 +29,27 @@ export default async function SignupCompletePage({
   const user = await requireUser();
   let email = (user.email ?? "").trim().toLowerCase();
   let adAttribution = null as ReturnType<typeof normalizeAttribution>;
+  let ownerId: string | null = null;
+  let alreadyChose = false;
   try {
     const account = await prisma.user.findUnique({
       where: { id: user.id },
       select: {
         email: true,
-        owner: { select: { adAttribution: true } },
+        owner: { select: { id: true, adAttribution: true, welcomeChoiceAt: true } },
       },
     });
     email = (email || account?.email || "").trim().toLowerCase();
     adAttribution = normalizeAttribution(account?.owner?.adAttribution);
+    ownerId = account?.owner?.id ?? null;
+    alreadyChose = Boolean(account?.owner?.welcomeChoiceAt);
   } catch (error) {
-    console.error("signup-complete: attribution lookup failed", error);
+    console.error("signup-complete: account lookup failed", error);
   }
+
+  // Returning users, owners who already chose, and Pro subscribers skip the one-time welcome.
+  if (alreadyChose || (ownerId && (await ownerIdHasProAccess(ownerId)))) redirect("/dashboard");
+  const currency = params.currency && isBillingCurrency(params.currency) ? params.currency : null;
 
   return (
     <main className="mx-auto flex min-h-full w-full max-w-md flex-1 flex-col justify-center px-6 py-16">
@@ -54,24 +58,30 @@ export default async function SignupCompletePage({
         email={email || null}
         adAttribution={adAttribution}
       />
-      <BrandLockup />
-      <h1 className="mt-8 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
-        You&apos;re in
+      <div className="self-center">
+        <BrandLockup />
+      </div>
+      <h1 className="mt-8 text-center font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-[var(--field)]">
+        You&apos;re in! Let&apos;s get Vendl set up.
       </h1>
-      <p className="mt-2 text-[var(--muted)]">
-        {wantsPro
-          ? "Your account is ready. Continue to checkout to start Vendl Pro."
-          : "Your account is ready. Set up your stand, print a QR, and start taking payments from your phone."}
-      </p>
-      <Link href={wantsPro ? proBillingHref(params.currency, params.interval) : "/dashboard"} className={BUTTON_CLASS}>
-        {wantsPro ? "Continue to Vendl Pro" : "Go to dashboard"}
-      </Link>
-      {wantsPro ? (
-        <Link href="/dashboard" className="mt-4 text-center text-sm text-[var(--muted)] underline">
-          Skip for now and stay on Free
+      {ownerId ? (
+        <>
+          <p className="mb-6 mt-2 text-center text-[var(--muted)]">
+            Your Free account is ready. You can start with Free or unlock more tools with Pro.
+          </p>
+          <WelcomeChoiceCards
+            proFirst={wantsPro}
+            currency={currency}
+            interval={params.interval === "year" ? "year" : null}
+          />
+          <p className="mt-4 text-center text-sm text-[var(--muted)]">You can upgrade later from your dashboard.</p>
+        </>
+      ) : (
+        <Link href="/dashboard" className={`${BUTTON_CLASS} self-center`}>
+          Go to dashboard
         </Link>
-      ) : null}
-      <p className="mt-6 text-xs text-[var(--muted)]">{APP_NAME.toLowerCase()}.app</p>
+      )}
+      <p className="mt-6 text-center text-xs text-[var(--muted)]">{APP_NAME.toLowerCase()}.app</p>
     </main>
   );
 }

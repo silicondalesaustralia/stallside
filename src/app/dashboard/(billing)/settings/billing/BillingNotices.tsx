@@ -1,3 +1,5 @@
+import ProUpgradeCompleted from "./ProUpgradeCompleted";
+
 type BillingNoticesProps = {
   freeForever: boolean;
   locked: boolean;
@@ -23,6 +25,7 @@ export default function BillingNotices({
       ) : null}
       {success ? (
         <p className="text-sm text-[var(--leaf-dark)]">
+          <ProUpgradeCompleted />
           Pro subscription started. Status updates within a few seconds.
         </p>
       ) : null}

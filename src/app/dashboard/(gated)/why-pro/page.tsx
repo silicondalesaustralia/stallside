@@ -1,85 +1,95 @@
 import Link from "next/link";
 import PageHeader from "@/components/dashboard/ui/PageHeader";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
+import { socialKitEnabledFor } from "@/lib/beta-features";
 import { STALLSIDE_FEE_BPS } from "@/lib/constants";
-import { formatMoney } from "@/lib/money";
 import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
-import { cardPlanCents, isBillingCurrency } from "@/lib/saas-pricing";
+import { annualPlanCents, cardPlanCents, isBillingCurrency } from "@/lib/saas-pricing";
 import { requireOwner } from "@/lib/session";
-import ProBenefitCards from "./ProBenefitCards";
+import { listProAnnualCurrencies } from "@/lib/stripe-pro-annual";
 import ProComparisonTable from "./ProComparisonTable";
+import ProDemos from "./ProDemos";
 import ProFaq from "./ProFaq";
-import { FREE_INCLUDES } from "./free-includes";
-
-const BILLING_PATH = "/dashboard/settings/billing";
+import ProFeatureAccordions from "./ProFeatureAccordions";
+import ProFeaturedBenefits from "./ProFeaturedBenefits";
+import ProFreeReassurance from "./ProFreeReassurance";
+import ProPricingDecision from "./ProPricingDecision";
+import ProUpgradeHero from "./ProUpgradeHero";
+import ProUpgradePageView from "./ProUpgradePageView";
+import FounderVideoSection from "@/components/FounderVideoSection";
+import { PRO_VIDEO } from "@/lib/founder-videos";
+import { proBenefitGroups } from "./pro-benefits";
+import { BILLING_PATH, OPENING_CARDS, WEBSITE_OPENING_CARD, formatProMoney, proCheckoutHref } from "./why-pro-copy";
 
 export default async function WhyProPage() {
-  const { owner } = await requireOwner();
+  const { owner, user } = await requireOwner();
   const isPro = await ownerIdHasProAccess(owner.id);
+  const socialReady = socialKitEnabledFor(owner, user.email);
   const currency = isBillingCurrency(owner.billingCurrency) ? owner.billingCurrency : "AUD";
-  const priceCents = cardPlanCents(currency);
-  const breakEvenCents = Math.ceil((priceCents * 10_000) / STALLSIDE_FEE_BPS / 100) * 100;
-  const price = formatMoney(priceCents, currency);
+  const monthlyCents = cardPlanCents(currency);
+  const annualCents = listProAnnualCurrencies().includes(currency) ? annualPlanCents(currency) : null;
+  const checkoutHref = proCheckoutHref(currency);
+  const groups = proBenefitGroups(socialReady);
+  const openingCards = OPENING_CARDS.map((card) => (card.social && !socialReady ? WEBSITE_OPENING_CARD : card));
+
+  const comparison = (
+    <section aria-labelledby="pro-compare-heading" className="flex flex-col gap-3">
+      <h2 id="pro-compare-heading" className="text-xl font-semibold">
+        Free vs Pro
+      </h2>
+      <ProComparisonTable groups={groups} />
+    </section>
+  );
+
+  if (isPro) {
+    return (
+      <main className="flex max-w-4xl flex-col gap-8 pb-12">
+        <PageHeader
+          title="You're on Vendl Pro"
+          subtitle="Thanks for being on Pro. Here's everything your plan includes."
+          actions={
+            <Link href={BILLING_PATH} className={dashCtaClass}>
+              Manage billing
+            </Link>
+          }
+        />
+        <ProFeaturedBenefits socialReady={socialReady} checkoutHref={null} />
+        <ProFeatureAccordions groups={groups} />
+        {comparison}
+        <ProFaq />
+      </main>
+    );
+  }
 
   return (
-    <main className="flex max-w-4xl flex-col gap-6 pb-12">
-      <PageHeader
-        title={isPro ? "You're on Vendl Pro" : "Why upgrade to Pro"}
-        subtitle={
-          isPro
-            ? "Thanks for being on Pro. Here's everything your plan includes."
-            : "Everything on Free, plus zero Vendl fees, your own website, production costing, the Vendl app and more."
-        }
-        actions={
-          <Link href={BILLING_PATH} className={dashCtaClass}>
-            {isPro ? "Manage billing" : "Upgrade to Pro"}
-          </Link>
+    <main className="flex max-w-4xl flex-col gap-10 pb-12">
+      <ProUpgradePageView currency={currency} />
+      <ProUpgradeHero cards={openingCards} monthlyPrice={formatProMoney(monthlyCents, currency)} checkoutHref={checkoutHref} />
+      <FounderVideoSection
+        heading="Why We Built Vendl Pro"
+        description="Hear why Vendl Pro was created to help makers understand their costs, price their products and promote what they make."
+        video={PRO_VIDEO}
+        eventPrefix="pro"
+        action={
+          <a href="#pro-demos" className="text-sm font-semibold text-[var(--leaf-dark)] underline underline-offset-4">
+            Explore Pro features
+          </a>
         }
       />
-
-      {isPro ? null : (
-        <section className="rounded-2xl bg-[var(--field)] p-6 text-[var(--ink-on-dark)]">
-          <p className="text-xs font-bold uppercase tracking-wide text-[var(--marigold)]">Vendl Pro</p>
-          <p className="mt-2 font-[family-name:var(--font-display)] text-3xl font-bold">
-            {price}
-            <span className="text-base font-semibold opacity-80"> / month</span>
-          </p>
-          <p className="mt-2 max-w-xl text-sm opacity-85">
-            Pro pays for itself once you take more than {formatMoney(breakEvenCents, currency)} a month in card
-            payments, because you stop paying the {STALLSIDE_FEE_BPS / 100}% Vendl fee. Cancel anytime.
-          </p>
-          <Link
-            href={BILLING_PATH}
-            className="mt-4 inline-block rounded-full bg-[var(--marigold)] px-5 py-2.5 text-sm font-bold text-[var(--field)] hover:brightness-105"
-          >
-            Upgrade to Pro
-          </Link>
-        </section>
-      )}
-
-      <ProBenefitCards />
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Free vs Pro</h2>
-        <ProComparisonTable />
-      </section>
-
-      <section className="dash-card p-5">
-        <h2 className="font-semibold">Still free, forever</h2>
-        <ul className="mt-3 grid gap-x-6 gap-y-1.5 text-sm text-[var(--muted)] sm:grid-cols-2">
-          {FREE_INCLUDES.map((item) => (
-            <li key={item}>✓ {item}</li>
-          ))}
-        </ul>
-      </section>
-
+      <ProDemos
+        currency={currency}
+        feeBps={STALLSIDE_FEE_BPS}
+        monthlyCents={monthlyCents}
+        annualCents={annualCents}
+        socialReady={socialReady}
+        checkoutHref={checkoutHref}
+      />
+      <ProFeaturedBenefits socialReady={socialReady} checkoutHref={checkoutHref} />
+      <ProFeatureAccordions groups={groups} />
+      {comparison}
+      <ProFreeReassurance socialReady={socialReady} />
+      <ProPricingDecision currency={currency} monthlyCents={monthlyCents} annualCents={annualCents} />
       <ProFaq />
-
-      {isPro ? null : (
-        <Link href={BILLING_PATH} className={`${dashCtaClass} self-start`}>
-          Upgrade to Pro for {price} / month
-        </Link>
-      )}
     </main>
   );
 }

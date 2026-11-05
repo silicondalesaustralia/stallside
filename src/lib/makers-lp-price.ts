@@ -1,17 +1,14 @@
 import {
   annualPlanCents,
-  billingCurrencyFromLocale,
   cardPlanCents,
   type BillingCurrency,
 } from "@/lib/saas-pricing";
 
 const PREFIX: Record<BillingCurrency, string> = { AUD: "A$", USD: "US$", EUR: "€", GBP: "£" };
 
-const AUD_COUNTRIES = new Set(["AU", "NZ"]);
-
-export function lpCurrencySymbol(currency: BillingCurrency): string {
-  return PREFIX[currency];
-}
+const EURO_COUNTRIES = new Set([
+  "AT", "BE", "CY", "DE", "EE", "ES", "FI", "FR", "GR", "HR", "IE", "IT", "LT", "LU", "LV", "MT", "NL", "PT", "SI", "SK",
+]);
 
 /** Unambiguous fixed price, e.g. A$19.99, US$14.99, £0. */
 export function formatLpPrice(cents: number, currency: BillingCurrency): string {
@@ -35,13 +32,19 @@ export function lpAnnualNote(currency: BillingCurrency): string {
   return `Works out to ${perMonth} a month. Save ${saving} a year.`;
 }
 
-/** Visitor country (CDN header) first, then the browser language; non-AU/NZ visitors never default to AUD. */
+/** Country code for the region's currency, or null outside Australia, the US, the UK and the eurozone. */
+function currencyForCountry(code: string): BillingCurrency | null {
+  if (code === "AU") return "AUD";
+  if (code === "US") return "USD";
+  if (code === "GB") return "GBP";
+  return EURO_COUNTRIES.has(code) ? "EUR" : null;
+}
+
+/** Visitor country (CDN header) first, then the browser language's region; everywhere else is USD. */
 export function lpCurrencyFromRequest(country: string | null, acceptLanguage: string | null): BillingCurrency {
   const code = country?.trim().toUpperCase();
-  if (code && /^[A-Z]{2}$/.test(code)) {
-    const mapped = billingCurrencyFromLocale(`en-${code}`);
-    return mapped === "AUD" && !AUD_COUNTRIES.has(code) ? "USD" : mapped;
-  }
-  const first = acceptLanguage?.split(",")[0]?.split(";")[0]?.trim();
-  return first ? billingCurrencyFromLocale(first) : "AUD";
+  if (code && /^[A-Z]{2}$/.test(code)) return currencyForCountry(code) ?? "USD";
+  const first = acceptLanguage?.split(",")[0]?.split(";")[0]?.trim() ?? "";
+  const region = first.replace("_", "-").split("-")[1]?.toUpperCase();
+  return (region && currencyForCountry(region)) || "USD";
 }

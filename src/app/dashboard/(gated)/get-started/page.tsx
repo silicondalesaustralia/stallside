@@ -7,6 +7,9 @@ import { onboardingPending } from "@/lib/onboarding/onboarding-gate";
 import { assistantEnabledFor } from "@/lib/website-ai/assistant/access";
 import { ASSISTANT_PATH } from "@/lib/website/readiness";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
+import { dashCtaClass } from "@/components/DashPrimaryCta";
+import FounderVideoSection from "@/components/FounderVideoSection";
+import { WELCOME_VIDEO } from "@/lib/founder-videos";
 import GetStartedCard from "./GetStartedCard";
 import StoreChoiceCard from "./StoreChoiceCard";
 import { finishOnboarding } from "./actions";
@@ -19,6 +22,7 @@ export default async function GetStartedPage() {
   const gate = await onboardingPending(owner, user.email);
   const progress = gate.progress ?? (await loadSetupProgress(owner));
   const websiteHref = assistantEnabledFor(owner.id) ? ASSISTANT_PATH : "/dashboard/website/web-studio";
+  const productHref = `/dashboard/products/new?standId=${selected.id}`;
 
   return (
     <main className="flex flex-col gap-6">
@@ -32,13 +36,27 @@ export default async function GetStartedPage() {
         </p>
       </div>
       <OnboardingFlow activeStep={2} />
+      {gate.pending ? (
+        <FounderVideoSection
+          heading="A Quick Hello from the Person Behind Vendl"
+          description="A personal welcome and a quick introduction to getting started with Vendl."
+          video={WELCOME_VIDEO}
+          eventPrefix="welcome"
+          variant="compact"
+          action={
+            <Link href={productHref} className={dashCtaClass}>
+              Set up your first product
+            </Link>
+          }
+        />
+      ) : null}
       <ol className="grid gap-4 md:grid-cols-3">
         <GetStartedCard
           number={1}
           icon="products"
           title="Add products"
           body="Eggs, produce, baked goods — plus subscriptions and pre-orders, however you sell."
-          href={`/dashboard/products/new?standId=${selected.id}`}
+          href={productHref}
           cta="Add a product"
           done={progress.products}
           extraLinks={[

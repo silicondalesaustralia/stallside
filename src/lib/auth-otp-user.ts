@@ -14,6 +14,7 @@ import { normalizeAttribution } from "@/lib/ad-attribution";
 import { Prisma } from "@/generated/prisma/client";
 import { claimSupplierInvite, hasSupplierSeat } from "@/lib/suppliers/claim-invite";
 import { attachReferrerAtSignup } from "@/lib/affiliate/attach-referrer";
+import { grantBetaAppAccessOnBeta } from "@/lib/beta-features";
 
 /** Verify email code and return the Auth.js user (creating owner on first sign-in). */
 export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
@@ -84,6 +85,7 @@ export async function authorizeEmailOtp(emailRaw: string, codeRaw: string) {
       referralCode: intent?.referralCode,
     });
     if (intent) {
+      await grantBetaAppAccessOnBeta(owner.id);
       await prisma.signupIntent.delete({ where: { email } }).catch(() => null);
     }
     try {

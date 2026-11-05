@@ -581,6 +581,12 @@ model Owner {
    */
   preOrdersCrossSellDismissedAt DateTime?
   /**
+   * Post-signup welcome choice: "free" | "pro" | "skipped" | "legacy" (owners before the welcome screen).
+   * Null until a new owner picks, so the welcome screen shows once per account.
+   */
+  welcomeChoice                 String?
+  welcomeChoiceAt               DateTime?
+  /**
    * Onboarding preset: FARM_STAND | FOOD_BUSINESS | BOTH.
    * Configures checklist/nav emphasis only — not a separate account type.
    */
