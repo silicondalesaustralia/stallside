@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import FounderVideoPlaceholder from "@/components/FounderVideoPlaceholder";
 import FounderVideoPlayer from "@/components/FounderVideoPlayer";
-import type { FounderVideo } from "@/lib/founder-videos";
+import FounderVideoEmbed from "@/components/FounderVideoEmbed";
+import { founderVideoEmbedSrc, type FounderVideo } from "@/lib/founder-videos";
 
 type Props = {
   id?: string;
@@ -14,10 +15,17 @@ type Props = {
   variant?: "compact" | "wide";
 };
 
-/** Founder video with a placeholder until `video.src` is configured in founder-videos.ts. */
+/** Founder video (YouTube, else MP4) with a placeholder until one is configured in founder-videos.ts. */
 export default function FounderVideoSection({ id, heading, description, video, eventPrefix, action, variant = "wide" }: Props) {
   const src = video.src;
-  const media = src ? <FounderVideoPlayer video={{ ...video, src }} eventPrefix={eventPrefix} /> : <FounderVideoPlaceholder video={video} />;
+  const embedSrc = founderVideoEmbedSrc(video);
+  const media = embedSrc ? (
+    <FounderVideoEmbed title={video.title} embedSrc={embedSrc} eventPrefix={eventPrefix} />
+  ) : src ? (
+    <FounderVideoPlayer video={{ ...video, src }} eventPrefix={eventPrefix} />
+  ) : (
+    <FounderVideoPlaceholder video={video} />
+  );
   const headingId = `${eventPrefix}-video-heading`;
   const text = (
     <div className="flex flex-col gap-3">
