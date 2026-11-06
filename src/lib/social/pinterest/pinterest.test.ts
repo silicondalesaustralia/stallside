@@ -82,6 +82,7 @@ async function run() {
     pinterest_error: null,
     pinterest_media_id: 'm1',
   })
+  assert.equal('pinterest_media_id' in pinterestResultColumns({ success: true, mediaId: 'm1', postId: 'p9' }), false)
 
   // Pin media source: image, video with cover, video falling back to the first frame.
   const { pinMediaSource } = await import('./pinterestApi')
@@ -89,22 +90,40 @@ async function run() {
     source_type: 'image_url',
     url: 'https://x/a.jpg',
   })
-  assert.deepEqual(pinMediaSource({ kind: 'video', mediaId: 'm1', coverImageUrl: 'https://x/c.jpg' }), {
+  assert.deepEqual(pinMediaSource({ kind: 'video', mediaId: 'm1', cover: { url: 'https://x/c.jpg' } }), {
     source_type: 'video_id',
     media_id: 'm1',
     cover_image_url: 'https://x/c.jpg',
   })
-  assert.equal(pinMediaSource({ kind: 'video', mediaId: 'm1', coverImageUrl: null }).cover_image_key_frame_time, 0)
+  assert.deepEqual(pinMediaSource({ kind: 'video', mediaId: 'm1', cover: { jpegBase64: 'AAA' } }), {
+    source_type: 'video_id',
+    media_id: 'm1',
+    cover_image_content_type: 'image/jpeg',
+    cover_image_data: 'AAA',
+  })
+  assert.equal(pinMediaSource({ kind: 'video', mediaId: 'm1', cover: null }).cover_image_key_frame_time, 0)
 
-  // Video cover: never the video file itself (no-thumbnail videos store it as the image).
-  const { publishPinterestForPost, pinVideoCoverUrl } = await import('./publishPinterestForPost')
+  // Video cover source: never the video file itself (no-thumbnail videos store it as the image).
+  const { pinVideoCoverSourceUrl, resolvePinterestVideoCover } = await import('./pinterestVideoCover')
   const vid = 'https://abc.supabase.co/storage/v1/object/public/v/clip.mp4'
-  assert.equal(pinVideoCoverUrl({ facebook: [vid] }, vid), null)
-  assert.equal(pinVideoCoverUrl({ facebook: ['https://x/other.MOV?t=1'] }, vid), null)
-  assert.equal(pinVideoCoverUrl({ facebook: ['https://x/thumb.jpg'] }, vid), 'https://x/thumb.jpg')
-  assert.equal(pinVideoCoverUrl({ facebook: ['https://x/thumbs/a.webp'] }, vid), null)
+  assert.equal(pinVideoCoverSourceUrl({ facebook: [vid] }, vid), null)
+  assert.equal(pinVideoCoverSourceUrl({ facebook: ['https://x/other.MOV?t=1'] }, vid), null)
+  assert.equal(pinVideoCoverSourceUrl({ facebook: ['https://x/thumbs/a.webp'] }, vid), 'https://x/thumbs/a.webp')
+  assert.deepEqual(await resolvePinterestVideoCover({ facebook: ['https://x/thumb.jpg'] }, vid), { url: 'https://x/thumb.jpg' })
+
+  // WebP thumbnails are converted to inline JPEG.
+  const sharp = (await import('sharp')).default
+  const webp = await sharp({ create: { width: 8, height: 8, channels: 3, background: '#3a7' } }).webp().toBuffer()
+  const realFetch = globalThis.fetch
+  globalThis.fetch = (async () => new Response(new Uint8Array(webp), { status: 200 })) as typeof fetch
+  const inline = await resolvePinterestVideoCover({ facebook: ['https://x/thumbs/a.webp'] }, vid)
+  globalThis.fetch = realFetch
+  assert.ok(inline && 'jpegBase64' in inline)
+  const meta = await sharp(Buffer.from(inline.jpegBase64, 'base64')).metadata()
+  assert.equal(meta.format, 'jpeg')
 
   // Video posts need a Library video.
+  const { publishPinterestForPost } = await import('./publishPinterestForPost')
   const videoResult = await publishPinterestForPost({
     postId: 'p1',
     businessId: 'b1',

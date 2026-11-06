@@ -97,7 +97,8 @@ export async function POST(
     ...xResultColumns(results.x),
   }
 
-  await db.from('social_posts').update(update).eq('id', id)
+  const { error: saveError } = await db.from('social_posts').update(update).eq('id', id)
+  if (saveError) console.error('[Social publish] Saving results failed', { postId: id, saveError })
 
   // Send notification
   const platformNames = post.platforms.join(', ')

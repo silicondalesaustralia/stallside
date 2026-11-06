@@ -1,4 +1,4 @@
-import { createPinFromSettings } from '@/lib/social/pinterest/pinterestApi'
+import { createPinFromSettings, type PinVideoCover } from '@/lib/social/pinterest/pinterestApi'
 import type { PinterestPostSettings } from '@/lib/social/pinterest/pinterestSettings'
 import {
   registerPinterestVideo,
@@ -18,23 +18,20 @@ export type PinterestVideoPublishResult =
 export async function publishPinterestVideo(input: {
   accessToken: string
   videoUrl: string
-  coverImageUrl: string | null
+  cover: PinVideoCover | null
   settings: PinterestPostSettings
   caption: string
 }): Promise<PinterestVideoPublishResult> {
-  const { accessToken, settings, caption, coverImageUrl } = input
+  const { accessToken, settings, caption, cover } = input
   const { bytes, mimeType } = await downloadVideo(input.videoUrl)
   const registration = await registerPinterestVideo(accessToken)
   await uploadPinterestVideoBytes(registration, bytes, mimeType)
   const mediaId = registration.media_id
   const status = await waitForPinterestMedia(accessToken, mediaId, WAIT_BUDGET_MS)
-  console.info('[Pinterest] Video media', { mediaId, status, cover: coverImageUrl ?? 'first frame' })
+  const coverLabel = !cover ? 'first frame' : 'url' in cover ? cover.url : 'inline jpeg'
+  console.info('[Pinterest] Video media', { mediaId, status, cover: coverLabel })
   if (status === 'failed') return { success: false, error: 'Pinterest could not process this video' }
   if (status !== 'succeeded') return { success: true, mediaId }
-  const postId = await createPinFromSettings(accessToken, settings, caption, {
-    kind: 'video',
-    mediaId,
-    coverImageUrl,
-  })
+  const postId = await createPinFromSettings(accessToken, settings, caption, { kind: 'video', mediaId, cover })
   return { success: true, mediaId, postId }
 }

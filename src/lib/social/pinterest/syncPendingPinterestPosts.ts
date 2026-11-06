@@ -3,7 +3,7 @@ import { getPinterestAccessToken } from '@/lib/social/pinterest/pinterestAuth'
 import { createPinFromSettings } from '@/lib/social/pinterest/pinterestApi'
 import { sanitizePinterestSettings } from '@/lib/social/pinterest/pinterestSettings'
 import { getPinterestMediaStatus } from '@/lib/social/pinterest/pinterestVideoUpload'
-import { pinVideoCoverUrl } from '@/lib/social/pinterest/publishPinterestForPost'
+import { resolvePinterestVideoCover } from '@/lib/social/pinterest/pinterestVideoCover'
 
 const STALE_AFTER_MS = 24 * 60 * 60 * 1000
 
@@ -75,7 +75,7 @@ async function syncRow(db: SupabaseClient, row: PendingRow, now: Date): Promise<
     const pinId = await createPinFromSettings(token, settings, caption, {
       kind: 'video',
       mediaId: row.pinterest_media_id,
-      coverImageUrl: pinVideoCoverUrl(row.processed_photo_urls ?? {}, row.video_url),
+      cover: await resolvePinterestVideoCover(row.processed_photo_urls ?? {}, row.video_url),
     })
     await applyResult(db, row, { pinterest_post_id: pinId })
     return 'completed'

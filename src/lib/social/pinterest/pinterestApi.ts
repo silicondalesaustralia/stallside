@@ -26,9 +26,11 @@ export type PinterestBoard = {
   privacy: string
 }
 
+export type PinVideoCover = { url: string } | { jpegBase64: string }
+
 export type PinMedia =
   | { kind: 'image'; imageUrl: string }
-  | { kind: 'video'; mediaId: string; coverImageUrl: string | null }
+  | { kind: 'video'; mediaId: string; cover: PinVideoCover | null }
 
 export type CreatePinInput = {
   boardId: string
@@ -129,12 +131,14 @@ export async function createPinFromSettings(
   })
 }
 
-/** Video Pins need a cover: the post's thumbnail, else the first frame. */
+/** Video Pins need a cover: a JPEG/PNG URL, inline JPEG data, else the first frame. */
 export function pinMediaSource(media: PinMedia): Record<string, unknown> {
   if (media.kind === 'image') return { source_type: 'image_url', url: media.imageUrl }
-  return {
-    source_type: 'video_id',
-    media_id: media.mediaId,
-    ...(media.coverImageUrl ? { cover_image_url: media.coverImageUrl } : { cover_image_key_frame_time: 0 }),
-  }
+  const { cover } = media
+  const coverFields = !cover
+    ? { cover_image_key_frame_time: 0 }
+    : 'url' in cover
+      ? { cover_image_url: cover.url }
+      : { cover_image_content_type: 'image/jpeg', cover_image_data: cover.jpegBase64 }
+  return { source_type: 'video_id', media_id: media.mediaId, ...coverFields }
 }

@@ -120,7 +120,7 @@ export async function publishDueAutomaticSocialPosts(
       const anySuccess = Object.values(postResults).some((r) => r?.success)
       const allFailed = Object.values(postResults).every((r) => r && !r.success)
 
-      await db.from('social_posts').update({
+      const { error: saveError } = await db.from('social_posts').update({
         status: allFailed ? 'failed' : 'posted',
         posted_at: anySuccess ? now.toISOString() : null,
         facebook_post_id: postResults.facebook?.postId || null,
@@ -134,6 +134,7 @@ export async function publishDueAutomaticSocialPosts(
         ...pinterestResultColumns(postResults.pinterest),
         ...xResultColumns(postResults.x),
       }).eq('id', post.id)
+      if (saveError) console.error('[Social publish] Saving results failed', { postId: post.id, saveError })
 
       const platformNames = post.platforms.join(', ')
       await db.from('notifications').insert({
