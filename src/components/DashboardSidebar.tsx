@@ -7,6 +7,8 @@ import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
 import SidebarNavGroup from "@/components/SidebarNavGroup";
 import SidebarNavItem from "@/components/SidebarNavItem";
 import SidebarSoonItem from "@/components/SidebarSoonItem";
+import SkoolNavLink from "@/components/SkoolNavLink";
+import SupportNavLink from "@/components/SupportNavLink";
 import UpgradeNavLink from "@/components/UpgradeNavLink";
 import { activeNavHref, visibleNavGroups, WHY_PRO_PATH, type NavAccess } from "@/components/dash-nav-links";
 import {
@@ -97,17 +99,19 @@ export default function DashboardSidebar({
             }
           />
         ))}
+        <SkoolNavLink collapsed={collapsed} />
       </nav>
-      {collapsed ? null : (
-        <div className="border-t border-white/10 px-2 py-3">
+      <div className="space-y-2 border-t border-white/10 px-2 py-3">
+        {collapsed ? null : (
           <DashboardBusinessSelect
             businesses={businesses}
             selectedId={selectedBusinessId}
             tone="dark"
             needsBusiness={setupAlerts.needsBusiness}
           />
-        </div>
-      )}
+        )}
+        <SupportNavLink collapsed={collapsed} />
+      </div>
     </aside>
   );
 }

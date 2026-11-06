@@ -7,6 +7,8 @@ import BrandLockup from "@/components/BrandLockup";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
 import MobileNavLinkItem from "@/components/MobileNavLinkItem";
 import UpgradeNavLink from "@/components/UpgradeNavLink";
+import SkoolNavLink from "@/components/SkoolNavLink";
+import SupportNavLink from "@/components/SupportNavLink";
 import { dashLinkActive, mobileTabs, visibleNavGroups, WHY_PRO_PATH, type NavAccess } from "@/components/dash-nav-links";
 import {
   setupNavBadge,
@@ -100,6 +102,10 @@ export default function DashboardMobileNav({
                   ))}
                 </div>
               ))}
+              <SkoolNavLink />
+              <div className="mt-2 border-t border-white/10 pt-2">
+                <SupportNavLink />
+              </div>
             </nav>
           </div>
         </div>
