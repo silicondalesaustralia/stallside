@@ -38,7 +38,7 @@ export default async function GetStartedPage() {
       <OnboardingFlow activeStep={2} />
       {gate.pending ? (
         <FounderVideoSection
-          heading="A Quick Hello from the Person Behind Vendl"
+          heading="A Quick Welcome From The Co-Founders"
           description="A personal welcome and a quick introduction to getting started with Vendl."
           video={WELCOME_VIDEO}
           eventPrefix="welcome"
