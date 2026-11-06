@@ -96,8 +96,14 @@ async function run() {
   })
   assert.equal(pinMediaSource({ kind: 'video', mediaId: 'm1', coverImageUrl: null }).cover_image_key_frame_time, 0)
 
+  // Video cover: never the video file itself (no-thumbnail videos store it as the image).
+  const { publishPinterestForPost, pinVideoCoverUrl } = await import('./publishPinterestForPost')
+  const vid = 'https://abc.supabase.co/storage/v1/object/public/v/clip.mp4'
+  assert.equal(pinVideoCoverUrl({ facebook: [vid] }, vid), null)
+  assert.equal(pinVideoCoverUrl({ facebook: ['https://x/other.MOV?t=1'] }, vid), null)
+  assert.equal(pinVideoCoverUrl({ facebook: ['https://x/thumb.jpg'] }, vid), 'https://x/thumb.jpg')
+
   // Video posts need a Library video.
-  const { publishPinterestForPost } = await import('./publishPinterestForPost')
   const videoResult = await publishPinterestForPost({
     postId: 'p1',
     businessId: 'b1',

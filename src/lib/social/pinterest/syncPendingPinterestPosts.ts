@@ -3,7 +3,7 @@ import { getPinterestAccessToken } from '@/lib/social/pinterest/pinterestAuth'
 import { createPinFromSettings } from '@/lib/social/pinterest/pinterestApi'
 import { sanitizePinterestSettings } from '@/lib/social/pinterest/pinterestSettings'
 import { getPinterestMediaStatus } from '@/lib/social/pinterest/pinterestVideoUpload'
-import { pinImageUrl } from '@/lib/social/pinterest/publishPinterestForPost'
+import { pinVideoCoverUrl } from '@/lib/social/pinterest/publishPinterestForPost'
 
 const STALE_AFTER_MS = 24 * 60 * 60 * 1000
 
@@ -15,6 +15,7 @@ type PendingRow = {
   pinterest_settings: unknown
   pinterest_media_id: string
   processed_photo_urls: Record<string, string[]> | null
+  video_url: string | null
   created_at: string
   posted_at: string | null
   tiktok_post_id: string | null
@@ -74,7 +75,7 @@ async function syncRow(db: SupabaseClient, row: PendingRow, now: Date): Promise<
     const pinId = await createPinFromSettings(token, settings, caption, {
       kind: 'video',
       mediaId: row.pinterest_media_id,
-      coverImageUrl: pinImageUrl(row.processed_photo_urls ?? {}),
+      coverImageUrl: pinVideoCoverUrl(row.processed_photo_urls ?? {}, row.video_url),
     })
     await applyResult(db, row, { pinterest_post_id: pinId })
     return 'completed'
@@ -95,7 +96,7 @@ export async function syncPendingPinterestPosts(
   const { data, error } = await db
     .from('social_posts')
     .select(
-      'id, business_id, caption, platform_captions, pinterest_settings, pinterest_media_id, processed_photo_urls, created_at, posted_at, tiktok_post_id, tiktok_publish_id, tiktok_error, youtube_post_id',
+      'id, business_id, caption, platform_captions, pinterest_settings, pinterest_media_id, processed_photo_urls, video_url, created_at, posted_at, tiktok_post_id, tiktok_publish_id, tiktok_error, youtube_post_id',
     )
     .not('pinterest_media_id', 'is', null)
     .is('pinterest_post_id', null)
