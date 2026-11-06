@@ -9,7 +9,6 @@ import DashboardNextCard from "@/components/DashboardNextCard";
 import DashboardPanels from "@/components/DashboardPanels";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesAnalyticsPanel from "@/components/SalesAnalyticsPanel";
-import NoBusinessYet from "@/components/NoBusinessYet";
 import { resolveDateWindow } from "@/lib/date-range";
 import { resolveStandTimezone } from "@/lib/stand-timezone";
 import { ownerHasProAccess } from "@/lib/owner-trial";
@@ -38,14 +37,7 @@ export default async function DashboardPage({
   monthStart.setUTCDate(1);
   monthStart.setUTCHours(0, 0, 0, 0);
 
-  if (!selected) {
-    return (
-      <main className="flex flex-col gap-8">
-        <DashboardGreeting standName={owner.businessName} />
-        <NoBusinessYet />
-      </main>
-    );
-  }
+  if (!selected) redirect("/dashboard/businesses/new");
 
   if ((await onboardingPending(owner, user.email)).pending) redirect(GET_STARTED_PATH);
 
