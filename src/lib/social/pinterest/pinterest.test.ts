@@ -72,6 +72,37 @@ async function run() {
     pinterest_error: null,
   })
   assert.equal(pinterestResultColumns({ success: false, error: 'nope' }).pinterest_error, 'nope')
+  assert.deepEqual(pinterestResultColumns({ success: true, mediaId: 'm1' }), {
+    pinterest_post_id: null,
+    pinterest_error: null,
+    pinterest_media_id: 'm1',
+  })
+
+  // Pin media source: image, video with cover, video falling back to the first frame.
+  const { pinMediaSource } = await import('./pinterestApi')
+  assert.deepEqual(pinMediaSource({ kind: 'image', imageUrl: 'https://x/a.jpg' }), {
+    source_type: 'image_url',
+    url: 'https://x/a.jpg',
+  })
+  assert.deepEqual(pinMediaSource({ kind: 'video', mediaId: 'm1', coverImageUrl: 'https://x/c.jpg' }), {
+    source_type: 'video_id',
+    media_id: 'm1',
+    cover_image_url: 'https://x/c.jpg',
+  })
+  assert.equal(pinMediaSource({ kind: 'video', mediaId: 'm1', coverImageUrl: null }).cover_image_key_frame_time, 0)
+
+  // Video posts need a Library video.
+  const { publishPinterestForPost } = await import('./publishPinterestForPost')
+  const videoResult = await publishPinterestForPost({
+    postId: 'p1',
+    businessId: 'b1',
+    caption: 'Hi',
+    pinterestSettings: { boardId: '9', title: 'Hi' },
+    mediaType: 'video',
+    videoUrl: 'https://evil.example/v.mp4',
+    processedPhotoUrls: {},
+  })
+  assert.equal(videoResult.error, 'Video must come from your Library')
 
   console.log('pinterest.test.ts: all assertions passed')
 }

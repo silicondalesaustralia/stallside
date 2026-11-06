@@ -33,7 +33,7 @@ export const COMPOSER_PUBLISH_PLATFORMS: SocialPublishPlatform[] = [
 ]
 
 /** Platforms that accept an automatically published video. */
-export const VIDEO_PUBLISH_PLATFORMS: SocialPublishPlatform[] = ['tiktok', 'youtube']
+export const VIDEO_PUBLISH_PLATFORMS: SocialPublishPlatform[] = ['tiktok', 'youtube', 'pinterest']
 
 export const SOCIAL_PUBLISH_PLATFORM_LABELS: Record<SocialPublishPlatform, string> = {
   facebook: 'Facebook',

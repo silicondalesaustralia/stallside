@@ -41,7 +41,7 @@ export const socialArticles: KnowledgeArticle[] = [
     ],
     tips: [
       "Post now needs every chosen platform connected. If one isn't, schedule it instead and it's added to your calendar as a manual post to do yourself.",
-      "Videos post automatically to TikTok only. For other platforms, download the video from Library and post it yourself.",
+      "Videos post automatically to TikTok, YouTube and Pinterest. For other platforms, download the video from Library and post it yourself.",
     ],
   },
   {

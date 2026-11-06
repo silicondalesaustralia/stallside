@@ -8,6 +8,11 @@ import {
   pinterestApiBase,
   pinterestSandboxAccessToken,
 } from '@/lib/social/pinterest/pinterestConfig'
+import {
+  PINTEREST_ALT_TEXT_MAX,
+  cleanPinterestDescription,
+  type PinterestPostSettings,
+} from '@/lib/social/pinterest/pinterestSettings'
 
 export type PinterestAccount = {
   id: string
@@ -21,19 +26,23 @@ export type PinterestBoard = {
   privacy: string
 }
 
+export type PinMedia =
+  | { kind: 'image'; imageUrl: string }
+  | { kind: 'video'; mediaId: string; coverImageUrl: string | null }
+
 export type CreatePinInput = {
   boardId: string
   title: string
   description: string
   link: string | null
-  imageUrl: string
+  media: PinMedia
   altText: string
 }
 
-type PinterestTarget = { base: string; accessToken: string }
+export type PinterestTarget = { base: string; accessToken: string }
 
 /** Boards and Pins go to the sandbox (with the sandbox token) while the app is on Trial access. */
-function contentTarget(accessToken: string): PinterestTarget {
+export function contentTarget(accessToken: string): PinterestTarget {
   const base = pinterestApiBase()
   if (base === PINTEREST_PRODUCTION_API) return { base, accessToken }
   const sandboxToken = pinterestSandboxAccessToken()
@@ -43,7 +52,7 @@ function contentTarget(accessToken: string): PinterestTarget {
   return { base, accessToken: sandboxToken }
 }
 
-async function pinterestRequest<T>(
+export async function pinterestRequest<T>(
   target: PinterestTarget,
   path: string,
   init?: { method: 'POST'; body: unknown },
@@ -98,8 +107,34 @@ export async function createPinterestPin(accessToken: string, input: CreatePinIn
       description: input.description,
       alt_text: input.altText,
       ...(input.link ? { link: input.link } : {}),
-      media_source: { source_type: 'image_url', url: input.imageUrl },
+      media_source: pinMediaSource(input.media),
     },
   })
   return json.id
+}
+
+export async function createPinFromSettings(
+  accessToken: string,
+  settings: PinterestPostSettings,
+  caption: string,
+  media: PinMedia,
+): Promise<string> {
+  return createPinterestPin(accessToken, {
+    boardId: settings.boardId,
+    title: settings.title,
+    description: cleanPinterestDescription(caption),
+    link: settings.link,
+    media,
+    altText: settings.title.slice(0, PINTEREST_ALT_TEXT_MAX),
+  })
+}
+
+/** Video Pins need a cover: the post's thumbnail, else the first frame. */
+export function pinMediaSource(media: PinMedia): Record<string, unknown> {
+  if (media.kind === 'image') return { source_type: 'image_url', url: media.imageUrl }
+  return {
+    source_type: 'video_id',
+    media_id: media.mediaId,
+    ...(media.coverImageUrl ? { cover_image_url: media.coverImageUrl } : { cover_image_key_frame_time: 0 }),
+  }
 }

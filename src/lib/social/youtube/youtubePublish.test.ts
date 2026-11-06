@@ -74,7 +74,7 @@ async function run() {
   const base = { mode: 'now' as const, connected, imageUrl: 'x', caption: 'c', date: '' }
   assert.match(composerBlockReason({ ...base, selected: ['youtube'], isVideo: false }) ?? '', /YouTube needs a video/)
   assert.equal(composerBlockReason({ ...base, selected: ['youtube', 'tiktok'], isVideo: true }), null)
-  assert.match(composerBlockReason({ ...base, selected: ['youtube', 'facebook'], isVideo: true }) ?? '', /TikTok and YouTube only/)
+  assert.match(composerBlockReason({ ...base, selected: ['youtube', 'facebook'], isVideo: true }) ?? '', /TikTok, YouTube and Pinterest only/)
   assert.equal(composerBlockReason({ ...base, selected: ['youtube'], isVideo: true, youtubeBlockReason: 'Add a YouTube title.' }), 'Add a YouTube title.')
 
   console.log('youtubePublish.test.ts: all assertions passed')

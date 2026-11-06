@@ -68,7 +68,7 @@ export const socialPublishingArticles: KnowledgeArticle[] = [
     ],
     tips: [
       "If a card says Meta approval in progress, automatic posting isn't available yet. Download from Library and post yourself in the meantime.",
-      "YouTube, Pinterest and X are coming soon.",
+      "You can also connect YouTube, Pinterest and X from the same page.",
     ],
   },
   {
