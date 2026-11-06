@@ -102,8 +102,8 @@ export default function DashboardMobileNav({
                   ))}
                 </div>
               ))}
-              <SkoolNavLink />
-              <div className="mt-2 border-t border-white/10 pt-2">
+              <div className="mt-3 space-y-2 border-t border-white/10 pt-3">
+                <SkoolNavLink />
                 <SupportNavLink />
               </div>
             </nav>

@@ -99,7 +99,6 @@ export default function DashboardSidebar({
             }
           />
         ))}
-        <SkoolNavLink collapsed={collapsed} />
       </nav>
       <div className="space-y-2 border-t border-white/10 px-2 py-3">
         {collapsed ? null : (
@@ -110,6 +109,7 @@ export default function DashboardSidebar({
             needsBusiness={setupAlerts.needsBusiness}
           />
         )}
+        <SkoolNavLink collapsed={collapsed} />
         <SupportNavLink collapsed={collapsed} />
       </div>
     </aside>

@@ -10,7 +10,7 @@ export default function SkoolNavLink({ collapsed = false }: { collapsed?: boolea
       rel="noopener noreferrer"
       title={collapsed ? LABEL : undefined}
       data-testid="nav-skool"
-      className={`mt-3 flex items-center rounded-lg bg-violet-500 font-bold text-white shadow-sm transition-colors hover:bg-violet-400 ${
+      className={`flex items-center rounded-lg bg-violet-500 font-bold text-white shadow-sm transition-colors hover:bg-violet-400 ${
         collapsed ? "justify-center px-2 py-2" : "gap-3 px-3 py-2"
       }`}
     >
