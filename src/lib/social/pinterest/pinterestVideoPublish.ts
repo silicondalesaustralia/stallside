@@ -28,6 +28,7 @@ export async function publishPinterestVideo(input: {
   await uploadPinterestVideoBytes(registration, bytes, mimeType)
   const mediaId = registration.media_id
   const status = await waitForPinterestMedia(accessToken, mediaId, WAIT_BUDGET_MS)
+  console.info('[Pinterest] Video media', { mediaId, status, cover: coverImageUrl ?? 'first frame' })
   if (status === 'failed') return { success: false, error: 'Pinterest could not process this video' }
   if (status !== 'succeeded') return { success: true, mediaId }
   const postId = await createPinFromSettings(accessToken, settings, caption, {

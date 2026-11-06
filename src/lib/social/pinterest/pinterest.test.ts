@@ -102,6 +102,7 @@ async function run() {
   assert.equal(pinVideoCoverUrl({ facebook: [vid] }, vid), null)
   assert.equal(pinVideoCoverUrl({ facebook: ['https://x/other.MOV?t=1'] }, vid), null)
   assert.equal(pinVideoCoverUrl({ facebook: ['https://x/thumb.jpg'] }, vid), 'https://x/thumb.jpg')
+  assert.equal(pinVideoCoverUrl({ facebook: ['https://x/thumbs/a.webp'] }, vid), null)
 
   // Video posts need a Library video.
   const videoResult = await publishPinterestForPost({

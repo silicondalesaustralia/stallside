@@ -58,11 +58,14 @@ export function pinImageUrl(processed: Record<string, string[]>): string | null 
   return url && /^https:\/\//.test(url) ? url : null
 }
 
-/** A video with no thumbnail stores the video URL as its image; Pinterest then uses the first frame. */
+/**
+ * Video Pin covers must be JPEG or PNG: Library thumbnails are WebP, and a video with no
+ * thumbnail stores the video URL as its image. Anything else falls back to the first frame.
+ */
 export function pinVideoCoverUrl(processed: Record<string, string[]>, videoUrl: string | null): string | null {
   const url = pinImageUrl(processed)
   if (!url || url === videoUrl) return null
-  return /\.(mp4|mov|m4v|webm)(\?|$)/i.test(url) ? null : url
+  return /\.(jpe?g|png)(\?|$)/i.test(url) ? url : null
 }
 
 /** Resolve token + media for one social_posts row and create the Pin (video may finish later). */
