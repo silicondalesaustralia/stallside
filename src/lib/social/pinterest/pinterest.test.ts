@@ -36,7 +36,12 @@ async function run() {
 
   const url = new URL(getPinterestOAuthUrl('st', 'https://vendl.app/cb'))
   assert.equal(url.searchParams.get('client_id'), 'test-app')
-  assert.equal(url.searchParams.get('scope'), 'boards:read,pins:read,pins:write,user_accounts:read')
+  assert.equal(url.searchParams.get('scope'), 'boards:read,boards:write,pins:read,pins:write,user_accounts:read')
+
+  // Old connections without boards:write must reconnect.
+  const { pinterestMissingScopes } = await import('./pinterestAuth')
+  assert.deepEqual(pinterestMissingScopes('boards:read pins:read pins:write user_accounts:read'), ['boards:write'])
+  assert.deepEqual(pinterestMissingScopes('boards:read boards:write pins:read pins:write user_accounts:read'), [])
 
   // OAuth state round-trip and tamper check.
   const state = encodePinterestOAuthState({ businessId: 'b1', userId: 'u1', returnPath: '/dashboard/connectors' })

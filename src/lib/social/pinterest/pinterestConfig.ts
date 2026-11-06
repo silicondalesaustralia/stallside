@@ -3,7 +3,8 @@ import { resolveKnownProductFromHostname } from '@/lib/products/resolveProductCo
 import { isSocialDemoMode } from '@/lib/social/metaConnectConfig'
 import { envFlag } from '@/lib/social/envFlag'
 
-export const PINTEREST_SCOPES = ['boards:read', 'pins:read', 'pins:write', 'user_accounts:read']
+/** POST /v5/pins needs boards:write as well as pins:write. */
+export const PINTEREST_SCOPES = ['boards:read', 'boards:write', 'pins:read', 'pins:write', 'user_accounts:read']
 
 export function isPinterestConnectEnabled(): boolean {
   return envFlag(process.env.PINTEREST_CONNECT_ENABLED)

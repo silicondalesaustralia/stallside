@@ -1,5 +1,6 @@
 import { socialDb } from '@/lib/socialHost/socialDb'
 import { pinterestTokenColumns, refreshPinterestToken } from '@/lib/social/pinterest/pinterestOAuth'
+import { PINTEREST_SCOPES } from '@/lib/social/pinterest/pinterestConfig'
 
 const DEMO = process.env.SOCIAL_DEMO_MODE === 'true'
 const REFRESH_MARGIN_MS = 24 * 60 * 60 * 1000
@@ -9,6 +10,13 @@ type PinterestTokenRow = {
   pinterest_access_token: string | null
   pinterest_refresh_token: string | null
   pinterest_token_expires_at: string | null
+  pinterest_scopes: string | null
+}
+
+/** Connections made before a scope was added must reconnect to grant it. */
+export function pinterestMissingScopes(stored: string | null): string[] {
+  const granted = (stored ?? '').split(/[\s,]+/)
+  return PINTEREST_SCOPES.filter((s) => !granted.includes(s))
 }
 
 /** True when the access token has no expiry or expires within a day. */
@@ -23,13 +31,16 @@ export async function getPinterestAccessToken(businessId: string): Promise<strin
   const db = socialDb()
   const { data, error } = await db
     .from('businesses')
-    .select('pinterest_user_id, pinterest_access_token, pinterest_refresh_token, pinterest_token_expires_at')
+    .select('pinterest_user_id, pinterest_access_token, pinterest_refresh_token, pinterest_token_expires_at, pinterest_scopes')
     .eq('id', businessId)
     .single()
 
   const business = data as PinterestTokenRow | null
   if (error || !business?.pinterest_user_id || !business.pinterest_access_token) return null
   if (DEMO) return business.pinterest_access_token
+  if (pinterestMissingScopes(business.pinterest_scopes).length) {
+    throw new Error('Pinterest needs a new permission - disconnect and reconnect Pinterest in Connectors')
+  }
   if (!pinterestTokenNeedsRefresh(business.pinterest_token_expires_at)) return business.pinterest_access_token
   if (!business.pinterest_refresh_token) {
     throw new Error('Pinterest connection expired - reconnect Pinterest in Connectors')
