@@ -35,7 +35,7 @@ export const WELCOME_VIDEO: FounderVideo = {
 
 export const PRO_VIDEO: FounderVideo = {
   title: "Why We Built Vendl Pro",
-  youtubeUrl: null,
+  youtubeUrl: "https://youtu.be/-X4dunPRUxE",
   src: null,
   poster: null,
   captions: null,
