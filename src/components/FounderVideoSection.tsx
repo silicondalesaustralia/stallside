@@ -48,7 +48,7 @@ export default function FounderVideoSection({ id, heading, description, video, e
   return (
     <section id={id} aria-labelledby={headingId} className="flex flex-col gap-4">
       {text}
-      <div className="w-full max-w-3xl">{media}</div>
+      <div className="mx-auto w-full max-w-3xl">{media}</div>
     </section>
   );
 }
