@@ -7,8 +7,8 @@ import {
 } from '@/lib/social/pinterest/pinterestVideoUpload'
 import { downloadVideo } from '@/lib/social/tiktok/tiktokVideoUpload'
 
-/** Kept short: publishPost runs platforms one after another inside the route's 60s limit. */
-const WAIT_BUDGET_MS = 20_000
+/** publishPost runs platforms one after another inside the route's 300s limit. */
+const WAIT_BUDGET_MS = 90_000
 
 export type PinterestVideoPublishResult =
   | { success: true; mediaId: string; postId?: string }
