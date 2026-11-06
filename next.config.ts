@@ -108,6 +108,9 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      ...(process.env.VENDL_BETA_APP === "1"
+        ? [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }]
+        : []),
       {
         source: "/lp/missed-sales",
         headers: [
