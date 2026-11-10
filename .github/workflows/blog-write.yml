@@ -40,7 +40,7 @@ jobs:
           BLOG_AGENT_PREVIEW_REF: origin/${{ vars.BLOG_AGENT_CONTEXT_REF || 'feature/social-kit' }}
           BLOG_AGENT_CONTEXT_DIR: .blog-context
           BLOG_AGENT_CONTEXT_REF: ${{ vars.BLOG_AGENT_CONTEXT_REF || 'feature/social-kit' }}
-          BLOG_AGENT_BASE_URL: https://beta.vendl.app
+          BLOG_AGENT_BASE_URL: https://www.vendl.app
           BLOG_AGENT_TOKEN: ${{ secrets.BLOG_AGENT_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}

@@ -37,7 +37,7 @@ jobs:
       - name: Recommend tomorrow's ideas
         run: npx -y tsx scripts/blog-agent/plan.ts ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }} ${{ inputs.weekly && '--weekly' || '' }}
         env:
-          BLOG_AGENT_BASE_URL: https://beta.vendl.app
+          BLOG_AGENT_BASE_URL: https://www.vendl.app
           BLOG_AGENT_TOKEN: ${{ secrets.BLOG_AGENT_TOKEN }}
           BLOG_AGENT_PREVIEW_REF: origin/${{ vars.BLOG_AGENT_CONTEXT_REF || 'feature/social-kit' }}
           BLOG_AGENT_CONTEXT_DIR: .blog-context

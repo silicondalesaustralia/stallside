@@ -19,7 +19,7 @@ The blog exists to bring sellers to Vendl. Every idea must solve a reader's prob
 
 ## Planner: choosing tonight's 5
 
-Ideas describe the product on beta.vendl.app (`feature/social-kit`). Inputs: blog context from that app (existing posts, backlog topics, recent rejections and discarded revision reasons), the Search Console report for live vendl.app queries, the beta knowledge base index (one line per article), the last 7 days' commit subjects (`commits.upcoming` is the beta branch, `commits.shipped` is www), live web search for news, and on Sundays the weekly research: `competitorScan` (competitors' recent content, product changes, content gaps), `communityScan` (real seller questions from Reddit, Quora, LinkedIn and Medium) and `aiVisibility` (ChatGPT's answers to buyer questions: whether Vendl is mentioned or cited, which competitors appear, which pages are cited).
+Ideas describe the product on beta.vendl.app (`feature/social-kit`). Inputs: blog posts and the topic backlog (existing posts, backlog topics, recent rejections and discarded revision reasons), the Search Console report for live vendl.app queries, the beta knowledge base index (one line per article), the last 7 days' commit subjects (`commits.upcoming` is the beta branch, `commits.shipped` is www), live web search for news, and on Sundays the weekly research: `competitorScan` (competitors' recent content, product changes, content gaps), `communityScan` (real seller questions from Reddit, Quora, LinkedIn and Medium) and `aiVisibility` (ChatGPT's answers to buyer questions: whether Vendl is mentioned or cited, which competitors appear, which pages are cited).
 
 Aim for a mix across the 5; across a week no single source should exceed half the ideas.
 
