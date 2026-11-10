@@ -29,7 +29,7 @@ Migration `prisma/migrations/20261019110000_blog_posts` adds `BlogPost`, `BlogPo
 
 Two workflows in `.github/workflows/`. GitHub only runs scheduled and dispatched workflows whose files are on the **default branch (`main`)**; they check out `BLOG_AGENT_GIT_REF` to run the code.
 
-- `blog-plan.yml`: 9pm Adelaide daily, started by the app's Vercel cron `/api/cron/blog-plan` (two UTC crons cover daylight saving; it uses `GITHUB_DISPATCH_TOKEN`). GitHub's own schedule isn't used because it ran hours late. Builds the Search Console report, reads a compact blog context (titles, slugs, statuses), the knowledge base index and the last 7 days' commit subjects, searches the web for news, and asks GPT-5.4 for 5 ranked ideas. On Sundays it first runs weekly research (tick "weekly research" on a manual run to force it):
+- `blog-plan.yml`: 9pm Adelaide daily, started by the app's Vercel cron `/api/cron/blog-plan` (two UTC crons cover daylight saving; it uses `GITHUB_DISPATCH_TOKEN`). GitHub's own schedule isn't used because it ran hours late. Builds the Search Console report, reads blog context from `https://beta.vendl.app` (titles, slugs, statuses, hand-coded articles on the social-kit deploy), the knowledge base and playbook from `feature/social-kit`, and the last 7 days' commit subjects, searches the web for news, and asks GPT-5.4 for 5 ranked ideas. On Sundays it first runs weekly research (tick "weekly research" on a manual run to force it):
   - **Competitor scan:** CottageCMS, Bakebug, Hotplate, Loafly, Bakesy, Shopify, Square Online and Wix; recent content, product changes and content gaps (`scripts/blog-agent/competitor-scan.ts`).
   - **Community scan:** Reddit, Quora and public LinkedIn posts via web search, plus Medium tag feeds; real seller questions and wording (`scripts/blog-agent/community-scan.ts`).
   - **ChatGPT visibility:** asks ChatGPT (web search, Australian location) 24 fixed buyer questions and stores whether Vendl is mentioned or cited, competitor mentions and cited pages. See the trend at `/admin/blog/ai-visibility`. Questions are in `scripts/blog-agent/ai-questions.ts`; add new ones rather than rewording, so the trend stays comparable. The app stores them as topics and emails them, each with a **Write this** link (signed, 48 hours). Run it manually from the Actions tab to test.
@@ -42,9 +42,9 @@ Repository settings → Secrets and variables → Actions:
 | Secret | `OPENAI_API_KEY` | OpenAI key with access to `gpt-6-astra` and `gpt-image-1` |
 | Secret | `BLOG_AGENT_TOKEN` | Same value as Vercel |
 | Secret | `GSC_SERVICE_ACCOUNT_JSON` | Service account key JSON (or base64 of it) |
-| Variable | `BLOG_AGENT_BASE_URL` | `https://stagingv2.vendl.app` now, `https://www.vendl.app` on `main` |
+| Pinned in the workflows | `BLOG_AGENT_BASE_URL` | `https://beta.vendl.app`. The Actions variable is not read, so a stale `www.vendl.app` value cannot win |
 | Variable | `BLOG_AGENT_GIT_REF` | Branch whose agent code runs (`main`) |
-| Variable | `BLOG_AGENT_CONTEXT_REF` | Optional. Upcoming release the knowledge base, pricing facts and "upcoming" commits are read from. Defaults to `feature/social-kit`; if that branch can't be checked out the agent uses its own checkout |
+| Variable | `BLOG_AGENT_CONTEXT_REF` | Optional. Beta branch the knowledge base, pricing facts, playbook and "upcoming" commits are read from. Defaults to `feature/social-kit`. A failed checkout fails the job |
 | Variable | `GSC_SITE_URL` | `sc-domain:vendl.app` |
 | Secret | `DATAFORSEO_LOGIN`, `DATAFORSEO_PASSWORD` | Optional. DataForSEO API login and API password (not the dashboard password) |
 | Secret | `DATAFORSEO_RELAY_URL`, `DATAFORSEO_RELAY_SECRET` | Optional. A relay on a fixed IP, needed while the DataForSEO account has an IP allowlist (GitHub runners have no fixed IP) |
