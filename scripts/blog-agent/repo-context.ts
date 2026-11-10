@@ -10,28 +10,38 @@ function read(relative: string): string {
 }
 
 /**
- * Checkout of the upcoming release (BLOG_AGENT_CONTEXT_DIR, e.g. feature/social-kit) that product
- * facts and the knowledge base are read from; falls back to this checkout when it is missing.
+ * Checkout of the beta branch (BLOG_AGENT_CONTEXT_DIR, feature/social-kit, beta.vendl.app).
+ * Product facts, the knowledge base and the playbook are read from here.
+ * A set but missing checkout throws, so a failed fetch cannot silently use main.
  */
 export function productContextRoot(): string {
   const dir = process.env.BLOG_AGENT_CONTEXT_DIR?.trim();
-  const root = dir ? resolve(ROOT, dir) : ROOT;
-  return existsSync(join(root, "src/lib/knowledge-base/index.ts")) ? root : ROOT;
+  if (!dir) return ROOT;
+  const root = resolve(ROOT, dir);
+  if (!existsSync(join(root, "src/lib/knowledge-base/index.ts"))) {
+    throw new Error(
+      `Product context checkout is missing at ${root}. Expected the feature/social-kit tree used by beta.vendl.app.`,
+    );
+  }
+  return root;
 }
 
 /** Which branch the product context came from, for source labels. */
 export function productContextLabel(): string {
-  return productContextRoot() === ROOT ? "this checkout" : process.env.BLOG_AGENT_CONTEXT_REF?.trim() || "upcoming release";
+  return productContextRoot() === ROOT ? "this checkout" : process.env.BLOG_AGENT_CONTEXT_REF?.trim() || "beta";
+}
+
+function readProduct(relative: string): string {
+  const fromContext = join(productContextRoot(), relative);
+  return existsSync(fromContext) ? readFileSync(fromContext, "utf8") : read(relative);
 }
 
 function labelled(relative: string): string {
-  const fromContext = join(productContextRoot(), relative);
-  const text = existsSync(fromContext) ? readFileSync(fromContext, "utf8") : read(relative);
-  return `===== ${relative} (${productContextLabel()}) =====\n${text}`;
+  return `===== ${relative} (${productContextLabel()}) =====\n${readProduct(relative)}`;
 }
 
 export function agentDoc(name: "PLAYBOOK" | "WRITING"): string {
-  return read(`docs/blog-agent/${name}.md`);
+  return readProduct(`docs/blog-agent/${name}.md`);
 }
 
 const SECTIONS_SKIPPED_BY: Record<"PLAN" | "WRITE", RegExp> = {
@@ -62,7 +72,7 @@ function git(args: string[]): string {
 
 const MAX_COMMITS = 40;
 
-/** Recent commit subjects (no bodies) on shipped (main) and upcoming (preview) branches. */
+/** Recent commit subjects (no bodies): shipped is www (main), upcoming is the beta branch. */
 export function recentCommits(days = 7): { shipped: string; upcoming: string } {
   const range = [`--since=${days} days ago`, "--no-merges", `--max-count=${MAX_COMMITS}`, "--pretty=format:%ad %s", "--date=short"];
   const upcomingRef = process.env.BLOG_AGENT_PREVIEW_REF?.trim() || "origin/feature/social-kit";
