@@ -1,3 +1,5 @@
+import type { VideoQuality } from '@/lib/social/videoQuality'
+
 export const VIDEO_LOGO_POSITIONS = [
   'top_left',
   'top_right',
@@ -89,6 +91,7 @@ export type VideoBrandingConfig = {
   overlayTextAlign?: VideoHeadlineAlign | null
   overlayTextBackground?: VideoHeadlineBackground | null
   blurRegions?: VideoBlurRegion[] | null
+  quality?: VideoQuality | null
 }
 
 export type VideoProcessingJobRow = {

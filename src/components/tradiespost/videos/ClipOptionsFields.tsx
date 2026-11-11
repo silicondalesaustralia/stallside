@@ -3,6 +3,7 @@
 import { CLIP_COUNT_DEFAULT, CLIP_COUNT_MAX, CLIP_COUNT_MIN } from '@/lib/social/videoClips/limits'
 import type { ClipJobOptions } from '@/lib/social/videoClips/validation'
 import { CaptionStyleFields } from './CaptionStyleFields'
+import { VIDEO_QUALITY_HINT, VideoQualitySelect } from '@/components/social/VideoQualitySelect'
 
 type Props = {
   value: ClipJobOptions
@@ -56,7 +57,7 @@ export function ClipOptionsFields({ value, onChange, disabled }: Props) {
           We’ll keep the whole video (up to 3 minutes) and transcribe it. Open it with Edit to trim, add captions or add text.
         </p>
       ) : null}
-      <div className={`grid gap-3 ${full ? '' : 'sm:grid-cols-3'}`}>
+      <div className={`grid gap-3 sm:grid-cols-2 ${full ? '' : 'lg:grid-cols-4'}`}>
         {full ? null : (
           <>
             <label className="block">
@@ -102,7 +103,16 @@ export function ClipOptionsFields({ value, onChange, disabled }: Props) {
             <option value="original">Keep original</option>
           </select>
         </label>
+        <VideoQualitySelect
+          value={value.quality}
+          disabled={disabled}
+          onChange={(quality) => onChange({ ...value, quality })}
+          className={selectClass}
+          labelClassName="mb-1.5 block text-xs font-semibold text-zinc-600"
+          testId="clip-quality"
+        />
       </div>
+      <p className="text-xs text-zinc-500">{VIDEO_QUALITY_HINT}</p>
       <CaptionStyleFields
         value={{ style: value.captionStyle, position: value.captionPosition }}
         disabled={disabled}

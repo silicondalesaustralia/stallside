@@ -13,12 +13,13 @@ function even(value: number): number {
 export function videoOutputDimensions(
   sourceWidth: number,
   sourceHeight: number,
+  maxLongEdge = VIDEO_OUTPUT_MAX_LONG_EDGE,
 ): { width: number; height: number; scaled: boolean } {
   const longEdge = Math.max(sourceWidth, sourceHeight)
-  if (longEdge <= VIDEO_OUTPUT_MAX_LONG_EDGE) {
+  if (longEdge <= maxLongEdge) {
     return { width: sourceWidth, height: sourceHeight, scaled: false }
   }
-  const ratio = VIDEO_OUTPUT_MAX_LONG_EDGE / longEdge
+  const ratio = maxLongEdge / longEdge
   return {
     width: even(sourceWidth * ratio),
     height: even(sourceHeight * ratio),

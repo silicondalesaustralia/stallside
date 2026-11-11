@@ -51,6 +51,8 @@ import { VideoBlurEditor } from '@/components/social/videoBlur/VideoBlurEditor'
 import type { VideoDimensions } from '@/components/social/videoBlur/useVideoPlayback'
 import { videoOutputDimensions } from '@/lib/social/videoBranding/videoFilters'
 import type { VideoBlurRegion } from '@/lib/social/videoBranding/types'
+import { videoQualityMaxEdge, type VideoQuality } from '@/lib/social/videoQuality'
+import { VIDEO_QUALITY_HINT, VideoQualitySelect } from '@/components/social/VideoQualitySelect'
 
 export type VideoBrandingFormValue = RecreateLogoSelection & {
   logoPosition: VideoLogoPosition
@@ -64,6 +66,7 @@ export type VideoBrandingFormValue = RecreateLogoSelection & {
   overlayTextAlign: VideoHeadlineAlign
   overlayTextBackground: VideoHeadlineBackground
   blurRegions: VideoBlurRegion[]
+  quality: VideoQuality
 }
 
 const PORTRAIT_FALLBACK: VideoDimensions = { width: 720, height: 1280 }
@@ -98,6 +101,7 @@ export function defaultBrandingFormValue(
     overlayTextAlign: style.align,
     overlayTextBackground: style.background,
     blurRegions: config?.blurRegions ?? [],
+    quality: config?.quality ?? 'auto',
   }
 }
 
@@ -210,14 +214,14 @@ export function VideoBrandingPanel({
 
   const wrapWarning = useMemo(() => {
     if (!value.overlayText.trim()) return null
-    const out = videoOutputDimensions(videoDims.width, videoDims.height)
+    const out = videoOutputDimensions(videoDims.width, videoDims.height, videoQualityMaxEdge(value.quality) ?? undefined)
     const fontSize = videoHeadlineFontSizePx(value.overlayTextSize, out.height)
     return wrapVideoHeadlineLines(value.overlayText, {
       videoWidth: out.width,
       fontSize,
       align: value.overlayTextAlign,
     }).warning
-  }, [value.overlayText, value.overlayTextSize, value.overlayTextAlign, videoDims])
+  }, [value.overlayText, value.overlayTextSize, value.overlayTextAlign, value.quality, videoDims])
 
   async function handleSubmit() {
     setSubmitting(true)
@@ -241,6 +245,7 @@ export function VideoBrandingPanel({
         overlayTextAlign: value.overlayText.trim() ? value.overlayTextAlign : undefined,
         overlayTextBackground: value.overlayText.trim() ? value.overlayTextBackground : undefined,
         blurRegions: value.blurRegions,
+        quality: value.quality,
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not start branding')
@@ -546,6 +551,16 @@ export function VideoBrandingPanel({
           Add headline text above to see a live style preview.
         </p>
       )}
+
+      <div>
+        <VideoQualitySelect
+          value={value.quality}
+          disabled={processing || submitting}
+          onChange={(quality) => setValue((prev) => ({ ...prev, quality }))}
+          testId={`video-quality-${assetId}`}
+        />
+        <p className="mt-1 text-[10px] leading-relaxed text-[#AAA]">{VIDEO_QUALITY_HINT}</p>
+      </div>
 
       {error ? <p className="text-xs font-medium text-red-600">{error}</p> : null}
 

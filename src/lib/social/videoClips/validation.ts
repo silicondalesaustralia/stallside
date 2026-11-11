@@ -19,6 +19,7 @@ import {
   type CaptionPosition,
   type CaptionStyleId,
 } from './captionStyles'
+import { parseVideoQuality, type VideoQuality } from '../videoQuality'
 
 type Fail = { ok: false; error: string }
 
@@ -62,6 +63,7 @@ export type ClipJobOptions = {
   aspect: ClipAspect
   captionStyle: CaptionStyleId
   captionPosition: CaptionPosition
+  quality: VideoQuality
 }
 
 export const DEFAULT_CLIP_JOB_OPTIONS: ClipJobOptions = {
@@ -70,6 +72,7 @@ export const DEFAULT_CLIP_JOB_OPTIONS: ClipJobOptions = {
   aspect: 'vertical',
   captionStyle: 'bold',
   captionPosition: 'bottom',
+  quality: 'auto',
 }
 
 export function parseClipJobOptions(input: {
@@ -78,6 +81,7 @@ export function parseClipJobOptions(input: {
   aspect?: unknown
   captionStyle?: unknown
   captionPosition?: unknown
+  quality?: unknown
 }): ClipJobOptions {
   const rawCount = Number(input.clipCount)
   const clipLength: ClipJobLength =
@@ -95,6 +99,7 @@ export function parseClipJobOptions(input: {
     aspect,
     captionStyle: parseCaptionStyle(input.captionStyle),
     captionPosition: parseCaptionPosition(input.captionPosition),
+    quality: parseVideoQuality(input.quality),
   }
 }
 

@@ -28,6 +28,7 @@ import { buildPreBrandingFilters } from '@/lib/social/videoBranding/videoFilters
 import type { LibraryEditGraph } from '@/lib/social/videoBranding/libraryEditPlan'
 import { buildEditFilterGraph } from '@/lib/social/videoClips/editFfmpegArgs'
 import { assFilter } from '@/lib/social/videoClips/clipFfmpegArgs'
+import type { VideoEncodeSettings } from '@/lib/social/videoQuality'
 
 /** libx264 speed preset - social V1 favours latency over compression efficiency. */
 export const FFMPEG_VIDEO_PRESET = 'veryfast'
@@ -180,7 +181,9 @@ export function buildFfmpegArgs(params: {
   outputPath: string
   plan: FfmpegBrandingPlan
   hasAudio: boolean
+  encode?: VideoEncodeSettings
 }): string[] {
+  const encode = params.encode ?? { preset: FFMPEG_VIDEO_PRESET, crf: FFMPEG_VIDEO_CRF }
   const args = ['-y', '-hide_banner', '-loglevel', 'error']
 
   args.push('-i', params.inputVideoPath)
@@ -204,9 +207,9 @@ export function buildFfmpegArgs(params: {
     '-c:v',
     'libx264',
     '-preset',
-    FFMPEG_VIDEO_PRESET,
+    encode.preset,
     '-crf',
-    FFMPEG_VIDEO_CRF,
+    encode.crf,
     '-pix_fmt',
     'yuv420p',
     '-movflags',

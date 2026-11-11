@@ -1,8 +1,10 @@
 import { clipMaxEdge, clipRateArgs } from './clipSizeBudget'
 import type { ClipAspect } from './limits'
+import type { VideoEncodeSettings } from '../videoQuality'
 
 export const CLIP_VIDEO_PRESET = 'veryfast'
 export const CLIP_VIDEO_CRF = '23'
+export const CLIP_ENCODE: VideoEncodeSettings = { preset: CLIP_VIDEO_PRESET, crf: CLIP_VIDEO_CRF }
 
 /**
  * Containers often report the host's full core count, so ffmpeg/x264 would start dozens of
@@ -36,8 +38,11 @@ export function cutClipArgs(input: {
   end: number
   aspect: ClipAspect
   hasAudio: boolean
+  maxEdge?: number
+  encode?: VideoEncodeSettings
 }): string[] {
   const duration = Math.max(0.5, input.end - input.start)
+  const encode = input.encode ?? CLIP_ENCODE
   return [
     '-y',
     ...ffmpegThreadArgs(),
@@ -48,14 +53,14 @@ export function cutClipArgs(input: {
     '-t',
     duration.toFixed(3),
     '-vf',
-    clipVideoFilter(input.aspect, clipMaxEdge(duration)),
+    clipVideoFilter(input.aspect, input.maxEdge ?? clipMaxEdge(duration)),
     '-c:v',
     'libx264',
     ...ffmpegThreadArgs(),
     '-preset',
-    CLIP_VIDEO_PRESET,
+    encode.preset,
     '-crf',
-    CLIP_VIDEO_CRF,
+    encode.crf,
     ...clipRateArgs(duration),
     '-pix_fmt',
     'yuv420p',
@@ -78,7 +83,9 @@ export function burnCaptionsArgs(input: {
   hasAudio: boolean
   fontsDir: string | null
   durationSeconds: number
+  encode?: VideoEncodeSettings
 }): string[] {
+  const encode = input.encode ?? CLIP_ENCODE
   return [
     '-y',
     ...ffmpegThreadArgs(),
@@ -90,9 +97,9 @@ export function burnCaptionsArgs(input: {
     'libx264',
     ...ffmpegThreadArgs(),
     '-preset',
-    CLIP_VIDEO_PRESET,
+    encode.preset,
     '-crf',
-    CLIP_VIDEO_CRF,
+    encode.crf,
     ...clipRateArgs(input.durationSeconds),
     '-pix_fmt',
     'yuv420p',

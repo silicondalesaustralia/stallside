@@ -6,6 +6,7 @@ import { wordsForClip } from '../../../src/lib/social/videoClips/selectMoments'
 import { burnCaptionsArgs, clipThumbnailArgs, cutClipArgs } from '../../../src/lib/social/videoClips/clipFfmpegArgs'
 import { clipOutputSize, cutClipWithCaptionsArgs } from '../../../src/lib/social/videoClips/cutCaptionedArgs'
 import { clipMaxEdge } from '../../../src/lib/social/videoClips/clipSizeBudget'
+import { videoEncodeSettings, videoQualityMaxEdge } from '../../../src/lib/social/videoQuality'
 import { groupWordsIntoCues } from '../../../src/lib/social/videoClips/captionCues'
 import { parseCaptionSettings } from '../../../src/lib/social/videoClips/captionStyles'
 import { runFfmpeg } from '../../../src/lib/social/videoBranding/runFfmpeg'
@@ -47,7 +48,9 @@ export async function renderMomentClip(ctx: MomentClipContext, moment: ClipMomen
   }
 
   const seconds = moment.end - moment.start
-  const size = clipOutputSize(job.aspect, probe.displayWidth, probe.displayHeight, clipMaxEdge(seconds))
+  const maxEdge = videoQualityMaxEdge(job.quality) ?? clipMaxEdge(seconds)
+  const encode = videoEncodeSettings(job.quality)
+  const size = clipOutputSize(job.aspect, probe.displayWidth, probe.displayHeight, maxEdge)
   const assPath = await writeClipAss({ captions, brandColor: ctx.brandColor, ...size, workDir: ctx.workDir })
   let publishPath = cleanPath
   if (assPath && SINGLE_PASS_CAPTIONS) {
@@ -63,6 +66,8 @@ export async function renderMomentClip(ctx: MomentClipContext, moment: ClipMomen
         hasAudio: probe.hasAudio,
         assPath,
         fontsDir: workerFontsRoot(),
+        maxEdge,
+        encode,
       }),
     )
   } else {
@@ -74,6 +79,8 @@ export async function renderMomentClip(ctx: MomentClipContext, moment: ClipMomen
         end: moment.end,
         aspect: job.aspect,
         hasAudio: probe.hasAudio,
+        maxEdge,
+        encode,
       }),
     )
     if (assPath) {
@@ -86,6 +93,7 @@ export async function renderMomentClip(ctx: MomentClipContext, moment: ClipMomen
           hasAudio: probe.hasAudio,
           fontsDir: workerFontsRoot(),
           durationSeconds: seconds,
+          encode,
         }),
       )
     }

@@ -1,6 +1,7 @@
-import { CLIP_VIDEO_CRF, CLIP_VIDEO_PRESET, assFilter, clipVideoFilter, ffmpegThreadArgs } from './clipFfmpegArgs'
+import { CLIP_ENCODE, assFilter, clipVideoFilter, ffmpegThreadArgs } from './clipFfmpegArgs'
 import { clipMaxEdge, clipRateArgs } from './clipSizeBudget'
 import type { ClipAspect } from './limits'
+import type { VideoEncodeSettings } from '../videoQuality'
 
 const even = (n: number) => Math.max(2, Math.round(n / 2) * 2)
 
@@ -25,15 +26,15 @@ export function clipOutputSize(
   return { width: even((width * outH) / height), height: outH }
 }
 
-function encodeArgs(hasAudio: boolean, outputPath: string, seconds: number): string[] {
+function encodeArgs(hasAudio: boolean, outputPath: string, seconds: number, encode: VideoEncodeSettings): string[] {
   return [
     '-c:v',
     'libx264',
     ...ffmpegThreadArgs(),
     '-preset',
-    CLIP_VIDEO_PRESET,
+    encode.preset,
     '-crf',
-    CLIP_VIDEO_CRF,
+    encode.crf,
     ...clipRateArgs(seconds),
     '-pix_fmt',
     'yuv420p',
@@ -58,10 +59,13 @@ export function cutClipWithCaptionsArgs(input: {
   hasAudio: boolean
   assPath: string
   fontsDir: string | null
+  maxEdge?: number
+  encode?: VideoEncodeSettings
 }): string[] {
   const duration = Math.max(0.5, input.end - input.start)
+  const encode = input.encode ?? CLIP_ENCODE
   const graph = [
-    `[0:v]${clipVideoFilter(input.aspect, clipMaxEdge(duration))},split=2[clean][cap]`,
+    `[0:v]${clipVideoFilter(input.aspect, input.maxEdge ?? clipMaxEdge(duration))},split=2[clean][cap]`,
     `[cap]${assFilter(input.assPath, input.fontsDir)}[captioned]`,
   ].join(';')
   return [
@@ -77,9 +81,9 @@ export function cutClipWithCaptionsArgs(input: {
     graph,
     '-map',
     '[clean]',
-    ...encodeArgs(input.hasAudio, input.cleanPath, duration),
+    ...encodeArgs(input.hasAudio, input.cleanPath, duration, encode),
     '-map',
     '[captioned]',
-    ...encodeArgs(input.hasAudio, input.captionedPath, duration),
+    ...encodeArgs(input.hasAudio, input.captionedPath, duration, encode),
   ]
 }

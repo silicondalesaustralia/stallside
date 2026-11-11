@@ -1,5 +1,6 @@
 import type { ClipAspect, ClipJobLength } from './limits'
 import type { CaptionPosition, CaptionStyleId } from './captionStyles'
+import type { VideoQuality } from '../videoQuality'
 
 export type VideoSourceStatus = 'uploading' | 'ready' | 'failed'
 
@@ -15,6 +16,8 @@ export type ClipJobRow = {
   aspect: ClipAspect
   caption_style: CaptionStyleId
   caption_position: CaptionPosition
+  /** Absent until supabase/social/014_clip_job_quality.sql is applied. */
+  quality?: VideoQuality | null
   clips_created: number
   progress_stage: string | null
   error_code: string | null

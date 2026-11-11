@@ -7,9 +7,8 @@ import {
   buildFfmpegArgs,
   buildFfmpegBrandingPlan,
   computeLogoDimensions,
-  FFMPEG_VIDEO_CRF,
-  FFMPEG_VIDEO_PRESET,
 } from '../../../src/lib/social/videoBranding/ffmpegPlan'
+import { videoEncodeSettings, videoQualityMaxEdge } from '../../../src/lib/social/videoQuality'
 import type { VideoProcessingJobRow } from '../../../src/lib/social/videoBranding/types'
 import { resolveLogoChoiceForWorker, requireProcessedPublicUrl } from '../../../src/lib/social/videoBranding/createProcessingJob'
 import { markBrandingJobFailed } from '../../../src/lib/social/videoBranding/jobFailure'
@@ -92,7 +91,13 @@ export async function processVideoJob(
       rotation: probe.rotation,
     })
 
-    const out = videoOutputDimensions(probe.displayWidth, probe.displayHeight)
+    const quality = brandingConfigFromJson(asset.branding_config as Record<string, unknown> | null)?.quality ?? 'auto'
+    const encode = videoEncodeSettings(quality)
+    const out = videoOutputDimensions(
+      probe.displayWidth,
+      probe.displayHeight,
+      videoQualityMaxEdge(quality) ?? undefined,
+    )
     let logoPath: string | null = null
     let logoWidth = 0
     let logoHeight = 0
@@ -191,19 +196,21 @@ export async function processVideoJob(
       outputPath,
       plan,
       hasAudio: probe.hasAudio,
+      encode,
     })
 
     timer.beginStage('ffmpeg')
     timer.log('ffmpeg start', {
-      preset: FFMPEG_VIDEO_PRESET,
-      crf: FFMPEG_VIDEO_CRF,
+      quality,
+      preset: encode.preset,
+      crf: encode.crf,
       outWidth: out.width,
       outHeight: out.height,
       blurRegions: brandingConfig.blurRegions?.length ?? 0,
     })
     await runFfmpeg(ffmpegArgs)
     const outputBytes = (await stat(outputPath)).size
-    timer.log('ffmpeg complete', { bytes: outputBytes, preset: FFMPEG_VIDEO_PRESET, crf: FFMPEG_VIDEO_CRF })
+    timer.log('ffmpeg complete', { bytes: outputBytes, preset: encode.preset, crf: encode.crf })
 
     timer.beginStage('upload')
     const uploadedBytes = isLibraryR2Path(job.output_storage_path)

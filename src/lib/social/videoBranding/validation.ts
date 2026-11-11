@@ -35,6 +35,7 @@ import {
   blurRegionsFromJson,
   parseBlurRegionsInput,
 } from '@/lib/social/videoBranding/blurRegions'
+import { isVideoQuality, parseVideoQuality } from '@/lib/social/videoQuality'
 
 export const VIDEO_OVERLAY_TEXT_MAX_CHARS = 80
 
@@ -99,6 +100,7 @@ export function parseVideoBrandingRequest(input: {
   overlayTextAlign?: unknown
   overlayTextBackground?: unknown
   blurRegions?: unknown
+  quality?: unknown
   defaultLogoCorner?: string | null
   businessDefaults?: VideoHeadlineBusinessDefaults
 }):
@@ -253,6 +255,7 @@ export function parseVideoBrandingRequest(input: {
     overlayTextAlign,
     overlayTextBackground,
     blurRegions: blurParsed.regions,
+    quality: parseVideoQuality(input.quality),
   }
 
   return {
@@ -389,5 +392,6 @@ export function brandingConfigFromJson(
         ? (raw.overlayTextBackground as VideoHeadlineBackground)
         : null,
     blurRegions: blurRegionsFromJson(raw.blurRegions),
+    quality: isVideoQuality(raw.quality) ? raw.quality : null,
   }
 }

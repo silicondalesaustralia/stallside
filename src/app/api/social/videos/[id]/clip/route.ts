@@ -79,6 +79,8 @@ export async function POST(req: NextRequest, context: RouteContext<'/api/social/
       aspect: options.aspect,
       caption_style: options.captionStyle,
       caption_position: options.captionPosition,
+      // Omitted for Auto so clipping keeps working before 014_clip_job_quality.sql is applied.
+      ...(options.quality === 'auto' ? {} : { quality: options.quality }),
     })
     .select('id')
     .single()
