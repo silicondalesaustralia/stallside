@@ -26,9 +26,27 @@ async function compositeJpeg(photo: Buffer, overlay: Buffer, size: Size): Promis
     .toBuffer()
 }
 
+const UPLOAD_ATTEMPTS = 3
+
+/** Storage sometimes answers a valid upload with a bare 5xx ("<none>"); those are worth retrying. */
+function isRetryable(status: unknown): boolean {
+  return typeof status !== 'number' || status >= 500
+}
+
 async function upload(storage: SupabaseClient, path: string, data: Buffer): Promise<string> {
-  const { error } = await storage.storage.from(BUCKET).upload(path, data, { contentType: 'image/jpeg', upsert: false })
-  if (error) throw new Error(`Slide upload failed: ${error.message}`)
+  for (let attempt = 1; ; attempt++) {
+    // upsert on retries: a failed attempt may still have written the object.
+    const { error } = await storage.storage
+      .from(BUCKET)
+      .upload(path, data, { contentType: 'image/jpeg', upsert: attempt > 1 })
+    if (!error) break
+    const status = (error as { status?: unknown }).status
+    console.warn('[Slideshow] slide upload failed', { path, attempt, status, message: error.message })
+    if (attempt >= UPLOAD_ATTEMPTS || !isRetryable(status)) {
+      throw new Error(`Slide upload failed (${String(status ?? 'no status')}): ${error.message}`)
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500 * attempt))
+  }
   return storage.storage.from(BUCKET).getPublicUrl(path).data.publicUrl
 }
 
