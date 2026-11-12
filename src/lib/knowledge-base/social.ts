@@ -42,7 +42,7 @@ export const socialArticles: KnowledgeArticle[] = [
     ],
     tips: [
       "Post now needs every chosen platform connected. If one isn't, schedule it instead and it's added to your calendar as a manual post to do yourself.",
-      "Videos post automatically to TikTok, YouTube and Pinterest. For other platforms, download the video from Library and post it yourself.",
+      "Videos post automatically to TikTok, YouTube, Pinterest, Facebook (as a Page video) and Instagram (as a Reel). For other platforms, download the video from Library and post it yourself.",
       "Slideshows are saved to Library as 9:16 videos, sized for TikTok, Reels, YouTube Shorts, X and Pinterest. When TikTok is picked, you can post the slides as swipeable photos instead.",
     ],
   },

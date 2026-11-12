@@ -72,6 +72,7 @@ export async function POST(
     youtubePost:        youtubePostSourceFromRow(post),
     pinterestPost:      pinterestPostSourceFromRow(post),
     xPost:              { postId: post.id, mediaType: post.media_type ?? null },
+    videoUrl:           isVideo ? post.video_url : null,
   })
 
   // Determine overall status

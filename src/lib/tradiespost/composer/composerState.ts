@@ -89,7 +89,7 @@ export function composerBlockReason(params: {
   if (!params.selected.length) return 'Pick at least one platform.'
   if (!params.imageUrl) return params.isVideo ? 'Pick a video first.' : 'Add an image first.'
   if (params.isVideo && params.selected.some((p) => !VIDEO_PUBLISH_PLATFORMS.includes(p))) {
-    return 'Videos post automatically to TikTok, YouTube and Pinterest only. Deselect the other platforms.'
+    return 'Videos post automatically to TikTok, YouTube, Pinterest, Facebook and Instagram only. Deselect the other platforms.'
   }
   if (!params.isVideo && params.selected.includes('youtube')) {
     return 'YouTube needs a video. Pick a video or deselect YouTube.'

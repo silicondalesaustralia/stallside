@@ -67,14 +67,16 @@ async function run() {
   assert.equal(ok.ok, true)
   assert.equal(composerPostColumns({ platforms: ['youtube'], ...video }).ok, false)
   assert.equal(composerPostColumns({ platforms: ['youtube'], youtubeSettings: { title: 'T', privacy: 'public' } }).ok, false)
-  assert.equal(composerPostColumns({ platforms: ['youtube', 'facebook'], youtubeSettings: { title: 'T', privacy: 'public' }, ...video }).ok, false)
+  assert.equal(composerPostColumns({ platforms: ['youtube', 'gmb'], youtubeSettings: { title: 'T', privacy: 'public' }, ...video }).ok, false)
+  assert.equal(composerPostColumns({ platforms: ['youtube', 'facebook', 'instagram'], youtubeSettings: { title: 'T', privacy: 'public' }, ...video }).ok, true)
 
   // Composer gate.
   const connected = { facebook: true, instagram: true, gmb: true, tiktok: true, youtube: true, pinterest: true, x: true }
   const base = { mode: 'now' as const, connected, imageUrl: 'x', caption: 'c', date: '' }
   assert.match(composerBlockReason({ ...base, selected: ['youtube'], isVideo: false }) ?? '', /YouTube needs a video/)
   assert.equal(composerBlockReason({ ...base, selected: ['youtube', 'tiktok'], isVideo: true }), null)
-  assert.match(composerBlockReason({ ...base, selected: ['youtube', 'facebook'], isVideo: true }) ?? '', /TikTok, YouTube and Pinterest only/)
+  assert.equal(composerBlockReason({ ...base, selected: ['youtube', 'facebook', 'instagram'], isVideo: true }), null)
+  assert.match(composerBlockReason({ ...base, selected: ['youtube', 'gmb'], isVideo: true }) ?? '', /Deselect the other platforms/)
   assert.equal(composerBlockReason({ ...base, selected: ['youtube'], isVideo: true, youtubeBlockReason: 'Add a YouTube title.' }), 'Add a YouTube title.')
 
   console.log('youtubePublish.test.ts: all assertions passed')

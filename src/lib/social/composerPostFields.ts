@@ -88,7 +88,7 @@ export function composerPostColumns(body: {
       return { ok: false, message: 'Video must come from your Library.' }
     }
     if (body.publishingMode !== 'manual' && platforms.some((p) => !(VIDEO_PUBLISH_PLATFORMS as unknown[]).includes(p))) {
-      return { ok: false, message: 'Videos can only be posted automatically to TikTok, YouTube and Pinterest for now.' }
+      return { ok: false, message: 'Videos can only be posted automatically to TikTok, YouTube, Pinterest, Facebook and Instagram for now.' }
     }
     columns.media_type = 'video'
     columns.video_url = body.videoUrl

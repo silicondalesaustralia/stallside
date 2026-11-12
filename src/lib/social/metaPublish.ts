@@ -89,11 +89,11 @@ export async function postToInstagram(
 }
 
 /** media_publish fails with "Media ID is not available" until the container is FINISHED. */
-async function waitForInstagramContainer(
+export async function waitForInstagramContainer(
   containerId: string,
   accessToken: string,
+  { maxAttempts = 15, kind = 'image' }: { maxAttempts?: number; kind?: 'image' | 'video' } = {},
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  const maxAttempts = 15
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       const { status_code } = await graphGet<{ status_code?: string }>(containerId, {
@@ -102,7 +102,7 @@ async function waitForInstagramContainer(
       })
       if (status_code === 'FINISHED') return { ok: true }
       if (status_code === 'ERROR' || status_code === 'EXPIRED') {
-        return { ok: false, error: `Instagram could not process the image (${status_code})` }
+        return { ok: false, error: `Instagram could not process the ${kind} (${status_code})` }
       }
     } catch (err) {
       console.warn('[Meta][instagram] Container status check failed', {
@@ -112,5 +112,5 @@ async function waitForInstagramContainer(
     }
     await new Promise((r) => setTimeout(r, 2000))
   }
-  return { ok: false, error: 'Instagram is still processing the image - please retry in a minute' }
+  return { ok: false, error: `Instagram is still processing the ${kind} - please retry in a minute` }
 }

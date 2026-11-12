@@ -115,6 +115,7 @@ export async function publishDueAutomaticSocialPosts(
         youtubePost: youtubePostSourceFromRow(post as DueSocialPostRow),
         pinterestPost: pinterestPostSourceFromRow(post as DueSocialPostRow),
         xPost: { postId: post.id, mediaType: (post as DueSocialPostRow).media_type ?? null },
+        videoUrl: post.media_type === 'video' && post.video_url ? post.video_url : null,
       })
 
       const anySuccess = Object.values(postResults).some((r) => r?.success)

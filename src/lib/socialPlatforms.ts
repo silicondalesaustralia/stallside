@@ -19,6 +19,7 @@ import {
   mergeMetricSeries,
 } from '@/lib/social/gbpPerformance'
 import { postToFacebook, postToInstagram } from '@/lib/social/metaPublish'
+import { postReelToInstagram, postVideoToFacebook } from '@/lib/social/metaVideoPublish'
 import {
   publishTikTokForPost,
   type TikTokPostSource,
@@ -338,8 +339,10 @@ export async function publishPost(options: {
   pinterestPost?: Omit<PinterestPostSource, 'businessId' | 'caption' | 'processedPhotoUrls'>
   /** social_posts.id and media_type; required when platforms include 'x'. */
   xPost?: { postId: string; mediaType: string | null }
+  /** social_posts.video_url for video posts; Facebook and Instagram then publish it as a video / Reel. */
+  videoUrl?: string | null
 }): Promise<PostResults> {
-  const { platforms, caption, platformCaptions, processedPhotoUrls, businessId, business } = options
+  const { platforms, caption, platformCaptions, processedPhotoUrls, businessId, business, videoUrl } = options
   const results: PostResults = {}
 
   if (platforms.includes('tiktok')) {
@@ -393,23 +396,37 @@ export async function publishPost(options: {
     const fbUrls = processedPhotoUrls['facebook'] || processedPhotoUrls['instagram_square'] || []
     const fbOverride = platformCaptions?.facebook
     const fbCaption = typeof fbOverride === 'string' && fbOverride.trim() ? fbOverride : caption
-    results.facebook = await postToFacebook(
-      business.facebook_page_id || 'demo-page',
-      business.facebook_access_token || '',
-      fbUrls[0] || '',
-      fbCaption
-    )
+    results.facebook = videoUrl
+      ? await postVideoToFacebook(
+          business.facebook_page_id || 'demo-page',
+          business.facebook_access_token || '',
+          videoUrl,
+          fbCaption,
+        )
+      : await postToFacebook(
+          business.facebook_page_id || 'demo-page',
+          business.facebook_access_token || '',
+          fbUrls[0] || '',
+          fbCaption
+        )
   }
 
   if (platforms.includes('instagram')) {
     const igUrls = processedPhotoUrls['instagram_square'] || []
-    results.instagram = await postToInstagram(
-      business.instagram_account_id || 'demo-ig',
-      business.facebook_access_token || '',
-      igUrls[0] || '',
-      caption,
-      businessId,
-    )
+    results.instagram = videoUrl
+      ? await postReelToInstagram(
+          business.instagram_account_id || 'demo-ig',
+          business.facebook_access_token || '',
+          videoUrl,
+          caption,
+        )
+      : await postToInstagram(
+          business.instagram_account_id || 'demo-ig',
+          business.facebook_access_token || '',
+          igUrls[0] || '',
+          caption,
+          businessId,
+        )
   }
 
   if (platforms.includes('gmb')) {
