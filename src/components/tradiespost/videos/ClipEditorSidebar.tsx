@@ -5,6 +5,7 @@ import { CaptionCueList } from './CaptionCueList'
 import { CaptionStylePanel } from './CaptionStylePanel'
 import { ClipSpeedField } from './ClipSpeedField'
 import { TextOverlayPanel } from './TextOverlayPanel'
+import { VideoMusicSection } from '@/components/social/music/VideoMusicSection'
 import type { useClipEditor } from './useClipEditor'
 
 type Props = { ed: ReturnType<typeof useClipEditor>; children?: ReactNode }
@@ -30,6 +31,7 @@ export function ClipEditorSidebar({ ed, children }: Props) {
         />
       ) : null}
       <ClipSpeedField value={ed.speed} disabled={busy} onChange={ed.setSpeed} />
+      <VideoMusicSection videoRef={ed.videoRef} music={ed.music} onChange={ed.setMusic} disabled={busy} />
       <CaptionStylePanel value={ed.settings} disabled={busy} onChange={ed.setSettings} />
       <div className="max-h-[30vh] overflow-y-auto pr-1">
         <CaptionCueList cues={ed.cues} activeIndex={ed.activeIndex} disabled={busy} onChange={ed.setCues} onSeek={ed.seek} />

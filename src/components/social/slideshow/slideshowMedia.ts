@@ -7,7 +7,7 @@ export function slideshowVideoMedia(video: SlideshowVideo, rendered: SlideshowRe
     url: video.thumbnailUrl || rendered.slideUrls[0],
     renderId: null,
     aiGenerated: false,
-    video: { url: video.url, durationSeconds: video.durationSeconds },
+    video: { url: video.url, durationSeconds: video.durationSeconds, silent: true },
     assetId: video.assetId,
   }
 }

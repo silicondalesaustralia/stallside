@@ -12,6 +12,7 @@ import { fullSegments, isFullClip, normalizeSegments } from '@/lib/social/videoC
 import { sanitizeOverlays } from '@/lib/social/videoClips/textOverlays'
 import { parseClipSpeed } from '@/lib/social/videoClips/playbackSpeed'
 import { sanitizeAudioMutes } from '@/lib/social/videoClips/audioEdits'
+import { parseMusicChoice } from '@/lib/social/music/musicCatalog'
 
 export const runtime = 'nodejs'
 
@@ -65,6 +66,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     overlays: doc.overlays,
     speed: parseClipSpeed(doc.speed),
     audioMutes: doc.audioMutes ?? [],
+    music: doc.music ?? null,
     previewUrl: publicSocialPostsUrl(doc.cleanPath ?? clip.storage_path) || null,
     rendering: await hasActiveJob(ctx, clip.id),
   })
@@ -82,6 +84,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     overlays?: unknown
     speed?: unknown
     audioMutes?: unknown
+    music?: unknown
   }
   try {
     body = await req.json()
@@ -112,6 +115,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     overlays: sanitizeOverlays(body.overlays, duration),
     speed: parseClipSpeed(body.speed),
     audioMutes: sanitizeAudioMutes(body.audioMutes, duration),
+    music: parseMusicChoice(body.music),
   }
 
   const { error: updateErr } = await ctx.db

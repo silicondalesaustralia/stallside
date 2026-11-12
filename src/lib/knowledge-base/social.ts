@@ -27,7 +27,7 @@ export const socialArticles: KnowledgeArticle[] = [
     title: "Create and send a post",
     summary:
       "Pick platforms, add a photo, link a product or pre-order page, write a caption, and post or schedule.",
-    keywords: ["create", "compose", "caption", "schedule", "post now", "photo", "write for me", "write all", "headline", "hashtags", "tags", "slideshow", "slides", "carousel"],
+    keywords: ["create", "compose", "caption", "schedule", "post now", "photo", "write for me", "write all", "headline", "hashtags", "tags", "slideshow", "slides", "carousel", "music", "song", "audio", "volume"],
     related: ["social-ai-images", "social-posts-calendar", "social-connections"],
     availability: "Coming soon",
     ctas: [],
@@ -36,6 +36,7 @@ export const socialArticles: KnowledgeArticle[] = [
       "Under Add a photo, video or slideshow, search What's this post about? and pick a product, pre-order page or subscription. The AI uses its details and can use its photos.",
       "Add an image with Upload photo, From Library, or Create with AI.",
       "Or tap Slideshow: pick 3 to 5 images (from the item you picked, Upload images or Add from Library), optionally tell the AI what to say, and tap Make slides with AI. Edit the heading and text on each slide, choose Seconds per slide and Transition, then tap Create slides.",
+      "To add a song to a video or slideshow, open Add music. Search or pick a mood, tap play to listen, then tap Use. Set the Music volume (and the video's own sound), press play on the video to hear the mix, then tap Add music.",
       "Under Write your captions, tap Write all with AI to write a version for every chosen platform, with the Facebook headline, YouTube title and tags, Pinterest title and X text. Or write the main caption with Write for me (or Try another).",
       "To change one platform, open it under Each platform and edit its text, or tap its Write with AI. A blank platform caption uses the main caption, and each platform's own limit applies.",
       "Choose Post now, or Schedule and pick a time (Tonight 7pm, Tomorrow 7am, or your own). Times use your business's timezone.",
@@ -45,6 +46,7 @@ export const socialArticles: KnowledgeArticle[] = [
       "Post now needs every chosen platform connected. If one isn't, schedule it instead and it's added to your calendar as a manual post to do yourself.",
       "Videos post automatically to TikTok, YouTube, Pinterest, Facebook (as a Page video) and Instagram (as a Reel). For other platforms, download the video from Library and post it yourself.",
       "Slideshows are saved to Library as 9:16 videos, sized for TikTok, Reels, YouTube Shorts, X and Pinterest. When TikTok is picked, you can post the slides as swipeable photos instead.",
+      "Music is free to use with no credit needed. Adding it saves a new copy of the video in Library, and the original stays as it was. You can also add music in the clip and Library video editors under Background music.",
     ],
   },
   {

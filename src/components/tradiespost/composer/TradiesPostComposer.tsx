@@ -18,6 +18,7 @@ import { useComposerCaption } from '@/components/tradiespost/composer/useCompose
 import { useComposerTikTokGate } from '@/components/tradiespost/composer/useComposerTikTok'
 import { ComposerTikTokSlides } from '@/components/tradiespost/composer/ComposerTikTokSlides'
 import { ComposerSlideshow } from '@/components/social/slideshow/ComposerSlideshow'
+import { ComposerMusicPanel } from '@/components/tradiespost/composer/ComposerMusicPanel'
 import { useComposerPlatformCopy } from '@/components/tradiespost/composer/useComposerPlatformCopy'
 import { useComposerPlatformWriter } from '@/components/tradiespost/composer/useComposerPlatformWriter'
 import { ComposerPlatformSettingsSteps } from '@/components/tradiespost/composer/ComposerPlatformSettingsSteps'
@@ -100,6 +101,7 @@ export function TradiesPostComposer() {
                 tiktokSelected={platforms.includes('tiktok')} onMedia={setMedia} onSuggestedCaption={suggestCaption}
                 saved={drafts.slideshow} onDraft={drafts.setSlideshow} />}
             />
+            <ComposerMusicPanel media={media} setMedia={setMedia} />
           </ComposerStep>
           <ComposerCaptionStep platforms={platforms} headline={headline} onHeadline={setHeadline} captionState={captionState}
             onWriteForMe={writeForMe} copy={copy} writer={writer} xUsername={ctx.business?.x_username ?? null} />

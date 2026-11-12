@@ -4,6 +4,8 @@ import { sanitizeOverlays, type TextOverlay } from './textOverlays'
 import { normalizeSegments, type ClipSegment } from './timeline'
 import { parseClipSpeed } from './playbackSpeed'
 import type { TranscriptWord } from './types'
+import { parseMusicChoice } from '../music/musicCatalog'
+import type { MusicChoice } from '../music/musicTypes'
 
 /** One on-screen caption line. Times are seconds of the caption-free clip. */
 export type CaptionCue = { s: number; e: number; text: string }
@@ -24,6 +26,8 @@ export type CaptionsDoc = {
   speed?: number
   /** Voice ranges (clip time) played silent in the final render. */
   audioMutes?: ClipSegment[]
+  /** Background music mixed into the final render. */
+  music?: MusicChoice | null
 }
 
 const MAX_WORDS_PER_CUE = 4
@@ -117,5 +121,6 @@ export function parseCaptionsDoc(value: unknown): CaptionsDoc {
     overlays: sanitizeOverlays(raw.overlays, hasDuration ? cleanDuration : Number.MAX_SAFE_INTEGER),
     speed: parseClipSpeed(raw.speed),
     audioMutes: sanitizeAudioMutes(raw.audioMutes, hasDuration ? cleanDuration : Number.MAX_SAFE_INTEGER),
+    music: parseMusicChoice(raw.music),
   }
 }

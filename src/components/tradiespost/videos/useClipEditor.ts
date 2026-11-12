@@ -7,6 +7,7 @@ import type { CaptionCue } from '@/lib/social/videoClips/captionCues'
 import { DEFAULT_CAPTION_SETTINGS, type CaptionSettings } from '@/lib/social/videoClips/captionStyles'
 import { MAX_OVERLAYS, newOverlayAt, type TextOverlay } from '@/lib/social/videoClips/textOverlays'
 import type { ClipSegment } from '@/lib/social/videoClips/timeline'
+import type { MusicChoice } from '@/lib/social/music/musicTypes'
 import { cueIndexAt } from '@/lib/social/videoClips/timelineEdits'
 import { fetchClipCaptions, saveClipCaptions, type ClipCaptions, type ClipEdit } from './captionsApi'
 import { useClipPlayback } from './useClipPlayback'
@@ -31,6 +32,7 @@ export function useClipEditor(clipId: string, load: (id: string) => Promise<Clip
   const [settings, setSettings] = useState<CaptionSettings>(DEFAULT_CAPTION_SETTINGS)
   const [speed, setSpeed] = useState(1)
   const [audioParts, setAudioParts] = useState<AudioPart[]>([])
+  const [music, setMusic] = useState<MusicChoice | null>(null)
   const playback = useClipPlayback(videoRef, segments, audioParts)
   const { time } = playback
 
@@ -45,6 +47,7 @@ export function useClipEditor(clipId: string, load: (id: string) => Promise<Clip
         setOverlays(data.overlays ?? [])
         setSpeed(data.speed ?? 1)
         setAudioParts(audioPartsFrom(data.audioMutes ?? [], data.durationSeconds))
+        setMusic(data.music ?? null)
         setDuration(data.durationSeconds)
         setPreviewUrl(data.previewUrl)
         setRendering(data.rendering)
@@ -79,7 +82,7 @@ export function useClipEditor(clipId: string, load: (id: string) => Promise<Clip
     setSelectedOverlayId(null)
   }
 
-  const edit: ClipEdit = { cues, settings, segments, overlays, speed, audioMutes: audioMutesFrom(audioParts) }
+  const edit: ClipEdit = { cues, settings, segments, overlays, speed, audioMutes: audioMutesFrom(audioParts), music }
 
   async function save(): Promise<boolean> {
     setSaving(true)
@@ -122,6 +125,8 @@ export function useClipEditor(clipId: string, load: (id: string) => Promise<Clip
     setSpeed,
     audioParts,
     setAudioParts,
+    music,
+    setMusic,
     ...playback,
     activeIndex: cueIndexAt(cues, time),
     edit,

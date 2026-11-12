@@ -2,6 +2,7 @@ import type { CaptionCue } from '@/lib/social/videoClips/captionCues'
 import type { CaptionSettings } from '@/lib/social/videoClips/captionStyles'
 import type { TextOverlay } from '@/lib/social/videoClips/textOverlays'
 import type { ClipSegment } from '@/lib/social/videoClips/timeline'
+import type { MusicChoice } from '@/lib/social/music/musicTypes'
 
 export type ClipCaptions = {
   cues: CaptionCue[]
@@ -11,11 +12,12 @@ export type ClipCaptions = {
   overlays: TextOverlay[]
   speed: number
   audioMutes: ClipSegment[]
+  music: MusicChoice | null
   previewUrl: string | null
   rendering: boolean
 }
 
-export type ClipEdit = Pick<ClipCaptions, 'cues' | 'settings' | 'segments' | 'overlays' | 'speed' | 'audioMutes'>
+export type ClipEdit = Pick<ClipCaptions, 'cues' | 'settings' | 'segments' | 'overlays' | 'speed' | 'audioMutes' | 'music'>
 
 async function errorFrom(res: Response, fallback: string): Promise<Error> {
   const json = (await res.json().catch(() => ({}))) as { error?: string }

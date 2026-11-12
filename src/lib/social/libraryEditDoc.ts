@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { sanitizeAudioMutes } from '@/lib/social/videoClips/audioEdits'
+import { parseMusicChoice } from '@/lib/social/music/musicCatalog'
 import { parseCaptionsDoc, sanitizeCues, type CaptionsDoc } from '@/lib/social/videoClips/captionCues'
 import { parseCaptionSettings } from '@/lib/social/videoClips/captionStyles'
 import { parseClipSpeed } from '@/lib/social/videoClips/playbackSpeed'
@@ -51,6 +52,7 @@ export function sanitizeLibraryEdit(raw: unknown, asset: LibraryEditAsset): Capt
     overlays: sanitizeOverlays(body.overlays, duration),
     speed: parseClipSpeed(body.speed),
     audioMutes: sanitizeAudioMutes(body.audioMutes, duration),
+    music: parseMusicChoice(body.music),
   }
 }
 
@@ -66,6 +68,7 @@ export function libraryEditResponse(asset: LibraryEditAsset, flags: { transcribi
     overlays: doc.overlays,
     speed: parseClipSpeed(doc.speed),
     audioMutes: doc.audioMutes ?? [],
+    music: doc.music ?? null,
     previewUrl: asset.original_url,
     rendering: asset.processing_status === 'processing',
     hasTranscript: doc.words.length > 0,

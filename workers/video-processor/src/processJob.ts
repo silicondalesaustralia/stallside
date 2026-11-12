@@ -37,6 +37,8 @@ import {
 import { downloadSourceToFile } from './sourceDownload'
 import { uploadFileToR2 } from './r2Upload'
 import { prepareLibraryEdit } from './libraryEditRender'
+import { mixMusicIntoVideo } from './musicMix'
+import { parseCaptionsDoc } from '../../../src/lib/social/videoClips/captionCues'
 import { isLibraryR2Path } from '../../../src/lib/social/libraryVideoR2'
 
 export async function processVideoJob(
@@ -209,13 +211,14 @@ export async function processVideoJob(
       blurRegions: brandingConfig.blurRegions?.length ?? 0,
     })
     await runFfmpeg(ffmpegArgs)
-    const outputBytes = (await stat(outputPath)).size
+    const finalPath = await mixMusicIntoVideo({ videoPath: outputPath, music: parseCaptionsDoc(asset.captions).music, workDir })
+    const outputBytes = (await stat(finalPath)).size
     timer.log('ffmpeg complete', { bytes: outputBytes, preset: encode.preset, crf: encode.crf })
 
     timer.beginStage('upload')
     const uploadedBytes = isLibraryR2Path(job.output_storage_path)
-      ? await uploadFileToR2(job.output_storage_path, outputPath, 'video/mp4')
-      : await uploadProcessedVideo(db, job.output_storage_path, outputPath)
+      ? await uploadFileToR2(job.output_storage_path, finalPath, 'video/mp4')
+      : await uploadProcessedVideo(db, job.output_storage_path, finalPath)
     uploadedOutputPath = job.output_storage_path
     timer.log('upload complete', { bytes: uploadedBytes })
 

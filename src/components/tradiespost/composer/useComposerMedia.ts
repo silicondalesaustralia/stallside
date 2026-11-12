@@ -7,7 +7,8 @@ export type ComposerMedia = {
   url: string
   renderId: string | null
   aiGenerated: boolean
-  video?: { url: string; durationSeconds: number | null } | null
+  /** `silent`: no sound of its own (slideshows), so added music starts louder. */
+  video?: { url: string; durationSeconds: number | null; silent?: boolean } | null
   /** Library video asset id, so "Write with AI" can use the clip's script, on-screen text and name. */
   assetId?: string | null
   /** Ordered TikTok photo slides (includes the first). Absent = TikTok gets `url` only. */

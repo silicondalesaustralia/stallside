@@ -14,6 +14,7 @@ import {
 } from '../../../src/lib/social/socialVideoStorage'
 import { fetchBrandColor, renderCaptionedClip } from './captionRender'
 import { uploadFile } from './clipJobStorage'
+import { mixMusicIntoVideo } from './musicMix'
 import { transcribeLibraryAsset } from './libraryTranscribe'
 import { refundSocialCredits } from '../../../src/lib/socialCredits/ledger'
 import { libraryCaptionsCreditActionId } from '../../../src/lib/social/libraryCaptionsCredit'
@@ -81,7 +82,7 @@ export async function processCaptionJob(db: SupabaseClient, job: CaptionJobRow):
 
     const brandColor = await fetchBrandColor(db, asset.business_id)
     const rendered = await renderCaptionedClip({ cleanPath: cleanFile, workDir, captions: doc, brandColor })
-    const publishFile = rendered.path
+    const publishFile = await mixMusicIntoVideo({ videoPath: rendered.path, music: doc.music, workDir })
 
     const version = `${asset.id}-${Date.now().toString(36)}`
     let videoPath = cleanPath

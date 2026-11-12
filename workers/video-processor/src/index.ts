@@ -11,6 +11,7 @@ import { isR2Configured } from '../../../src/lib/social/videoClips/r2'
 import { claimNextCaptionJob, processCaptionJob } from './captionJob'
 import { recoverStaleCaptionJobs, requeueInterruptedCaptionJobs } from './captionJobRecovery'
 import { claimNextSlideshowJob, processSlideshowJob, recoverStaleSlideshowJobs } from './slideshowJob'
+import { claimNextMusicJob, processMusicJob, recoverStaleMusicJobs } from './musicJob'
 
 const POLL_MS = Number(process.env.VIDEO_PROCESSOR_POLL_MS || 3000)
 const WORKER_ID = process.env.VIDEO_PROCESSOR_WORKER_ID || `render-${randomUUID().slice(0, 8)}`
@@ -31,12 +32,17 @@ async function drainQuickJobs(db: SupabaseClient): Promise<boolean> {
   return ran
 }
 
-/** Slideshows need only Supabase storage and take seconds, so every worker runs them first. */
+/** Slideshows and music mixes need only storage and take seconds, so every worker runs them first. */
 async function drainSlideshowJobs(db: SupabaseClient): Promise<boolean> {
   let ran = false
   for (let job = await claimNextSlideshowJob(db, WORKER_ID); job; job = await claimNextSlideshowJob(db, WORKER_ID)) {
     console.log('[VideoProcessor] processing slideshow job', job.id)
     await processSlideshowJob(db, job)
+    ran = true
+  }
+  for (let job = await claimNextMusicJob(db, WORKER_ID); job; job = await claimNextMusicJob(db, WORKER_ID)) {
+    console.log('[VideoProcessor] processing music job', job.id)
+    await processMusicJob(db, job)
     ran = true
   }
   return ran
@@ -52,7 +58,8 @@ async function main() {
     (await recoverStaleProcessingJobs(db)) +
     (await recoverStaleClipJobs(db)) +
     (await recoverStaleCaptionJobs(db)) +
-    (await recoverStaleSlideshowJobs(db))
+    (await recoverStaleSlideshowJobs(db)) +
+    (await recoverStaleMusicJobs(db))
   if (startupRecovered > 0) {
     console.log('[VideoProcessor] recovered stale jobs on startup', startupRecovered)
   }
@@ -71,7 +78,8 @@ async function main() {
           (await recoverStaleProcessingJobs(db)) +
           (await recoverStaleClipJobs(db)) +
           (await recoverStaleCaptionJobs(db)) +
-          (await recoverStaleSlideshowJobs(db))
+          (await recoverStaleSlideshowJobs(db)) +
+          (await recoverStaleMusicJobs(db))
         if (recovered > 0) {
           console.log('[VideoProcessor] recovered stale jobs', recovered)
         }
