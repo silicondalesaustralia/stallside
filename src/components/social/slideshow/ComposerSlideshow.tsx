@@ -24,6 +24,8 @@ type Props = {
   saved: SlideshowDraft | null
   /** Latest in-progress work; null once the video is made (it is then the post's media). */
   onDraft: (draft: SlideshowDraft | null) => void
+  /** The post's current video (differs from the slideshow once music is added). */
+  currentVideoUrl?: string | null
 }
 
 /** Pick images -> AI writes a slide per image -> edit -> 9:16 MP4 for every platform. */
@@ -54,6 +56,7 @@ export function ComposerSlideshow(props: Props) {
       <SlideshowDone
         video={result.video}
         rendered={result.rendered}
+        currentVideoUrl={props.currentVideoUrl ?? null}
         tiktokSelected={tiktokSelected}
         onMedia={onMedia}
         onStartOver={() => {

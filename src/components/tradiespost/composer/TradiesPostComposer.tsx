@@ -101,9 +101,9 @@ export function TradiesPostComposer() {
               )}
               slideshow={<ComposerSlideshow jobId={jobId} linkedImages={linkedImages} business={ctx.business}
                 tiktokSelected={platforms.includes('tiktok')} onMedia={setMedia} onSuggestedCaption={suggestCaption}
-                saved={drafts.slideshow} onDraft={drafts.setSlideshow} />}
+                saved={drafts.slideshow} onDraft={drafts.setSlideshow} currentVideoUrl={media?.video?.url} />}
             />
-            <ComposerMusicPanel music={music} />
+            <ComposerMusicPanel music={music} videoUrl={media?.video?.url ?? null} />
           </ComposerStep>
           <ComposerCaptionStep platforms={platforms} headline={headline} onHeadline={setHeadline} captionState={captionState}
             onWriteForMe={writeForMe} copy={copy} writer={writer} xUsername={ctx.business?.x_username ?? null} />

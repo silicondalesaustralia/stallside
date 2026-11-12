@@ -10,6 +10,7 @@ import { slideshowPhotoMedia, slideshowVideoMedia } from '@/components/social/sl
 type Props = {
   video: SlideshowVideo
   rendered: SlideshowRenderResult
+  currentVideoUrl: string | null
   tiktokSelected: boolean
   onMedia: (media: ComposerMedia) => void
   onStartOver: () => void
@@ -18,10 +19,12 @@ type Props = {
 const choiceBtn = (on: boolean) =>
   `rounded-lg px-3 py-1.5 text-xs font-bold ${on ? 'bg-[#18181B] text-white' : 'border border-[#E4E4E7] bg-white text-zinc-700'}`
 
-export function SlideshowDone({ video, rendered, tiktokSelected, onMedia, onStartOver }: Props) {
+export function SlideshowDone({ video, rendered, currentVideoUrl, tiktokSelected, onMedia, onStartOver }: Props) {
   const [mode, setMode] = useState<'video' | 'photos'>('video')
+  const playUrl = currentVideoUrl || video.url
 
   const choose = (next: 'video' | 'photos') => {
+    if (next === mode) return
     setMode(next)
     onMedia(next === 'video' ? slideshowVideoMedia(video, rendered) : slideshowPhotoMedia(rendered))
   }
@@ -29,7 +32,7 @@ export function SlideshowDone({ video, rendered, tiktokSelected, onMedia, onStar
   return (
     <div className="space-y-3" data-testid="slideshow-done">
       <div className="flex items-start gap-3">
-        <video src={video.url} poster={video.thumbnailUrl ?? undefined} controls playsInline className="aspect-[9/16] w-40 shrink-0 rounded-xl bg-black" />
+        <video key={playUrl} src={playUrl} poster={video.thumbnailUrl ?? undefined} controls playsInline className="aspect-[9/16] w-40 shrink-0 rounded-xl bg-black" />
         <div className="space-y-1 text-sm">
           <p className="flex items-center gap-1.5 font-bold text-[#18181B]">
             <CheckCircle2 className="h-4 w-4 text-green-600" /> Your slideshow is ready

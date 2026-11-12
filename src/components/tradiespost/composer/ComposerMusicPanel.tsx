@@ -6,10 +6,14 @@ import { MusicSettings } from '@/components/social/music/MusicSettings'
 import { useMusicVideoSync } from '@/components/social/music/useMusicVideoSync'
 import type { useComposerMusic } from '@/components/tradiespost/composer/useComposerMusic'
 
-type Props = { music: ReturnType<typeof useComposerMusic> }
+type Props = {
+  music: ReturnType<typeof useComposerMusic>
+  /** The post's current video: the version with music once it is added. */
+  videoUrl: string | null
+}
 
 /** Create > video or slideshow: add a background song, previewed in sync, then mixed into a new Library video. */
-export function ComposerMusicPanel({ music }: Props) {
+export function ComposerMusicPanel({ music, videoUrl }: Props) {
   const [open, setOpen] = useState(false)
   const [video, setVideo] = useState<HTMLVideoElement | null>(null)
   useMusicVideoSync(video, music.pending ? music.music : null)
@@ -63,7 +67,14 @@ export function ComposerMusicPanel({ music }: Props) {
             </button>
           )}
           {music.applied && !music.pending && (
-            <p className="text-xs text-zinc-600">Your post will use a copy of the video with this song. The original stays in your Library.</p>
+            <div className="flex items-start gap-3">
+              {videoUrl && (
+                <video key={videoUrl} src={videoUrl} poster={base.url} controls playsInline className="aspect-[9/16] w-32 shrink-0 rounded-xl bg-black" />
+              )}
+              <p className="text-xs text-zinc-600">
+                This is your video with the song - press play to hear it. Your post will use this copy; the original stays in your Library.
+              </p>
+            </div>
           )}
           {music.error && <p className="text-xs font-semibold text-red-600">{music.error}</p>}
         </div>
