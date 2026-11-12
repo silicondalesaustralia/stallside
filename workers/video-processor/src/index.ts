@@ -10,6 +10,7 @@ import { processClipJob } from './processClipJob'
 import { isR2Configured } from '../../../src/lib/social/videoClips/r2'
 import { claimNextCaptionJob, processCaptionJob } from './captionJob'
 import { recoverStaleCaptionJobs, requeueInterruptedCaptionJobs } from './captionJobRecovery'
+import { claimNextSlideshowJob, processSlideshowJob, recoverStaleSlideshowJobs } from './slideshowJob'
 
 const POLL_MS = Number(process.env.VIDEO_PROCESSOR_POLL_MS || 3000)
 const WORKER_ID = process.env.VIDEO_PROCESSOR_WORKER_ID || `render-${randomUUID().slice(0, 8)}`
@@ -30,6 +31,17 @@ async function drainQuickJobs(db: SupabaseClient): Promise<boolean> {
   return ran
 }
 
+/** Slideshows need only Supabase storage and take seconds, so every worker runs them first. */
+async function drainSlideshowJobs(db: SupabaseClient): Promise<boolean> {
+  let ran = false
+  for (let job = await claimNextSlideshowJob(db, WORKER_ID); job; job = await claimNextSlideshowJob(db, WORKER_ID)) {
+    console.log('[VideoProcessor] processing slideshow job', job.id)
+    await processSlideshowJob(db, job)
+    ran = true
+  }
+  return ran
+}
+
 async function main() {
   console.log('[VideoProcessor] starting', { workerId: WORKER_ID, pollMs: POLL_MS })
   const db = createWorkerSupabase()
@@ -39,7 +51,8 @@ async function main() {
     (await requeueInterruptedCaptionJobs(db, WORKER_ID)) +
     (await recoverStaleProcessingJobs(db)) +
     (await recoverStaleClipJobs(db)) +
-    (await recoverStaleCaptionJobs(db))
+    (await recoverStaleCaptionJobs(db)) +
+    (await recoverStaleSlideshowJobs(db))
   if (startupRecovered > 0) {
     console.log('[VideoProcessor] recovered stale jobs on startup', startupRecovered)
   }
@@ -57,7 +70,8 @@ async function main() {
         const recovered =
           (await recoverStaleProcessingJobs(db)) +
           (await recoverStaleClipJobs(db)) +
-          (await recoverStaleCaptionJobs(db))
+          (await recoverStaleCaptionJobs(db)) +
+          (await recoverStaleSlideshowJobs(db))
         if (recovered > 0) {
           console.log('[VideoProcessor] recovered stale jobs', recovered)
         }
@@ -71,6 +85,7 @@ async function main() {
         console.log('[VideoProcessor] completed job', job.id)
         continue
       }
+      if (await drainSlideshowJobs(db)) continue
 
       // Clip editor jobs only run on workers set up for video clips (R2), so a stray or
       // under-provisioned worker can't claim them and stall them.

@@ -27,14 +27,15 @@ export const socialArticles: KnowledgeArticle[] = [
     title: "Create and send a post",
     summary:
       "Pick platforms, add a photo, link a product or pre-order page, write a caption, and post or schedule.",
-    keywords: ["create", "compose", "caption", "schedule", "post now", "photo", "write for me"],
+    keywords: ["create", "compose", "caption", "schedule", "post now", "photo", "write for me", "slideshow", "slides", "carousel"],
     related: ["social-ai-images", "social-posts-calendar", "social-connections"],
     availability: "Coming soon",
     ctas: [],
     steps: [
       "Open Social → Create. Under Where should it go?, pick Facebook, Instagram or TikTok. Connected accounts are picked for you.",
-      "Under Add a photo or video, search What's this post about? and pick a product, pre-order page or subscription. The AI uses its details and can use its photos.",
+      "Under Add a photo, video or slideshow, search What's this post about? and pick a product, pre-order page or subscription. The AI uses its details and can use its photos.",
       "Add an image with Upload photo, From Library, or Create with AI.",
+      "Or tap Slideshow: pick 3 to 5 images (from the item you picked, Upload images or Add from Library), optionally tell the AI what to say, and tap Make slides with AI. Edit the heading and text on each slide, choose Seconds per slide and Transition, then tap Create slides.",
       "Under Write a caption, tap Write for me (or Try another), then edit it. The shortest limit of your chosen platforms applies.",
       "Choose Post now, or Schedule and pick a time (Tonight 7pm, Tomorrow 7am, or your own). Times use your business's timezone.",
       "Tap Post or Schedule. You'll land on Posts, where you can see whether it worked.",
@@ -42,6 +43,7 @@ export const socialArticles: KnowledgeArticle[] = [
     tips: [
       "Post now needs every chosen platform connected. If one isn't, schedule it instead and it's added to your calendar as a manual post to do yourself.",
       "Videos post automatically to TikTok, YouTube and Pinterest. For other platforms, download the video from Library and post it yourself.",
+      "Slideshows are saved to Library as 9:16 videos, sized for TikTok, Reels, YouTube Shorts, X and Pinterest. When TikTok is picked, you can post the slides as swipeable photos instead.",
     ],
   },
   {

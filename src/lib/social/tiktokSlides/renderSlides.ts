@@ -20,7 +20,7 @@ export type RenderSlidesInput = {
   background: Buffer | null
 }
 
-function svgToPng(svg: string): Buffer {
+export function svgToPng(svg: string): Buffer {
   const fonts = assertBundledSocialFontsPresent()
   if (!fonts.ok) throw new Error(`Missing bundled fonts: ${fonts.missing.join(', ')}`)
   const resvg = new Resvg(svg, {

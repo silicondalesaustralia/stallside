@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState, type ReactNode } from 'react'
-import { ImageIcon, Loader2, Sparkles, Upload, Video } from 'lucide-react'
+import { GalleryHorizontalEnd, ImageIcon, Loader2, Sparkles, Upload, Video } from 'lucide-react'
 import { ComposerLibraryPicker } from '@/components/tradiespost/composer/ComposerLibraryPicker'
 import { ComposerLinkedPhotos } from '@/components/tradiespost/composer/ComposerLinkedPhotos'
 import { ComposerMediaPreviewThumb } from '@/components/tradiespost/composer/ComposerMediaPreviewThumb'
@@ -22,14 +22,23 @@ type Props = {
   photoExtras?: ReactNode
   /** Photos of the linked product / pre-order page. */
   linkedImages?: string[]
+  /** Slideshow builder shown on the Slideshow tab. */
+  slideshow?: ReactNode
 }
+
+type MediaKind = 'photo' | 'video' | 'slideshow'
+const KIND_TABS: { id: MediaKind; label: string; Icon: typeof ImageIcon }[] = [
+  { id: 'photo', label: 'Photo', Icon: ImageIcon },
+  { id: 'video', label: 'Video', Icon: Video },
+  { id: 'slideshow', label: 'Slideshow', Icon: GalleryHorizontalEnd },
+]
 
 const sourceBtn =
   'flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-[#E4E4E7] bg-white px-3 py-3 text-sm font-bold text-[#18181B] transition-colors hover:border-[#F5C518] disabled:opacity-50'
 
 export function ComposerMediaPicker(props: Props) {
-  const { media, uploading, uploadError, onUpload, onSelectLibrary, onOpenAi, onRemove, photoExtras, linkedImages } = props
-  const [kind, setKind] = useState<'photo' | 'video'>('photo')
+  const { media, uploading, uploadError, onUpload, onSelectLibrary, onOpenAi, onRemove, photoExtras, linkedImages, slideshow } = props
+  const [kind, setKind] = useState<MediaKind>('photo')
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [videoRefresh, setVideoRefresh] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -37,20 +46,20 @@ export function ComposerMediaPicker(props: Props) {
   return (
     <div data-testid="composer-media">
       <div className="mb-3 inline-flex rounded-xl border border-[#E4E4E7] bg-white p-1">
-        {(['photo', 'video'] as const).map((k) => (
+        {KIND_TABS.filter((t) => t.id !== 'slideshow' || slideshow).map(({ id, label, Icon }) => (
           <button
-            key={k}
+            key={id}
             type="button"
             onClick={() => {
-              setKind(k)
-              if (media && Boolean(media.video) !== (k === 'video')) onRemove()
+              if (media && (id === 'slideshow' ? id !== kind : Boolean(media.video) !== (id === 'video'))) onRemove()
+              setKind(id)
             }}
             className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-sm font-bold ${
-              kind === k ? 'bg-[#18181B] text-white' : 'text-zinc-600'
+              kind === id ? 'bg-[#18181B] text-white' : 'text-zinc-600'
             }`}
           >
-            {k === 'photo' ? <ImageIcon className="h-4 w-4" /> : <Video className="h-4 w-4" />}
-            {k === 'photo' ? 'Photo' : 'Video'}
+            <Icon className="h-4 w-4" />
+            {label}
           </button>
         ))}
       </div>
@@ -134,6 +143,7 @@ export function ComposerMediaPicker(props: Props) {
       />
       {uploadError && <p className="mt-2 text-xs font-semibold text-red-600">{uploadError}</p>}
       {kind === 'photo' && photoExtras}
+      {kind === 'slideshow' && slideshow}
     </div>
   )
 }

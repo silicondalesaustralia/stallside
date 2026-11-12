@@ -18,6 +18,7 @@ import { useComposerMedia } from '@/components/tradiespost/composer/useComposerM
 import { useComposerCaption } from '@/components/tradiespost/composer/useComposerCaption'
 import { useComposerTikTokGate } from '@/components/tradiespost/composer/useComposerTikTok'
 import { ComposerTikTokSlides } from '@/components/tradiespost/composer/ComposerTikTokSlides'
+import { ComposerSlideshow } from '@/components/social/slideshow/ComposerSlideshow'
 import { useComposerYouTubeGate } from '@/components/tradiespost/composer/useComposerYouTube'
 import { useComposerPinterestGate } from '@/components/tradiespost/composer/useComposerPinterest'
 import { useComposerXGate } from '@/components/tradiespost/composer/useComposerX'
@@ -51,6 +52,7 @@ export function TradiesPostComposer() {
   const x = useComposerXGate(platforms.includes('x') && connected.x, captionState.caption)
   const gates = { tiktok, youtube, pinterest, x }
   const { setCaption } = captionState
+  const suggestCaption = (c: string) => !captionState.caption.trim() && setCaption(c)
   useComposerStartState({ business: ctx.business, posts: ctx.posts, connected, setPlatforms, setCaption, setMedia })
 
   const handleDone = useCallback(
@@ -83,7 +85,7 @@ export function TradiesPostComposer() {
               onToggle={(p) => setPlatforms((prev) => toggleLibraryPlatform(prev, p))}
             />
           </ComposerStep>
-          <ComposerStep number={2} title="Add a photo or video">
+          <ComposerStep number={2} title="Add a photo, video or slideshow">
             <div className="mb-4 max-w-md">
               <SocialJobPicker
                 value={jobId}
@@ -101,9 +103,10 @@ export function TradiesPostComposer() {
               onRemove={() => setMedia(null)}
               linkedImages={linkedImages}
               photoExtras={platforms.includes('tiktok') && (
-                <ComposerTikTokSlides media={media} setMedia={setMedia} jobId={jobId}
-                  onSuggestedCaption={(c) => { if (!captionState.caption.trim()) setCaption(c) }} />
+                <ComposerTikTokSlides media={media} setMedia={setMedia} jobId={jobId} onSuggestedCaption={suggestCaption} />
               )}
+              slideshow={<ComposerSlideshow jobId={jobId} linkedImages={linkedImages} business={ctx.business}
+                tiktokSelected={platforms.includes('tiktok')} onMedia={setMedia} onSuggestedCaption={suggestCaption} />}
             />
           </ComposerStep>
           <ComposerCaptionStep

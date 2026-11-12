@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
     "/api/social/inspiration-photo-refine": SHARP_RESVG_NFT,
     "/api/social/inspiration-analyze": SHARP_LINUX_NFT,
     "/api/social/tiktok-slides": SHARP_RESVG_NFT,
+    "/api/social/slideshow/write": SHARP_LINUX_NFT,
+    "/api/social/slideshow/render": SHARP_RESVG_NFT,
     "/api/social/tiktok-media/[postId]/[index]": SHARP_LINUX_NFT,
     "/api/social/bundled-font/[file]": SOCIAL_FONTS_NFT,
     "/dashboard/data": SHARP_LINUX_NFT,
