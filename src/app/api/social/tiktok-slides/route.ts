@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireEffectiveBusinessContext } from '@/lib/utils/impersonation'
-import { isProxyableStorageUrl } from '@/lib/social/tiktok/tiktokMediaUrl'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import { assertSlideshowImagesAllowed, fetchSlideshowImage } from '@/lib/social/slideshow/slideshowImages'
 import { parseSlideRequest, type SlideDeckResult } from '@/lib/social/tiktokSlides/slideTypes'
 import { writeTikTokSlides } from '@/lib/social/tiktokSlides/writeSlides'
 import { renderAndStoreSlides } from '@/lib/social/tiktokSlides/renderSlides'
@@ -8,16 +9,10 @@ import { renderAndStoreSlides } from '@/lib/social/tiktokSlides/renderSlides'
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
-const MAX_BACKGROUND_BYTES = 15 * 1024 * 1024
-
-async function fetchBackground(url: string | null): Promise<Buffer | null> {
+async function fetchBackground(db: SupabaseClient, businessId: string, url: string | null): Promise<Buffer | null> {
   if (!url) return null
-  if (!isProxyableStorageUrl(url)) throw new Error('Background photo must come from your uploads or Library.')
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Could not load the background photo (HTTP ${res.status})`)
-  const bytes = Buffer.from(await res.arrayBuffer())
-  if (bytes.byteLength > MAX_BACKGROUND_BYTES) throw new Error('Background photo is too large.')
-  return bytes
+  await assertSlideshowImagesAllowed(db, businessId, [url])
+  return fetchSlideshowImage(url)
 }
 
 /** AI-written TikTok photo slides, rendered server-side (no render credits). */
@@ -50,7 +45,7 @@ export async function POST(req: NextRequest) {
     }
 
     const businessName = (business.name as string | null)?.trim() || 'Our team'
-    const background = await fetchBackground(request.backgroundUrl)
+    const background = await fetchBackground(db, businessId, request.backgroundUrl)
     const written = await writeTikTokSlides({
       businessId,
       businessName,
