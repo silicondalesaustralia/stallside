@@ -43,10 +43,15 @@ export function removeSlide<T extends SlideMedia>(media: T, index: number): T | 
   return withSlides(media, slideList(media).filter((_, i) => i !== index))
 }
 
-/** Rebuild composer media from a saved post (Duplicate), keeping TikTok slides. */
-export function mediaFromSavedPost(coverUrl: string | null, processed: Record<string, string[]> | null): SlideMedia | null {
+/** Rebuild composer media from a saved post (Duplicate), keeping its video or TikTok slides. */
+export function mediaFromSavedPost(
+  coverUrl: string | null,
+  processed: Record<string, string[]> | null,
+  video?: { url: string | null | undefined; durationSeconds: number | null | undefined } | null,
+): SlideMedia | null {
   if (!coverUrl) return null
   const media: SlideMedia = { url: coverUrl, renderId: null, aiGenerated: false }
+  if (video?.url) return { ...media, video: { url: video.url, durationSeconds: video.durationSeconds ?? null } }
   const slides = processed?.tiktok
   if (!Array.isArray(slides) || slides.length < 2) return media
   return { ...media, slides, slidesKind: slides[0] === coverUrl ? 'photos' : 'ai' }

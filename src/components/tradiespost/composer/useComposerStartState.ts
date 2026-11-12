@@ -40,7 +40,8 @@ export function useComposerStartState(params: {
     if (!source) return
     duplicateAppliedRef.current = true
     setCaption(source.caption ?? '')
-    setMedia(mediaFromSavedPost(postImageUrl(source), source.processed_photo_urls))
+    const video = source.media_type === 'video' ? { url: source.video_url, durationSeconds: source.video_duration_seconds } : null
+    setMedia(mediaFromSavedPost(postImageUrl(source), source.processed_photo_urls, video))
   }, [searchParams, posts, setCaption, setMedia])
 
   useVideoAssetFromQuery(setMedia)

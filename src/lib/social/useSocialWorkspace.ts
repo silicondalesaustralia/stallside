@@ -34,6 +34,9 @@ export interface SocialWorkspacePost {
   pinterest_error?: string | null
   x_post_id?: string | null
   x_error?: string | null
+  media_type?: string | null
+  video_url?: string | null
+  video_duration_seconds?: number | null
   created_at: string
 }
 

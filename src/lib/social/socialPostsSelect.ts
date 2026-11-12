@@ -28,5 +28,8 @@ export const SOCIAL_POSTS_SELECT = [
   'pinterest_error',
   'x_post_id',
   'x_error',
+  'media_type',
+  'video_url',
+  'video_duration_seconds',
   'created_at',
 ].join(', ')

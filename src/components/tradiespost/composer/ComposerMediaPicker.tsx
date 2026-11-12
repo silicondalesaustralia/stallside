@@ -40,7 +40,8 @@ const sourceBtn =
 
 export function ComposerMediaPicker(props: Props) {
   const { media, uploading, uploadError, onUpload, onSelectLibrary, onOpenAi, onRemove, photoExtras, linkedImages, slideshow } = props
-  const [kind, setKind] = useState<MediaKind>(props.initialKind ?? 'photo')
+  const [chosenKind, setKind] = useState<MediaKind>(props.initialKind ?? 'photo')
+  const kind: MediaKind = chosenKind === 'photo' && media?.video ? 'video' : chosenKind
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [videoRefresh, setVideoRefresh] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)

@@ -122,7 +122,7 @@ export async function postToTikTok(input: TikTokPublishInput): Promise<TikTokPub
       return {
         success: false,
         error:
-          'TikTok still sees your connection as our test app. Go to Connections, disconnect TikTok and connect it again, then tap Retry.',
+          "TikTok hasn't approved Vendl for public posts yet, so it only accepts posts set to Only me from a private account. Download the video from Library and post it in the TikTok app for now.",
       }
     }
     return { success: false, error: err instanceof Error ? err.message : String(err) }
