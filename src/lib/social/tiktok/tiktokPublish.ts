@@ -122,7 +122,7 @@ export async function postToTikTok(input: TikTokPublishInput): Promise<TikTokPub
       return {
         success: false,
         error:
-          'TikTok only allows private posts until our app is approved. Set your TikTok account to Private and choose "Only me", then try again.',
+          'TikTok still sees your connection as our test app. Go to Connections, disconnect TikTok and connect it again, then tap Retry.',
       }
     }
     return { success: false, error: err instanceof Error ? err.message : String(err) }

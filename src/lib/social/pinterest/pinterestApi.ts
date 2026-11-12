@@ -78,6 +78,9 @@ export async function pinterestRequest<T>(
       // Non-JSON error body: keep the status message.
     }
     console.error('[Pinterest] API error', { path, status: res.status, message })
+    if (/sandbox boards?/i.test(message)) {
+      throw new Error('That board was made in Pinterest test mode and cannot take real Pins. Duplicate the post and pick another board (or create a new one on Pinterest).')
+    }
     throw new Error(message)
   }
   return JSON.parse(text) as T
