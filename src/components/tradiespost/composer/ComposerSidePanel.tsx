@@ -42,6 +42,8 @@ type Props = {
   onDone: (result: { mode: ComposerMode }) => void
   /** Save draft control, shown under the submit button. */
   draftAction?: ReactNode
+  /** Media not ready to post yet (e.g. a chosen song not added to the video). */
+  mediaBlockReason?: string | null
 }
 
 export function ComposerSidePanel(props: Props) {
@@ -54,7 +56,7 @@ export function ComposerSidePanel(props: Props) {
 
   const businessTz = resolveBusinessTimeZone(business?.timezone)
   const publishingMode = schedulePublishingMode(platforms, connected)
-  const blockReason = composerBlockReason({
+  const blockReason = props.mediaBlockReason || composerBlockReason({
     mode,
     selected: platforms,
     connected,

@@ -4,20 +4,19 @@ import { useState } from 'react'
 import { CheckCircle2, ChevronDown, Loader2, Music } from 'lucide-react'
 import { MusicSettings } from '@/components/social/music/MusicSettings'
 import { useMusicVideoSync } from '@/components/social/music/useMusicVideoSync'
-import type { ComposerMedia } from '@/components/tradiespost/composer/useComposerMedia'
-import { useComposerMusic } from '@/components/tradiespost/composer/useComposerMusic'
+import type { useComposerMusic } from '@/components/tradiespost/composer/useComposerMusic'
 
-type Props = { media: ComposerMedia | null; setMedia: (media: ComposerMedia | null) => void }
+type Props = { music: ReturnType<typeof useComposerMusic> }
 
 /** Create > video or slideshow: add a background song, previewed in sync, then mixed into a new Library video. */
-export function ComposerMusicPanel({ media, setMedia }: Props) {
-  const music = useComposerMusic({ media, setMedia })
+export function ComposerMusicPanel({ music }: Props) {
   const [open, setOpen] = useState(false)
   const [video, setVideo] = useState<HTMLVideoElement | null>(null)
   useMusicVideoSync(video, music.pending ? music.music : null)
 
   const base = music.base
   if (!base?.video) return null
+  const expanded = open || music.pending || music.working
   const silent = Boolean(base.video.silent)
 
   return (
@@ -29,10 +28,10 @@ export function ComposerMusicPanel({ media, setMedia }: Props) {
           <span className="ml-1 font-normal text-zinc-500">(optional)</span>
         </span>
         {music.applied && <CheckCircle2 className="h-4 w-4 text-green-600" />}
-        <ChevronDown className={`h-4 w-4 text-zinc-500 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-4 w-4 text-zinc-500 transition-transform ${expanded ? 'rotate-180' : ''}`} />
       </button>
 
-      {open && (
+      {expanded && (
         <div className="mt-3 space-y-3">
           {music.pending && (
             <div className="flex items-start gap-3">

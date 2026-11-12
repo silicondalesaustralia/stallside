@@ -89,12 +89,19 @@ export function useComposerMusic({ media, setMedia }: Params) {
     setMedia(base)
   }, [applied, base, setMedia])
 
+  const pending = Boolean(base?.video) && Boolean(music) && !sameChoice(music, applied)
+
   return {
     base,
     music,
     setMusic,
     applied,
-    pending: Boolean(music) && !sameChoice(music, applied),
+    pending,
+    blockReason: working
+      ? 'Adding your music - one moment.'
+      : pending
+        ? 'Tap Add music to put the song on your video, or remove the song.'
+        : null,
     working,
     error,
     apply,

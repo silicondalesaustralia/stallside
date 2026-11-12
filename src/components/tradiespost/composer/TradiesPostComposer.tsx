@@ -19,6 +19,7 @@ import { useComposerTikTokGate } from '@/components/tradiespost/composer/useComp
 import { ComposerTikTokSlides } from '@/components/tradiespost/composer/ComposerTikTokSlides'
 import { ComposerSlideshow } from '@/components/social/slideshow/ComposerSlideshow'
 import { ComposerMusicPanel } from '@/components/tradiespost/composer/ComposerMusicPanel'
+import { useComposerMusic } from '@/components/tradiespost/composer/useComposerMusic'
 import { useComposerPlatformCopy } from '@/components/tradiespost/composer/useComposerPlatformCopy'
 import { useComposerPlatformWriter } from '@/components/tradiespost/composer/useComposerPlatformWriter'
 import { ComposerPlatformSettingsSteps } from '@/components/tradiespost/composer/ComposerPlatformSettingsSteps'
@@ -45,6 +46,7 @@ export function TradiesPostComposer() {
   const [headline, setHeadline] = useState('')
   const { media, setMedia, uploading, uploadError, upload } = useComposerMedia()
   const { jobId, onJobChange, restoreJob, linkedImages, linkedUrl } = useComposerLinkedItem({ initialJobId: searchParams.get('jobId'), media, setMedia })
+  const music = useComposerMusic({ media, setMedia })
   const captionState = useComposerCaption()
   const videoDuration = media?.video?.durationSeconds ?? null
   const tiktok = useComposerTikTokGate(platforms.includes('tiktok') && connected.tiktok, videoDuration)
@@ -101,7 +103,7 @@ export function TradiesPostComposer() {
                 tiktokSelected={platforms.includes('tiktok')} onMedia={setMedia} onSuggestedCaption={suggestCaption}
                 saved={drafts.slideshow} onDraft={drafts.setSlideshow} />}
             />
-            <ComposerMusicPanel media={media} setMedia={setMedia} />
+            <ComposerMusicPanel music={music} />
           </ComposerStep>
           <ComposerCaptionStep platforms={platforms} headline={headline} onHeadline={setHeadline} captionState={captionState}
             onWriteForMe={writeForMe} copy={copy} writer={writer} xUsername={ctx.business?.x_username ?? null} />
@@ -124,6 +126,7 @@ export function TradiesPostComposer() {
           jobId={jobId}
           gates={gates}
           onDone={handleDone}
+          mediaBlockReason={music.blockReason}
           draftAction={<ComposerDraftButton saving={draft.saving} savedAt={draft.savedAt} error={draft.error} onSave={() => void draft.save()} />}
         />
       </div>
