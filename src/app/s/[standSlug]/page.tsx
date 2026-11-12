@@ -20,7 +20,7 @@ import StandCategoryChips from "./StandCategoryChips";
 import StandGoToCartBar from "./StandGoToCartBar";
 import StandSocialLinks from "./StandSocialLinks";
 import StandStoreHeader from "./StandStoreHeader";
-import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
+import { redirectStandToFarmstand } from "@/lib/storefront/legacy-stand-redirect";
 
 export async function generateMetadata({
   params,
@@ -46,7 +46,7 @@ export default async function PublicStandPage({
   params: Promise<{ standSlug: string }>;
 }) {
   const { standSlug } = await params;
-  await redirectLegacyStandToWebsite(standSlug, { kind: "home" });
+  await redirectStandToFarmstand(standSlug);
   const slug = decodeURIComponent(standSlug).trim().toLowerCase();
   const stand = await loadPublicStandCatalog(slug, "catalog");
 

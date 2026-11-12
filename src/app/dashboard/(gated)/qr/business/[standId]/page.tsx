@@ -4,10 +4,11 @@ import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import { APP_DOMAIN } from "@/lib/constants";
-import { standCheckoutUrl, standQrDataUrl } from "@/lib/stand-qr";
+import { standQrDataUrl } from "@/lib/stand-qr";
 import { standPaymentBrands } from "@/lib/stand-payment-brands";
 import { loadPosterExtras } from "@/lib/qr/poster-extras";
-import { standPosterBrand } from "@/lib/storefront/stand-brand-source";
+import { standFarmstandBase } from "@/lib/farmstand/resolve";
+import { withCartModePath } from "@/lib/farmstand/paths";
 import QrStudio from "@/app/dashboard/(gated)/businesses/[standId]/qr/QrStudio";
 
 export default async function BusinessQrPage({ params }: { params: Promise<{ standId: string }> }) {
@@ -16,11 +17,11 @@ export default async function BusinessQrPage({ params }: { params: Promise<{ sta
   const stand = await prisma.stand.findFirst({ where: { id: standId, ownerId: owner.id } });
   if (!stand) notFound();
 
-  const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
-  const [qrDataUrl, extras, brand, isPro] = await Promise.all([
+  const farmstandBaseUrl = await standFarmstandBase(stand.slug);
+  const checkoutUrl = withCartModePath(farmstandBaseUrl, stand.cartMode);
+  const [qrDataUrl, extras, isPro] = await Promise.all([
     standQrDataUrl(checkoutUrl, 640),
     loadPosterExtras(stand.id),
-    standPosterBrand(stand),
     ownerIdHasProAccess(owner.id),
   ]);
   const paymentBrands = standPaymentBrands(stand, { ...owner, user: { email: user.email, role: user.role } });
@@ -42,7 +43,8 @@ export default async function BusinessQrPage({ params }: { params: Promise<{ sta
         ) : null}
       </div>
       <p className="text-sm text-[var(--muted)] print:hidden">
-        This is your business&apos;s main QR code. Posters already printed with it keep working.
+        This is your farmstand QR code. It opens your farmstand, even if you also have a website. Posters
+        already printed with it keep working.
       </p>
 
       <QrStudio
@@ -62,12 +64,13 @@ export default async function BusinessQrPage({ params }: { params: Promise<{ sta
           posterShowFreshness: stand.posterShowFreshness,
           posterShowHowItWorks: stand.posterShowHowItWorks,
           slug: stand.slug,
-          logoUrl: brand.logoUrl,
-          accentColor: brand.accentColor,
-          secondaryColor: brand.secondaryColor,
+          logoUrl: stand.logoUrl,
+          accentColor: stand.accentColor,
+          secondaryColor: stand.secondaryColor,
         }}
         siteUrl={`https://${APP_DOMAIN}`}
         paymentBrands={paymentBrands}
+        farmstandBaseUrl={farmstandBaseUrl}
         initialCheckoutUrl={checkoutUrl}
         initialQrDataUrl={qrDataUrl}
         fileName={`${stand.slug}-qr.png`}

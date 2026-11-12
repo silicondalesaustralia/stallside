@@ -45,8 +45,14 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
       { href: "/dashboard/suppliers", label: "Suppliers" },
       { href: "/dashboard/collections", label: "Pick Ups & Delivery" },
       { href: "/dashboard/calendar", label: "Calendar", pro: true },
-      { href: "/dashboard/qr", label: "QR codes" },
       { href: "/dashboard/data", label: "Data management" },
+    ],
+  },
+  {
+    heading: "Farmstand",
+    links: [
+      { href: "/dashboard/farmstand", label: "Farmstand" },
+      { href: "/dashboard/qr", label: "QR codes" },
     ],
   },
   {

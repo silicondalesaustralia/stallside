@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { CURRENCIES } from "@/lib/constants";
 import { STAND_TIMEZONES, resolveStandTimezone } from "@/lib/stand-timezone";
 import { STAND_SOCIALS } from "@/lib/stand-social";
-import { standCheckoutUrl } from "@/lib/stand-qr";
 import { standPublicHome } from "@/lib/storefront/legacy-stand-redirect";
 import { businessSiteUrl } from "@/lib/storefront/business-site-url";
 
@@ -16,7 +15,7 @@ export async function loadBusinessDetails(ownerId: string, standId: string): Pro
   const stand = await prisma.stand.findFirst({ where: { id: standId, ownerId } });
   if (!stand) return null;
   const [publicHome, site] = await Promise.all([
-    standPublicHome(stand.slug, standCheckoutUrl(stand.slug, stand.cartMode)),
+    standPublicHome(stand.slug, stand.cartMode),
     businessSiteUrl(ownerId),
   ]);
   return {

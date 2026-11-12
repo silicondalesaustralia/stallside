@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition, type ReactNode } from "react";
 import QRCode from "qrcode";
 import type { PaymentBrand } from "@/components/PaymentBrandIcon";
-import { standCheckoutUrl } from "@/lib/stand-qr";
+import { withCartModePath } from "@/lib/farmstand/paths";
 import { updateStandQrPrint } from "../../actions";
 import type { QrPrintSize } from "@/lib/print-qr-sheet";
 import QrActions from "./QrActions";
@@ -44,6 +44,7 @@ export default function QrStudio({
   stand,
   siteUrl,
   paymentBrands,
+  farmstandBaseUrl,
   initialCheckoutUrl,
   initialQrDataUrl,
   fileName,
@@ -55,6 +56,8 @@ export default function QrStudio({
   stand: QrStudioStand;
   siteUrl: string;
   paymentBrands: PaymentBrand[];
+  /** Farmstand home; Customer Choice adds `/pay`. */
+  farmstandBaseUrl: string;
   initialCheckoutUrl: string;
   initialQrDataUrl: string;
   fileName: string;
@@ -97,8 +100,8 @@ export default function QrStudio({
   );
 
   const checkoutUrl = useMemo(
-    () => standCheckoutUrl(stand.slug, cartMode),
-    [stand.slug, cartMode],
+    () => withCartModePath(farmstandBaseUrl, cartMode),
+    [farmstandBaseUrl, cartMode],
   );
   const [qrDataUrl, setQrDataUrl] = useState(initialQrDataUrl);
 

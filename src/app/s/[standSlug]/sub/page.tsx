@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { subscriptionsIndexMetadata } from "@/lib/stand-seo";
 import SubscriptionsIndexView from "./SubscriptionsIndexView";
-import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
+import { redirectStandToFarmstand } from "@/lib/storefront/legacy-stand-redirect";
 
 export async function generateMetadata({
   params,
@@ -36,6 +36,6 @@ export default async function PublicSubscriptionsIndexPage({
   params: Promise<{ standSlug: string }>;
 }) {
   const { standSlug } = await params;
-  await redirectLegacyStandToWebsite(standSlug, { kind: "subscriptions" });
+  await redirectStandToFarmstand(standSlug);
   return <SubscriptionsIndexView standSlug={standSlug} />;
 }

@@ -5,28 +5,20 @@ import DashPrimaryCta from "@/components/DashPrimaryCta";
 import PageHeader from "@/components/dashboard/ui/PageHeader";
 import ProGateCard from "@/components/dashboard/ProGateCard";
 import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
-import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
 import { listOwnerQrCodes } from "@/lib/qr/owner-codes";
+import { standFarmstandUrl } from "@/lib/farmstand/resolve";
 import BusinessQrList from "./BusinessQrList";
 import QrCodeList from "./QrCodeList";
 
 export default async function WebsiteQrListPage() {
   const { owner } = await requireOwner();
 
-  const [stands, storefront, codes, isPro] = await Promise.all([
+  const [stands, codes, isPro] = await Promise.all([
     prisma.stand.findMany({
       where: { ownerId: owner.id, isActive: true },
       orderBy: { name: "asc" },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        cartMode: true,
-        qrLinkMode: true,
-        qrCategory: { select: { title: true, slug: true } },
-      },
+      select: { id: true, name: true, slug: true, cartMode: true },
     }),
-    prisma.storefront.findUnique({ where: { ownerId: owner.id }, select: { id: true, slug: true } }),
     listOwnerQrCodes(owner.id),
     ownerIdHasProAccess(owner.id),
   ]);
@@ -40,7 +32,9 @@ export default async function WebsiteQrListPage() {
     );
   }
 
-  const primaryCustomHostname = storefront ? await loadPrimaryCustomHostname(storefront.id) : null;
+  const farmstandRows = await Promise.all(
+    stands.map(async (stand) => ({ ...stand, url: await standFarmstandUrl(stand.slug, stand.cartMode) })),
+  );
   return (
     <main className="flex flex-col gap-5">
       <PageHeader
@@ -54,11 +48,7 @@ export default async function WebsiteQrListPage() {
         actions={isPro ? <DashPrimaryCta href="/dashboard/qr/new">+ New QR code</DashPrimaryCta> : null}
       />
 
-      <BusinessQrList
-        stands={stands}
-        storefrontSlug={storefront?.slug ?? null}
-        primaryCustomHostname={primaryCustomHostname}
-      />
+      <BusinessQrList stands={farmstandRows} />
       {isPro ? <QrCodeList codes={codes} /> : <ProGateCard feature="qrCodes" />}
     </main>
   );

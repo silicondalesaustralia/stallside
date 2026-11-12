@@ -8,7 +8,7 @@ import {
   standSectionMetadata,
 } from "@/lib/stand-seo";
 import { loadStandCartData } from "@/lib/storefront/stand-cart-props";
-import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
+import { redirectStandToFarmstand } from "@/lib/storefront/legacy-stand-redirect";
 import StandCartCheckout from "../StandCartCheckout";
 import StandStoreHeader from "../StandStoreHeader";
 
@@ -57,7 +57,7 @@ export default async function StandCartPage({
   if (stand.cartMode === "CUSTOMER_CHOICE") {
     redirect(`${standCatalogPath(stand.slug)}/pay`);
   }
-  await redirectLegacyStandToWebsite(stand.slug, { kind: "cart" });
+  await redirectStandToFarmstand(stand.slug);
 
   return (
     <main

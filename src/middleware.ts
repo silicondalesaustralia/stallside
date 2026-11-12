@@ -12,6 +12,7 @@ import { betaAppMainOnlyPath, betaAppSkipsCron, mainAppUrl } from "@/lib/beta-ap
 import { requestPublicHostname } from "@/lib/tenancy/request-hostname";
 import { legacyStorefrontRedirect } from "@/lib/tenancy/legacy-redirects";
 import { resolveCustomDomainSlug } from "@/lib/domains/middleware-lookup";
+import { farmstandTenantPath } from "@/lib/tenancy/farmstand-routing";
 
 const STALLSIDE_HOSTS = new Set(["stallside.app", "www.stallside.app"]);
 
@@ -89,19 +90,20 @@ function shouldRedirectTenantToApex(pathname: string): boolean {
   );
 }
 
-function applyTenantRewrite(
+async function applyTenantRewrite(
   request: NextRequest,
   slug: string,
   pathname: string,
 ) {
-  if (shouldRedirectTenantToApex(pathname)) {
+  const farmstand = await farmstandTenantPath(slug, pathname, request.nextUrl);
+  if (shouldRedirectTenantToApex(pathname) && !farmstand) {
     const dest = new URL(
       `${apexOrigin(request)}${pathname}${request.nextUrl.search}`,
     );
     return NextResponse.redirect(dest, 307);
   }
 
-  const rewritten = tenantRewritePath(slug, pathname);
+  const rewritten = farmstand ?? tenantRewritePath(slug, pathname);
   if (rewritten && rewritten !== pathname) {
     const url = request.nextUrl.clone();
     url.pathname = rewritten;
@@ -147,7 +149,10 @@ export async function middleware(request: NextRequest) {
 
   // Must reach the Node host-lookup route before custom-domain handling.
   // Otherwise middleware fetches itself, gets /not-found, and stallside → vendl.
-  if (pathname.startsWith("/api/tenancy/host-lookup")) {
+  if (
+    pathname.startsWith("/api/tenancy/host-lookup") ||
+    pathname.startsWith("/api/tenancy/farmstand-lookup")
+  ) {
     return NextResponse.next();
   }
 

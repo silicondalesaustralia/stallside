@@ -1,7 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { standCheckoutUrl } from "@/lib/stand-qr";
 import { standPublicHome } from "@/lib/storefront/legacy-stand-redirect";
 import { businessSiteUrl } from "@/lib/storefront/business-site-url";
 import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
@@ -14,8 +13,6 @@ import BusinessSetupTabs, {
 } from "./BusinessSetupTabs";
 import StandBrandingForm from "./StandBrandingForm";
 import StandSocialForm from "./StandSocialForm";
-import BrandingManagedByWebsite from "./BrandingManagedByWebsite";
-import { websiteBrandForStand } from "@/lib/storefront/stand-brand-source";
 import StandDeleteButton from "./StandDeleteButton";
 import StandEditForm from "./StandEditForm";
 import SyncSelectedBusiness from "@/components/SyncSelectedBusiness";
@@ -48,17 +45,11 @@ export default async function StandDetailPage({
   });
   if (!stand) notFound();
 
-  const checkoutUrl = standCheckoutUrl(stand.slug, stand.cartMode);
-  const [isPro, websiteBrand, site] = await Promise.all([
+  const [isPro, site, publicHome] = await Promise.all([
     ownerIdHasProAccess(owner.id),
-    websiteBrandForStand(stand.slug),
     businessSiteUrl(owner.id),
+    standPublicHome(stand.slug, stand.cartMode),
   ]);
-  const checkout = new URL(checkoutUrl);
-  const publicHome = isPro
-    ? await standPublicHome(stand.slug, checkoutUrl)
-    : { url: checkoutUrl, label: `${checkout.host}${checkout.pathname}` };
-  const brandingInWebStudio = websiteBrand !== null;
   return (
     <main className="flex flex-col gap-8">
       <SyncSelectedBusiness
@@ -77,7 +68,7 @@ export default async function StandDetailPage({
         productCount={stand.products.length}
       />
 
-      <BusinessSetupTabs standId={stand.id} active={tab} hideBranding={brandingInWebStudio} />
+      <BusinessSetupTabs standId={stand.id} active={tab} />
 
       {tab === "details" ? <StandEditForm stand={stand} site={site} isPro={isPro} storeLink={publicHome} /> : null}
       {tab === "details" ? (
@@ -92,8 +83,7 @@ export default async function StandDetailPage({
           }}
         />
       ) : null}
-      {tab === "branding" && brandingInWebStudio ? <BrandingManagedByWebsite /> : null}
-      {tab === "branding" && !brandingInWebStudio ? (
+      {tab === "branding" ? (
         <StandBrandingForm
           standId={stand.id}
           branding={{

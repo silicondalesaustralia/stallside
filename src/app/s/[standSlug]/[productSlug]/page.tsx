@@ -11,7 +11,7 @@ import { productLiveWhere } from "@/lib/product-visibility";
 import { publicVariantsInclude } from "@/lib/product-variants/public-variant";
 import ProductDetailActions from "../ProductDetailActions";
 import StandStoreHeader from "../StandStoreHeader";
-import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
+import { redirectStandToFarmstand } from "@/lib/storefront/legacy-stand-redirect";
 import { richTextToPlainOrNull } from "@/lib/website/rich-text/plain";
 import RichText from "@/components/studio/RichText";
 
@@ -59,7 +59,7 @@ export default async function PublicProductPage({
   params: Promise<{ standSlug: string; productSlug: string }>;
 }) {
   const { standSlug, productSlug } = await params;
-  await redirectLegacyStandToWebsite(standSlug, { kind: "product", productSlug });
+  await redirectStandToFarmstand(standSlug);
   const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
   const productKey = decodeURIComponent(productSlug).trim().toLowerCase();
   if (isReservedProductSlug(productKey)) notFound();

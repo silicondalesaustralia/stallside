@@ -1,102 +1,44 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { CartMode, ProductChannelType } from "@/generated/prisma/client";
-import { businessPageProductWhere } from "@/lib/product-visibility";
-import { publishedWebsiteForStand, standWebsiteUrl, type StandWebsite } from "./stand-website";
-
-/** Where an old stand page lives on the website. Pay (Customer Choice), checkout and manage links never move. */
-export type LegacyStandTarget =
-  | { kind: "home" }
-  | { kind: "cart" }
-  | { kind: "product"; productSlug: string }
-  | { kind: "category"; categorySlug: string }
-  | { kind: "preOrders" }
-  | { kind: "preOrder"; pageSlug: string }
-  | { kind: "subscriptions" }
-  | { kind: "subscription"; offerSlug: string };
+import type { CartMode } from "@/generated/prisma/client";
+import { farmstandSubdomainBase, standFarmstandUrl } from "@/lib/farmstand/resolve";
 
 export function legacyStandRedirectsEnabled(): boolean {
   return process.env.LEGACY_STAND_REDIRECTS !== "off";
 }
 
-const seg = (s: string) => encodeURIComponent(decodeURIComponent(s).trim().toLowerCase());
-
-async function websitePath(site: StandWebsite, target: LegacyStandTarget): Promise<string> {
-  switch (target.kind) {
-    case "home":
-      return "/";
-    case "cart":
-      return "/cart";
-    case "category":
-      return `/${seg(target.categorySlug)}`;
-    case "preOrders":
-      return "/pre-orders";
-    case "preOrder":
-      return `/pre-orders/${seg(target.pageSlug)}`;
-    case "subscriptions":
-      return "/subscriptions";
-    case "subscription":
-      return `/subscriptions/${seg(target.offerSlug)}`;
-    case "product": {
-      const slug = decodeURIComponent(target.productSlug).trim().toLowerCase();
-      const onSite = await prisma.product.findFirst({
-        where: {
-          AND: [
-            { slug },
-            businessPageProductWhere,
-            { channels: { some: { channelType: ProductChannelType.ONLINE, standId: site.standId, isEnabled: true } } },
-          ],
-        },
-        select: { id: true },
-      });
-      return onSite ? `/products/${seg(slug)}` : "/shop";
-    }
-  }
-}
-
 /**
- * Sends old `vendl.app/s/{stand}/…` links and printed QR codes to the same page on the
- * stand's published website, in one hop. Temporary (307) so unpublishing restores the
- * stand pages. Only acts on requests for `/s/…` itself, so website routes that reuse
- * stand page components are never redirected.
+ * Sends `vendl.app/s/{stand}/…` links and printed QR codes to the same page on the stand's
+ * farmstand (`{sub}.vendl.app/farmstand/…`), whether or not the owner has a website.
+ * Requests already on a seller host are served in place. Pay (Customer Choice), checkout
+ * and manage pages don't call this, so they never move.
  */
-export async function redirectLegacyStandToWebsite(standSlug: string, target: LegacyStandTarget): Promise<void> {
+export async function redirectStandToFarmstand(standSlug: string): Promise<void> {
   if (!legacyStandRedirectsEnabled()) return;
   const h = await headers();
+  if (h.get("x-vendl-tenant-slug")) return;
   const pathname = h.get("x-stallside-pathname") ?? "";
   if (!pathname.startsWith("/s/")) return;
 
   let destination: string | null = null;
   try {
-    const site = await publishedWebsiteForStand(decodeURIComponent(standSlug));
-    if (site && site.cartMode !== CartMode.CUSTOMER_CHOICE) {
-      destination = `${standWebsiteUrl(site, await websitePath(site, target))}${h.get("x-stallside-search") ?? ""}`;
+    const base = await farmstandSubdomainBase(decodeURIComponent(standSlug));
+    if (base) {
+      const rest = pathname.split("/").slice(3).join("/");
+      destination = `${base}${rest ? `/${rest}` : ""}${h.get("x-stallside-search") ?? ""}`;
     }
   } catch (err) {
-    console.error("[legacy-stand-redirect] lookup failed; serving stand page", err);
+    console.error("[stand-redirect] farmstand lookup failed; serving stand page", err);
   }
   if (destination) redirect(destination);
 }
 
-/**
- * The stand's live public home as owners should see it: the website (custom domain or
- * subdomain) when `/s/{stand}` would redirect there, otherwise the stand checkout URL.
- */
+/** The stand's public farmstand link as owners should see it. */
 export async function standPublicHome(
   standSlug: string,
-  checkoutUrl: string,
+  cartMode: CartMode | "PRODUCT" | "CUSTOMER_CHOICE",
 ): Promise<{ url: string; label: string }> {
-  const fallback = { url: checkoutUrl, label: new URL(checkoutUrl).pathname };
-  if (!legacyStandRedirectsEnabled()) return fallback;
-  try {
-    const site = await publishedWebsiteForStand(standSlug);
-    if (!site || site.cartMode === CartMode.CUSTOMER_CHOICE) return fallback;
-    const url = standWebsiteUrl(site, "/");
-    const { host, pathname } = new URL(url);
-    return { url, label: `${host}${pathname === "/" ? "" : pathname}` };
-  } catch (err) {
-    console.error("[standPublicHome] website lookup failed; showing stand checkout", err);
-    return fallback;
-  }
+  const url = await standFarmstandUrl(standSlug, cartMode);
+  const { host, pathname } = new URL(url);
+  return { url, label: `${host}${pathname === "/" ? "" : pathname}` };
 }

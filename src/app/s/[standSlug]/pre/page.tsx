@@ -5,7 +5,7 @@ import {
   standSectionMetadata,
 } from "@/lib/stand-seo";
 import PreOrdersIndexView from "./PreOrdersIndexView";
-import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
+import { redirectStandToFarmstand } from "@/lib/storefront/legacy-stand-redirect";
 
 export async function generateMetadata({
   params,
@@ -42,6 +42,6 @@ export default async function PublicPreOrdersIndexPage({
   params: Promise<{ standSlug: string }>;
 }) {
   const { standSlug } = await params;
-  await redirectLegacyStandToWebsite(standSlug, { kind: "preOrders" });
+  await redirectStandToFarmstand(standSlug);
   return <PreOrdersIndexView standSlug={standSlug} />;
 }

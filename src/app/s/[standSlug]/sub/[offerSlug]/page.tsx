@@ -8,7 +8,7 @@ import { standSectionMetadata } from "@/lib/stand-seo";
 import { loadSubscriptionOffer } from "@/lib/storefront/views/load-subscription-offer";
 import StandStoreHeader from "../../StandStoreHeader";
 import SubscriptionOfferContent from "./SubscriptionOfferContent";
-import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
+import { redirectStandToFarmstand } from "@/lib/storefront/legacy-stand-redirect";
 
 export async function generateMetadata({
   params,
@@ -53,7 +53,7 @@ export default async function PublicSubscriptionOfferPage({
   searchParams: Promise<{ cancelled?: string }>;
 }) {
   const { standSlug, offerSlug } = await params;
-  await redirectLegacyStandToWebsite(standSlug, { kind: "subscription", offerSlug });
+  await redirectStandToFarmstand(standSlug);
   const sp = await searchParams;
   const data = await loadSubscriptionOffer({ standSlug, offerSlug });
   if (!data) notFound();

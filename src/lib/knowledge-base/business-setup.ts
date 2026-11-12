@@ -29,11 +29,11 @@ export const businessSetupArticles: KnowledgeArticle[] = [
     title: "Design and print your QR sign",
     summary:
       "Set the sign's wording and sections, preview it live, then print A4, half or quarter A4, or download a PNG.",
-    keywords: ["qr", "print", "poster", "sign", "png", "a4", "cta"],
+    keywords: ["qr", "print", "poster", "sign", "png", "a4", "cta", "farmstand"],
     related: ["first-stand", "customer-choice-cart", "stand-branding", "volume-prices"],
-    ctas: [{ label: "My Businesses", href: "/dashboard/businesses" }],
+    ctas: [{ label: "Farmstand", href: "/dashboard/farmstand" }],
     steps: [
-      "Open your business and tap QR & print at the top.",
+      "In the sidebar under Farmstand, tap Farmstand, then Print QR poster.",
       "Under Edit QR sign, choose the Cart mode (Product cart or Customer Choice cart), then fill in Stand name, Location, Sign message and Instructions. Add an Attention callout for anything urgent.",
       "Under Poster sections, choose what to show: Big CTA headline (with your own CTA text), Sign message + instructions, Bundle / volume prices, First-order offer, Freshness lines, and How it works.",
       "Check the live preview, then tap Save sign details.",
@@ -41,6 +41,7 @@ export const businessSetupArticles: KnowledgeArticle[] = [
       "Use Copy checkout link to share the same page online.",
     ],
     tips: [
+      "Your QR code opens your farmstand at your web address followed by /farmstand, even if you also have a website. The farmstand and website share products, cart and checkout.",
       "The payment icons on the poster follow what's ticked under Payments → Checkout payments.",
       "First-order offer only shows once you've turned on a first-order discount on the Upsells tab.",
       "Reprint after changing your logo, cart mode or checkout link.",
@@ -55,7 +56,7 @@ export const businessSetupArticles: KnowledgeArticle[] = [
     related: ["qr-signs", "cash-payid", "customer-payments"],
     ctas: [{ label: "My Businesses", href: "/dashboard/businesses" }],
     steps: [
-      "Open your business → QR & print. Under Cart mode, choose Customer Choice cart and tap Save sign details.",
+      "Open Farmstand → Print QR poster. Under Cart mode, choose Customer Choice cart and tap Save sign details.",
       "Reprint the QR. The code now opens a Pay what you picked page.",
       "Shoppers type each price (for example $10, then $5), see a running Total and tap Continue to pay.",
       "They pay with cash, PayID (AUD) or card through Stripe, depending on what you've ticked under Payments → Checkout payments.",
@@ -85,7 +86,7 @@ export const businessSetupArticles: KnowledgeArticle[] = [
       "For social links, open the Business Details tab and add Instagram, Facebook, TikTok, YouTube or Website. Leave a field blank to hide it.",
     ],
     tips: [
-      "Once your website is published, the Branding tab goes away. Set your logo, colours and fonts in Web Studio → Branding instead; they apply to your website, checkout and QR posters.",
+      "The Branding tab sets your farmstand's logo and colours and your farmstand QR poster. Your website has its own look in Web Studio → Branding.",
       "Social icons show on your shop page, not on the QR poster or the Customer Choice page.",
       "Reprint your QR sign after changing the logo.",
     ],

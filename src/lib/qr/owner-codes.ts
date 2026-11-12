@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { qrShortUrl } from "@/lib/qr-short-link";
-import { standCheckoutUrl } from "@/lib/stand-qr";
+import { standFarmstandUrl } from "@/lib/farmstand/resolve";
 import { listQrTargets } from "./targets";
 import { legacyQrTarget, parseQrTarget, qrTargetKey } from "./target-types";
 
@@ -58,11 +58,13 @@ export async function getOwnerQrCode(ownerId: string, qrId: string) {
   return qr ? { id: qr.id, name: qr.name, standName: qr.stand.name, url: qrShortUrl(qr.id) } : null;
 }
 
-/** The business's main QR, which opens its shop checkout. */
+/** The business's farmstand QR, which opens its farmstand. */
 export async function getOwnerBusinessQr(ownerId: string, standId: string) {
   const stand = await prisma.stand.findFirst({
     where: { id: standId, ownerId },
     select: { id: true, name: true, slug: true, cartMode: true },
   });
-  return stand ? { id: stand.id, name: stand.name, url: standCheckoutUrl(stand.slug, stand.cartMode) } : null;
+  return stand
+    ? { id: stand.id, name: stand.name, url: await standFarmstandUrl(stand.slug, stand.cartMode) }
+    : null;
 }

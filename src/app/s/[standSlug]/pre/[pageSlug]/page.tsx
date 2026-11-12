@@ -12,7 +12,7 @@ import StandGoToCartBar from "../../StandGoToCartBar";
 import PreOrderPageContent from "./PreOrderPageContent";
 import { loadPreOrderCardRail } from "@/lib/preorder-card-rail";
 import { preOrderDetailMetadata } from "./pre-order-detail-metadata";
-import { redirectLegacyStandToWebsite } from "@/lib/storefront/legacy-stand-redirect";
+import { redirectStandToFarmstand } from "@/lib/storefront/legacy-stand-redirect";
 
 export async function generateMetadata({
   params,
@@ -29,7 +29,7 @@ export default async function PublicPreOrderPage({
   params: Promise<{ standSlug: string; pageSlug: string }>;
 }) {
   const { standSlug, pageSlug } = await params;
-  await redirectLegacyStandToWebsite(standSlug, { kind: "preOrder", pageSlug });
+  await redirectStandToFarmstand(standSlug);
   const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
   const pageKey = decodeURIComponent(pageSlug).trim().toLowerCase();
 

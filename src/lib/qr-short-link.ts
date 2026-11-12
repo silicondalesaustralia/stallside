@@ -2,7 +2,7 @@ import { appBaseUrl } from "@/lib/app-url";
 import { prisma } from "@/lib/prisma";
 import { CartMode } from "@/generated/prisma/client";
 import { loadPrimaryCustomHostname } from "@/lib/domains/resolve";
-import { standCheckoutUrl } from "@/lib/stand-qr";
+import { standFarmstandUrl } from "@/lib/farmstand/resolve";
 import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 import { lookupQrTargetPath } from "@/lib/qr/target-lookup";
 import { legacyQrTarget, parseQrTarget, withStallFlag } from "@/lib/qr/target-types";
@@ -17,7 +17,7 @@ export function qrShortUrl(qrId: string): string {
 
 /**
  * Current destination for a saved QR code, or null when it no longer exists. Without a published
- * website (or for Customer Choice stalls) it opens the stall checkout; a page that has since gone
+ * website (or for Customer Choice stalls) it opens the farmstand; a page that has since gone
  * opens the website home rather than an error.
  */
 export async function resolveQrTarget(qrId: string): Promise<string | null> {
@@ -39,7 +39,7 @@ export async function resolveQrTarget(qrId: string): Promise<string | null> {
     select: { id: true, slug: true, isPublished: true, publishedConfig: true },
   });
   if (!storefront?.isPublished || qr.stand.cartMode === CartMode.CUSTOMER_CHOICE) {
-    return standCheckoutUrl(qr.stand.slug, qr.stand.cartMode);
+    return standFarmstandUrl(qr.stand.slug, qr.stand.cartMode);
   }
   const target = parseQrTarget(qr.targetKind, qr.targetId) ?? legacyQrTarget(qr.linkMode, qr.categoryId);
   const path = (await lookupQrTargetPath(qr.ownerId, target, storefront.publishedConfig)) ?? "/";
