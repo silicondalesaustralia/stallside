@@ -14,6 +14,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireEffectiveBusinessContext } from '@/lib/utils/impersonation'
 import { convertToWebP } from '@/lib/imageProcessor'
+import { saveUploadsToLibrary } from '@/lib/social/libraryUploads'
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024   // 10 MB
 const MAX_FILES = 10
@@ -80,6 +81,8 @@ export async function POST(req: NextRequest) {
       errors.push(`${file.name}: ${String(err)}`)
     }
   }
+
+  await saveUploadsToLibrary(storage, businessId, results.map((r) => r.url))
 
   return NextResponse.json(
     { media: results, errors: errors.length ? errors : undefined, count: results.length },
