@@ -256,5 +256,8 @@ async function refreshSessionCookie(
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image).*)"],
+  // Static assets skip middleware; .txt/.xml stay in for tenant robots.txt and sitemap.xml.
+  matcher: [
+    "/((?!_next/static|_next/image|.*\\.(?:png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf|otf|css|js|map|mp4|webm)$).*)",
+  ],
 };

@@ -34,6 +34,12 @@ function clearFailedCustomersMigration(env) {
 }
 
 async function main() {
+  // Previews share the production database: migrating there would apply unmerged schema changes.
+  if (process.env.VERCEL_ENV && process.env.VERCEL_ENV !== "production" && process.env.MIGRATE_ON_PREVIEW !== "1") {
+    console.log(`Skipping prisma migrate deploy on ${process.env.VERCEL_ENV} (set MIGRATE_ON_PREVIEW=1 to run it).`);
+    return;
+  }
+
   const migrateUrl =
     process.env.DIRECT_DATABASE_URL ||
     process.env.DATABASE_URL_UNPOOLED ||
