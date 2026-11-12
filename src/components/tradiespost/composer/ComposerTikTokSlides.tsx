@@ -88,6 +88,7 @@ export function ComposerTikTokSlides({ media, setMedia, jobId, onSuggestedCaptio
         <ComposerSlideGenerator
           jobId={jobId}
           photoUrl={backgroundUrl}
+          photos={media?.slidesKind === 'ai' ? [] : slides}
           onCancel={() => setPanel('none')}
           onDone={(deck) => {
             applyDeck(deck)

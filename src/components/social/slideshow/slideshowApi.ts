@@ -1,9 +1,11 @@
-import type {
-  SlideshowJobView,
-  SlideshowRenderRequest,
-  SlideshowRenderResult,
-  SlideshowWriteRequest,
-  SlideshowWriteResult,
+import type { SlideDeckResult } from '@/lib/social/tiktokSlides/slideTypes'
+import {
+  SLIDESHOW_DEFAULT_SECONDS,
+  type SlideshowJobView,
+  type SlideshowRenderRequest,
+  type SlideshowRenderResult,
+  type SlideshowWriteRequest,
+  type SlideshowWriteResult,
 } from '@/lib/social/slideshow/slideshowTypes'
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
@@ -29,6 +31,20 @@ export function renderSlideshow(body: SlideshowRenderRequest): Promise<Slideshow
 
 export function getSlideshowJob(id: string): Promise<SlideshowJobView> {
   return request(`/api/social/slideshow/jobs/${encodeURIComponent(id)}`, { cache: 'no-store' })
+}
+
+/** One AI-written slide per photo, rendered as images only (TikTok photo slides, no video). */
+export async function makePhotoSlides(images: string[], context: string, jobId: string | null): Promise<SlideDeckResult> {
+  const written = await writeSlideshowSlides({ images, context, jobId })
+  const rendered = await renderSlideshow({
+    slides: written.slides,
+    jobId,
+    secondsPerSlide: SLIDESHOW_DEFAULT_SECONDS,
+    transition: 'fade',
+    about: '',
+    makeVideo: false,
+  })
+  return { slides: rendered.slideUrls, coverUrl: rendered.coverUrl, caption: written.caption }
 }
 
 /** /api/social/upload-media takes at most 10 files per request. */

@@ -8,18 +8,23 @@ import {
   SLIDE_TOPIC_MAX,
   type SlideDeckResult,
 } from '@/lib/social/tiktokSlides/slideTypes'
+import { SLIDESHOW_MAX_IMAGES, SLIDESHOW_MIN_IMAGES } from '@/lib/social/slideshow/slideshowTypes'
+import { makePhotoSlides } from '@/components/social/slideshow/slideshowApi'
 
 type Props = {
   jobId: string | null
   /** Current photo, offered as the background behind every slide. */
   photoUrl: string | null
+  /** Photos already in the slide list; 3-10 of them get one AI slide each. */
+  photos: string[]
   onDone: (deck: SlideDeckResult) => void
   onCancel: () => void
 }
 
 const COUNTS = Array.from({ length: AI_SLIDES_MAX - AI_SLIDES_MIN + 1 }, (_, i) => AI_SLIDES_MIN + i)
 
-export function ComposerSlideGenerator({ jobId, photoUrl, onDone, onCancel }: Props) {
+export function ComposerSlideGenerator({ jobId, photoUrl, photos, onDone, onCancel }: Props) {
+  const perPhoto = photos.length >= SLIDESHOW_MIN_IMAGES && photos.length <= SLIDESHOW_MAX_IMAGES
   const [topic, setTopic] = useState('')
   const [count, setCount] = useState(5)
   const [usePhoto, setUsePhoto] = useState(Boolean(photoUrl))
@@ -30,6 +35,10 @@ export function ComposerSlideGenerator({ jobId, photoUrl, onDone, onCancel }: Pr
     setBusy(true)
     setError(null)
     try {
+      if (perPhoto) {
+        onDone(await makePhotoSlides(photos, topic, jobId))
+        return
+      }
       const res = await fetch('/api/social/tiktok-slides', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,7 +58,7 @@ export function ComposerSlideGenerator({ jobId, photoUrl, onDone, onCancel }: Pr
   return (
     <div className="space-y-3 rounded-xl border-2 border-[#F5C518] bg-[#FFF8DB] p-3" data-testid="composer-slide-generator">
       <label className="block text-sm font-bold text-[#18181B]">
-        What should the slides be about?
+        {perPhoto ? `Anything the AI should know? (optional - it writes one slide for each of your ${photos.length} photos)` : 'What should the slides be about?'}
         <textarea
           value={topic}
           onChange={(e) => setTopic(e.target.value.slice(0, SLIDE_TOPIC_MAX))}
@@ -58,7 +67,7 @@ export function ComposerSlideGenerator({ jobId, photoUrl, onDone, onCancel }: Pr
           className="mt-1 block w-full rounded-xl border border-[#E4E4E7] bg-white px-3 py-2 text-sm font-normal"
         />
       </label>
-      <div className="flex flex-wrap items-center gap-4">
+      <div className={perPhoto ? 'hidden' : 'flex flex-wrap items-center gap-4'}>
         <label className="flex items-center gap-2 text-sm font-bold text-[#18181B]">
           Slides
           <select
@@ -83,7 +92,7 @@ export function ComposerSlideGenerator({ jobId, photoUrl, onDone, onCancel }: Pr
         <button
           type="button"
           onClick={() => void generate()}
-          disabled={busy || topic.trim().length < 3}
+          disabled={busy || (!perPhoto && topic.trim().length < 3)}
           className="inline-flex items-center gap-1.5 rounded-xl bg-[#18181B] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
         >
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}

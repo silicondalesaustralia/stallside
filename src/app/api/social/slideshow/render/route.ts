@@ -30,22 +30,26 @@ export async function POST(req: NextRequest) {
       slides: request.slides,
     })
 
-    const { data: job, error } = await db
-      .from('social_slideshow_jobs')
-      .insert({
-        business_id: businessId,
-        job_id: await ownedJobId(db, businessId, request.jobId),
-        slide_paths: rendered.slidePaths,
-        seconds_per_slide: request.secondsPerSlide,
-        transition: request.transition,
-        about_text: request.about || request.slides.map((s) => s.heading).join('. ').slice(0, 2000),
-      })
-      .select('id')
-      .single()
-    if (error || !job) throw new Error(`Could not queue the video: ${error?.message ?? 'no row returned'}`)
+    let renderJobId: string | null = null
+    if (request.makeVideo) {
+      const { data: job, error } = await db
+        .from('social_slideshow_jobs')
+        .insert({
+          business_id: businessId,
+          job_id: await ownedJobId(db, businessId, request.jobId),
+          slide_paths: rendered.slidePaths,
+          seconds_per_slide: request.secondsPerSlide,
+          transition: request.transition,
+          about_text: request.about || request.slides.map((s) => s.heading).join('. ').slice(0, 2000),
+        })
+        .select('id')
+        .single()
+      if (error || !job) throw new Error(`Could not queue the video: ${error?.message ?? 'no row returned'}`)
+      renderJobId = job.id as string
+    }
 
     const result: SlideshowRenderResult = {
-      renderJobId: job.id as string,
+      renderJobId,
       slideUrls: rendered.slideUrls,
       coverUrl: rendered.coverUrl,
     }
