@@ -2,10 +2,8 @@
 
 import { useCallback, useState, type Dispatch, type SetStateAction } from 'react'
 import type { ComposerMedia } from '@/components/tradiespost/composer/useComposerMedia'
-import type { SlideDeckResult } from '@/lib/social/tiktokSlides/slideTypes'
 import {
   addSlide,
-  mediaFromDeck,
   moveSlide,
   removeSlide,
   slideList,
@@ -28,8 +26,6 @@ export function useComposerSlides(
     [setMedia],
   )
   const remove = useCallback((index: number) => setMedia((m) => (m ? removeSlide(m, index) : m)), [setMedia])
-  const applyDeck = useCallback((deck: SlideDeckResult) => setMedia(mediaFromDeck(deck, blank)), [setMedia])
-
   const uploadAndAdd = useCallback(
     async (files: File[]) => {
       if (!files.length) return
@@ -52,5 +48,5 @@ export function useComposerSlides(
     [add],
   )
 
-  return { slides: slideList(media), add, move, remove, applyDeck, uploadAndAdd, uploading, error }
+  return { slides: slideList(media), add, move, remove, uploadAndAdd, uploading, error }
 }

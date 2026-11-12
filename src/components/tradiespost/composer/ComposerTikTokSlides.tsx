@@ -1,9 +1,8 @@
 'use client'
 
 import { useRef, useState, type Dispatch, type SetStateAction } from 'react'
-import { ChevronLeft, ChevronRight, ImageIcon, Loader2, Plus, Sparkles, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ImageIcon, Loader2, Plus, X } from 'lucide-react'
 import { ComposerLibraryPicker } from '@/components/tradiespost/composer/ComposerLibraryPicker'
-import { ComposerSlideGenerator } from '@/components/tradiespost/composer/ComposerSlideGenerator'
 import { useComposerSlides } from '@/components/tradiespost/composer/useComposerSlides'
 import type { ComposerMedia } from '@/components/tradiespost/composer/useComposerMedia'
 import { TIKTOK_MAX_PHOTO_SLIDES } from '@/lib/social/tiktokSlides/slideTypes'
@@ -11,9 +10,6 @@ import { TIKTOK_MAX_PHOTO_SLIDES } from '@/lib/social/tiktokSlides/slideTypes'
 type Props = {
   media: ComposerMedia | null
   setMedia: Dispatch<SetStateAction<ComposerMedia | null>>
-  jobId: string | null
-  /** AI decks come with a suggested caption; used only when the caption is empty. */
-  onSuggestedCaption: (caption: string) => void
 }
 
 /** /api/social/upload-media accepts at most 10 files per request. */
@@ -23,10 +19,9 @@ const iconBtn = 'rounded bg-black/60 p-0.5 text-white hover:bg-black/80 disabled
 const actionBtn =
   'inline-flex items-center gap-1.5 rounded-lg border border-[#E4E4E7] bg-white px-3 py-1.5 text-xs font-bold text-[#18181B] hover:border-[#F5C518] disabled:opacity-50'
 
-export function ComposerTikTokSlides({ media, setMedia, jobId, onSuggestedCaption }: Props) {
-  const { slides, move, remove, add, applyDeck, uploadAndAdd, uploading, error } = useComposerSlides(media, setMedia)
-  const backgroundUrl = media && !media.video && media.slidesKind !== 'ai' ? media.url : null
-  const [panel, setPanel] = useState<'none' | 'library' | 'ai'>('none')
+export function ComposerTikTokSlides({ media, setMedia }: Props) {
+  const { slides, move, remove, add, uploadAndAdd, uploading, error } = useComposerSlides(media, setMedia)
+  const [libraryOpen, setLibraryOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const full = slides.length >= TIKTOK_MAX_PHOTO_SLIDES
 
@@ -35,7 +30,7 @@ export function ComposerTikTokSlides({ media, setMedia, jobId, onSuggestedCaptio
       <div>
         <p className="text-sm font-bold text-[#18181B]">TikTok slides {slides.length > 1 && `(${slides.length})`}</p>
         <p className="text-xs text-zinc-500">
-          TikTok gets every slide as a swipeable photo post. Other platforms get the cover image.
+          TikTok gets every slide as a swipeable photo post. Other platforms get the cover image. For AI-written slides, use the Slideshow tab.
         </p>
       </div>
 
@@ -67,33 +62,17 @@ export function ComposerTikTokSlides({ media, setMedia, jobId, onSuggestedCaptio
           {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
           {uploading ? 'Uploading…' : 'Add photos'}
         </button>
-        <button type="button" className={actionBtn} disabled={full} onClick={() => setPanel('library')}>
+        <button type="button" className={actionBtn} disabled={full} onClick={() => setLibraryOpen(true)}>
           <ImageIcon className="h-3.5 w-3.5" /> Add from Library
-        </button>
-        <button type="button" className={`${actionBtn} border-[#F5C518] bg-[#FFF8DB]`} onClick={() => setPanel('ai')}>
-          <Sparkles className="h-3.5 w-3.5" /> Make slides with AI
         </button>
       </div>
 
-      {panel === 'library' && (
+      {libraryOpen && (
         <ComposerLibraryPicker
-          onCancel={() => setPanel('none')}
+          onCancel={() => setLibraryOpen(false)}
           onSelect={(render) => {
             add(render.result_url)
-            setPanel('none')
-          }}
-        />
-      )}
-      {panel === 'ai' && (
-        <ComposerSlideGenerator
-          jobId={jobId}
-          photoUrl={backgroundUrl}
-          photos={media?.slidesKind === 'ai' ? [] : slides}
-          onCancel={() => setPanel('none')}
-          onDone={(deck) => {
-            applyDeck(deck)
-            if (deck.caption) onSuggestedCaption(deck.caption)
-            setPanel('none')
+            setLibraryOpen(false)
           }}
         />
       )}

@@ -1,4 +1,4 @@
-import { TIKTOK_MAX_PHOTO_SLIDES, type SlideDeckResult } from '@/lib/social/tiktokSlides/slideTypes'
+import { TIKTOK_MAX_PHOTO_SLIDES } from '@/lib/social/tiktokSlides/slideTypes'
 
 export type SlideMedia = {
   url: string
@@ -50,8 +50,4 @@ export function mediaFromSavedPost(coverUrl: string | null, processed: Record<st
   const slides = processed?.tiktok
   if (!Array.isArray(slides) || slides.length < 2) return media
   return { ...media, slides, slidesKind: slides[0] === coverUrl ? 'photos' : 'ai' }
-}
-
-export function mediaFromDeck<T extends SlideMedia>(deck: SlideDeckResult, blank: () => T): T {
-  return { ...blank(), url: deck.coverUrl, slides: deck.slides, slidesKind: 'ai' }
 }

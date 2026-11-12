@@ -20,15 +20,12 @@ export type SlideshowRenderRequest = {
   transition: SlideshowTransition
   /** Short summary saved on the Library video so "Write with AI" has context. */
   about: string
-  /** false = slide images only (TikTok photo slides), no MP4 job. */
-  makeVideo: boolean
 }
 
 export type SlideshowWriteResult = { slides: SlideshowSlide[]; caption: string }
 
 export type SlideshowRenderResult = {
-  /** Null when makeVideo was false. */
-  renderJobId: string | null
+  renderJobId: string
   /** Rendered 9:16 JPEG slides, usable as TikTok photo slides. */
   slideUrls: string[]
   coverUrl: string
@@ -106,7 +103,6 @@ export function parseSlideshowRenderRequest(body: unknown): Parsed<SlideshowRend
       secondsPerSlide,
       transition,
       about: clipText(raw.about, 2000),
-      makeVideo: raw.makeVideo !== false,
     },
   }
 }

@@ -103,7 +103,7 @@ export function TradiesPostComposer() {
               onRemove={() => setMedia(null)}
               linkedImages={linkedImages}
               photoExtras={platforms.includes('tiktok') && (
-                <ComposerTikTokSlides media={media} setMedia={setMedia} jobId={jobId} onSuggestedCaption={suggestCaption} />
+                <ComposerTikTokSlides media={media} setMedia={setMedia} />
               )}
               slideshow={<ComposerSlideshow jobId={jobId} linkedImages={linkedImages} business={ctx.business}
                 tiktokSelected={platforms.includes('tiktok')} onMedia={setMedia} onSuggestedCaption={suggestCaption} />}

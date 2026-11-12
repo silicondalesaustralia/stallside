@@ -78,10 +78,9 @@ export function useSlideshowBuild(params: { jobId: string | null; onVideo: (vide
     setError(null)
     try {
       const about = [caption, ...slides.map((s) => `${s.heading}. ${s.body}`)].join(' ').trim()
-      const result = await renderSlideshow({ slides, jobId, secondsPerSlide, transition, about, makeVideo: true })
+      const result = await renderSlideshow({ slides, jobId, secondsPerSlide, transition, about })
       if (!alive.current) return
       setRendered(result)
-      if (!result.renderJobId) throw new Error('The video could not be queued - try again.')
       const video = await pollVideo(result.renderJobId)
       if (!alive.current) return
       setPhase('done')
