@@ -8,6 +8,7 @@ import {
   type SlideshowSlide,
   type SlideshowTransition,
 } from '@/lib/social/slideshow/slideshowTypes'
+import type { SlideshowDraft } from '@/lib/social/slideshow/slideshowDraft'
 import { getSlideshowJob, renderSlideshow, writeSlideshowSlides } from '@/components/social/slideshow/slideshowApi'
 
 export type SlideshowPhase = 'pick' | 'writing' | 'edit' | 'creating' | 'done'
@@ -18,13 +19,17 @@ const POLL_LIMIT = 100
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-export function useSlideshowBuild(params: { jobId: string | null; onVideo: (video: SlideshowVideo, rendered: SlideshowRenderResult) => void }) {
-  const { jobId, onVideo } = params
-  const [phase, setPhase] = useState<SlideshowPhase>('pick')
-  const [slides, setSlides] = useState<SlideshowSlide[]>([])
-  const [caption, setCaption] = useState('')
-  const [secondsPerSlide, setSecondsPerSlide] = useState<number>(SLIDESHOW_DEFAULT_SECONDS)
-  const [transition, setTransition] = useState<SlideshowTransition>('fade')
+export function useSlideshowBuild(params: {
+  jobId: string | null
+  initial?: SlideshowDraft | null
+  onVideo: (video: SlideshowVideo, rendered: SlideshowRenderResult) => void
+}) {
+  const { jobId, initial, onVideo } = params
+  const [phase, setPhase] = useState<SlideshowPhase>(initial?.stage === 'edit' ? 'edit' : 'pick')
+  const [slides, setSlides] = useState<SlideshowSlide[]>(initial?.slides ?? [])
+  const [caption, setCaption] = useState(initial?.caption ?? '')
+  const [secondsPerSlide, setSecondsPerSlide] = useState<number>(initial?.secondsPerSlide ?? SLIDESHOW_DEFAULT_SECONDS)
+  const [transition, setTransition] = useState<SlideshowTransition>(initial?.transition ?? 'fade')
   const [rendered, setRendered] = useState<SlideshowRenderResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const alive = useRef(true)

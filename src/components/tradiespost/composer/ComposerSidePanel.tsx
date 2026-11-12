@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { ComposerPreview } from '@/components/tradiespost/composer/ComposerPreview'
 import { ComposerSchedulePanel } from '@/components/tradiespost/composer/ComposerSchedulePanel'
 import { ComposerSubmitBar } from '@/components/tradiespost/composer/ComposerSubmitBar'
@@ -38,6 +38,8 @@ type Props = {
     x: PlatformGate<string>
   }
   onDone: (result: { mode: ComposerMode }) => void
+  /** Save draft control, shown under the submit button. */
+  draftAction?: ReactNode
 }
 
 export function ComposerSidePanel(props: Props) {
@@ -112,6 +114,7 @@ export function ComposerSidePanel(props: Props) {
             })
           }}
         />
+        {props.draftAction}
       </div>
     </aside>
   )

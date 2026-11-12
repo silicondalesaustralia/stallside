@@ -1,8 +1,7 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useToast } from '@/components/ui/Toast'
+import { useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useTradiesPostSocialWorkspace } from '@/components/tradiespost/TradiesPostSocialWorkspaceProvider'
 import { TradiesPostAppPage } from '@/components/tradiespost/TradiesPostAppPage'
 import { TradiesPostPageHeader } from '@/components/tradiespost/ui'
@@ -25,6 +24,10 @@ import { useComposerXGate } from '@/components/tradiespost/composer/useComposerX
 import { ComposerPlatformSettingsSteps } from '@/components/tradiespost/composer/ComposerPlatformSettingsSteps'
 import { useComposerStartState } from '@/components/tradiespost/composer/useComposerStartState'
 import { useComposerLinkedItem } from '@/components/tradiespost/composer/useComposerLinkedItem'
+import { useComposerActions } from '@/components/tradiespost/composer/useComposerActions'
+import { useComposerDraftState } from '@/components/tradiespost/composer/useComposerDraftState'
+import { ComposerDraftBanner } from '@/components/tradiespost/composer/ComposerDraftBanner'
+import { ComposerDraftButton } from '@/components/tradiespost/composer/ComposerDraftButton'
 import {
   socialConnectionsFromBusiness,
   toggleLibraryPlatform,
@@ -33,9 +36,7 @@ import {
 import { isAiPhotoSource } from '@/lib/tradiespost/composer/composerState'
 
 export function TradiesPostComposer() {
-  const router = useRouter()
   const searchParams = useSearchParams()
-  const { toast } = useToast()
   const ctx = useTradiesPostSocialWorkspace()
   const connected = useMemo(() => socialConnectionsFromBusiness(ctx.business), [ctx.business])
 
@@ -43,7 +44,7 @@ export function TradiesPostComposer() {
   const [aiOpen, setAiOpen] = useState(false)
   const [headline, setHeadline] = useState('')
   const { media, setMedia, uploading, uploadError, upload } = useComposerMedia()
-  const { jobId, onJobChange, linkedImages, linkedUrl } = useComposerLinkedItem({ initialJobId: searchParams.get('jobId'), media, setMedia })
+  const { jobId, onJobChange, restoreJob, linkedImages, linkedUrl } = useComposerLinkedItem({ initialJobId: searchParams.get('jobId'), media, setMedia })
   const captionState = useComposerCaption()
   const videoDuration = media?.video?.durationSeconds ?? null
   const tiktok = useComposerTikTokGate(platforms.includes('tiktok') && connected.tiktok, videoDuration)
@@ -54,36 +55,24 @@ export function TradiesPostComposer() {
   const { setCaption } = captionState
   const suggestCaption = (c: string) => !captionState.caption.trim() && setCaption(c)
   useComposerStartState({ business: ctx.business, posts: ctx.posts, connected, setPlatforms, setCaption, setMedia })
-
-  const handleDone = useCallback(
-    ({ mode }: { mode: 'now' | 'schedule' }) => {
-      toast(mode === 'now' ? 'Posted' : 'Scheduled', 'success')
-      void ctx.loadData({ force: true })
-      router.push('/dashboard/social/posts')
-    },
-    [toast, ctx, router],
-  )
+  const drafts = useComposerDraftState({ businessId: ctx.business?.id ?? null,
+    platforms: { value: platforms, set: setPlatforms }, headline: { value: headline, set: setHeadline },
+    caption: { value: captionState.caption, set: setCaption }, media: { value: media, set: setMedia }, jobId: { value: jobId, set: restoreJob } })
+  const { draft } = drafts
+  const { handleDone, writeForMe } = useComposerActions({ captionState, jobId, media, platforms, youtube, pinterest,
+    reload: () => void ctx.loadData({ force: true }), onFinished: draft.finish })
 
   if (ctx.loading && !ctx.business) return <SocialTabLoading variant="tradiespost" />
-
-  const writeForMe = () =>
-    void captionState.generate({ jobId, renderId: media?.renderId ?? null, assetId: media?.assetId ?? null, platform: platforms[0] }).then((written) => {
-      if (written && pinterest.active) void pinterest.writeTitle(written.caption, jobId)
-      if (written?.title) youtube.prefillTitle(written.title)
-      if (written?.tags.length) youtube.prefillTags(written.tags)
-    })
 
   return (
     <TradiesPostAppPage maxWidth="2xl">
       <TradiesPostPageHeader title="Create a post" subtitle="Pick where, add an image, write a caption. Done." />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-4">
+          <ComposerDraftBanner restored={draft.restored} onStartFresh={drafts.startFresh} onDismiss={draft.dismiss} />
           <ComposerStep number={1} title="Where should it go?">
-            <ComposerPlatformChips
-              selected={platforms}
-              connected={connected}
-              onToggle={(p) => setPlatforms((prev) => toggleLibraryPlatform(prev, p))}
-            />
+            <ComposerPlatformChips selected={platforms} connected={connected}
+              onToggle={(p) => setPlatforms((prev) => toggleLibraryPlatform(prev, p))} />
           </ComposerStep>
           <ComposerStep number={2} title="Add a photo, video or slideshow">
             <div className="mb-4 max-w-md">
@@ -94,6 +83,8 @@ export function TradiesPostComposer() {
               />
             </div>
             <ComposerMediaPicker
+              key={drafts.restoreKey}
+              initialKind={drafts.initialKind}
               media={media}
               uploading={uploading}
               uploadError={uploadError}
@@ -106,7 +97,8 @@ export function TradiesPostComposer() {
                 <ComposerTikTokSlides media={media} setMedia={setMedia} />
               )}
               slideshow={<ComposerSlideshow jobId={jobId} linkedImages={linkedImages} business={ctx.business}
-                tiktokSelected={platforms.includes('tiktok')} onMedia={setMedia} onSuggestedCaption={suggestCaption} />}
+                tiktokSelected={platforms.includes('tiktok')} onMedia={setMedia} onSuggestedCaption={suggestCaption}
+                saved={drafts.slideshow} onDraft={drafts.setSlideshow} />}
             />
           </ComposerStep>
           <ComposerCaptionStep
@@ -137,6 +129,7 @@ export function TradiesPostComposer() {
           jobId={jobId}
           gates={gates}
           onDone={handleDone}
+          draftAction={<ComposerDraftButton saving={draft.saving} savedAt={draft.savedAt} error={draft.error} onSave={() => void draft.save()} />}
         />
       </div>
       <ComposerAiStudioDrawer

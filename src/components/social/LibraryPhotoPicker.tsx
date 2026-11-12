@@ -126,7 +126,7 @@ export function LibraryPhotoPicker({
                     {formatPresetLabel(render.preset)}
                   </span>
                 )}
-                <span className="text-[9px] text-[#999]">{platformSizeLabel(render.platform)}</span>
+                <span className="text-[9px] text-[#999]">{platformSizeLabel(render)}</span>
               </div>
             </div>
           )

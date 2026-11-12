@@ -4,6 +4,8 @@ import {
   type ContentFormat,
 } from '@/lib/social/composeModel'
 import { INFOGRAPHIC_PLATFORM_SIZES } from '@/lib/social/infographic/platformSizes'
+import { SLIDE_SIZE } from '@/lib/social/tiktokSlides/slideTypes'
+import { SLIDESHOW_LIBRARY_PRESET } from '@/lib/social/slideshow/slideshowLibrary'
 
 export interface HybridRenderListItem {
   id: string
@@ -29,11 +31,13 @@ export function formatPresetLabel(preset: string): string {
   if (preset === 'scene') return 'Scene'
   if (preset === 'quote_card') return 'Quote card'
   if (isInfographicPreset(preset)) return INFOGRAPHIC_PRESET_LABELS[preset]
+  if (preset === SLIDESHOW_LIBRARY_PRESET) return 'Slideshow'
   return preset
 }
 
-export function platformSizeLabel(platform: HybridRenderListItem['platform']): string {
-  const { width, height } = INFOGRAPHIC_PLATFORM_SIZES[platform]
+export function platformSizeLabel(render: Pick<HybridRenderListItem, 'platform' | 'preset'>): string {
+  const { width, height } =
+    render.preset === SLIDESHOW_LIBRARY_PRESET ? SLIDE_SIZE : INFOGRAPHIC_PLATFORM_SIZES[render.platform]
   return `${width}×${height}`
 }
 

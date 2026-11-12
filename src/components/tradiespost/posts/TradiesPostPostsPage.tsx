@@ -9,6 +9,7 @@ import { TradiesPostButtonLight, TradiesPostPageHeader } from '@/components/trad
 import { SocialTabLoading } from '@/components/social/SocialTabPanel'
 import { PostsFilterChips } from '@/components/tradiespost/posts/PostsFilterChips'
 import { PostCard } from '@/components/tradiespost/posts/PostCard'
+import { SavedDraftsList } from '@/components/tradiespost/posts/SavedDraftsList'
 import { resolveBusinessTimeZone } from '@/lib/social/weekPlan/weekIdentity'
 import {
   matchesFilter,
@@ -87,6 +88,7 @@ export function TradiesPostPostsPage() {
         }
       />
       {ctx.loadError && <p className="mb-4 text-sm font-semibold text-red-600">{ctx.loadError}</p>}
+      <SavedDraftsList />
       <PostsFilterChips value={filter} counts={counts} onChange={setFilter} />
       {shown.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[#E4E4E7] bg-white p-10 text-center">

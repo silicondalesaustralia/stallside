@@ -4,6 +4,7 @@ import { parseSlideshowRenderRequest, type SlideshowRenderResult } from '@/lib/s
 import { assertSlideshowImagesAllowed } from '@/lib/social/slideshow/slideshowImages'
 import { renderSlideshowImages } from '@/lib/social/slideshow/renderSlideshow'
 import { loadSlideshowBusiness, ownedJobId } from '@/lib/social/slideshow/slideshowContext'
+import { saveSlidesToLibrary } from '@/lib/social/slideshow/slideshowLibrary'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -30,11 +31,14 @@ export async function POST(req: NextRequest) {
       slides: request.slides,
     })
 
+    const itemId = await ownedJobId(db, businessId, request.jobId)
+    await saveSlidesToLibrary(db, { businessId, jobId: itemId, slides: request.slides, slideUrls: rendered.slideUrls })
+
     const { data: job, error } = await db
       .from('social_slideshow_jobs')
       .insert({
         business_id: businessId,
-        job_id: await ownedJobId(db, businessId, request.jobId),
+        job_id: itemId,
         slide_paths: rendered.slidePaths,
         seconds_per_slide: request.secondsPerSlide,
         transition: request.transition,

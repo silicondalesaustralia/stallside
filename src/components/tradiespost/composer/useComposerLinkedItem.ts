@@ -31,5 +31,6 @@ export function useComposerLinkedItem(params: {
     [media, linkedImages, setMedia],
   )
 
-  return { jobId, onJobChange, linkedImages, linkedUrl }
+  /** Drafts: restore the linked item id only (its photos load when it is picked again). */
+  return { jobId, onJobChange, restoreJob: setJobId, linkedImages, linkedUrl }
 }

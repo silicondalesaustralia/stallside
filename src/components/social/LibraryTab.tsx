@@ -809,7 +809,7 @@ export function LibraryTab({
               </span>
             )}
             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold text-gray-600">
-              {platformSizeLabel(render.platform)}
+              {platformSizeLabel(render)}
             </span>
           </div>
           {expanded ? (

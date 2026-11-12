@@ -24,9 +24,11 @@ type Props = {
   linkedImages?: string[]
   /** Slideshow builder shown on the Slideshow tab. */
   slideshow?: ReactNode
+  /** Tab to open on mount (restored drafts). */
+  initialKind?: MediaKind
 }
 
-type MediaKind = 'photo' | 'video' | 'slideshow'
+export type MediaKind = 'photo' | 'video' | 'slideshow'
 const KIND_TABS: { id: MediaKind; label: string; Icon: typeof ImageIcon }[] = [
   { id: 'photo', label: 'Photo', Icon: ImageIcon },
   { id: 'video', label: 'Video', Icon: Video },
@@ -38,7 +40,7 @@ const sourceBtn =
 
 export function ComposerMediaPicker(props: Props) {
   const { media, uploading, uploadError, onUpload, onSelectLibrary, onOpenAi, onRemove, photoExtras, linkedImages, slideshow } = props
-  const [kind, setKind] = useState<MediaKind>('photo')
+  const [kind, setKind] = useState<MediaKind>(props.initialKind ?? 'photo')
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [videoRefresh, setVideoRefresh] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -65,12 +67,7 @@ export function ComposerMediaPicker(props: Props) {
       </div>
 
       {kind === 'video' && media?.video && (
-        <ComposerMediaPreviewThumb
-          imageUrl={media.url}
-          aiGenerated={false}
-          onReplace={onRemove}
-          onRemove={onRemove}
-        />
+        <ComposerMediaPreviewThumb imageUrl={media.url} aiGenerated={false} onReplace={onRemove} onRemove={onRemove} />
       )}
 
       {kind === 'video' && !media?.video && (

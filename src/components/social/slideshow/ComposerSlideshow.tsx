@@ -1,8 +1,9 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { ComposerMedia } from '@/components/tradiespost/composer/useComposerMedia'
 import type { SlideshowRenderResult } from '@/lib/social/slideshow/slideshowTypes'
+import type { SlideshowDraft } from '@/lib/social/slideshow/slideshowDraft'
 import { useSlideshowImages } from '@/components/social/slideshow/useSlideshowImages'
 import { useSlideshowBuild, type SlideshowVideo } from '@/components/social/slideshow/useSlideshowBuild'
 import { SlideshowSelectedTray } from '@/components/social/slideshow/SlideshowSelectedTray'
@@ -19,12 +20,17 @@ type Props = {
   tiktokSelected: boolean
   onMedia: (media: ComposerMedia) => void
   onSuggestedCaption: (caption: string) => void
+  /** In-progress work to start from (drafts / switching tabs). */
+  saved: SlideshowDraft | null
+  /** Latest in-progress work; null once the video is made (it is then the post's media). */
+  onDraft: (draft: SlideshowDraft | null) => void
 }
 
 /** Pick images -> AI writes a slide per image -> edit -> 9:16 MP4 for every platform. */
-export function ComposerSlideshow({ jobId, linkedImages, business, tiktokSelected, onMedia, onSuggestedCaption }: Props) {
-  const picker = useSlideshowImages()
-  const [context, setContext] = useState('')
+export function ComposerSlideshow(props: Props) {
+  const { jobId, linkedImages, business, tiktokSelected, onMedia, onSuggestedCaption, saved, onDraft } = props
+  const picker = useSlideshowImages(saved?.images)
+  const [context, setContext] = useState(saved?.context ?? '')
   const [result, setResult] = useState<{ video: SlideshowVideo; rendered: SlideshowRenderResult } | null>(null)
 
   const onVideo = useCallback(
@@ -34,7 +40,14 @@ export function ComposerSlideshow({ jobId, linkedImages, business, tiktokSelecte
     },
     [onMedia],
   )
-  const build = useSlideshowBuild({ jobId, onVideo })
+  const build = useSlideshowBuild({ jobId, initial: saved, onVideo })
+  const { phase, slides, caption, secondsPerSlide, transition } = build
+
+  useEffect(() => {
+    if (phase === 'done') return onDraft(null)
+    const stage = phase === 'edit' || phase === 'creating' ? 'edit' : 'pick'
+    onDraft({ stage, images: picker.images, context, slides, caption, secondsPerSlide, transition })
+  }, [phase, picker.images, context, slides, caption, secondsPerSlide, transition, onDraft])
 
   if (build.phase === 'done' && result) {
     return (

@@ -5,8 +5,8 @@ import { SLIDESHOW_MAX_IMAGES } from '@/lib/social/slideshow/slideshowTypes'
 import { uploadSlideshowImages } from '@/components/social/slideshow/slideshowApi'
 
 /** Ordered image selection: the order picked is the slide order. */
-export function useSlideshowImages() {
-  const [images, setImages] = useState<string[]>([])
+export function useSlideshowImages(initial: string[] = []) {
+  const [images, setImages] = useState<string[]>(initial)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
