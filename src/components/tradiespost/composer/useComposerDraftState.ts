@@ -7,6 +7,7 @@ import { useComposerDraft } from '@/components/tradiespost/composer/useComposerD
 import type { SocialPublishPlatform } from '@/lib/social/libraryPublish'
 import type { SlideshowDraft } from '@/lib/social/slideshow/slideshowDraft'
 import { EMPTY_COMPOSER_DRAFT, type ComposerDraftData } from '@/lib/tradiespost/composer/composerDraft'
+import type { PlatformTextDraft } from '@/lib/tradiespost/composer/platformText'
 
 type Field<T> = { value: T; set: (value: T) => void }
 
@@ -16,15 +17,17 @@ export function useComposerDraftState(params: {
   platforms: Field<SocialPublishPlatform[]>
   headline: Field<string>
   caption: Field<string>
+  platformText: Field<PlatformTextDraft>
   media: Field<ComposerMedia | null>
   jobId: Field<string | null>
 }) {
-  const { businessId, platforms, headline, caption, media, jobId } = params
+  const { businessId, platforms, headline, caption, platformText, media, jobId } = params
   const [slideshow, setSlideshow] = useState<SlideshowDraft | null>(null)
   const [restoreKey, setRestoreKey] = useState(0)
   const setPlatforms = platforms.set
   const setHeadline = headline.set
   const setCaption = caption.set
+  const setPlatformText = platformText.set
   const setMedia = media.set
   const setJobId = jobId.set
 
@@ -33,11 +36,12 @@ export function useComposerDraftState(params: {
       platforms: platforms.value,
       headline: headline.value,
       caption: caption.value,
+      platformText: platformText.value,
       media: media.value,
       jobId: jobId.value,
       slideshow,
     }),
-    [platforms.value, headline.value, caption.value, media.value, jobId.value, slideshow],
+    [platforms.value, headline.value, caption.value, platformText.value, media.value, jobId.value, slideshow],
   )
 
   const apply = useCallback(
@@ -45,12 +49,13 @@ export function useComposerDraftState(params: {
       setPlatforms(draft.platforms)
       setHeadline(draft.headline)
       setCaption(draft.caption)
+      setPlatformText(draft.platformText)
       setMedia(draft.media)
       setJobId(draft.jobId)
       setSlideshow(draft.slideshow)
       setRestoreKey((n) => n + 1)
     },
-    [setPlatforms, setHeadline, setCaption, setMedia, setJobId],
+    [setPlatforms, setHeadline, setCaption, setPlatformText, setMedia, setJobId],
   )
 
   const draft = useComposerDraft({ businessId, snapshot, apply })

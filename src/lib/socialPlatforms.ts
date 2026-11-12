@@ -344,6 +344,10 @@ export async function publishPost(options: {
 }): Promise<PostResults> {
   const { platforms, caption, platformCaptions, processedPhotoUrls, businessId, business, videoUrl } = options
   const results: PostResults = {}
+  const captionFor = (platform: string): string => {
+    const override = platformCaptions?.[platform]
+    return typeof override === 'string' && override.trim() ? override : caption
+  }
 
   if (platforms.includes('tiktok')) {
     const tiktokOverride = platformCaptions?.tiktok
@@ -418,13 +422,13 @@ export async function publishPost(options: {
           business.instagram_account_id || 'demo-ig',
           business.facebook_access_token || '',
           videoUrl,
-          caption,
+          captionFor('instagram'),
         )
       : await postToInstagram(
           business.instagram_account_id || 'demo-ig',
           business.facebook_access_token || '',
           igUrls[0] || '',
-          caption,
+          captionFor('instagram'),
           businessId,
         )
   }
@@ -450,7 +454,7 @@ export async function publishPost(options: {
         business.gmb_location_id || 'demo-location',
         gmbAccessToken,
         gmbUrls[0] || '',
-        caption,
+        captionFor('gmb'),
         business.phone || undefined
       )
     }

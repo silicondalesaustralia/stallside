@@ -18,9 +18,8 @@ import { useComposerCaption } from '@/components/tradiespost/composer/useCompose
 import { useComposerTikTokGate } from '@/components/tradiespost/composer/useComposerTikTok'
 import { ComposerTikTokSlides } from '@/components/tradiespost/composer/ComposerTikTokSlides'
 import { ComposerSlideshow } from '@/components/social/slideshow/ComposerSlideshow'
-import { useComposerYouTubeGate } from '@/components/tradiespost/composer/useComposerYouTube'
-import { useComposerPinterestGate } from '@/components/tradiespost/composer/useComposerPinterest'
-import { useComposerXGate } from '@/components/tradiespost/composer/useComposerX'
+import { useComposerPlatformCopy } from '@/components/tradiespost/composer/useComposerPlatformCopy'
+import { useComposerPlatformWriter } from '@/components/tradiespost/composer/useComposerPlatformWriter'
 import { ComposerPlatformSettingsSteps } from '@/components/tradiespost/composer/ComposerPlatformSettingsSteps'
 import { useComposerStartState } from '@/components/tradiespost/composer/useComposerStartState'
 import { useComposerLinkedItem } from '@/components/tradiespost/composer/useComposerLinkedItem'
@@ -48,17 +47,18 @@ export function TradiesPostComposer() {
   const captionState = useComposerCaption()
   const videoDuration = media?.video?.durationSeconds ?? null
   const tiktok = useComposerTikTokGate(platforms.includes('tiktok') && connected.tiktok, videoDuration)
-  const youtube = useComposerYouTubeGate(platforms.includes('youtube') && connected.youtube, captionState.caption)
-  const pinterest = useComposerPinterestGate(platforms.includes('pinterest') && connected.pinterest, captionState.caption, linkedUrl)
-  const x = useComposerXGate(platforms.includes('x') && connected.x, captionState.caption)
+  const copy = useComposerPlatformCopy({ platforms, connected, caption: captionState.caption, linkedUrl })
+  const { youtube, pinterest, x } = copy
   const gates = { tiktok, youtube, pinterest, x }
   const { setCaption } = captionState
   const suggestCaption = (c: string) => !captionState.caption.trim() && setCaption(c)
   useComposerStartState({ business: ctx.business, posts: ctx.posts, connected, setPlatforms, setCaption, setMedia })
   const drafts = useComposerDraftState({ businessId: ctx.business?.id ?? null,
     platforms: { value: platforms, set: setPlatforms }, headline: { value: headline, set: setHeadline },
-    caption: { value: captionState.caption, set: setCaption }, media: { value: media, set: setMedia }, jobId: { value: jobId, set: restoreJob } })
+    caption: { value: captionState.caption, set: setCaption }, platformText: { value: copy.text, set: copy.applyText },
+    media: { value: media, set: setMedia }, jobId: { value: jobId, set: restoreJob } })
   const { draft } = drafts
+  const writer = useComposerPlatformWriter({ platforms, caption: captionState.caption, setCaption, setHeadline, jobId, media, copy })
   const { handleDone, writeForMe } = useComposerActions({ captionState, jobId, media, platforms, youtube, pinterest,
     reload: () => void ctx.loadData({ force: true }), onFinished: draft.finish })
 
@@ -101,22 +101,14 @@ export function TradiesPostComposer() {
                 saved={drafts.slideshow} onDraft={drafts.setSlideshow} />}
             />
           </ComposerStep>
-          <ComposerCaptionStep
-            platforms={platforms}
-            headline={headline}
-            onHeadline={setHeadline}
-            captionState={captionState}
-            onWriteForMe={writeForMe}
-          />
+          <ComposerCaptionStep platforms={platforms} headline={headline} onHeadline={setHeadline} captionState={captionState}
+            onWriteForMe={writeForMe} copy={copy} writer={writer} xUsername={ctx.business?.x_username ?? null} />
           <ComposerPlatformSettingsSteps
             gates={gates}
-            caption={captionState.caption}
             isVideo={Boolean(media?.video)}
             videoDurationSeconds={videoDuration}
             youtubeChannelTitle={ctx.business?.youtube_channel_title ?? null}
             pinterestUsername={ctx.business?.pinterest_username ?? null}
-            xUsername={ctx.business?.x_username ?? null}
-            jobId={jobId}
           />
         </div>
         <ComposerSidePanel
@@ -125,6 +117,7 @@ export function TradiesPostComposer() {
           connected={connected}
           media={media}
           caption={captionState.caption}
+          overrides={copy.overrides}
           headline={platforms.includes('facebook') ? headline : ''}
           jobId={jobId}
           gates={gates}

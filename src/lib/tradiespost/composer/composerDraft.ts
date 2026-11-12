@@ -2,12 +2,19 @@ import type { ComposerMedia } from '@/components/tradiespost/composer/useCompose
 import { COMPOSER_PUBLISH_PLATFORMS, type SocialPublishPlatform } from '@/lib/social/libraryPublish'
 import { TIKTOK_MAX_PHOTO_SLIDES } from '@/lib/social/tiktokSlides/slideTypes'
 import { parseSlideshowDraft, slideshowDraftIsEmpty, type SlideshowDraft } from '@/lib/social/slideshow/slideshowDraft'
+import {
+  EMPTY_PLATFORM_TEXT,
+  parsePlatformText,
+  platformTextIsEmpty,
+  type PlatformTextDraft,
+} from '@/lib/tradiespost/composer/platformText'
 
 /** Everything Create needs to come back after a refresh or from a saved draft. */
 export type ComposerDraftData = {
   platforms: SocialPublishPlatform[]
   headline: string
   caption: string
+  platformText: PlatformTextDraft
   media: ComposerMedia | null
   jobId: string | null
   slideshow: SlideshowDraft | null
@@ -22,6 +29,7 @@ export const EMPTY_COMPOSER_DRAFT: ComposerDraftData = {
   platforms: [],
   headline: '',
   caption: '',
+  platformText: EMPTY_PLATFORM_TEXT,
   media: null,
   jobId: null,
   slideshow: null,
@@ -60,15 +68,22 @@ export function parseComposerDraft(value: unknown): ComposerDraftData | null {
     platforms: [...new Set(platforms)],
     headline: typeof raw.headline === 'string' ? raw.headline.slice(0, 300) : '',
     caption: typeof raw.caption === 'string' ? raw.caption.slice(0, 5000) : '',
+    platformText: parsePlatformText(raw.platformText),
     media: parseMedia(raw.media),
     jobId: optionalId(raw.jobId),
     slideshow: slideshowDraftIsEmpty(slideshow) ? null : slideshow,
   }
 }
 
-/** Nothing worth keeping: no caption, headline, media or slideshow work. Platforms alone don't count. */
+/** Nothing worth keeping: no caption, headline, platform text, media or slideshow work. Platforms alone don't count. */
 export function composerDraftIsEmpty(draft: ComposerDraftData): boolean {
-  return !draft.caption.trim() && !draft.headline.trim() && !draft.media && slideshowDraftIsEmpty(draft.slideshow)
+  return (
+    !draft.caption.trim() &&
+    !draft.headline.trim() &&
+    platformTextIsEmpty(draft.platformText) &&
+    !draft.media &&
+    slideshowDraftIsEmpty(draft.slideshow)
+  )
 }
 
 export function summarizeComposerDraft(id: string, updatedAt: string, data: unknown): SavedDraftSummary {

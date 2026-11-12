@@ -27,7 +27,7 @@ export const socialArticles: KnowledgeArticle[] = [
     title: "Create and send a post",
     summary:
       "Pick platforms, add a photo, link a product or pre-order page, write a caption, and post or schedule.",
-    keywords: ["create", "compose", "caption", "schedule", "post now", "photo", "write for me", "slideshow", "slides", "carousel"],
+    keywords: ["create", "compose", "caption", "schedule", "post now", "photo", "write for me", "write all", "headline", "hashtags", "tags", "slideshow", "slides", "carousel"],
     related: ["social-ai-images", "social-posts-calendar", "social-connections"],
     availability: "Coming soon",
     ctas: [],
@@ -36,7 +36,8 @@ export const socialArticles: KnowledgeArticle[] = [
       "Under Add a photo, video or slideshow, search What's this post about? and pick a product, pre-order page or subscription. The AI uses its details and can use its photos.",
       "Add an image with Upload photo, From Library, or Create with AI.",
       "Or tap Slideshow: pick 3 to 5 images (from the item you picked, Upload images or Add from Library), optionally tell the AI what to say, and tap Make slides with AI. Edit the heading and text on each slide, choose Seconds per slide and Transition, then tap Create slides.",
-      "Under Write a caption, tap Write for me (or Try another), then edit it. The shortest limit of your chosen platforms applies.",
+      "Under Write your captions, tap Write all with AI to write a version for every chosen platform, with the Facebook headline, YouTube title and tags, Pinterest title and X text. Or write the main caption with Write for me (or Try another).",
+      "To change one platform, open it under Each platform and edit its text, or tap its Write with AI. A blank platform caption uses the main caption, and each platform's own limit applies.",
       "Choose Post now, or Schedule and pick a time (Tonight 7pm, Tomorrow 7am, or your own). Times use your business's timezone.",
       "Tap Post or Schedule. You'll land on Posts, where you can see whether it worked.",
     ],

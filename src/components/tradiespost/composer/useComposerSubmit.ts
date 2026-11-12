@@ -5,6 +5,7 @@ import {
   submitLibraryPostNow,
   submitLibrarySchedule,
   type LibraryPostFetcher,
+  type PlatformCaptions,
   type SocialPublishPlatform,
 } from '@/lib/social/libraryPublish'
 import type { ComposerMode } from '@/lib/tradiespost/composer/composerState'
@@ -24,7 +25,7 @@ const browserFetch: LibraryPostFetcher = async (url, init) => {
 export type ComposerSubmitInput = {
   mode: ComposerMode
   caption: string
-  facebookCaption: string | null
+  platformCaptions: PlatformCaptions
   platforms: SocialPublishPlatform[]
   imageUrl: string
   jobId: string | null
@@ -34,7 +35,6 @@ export type ComposerSubmitInput = {
   tiktokSettings: TikTokPostSettings | null
   youtubeSettings: YouTubePostSettings | null
   pinterestSettings: PinterestPostSettings | null
-  xText: string | null
   video: { url: string; durationSeconds: number | null } | null
   tiktokSlides: string[] | null
 }
@@ -53,10 +53,7 @@ export function useComposerSubmit(onDone: (result: { mode: ComposerMode }) => vo
           platforms: input.platforms,
           resultUrl: input.imageUrl,
           jobId: input.jobId,
-          platformCaptions: {
-            ...(input.facebookCaption && input.platforms.includes('facebook') ? { facebook: input.facebookCaption } : {}),
-            ...(input.xText && input.platforms.includes('x') ? { x: input.xText } : {}),
-          },
+          platformCaptions: input.platformCaptions,
           tiktokSettings: input.tiktokSettings,
           youtubeSettings: input.youtubeSettings,
           pinterestSettings: input.pinterestSettings,

@@ -7,14 +7,14 @@ import { ComposerSubmitBar } from '@/components/tradiespost/composer/ComposerSub
 import { useComposerSubmit } from '@/components/tradiespost/composer/useComposerSubmit'
 import type { ComposerMedia } from '@/components/tradiespost/composer/useComposerMedia'
 import type { SocialWorkspaceBusiness } from '@/lib/social/useSocialWorkspace'
-import type { SocialConnectionState, SocialPublishPlatform } from '@/lib/social/libraryPublish'
+import type { PlatformCaptions, SocialConnectionState, SocialPublishPlatform } from '@/lib/social/libraryPublish'
+import { composerPlatformCaptions } from '@/lib/tradiespost/composer/platformText'
 import { resolveBusinessTimeZone } from '@/lib/social/weekPlan/weekIdentity'
 import type { TikTokPostSettings } from '@/lib/social/tiktok/tiktokSettings'
 import type { YouTubePostSettings } from '@/lib/social/youtube/youtubeSettings'
 import type { PinterestPostSettings } from '@/lib/social/pinterest/pinterestSettings'
 import {
   composerBlockReason,
-  facebookCaptionWithHeadline,
   schedulePublishingMode,
   submitLabel,
   timeZoneMismatch,
@@ -29,6 +29,8 @@ type Props = {
   connected: SocialConnectionState
   media: ComposerMedia | null
   caption: string
+  /** Per-platform captions; blank platforms use `caption`. */
+  overrides: PlatformCaptions
   headline: string
   jobId: string | null
   gates: {
@@ -43,7 +45,7 @@ type Props = {
 }
 
 export function ComposerSidePanel(props: Props) {
-  const { business, platforms, connected, media, caption, headline, jobId, onDone } = props
+  const { business, platforms, connected, media, caption, overrides, headline, jobId, onDone } = props
   const { tiktok, youtube, pinterest, x } = props.gates
   const [mode, setMode] = useState<ComposerMode>('now')
   const [date, setDate] = useState('')
@@ -58,6 +60,7 @@ export function ComposerSidePanel(props: Props) {
     connected,
     imageUrl: media?.url ?? null,
     caption,
+    overrides,
     date,
     isVideo: Boolean(media?.video),
     tiktokBlockReason: tiktok.blockReason,
@@ -95,10 +98,11 @@ export function ComposerSidePanel(props: Props) {
           error={submitError}
           onSubmit={() => {
             if (!media || blockReason) return
+            const platformCaptions = composerPlatformCaptions({ selected: platforms, caption, overrides, headline, xText: x.settings })
             void submit({
               mode,
-              caption: caption.trim(),
-              facebookCaption: facebookCaptionWithHeadline(headline, caption),
+              caption: caption.trim() || Object.values(platformCaptions).find(Boolean) || '',
+              platformCaptions,
               platforms,
               imageUrl: media.url,
               jobId,
@@ -108,7 +112,6 @@ export function ComposerSidePanel(props: Props) {
               tiktokSettings: tiktok.settings,
               youtubeSettings: youtube.settings,
               pinterestSettings: pinterest.settings,
-              xText: x.settings,
               video: media.video ?? null,
               tiktokSlides: media.slides ?? null,
             })

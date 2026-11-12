@@ -2,28 +2,15 @@ import {
   libraryAutomaticScheduleAvailable,
   localDateInputValue,
   VIDEO_PUBLISH_PLATFORMS,
+  type PlatformCaptions,
   type SocialConnectionState,
   type SocialPublishPlatform,
 } from '@/lib/social/libraryPublish'
+import { captionBlockReason } from '@/lib/tradiespost/composer/captionLimits'
+
+export { CAPTION_LIMITS, captionLimitFor } from '@/lib/tradiespost/composer/captionLimits'
 
 export type ComposerMode = 'now' | 'schedule'
-
-export const CAPTION_LIMITS: Record<SocialPublishPlatform, number> = {
-  instagram: 2200,
-  facebook: 63206,
-  gmb: 1500,
-  tiktok: 2200,
-  youtube: 5000,
-  pinterest: 800,
-  /** X has its own 280-character text (platform_captions.x), checked by xBlockReason. */
-  x: 63206,
-}
-
-/** Strictest limit across the selected platforms (Instagram's when none selected). */
-export function captionLimitFor(selected: SocialPublishPlatform[]): number {
-  if (!selected.length) return CAPTION_LIMITS.instagram
-  return Math.min(...selected.map((p) => CAPTION_LIMITS[p]))
-}
 
 export type QuickPick = { id: string; label: string; date: string; time: string }
 
@@ -75,6 +62,8 @@ export function composerBlockReason(params: {
   connected: SocialConnectionState
   imageUrl: string | null
   caption: string
+  /** Per-platform captions; blank platforms use `caption`. */
+  overrides?: PlatformCaptions
   date: string
   isVideo?: boolean
   /** From TikTok settings when TikTok is selected and connected. */
@@ -98,10 +87,8 @@ export function composerBlockReason(params: {
   if (params.youtubeBlockReason) return params.youtubeBlockReason
   if (params.pinterestBlockReason) return params.pinterestBlockReason
   if (params.xBlockReason) return params.xBlockReason
-  if (!params.caption.trim()) return 'Write a caption first.'
-  if (params.caption.length > captionLimitFor(params.selected)) {
-    return 'Caption is too long for one of the selected platforms.'
-  }
+  const captionReason = captionBlockReason(params.selected, params.caption, params.overrides ?? {})
+  if (captionReason) return captionReason
   if (params.mode === 'now' && !params.selected.every((p) => params.connected[p])) {
     return 'Connect every selected platform to post now, or schedule it to post manually.'
   }

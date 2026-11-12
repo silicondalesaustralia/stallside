@@ -1,24 +1,19 @@
 'use client'
 
-import { Sparkles } from 'lucide-react'
 import {
   rememberPinterestBoard,
   type ComposerPinterestState,
 } from '@/components/tradiespost/composer/useComposerPinterest'
-import { PINTEREST_TITLE_MAX, defaultPinterestTitle } from '@/lib/social/pinterest/pinterestSettings'
 
 type Props = {
   state: ComposerPinterestState
-  caption: string
   username: string | null
-  jobId: string | null
 }
 
 const FIELD = 'mt-1 block w-full rounded-xl border border-[#E4E4E7] bg-white px-3 py-2 text-sm font-normal'
 
-export function ComposerPinterestSettings({ state, caption, username, jobId }: Props) {
-  const { draft, setDraft, boards, boardsError, writeTitle, titleGenerating, titleError } = state
-  const fallbackTitle = defaultPinterestTitle(caption)
+export function ComposerPinterestSettings({ state, username }: Props) {
+  const { draft, setDraft, boards, boardsError } = state
 
   function pickBoard(boardId: string) {
     const board = boards?.find((b) => b.id === boardId)
@@ -57,36 +52,6 @@ export function ComposerPinterestSettings({ state, caption, username, jobId }: P
         )}
       </label>
 
-      <div>
-        <div className="flex items-center justify-between gap-2">
-          <label htmlFor="pinterest-title" className="text-sm font-bold text-[#18181B]">Pin title</label>
-          <button
-            type="button"
-            onClick={() => void writeTitle(caption, jobId)}
-            disabled={titleGenerating || !caption.trim()}
-            className="inline-flex items-center gap-1 text-xs font-bold text-[#18181B] underline disabled:opacity-50"
-            data-testid="pinterest-title-ai"
-          >
-            <Sparkles className="h-3.5 w-3.5" aria-hidden />
-            {titleGenerating ? 'Writing…' : 'Write with AI'}
-          </button>
-        </div>
-        <input
-          id="pinterest-title"
-          type="text"
-          value={draft.title}
-          maxLength={PINTEREST_TITLE_MAX}
-          onChange={(e) => setDraft((prev) => ({ ...prev, title: e.target.value }))}
-          placeholder={fallbackTitle || 'e.g. Fresh sourdough every Saturday'}
-          className={FIELD}
-          data-testid="pinterest-title"
-        />
-        <span className="mt-1 block text-xs font-normal text-zinc-500">
-          {draft.title.trim() ? `${draft.title.length}/${PINTEREST_TITLE_MAX}` : 'Leave blank to use the first line of your caption.'}
-        </span>
-        {titleError && <span className="mt-1 block text-xs font-semibold text-red-600">{titleError}</span>}
-      </div>
-
       <label className="block text-sm font-bold text-[#18181B]">
         Link (optional)
         <input
@@ -102,7 +67,7 @@ export function ComposerPinterestSettings({ state, caption, username, jobId }: P
         </span>
       </label>
 
-      <p className="text-xs text-zinc-500">Your caption becomes the Pin description (up to 800 characters).</p>
+      <p className="text-xs text-zinc-500">The Pin title and description are in step 3 under Pinterest.</p>
     </div>
   )
 }
