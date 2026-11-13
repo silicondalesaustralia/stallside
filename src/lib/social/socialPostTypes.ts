@@ -1,6 +1,7 @@
 export const SOCIAL_POST_STATUSES = [
   'draft',
   'scheduled',
+  'publishing',
   'posted',
   'failed',
   'cancelled',

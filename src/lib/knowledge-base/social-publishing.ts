@@ -28,7 +28,7 @@ export const socialPublishingArticles: KnowledgeArticle[] = [
     availability: "Coming soon",
     ctas: [],
     steps: [
-      "Open Social → Posts. Filter by Scheduled, Posted or Needs attention.",
+      "Open Social → Posts. Filter by Scheduled, Posted or Needs attention. Posts marked In queue are being published now and update on their own.",
       "Tap Retry on a failed post, Cancel on a scheduled one, or Duplicate to reuse it.",
       "Open Calendar to see posts by Month or Week. Tap a post to download the image, copy the caption, or Move date/time.",
       "For manual posts, post it yourself at the time, then tap Mark as posted.",

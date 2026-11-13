@@ -7,6 +7,7 @@ export type PlatformOutcome = 'success' | 'failed' | 'pending'
 export type PostOverallStatus =
   | 'posted'
   | 'scheduled'
+  | 'queued'
   | 'needs_attention'
   | 'failed'
   | 'draft'
@@ -40,8 +41,20 @@ export function platformOutcomes(
   }))
 }
 
+/** Being published now, or an automatic post whose time has come and is waiting for its turn. */
+export function isQueuedPost(post: SocialWorkspacePost, now: number = Date.now()): boolean {
+  if (post.status === 'publishing') return true
+  return (
+    post.status === 'scheduled' &&
+    post.publishing_mode === 'automatic' &&
+    Boolean(post.scheduled_for) &&
+    new Date(post.scheduled_for as string).getTime() <= now
+  )
+}
+
 export function overallStatus(post: SocialWorkspacePost): PostOverallStatus {
   if (post.status === 'cancelled') return 'cancelled'
+  if (isQueuedPost(post)) return 'queued'
   if (post.status === 'scheduled') return 'scheduled'
   if (post.status === 'draft') return 'draft'
   const outcomes = platformOutcomes(post).map((o) => o.outcome)
@@ -54,6 +67,7 @@ export function overallStatus(post: SocialWorkspacePost): PostOverallStatus {
 export const OVERALL_BADGE: Record<PostOverallStatus, { status: TradiesPostStatus; label: string }> = {
   posted: { status: 'published', label: 'Posted' },
   scheduled: { status: 'scheduled', label: 'Scheduled' },
+  queued: { status: 'automatic', label: 'In queue' },
   needs_attention: { status: 'needs_review', label: 'Needs attention' },
   failed: { status: 'failed', label: 'Failed' },
   draft: { status: 'draft', label: 'Draft' },
@@ -64,6 +78,7 @@ export function matchesFilter(post: SocialWorkspacePost, filter: PostsFilter): b
   if (filter === 'all') return true
   const status = overallStatus(post)
   if (filter === 'needs_attention') return status === 'needs_attention' || status === 'failed'
+  if (filter === 'scheduled') return status === 'scheduled' || status === 'queued'
   return status === filter
 }
 

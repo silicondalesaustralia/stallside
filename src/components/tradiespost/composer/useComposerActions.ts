@@ -28,9 +28,9 @@ export function useComposerActions(params: {
   const handleDone = useCallback(
     ({ mode }: { mode: ComposerMode }) => {
       onFinished()
-      toast(mode === 'now' ? 'Posted' : 'Scheduled', 'success')
+      toast(mode === 'now' ? 'Post added to the queue' : 'Scheduled', 'success')
       reload()
-      router.push('/dashboard/social/posts')
+      router.push(mode === 'now' ? '/dashboard/social/posts?queued=1' : '/dashboard/social/posts')
     },
     [onFinished, toast, reload, router],
   )

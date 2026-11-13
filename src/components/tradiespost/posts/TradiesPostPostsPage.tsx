@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import { useTradiesPostSocialWorkspace } from '@/components/tradiespost/TradiesPostSocialWorkspaceProvider'
@@ -10,14 +11,17 @@ import { SocialTabLoading } from '@/components/social/SocialTabPanel'
 import { PostsFilterChips } from '@/components/tradiespost/posts/PostsFilterChips'
 import { PostCard } from '@/components/tradiespost/posts/PostCard'
 import { SavedDraftsList } from '@/components/tradiespost/posts/SavedDraftsList'
+import { PostsQueueNotice } from '@/components/tradiespost/posts/PostsQueueNotice'
 import { resolveBusinessTimeZone } from '@/lib/social/weekPlan/weekIdentity'
 import {
+  isQueuedPost,
   matchesFilter,
   postSortTime,
   type PostsFilter,
 } from '@/lib/tradiespost/posts/derivePostOutcome'
 
 const ALL_FILTERS: PostsFilter[] = ['all', 'scheduled', 'posted', 'needs_attention']
+const QUEUE_POLL_MS = 8000
 
 type ActionResponse = {
   error?: string
@@ -41,6 +45,9 @@ export function TradiesPostPostsPage() {
   const { loadData } = ctx
   const [filter, setFilter] = useState<PostsFilter>('all')
   const [busyId, setBusyId] = useState<string | null>(null)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [showQueued, setShowQueued] = useState(searchParams.get('queued') === '1')
 
   useEffect(() => {
     void loadData({ force: true })
@@ -50,6 +57,20 @@ export function TradiesPostPostsPage() {
     () => ctx.posts.filter((p) => p.status !== 'cancelled' && p.status !== 'draft'),
     [ctx.posts],
   )
+  const queuedCount = useMemo(() => visiblePosts.filter((p) => isQueuedPost(p)).length, [visiblePosts])
+  const [sawQueued, setSawQueued] = useState(false)
+  if (queuedCount > 0 && !sawQueued) setSawQueued(true)
+
+  useEffect(() => {
+    if (queuedCount === 0) return
+    const timer = setInterval(() => void loadData({ force: true }), QUEUE_POLL_MS)
+    return () => clearInterval(timer)
+  }, [queuedCount, loadData])
+
+  function dismissQueued() {
+    setShowQueued(false)
+    router.replace('/dashboard/social/posts', { scroll: false })
+  }
   const counts = useMemo(() => {
     const entries = ALL_FILTERS.map((f) => [f, visiblePosts.filter((p) => matchesFilter(p, f)).length])
     return Object.fromEntries(entries) as Record<PostsFilter, number>
@@ -88,6 +109,7 @@ export function TradiesPostPostsPage() {
         }
       />
       {ctx.loadError && <p className="mb-4 text-sm font-semibold text-red-600">{ctx.loadError}</p>}
+      {showQueued && <PostsQueueNotice finished={sawQueued && queuedCount === 0} onDismiss={dismissQueued} />}
       <SavedDraftsList />
       <PostsFilterChips value={filter} counts={counts} onChange={setFilter} />
       {shown.length === 0 ? (

@@ -319,7 +319,7 @@ export function LibraryTab({
         },
         browserFetch,
       )
-      toast('Published successfully.', 'success')
+      toast('Post added to the queue. It will publish in the background - see Posts for the result.', 'success')
       onPostCreated?.()
       return true
     } catch (err) {

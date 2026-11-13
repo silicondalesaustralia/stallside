@@ -54,7 +54,7 @@ import {
 
 export type SocialCalendarPost = {
   id: string
-  status: 'draft' | 'scheduled' | 'posted' | 'failed' | 'cancelled'
+  status: 'draft' | 'scheduled' | 'publishing' | 'posted' | 'failed' | 'cancelled'
   publishing_mode?: 'automatic' | 'manual' | null
   caption: string | null
   platforms: string[]

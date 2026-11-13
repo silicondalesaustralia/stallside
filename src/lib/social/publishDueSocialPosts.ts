@@ -1,19 +1,14 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { publishPost } from '@/lib/socialPlatforms'
 import { isDueAutomaticPost } from '@/lib/social/socialPostTypes'
 import {
-  tiktokPostSourceFromRow,
-  tiktokResultColumns,
-} from '@/lib/social/tiktok/publishTikTokForPost'
-import {
-  youtubePostSourceFromRow,
-  youtubeResultColumns,
-} from '@/lib/social/youtube/publishYouTubeForPost'
-import {
-  pinterestPostSourceFromRow,
-  pinterestResultColumns,
-} from '@/lib/social/pinterest/publishPinterestForPost'
-import { xResultColumns } from '@/lib/social/x/publishXForPost'
+  claimPostForPublishing,
+  markFailed,
+  notify,
+  publishClaimedPost,
+} from '@/lib/social/publishClaimedPost'
+
+/** A claimed post older than this was cut off mid-publish (function timeout or crash). */
+const PUBLISHING_STALE_MS = 15 * 60 * 1000
 
 export type DueSocialPostRow = {
   id: string
@@ -53,6 +48,26 @@ export function filterDueAutomaticPosts<T extends Pick<DueSocialPostRow, 'status
   })
 }
 
+/** Posts stuck in 'publishing' past PUBLISHING_STALE_MS are failed so the owner can retry. */
+async function failStalePublishingPosts(db: SupabaseClient, now: Date): Promise<number> {
+  const cutoff = new Date(now.getTime() - PUBLISHING_STALE_MS).toISOString()
+  const { data, error } = await db
+    .from('social_posts')
+    .select('*')
+    .eq('status', 'publishing')
+    .lt('publishing_started_at', cutoff)
+  if (error) {
+    console.error('[Social publish] Stale publishing query failed', error.message)
+    return 0
+  }
+  const stale = (data ?? []) as DueSocialPostRow[]
+  for (const post of stale) {
+    await markFailed(db, post, 'Publishing did not finish. Check the platform, then tap Retry if it is not there.')
+    await notify(db, post, false)
+  }
+  return stale.length
+}
+
 export type PublishDuePostsResult = { published: number; failed: number; skipped: number }
 
 export async function publishDueAutomaticSocialPosts(
@@ -78,85 +93,18 @@ export async function publishDueAutomaticSocialPosts(
       result.skipped++
       continue
     }
-
-    try {
-      const { data: business } = await db
-        .from('businesses')
-        .select([
-          'facebook_page_id', 'facebook_access_token',
-          'instagram_account_id',
-          'gmb_account_id', 'gmb_location_id', 'gmb_access_token',
-          'phone',
-        ].join(', '))
-        .eq('id', post.business_id)
-        .single()
-
-      if (!business || !post.caption) {
-        await db.from('social_posts').update({
-          status: 'failed',
-          instagram_error: 'Missing caption or business',
-        }).eq('id', post.id)
-        result.failed++
-        continue
-      }
-
-      const processedPhotoUrls: Record<string, string[]> = post.processed_photo_urls
-        ? (post.processed_photo_urls as Record<string, string[]>)
-        : { instagram_square: post.photo_urls || [] }
-
-      const postResults = await publishPost({
-        platforms: post.platforms,
-        caption: post.caption,
-        platformCaptions: post.platform_captions,
-        processedPhotoUrls,
-        businessId: post.business_id,
-        business: business as Parameters<typeof publishPost>[0]['business'],
-        tiktokPost: tiktokPostSourceFromRow(post as DueSocialPostRow),
-        youtubePost: youtubePostSourceFromRow(post as DueSocialPostRow),
-        pinterestPost: pinterestPostSourceFromRow(post as DueSocialPostRow),
-        xPost: { postId: post.id, mediaType: (post as DueSocialPostRow).media_type ?? null },
-        videoUrl: post.media_type === 'video' && post.video_url ? post.video_url : null,
-      })
-
-      const anySuccess = Object.values(postResults).some((r) => r?.success)
-      const allFailed = Object.values(postResults).every((r) => r && !r.success)
-
-      const { error: saveError } = await db.from('social_posts').update({
-        status: allFailed ? 'failed' : 'posted',
-        posted_at: anySuccess ? now.toISOString() : null,
-        facebook_post_id: postResults.facebook?.postId || null,
-        facebook_error: postResults.facebook?.error || null,
-        instagram_post_id: postResults.instagram?.postId || null,
-        instagram_error: postResults.instagram?.error || null,
-        gmb_post_id: postResults.gmb?.postId || null,
-        gmb_error: postResults.gmb?.error || null,
-        ...tiktokResultColumns(postResults.tiktok),
-        ...youtubeResultColumns(postResults.youtube),
-        ...pinterestResultColumns(postResults.pinterest),
-        ...xResultColumns(postResults.x),
-      }).eq('id', post.id)
-      if (saveError) console.error('[Social publish] Saving results failed', { postId: post.id, saveError })
-
-      const platformNames = post.platforms.join(', ')
-      await db.from('notifications').insert({
-        business_id: post.business_id,
-        type: 'social_post_published',
-        message: anySuccess
-          ? `✅ Your post was published to ${platformNames}`
-          : `❌ Post failed to publish to ${platformNames} - tap to retry`,
-        read: false,
-      })
-
-      anySuccess ? result.published++ : result.failed++
-    } catch (err) {
-      console.error('[Social publish] Post failed:', post.id, err)
-      await db.from('social_posts').update({
-        status: 'failed',
-        instagram_error: String(err),
-      }).eq('id', post.id)
-      result.failed++
+    const claim = await claimPostForPublishing(db, post.id, now)
+    if (claim.status === 'taken') {
+      result.skipped++
+      continue
     }
+    // Without the claim (status migration missing) publish the row as before.
+    const row = claim.status === 'claimed' ? claim.post : (post as DueSocialPostRow)
+    const outcome = await publishClaimedPost(db, row, now)
+    if (outcome === 'posted') result.published++
+    else result.failed++
   }
 
+  result.failed += await failStalePublishingPosts(db, now)
   return result
 }

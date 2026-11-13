@@ -40,6 +40,7 @@ export const socialArticles: KnowledgeArticle[] = [
       "Under Write your captions, tap Write all with AI to write a version for every chosen platform, with the Facebook headline, YouTube title and tags, Pinterest title and X text. Or write the main caption with Write for me (or Try another).",
       "To change one platform, open it under Each platform and edit its text, or tap its Write with AI. A blank platform caption uses the main caption, and each platform's own limit applies.",
       "Choose Post now, or Schedule and pick a time (Tonight 7pm, Tomorrow 7am, or your own). Times use your business's timezone.",
+      "Post now adds your post to the queue and takes you to Posts, where it shows as In queue. You can click away; it keeps posting in the background.",
       "Tap Post or Schedule. You'll land on Posts, where you can see whether it worked.",
     ],
     tips: [

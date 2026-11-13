@@ -5,7 +5,8 @@ function toMobilePost(post: StandSocialPost): MobileSocialPost {
   const photos = post.photo_urls ?? [];
   return {
     id: post.id,
-    status: post.status,
+    // The mobile contract predates 'publishing'; to the app it is still waiting.
+    status: post.status === "publishing" ? "scheduled" : post.status,
     manual: post.publishing_mode === "manual",
     caption: post.caption ?? "",
     platforms: post.platforms ?? [],

@@ -345,7 +345,11 @@ export type LibraryPostFetcher = (
   init: { method: string; headers?: Record<string, string>; body?: string },
 ) => Promise<{ ok: boolean; status: number; json: () => Promise<Record<string, unknown>> }>
 
-/** Text-only create + existing publish route. Never charges render credits. */
+/**
+ * Saves the post as due now and queues it; the server publishes in the background
+ * (the publish-due cron picks it up if the background run never starts).
+ * Never charges render credits.
+ */
 export async function submitLibraryPostNow(
   params: {
     caption: string
@@ -356,7 +360,12 @@ export async function submitLibraryPostNow(
   } & ComposerPostExtras,
   fetchFn: LibraryPostFetcher,
 ): Promise<{ postId: string }> {
-  const body = buildLibrarySocialPostBody({ ...params, mode: 'now' })
+  const body = {
+    ...buildLibrarySocialPostBody({ ...params, mode: 'now' }),
+    status: 'scheduled' as const,
+    scheduledFor: new Date().toISOString(),
+    publishingMode: 'automatic' as const,
+  }
   const createRes = await fetchFn('/api/social/posts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -370,10 +379,10 @@ export async function submitLibraryPostNow(
   }
   const post = createJson.post as { id?: string } | undefined
   if (!post?.id) throw new Error('Post was not created')
-  const pubRes = await fetchFn(`/api/social/posts/${post.id}/publish`, { method: 'POST' })
-  const pubJson = (await pubRes.json().catch(() => ({}))) as Record<string, unknown>
-  if (!pubRes.ok) {
-    throw new Error((typeof pubJson.error === 'string' && pubJson.error) || 'Publish failed')
+  const queueRes = await fetchFn(`/api/social/posts/${post.id}/queue`, { method: 'POST' })
+  if (!queueRes.ok) {
+    const queueJson = (await queueRes.json().catch(() => ({}))) as Record<string, unknown>
+    throw new Error((typeof queueJson.error === 'string' && queueJson.error) || 'Could not queue post')
   }
   return { postId: post.id }
 }
