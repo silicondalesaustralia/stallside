@@ -12,7 +12,8 @@ async function run() {
   const { xTokenNeedsRefresh } = await import('./xAuth')
   const { createXPkcePair, getXOAuthUrl, xTokenColumns } = await import('./xOAuth')
   const { encodeXOAuthState, decodeXOAuthState, peekXReturnPath } = await import('./xOAuthState')
-  const { X_TEXT_MAX, defaultXText, xTextBlockReason, xTextLength } = await import('./xText')
+  const { X_TEXT_MAX, defaultXText, xTextBlockReason, xTextLength, xVideoTooLongReason } = await import('./xText')
+  const { composerBlockReason } = await import('../../tradiespost/composer/composerState')
   const { xResultColumns } = await import('./publishXForPost')
   const { directPostUrl } = await import('../postLinks')
   const { composerPostColumns } = await import('../composerPostFields')
@@ -56,6 +57,22 @@ async function run() {
   assert.equal(xTextBlockReason(trimmed), null)
   assert.equal(xTextBlockReason('   '), 'Write the text for X.')
   assert.match(xTextBlockReason(long) ?? '', /280/)
+
+  // Video length: X takes up to 140s.
+  assert.equal(xVideoTooLongReason(140), null)
+  assert.equal(xVideoTooLongReason(null), null)
+  assert.match(xVideoTooLongReason(141) ?? '', /2 minutes 20 seconds/)
+  const videoParams = {
+    mode: 'schedule' as const,
+    selected: ['x' as const],
+    connected: {} as Parameters<typeof composerBlockReason>[0]['connected'],
+    imageUrl: 'https://example.com/v.jpg',
+    caption: 'Fresh eggs',
+    date: '2026-11-14',
+    isVideo: true,
+  }
+  assert.equal(composerBlockReason({ ...videoParams, videoDurationSeconds: 60 }), null)
+  assert.match(composerBlockReason({ ...videoParams, videoDurationSeconds: 200 }) ?? '', /X only takes/)
 
   // Result columns.
   assert.deepEqual(xResultColumns(undefined), {})

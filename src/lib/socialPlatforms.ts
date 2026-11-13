@@ -392,6 +392,7 @@ export async function publishPost(options: {
           businessId,
           text: typeof xOverride === 'string' && xOverride.trim() ? xOverride : caption,
           processedPhotoUrls,
+          videoUrl: videoUrl ?? null,
         })
       : { success: false, error: 'X post details missing' }
   }

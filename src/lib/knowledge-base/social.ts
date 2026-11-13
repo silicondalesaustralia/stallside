@@ -45,7 +45,7 @@ export const socialArticles: KnowledgeArticle[] = [
     ],
     tips: [
       "Post now needs every chosen platform connected. If one isn't, schedule it instead and it's added to your calendar as a manual post to do yourself.",
-      "Videos post automatically to TikTok, YouTube, Pinterest, Facebook (as a Page video) and Instagram (as a Reel). For other platforms, download the video from Library and post it yourself.",
+      "Videos post automatically to TikTok, YouTube, Pinterest, Facebook (as a Page video), Instagram (as a Reel) and X (up to 2 minutes 20 seconds). For other platforms, download the video from Library and post it yourself.",
       "Slideshows are saved to Library as 9:16 videos, sized for TikTok, Reels, YouTube Shorts, X and Pinterest. When TikTok is picked, you can post the slides as swipeable photos instead.",
       "Music is free to use with no credit needed. Adding it saves a new copy of the video in Library, and the original stays as it was. You can also add music in the clip and Library video editors under Background music.",
     ],

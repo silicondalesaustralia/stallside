@@ -1,4 +1,11 @@
 export const X_TEXT_MAX = 280
+/** X's video length limit for standard accounts; longer videos fail during processing. */
+export const X_VIDEO_MAX_SECONDS = 140
+
+export function xVideoTooLongReason(durationSeconds: number | null | undefined): string | null {
+  if (!durationSeconds || durationSeconds <= X_VIDEO_MAX_SECONDS) return null
+  return 'X only takes videos up to 2 minutes 20 seconds. Pick a shorter video or deselect X.'
+}
 
 /**
  * X counts every link as 23 characters (t.co) and most emoji/CJK as 2.

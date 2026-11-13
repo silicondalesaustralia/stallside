@@ -1,5 +1,6 @@
 import { getXAccessToken } from '@/lib/social/x/xAuth'
 import { createXPost, uploadXImage } from '@/lib/social/x/xApi'
+import { uploadXVideo } from '@/lib/social/x/xVideo'
 import { xTextBlockReason } from '@/lib/social/x/xText'
 
 const DEMO = process.env.SOCIAL_DEMO_MODE === 'true'
@@ -18,6 +19,8 @@ export type XPostSource = {
   text: string
   mediaType: string | null
   processedPhotoUrls: Record<string, string[]>
+  /** social_posts.video_url for video posts. */
+  videoUrl: string | null
 }
 
 /** social_posts columns after a publish attempt ({} when X was not targeted). */
@@ -34,11 +37,12 @@ function postImageUrl(processed: Record<string, string[]>): string | null {
   return url && /^https:\/\//.test(url) ? url : null
 }
 
-/** Upload the post image and create the X post. */
+/** Upload the post's video or image and create the X post. */
 export async function publishXForPost(src: XPostSource): Promise<XPublishResult> {
   const textProblem = xTextBlockReason(src.text)
   if (textProblem) return { success: false, error: textProblem }
-  if (src.mediaType === 'video') return { success: false, error: 'Video posts to X are not supported yet' }
+  const isVideo = src.mediaType === 'video'
+  if (isVideo && !src.videoUrl) return { success: false, error: 'The video for X is missing' }
   const imageUrl = postImageUrl(src.processedPhotoUrls)
   if (DEMO) {
     console.log('[Demo] Would post to X:', src.postId)
@@ -48,7 +52,11 @@ export async function publishXForPost(src: XPostSource): Promise<XPublishResult>
   try {
     const accessToken = await getXAccessToken(src.businessId)
     if (!accessToken) return { success: false, error: 'X is not connected' }
-    const mediaId = imageUrl ? await uploadXImage(accessToken, imageUrl) : null
+    const mediaId = isVideo && src.videoUrl
+      ? await uploadXVideo(accessToken, src.videoUrl)
+      : imageUrl
+        ? await uploadXImage(accessToken, imageUrl)
+        : null
     const postId = await createXPost(accessToken, { text: src.text.trim(), mediaId })
     return { success: true, postId }
   } catch (err) {

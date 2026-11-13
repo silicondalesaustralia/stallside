@@ -1,6 +1,6 @@
 // ============================================================
 // lib/social/x/xApi.ts
-// X API v2 calls used by Vendl: account, image upload, create post.
+// X API v2 calls used by Vendl: account, image upload, create post (video upload: xVideo.ts).
 // ============================================================
 
 import { X_API_BASE } from '@/lib/social/x/xConfig'
@@ -15,7 +15,7 @@ export type XAccount = {
 
 type XErrorBody = { detail?: string; title?: string; errors?: { message?: string }[] }
 
-async function xRequest<T>(accessToken: string, path: string, init?: { method: 'POST'; body: BodyInit; json?: boolean }): Promise<T> {
+export async function xRequest<T>(accessToken: string, path: string, init?: { method: 'POST'; body: BodyInit; json?: boolean }): Promise<T> {
   const res = await fetch(`${X_API_BASE}${path}`, {
     method: init?.method ?? 'GET',
     headers: {
@@ -36,7 +36,8 @@ async function xRequest<T>(accessToken: string, path: string, init?: { method: '
     console.error('[X] API error', { path, status: res.status, message })
     throw new Error(message)
   }
-  return JSON.parse(text) as T
+  // Chunk appends answer 2xx with an empty body.
+  return (text ? JSON.parse(text) : {}) as T
 }
 
 export async function getXAccount(accessToken: string): Promise<XAccount> {

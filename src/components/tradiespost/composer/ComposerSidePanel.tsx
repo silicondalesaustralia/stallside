@@ -65,6 +65,7 @@ export function ComposerSidePanel(props: Props) {
     overrides,
     date,
     isVideo: Boolean(media?.video),
+    videoDurationSeconds: media?.video?.durationSeconds ?? null,
     tiktokBlockReason: tiktok.blockReason,
     youtubeBlockReason: youtube.blockReason,
     pinterestBlockReason: pinterest.blockReason,

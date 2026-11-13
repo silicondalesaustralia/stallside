@@ -14,7 +14,7 @@ export function ComposerVideoNotice({ onUploaded }: { onUploaded?: () => void })
       <p className="text-sm font-bold text-[#18181B]">Videos go to your Library first</p>
       <p className="mx-auto mt-1 max-w-md text-xs text-zinc-500">
         Upload an MP4 or MOV up to 30 minutes, then pick it above. Videos post automatically to TikTok,
-        YouTube, Pinterest, Facebook and Instagram (each platform may cap length for your account).
+        YouTube, Pinterest, Facebook, Instagram and X (each platform may cap length for your account).
         For other platforms, download it from your Library and post it yourself.
       </p>
       <button
