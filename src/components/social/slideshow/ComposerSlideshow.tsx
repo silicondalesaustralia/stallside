@@ -43,13 +43,13 @@ export function ComposerSlideshow(props: Props) {
     [onMedia],
   )
   const build = useSlideshowBuild({ jobId, initial: saved, onVideo })
-  const { phase, slides, caption, secondsPerSlide, transition } = build
+  const { phase, slides, caption, secondsPerSlide, transition, accentColor, showText } = build
 
   useEffect(() => {
     if (phase === 'done') return onDraft(null)
     const stage = phase === 'edit' || phase === 'creating' ? 'edit' : 'pick'
-    onDraft({ stage, images: picker.images, context, slides, caption, secondsPerSlide, transition })
-  }, [phase, picker.images, context, slides, caption, secondsPerSlide, transition, onDraft])
+    onDraft({ stage, images: picker.images, context, slides, caption, secondsPerSlide, transition, accentColor, showText })
+  }, [phase, picker.images, context, slides, caption, secondsPerSlide, transition, accentColor, showText, onDraft])
 
   if (build.phase === 'done' && result) {
     return (
@@ -73,6 +73,10 @@ export function ComposerSlideshow(props: Props) {
         slides={build.slides}
         businessName={business?.name?.trim() || 'Our team'}
         brandColor={business?.brand_color ?? null}
+        accentColor={build.accentColor}
+        onAccentColor={build.setAccentColor}
+        showText={build.showText}
+        onShowText={build.setShowText}
         creating={build.phase === 'creating'}
         error={build.error}
         secondsPerSlide={build.secondsPerSlide}
@@ -107,6 +111,7 @@ export function ComposerSlideshow(props: Props) {
         error={build.error}
         onContext={setContext}
         onWrite={() => void build.write(picker.images, context)}
+        onPhotosOnly={() => build.photosOnly(picker.images)}
       />
     </div>
   )

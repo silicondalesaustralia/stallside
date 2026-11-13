@@ -22,6 +22,11 @@ assert.equal(render.value.transition, 'fade')
 const missingHeading = parseSlideshowRenderRequest({ slides: [...slides.slice(0, 2), { imageUrl: imgs[2], heading: ' ' }] })
 assert.equal(missingHeading.ok, false)
 
+const plain = parseSlideshowRenderRequest({ slides: imgs.map((imageUrl) => ({ imageUrl, heading: '', body: '' })), showText: false })
+assert.ok(plain.ok)
+assert.equal(plain.value.showText, false)
+assert.equal(render.value.showText, true)
+
 assert.equal(slideshowDurationSeconds(5, 3), 15)
 
 const fade = slideshowFfmpegArgs({ imagePaths: ['/w/1.jpg', '/w/2.jpg', '/w/3.jpg'], outputPath: '/w/o.mp4', secondsPerSlide: 3, transition: 'fade' })

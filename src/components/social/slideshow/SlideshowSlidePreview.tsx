@@ -15,10 +15,11 @@ type Props = {
   total: number
   businessName: string
   brandColor: string | null
+  showText: boolean
 }
 
 /** Same SVG the server renders, laid over the photo, so text edits show instantly. */
-export function SlideshowSlidePreview({ slide, index, total, businessName, brandColor }: Props) {
+export function SlideshowSlidePreview({ slide, index, total, businessName, brandColor, showText }: Props) {
   const svg = useMemo(
     () =>
       buildSlideSvg({
@@ -42,7 +43,9 @@ export function SlideshowSlidePreview({ slide, index, total, businessName, brand
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={slide.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
       {/* buildSlideSvg escapes all text and validates the brand colour. */}
-      <div className="absolute inset-0 [&>svg]:h-full [&>svg]:w-full" dangerouslySetInnerHTML={{ __html: svg }} />
+      {showText && (
+        <div className="absolute inset-0 [&>svg]:h-full [&>svg]:w-full" dangerouslySetInnerHTML={{ __html: svg }} />
+      )}
     </div>
   )
 }

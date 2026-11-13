@@ -5,6 +5,7 @@ import {
   SLIDESHOW_MAX_IMAGES,
   SLIDESHOW_SECONDS_OPTIONS,
   SLIDESHOW_TRANSITIONS,
+  parseAccentColor,
   type SlideshowSlide,
   type SlideshowTransition,
 } from '@/lib/social/slideshow/slideshowTypes'
@@ -18,6 +19,8 @@ export type SlideshowDraft = {
   caption: string
   secondsPerSlide: number
   transition: SlideshowTransition
+  accentColor: string | null
+  showText: boolean
 }
 
 export const EMPTY_SLIDESHOW_DRAFT: SlideshowDraft = {
@@ -28,6 +31,8 @@ export const EMPTY_SLIDESHOW_DRAFT: SlideshowDraft = {
   caption: '',
   secondsPerSlide: SLIDESHOW_DEFAULT_SECONDS,
   transition: 'fade',
+  accentColor: null,
+  showText: true,
 }
 
 const httpsUrl = (v: unknown): v is string => typeof v === 'string' && v.startsWith('https://')
@@ -58,6 +63,8 @@ export function parseSlideshowDraft(value: unknown): SlideshowDraft | null {
     caption: text(raw.caption, 2200),
     secondsPerSlide: (SLIDESHOW_SECONDS_OPTIONS as readonly number[]).includes(seconds) ? seconds : SLIDESHOW_DEFAULT_SECONDS,
     transition: SLIDESHOW_TRANSITIONS.find((t) => t === raw.transition) ?? 'fade',
+    accentColor: parseAccentColor(raw.accentColor),
+    showText: raw.showText !== false,
   }
 }
 

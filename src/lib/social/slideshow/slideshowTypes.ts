@@ -18,6 +18,10 @@ export type SlideshowRenderRequest = {
   jobId: string | null
   secondsPerSlide: number
   transition: SlideshowTransition
+  /** Heading underline colour (#RRGGBB); null uses the business brand colour. */
+  accentColor: string | null
+  /** false = plain photos: no heading, text, underline or business name. */
+  showText: boolean
   /** Short summary saved on the Library video so "Write with AI" has context. */
   about: string
 }
@@ -49,6 +53,11 @@ export function clipText(value: unknown, max: number): string {
   return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim().slice(0, max) : ''
 }
 
+export function parseAccentColor(value: unknown): string | null {
+  const v = typeof value === 'string' ? value.trim() : ''
+  return /^#[0-9a-fA-F]{6}$/.test(v) ? v.toUpperCase() : null
+}
+
 function parseJobId(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null
 }
@@ -75,18 +84,19 @@ export function parseSlideshowWriteRequest(body: unknown): Parsed<SlideshowWrite
   }
 }
 
-export function sanitizeSlide(value: unknown): SlideshowSlide | null {
+export function sanitizeSlide(value: unknown, requireHeading = true): SlideshowSlide | null {
   const raw = record(value)
   const imageUrl = parseImages([raw.imageUrl])[0]
   const heading = clipText(raw.heading, SLIDE_HEADING_MAX)
-  if (!imageUrl || !heading) return null
+  if (!imageUrl || (requireHeading && !heading)) return null
   return { imageUrl, heading, body: clipText(raw.body, SLIDE_BODY_MAX) }
 }
 
 export function parseSlideshowRenderRequest(body: unknown): Parsed<SlideshowRenderRequest> {
   const raw = record(body)
+  const showText = raw.showText !== false
   const list = Array.isArray(raw.slides) ? raw.slides : []
-  const slides = list.map(sanitizeSlide).filter((s): s is SlideshowSlide => s !== null)
+  const slides = list.map((s) => sanitizeSlide(s, showText)).filter((s): s is SlideshowSlide => s !== null)
   if (slides.length !== list.length) return { ok: false, message: 'Every slide needs a heading.' }
   const error = countError(slides.length)
   if (error) return { ok: false, message: error }
@@ -102,6 +112,8 @@ export function parseSlideshowRenderRequest(body: unknown): Parsed<SlideshowRend
       jobId: parseJobId(raw.jobId),
       secondsPerSlide,
       transition,
+      accentColor: parseAccentColor(raw.accentColor),
+      showText,
       about: clipText(raw.about, 2000),
     },
   }

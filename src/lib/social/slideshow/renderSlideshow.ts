@@ -16,12 +16,12 @@ export type RenderedSlideshow = {
   coverUrl: string
 }
 
-async function compositeJpeg(photo: Buffer, overlay: Buffer, size: Size): Promise<Buffer> {
+async function compositeJpeg(photo: Buffer, overlay: Buffer | null, size: Size): Promise<Buffer> {
   const { default: sharp } = await import('sharp')
   return sharp(photo)
     .rotate()
     .resize(size.width, size.height, { fit: 'cover', position: 'attention' })
-    .composite([{ input: overlay }])
+    .composite(overlay ? [{ input: overlay }] : [])
     .jpeg({ quality: 88, mozjpeg: true })
     .toBuffer()
 }
@@ -57,6 +57,7 @@ export async function renderSlideshowImages(input: {
   businessName: string
   brandColor: string | null
   slides: SlideshowSlide[]
+  showText: boolean
 }): Promise<RenderedSlideshow> {
   const folder = `${input.businessId}/slideshows/${Date.now()}`
   const photos = await Promise.all(input.slides.map((s) => fetchSlideshowImage(s.imageUrl)))
@@ -70,15 +71,19 @@ export async function renderSlideshowImages(input: {
   const slidePaths: string[] = []
   const slideUrls: string[] = []
   for (const [index, slide] of input.slides.entries()) {
-    const svg = buildSlideSvg({ ...base, ...SLIDE_SIZE, slide, index, showCounter: false })
-    const jpeg = await compositeJpeg(photos[index], svgToPng(svg), SLIDE_SIZE)
+    const overlay = input.showText
+      ? svgToPng(buildSlideSvg({ ...base, ...SLIDE_SIZE, slide, index, showCounter: false }))
+      : null
+    const jpeg = await compositeJpeg(photos[index], overlay, SLIDE_SIZE)
     const path = `${folder}/slide-${index + 1}.jpg`
     slideUrls.push(await upload(input.storage, path, jpeg))
     slidePaths.push(path)
   }
 
-  const coverSvg = buildSlideSvg({ ...base, ...FEED_COVER_SIZE, slide: input.slides[0], index: 0, showCounter: false })
-  const cover = await compositeJpeg(photos[0], svgToPng(coverSvg), FEED_COVER_SIZE)
+  const coverOverlay = input.showText
+    ? svgToPng(buildSlideSvg({ ...base, ...FEED_COVER_SIZE, slide: input.slides[0], index: 0, showCounter: false }))
+    : null
+  const cover = await compositeJpeg(photos[0], coverOverlay, FEED_COVER_SIZE)
   const coverUrl = await upload(input.storage, `${folder}/cover.jpg`, cover)
 
   return { slidePaths, slideUrls, coverUrl }

@@ -27,8 +27,9 @@ export async function POST(req: NextRequest) {
       storage: db,
       businessId,
       businessName: business.name,
-      brandColor: business.brandColor,
+      brandColor: request.accentColor ?? business.brandColor,
       slides: request.slides,
+      showText: request.showText,
     })
 
     const itemId = await ownedJobId(db, businessId, request.jobId)

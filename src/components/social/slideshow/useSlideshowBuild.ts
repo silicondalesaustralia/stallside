@@ -30,6 +30,8 @@ export function useSlideshowBuild(params: {
   const [caption, setCaption] = useState(initial?.caption ?? '')
   const [secondsPerSlide, setSecondsPerSlide] = useState<number>(initial?.secondsPerSlide ?? SLIDESHOW_DEFAULT_SECONDS)
   const [transition, setTransition] = useState<SlideshowTransition>(initial?.transition ?? 'fade')
+  const [accentColor, setAccentColor] = useState<string | null>(initial?.accentColor ?? null)
+  const [showText, setShowText] = useState<boolean>(initial?.showText ?? true)
   const [rendered, setRendered] = useState<SlideshowRenderResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const alive = useRef(true)
@@ -50,6 +52,7 @@ export function useSlideshowBuild(params: {
         if (!alive.current) return
         setSlides(result.slides)
         setCaption(result.caption)
+        setShowText(true)
         setPhase('edit')
       } catch (err) {
         if (!alive.current) return
@@ -59,6 +62,14 @@ export function useSlideshowBuild(params: {
     },
     [jobId],
   )
+
+  const photosOnly = useCallback((images: string[]) => {
+    setSlides(images.map((imageUrl) => ({ imageUrl, heading: '', body: '' })))
+    setCaption('')
+    setShowText(false)
+    setError(null)
+    setPhase('edit')
+  }, [])
 
   const updateSlide = useCallback((index: number, patch: Partial<Pick<SlideshowSlide, 'heading' | 'body'>>) => {
     setSlides((prev) => prev.map((s, i) => (i === index ? { ...s, ...patch } : s)))
@@ -82,8 +93,8 @@ export function useSlideshowBuild(params: {
     setPhase('creating')
     setError(null)
     try {
-      const about = [caption, ...slides.map((s) => `${s.heading}. ${s.body}`)].join(' ').trim()
-      const result = await renderSlideshow({ slides, jobId, secondsPerSlide, transition, about })
+      const about = [caption, ...slides.filter((s) => s.heading).map((s) => `${s.heading}. ${s.body}`)].join(' ').trim()
+      const result = await renderSlideshow({ slides, jobId, secondsPerSlide, transition, accentColor, showText, about })
       if (!alive.current) return
       setRendered(result)
       const video = await pollVideo(result.renderJobId)
@@ -95,7 +106,7 @@ export function useSlideshowBuild(params: {
       setError(err instanceof Error ? err.message : 'Could not create the slides')
       setPhase('edit')
     }
-  }, [caption, slides, jobId, secondsPerSlide, transition, pollVideo, onVideo])
+  }, [caption, slides, jobId, secondsPerSlide, transition, accentColor, showText, pollVideo, onVideo])
 
   const reset = useCallback(() => {
     setPhase('pick')
@@ -106,6 +117,6 @@ export function useSlideshowBuild(params: {
 
   return {
     phase, setPhase, slides, caption, secondsPerSlide, setSecondsPerSlide, transition, setTransition,
-    rendered, error, write, updateSlide, create, reset,
+    accentColor, setAccentColor, showText, setShowText, rendered, error, write, photosOnly, updateSlide, create, reset,
   }
 }
