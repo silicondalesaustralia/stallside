@@ -112,7 +112,7 @@ export function TradiesPostGmbConnectionCard({
           ) : connected && canManageConnections ? (
             <div className="flex flex-wrap items-center gap-3">
               {canConnect && (
-                <TradiesPostConnectionSecondaryButton onClick={() => beginConnect(true)}>
+                <TradiesPostConnectionSecondaryButton onClick={() => beginConnect()}>
                   Reconnect
                 </TradiesPostConnectionSecondaryButton>
               )}

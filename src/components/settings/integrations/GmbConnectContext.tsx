@@ -42,7 +42,7 @@ export interface GmbConnectContextValue {
   showDemoHint: boolean
   errorInfo: ReturnType<typeof getGmbConnectErrorInfo> | null
   disconnecting: boolean
-  beginConnect: (reconnect?: boolean) => void
+  beginConnect: () => void
   openGuide: (section?: GmbGuideSection) => void
   disconnectGmb: () => Promise<void>
   scrollToCard: () => void
@@ -79,8 +79,6 @@ export function GmbConnectProvider({
 
   const [config, setConfig] = useState<GmbConnectConfig | null>(null)
   const [errorCode, setErrorCode] = useState<GmbConnectErrorCode | null>(null)
-  const [preCheckOpen, setPreCheckOpen] = useState(false)
-  const [hasProfileAnswer, setHasProfileAnswer] = useState<'yes' | 'no' | null>(null)
   const [guideOpen, setGuideOpen] = useState(false)
   const [guideSection, setGuideSection] = useState<GmbGuideSection>('before')
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -177,8 +175,8 @@ export function GmbConnectProvider({
     setGuideOpen(true)
   }
 
-  function continueToGmb() {
-    setPreCheckOpen(false)
+  function beginConnect() {
+    setErrorCode(null)
     const returnQuery = encodeURIComponent(integrationsPath)
     if (config?.gmbConnectEnabled) {
       window.location.href = `/api/social/connect/gmb?returnPath=${returnQuery}`
@@ -193,16 +191,6 @@ export function GmbConnectProvider({
       'Google Business connect is not live yet - waiting on Google API approval.',
       'error',
     )
-  }
-
-  function beginConnect(reconnect = false) {
-    setErrorCode(null)
-    if (reconnect) {
-      continueToGmb()
-      return
-    }
-    setHasProfileAnswer(null)
-    setPreCheckOpen(true)
   }
 
   async function confirmLocationSelection() {
@@ -283,68 +271,6 @@ export function GmbConnectProvider({
       {children}
 
       <Modal
-        open={preCheckOpen}
-        onClose={() => setPreCheckOpen(false)}
-        title="Connect Google Business Profile"
-        size="lg"
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-[#666]">
-            Do you already have a <strong>verified Google Business Profile</strong> listing for your trade business?
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant={hasProfileAnswer === 'yes' ? 'primary' : 'outline'}
-              onClick={() => setHasProfileAnswer('yes')}
-            >
-              Yes, I have a profile
-            </Button>
-            <Button
-              type="button"
-              variant={hasProfileAnswer === 'no' ? 'primary' : 'outline'}
-              onClick={() => setHasProfileAnswer('no')}
-            >
-              No, I need to set one up
-            </Button>
-          </div>
-          {hasProfileAnswer === 'no' && (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-              <p className="font-semibold">Create and verify your profile first</p>
-              <p className="mt-1 text-amber-800">
-                Google requires a Business Profile before Vendl can publish for you. Follow the guide below, then return and connect.
-              </p>
-              <button
-                type="button"
-                onClick={() => { setPreCheckOpen(false); openGuide('create-profile') }}
-                className="mt-2 font-semibold underline"
-              >
-                Open setup guide →
-              </button>
-            </div>
-          )}
-          {hasProfileAnswer === 'yes' && (
-            <p className="text-xs text-[#888]">
-              On the next screen, sign in with the Google account that is an <strong>owner or manager</strong> on your listing.
-            </p>
-          )}
-          <div className="flex flex-wrap items-center gap-2 border-t border-warm-border pt-4">
-            {hasProfileAnswer === 'yes' && (
-              <Button type="button" onClick={continueToGmb}>
-                Continue to Google sign-in
-              </Button>
-            )}
-            <Button type="button" variant="outline" onClick={() => openGuide('before')}>
-              Full setup guide
-            </Button>
-            <Button type="button" variant="ghost" onClick={() => setPreCheckOpen(false)}>
-              Cancel
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
         open={guideOpen}
         onClose={() => setGuideOpen(false)}
         title="How to connect Google Business Profile"
@@ -355,7 +281,7 @@ export function GmbConnectProvider({
           onClose={() => setGuideOpen(false)}
           onStartConnect={canConnect ? () => {
             setGuideOpen(false)
-            setPreCheckOpen(true)
+            beginConnect()
           } : undefined}
         />
       </Modal>

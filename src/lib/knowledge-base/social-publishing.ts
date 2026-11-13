@@ -62,7 +62,7 @@ export const socialPublishingArticles: KnowledgeArticle[] = [
     ctas: [],
     steps: [
       "Open Social → Connections.",
-      "Tap Connect Facebook. Confirm you have a Facebook Page (or create one), then Continue to Meta login and choose the Page to connect.",
+      "Tap Connect Facebook, log in to Meta and choose the business Page to connect. You need a Facebook Page, not just a personal profile.",
       "Once Facebook is connected, tap Connect Instagram. Your Instagram must be a business account linked to that Page.",
       "Tap Connect TikTok to post product photos and videos to TikTok.",
       "Use Reconnect if posting stops working, or Disconnect to unlink.",

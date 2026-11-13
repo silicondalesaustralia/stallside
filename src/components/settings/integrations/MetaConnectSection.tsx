@@ -85,9 +85,6 @@ export function MetaConnectSection({
 
   const [config, setConfig] = useState<MetaConnectConfig | null>(null)
   const [errorCode, setErrorCode] = useState<MetaConnectErrorCode | null>(null)
-  const [preCheckOpen, setPreCheckOpen] = useState(false)
-  const [preCheckPlatform, setPreCheckPlatform] = useState<MetaPlatform>('facebook')
-  const [hasPageAnswer, setHasPageAnswer] = useState<'yes' | 'no' | null>(null)
   const [guideOpen, setGuideOpen] = useState(false)
   const [guideSection, setGuideSection] = useState<MetaGuideSection>('before')
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -185,19 +182,8 @@ export function MetaConnectSection({
     setGuideOpen(true)
   }
 
-  function beginConnect(platform: MetaPlatform, reconnect = false) {
-    setPreCheckPlatform(platform)
-    setHasPageAnswer(null)
+  function beginConnect(platform: MetaPlatform) {
     setErrorCode(null)
-    if (reconnect) {
-      continueToMeta(platform)
-      return
-    }
-    setPreCheckOpen(true)
-  }
-
-  function continueToMeta(platform: MetaPlatform) {
-    setPreCheckOpen(false)
     const returnQuery = encodeURIComponent(integrationsPath)
     if (config?.metaConnectEnabled) {
       window.location.href = `/api/social/connect/meta?platform=${platform}&returnPath=${returnQuery}`
@@ -306,7 +292,7 @@ export function MetaConnectSection({
 
       {showDemoHint && (
         <p className={`${isTradiesPost ? 'tp-connections-alert ' : ''}mb-4 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-xs text-blue-800`}>
-          <strong>Demo mode:</strong> Meta connect is simulated locally (SOCIAL_DEMO_MODE). Use Connect below to test the full pre-check and Page picker without live Meta credentials.
+          <strong>Demo mode:</strong> Meta connect is simulated locally (SOCIAL_DEMO_MODE). Use Connect below to test the Page picker without live Meta credentials.
         </p>
       )}
 
@@ -345,7 +331,7 @@ export function MetaConnectSection({
                 </TradiesPostConnectionExternalLink>
               ) : facebookPageId && canManageConnections ? (
                 <div className="flex flex-wrap items-center gap-3">
-                  <TradiesPostConnectionSecondaryButton onClick={() => beginConnect('facebook', true)}>
+                  <TradiesPostConnectionSecondaryButton onClick={() => beginConnect('facebook')}>
                     Reconnect
                   </TradiesPostConnectionSecondaryButton>
                   <button
@@ -407,7 +393,7 @@ export function MetaConnectSection({
                 </TradiesPostConnectionExternalLink>
               ) : instagramAccountId && canManageConnections ? (
                 <div className="flex flex-wrap items-center gap-3">
-                  <TradiesPostConnectionSecondaryButton onClick={() => beginConnect('instagram', true)}>
+                  <TradiesPostConnectionSecondaryButton onClick={() => beginConnect('instagram')}>
                     Reconnect
                   </TradiesPostConnectionSecondaryButton>
                   <button
@@ -448,7 +434,7 @@ export function MetaConnectSection({
           }
           action={
             facebookPageId ? (
-              <Button type="button" className="w-full sm:w-auto" onClick={() => beginConnect('facebook', true)}>
+              <Button type="button" className="w-full sm:w-auto" onClick={() => beginConnect('facebook')}>
                 Reconnect
               </Button>
             ) : showComingSoon ? null : (
@@ -497,7 +483,7 @@ export function MetaConnectSection({
           }
           action={
             instagramAccountId ? (
-              <Button type="button" className="w-full sm:w-auto" onClick={() => beginConnect('instagram', true)}>
+              <Button type="button" className="w-full sm:w-auto" onClick={() => beginConnect('instagram')}>
                 Reconnect
               </Button>
             ) : showComingSoon ? null : (
@@ -541,89 +527,6 @@ export function MetaConnectSection({
       )}
 
       <Modal
-        open={preCheckOpen}
-        onClose={() => setPreCheckOpen(false)}
-        title={preCheckPlatform === 'facebook' ? 'Connect Facebook' : 'Connect Instagram'}
-        size="lg"
-      >
-        <div className="space-y-4">
-          {preCheckPlatform === 'facebook' && (
-            <>
-              <p className="text-sm text-[#666]">
-                Do you already have a <strong>Facebook Page</strong> for your business? (Not just a personal profile.)
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant={hasPageAnswer === 'yes' ? 'primary' : 'outline'}
-                  onClick={() => setHasPageAnswer('yes')}
-                >
-                  Yes, I have a Page
-                </Button>
-                <Button
-                  type="button"
-                  variant={hasPageAnswer === 'no' ? 'primary' : 'outline'}
-                  onClick={() => setHasPageAnswer('no')}
-                >
-                  No, I need to create one
-                </Button>
-              </div>
-              {hasPageAnswer === 'no' && (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                  <p className="font-semibold">Create your Page first</p>
-                  <p className="mt-1 text-amber-800">
-                    Meta requires a business Page before Vendl can publish for you. Follow the guide below, then come back and connect.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => { setPreCheckOpen(false); openGuide('create-page') }}
-                    className="mt-2 font-semibold underline"
-                  >
-                    Open Page creation guide →
-                  </button>
-                </div>
-              )}
-              {hasPageAnswer === 'yes' && (
-                <p className="text-xs text-[#888]">
-                  On the next Meta screen, opt in to <strong>all Pages and businesses</strong> you manage.
-                </p>
-              )}
-            </>
-          )}
-
-          {preCheckPlatform === 'instagram' && (
-            <>
-              <p className="text-sm text-[#666]">
-                Is your Instagram a <strong>Business or Creator</strong> account, linked to your Facebook Page?
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Button type="button" variant="outline" onClick={() => openGuide('setup-instagram')}>
-                  Not sure / set up Instagram
-                </Button>
-                <Button type="button" onClick={() => continueToMeta('instagram')}>
-                  Yes - continue to Meta
-                </Button>
-              </div>
-            </>
-          )}
-
-          <div className="flex flex-wrap items-center gap-2 border-t border-warm-border pt-4">
-            {preCheckPlatform === 'facebook' && hasPageAnswer === 'yes' && (
-              <Button type="button" onClick={() => continueToMeta('facebook')}>
-                Continue to Meta login
-              </Button>
-            )}
-            <Button type="button" variant="outline" onClick={() => openGuide('before')}>
-              Full setup guide
-            </Button>
-            <Button type="button" variant="ghost" onClick={() => setPreCheckOpen(false)}>
-              Cancel
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
         open={guideOpen}
         onClose={() => setGuideOpen(false)}
         title="How to connect Facebook & Instagram"
@@ -634,7 +537,7 @@ export function MetaConnectSection({
           onClose={() => setGuideOpen(false)}
           onStartConnect={() => {
             setGuideOpen(false)
-            setPreCheckOpen(true)
+            beginConnect(facebookPageId && (guideSection === 'setup-instagram' || guideSection === 'troubleshoot-no-ig') ? 'instagram' : 'facebook')
           }}
         />
       </Modal>
