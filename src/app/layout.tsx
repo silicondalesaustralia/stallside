@@ -9,6 +9,7 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 import MetaPixel from "@/components/MetaPixel";
 import PerformPixel from "@/components/PerformPixel";
 import RedditPixel from "@/components/RedditPixel";
+import StitchStackIdentity from "@/components/StitchStackIdentity";
 import NativeShellBootstrap from "@/components/NativeShellBootstrap";
 import NavigationBusy from "@/components/NavigationBusy";
 import "./globals.css";
@@ -102,6 +103,7 @@ export default async function RootLayout({
           <>
             <GoogleAnalytics />
             <MetaPixel />
+            <StitchStackIdentity />
             <PerformPixel />
             <RedditPixel />
           </>
