@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CURRENT BUILD — /sell hub handoff | Vendl</title>
+  <link rel="stylesheet" href="./sell.css" />
+</head>
+<body class="sell-page">
+  <aside class="notes">
+    <strong>Design-agent handoff — CURRENT IMPLEMENTATION (not the mock).</strong><br />
+    Live: <code>http://localhost:3000/sell</code> · Target mock:
+    <code>../mocks/sell-hub-mockup.jpg</code><br />
+    Dashed <code>.img-slot</code> blocks = images still missing. React source:
+    <code>src/components/sell/SellHub.tsx</code> + category/directory/search components.
+  </aside>
+
+  <header class="sell-header">
+    <div class="sell-heading-font" style="font-weight:700;font-size:22px">vendl</div>
+    <nav class="sell-nav" aria-label="Main navigation">
+      <a href="/sell">What you make</a>
+      <a href="/#platform">The platform</a>
+      <a href="/#community">Community</a>
+      <a href="/#pricing">Pricing</a>
+    </nav>
+    <div style="display:flex;gap:12px;align-items:center">
+      <a href="/login" style="font-size:14px;font-weight:600">Login</a>
+      <a class="sell-btn-small" href="/signup">Start free <span aria-hidden>↗</span></a>
+    </div>
+  </header>
+
+  <main>
+    <div class="sell-wrap" style="padding-top:16px;padding-bottom:24px">
+      <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--muted)">
+        <a href="/">Home</a> / <span>What you make</span>
+      </nav>
+    </div>
+
+    <!-- HERO (mock wants full-bleed lifestyle photo + search overlay) -->
+    <section class="sell-wrap hero-grid hero-grid--hub">
+      <div>
+        <p class="sell-eyebrow">For people who make things</p>
+        <h1 class="sell-h1 sell-h1--hub sell-heading-font">You make it. Vendl helps you sell it.</h1>
+        <p class="sell-muted" style="margin-top:20px;max-width:36rem">
+          From ingredients, materials or parts to products people love. Find the tools for your kind of business.
+        </p>
+        <p style="margin-top:12px;font-size:14px">
+          Free selling tools. Website and production tools with Pro.
+        </p>
+        <div class="cta-row">
+          <a class="sell-btn" href="/signup">Start free <span aria-hidden>↗</span></a>
+          <a class="sell-btn-outline" href="#categories">Browse categories</a>
+        </div>
+        <div style="margin-top:40px">
+          <label class="sell-muted" style="display:block;margin-bottom:8px;font-weight:600;color:var(--field)">
+            What do you make?
+          </label>
+          <input
+            type="search"
+            placeholder="Try candles, cookies or 3D prints"
+            style="width:100%;max-width:28rem;border:1px solid var(--sell-chip-border);border-radius:8px;padding:12px 14px;font:inherit"
+          />
+        </div>
+      </div>
+      <div class="sell-panel sell-hero-placeholder sell-hero-placeholder--hub img-slot"
+           data-slot="IMG: hub hero — bread / candle / mug lifestyle (mock full-bleed)"></div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section id="categories" class="sell-wrap section">
+      <div class="category-chips">
+        <a class="category-chip" href="#directory-baking">Baking</a>
+        <a class="category-chip" href="#directory-food-drink">Food &amp; drink</a>
+        <a class="category-chip" href="#directory-beauty-fragrance">Beauty &amp; fragrance</a>
+        <a class="category-chip" href="#directory-jewelry-accessories">Jewellery &amp; accessories</a>
+        <a class="category-chip" href="#directory-clothing-textiles">Clothing &amp; textiles</a>
+        <a class="category-chip" href="#directory-home-workshop">Homewares &amp; woodwork</a>
+        <a class="category-chip" href="#directory-art-custom">Art &amp; personalised goods</a>
+        <a class="category-chip" href="#directory-pets-toys">Pets, toys &amp; more</a>
+      </div>
+
+      <h2 class="sell-h2 sell-heading-font" style="margin-bottom:24px;font-size:28px">Find your kind of business.</h2>
+
+      <div class="category-grid">
+        <!-- 8 category cards; image slots match mock photo tiles -->
+        <article class="sell-panel" id="card-baking">
+          <div class="img-slot category-card-image" data-slot="IMG: Baking card" style="height:112px"></div>
+          <div style="padding:16px">
+            <h3 style="margin:0 0 12px;font-size:18px">Baking</h3>
+            <ul style="margin:0;padding:0;list-style:none;font-size:14px;line-height:1.8">
+              <li><a href="/sell/cookies">Cookies →</a></li>
+              <li><a href="/sell/cakes">Cakes →</a></li>
+              <li><a href="/sell/bread">Bread →</a></li>
+              <li><a href="/sell/sourdough">Sourdough →</a></li>
+              <li><a href="/sell/cupcakes">Cupcakes →</a></li>
+            </ul>
+            <a href="#directory-baking" style="display:inline-block;margin-top:12px;font-size:14px;font-weight:600;color:var(--leaf)">View all 15</a>
+          </div>
+        </article>
+        <article class="sell-panel">
+          <div class="img-slot category-card-image" data-slot="IMG: Food & drink card" style="height:112px"></div>
+          <div style="padding:16px">
+            <h3 style="margin:0 0 12px;font-size:18px">Food &amp; drink</h3>
+            <ul style="margin:0;padding:0;list-style:none;font-size:14px;line-height:1.8">
+              <li><a href="/sell/chocolates">Chocolates →</a></li>
+              <li><a href="/sell/jam">Jam →</a></li>
+              <li><a href="/sell/hot-sauce">Hot sauce →</a></li>
+              <li><a href="/sell/tea">Tea →</a></li>
+              <li><a href="/sell/coffee">Coffee →</a></li>
+            </ul>
+            <a href="#directory-food-drink" style="display:inline-block;margin-top:12px;font-size:14px;font-weight:600;color:var(--leaf)">View all 20</a>
+          </div>
+        </article>
+        <article class="sell-panel">
+          <div class="img-slot category-card-image" data-slot="IMG: Beauty card" style="height:112px"></div>
+          <div style="padding:16px">
+            <h3 style="margin:0 0 12px;font-size:18px">Beauty &amp; fragrance</h3>
+            <ul style="margin:0;padding:0;list-style:none;font-size:14px;line-height:1.8">
+              <li><a href="/sell/soap">Soap →</a></li>
+              <li><a href="/sell/candles">Candles →</a></li>
+              <li><a href="/sell/wax-melts">Wax melts →</a></li>
+              <li><a href="/sell/bath-bombs">Bath bombs →</a></li>
+              <li><a href="/sell/lip-balm">Lip balm →</a></li>
+            </ul>
+            <a href="#directory-beauty-fragrance" style="display:inline-block;margin-top:12px;font-size:14px;font-weight:600;color:var(--leaf)">View all 15</a>
+          </div>
+        </article>
+        <article class="sell-panel">
+          <div class="img-slot category-card-image" data-slot="IMG: Jewellery card" style="height:112px"></div>
+          <div style="padding:16px">
+            <h3 style="margin:0 0 12px;font-size:18px">Jewellery &amp; accessories</h3>
+            <ul style="margin:0;padding:0;list-style:none;font-size:14px;line-height:1.8">
+              <li><a href="/sell/earrings">Earrings →</a></li>
+              <li><a href="/sell/bracelets">Bracelets →</a></li>
+              <li><a href="/sell/necklaces">Necklaces →</a></li>
+              <li><a href="/sell/polymer-clay-jewelry">Polymer clay →</a></li>
+              <li><a href="/sell/hair-accessories">Hair accessories →</a></li>
+            </ul>
+            <a href="#directory-jewelry-accessories" style="display:inline-block;margin-top:12px;font-size:14px;font-weight:600;color:var(--leaf)">View all 12</a>
+          </div>
+        </article>
+        <article class="sell-panel">
+          <div class="img-slot category-card-image" data-slot="IMG: Clothing card" style="height:112px"></div>
+          <div style="padding:16px">
+            <h3 style="margin:0 0 12px;font-size:18px">Clothing &amp; textiles</h3>
+            <ul style="margin:0;padding:0;list-style:none;font-size:14px;line-height:1.8">
+              <li><a href="/sell/crochet">Crochet →</a></li>
+              <li><a href="/sell/knitwear">Knitwear →</a></li>
+              <li><a href="/sell/handmade-bags">Handmade bags →</a></li>
+              <li><a href="/sell/quilts">Quilts →</a></li>
+              <li><a href="/sell/t-shirts">T-shirts →</a></li>
+            </ul>
+            <a href="#directory-clothing-textiles" style="display:inline-block;margin-top:12px;font-size:14px;font-weight:600;color:var(--leaf)">View all 16</a>
+          </div>
+        </article>
+        <article class="sell-panel">
+          <div class="img-slot category-card-image" data-slot="IMG: Homewares card" style="height:112px"></div>
+          <div style="padding:16px">
+            <h3 style="margin:0 0 12px;font-size:18px">Homewares &amp; woodwork</h3>
+            <ul style="margin:0;padding:0;list-style:none;font-size:14px;line-height:1.8">
+              <li><a href="/sell/pottery">Pottery →</a></li>
+              <li><a href="/sell/wooden-products">Wooden products →</a></li>
+              <li><a href="/sell/handmade-furniture">Handmade furniture →</a></li>
+              <li><a href="/sell/resin-products">Resin products →</a></li>
+              <li><a href="/sell/wreaths">Wreaths →</a></li>
+            </ul>
+            <a href="#directory-home-workshop" style="display:inline-block;margin-top:12px;font-size:14px;font-weight:600;color:var(--leaf)">View all 16</a>
+          </div>
+        </article>
+        <article class="sell-panel">
+          <div class="img-slot category-card-image" data-slot="IMG: Art card" style="height:112px"></div>
+          <div style="padding:16px">
+            <h3 style="margin:0 0 12px;font-size:18px">Art &amp; personalised goods</h3>
+            <ul style="margin:0;padding:0;list-style:none;font-size:14px;line-height:1.8">
+              <li><a href="/sell/art-prints">Art prints →</a></li>
+              <li><a href="/sell/greeting-cards">Greeting cards →</a></li>
+              <li><a href="/sell/stickers">Stickers →</a></li>
+              <li><a href="/sell/laser-cut-products">Laser-cut →</a></li>
+              <li><a href="/sell/3d-printed-products">3D-printed →</a></li>
+            </ul>
+            <a href="#directory-art-custom" style="display:inline-block;margin-top:12px;font-size:14px;font-weight:600;color:var(--leaf)">View all 14</a>
+          </div>
+        </article>
+        <article class="sell-panel">
+          <div class="img-slot category-card-image" data-slot="IMG: Pets/toys card" style="height:112px"></div>
+          <div style="padding:16px">
+            <h3 style="margin:0 0 12px;font-size:18px">Pets, toys &amp; more</h3>
+            <ul style="margin:0;padding:0;list-style:none;font-size:14px;line-height:1.8">
+              <li><a href="/sell/dog-treats">Dog treats →</a></li>
+              <li><a href="/sell/pet-bandanas">Pet bandanas →</a></li>
+              <li><a href="/sell/soft-toys">Soft toys →</a></li>
+              <li><a href="/sell/slime">Slime →</a></li>
+              <li><a href="/sell/miniatures">Miniatures →</a></li>
+            </ul>
+            <a href="#directory-pets-toys" style="display:inline-block;margin-top:12px;font-size:14px;font-weight:600;color:var(--leaf)">View all 12</a>
+          </div>
+        </article>
+      </div>
+
+      <div style="margin-top:28px;text-align:center">
+        <a class="sell-btn-outline" href="#directory">Browse all 120 businesses A–Z</a>
+      </div>
+    </section>
+
+    <!-- A–Z directory (abbreviated in handoff) -->
+    <section id="directory" class="sell-wrap section">
+      <h2 class="sell-h2 sell-heading-font" style="margin-bottom:16px;font-size:28px">All maker businesses</h2>
+      <p class="sell-muted">Full A–Z rendered from <code>getPublishedMarkets()</code> (120 links). Omitted here for handoff size.</p>
+    </section>
+
+    <!-- Essentials (mock: 3 columns with UI mockups) -->
+    <section class="sell-wrap section">
+      <h2 class="sell-h2 sell-heading-font" style="margin-bottom:24px;font-size:28px">Different products. The same business essentials.</h2>
+      <div class="card-grid-3">
+        <div class="sell-panel" style="padding:20px">
+          <div class="img-slot" data-slot="IMG: storefront UI — Ember & Earth" style="margin-bottom:16px;min-height:160px"></div>
+          <h3 style="margin:0 0 8px">Sell your products</h3>
+          <p class="sell-muted">A shop link on Free; full website and domain on Pro.</p>
+        </div>
+        <div class="sell-panel" style="padding:20px">
+          <div class="img-slot" data-slot="IMG: cost calculator UI" style="margin-bottom:16px;min-height:160px"></div>
+          <h3 style="margin:0 0 8px">Know your costs</h3>
+          <p class="sell-muted">Materials, labour and packaging in one production view.</p>
+        </div>
+        <div class="sell-panel" style="padding:20px">
+          <div class="img-slot" data-slot="IMG: social + email marketing UI" style="margin-bottom:16px;min-height:160px"></div>
+          <h3 style="margin:0 0 8px">Grow repeat orders</h3>
+          <p class="sell-muted">Email and social tools when you are ready to promote.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Process photos (in mock, missing in build) -->
+    <section class="sell-wrap section">
+      <h2 class="sell-h2 sell-heading-font" style="margin-bottom:24px;font-size:28px">From your kitchen, studio or workshop.</h2>
+      <div class="card-grid-3">
+        <div class="img-slot" data-slot="IMG: hands kneading dough" style="min-height:200px;border-radius:8px"></div>
+        <div class="img-slot" data-slot="IMG: sewing / textile work" style="min-height:200px;border-radius:8px"></div>
+        <div class="img-slot" data-slot="IMG: woodworking" style="min-height:200px;border-radius:8px"></div>
+      </div>
+      <div class="sell-panel" style="margin-top:24px;padding:20px">
+        <h3 style="margin:0 0 8px">Already have a shop?</h3>
+        <p class="sell-muted">Import from Shopify, Wix, WooCommerce, Squarespace, Square (logos in mock).</p>
+        <div class="img-slot" data-slot="IMG: platform logos row" style="margin-top:12px;min-height:64px"></div>
+      </div>
+    </section>
+
+    <section class="sell-wrap section faq">
+      <h2 class="sell-h2 sell-heading-font" style="margin-bottom:24px">Questions about finding your page</h2>
+      <div style="display:grid;gap:12px">
+        <details class="sell-panel">
+          <summary>Is Vendl only for home businesses?</summary>
+          <p class="sell-muted" style="margin-top:12px">No. Vendl is for independent makers and small production businesses working in kitchens, studios or workshops.</p>
+        </details>
+        <details class="sell-panel">
+          <summary>Do I need a website to start?</summary>
+          <p class="sell-muted" style="margin-top:12px">Free provides a shop link. Pro adds a full website and custom-domain connection.</p>
+        </details>
+        <details class="sell-panel">
+          <summary>What if my product is not listed?</summary>
+          <p class="sell-muted" style="margin-top:12px">Browse the closest category or start free and set up the products you make. We do not auto-create new indexable pages from search.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="sell-wrap final-cta">
+      <h2 class="sell-h2 sell-heading-font">Ready to sell what you make?</h2>
+      <p class="sell-muted" style="margin:16px auto 0;max-width:28rem">
+        Start with a free shop link. Add a website and costing tools when you need them.
+      </p>
+      <a class="sell-btn" href="/signup" style="margin-top:32px">Start free <span aria-hidden>↗</span></a>
+    </section>
+  </main>
+</body>
+</html>

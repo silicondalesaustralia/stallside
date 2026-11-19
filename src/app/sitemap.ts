@@ -26,6 +26,7 @@ import {
   loadAllUsJurisdictionRecords,
   loadJurisdictionCouncils,
 } from "@/lib/jurisdictions";
+import { getPublishedMarkets } from "@/lib/sell";
 
 /** Refresh storefront URLs hourly so new stands/products show up for crawlers. */
 export const revalidate = 3600;
@@ -34,6 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
   const marketing = [
     "",
+    "/sell",
     "/stall",
     "/pre-orders",
     "/pre-orders/bakers",
@@ -57,9 +59,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = marketing.map((path) => ({
     url: `${SITE_URL}${path}`,
     lastModified,
-    changeFrequency: path === "" ? "weekly" : "monthly",
-    priority: path === "" ? 1 : 0.6,
+    changeFrequency: path === "" || path === "/sell" ? "weekly" : "monthly",
+    priority: path === "" ? 1 : path === "/sell" ? 0.8 : 0.6,
   }));
+
+  for (const market of getPublishedMarkets()) {
+    entries.push({
+      url: `${SITE_URL}/sell/${market.slug}`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
+  }
 
   const publishedAu = loadAllAuJurisdictionRecords().filter(isPageIndexable);
   if (publishedAu.length > 0) {

@@ -11,6 +11,7 @@ const linkClass =
   "text-sm text-[var(--ink-on-dark)]/75 transition hover:text-[var(--ink-on-dark)]";
 
 const PRODUCT = [
+  { href: "/sell", label: "What you make" },
   { href: "/stall", label: "Stall" },
   { href: "/pre-orders", label: "Pre-orders" },
   { href: "/#pricing", label: "Pricing" },

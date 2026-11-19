@@ -1,0 +1,3140 @@
+[
+  {
+    "slug": "baked-goods",
+    "label": "Baked goods",
+    "aliases": [
+      "bakery",
+      "baked goods business"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Mixed weekend bakery box",
+    "saleUnit": "box",
+    "inputLabels": [
+      "Recipe components",
+      "Mixed yields",
+      "Box and packing time"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 0.75,
+    "currencyPresetId": "USD",
+    "scope": "Broad bakery menu and weekly order collection; keep product-specific detail on child markets",
+    "relatedSlugs": [
+      "cookies",
+      "bread",
+      "cakes"
+    ]
+  },
+  {
+    "slug": "cookies",
+    "label": "Cookies",
+    "aliases": [
+      "biscuits",
+      "cookie business"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Six-cookie gift bag",
+    "saleUnit": "bag",
+    "inputLabels": [
+      "Dough and ingredients",
+      "Baking labour"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.5,
+    "currencyPresetId": "USD",
+    "scope": "Batch-to-pack pricing and limited flavour releases; distinguish from general baking",
+    "relatedSlugs": [
+      "brownies",
+      "cupcakes",
+      "baked-goods"
+    ]
+  },
+  {
+    "slug": "cakes",
+    "label": "Cakes",
+    "aliases": [
+      "cake business",
+      "celebration cakes"
+    ],
+    "categoryId": "baking",
+    "variant": "personalized",
+    "exampleProduct": "Decorated celebration cake",
+    "saleUnit": "cake",
+    "inputLabels": [
+      "Cake layers",
+      "Filling",
+      "Decoration hours",
+      "Board and box"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Standard size/options and deposits where verified; no invented design-approval workflow",
+    "relatedSlugs": [
+      "cupcakes",
+      "cheesecakes",
+      "cake-pops"
+    ]
+  },
+  {
+    "slug": "cupcakes",
+    "label": "Cupcakes",
+    "aliases": [],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Box of six cupcakes",
+    "saleUnit": "box",
+    "inputLabels": [
+      "Sponge yield",
+      "Frosting",
+      "Liners and six-pack box"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 1.2,
+    "currencyPresetId": "USD",
+    "scope": "Box sizes and occasion orders rather than individual cake commissions",
+    "relatedSlugs": [
+      "cakes",
+      "cake-pops",
+      "cookies"
+    ]
+  },
+  {
+    "slug": "bread",
+    "label": "Bread",
+    "aliases": [
+      "artisan bread",
+      "loaves"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Mixed artisan loaf menu",
+    "saleUnit": "loaf",
+    "inputLabels": [
+      "Flour",
+      "Yeast",
+      "Energy allocation and bags"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.75,
+    "currencyPresetId": "USD",
+    "scope": "General loaf assortment and collection schedule; sourdough owns starter-specific narrative",
+    "relatedSlugs": [
+      "sourdough",
+      "pastries",
+      "baked-goods"
+    ]
+  },
+  {
+    "slug": "sourdough",
+    "label": "Sourdough",
+    "aliases": [
+      "sourdough bread",
+      "sour dough"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Weekly country-loaf release",
+    "saleUnit": "loaf",
+    "inputLabels": [
+      "Flour",
+      "Starter allocation",
+      "Saleable loaves and bag"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 0.75,
+    "currencyPresetId": "USD",
+    "scope": "Recurring bread drops, order deadlines and maker-managed fermentation lead time",
+    "relatedSlugs": [
+      "bread",
+      "cinnamon-rolls",
+      "crackers"
+    ]
+  },
+  {
+    "slug": "brownies",
+    "label": "Brownies",
+    "aliases": [
+      "brownie"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Six-piece brownie box",
+    "saleUnit": "box",
+    "inputLabels": [
+      "Tray cost",
+      "Saleable cuts",
+      "Toppings and box"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Tray-to-box yield and mixed flavours; separate from cookies",
+    "relatedSlugs": [
+      "cookies",
+      "fudge",
+      "chocolates"
+    ]
+  },
+  {
+    "slug": "donuts",
+    "label": "Donuts",
+    "aliases": [
+      "doughnuts",
+      "doughnut",
+      "donut"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Mixed donut dozen",
+    "saleUnit": "dozen",
+    "inputLabels": [
+      "Dough yield",
+      "Frying inputs",
+      "Glazes and box"
+    ],
+    "saleableYield": 12,
+    "packagingPerUnit": 1.5,
+    "currencyPresetId": "USD",
+    "scope": "Fresh daily releases and dozens; include doughnut alias",
+    "relatedSlugs": [
+      "pastries",
+      "cinnamon-rolls",
+      "cupcakes"
+    ]
+  },
+  {
+    "slug": "macarons",
+    "label": "Macarons",
+    "aliases": [
+      "macaroons"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Twelve-macaron gift box",
+    "saleUnit": "box",
+    "inputLabels": [
+      "Shell/filling batches",
+      "Matched saleable pairs",
+      "Insert"
+    ],
+    "saleableYield": 12,
+    "packagingPerUnit": 1.8,
+    "currencyPresetId": "USD",
+    "scope": "Fragile gift packaging and paired-unit yield; do not count shells as finished macarons",
+    "relatedSlugs": [
+      "cookies",
+      "chocolates",
+      "cupcakes"
+    ]
+  },
+  {
+    "slug": "pies",
+    "label": "Pies",
+    "aliases": [
+      "pie",
+      "savoury pies"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Family-sized savoury pie",
+    "saleUnit": "pie",
+    "inputLabels": [
+      "Pastry",
+      "Filling",
+      "Tins",
+      "Bake overhead"
+    ],
+    "saleableYield": 4,
+    "packagingPerUnit": 0.75,
+    "currencyPresetId": "USD",
+    "scope": "Whole pies versus individual sizes and collection; regional handling guidance kept separate",
+    "relatedSlugs": [
+      "pastries",
+      "prepared-meals",
+      "baked-goods"
+    ]
+  },
+  {
+    "slug": "pastries",
+    "label": "Pastries",
+    "aliases": [
+      "pastry",
+      "viennoiserie"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Weekend pastry assortment",
+    "saleUnit": "box",
+    "inputLabels": [
+      "Dough",
+      "Butter",
+      "Fillings",
+      "Labour and mixed box"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.75,
+    "currencyPresetId": "USD",
+    "scope": "Assorted pastry menus and fresh release windows; not every bakery product",
+    "relatedSlugs": [
+      "bread",
+      "donuts",
+      "cinnamon-rolls"
+    ]
+  },
+  {
+    "slug": "cinnamon-rolls",
+    "label": "Cinnamon rolls",
+    "aliases": [
+      "cinnamon buns",
+      "scrolls"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Four-roll weekend box",
+    "saleUnit": "box",
+    "inputLabels": [
+      "Dough/filling yield",
+      "Icing and four-pack packaging"
+    ],
+    "saleableYield": 4,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Scheduled roll drops and pack quantities",
+    "relatedSlugs": [
+      "sourdough",
+      "donuts",
+      "pastries"
+    ]
+  },
+  {
+    "slug": "cheesecakes",
+    "label": "Cheesecakes",
+    "aliases": [
+      "cheesecake"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Whole cheesecake with topping options",
+    "saleUnit": "cake",
+    "inputLabels": [
+      "Base/filling cost",
+      "Tins",
+      "Toppings and chilled packaging"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 0.75,
+    "currencyPresetId": "USD",
+    "scope": "Whole versus portion sales and collection; do not promise unrestricted shipping",
+    "relatedSlugs": [
+      "cakes",
+      "pies",
+      "cupcakes"
+    ]
+  },
+  {
+    "slug": "muffins",
+    "label": "Muffins",
+    "aliases": [
+      "muffin"
+    ],
+    "categoryId": "baking",
+    "variant": "fresh",
+    "exampleProduct": "Six-muffin breakfast pack",
+    "saleUnit": "pack",
+    "inputLabels": [
+      "Batter yield",
+      "Inclusions",
+      "Liners and pack"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 0.8,
+    "currencyPresetId": "USD",
+    "scope": "Breakfast packs and recurring local orders",
+    "relatedSlugs": [
+      "bread",
+      "cookies",
+      "baked-goods"
+    ]
+  },
+  {
+    "slug": "cake-pops",
+    "label": "Cake pops",
+    "aliases": [
+      "cakepops",
+      "cake pops"
+    ],
+    "categoryId": "baking",
+    "variant": "personalized",
+    "exampleProduct": "Twelve themed cake pops",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Cake mix",
+      "Coating",
+      "Sticks",
+      "Decoration and box"
+    ],
+    "saleableYield": 12,
+    "packagingPerUnit": 1.5,
+    "currencyPresetId": "USD",
+    "scope": "Per-piece labour and occasion sets; explain actual supported custom choices",
+    "relatedSlugs": [
+      "cakes",
+      "cupcakes",
+      "chocolates"
+    ]
+  },
+  {
+    "slug": "chocolates",
+    "label": "Chocolates",
+    "aliases": [
+      "chocolate",
+      "chocolate gifts"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Assorted chocolate gift box",
+    "saleUnit": "box",
+    "inputLabels": [
+      "Chocolate",
+      "Fillings",
+      "Saleable pieces",
+      "Insert and box"
+    ],
+    "saleableYield": 24,
+    "packagingPerUnit": 2,
+    "currencyPresetId": "USD",
+    "scope": "Selection boxes and seasonal gifting; production/temperature logistics belong to maker",
+    "relatedSlugs": [
+      "candy",
+      "fudge",
+      "marshmallows"
+    ]
+  },
+  {
+    "slug": "candy",
+    "label": "Candy and confectionery",
+    "aliases": [
+      "sweets",
+      "confectionery",
+      "candy and confectionery"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Bagged fruit sweets",
+    "saleUnit": "bag",
+    "inputLabels": [
+      "Ingredients",
+      "Batch yield",
+      "Bag weight and labels"
+    ],
+    "saleableYield": 20,
+    "packagingPerUnit": 0.4,
+    "currencyPresetId": "USD",
+    "scope": "Broad confectionery and bagged sweets; chocolate/fudge pages own their processes",
+    "relatedSlugs": [
+      "chocolates",
+      "fudge",
+      "marshmallows"
+    ]
+  },
+  {
+    "slug": "fudge",
+    "label": "Fudge",
+    "aliases": [
+      "homemade fudge"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Three-flavour fudge box",
+    "saleUnit": "box",
+    "inputLabels": [
+      "Batch ingredients",
+      "Trimmed yield",
+      "Cut size and box"
+    ],
+    "saleableYield": 16,
+    "packagingPerUnit": 1.2,
+    "currencyPresetId": "USD",
+    "scope": "Slab-to-piece costing and mixed boxes",
+    "relatedSlugs": [
+      "candy",
+      "chocolates",
+      "brownies"
+    ]
+  },
+  {
+    "slug": "marshmallows",
+    "label": "Marshmallows",
+    "aliases": [
+      "marshmallow"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Handmade marshmallow gift bag",
+    "saleUnit": "bag",
+    "inputLabels": [
+      "Ingredients",
+      "Cutting loss",
+      "Coating"
+    ],
+    "saleableYield": 15,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Flavour batches, gift bags and seasonal collections",
+    "relatedSlugs": [
+      "candy",
+      "chocolates",
+      "fudge"
+    ]
+  },
+  {
+    "slug": "jam",
+    "label": "Jam",
+    "aliases": [
+      "preserves",
+      "jams"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Small-batch strawberry jam",
+    "saleUnit": "jar",
+    "inputLabels": [
+      "Fruit",
+      "Sugar",
+      "Saleable jars",
+      "Lids and labels"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.35,
+    "currencyPresetId": "USD",
+    "scope": "Seasonal batches and jar sizes; food preservation advice needs separate expert review",
+    "relatedSlugs": [
+      "chutney",
+      "pickles",
+      "nut-butter"
+    ]
+  },
+  {
+    "slug": "chutney",
+    "label": "Chutney",
+    "aliases": [
+      "chutneys"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Apple chutney gift jars",
+    "saleUnit": "jar",
+    "inputLabels": [
+      "Produce",
+      "Spices",
+      "Cooking yield",
+      "Jars and labels"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Savoury preserves and gift collections; distinguish from sweet jam",
+    "relatedSlugs": [
+      "jam",
+      "pickles",
+      "spice-blends"
+    ]
+  },
+  {
+    "slug": "pickles",
+    "label": "Pickles",
+    "aliases": [
+      "pickled vegetables"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Cucumber pickle jars",
+    "saleUnit": "jar",
+    "inputLabels": [
+      "Produce",
+      "Brine",
+      "Drained fill",
+      "Jars and lids"
+    ],
+    "saleableYield": 10,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Jar yield and release timing; avoid automatic shelf-life or safety claims",
+    "relatedSlugs": [
+      "chutney",
+      "jam",
+      "hot-sauce"
+    ]
+  },
+  {
+    "slug": "hot-sauce",
+    "label": "Hot sauce",
+    "aliases": [
+      "hot sauces",
+      "chilli sauce",
+      "chili sauce"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Three-heat-level sauce set",
+    "saleUnit": "bottle",
+    "inputLabels": [
+      "Peppers",
+      "Ingredients",
+      "Saleable volume",
+      "Bottles"
+    ],
+    "saleableYield": 12,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Heat variants, bottle sizes and discovery bundles",
+    "relatedSlugs": [
+      "barbecue-sauce",
+      "spice-blends",
+      "pickles"
+    ]
+  },
+  {
+    "slug": "barbecue-sauce",
+    "label": "Barbecue sauce",
+    "aliases": [
+      "bbq sauce",
+      "barbeque sauce"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Original and smoky sauce bottles",
+    "saleUnit": "bottle",
+    "inputLabels": [
+      "Recipe ingredients",
+      "Reduced volume",
+      "Bottle and seal"
+    ],
+    "saleableYield": 10,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Recipe variants and BBQ bundles; do not duplicate hot-sauce copy",
+    "relatedSlugs": [
+      "hot-sauce",
+      "spice-blends",
+      "chutney"
+    ]
+  },
+  {
+    "slug": "spice-blends",
+    "label": "Spice blends",
+    "aliases": [
+      "spice mix",
+      "seasoning blends"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Three-blend cooking kit",
+    "saleUnit": "kit",
+    "inputLabels": [
+      "Ingredient weights",
+      "Blend yield",
+      "Jars and labels"
+    ],
+    "saleableYield": 3,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Own blended recipes and pack weights rather than commodity spice resale",
+    "relatedSlugs": [
+      "tea",
+      "hot-sauce",
+      "barbecue-sauce"
+    ]
+  },
+  {
+    "slug": "tea",
+    "label": "Tea blends",
+    "aliases": [
+      "tea blends",
+      "loose leaf tea"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Loose-leaf tea sampler",
+    "saleUnit": "pouch",
+    "inputLabels": [
+      "Tea/herbs",
+      "Blend proportions",
+      "Fill weight and pouch"
+    ],
+    "saleableYield": 10,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Blenders packaging their own tea; sampler and refill packs",
+    "relatedSlugs": [
+      "coffee",
+      "spice-blends",
+      "granola"
+    ]
+  },
+  {
+    "slug": "coffee",
+    "label": "Roasted coffee",
+    "aliases": [
+      "roasted coffee",
+      "coffee beans"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Two-roast coffee bag subscription",
+    "saleUnit": "bag",
+    "inputLabels": [
+      "Green beans",
+      "Roast loss",
+      "Roast overhead and valve bag"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Roasters, grind/size variants and repeat orders; not cafe POS claims",
+    "relatedSlugs": [
+      "tea",
+      "granola",
+      "chocolates"
+    ]
+  },
+  {
+    "slug": "granola",
+    "label": "Granola",
+    "aliases": [
+      "granola pouches"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Weekly granola pouch",
+    "saleUnit": "pouch",
+    "inputLabels": [
+      "Ingredients",
+      "Bake yield",
+      "Pack weight and pouch"
+    ],
+    "saleableYield": 12,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Batch-to-bag costing and replenishment orders",
+    "relatedSlugs": [
+      "nut-butter",
+      "dried-fruit",
+      "tea"
+    ]
+  },
+  {
+    "slug": "nut-butter",
+    "label": "Nut butter",
+    "aliases": [
+      "almond butter",
+      "peanut butter handmade"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Roasted almond butter jar",
+    "saleUnit": "jar",
+    "inputLabels": [
+      "Nuts",
+      "Added ingredients",
+      "Processing yield",
+      "Jar"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Jar sizes and repeat purchases; actual allergen information remains maker's responsibility",
+    "relatedSlugs": [
+      "granola",
+      "jam",
+      "chocolates"
+    ]
+  },
+  {
+    "slug": "popcorn",
+    "label": "Popcorn",
+    "aliases": [
+      "gourmet popcorn"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Caramel popcorn party bags",
+    "saleUnit": "bag",
+    "inputLabels": [
+      "Kernel yield",
+      "Coating",
+      "Saleable bags"
+    ],
+    "saleableYield": 20,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Party quantities and flavour bundles",
+    "relatedSlugs": [
+      "candy",
+      "crackers",
+      "dried-fruit"
+    ]
+  },
+  {
+    "slug": "pasta",
+    "label": "Pasta",
+    "aliases": [
+      "fresh pasta"
+    ],
+    "categoryId": "food-drink",
+    "variant": "fresh",
+    "exampleProduct": "Fresh pasta weekend packs",
+    "saleUnit": "pack",
+    "inputLabels": [
+      "Flour",
+      "Eggs",
+      "Finished weight",
+      "Labour and pack"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 0.75,
+    "currencyPresetId": "USD",
+    "scope": "Fresh versus dried packs and collection; describe actual fulfilment limits",
+    "relatedSlugs": [
+      "prepared-meals",
+      "crackers",
+      "spice-blends"
+    ]
+  },
+  {
+    "slug": "crackers",
+    "label": "Crackers",
+    "aliases": [
+      "cracker packs"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Seeded cracker packs",
+    "saleUnit": "pack",
+    "inputLabels": [
+      "Dough",
+      "Baking loss",
+      "Breakage and pack weight"
+    ],
+    "saleableYield": 15,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Saleable pack weight and mixed savoury ranges",
+    "relatedSlugs": [
+      "bread",
+      "spice-blends",
+      "granola"
+    ]
+  },
+  {
+    "slug": "dried-fruit",
+    "label": "Dried fruit",
+    "aliases": [
+      "dehydrated fruit"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Dried apple snack pouches",
+    "saleUnit": "pouch",
+    "inputLabels": [
+      "Fresh produce",
+      "Drying yield",
+      "Energy allocation and pouch"
+    ],
+    "saleableYield": 10,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Fresh-to-dried yield and bag sizes",
+    "relatedSlugs": [
+      "granola",
+      "popcorn",
+      "nut-butter"
+    ]
+  },
+  {
+    "slug": "kombucha",
+    "label": "Kombucha",
+    "aliases": [
+      "kombucha bottles"
+    ],
+    "categoryId": "food-drink",
+    "variant": "batch",
+    "exampleProduct": "Seasonal bottled kombucha",
+    "saleUnit": "bottle",
+    "inputLabels": [
+      "Tea/sugar inputs",
+      "Saleable volume",
+      "Bottles and caps"
+    ],
+    "saleableYield": 12,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Batch releases and local repeat sales; no unsupported fermentation or bottle-return automation",
+    "relatedSlugs": [
+      "tea",
+      "prepared-meals",
+      "spice-blends"
+    ]
+  },
+  {
+    "slug": "prepared-meals",
+    "label": "Prepared meals",
+    "aliases": [
+      "meal prep",
+      "ready meals"
+    ],
+    "categoryId": "food-drink",
+    "variant": "fresh",
+    "exampleProduct": "Weekly meal-prep menu",
+    "saleUnit": "meal",
+    "inputLabels": [
+      "Recipe batches",
+      "Portions",
+      "Containers and packing labour"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.75,
+    "currencyPresetId": "USD",
+    "scope": "Weekly menus, order cut-offs and pickup/delivery; no medical nutrition promises",
+    "relatedSlugs": [
+      "pasta",
+      "pies",
+      "spice-blends"
+    ]
+  },
+  {
+    "slug": "soap",
+    "label": "Soap",
+    "aliases": [],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Goat-milk soap collection",
+    "saleUnit": "bar",
+    "inputLabels": [
+      "Oils/base",
+      "Additives",
+      "Saleable bars",
+      "Wrap and label"
+    ],
+    "saleableYield": 10,
+    "packagingPerUnit": 0.4,
+    "currencyPresetId": "USD",
+    "scope": "Bar yield, scent variants and restock; curing managed by maker unless verified",
+    "relatedSlugs": [
+      "bath-bombs",
+      "body-scrubs",
+      "shampoo-bars"
+    ]
+  },
+  {
+    "slug": "candles",
+    "label": "Candles",
+    "aliases": [
+      "candle making",
+      "candle business",
+      "jar candles"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Cedar and fig jar candle",
+    "saleUnit": "candle",
+    "inputLabels": [
+      "Wax",
+      "Fragrance",
+      "Wicks",
+      "Jars and lids",
+      "Labour",
+      "Allocated overhead"
+    ],
+    "saleableYield": 12,
+    "packagingPerUnit": 0.8,
+    "currencyPresetId": "USD",
+    "scope": "Jar sizes, scent releases, restock and repeat customer marketing",
+    "relatedSlugs": [
+      "wax-melts",
+      "reed-diffusers",
+      "room-sprays"
+    ]
+  },
+  {
+    "slug": "wax-melts",
+    "label": "Wax melts",
+    "aliases": [
+      "wax melt",
+      "melts"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Six-cavity melt clamshell",
+    "saleUnit": "clamshell",
+    "inputLabels": [
+      "Wax/fragrance",
+      "Usable grams",
+      "Cavities and clamshell"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 0.9,
+    "currencyPresetId": "USD",
+    "scope": "Pack yield and scent samplers without wick/jar assumptions",
+    "relatedSlugs": [
+      "candles",
+      "reed-diffusers",
+      "room-sprays"
+    ]
+  },
+  {
+    "slug": "bath-bombs",
+    "label": "Bath bombs",
+    "aliases": [
+      "bathbombs",
+      "bath fizzies"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Three-bomb gift set",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Ingredients",
+      "Failed units",
+      "Decorations and gift box"
+    ],
+    "saleableYield": 3,
+    "packagingPerUnit": 1.5,
+    "currencyPresetId": "USD",
+    "scope": "Saleable units and gift bundles; no therapeutic claims",
+    "relatedSlugs": [
+      "bath-salts",
+      "soap",
+      "body-scrubs"
+    ]
+  },
+  {
+    "slug": "bath-salts",
+    "label": "Bath salts",
+    "aliases": [
+      "bath salt"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Bath-salt refill pouch",
+    "saleUnit": "pouch",
+    "inputLabels": [
+      "Salt blend",
+      "Additions",
+      "Pack weight and pouch"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Jar versus refill sizes and scent blends",
+    "relatedSlugs": [
+      "bath-bombs",
+      "body-scrubs",
+      "soap"
+    ]
+  },
+  {
+    "slug": "body-butter",
+    "label": "Body butter",
+    "aliases": [
+      "whipped body butter"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Whipped body-butter tub",
+    "saleUnit": "tub",
+    "inputLabels": [
+      "Butters/oils",
+      "Filled weight",
+      "Tub and label"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Batch-to-tub costs and sizes; distinguish from lotions and medical treatment",
+    "relatedSlugs": [
+      "lotions",
+      "body-scrubs",
+      "lip-balm"
+    ]
+  },
+  {
+    "slug": "body-scrubs",
+    "label": "Body scrubs",
+    "aliases": [
+      "sugar scrub",
+      "salt scrub"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Sugar scrub jar",
+    "saleUnit": "jar",
+    "inputLabels": [
+      "Sugar/salt",
+      "Oils",
+      "Fragrance",
+      "Filled weight and jar"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Scrub variants and replenishment; no unsupported skin-treatment claims",
+    "relatedSlugs": [
+      "body-butter",
+      "bath-salts",
+      "soap"
+    ]
+  },
+  {
+    "slug": "lip-balm",
+    "label": "Lip balm",
+    "aliases": [
+      "lip balms",
+      "chapstick"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Three-flavour balm set",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Wax/oils",
+      "Fill weight",
+      "Tubes and labels"
+    ],
+    "saleableYield": 3,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Small-unit batching and multipacks",
+    "relatedSlugs": [
+      "lip-gloss",
+      "body-butter",
+      "soap"
+    ]
+  },
+  {
+    "slug": "lip-gloss",
+    "label": "Lip gloss",
+    "aliases": [
+      "lipgloss"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Tinted gloss collection",
+    "saleUnit": "tube",
+    "inputLabels": [
+      "Base",
+      "Pigment",
+      "Tube",
+      "Applicator and filling time"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Shade variants and packaging cost; distinguish gloss from balm",
+    "relatedSlugs": [
+      "lip-balm",
+      "press-on-nails",
+      "perfume"
+    ]
+  },
+  {
+    "slug": "shampoo-bars",
+    "label": "Shampoo bars",
+    "aliases": [
+      "solid shampoo",
+      "shampoo bar"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Solid shampoo bar duo",
+    "saleUnit": "bar",
+    "inputLabels": [
+      "Ingredients",
+      "Saleable bars",
+      "Wrapping and labour"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Solid-product ranges and pack sizes; don't promise universal hair outcomes",
+    "relatedSlugs": [
+      "soap",
+      "bath-bombs",
+      "body-butter"
+    ]
+  },
+  {
+    "slug": "lotions",
+    "label": "Lotions",
+    "aliases": [
+      "body lotion",
+      "hand lotion"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Body-lotion bottle",
+    "saleUnit": "bottle",
+    "inputLabels": [
+      "Formulation inputs",
+      "Fill quantity",
+      "Bottle/pump and label"
+    ],
+    "saleableYield": 10,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Bottle sizes and recurring orders; manufacturing/safety guidance separately reviewed",
+    "relatedSlugs": [
+      "body-butter",
+      "body-scrubs",
+      "soap"
+    ]
+  },
+  {
+    "slug": "perfume",
+    "label": "Perfume",
+    "aliases": [
+      "fragrance",
+      "perfume sets"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Discovery scent set",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Fragrance materials",
+      "Carrier",
+      "Vial/spray"
+    ],
+    "saleableYield": 5,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Discovery sets and full-size variants; actual carrier restrictions require verification",
+    "relatedSlugs": [
+      "room-sprays",
+      "reed-diffusers",
+      "candles"
+    ]
+  },
+  {
+    "slug": "reed-diffusers",
+    "label": "Reed diffusers",
+    "aliases": [
+      "diffusers",
+      "reed diffuser"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Home fragrance diffuser",
+    "saleUnit": "diffuser",
+    "inputLabels": [
+      "Base",
+      "Fragrance",
+      "Vessel",
+      "Reeds and box"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Refill and complete-set options; distinguish from candles",
+    "relatedSlugs": [
+      "room-sprays",
+      "candles",
+      "wax-melts"
+    ]
+  },
+  {
+    "slug": "room-sprays",
+    "label": "Room sprays",
+    "aliases": [
+      "room spray",
+      "home spray"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "batch",
+    "exampleProduct": "Two-scent room spray set",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Base",
+      "Fragrance",
+      "Bottle/sprayer",
+      "Labels"
+    ],
+    "saleableYield": 2,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Scent variants and packaging; don't claim disinfectant or therapeutic effects",
+    "relatedSlugs": [
+      "reed-diffusers",
+      "perfume",
+      "candles"
+    ]
+  },
+  {
+    "slug": "press-on-nails",
+    "label": "Press-on nails",
+    "aliases": [
+      "press on nails",
+      "fake nails"
+    ],
+    "categoryId": "beauty-fragrance",
+    "variant": "personalized",
+    "exampleProduct": "Hand-painted nail set",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Tips",
+      "Finishes",
+      "Design labour",
+      "Adhesive pack and box"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Set sizing and design choices only through supported inputs; no invented virtual try-on",
+    "relatedSlugs": [
+      "lip-gloss",
+      "earrings",
+      "hair-accessories"
+    ]
+  },
+  {
+    "slug": "handmade-jewelry",
+    "label": "Handmade jewellery",
+    "aliases": [
+      "handmade jewellery",
+      "jewelry",
+      "jewellery"
+    ],
+    "categoryId": "jewelry-accessories",
+    "variant": "labour",
+    "exampleProduct": "Coordinated jewellery collection",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Components",
+      "Metal",
+      "Making hours and gift packaging"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Broad maker storefront; earrings, clay and beads own specific workflows",
+    "relatedSlugs": [
+      "earrings",
+      "polymer-clay-jewelry",
+      "beaded-jewelry"
+    ]
+  },
+  {
+    "slug": "earrings",
+    "label": "Earrings",
+    "aliases": [],
+    "categoryId": "jewelry-accessories",
+    "variant": "labour",
+    "exampleProduct": "Pair of statement earrings",
+    "saleUnit": "pair",
+    "inputLabels": [
+      "Components per pair",
+      "Findings",
+      "Labour and display card"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 0.75,
+    "currencyPresetId": "USD",
+    "scope": "Pair-level pricing and design drops; not single-component resale",
+    "relatedSlugs": [
+      "necklaces",
+      "bracelets",
+      "polymer-clay-jewelry"
+    ]
+  },
+  {
+    "slug": "bracelets",
+    "label": "Bracelets",
+    "aliases": [
+      "bracelet"
+    ],
+    "categoryId": "jewelry-accessories",
+    "variant": "labour",
+    "exampleProduct": "Adjustable bracelet range",
+    "saleUnit": "bracelet",
+    "inputLabels": [
+      "Beads/chain",
+      "Clasp",
+      "Sizes",
+      "Labour and pouch"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Sizing and multi-item collections",
+    "relatedSlugs": [
+      "beaded-jewelry",
+      "necklaces",
+      "rings"
+    ]
+  },
+  {
+    "slug": "necklaces",
+    "label": "Necklaces",
+    "aliases": [
+      "necklace",
+      "pendants"
+    ],
+    "categoryId": "jewelry-accessories",
+    "variant": "labour",
+    "exampleProduct": "Pendant necklace collection",
+    "saleUnit": "necklace",
+    "inputLabels": [
+      "Chain lengths",
+      "Pendant",
+      "Clasp and assembly"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Length/material variants and matching collections",
+    "relatedSlugs": [
+      "earrings",
+      "bracelets",
+      "handmade-jewelry"
+    ]
+  },
+  {
+    "slug": "rings",
+    "label": "Rings",
+    "aliases": [
+      "handmade rings"
+    ],
+    "categoryId": "jewelry-accessories",
+    "variant": "labour",
+    "exampleProduct": "Handmade silver ring",
+    "saleUnit": "ring",
+    "inputLabels": [
+      "Metal",
+      "Size-related usage",
+      "Finishing time and box"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Ring sizes and per-piece labour; don't invent resizing or custom quoting tools",
+    "relatedSlugs": [
+      "necklaces",
+      "bracelets",
+      "handmade-jewelry"
+    ]
+  },
+  {
+    "slug": "polymer-clay-jewelry",
+    "label": "Polymer-clay jewellery",
+    "aliases": [
+      "polymer clay jewellery",
+      "clay earrings",
+      "polymer clay jewellery"
+    ],
+    "categoryId": "jewelry-accessories",
+    "variant": "batch",
+    "exampleProduct": "Clay earring collection",
+    "saleUnit": "pair",
+    "inputLabels": [
+      "Clay",
+      "Pigments",
+      "Findings",
+      "Batch yield and finish labour"
+    ],
+    "saleableYield": 10,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Colour batches and shared components; relate to earrings without duplicating them",
+    "relatedSlugs": [
+      "earrings",
+      "beaded-jewelry",
+      "handmade-jewelry"
+    ]
+  },
+  {
+    "slug": "beaded-jewelry",
+    "label": "Beaded jewellery",
+    "aliases": [
+      "beaded jewellery",
+      "bead jewellery"
+    ],
+    "categoryId": "jewelry-accessories",
+    "variant": "labour",
+    "exampleProduct": "Beaded necklace and bracelet set",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Bead counts",
+      "Stringing supplies",
+      "Clasps and labour"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Component quantities and coordinated sets",
+    "relatedSlugs": [
+      "bracelets",
+      "necklaces",
+      "earrings"
+    ]
+  },
+  {
+    "slug": "hair-accessories",
+    "label": "Hair accessories",
+    "aliases": [
+      "hair clips",
+      "headbands"
+    ],
+    "categoryId": "jewelry-accessories",
+    "variant": "labour",
+    "exampleProduct": "Handmade clips and headbands",
+    "saleUnit": "piece",
+    "inputLabels": [
+      "Bases",
+      "Trims",
+      "Fabric",
+      "Assembly and card"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Broad clip/headband range; scrunchies page owns sewn elastic products",
+    "relatedSlugs": [
+      "scrunchies",
+      "earrings",
+      "handmade-hats"
+    ]
+  },
+  {
+    "slug": "scrunchies",
+    "label": "Scrunchies",
+    "aliases": [
+      "scrunchie"
+    ],
+    "categoryId": "jewelry-accessories",
+    "variant": "batch",
+    "exampleProduct": "Three-scrunchie bundle",
+    "saleUnit": "bundle",
+    "inputLabels": [
+      "Fabric yield",
+      "Elastic",
+      "Sewing minutes and tags"
+    ],
+    "saleableYield": 3,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Batch cutting and bundle economics",
+    "relatedSlugs": [
+      "hair-accessories",
+      "handmade-bags",
+      "handmade-clothing"
+    ]
+  },
+  {
+    "slug": "enamel-pins",
+    "label": "Enamel pins",
+    "aliases": [
+      "pins",
+      "lapel pins"
+    ],
+    "categoryId": "jewelry-accessories",
+    "variant": "batch",
+    "exampleProduct": "Artist-designed pin collection",
+    "saleUnit": "pin",
+    "inputLabels": [
+      "Production run cost",
+      "Setup allocation",
+      "Rejects and backing cards"
+    ],
+    "saleableYield": 50,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Designer-led outsourced production; do not imply hand-enamelling or factory integration",
+    "relatedSlugs": [
+      "stickers",
+      "keychains",
+      "art-prints"
+    ]
+  },
+  {
+    "slug": "keychains",
+    "label": "Keychains and keyrings",
+    "aliases": [
+      "keyrings",
+      "key rings",
+      "keychain"
+    ],
+    "categoryId": "jewelry-accessories",
+    "variant": "personalized",
+    "exampleProduct": "Personalised acrylic keyring",
+    "saleUnit": "keyring",
+    "inputLabels": [
+      "Blank/material",
+      "Fittings",
+      "Finishing"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Material and personalisation choices; search aliases keyrings/keychains",
+    "relatedSlugs": [
+      "laser-cut-products",
+      "resin-products",
+      "enamel-pins"
+    ]
+  },
+  {
+    "slug": "leather-belts",
+    "label": "Leather belts",
+    "aliases": [
+      "belts",
+      "handmade belts"
+    ],
+    "categoryId": "jewelry-accessories",
+    "variant": "labour",
+    "exampleProduct": "Handmade leather belt",
+    "saleUnit": "belt",
+    "inputLabels": [
+      "Leather yield",
+      "Buckle",
+      "Finishing and making time"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Length variants and hardware costs; distinguish belts from raw leather",
+    "relatedSlugs": [
+      "leather-wallets",
+      "handmade-bags",
+      "handmade-clothing"
+    ]
+  },
+  {
+    "slug": "handmade-clothing",
+    "label": "Handmade clothing",
+    "aliases": [
+      "clothing",
+      "handmade clothes"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "labour",
+    "exampleProduct": "Small-run garment collection",
+    "saleUnit": "garment",
+    "inputLabels": [
+      "Fabric",
+      "Trims",
+      "Cutting waste",
+      "Sewing time"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Independent production and size ranges; not second-hand resale or generic dropshipping",
+    "relatedSlugs": [
+      "baby-clothes",
+      "aprons",
+      "costumes"
+    ]
+  },
+  {
+    "slug": "t-shirts",
+    "label": "Printed T-shirts",
+    "aliases": [
+      "printed t-shirts",
+      "tshirts",
+      "tees"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "machine",
+    "exampleProduct": "Screen-printed T-shirt release",
+    "saleUnit": "shirt",
+    "inputLabels": [
+      "Blanks",
+      "Print consumables",
+      "Setup allocation and labour"
+    ],
+    "saleableYield": 12,
+    "packagingPerUnit": 1.25,
+    "currencyPresetId": "USD",
+    "scope": "In-house decoration and run size; no automatic print-on-demand fulfilment claims",
+    "relatedSlugs": [
+      "embroidered-products",
+      "handmade-clothing",
+      "tote-bags"
+    ]
+  },
+  {
+    "slug": "embroidered-products",
+    "label": "Embroidered products",
+    "aliases": [
+      "embroidery",
+      "embroidered"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "machine",
+    "exampleProduct": "Embroidered tote collection",
+    "saleUnit": "item",
+    "inputLabels": [
+      "Blank item",
+      "Thread",
+      "Stabiliser",
+      "Machine allocation and finish time"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 1.25,
+    "currencyPresetId": "USD",
+    "scope": "Decorated products across bases; clarify machine time versus active labour",
+    "relatedSlugs": [
+      "t-shirts",
+      "tote-bags",
+      "handmade-hats"
+    ]
+  },
+  {
+    "slug": "handmade-bags",
+    "label": "Handmade bags",
+    "aliases": [
+      "bags",
+      "shoulder bags"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "labour",
+    "exampleProduct": "Lined shoulder bag",
+    "saleUnit": "bag",
+    "inputLabels": [
+      "Fabric/leather",
+      "Lining",
+      "Hardware and assembly hours"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Construction and material variants; tote page focuses simpler batch production",
+    "relatedSlugs": [
+      "tote-bags",
+      "leather-wallets",
+      "handmade-clothing"
+    ]
+  },
+  {
+    "slug": "tote-bags",
+    "label": "Tote bags",
+    "aliases": [
+      "totes",
+      "canvas totes"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "batch",
+    "exampleProduct": "Printed canvas tote run",
+    "saleUnit": "tote",
+    "inputLabels": [
+      "Fabric/blanks",
+      "Handles",
+      "Print setup and sewing labour"
+    ],
+    "saleableYield": 12,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Repeatable tote runs and bundles",
+    "relatedSlugs": [
+      "handmade-bags",
+      "t-shirts",
+      "embroidered-products"
+    ]
+  },
+  {
+    "slug": "leather-wallets",
+    "label": "Leather wallets",
+    "aliases": [
+      "wallets",
+      "card wallets"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "labour",
+    "exampleProduct": "Hand-stitched card wallet",
+    "saleUnit": "wallet",
+    "inputLabels": [
+      "Leather yield",
+      "Thread",
+      "Hardware and stitching time"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Pattern-level material use and hand finishing",
+    "relatedSlugs": [
+      "leather-belts",
+      "handmade-bags",
+      "keychains"
+    ]
+  },
+  {
+    "slug": "baby-clothes",
+    "label": "Baby clothes",
+    "aliases": [
+      "babywear",
+      "baby rompers"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "labour",
+    "exampleProduct": "Small-batch baby romper",
+    "saleUnit": "romper",
+    "inputLabels": [
+      "Fabric",
+      "Fasteners",
+      "Sizes",
+      "Sewing"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Maker-made babywear sizes; product safety claims require specialist verification",
+    "relatedSlugs": [
+      "handmade-clothing",
+      "knitwear",
+      "quilts"
+    ]
+  },
+  {
+    "slug": "aprons",
+    "label": "Aprons",
+    "aliases": [
+      "workshop aprons"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "labour",
+    "exampleProduct": "Linen workshop apron",
+    "saleUnit": "apron",
+    "inputLabels": [
+      "Fabric",
+      "Straps",
+      "Hardware and sewing time"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Size/options and small business orders; no unsupported wholesale portal promise",
+    "relatedSlugs": [
+      "handmade-clothing",
+      "tote-bags",
+      "embroidered-products"
+    ]
+  },
+  {
+    "slug": "costumes",
+    "label": "Costumes",
+    "aliases": [
+      "costume making"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "personalized",
+    "exampleProduct": "Made-to-order costume set",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Fabric",
+      "Trims",
+      "Accessories",
+      "Fitting/assembly labour"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Seasonal orders and lead times; bespoke consultation handled honestly",
+    "relatedSlugs": [
+      "handmade-clothing",
+      "handmade-hats",
+      "soft-toys"
+    ]
+  },
+  {
+    "slug": "crochet",
+    "label": "Crochet products",
+    "aliases": [
+      "crochet products",
+      "crocheted"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "labour",
+    "exampleProduct": "Crochet accessory collection",
+    "saleUnit": "piece",
+    "inputLabels": [
+      "Yarn quantity",
+      "Hooks/overhead allocation",
+      "Making hours"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Finished handmade goods, labour pricing and limited capacity; not pattern downloads",
+    "relatedSlugs": [
+      "knitwear",
+      "soft-toys",
+      "macrame"
+    ]
+  },
+  {
+    "slug": "knitwear",
+    "label": "Knitted products",
+    "aliases": [
+      "knitted products",
+      "knitting",
+      "hand knitted"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "labour",
+    "exampleProduct": "Hand-knitted winter hat",
+    "saleUnit": "hat",
+    "inputLabels": [
+      "Yarn by size",
+      "Making hours",
+      "Finishing and tags"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Garment/accessory sizes and seasonal collections; distinguish from crochet technique",
+    "relatedSlugs": [
+      "crochet",
+      "handmade-hats",
+      "baby-clothes"
+    ]
+  },
+  {
+    "slug": "quilts",
+    "label": "Quilts",
+    "aliases": [
+      "patchwork quilts",
+      "handmade quilts"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "unique",
+    "exampleProduct": "Handmade patchwork quilt",
+    "saleUnit": "quilt",
+    "inputLabels": [
+      "Top fabric",
+      "Backing",
+      "Batting",
+      "Quilting hours and shipping box"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 2.5,
+    "currencyPresetId": "USD",
+    "scope": "One-off pieces and labour-heavy pricing",
+    "relatedSlugs": [
+      "cushion-covers",
+      "handmade-clothing",
+      "knitwear"
+    ]
+  },
+  {
+    "slug": "tufted-rugs",
+    "label": "Tufted rugs",
+    "aliases": [
+      "tufting",
+      "punch needle rugs"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "unique",
+    "exampleProduct": "Custom-colour tufted rug",
+    "saleUnit": "rug",
+    "inputLabels": [
+      "Yarn",
+      "Backing",
+      "Adhesive",
+      "Machine overhead and trimming"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 2.5,
+    "currencyPresetId": "USD",
+    "scope": "Size-dependent costs and finishing; no automatic design-proof claims",
+    "relatedSlugs": [
+      "macrame",
+      "cushion-covers",
+      "resin-products"
+    ]
+  },
+  {
+    "slug": "macrame",
+    "label": "Macramé",
+    "aliases": [
+      "macramé",
+      "macrame products"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "labour",
+    "exampleProduct": "Macramé plant hanger",
+    "saleUnit": "hanger",
+    "inputLabels": [
+      "Cord length",
+      "Rings/dowels and knotting hours"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Material length and labour; finished hangers and wall pieces",
+    "relatedSlugs": [
+      "crochet",
+      "tufted-rugs",
+      "ceramic-planters"
+    ]
+  },
+  {
+    "slug": "cushion-covers",
+    "label": "Cushion covers",
+    "aliases": [
+      "pillow covers",
+      "cushion cover"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "batch",
+    "exampleProduct": "Linen cushion-cover pair",
+    "saleUnit": "pair",
+    "inputLabels": [
+      "Fabric yield",
+      "Zip",
+      "Thread",
+      "Sewing and pack"
+    ],
+    "saleableYield": 2,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Covers versus filled cushions explicitly distinguished",
+    "relatedSlugs": [
+      "quilts",
+      "handmade-bags",
+      "handmade-clothing"
+    ]
+  },
+  {
+    "slug": "handmade-hats",
+    "label": "Handmade hats",
+    "aliases": [
+      "hats",
+      "fabric hats"
+    ],
+    "categoryId": "clothing-textiles",
+    "variant": "labour",
+    "exampleProduct": "Handmade fabric hat",
+    "saleUnit": "hat",
+    "inputLabels": [
+      "Fabric/yarn",
+      "Lining",
+      "Trims",
+      "Size and making time"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Construction and head-size variants; knitwear page owns broader knitted garments",
+    "relatedSlugs": [
+      "knitwear",
+      "handmade-clothing",
+      "hair-accessories"
+    ]
+  },
+  {
+    "slug": "pottery",
+    "label": "Pottery and ceramics",
+    "aliases": [
+      "pottery and ceramics",
+      "ceramics"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "unique",
+    "exampleProduct": "Studio ceramic collection",
+    "saleUnit": "piece",
+    "inputLabels": [
+      "Clay",
+      "Glaze",
+      "Firing allocation",
+      "Rejects and labour"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 3.5,
+    "currencyPresetId": "USD",
+    "scope": "Broad studio releases; mugs and planters own product-specific pack/shipping cases",
+    "relatedSlugs": [
+      "handmade-mugs",
+      "ceramic-planters",
+      "sculptures"
+    ]
+  },
+  {
+    "slug": "handmade-mugs",
+    "label": "Handmade mugs",
+    "aliases": [
+      "ceramic mugs",
+      "pottery mugs"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "batch",
+    "exampleProduct": "Small-batch ceramic mug",
+    "saleUnit": "mug",
+    "inputLabels": [
+      "Clay",
+      "Glaze",
+      "Firing",
+      "Saleable mugs and protective packaging"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Volume/glaze variants and mug collection drops",
+    "relatedSlugs": [
+      "pottery",
+      "ceramic-planters",
+      "coasters"
+    ]
+  },
+  {
+    "slug": "ceramic-planters",
+    "label": "Ceramic planters",
+    "aliases": [
+      "planters",
+      "plant pots"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "batch",
+    "exampleProduct": "Three-size planter range",
+    "saleUnit": "planter",
+    "inputLabels": [
+      "Clay by size",
+      "Glaze",
+      "Firing and protective box"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Size, drainage/saucer options and bulky packing",
+    "relatedSlugs": [
+      "pottery",
+      "handmade-mugs",
+      "concrete-homewares"
+    ]
+  },
+  {
+    "slug": "wooden-products",
+    "label": "Wooden products",
+    "aliases": [
+      "woodcraft",
+      "woodwork"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "labour",
+    "exampleProduct": "Small wooden homeware collection",
+    "saleUnit": "piece",
+    "inputLabels": [
+      "Timber yield",
+      "Fittings",
+      "Finish and workshop labour"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Broad finished woodcraft; raw timber resale excluded",
+    "relatedSlugs": [
+      "cutting-boards",
+      "wooden-toys",
+      "handmade-furniture"
+    ]
+  },
+  {
+    "slug": "cutting-boards",
+    "label": "Cutting boards",
+    "aliases": [
+      "chopping boards",
+      "charcuterie boards"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "labour",
+    "exampleProduct": "End-grain cutting board",
+    "saleUnit": "board",
+    "inputLabels": [
+      "Timber",
+      "Adhesive",
+      "Finish",
+      "Sanding"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Dimensions, timber variants and labour; no unverified food-safety certifications",
+    "relatedSlugs": [
+      "wooden-products",
+      "coasters",
+      "handmade-furniture"
+    ]
+  },
+  {
+    "slug": "handmade-furniture",
+    "label": "Handmade furniture",
+    "aliases": [
+      "furniture",
+      "made furniture"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "unique",
+    "exampleProduct": "Small-run side table",
+    "saleUnit": "table",
+    "inputLabels": [
+      "Timber",
+      "Hardware",
+      "Finish",
+      "Making hours and fulfilment"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 2.5,
+    "currencyPresetId": "USD",
+    "scope": "Standard products and collection/delivery; bespoke quotes only if actual workflow supports them",
+    "relatedSlugs": [
+      "wooden-products",
+      "picture-frames",
+      "cutting-boards"
+    ]
+  },
+  {
+    "slug": "wooden-toys",
+    "label": "Wooden toys",
+    "aliases": [
+      "wood toys"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "batch",
+    "exampleProduct": "Wooden stacking toy",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Timber",
+      "Components",
+      "Finish",
+      "Saleable sets and labour"
+    ],
+    "saleableYield": 10,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Set-level costs and small runs; no invented toy safety approval",
+    "relatedSlugs": [
+      "soft-toys",
+      "handmade-dolls",
+      "wooden-products"
+    ]
+  },
+  {
+    "slug": "picture-frames",
+    "label": "Picture frames",
+    "aliases": [
+      "frames",
+      "art frames"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "labour",
+    "exampleProduct": "Wooden art-frame range",
+    "saleUnit": "frame",
+    "inputLabels": [
+      "Moulding",
+      "Glazing",
+      "Backing",
+      "Fittings and assembly"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Dimensions and breakage-safe packing; distinguish from art prints",
+    "relatedSlugs": [
+      "wooden-products",
+      "art-prints",
+      "paintings"
+    ]
+  },
+  {
+    "slug": "wooden-signs",
+    "label": "Wooden signs",
+    "aliases": [
+      "custom signs",
+      "personalised signs",
+      "personalized signs",
+      "personalised wooden signs"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "personalized",
+    "exampleProduct": "Personalised workshop sign",
+    "saleUnit": "sign",
+    "inputLabels": [
+      "Wood blank",
+      "Lettering/finish",
+      "Setup and labour"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Text/size options using supported fields; avoid proof-approval claims",
+    "relatedSlugs": [
+      "laser-cut-products",
+      "keychains",
+      "wooden-products"
+    ]
+  },
+  {
+    "slug": "coasters",
+    "label": "Coasters",
+    "aliases": [],
+    "categoryId": "home-workshop",
+    "variant": "batch",
+    "exampleProduct": "Four-coaster gift set",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Base material",
+      "Finish",
+      "Backing and set packaging"
+    ],
+    "saleableYield": 4,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Finished sets across materials; link to material-specific production pages",
+    "relatedSlugs": [
+      "resin-products",
+      "wooden-products",
+      "concrete-homewares"
+    ]
+  },
+  {
+    "slug": "resin-products",
+    "label": "Resin products",
+    "aliases": [
+      "resin art",
+      "epoxy resin"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "batch",
+    "exampleProduct": "Resin tray and coaster range",
+    "saleUnit": "piece",
+    "inputLabels": [
+      "Resin/hardener",
+      "Pigments",
+      "Failed units",
+      "Finishing"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Material mix and saleable yield; maker manages curing/safety",
+    "relatedSlugs": [
+      "coasters",
+      "keychains",
+      "jesmonite-products"
+    ]
+  },
+  {
+    "slug": "jesmonite-products",
+    "label": "Jesmonite products",
+    "aliases": [
+      "jesmonite"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "batch",
+    "exampleProduct": "Cast decorative tray collection",
+    "saleUnit": "tray",
+    "inputLabels": [
+      "Casting materials",
+      "Pigment",
+      "Sealer",
+      "Waste and labour"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Specific material-based cast goods; do not confuse with all resin/concrete",
+    "relatedSlugs": [
+      "concrete-homewares",
+      "resin-products",
+      "coasters"
+    ]
+  },
+  {
+    "slug": "concrete-homewares",
+    "label": "Concrete homewares",
+    "aliases": [
+      "concrete decor",
+      "concrete vessels"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "batch",
+    "exampleProduct": "Concrete vessel collection",
+    "saleUnit": "vessel",
+    "inputLabels": [
+      "Mix",
+      "Mould allocation",
+      "Sealer",
+      "Rejects and packing"
+    ],
+    "saleableYield": 5,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Heavy cast goods, size/yield and packing",
+    "relatedSlugs": [
+      "ceramic-planters",
+      "jesmonite-products",
+      "coasters"
+    ]
+  },
+  {
+    "slug": "stained-glass",
+    "label": "Stained glass",
+    "aliases": [
+      "stained-glass art",
+      "suncatchers"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "unique",
+    "exampleProduct": "Stained-glass suncatcher",
+    "saleUnit": "piece",
+    "inputLabels": [
+      "Glass yield",
+      "Foil/lead",
+      "Solder",
+      "Labour and protection"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 2.5,
+    "currencyPresetId": "USD",
+    "scope": "One-off designs, fragile fulfilment and labour",
+    "relatedSlugs": [
+      "sculptures",
+      "christmas-ornaments",
+      "paintings"
+    ]
+  },
+  {
+    "slug": "wreaths",
+    "label": "Wreaths",
+    "aliases": [
+      "door wreaths"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "labour",
+    "exampleProduct": "Seasonal decorative wreath",
+    "saleUnit": "wreath",
+    "inputLabels": [
+      "Base",
+      "Foliage/decorations",
+      "Assembly and large box"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Seasonal order windows and maker material choices",
+    "relatedSlugs": [
+      "christmas-ornaments",
+      "wooden-signs",
+      "macrame"
+    ]
+  },
+  {
+    "slug": "christmas-ornaments",
+    "label": "Christmas ornaments",
+    "aliases": [
+      "ornaments",
+      "xmas ornaments"
+    ],
+    "categoryId": "home-workshop",
+    "variant": "batch",
+    "exampleProduct": "Personalised ornament collection",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Blanks/materials",
+      "Fittings",
+      "Decoration and set box"
+    ],
+    "saleableYield": 12,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Holiday production deadlines and gift sets; evergreen URL with reviewed seasonal copy",
+    "relatedSlugs": [
+      "wreaths",
+      "laser-cut-products",
+      "keychains"
+    ]
+  },
+  {
+    "slug": "paintings",
+    "label": "Original paintings",
+    "aliases": [
+      "original paintings",
+      "canvas art"
+    ],
+    "categoryId": "art-custom",
+    "variant": "unique",
+    "exampleProduct": "Original canvas collection",
+    "saleUnit": "painting",
+    "inputLabels": [
+      "Canvas",
+      "Paint allocation",
+      "Studio hours"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 2.5,
+    "currencyPresetId": "USD",
+    "scope": "One-off physical originals and studio launches; prints own reproduction economics",
+    "relatedSlugs": [
+      "art-prints",
+      "sculptures",
+      "picture-frames"
+    ]
+  },
+  {
+    "slug": "art-prints",
+    "label": "Art prints",
+    "aliases": [
+      "prints",
+      "fine art prints"
+    ],
+    "categoryId": "art-custom",
+    "variant": "machine",
+    "exampleProduct": "Limited print collection",
+    "saleUnit": "print",
+    "inputLabels": [
+      "Paper",
+      "Printing/run charges",
+      "Saleable prints and mailers"
+    ],
+    "saleableYield": 25,
+    "packagingPerUnit": 2.5,
+    "currencyPresetId": "USD",
+    "scope": "Physical editions and size variants; not digital downloads or originals",
+    "relatedSlugs": [
+      "paintings",
+      "greeting-cards",
+      "picture-frames"
+    ]
+  },
+  {
+    "slug": "sculptures",
+    "label": "Sculptures",
+    "aliases": [
+      "sculpture"
+    ],
+    "categoryId": "art-custom",
+    "variant": "unique",
+    "exampleProduct": "Small sculptural collection",
+    "saleUnit": "sculpture",
+    "inputLabels": [
+      "Materials",
+      "Armature/base",
+      "Studio labour and crating"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 2.5,
+    "currencyPresetId": "USD",
+    "scope": "Unique pieces, editions where relevant and delivery constraints",
+    "relatedSlugs": [
+      "pottery",
+      "paintings",
+      "miniatures"
+    ]
+  },
+  {
+    "slug": "greeting-cards",
+    "label": "Greeting cards",
+    "aliases": [
+      "cards",
+      "stationery cards"
+    ],
+    "categoryId": "art-custom",
+    "variant": "batch",
+    "exampleProduct": "Six-card stationery pack",
+    "saleUnit": "pack",
+    "inputLabels": [
+      "Printing",
+      "Card stock",
+      "Envelopes and packing"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Single cards versus multipacks and occasion ranges",
+    "relatedSlugs": [
+      "wedding-invitations",
+      "art-prints",
+      "stickers"
+    ]
+  },
+  {
+    "slug": "wedding-invitations",
+    "label": "Wedding invitations",
+    "aliases": [
+      "invitations",
+      "wedding invites"
+    ],
+    "categoryId": "art-custom",
+    "variant": "personalized",
+    "exampleProduct": "Printed invitation suite",
+    "saleUnit": "suite",
+    "inputLabels": [
+      "Paper",
+      "Print setup",
+      "Envelopes",
+      "Assembly and design labour"
+    ],
+    "saleableYield": 25,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Suite quantities and supported custom details; no invented proof approvals",
+    "relatedSlugs": [
+      "greeting-cards",
+      "rubber-stamps",
+      "bookmarks"
+    ]
+  },
+  {
+    "slug": "stickers",
+    "label": "Stickers",
+    "aliases": [
+      "sticker packs",
+      "artist stickers"
+    ],
+    "categoryId": "art-custom",
+    "variant": "machine",
+    "exampleProduct": "Artist sticker sheet pack",
+    "saleUnit": "pack",
+    "inputLabels": [
+      "Paper/vinyl",
+      "Printing",
+      "Cut yield"
+    ],
+    "saleableYield": 20,
+    "packagingPerUnit": 1.25,
+    "currencyPresetId": "USD",
+    "scope": "Sheets versus individual stickers and batch waste",
+    "relatedSlugs": [
+      "enamel-pins",
+      "art-prints",
+      "greeting-cards"
+    ]
+  },
+  {
+    "slug": "notebooks",
+    "label": "Notebooks",
+    "aliases": [
+      "journals",
+      "hand-bound notebooks"
+    ],
+    "categoryId": "art-custom",
+    "variant": "batch",
+    "exampleProduct": "Hand-bound notebook collection",
+    "saleUnit": "notebook",
+    "inputLabels": [
+      "Paper",
+      "Covers",
+      "Binding materials and labour"
+    ],
+    "saleableYield": 10,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Physical construction and sizes; planners own dated/structured interiors",
+    "relatedSlugs": [
+      "planners",
+      "bookmarks",
+      "rubber-stamps"
+    ]
+  },
+  {
+    "slug": "planners",
+    "label": "Physical planners",
+    "aliases": [
+      "physical planners",
+      "undated planners"
+    ],
+    "categoryId": "art-custom",
+    "variant": "batch",
+    "exampleProduct": "Undated printed planner",
+    "saleUnit": "planner",
+    "inputLabels": [
+      "Print run",
+      "Covers",
+      "Binding",
+      "Setup allocation and packing"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Physical planners and edition launches; exclude printable digital files",
+    "relatedSlugs": [
+      "notebooks",
+      "stickers",
+      "bookmarks"
+    ]
+  },
+  {
+    "slug": "rubber-stamps",
+    "label": "Rubber stamps",
+    "aliases": [
+      "custom stamps",
+      "maker stamps"
+    ],
+    "categoryId": "art-custom",
+    "variant": "personalized",
+    "exampleProduct": "Custom maker-logo stamp",
+    "saleUnit": "stamp",
+    "inputLabels": [
+      "Rubber",
+      "Mount",
+      "Design setup and cutting labour"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Physical stamp production and supported custom input",
+    "relatedSlugs": [
+      "wedding-invitations",
+      "notebooks",
+      "laser-cut-products"
+    ]
+  },
+  {
+    "slug": "bookmarks",
+    "label": "Bookmarks",
+    "aliases": [
+      "bookmark"
+    ],
+    "categoryId": "art-custom",
+    "variant": "batch",
+    "exampleProduct": "Illustrated bookmark set",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Paper/material",
+      "Print",
+      "Tassels and pack"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Low-unit-cost sets, finishing and gift add-ons",
+    "relatedSlugs": [
+      "art-prints",
+      "notebooks",
+      "greeting-cards"
+    ]
+  },
+  {
+    "slug": "personalized-tumblers",
+    "label": "Personalised tumblers",
+    "aliases": [
+      "personalised tumblers",
+      "custom tumblers"
+    ],
+    "categoryId": "art-custom",
+    "variant": "personalized",
+    "exampleProduct": "Name-personalised tumbler",
+    "saleUnit": "tumbler",
+    "inputLabels": [
+      "Blank",
+      "Transfer/vinyl",
+      "Consumables and decoration time"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Text/design variants and supported order details; no automatic engraving integration",
+    "relatedSlugs": [
+      "laser-cut-products",
+      "keychains",
+      "t-shirts"
+    ]
+  },
+  {
+    "slug": "laser-cut-products",
+    "label": "Laser-cut products",
+    "aliases": [
+      "laser cut",
+      "laser cutting"
+    ],
+    "categoryId": "art-custom",
+    "variant": "machine",
+    "exampleProduct": "Laser-cut desk organiser",
+    "saleUnit": "organiser",
+    "inputLabels": [
+      "Sheet nesting/yield",
+      "Machine allocation",
+      "Finish and assembly"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 1.25,
+    "currencyPresetId": "USD",
+    "scope": "Broad fabricated goods; signs/keychains own narrow products",
+    "relatedSlugs": [
+      "wooden-signs",
+      "keychains",
+      "3d-printed-products"
+    ]
+  },
+  {
+    "slug": "3d-printed-products",
+    "label": "3D-printed products",
+    "aliases": [
+      "3d prints",
+      "3d printing",
+      "3d printed"
+    ],
+    "categoryId": "art-custom",
+    "variant": "machine",
+    "exampleProduct": "Printed planter collection",
+    "saleUnit": "planter",
+    "inputLabels": [
+      "Filament or resin",
+      "Machine allocation",
+      "Active finishing labour"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 1.25,
+    "currencyPresetId": "USD",
+    "scope": "Physical printed products, time/capacity and size variants; no STL or printer-farm automation claims",
+    "relatedSlugs": [
+      "laser-cut-products",
+      "miniatures",
+      "ceramic-planters"
+    ]
+  },
+  {
+    "slug": "craft-kits",
+    "label": "Craft kits",
+    "aliases": [
+      "diy kits",
+      "maker kits"
+    ],
+    "categoryId": "art-custom",
+    "variant": "batch",
+    "exampleProduct": "Beginner macramé kit",
+    "saleUnit": "kit",
+    "inputLabels": [
+      "Components",
+      "Instructions",
+      "Packing labour and box"
+    ],
+    "saleableYield": 10,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Assembly bill of materials and complete kit quantities",
+    "relatedSlugs": [
+      "macrame",
+      "crochet",
+      "beaded-jewelry"
+    ]
+  },
+  {
+    "slug": "dog-treats",
+    "label": "Dog treats",
+    "aliases": [
+      "dog biscuits",
+      "pet treats"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "batch",
+    "exampleProduct": "Baked dog-treat bags",
+    "saleUnit": "bag",
+    "inputLabels": [
+      "Recipe batch",
+      "Dried/baked yield",
+      "Bag weight and labels"
+    ],
+    "saleableYield": 15,
+    "packagingPerUnit": 0.45,
+    "currencyPresetId": "USD",
+    "scope": "Own-produced treats, pack sizes and repeat orders; no veterinary or health promises",
+    "relatedSlugs": [
+      "pet-bandanas",
+      "pet-toys",
+      "granola"
+    ]
+  },
+  {
+    "slug": "dog-collars",
+    "label": "Dog collars",
+    "aliases": [
+      "pet collars",
+      "collar"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "labour",
+    "exampleProduct": "Handmade adjustable collar",
+    "saleUnit": "collar",
+    "inputLabels": [
+      "Webbing/leather",
+      "Buckle",
+      "Hardware and sewing"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Size ranges and components; do not infer tested strength or safety",
+    "relatedSlugs": [
+      "dog-leashes",
+      "pet-bandanas",
+      "pet-beds"
+    ]
+  },
+  {
+    "slug": "dog-leashes",
+    "label": "Dog leashes and leads",
+    "aliases": [
+      "dog leads",
+      "leads",
+      "dog lead"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "labour",
+    "exampleProduct": "Handmade rope dog lead",
+    "saleUnit": "leash",
+    "inputLabels": [
+      "Rope/webbing",
+      "Clips",
+      "Stitching/splicing and labour"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Length and hardware options; lead/leash synonyms share this URL",
+    "relatedSlugs": [
+      "dog-collars",
+      "pet-bandanas",
+      "pet-toys"
+    ]
+  },
+  {
+    "slug": "pet-bandanas",
+    "label": "Pet bandanas",
+    "aliases": [
+      "dog bandanas",
+      "bandanas"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "batch",
+    "exampleProduct": "Three-size pet bandana",
+    "saleUnit": "bandana",
+    "inputLabels": [
+      "Fabric yield",
+      "Fasteners",
+      "Sewing and tags"
+    ],
+    "saleableYield": 12,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Size-based fabric usage and seasonal drops",
+    "relatedSlugs": [
+      "dog-collars",
+      "dog-leashes",
+      "pet-beds"
+    ]
+  },
+  {
+    "slug": "pet-beds",
+    "label": "Pet beds",
+    "aliases": [
+      "dog beds",
+      "cat beds"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "labour",
+    "exampleProduct": "Washable pet-bed range",
+    "saleUnit": "bed",
+    "inputLabels": [
+      "Fabric",
+      "Fill",
+      "Zip",
+      "Sewing and bulky packaging"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Sizes, material costs and fulfilment; no unverified durability claims",
+    "relatedSlugs": [
+      "pet-bandanas",
+      "cushion-covers",
+      "dog-collars"
+    ]
+  },
+  {
+    "slug": "pet-toys",
+    "label": "Pet toys",
+    "aliases": [
+      "dog toys"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "batch",
+    "exampleProduct": "Handmade tug-toy range",
+    "saleUnit": "toy",
+    "inputLabels": [
+      "Fabric/rope",
+      "Components",
+      "Assembly"
+    ],
+    "saleableYield": 10,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Product variants and sets; do not claim indestructibility or universal safety",
+    "relatedSlugs": [
+      "dog-treats",
+      "dog-leashes",
+      "soft-toys"
+    ]
+  },
+  {
+    "slug": "soft-toys",
+    "label": "Soft toys",
+    "aliases": [
+      "plush toys",
+      "stuffed animals"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "labour",
+    "exampleProduct": "Handmade plush animal",
+    "saleUnit": "toy",
+    "inputLabels": [
+      "Fabric",
+      "Stuffing",
+      "Components",
+      "Pattern allocation and labour"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Finished plush production and limited collections; safety guidance separately reviewed",
+    "relatedSlugs": [
+      "handmade-dolls",
+      "crochet",
+      "wooden-toys"
+    ]
+  },
+  {
+    "slug": "handmade-dolls",
+    "label": "Handmade dolls",
+    "aliases": [
+      "cloth dolls",
+      "dolls"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "unique",
+    "exampleProduct": "Cloth doll collection",
+    "saleUnit": "doll",
+    "inputLabels": [
+      "Body materials",
+      "Clothing",
+      "Hair",
+      "Details and hours"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 2.5,
+    "currencyPresetId": "USD",
+    "scope": "Labour-rich dolls and accessories; distinguish from general plush animals",
+    "relatedSlugs": [
+      "soft-toys",
+      "costumes",
+      "miniatures"
+    ]
+  },
+  {
+    "slug": "slime",
+    "label": "Slime",
+    "aliases": [
+      "slime tubs",
+      "homemade slime"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "batch",
+    "exampleProduct": "Colour-themed slime tubs",
+    "saleUnit": "tub",
+    "inputLabels": [
+      "Ingredients",
+      "Mix-ins",
+      "Saleable volume",
+      "Tubs and labels"
+    ],
+    "saleableYield": 8,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Texture/colour variants and batch yield; no universal child-safety claims",
+    "relatedSlugs": [
+      "playdough",
+      "craft-kits",
+      "miniatures"
+    ]
+  },
+  {
+    "slug": "playdough",
+    "label": "Playdough",
+    "aliases": [
+      "play dough",
+      "play-doh style"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "batch",
+    "exampleProduct": "Four-colour playdough set",
+    "saleUnit": "set",
+    "inputLabels": [
+      "Ingredients",
+      "Colour batches",
+      "Tub weights"
+    ],
+    "saleableYield": 4,
+    "packagingPerUnit": 0.6,
+    "currencyPresetId": "USD",
+    "scope": "Colour sets and repeat production; don't claim edible or allergy-safe by default",
+    "relatedSlugs": [
+      "slime",
+      "craft-kits",
+      "wooden-toys"
+    ]
+  },
+  {
+    "slug": "miniatures",
+    "label": "Miniatures",
+    "aliases": [
+      "minis",
+      "scale models"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "unique",
+    "exampleProduct": "Painted model collection",
+    "saleUnit": "piece",
+    "inputLabels": [
+      "Base materials/prints",
+      "Paints",
+      "Assembly and finish hours"
+    ],
+    "saleableYield": 1,
+    "packagingPerUnit": 2.5,
+    "currencyPresetId": "USD",
+    "scope": "Physical scale models and painting labour; verify commercial design rights",
+    "relatedSlugs": [
+      "3d-printed-products",
+      "sculptures",
+      "handmade-dolls"
+    ]
+  },
+  {
+    "slug": "fishing-lures",
+    "label": "Handmade fishing lures",
+    "aliases": [
+      "handmade fishing lures",
+      "lures"
+    ],
+    "categoryId": "pets-toys",
+    "variant": "labour",
+    "exampleProduct": "Small-run lure collection",
+    "saleUnit": "lure",
+    "inputLabels": [
+      "Bodies",
+      "Hardware",
+      "Hooks",
+      "Coatings and finishing"
+    ],
+    "saleableYield": 6,
+    "packagingPerUnit": 1,
+    "currencyPresetId": "USD",
+    "scope": "Size/design variants and niche maker releases; no unsupported performance claims",
+    "relatedSlugs": [
+      "wooden-products",
+      "resin-products",
+      "3d-printed-products"
+    ]
+  }
+]

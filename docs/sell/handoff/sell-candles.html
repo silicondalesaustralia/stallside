@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CURRENT BUILD — /sell/candles handoff | Vendl</title>
+  <link rel="stylesheet" href="./sell.css" />
+</head>
+<body class="sell-page">
+  <aside class="notes">
+    <strong>Design-agent handoff — CURRENT IMPLEMENTATION (not the mock).</strong><br />
+    Live: <code>http://localhost:3000/sell/candles</code> · Target mock:
+    <code>../mocks/sell-candles-expanded-mockup.jpg</code><br />
+    Blueprint: <code>../vendl-programmatic-page-blueprint.md</code> §7–8.<br />
+    Dashed <code>.img-slot</code> = missing imagery / UI captures. React:
+    <code>src/components/sell/SellMarketPage.tsx</code> + <code>sections/*</code>.
+  </aside>
+
+  <header class="sell-header">
+    <div class="sell-heading-font" style="font-weight:700;font-size:22px">vendl</div>
+    <nav class="sell-nav" aria-label="Main navigation">
+      <a href="/sell">What you make</a>
+      <a href="/#platform">The platform</a>
+      <a href="/#community">Community</a>
+      <a href="/#pricing">Pricing</a>
+    </nav>
+    <div style="display:flex;gap:12px;align-items:center">
+      <a href="/login" style="font-size:14px;font-weight:600">Login</a>
+      <a class="sell-btn-small" href="/signup?entry=sell-page&amp;business_type=candles">Start free <span aria-hidden>↗</span></a>
+    </div>
+  </header>
+
+  <main>
+    <div class="sell-wrap" style="padding-top:16px;padding-bottom:16px">
+      <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--muted)">
+        <a href="/">Home</a> / <a href="/sell">What you make</a> / <span>Candles</span>
+      </nav>
+    </div>
+
+    <!-- HERO -->
+    <section class="sell-wrap hero-grid">
+      <div>
+        <p class="sell-eyebrow">Beauty &amp; fragrance</p>
+        <h1 class="sell-h1 sell-heading-font">Sell your candles online. Know what each one earns.</h1>
+        <p class="sell-muted" style="margin-top:20px;max-width:36rem">
+          Give your candles a place to sell. Manage your products and orders, then use Vendl Pro to bring wax, fragrance, jars, packaging and your time into one cost calculation.
+        </p>
+        <p style="margin-top:12px;font-size:14px">
+          Free shop link and selling tools. Your own website and costing tools with Pro.
+        </p>
+        <div class="cta-row">
+          <a class="sell-btn" href="/signup?entry=sell-page&amp;business_type=candles">Start free <span aria-hidden>↗</span></a>
+          <a class="sell-btn-outline" href="#calculator">Try the candle cost calculator</a>
+        </div>
+      </div>
+      <div class="sell-panel" style="overflow:hidden">
+        <!-- Mock: lifestyle photo + floating Ember & Earth browser + cost overlay -->
+        <div class="sell-hero-placeholder" style="position:relative">
+          <div class="img-slot" data-slot="IMG: candle lifestyle + Ember & Earth shop UI" style="position:absolute;inset:0;min-height:100%;border:0;border-radius:0"></div>
+          <div class="cost-overlay" style="position:relative;z-index:1">
+            <div class="label">COST PER CANDLE</div>
+            <div class="value">$6.47</div>
+            <p class="sell-muted" style="margin-top:4px;font-size:12px">At $18: $11.53 before fees/tax</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature strip (in mock under hero; removed from current React — restore) -->
+    <section class="sell-wrap" style="padding-bottom:56px">
+      <div class="card-grid-3">
+        <div class="sell-panel" style="padding:12px 16px;font-size:14px;font-weight:600">Sell your products</div>
+        <div class="sell-panel" style="padding:12px 16px;font-size:14px;font-weight:600">Know your costs</div>
+        <div class="sell-panel" style="padding:12px 16px;font-size:14px;font-weight:600">Grow your business</div>
+      </div>
+    </section>
+
+    <!-- STOREFRONT -->
+    <section class="sell-wrap section">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px">
+        <h2 class="sell-h2 sell-heading-font">Give your candle collection its own shop</h2>
+        <span class="sell-plan-tag">PRO WEBSITE</span>
+      </div>
+      <p class="sell-muted" style="max-width:42rem">
+        Show jar candles with scent and size options. Free includes a shop link; Pro adds a website and custom domain.
+      </p>
+      <div class="sell-panel" style="margin-top:24px;padding:24px">
+        <div class="img-slot" data-slot="IMG: Ember & Earth spring collection browser UI" style="min-height:220px;margin-bottom:16px;border-radius:6px"></div>
+        <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.14em;color:color-mix(in srgb,var(--field) 60%,transparent)">DEMONSTRATION</p>
+        <p style="margin:8px 0 0;font-size:14px;font-weight:600">Ember &amp; Earth (demo)</p>
+        <ul class="sample-grid">
+          <li class="sample-chip">Cedar &amp; fig · 8 oz</li>
+          <li class="sample-chip">Citrus grove · 4 oz</li>
+          <li class="sample-chip">Smoke &amp; cedar · 12 oz</li>
+        </ul>
+        <p class="sell-muted" style="margin-top:16px">Free includes your shop link. Pro adds pages and a custom domain.</p>
+        <p style="margin-top:16px;font-size:14px;font-weight:600">Explore the example shop — labelled demonstration only.</p>
+      </div>
+    </section>
+
+    <!-- CALCULATOR -->
+    <section id="calculator" class="sell-wrap section">
+      <h2 class="sell-h2 sell-heading-font">What does each candle really cost to make?</h2>
+      <p class="sell-muted" style="margin-top:12px;max-width:42rem">
+        Add the materials used in your batch, your making time and allocated overheads. Divide by the number of saleable candles, then add packaging per candle.
+      </p>
+      <div style="display:grid;gap:24px;margin-top:32px" class="calc-split">
+        <div class="img-slot" data-slot="IMG: pouring wax into jar (mock left column)" style="min-height:280px;border-radius:8px"></div>
+        <div class="sell-panel" style="padding:20px">
+          <div class="calc-layout">
+            <div>
+              <div class="field"><label>Wax (batch)<input type="number" value="20" step="0.01" /></label></div>
+              <div class="field"><label>Fragrance (batch)<input type="number" value="8" step="0.01" /></label></div>
+              <div class="field"><label>Wicks (batch)<input type="number" value="2" step="0.01" /></label></div>
+              <div class="field"><label>Jars and lids (batch)<input type="number" value="18" step="0.01" /></label></div>
+              <div class="field"><label>Labour (batch)<input type="number" value="15" step="0.01" /></label></div>
+              <div class="field"><label>Allocated overhead (batch)<input type="number" value="5" step="0.01" /></label></div>
+              <div class="field"><label>Packaging per unit<input type="number" value="0.80" step="0.01" /></label></div>
+              <div class="field"><label>Saleable yield<input type="number" value="12" step="1" /></label></div>
+              <div class="field"><label>Selling price (demo)<input type="number" value="18" step="0.01" /></label></div>
+              <button type="button" class="sell-btn-outline">Reset example</button>
+            </div>
+            <div class="calc-result">
+              <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.12em">RESULT</p>
+              <p class="sell-muted" style="margin-top:12px">Batch total before packaging: $68.00</p>
+              <p style="margin:16px 0 0;font-size:32px;font-weight:600">$6.47</p>
+              <p class="sell-muted" style="margin-top:4px">Cost per candle</p>
+              <p style="margin-top:16px;font-size:14px">Contribution before fees/tax: $11.53 (64.1% of price)</p>
+              <p class="sell-muted" style="margin-top:8px">Not guaranteed net profit. Fees and tax are separate.</p>
+              <p style="margin-top:16px;font-size:14px;font-weight:500">Saved production tools are part of Pro. This demo is free to try.</p>
+              <a class="sell-btn" href="/signup?entry=sell-page&amp;business_type=candles" style="margin-top:16px">Start free <span aria-hidden>↗</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPERATIONS -->
+    <section class="sell-wrap section">
+      <h2 class="sell-h2 sell-heading-font">Products, stock and orders. Together.</h2>
+      <p class="sell-muted" style="margin-top:12px;max-width:42rem">
+        Create jar candles with scent and size variants, track available quantities, take payment and fulfil orders — without mixing stock counts and order status in one view.
+      </p>
+      <div class="img-slot" data-slot="IMG: products/stock/orders UI (tabs — not one misleading table)" style="margin:24px 0;min-height:240px;border-radius:8px"></div>
+      <ol class="card-grid-3" style="list-style:none;margin:0;padding:0">
+        <li class="sell-panel" style="padding:20px">
+          <h3 style="margin:0">List what you make</h3>
+          <p class="sell-muted" style="margin-top:8px">Add cedar and fig jar candle with scent and size options.</p>
+        </li>
+        <li class="sell-panel" style="padding:20px">
+          <h3 style="margin:0">Set availability</h3>
+          <p class="sell-muted" style="margin-top:8px">Use stock counts for finished jars, or open a pre-order window for the next pour.</p>
+        </li>
+        <li class="sell-panel" style="padding:20px">
+          <h3 style="margin:0">Take and fulfil orders</h3>
+          <p class="sell-muted" style="margin-top:8px">Collect payment and mark orders ready for collection or shipping.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- SELLING MODES -->
+    <section class="sell-wrap section">
+      <h2 class="sell-h2 sell-heading-font">More ways to sell your next batch</h2>
+      <div class="card-grid-4" style="margin-top:24px">
+        <div class="sell-panel" style="padding:20px">
+          <h3 style="margin:0">Pre-orders</h3>
+          <p class="sell-muted" style="margin-top:8px">Open a pre-order for cedar and fig jar candle before the next scent release.</p>
+        </div>
+        <div class="sell-panel" style="padding:20px">
+          <h3 style="margin:0">Subscriptions</h3>
+          <p class="sell-muted" style="margin-top:8px">Offer a refill or seasonal candle drop where repeat buying fits your process.</p>
+        </div>
+        <div class="sell-panel" style="padding:20px">
+          <h3 style="margin:0">Bundles</h3>
+          <p class="sell-muted" style="margin-top:8px">Bundle two jar sizes or a candle with wax melts for a gift set.</p>
+        </div>
+        <div class="sell-panel" style="padding:20px">
+          <h3 style="margin:0">QR market checkout</h3>
+          <p class="sell-muted" style="margin-top:8px">Take market stall orders for cedar and fig jar candle with QR checkout.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARKETING -->
+    <section class="sell-wrap section">
+      <h2 class="sell-h2 sell-heading-font">One candle. A post, a clip and an email.</h2>
+      <p class="sell-muted" style="margin-top:12px;max-width:42rem">
+        Use the same example — Cedar and fig jar candle — across formats. Email is Pro; social and video use your credit allowance.
+      </p>
+      <div class="card-grid-3" style="margin-top:24px">
+        <div class="sell-panel" style="padding:20px">
+          <div class="img-slot" data-slot="IMG: social post — Cedar & Fig" style="min-height:200px;margin-bottom:12px;border-radius:6px"></div>
+          <h3 style="margin:0">Social</h3>
+          <p class="sell-muted" style="margin-top:8px">Share cedar and fig jar candle with a shop link and scent details.</p>
+        </div>
+        <div class="sell-panel" style="padding:20px">
+          <div class="img-slot" data-slot="IMG: short clip — behind the batch" style="min-height:200px;margin-bottom:12px;border-radius:6px"></div>
+          <h3 style="margin:0">Short clip</h3>
+          <p class="sell-muted" style="margin-top:8px">Short pour or packing clip for cedar and fig jar candle.</p>
+        </div>
+        <div class="sell-panel" style="padding:20px">
+          <div class="img-slot" data-slot="IMG: email — scent is back" style="min-height:200px;margin-bottom:12px;border-radius:6px"></div>
+          <h3 style="margin:0">Email</h3>
+          <p class="sell-muted" style="margin-top:8px">Subject: Cedar and fig jar candle is back in stock</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MIGRATION -->
+    <section class="sell-wrap" style="padding-bottom:40px">
+      <div class="sell-panel" style="padding:24px">
+        <h2 style="margin:0;font-size:20px">Starting fresh or moving an existing candle shop?</h2>
+        <p class="sell-muted" style="margin-top:12px;max-width:42rem">
+          Import products and customers from supported sources. Imports do not copy website design, pages or subscriptions.
+        </p>
+        <div class="img-slot" data-slot="IMG: Shopify / Wix / Woo / Square logos" style="margin-top:16px;min-height:56px;border-radius:6px"></div>
+        <a class="sell-text-link" href="/#pricing" style="margin-top:16px">See what you can import</a>
+      </div>
+    </section>
+
+    <!-- COMMUNITY STRIP -->
+    <section class="sell-wrap section">
+      <div class="sell-community">
+        <h2 style="margin:0;font-size:18px">You make the products. Let’s build the business.</h2>
+        <p class="sell-muted" style="margin-top:8px;max-width:42rem">
+          Practical learning and other makers in the Vendl community — Free and Pro.
+        </p>
+      </div>
+    </section>
+
+    <!-- PRICING (shared component; abbreviated) -->
+    <section id="pricing" class="sell-wrap section">
+      <p class="sell-eyebrow">Plans</p>
+      <h2 class="sell-h2 sell-heading-font">Choose the tools your candles business needs</h2>
+      <div class="card-grid-2" style="margin-top:32px">
+        <div class="sell-panel" style="padding:24px">
+          <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.12em">FREE</p>
+          <p style="margin:8px 0 0;font-size:28px;font-weight:600">$0</p>
+          <p class="sell-muted" style="margin-top:8px">Your shop link and the tools to start selling.</p>
+        </div>
+        <div class="sell-panel" style="padding:24px;border-color:var(--leaf)">
+          <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.12em">VENDL PRO</p>
+          <p style="margin:8px 0 0;font-size:28px;font-weight:600">From pricing source</p>
+          <p class="sell-muted" style="margin-top:8px">Everything in Free, plus website and production tools.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="sell-wrap section faq">
+      <h2 class="sell-h2 sell-heading-font">Questions about selling candles with Vendl</h2>
+      <div style="display:grid;gap:12px;margin-top:24px">
+        <details class="sell-panel"><summary>Can I calculate the cost of each candle size?</summary><p class="sell-muted" style="margin-top:12px">Yes. Enter batch materials, labour and overheads, set saleable yield for that size, then add packaging per candle.</p></details>
+        <details class="sell-panel"><summary>Can I sell different scents and sizes?</summary><p class="sell-muted" style="margin-top:12px">Yes. Create products or options for scent and size.</p></details>
+        <details class="sell-panel"><summary>Can I accept pre-orders for a new collection?</summary><p class="sell-muted" style="margin-top:12px">Yes. Open a pre-order for a scent release, take payment, then fulfil when that batch is ready.</p></details>
+        <details class="sell-panel"><summary>Can I sell at markets as well as online?</summary><p class="sell-muted" style="margin-top:12px">Yes. Use QR checkout for stall sales alongside your online shop link or website.</p></details>
+        <details class="sell-panel"><summary>What should I check before shipping candles to customers?</summary><p class="sell-muted" style="margin-top:12px">Vendl helps you take and fulfil orders. Packaging, carrier rules and destination restrictions are your decisions.</p></details>
+        <details class="sell-panel"><summary>Can I start selling without building a full website?</summary><p class="sell-muted" style="margin-top:12px">Yes. Free includes a shop link. Pro adds website, custom domain and costing tools.</p></details>
+        <details class="sell-panel"><summary>What does Vendl cost, including transaction fees?</summary><p class="sell-muted" style="margin-top:12px">Start free. Pro unlocks website, costing and email. Card processing fees apply separately.</p></details>
+      </div>
+    </section>
+
+    <!-- RELATED -->
+    <section class="sell-wrap section">
+      <h2 class="sell-h2 sell-heading-font">Build the business behind your candles</h2>
+      <p class="sell-muted" style="margin-top:12px">
+        Related maker pages.
+        <a class="sell-text-link" href="/sell">Browse all maker businesses</a>
+      </p>
+      <ul style="display:flex;flex-wrap:wrap;gap:12px;list-style:none;margin:24px 0 0;padding:0">
+        <li><a class="sell-panel" style="display:block;padding:8px 16px;font-size:14px;font-weight:600" href="/sell/wax-melts">Wax melts</a></li>
+        <li><a class="sell-panel" style="display:block;padding:8px 16px;font-size:14px;font-weight:600" href="/sell/reed-diffusers">Reed diffusers</a></li>
+        <li><a class="sell-panel" style="display:block;padding:8px 16px;font-size:14px;font-weight:600" href="/sell/soap">Soap</a></li>
+      </ul>
+    </section>
+
+    <section class="sell-wrap final-cta">
+      <h2 class="sell-h2 sell-heading-font">Give your next collection a place to sell.</h2>
+      <a class="sell-btn" href="/signup?entry=sell-page&amp;business_type=candles" style="margin-top:32px">Start free <span aria-hidden>↗</span></a>
+    </section>
+  </main>
+
+  <style>
+    @media (min-width: 1024px) {
+      .calc-split {
+        grid-template-columns: 0.9fr 1.1fr;
+        align-items: start;
+      }
+    }
+  </style>
+</body>
+</html>

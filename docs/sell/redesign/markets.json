@@ -1,0 +1,538 @@
+[
+  {
+    "id": "baking",
+    "name": "Baking",
+    "count": 15,
+    "items": [
+      {
+        "slug": "baked-goods",
+        "name": "Baked goods"
+      },
+      {
+        "slug": "cookies",
+        "name": "Cookies"
+      },
+      {
+        "slug": "cakes",
+        "name": "Cakes"
+      },
+      {
+        "slug": "cupcakes",
+        "name": "Cupcakes"
+      },
+      {
+        "slug": "bread",
+        "name": "Bread"
+      },
+      {
+        "slug": "sourdough",
+        "name": "Sourdough"
+      },
+      {
+        "slug": "brownies",
+        "name": "Brownies"
+      },
+      {
+        "slug": "donuts",
+        "name": "Donuts"
+      },
+      {
+        "slug": "macarons",
+        "name": "Macarons"
+      },
+      {
+        "slug": "pies",
+        "name": "Pies"
+      },
+      {
+        "slug": "pastries",
+        "name": "Pastries"
+      },
+      {
+        "slug": "cinnamon-rolls",
+        "name": "Cinnamon rolls"
+      },
+      {
+        "slug": "cheesecakes",
+        "name": "Cheesecakes"
+      },
+      {
+        "slug": "muffins",
+        "name": "Muffins"
+      },
+      {
+        "slug": "cake-pops",
+        "name": "Cake pops"
+      }
+    ]
+  },
+  {
+    "id": "food-drink",
+    "name": "Food & drink",
+    "count": 20,
+    "items": [
+      {
+        "slug": "chocolates",
+        "name": "Chocolates"
+      },
+      {
+        "slug": "candy",
+        "name": "Candy and confectionery"
+      },
+      {
+        "slug": "fudge",
+        "name": "Fudge"
+      },
+      {
+        "slug": "marshmallows",
+        "name": "Marshmallows"
+      },
+      {
+        "slug": "jam",
+        "name": "Jam"
+      },
+      {
+        "slug": "chutney",
+        "name": "Chutney"
+      },
+      {
+        "slug": "pickles",
+        "name": "Pickles"
+      },
+      {
+        "slug": "hot-sauce",
+        "name": "Hot sauce"
+      },
+      {
+        "slug": "barbecue-sauce",
+        "name": "Barbecue sauce"
+      },
+      {
+        "slug": "spice-blends",
+        "name": "Spice blends"
+      },
+      {
+        "slug": "tea",
+        "name": "Tea blends"
+      },
+      {
+        "slug": "coffee",
+        "name": "Roasted coffee"
+      },
+      {
+        "slug": "granola",
+        "name": "Granola"
+      },
+      {
+        "slug": "nut-butter",
+        "name": "Nut butter"
+      },
+      {
+        "slug": "popcorn",
+        "name": "Popcorn"
+      },
+      {
+        "slug": "pasta",
+        "name": "Pasta"
+      },
+      {
+        "slug": "crackers",
+        "name": "Crackers"
+      },
+      {
+        "slug": "dried-fruit",
+        "name": "Dried fruit"
+      },
+      {
+        "slug": "kombucha",
+        "name": "Kombucha"
+      },
+      {
+        "slug": "prepared-meals",
+        "name": "Prepared meals"
+      }
+    ]
+  },
+  {
+    "id": "beauty-fragrance",
+    "name": "Beauty & fragrance",
+    "count": 15,
+    "items": [
+      {
+        "slug": "soap",
+        "name": "Soap"
+      },
+      {
+        "slug": "candles",
+        "name": "Candles"
+      },
+      {
+        "slug": "wax-melts",
+        "name": "Wax melts"
+      },
+      {
+        "slug": "bath-bombs",
+        "name": "Bath bombs"
+      },
+      {
+        "slug": "bath-salts",
+        "name": "Bath salts"
+      },
+      {
+        "slug": "body-butter",
+        "name": "Body butter"
+      },
+      {
+        "slug": "body-scrubs",
+        "name": "Body scrubs"
+      },
+      {
+        "slug": "lip-balm",
+        "name": "Lip balm"
+      },
+      {
+        "slug": "lip-gloss",
+        "name": "Lip gloss"
+      },
+      {
+        "slug": "shampoo-bars",
+        "name": "Shampoo bars"
+      },
+      {
+        "slug": "lotions",
+        "name": "Lotions"
+      },
+      {
+        "slug": "perfume",
+        "name": "Perfume"
+      },
+      {
+        "slug": "reed-diffusers",
+        "name": "Reed diffusers"
+      },
+      {
+        "slug": "room-sprays",
+        "name": "Room sprays"
+      },
+      {
+        "slug": "press-on-nails",
+        "name": "Press-on nails"
+      }
+    ]
+  },
+  {
+    "id": "jewelry-accessories",
+    "name": "Jewellery & accessories",
+    "count": 12,
+    "items": [
+      {
+        "slug": "handmade-jewelry",
+        "name": "Handmade jewellery"
+      },
+      {
+        "slug": "earrings",
+        "name": "Earrings"
+      },
+      {
+        "slug": "bracelets",
+        "name": "Bracelets"
+      },
+      {
+        "slug": "necklaces",
+        "name": "Necklaces"
+      },
+      {
+        "slug": "rings",
+        "name": "Rings"
+      },
+      {
+        "slug": "polymer-clay-jewelry",
+        "name": "Polymer-clay jewellery"
+      },
+      {
+        "slug": "beaded-jewelry",
+        "name": "Beaded jewellery"
+      },
+      {
+        "slug": "hair-accessories",
+        "name": "Hair accessories"
+      },
+      {
+        "slug": "scrunchies",
+        "name": "Scrunchies"
+      },
+      {
+        "slug": "enamel-pins",
+        "name": "Enamel pins"
+      },
+      {
+        "slug": "keychains",
+        "name": "Keychains and keyrings"
+      },
+      {
+        "slug": "leather-belts",
+        "name": "Leather belts"
+      }
+    ]
+  },
+  {
+    "id": "clothing-textiles",
+    "name": "Clothing & textiles",
+    "count": 16,
+    "items": [
+      {
+        "slug": "handmade-clothing",
+        "name": "Handmade clothing"
+      },
+      {
+        "slug": "t-shirts",
+        "name": "Printed T-shirts"
+      },
+      {
+        "slug": "embroidered-products",
+        "name": "Embroidered products"
+      },
+      {
+        "slug": "handmade-bags",
+        "name": "Handmade bags"
+      },
+      {
+        "slug": "tote-bags",
+        "name": "Tote bags"
+      },
+      {
+        "slug": "leather-wallets",
+        "name": "Leather wallets"
+      },
+      {
+        "slug": "baby-clothes",
+        "name": "Baby clothes"
+      },
+      {
+        "slug": "aprons",
+        "name": "Aprons"
+      },
+      {
+        "slug": "costumes",
+        "name": "Costumes"
+      },
+      {
+        "slug": "crochet",
+        "name": "Crochet products"
+      },
+      {
+        "slug": "knitwear",
+        "name": "Knitted products"
+      },
+      {
+        "slug": "quilts",
+        "name": "Quilts"
+      },
+      {
+        "slug": "tufted-rugs",
+        "name": "Tufted rugs"
+      },
+      {
+        "slug": "macrame",
+        "name": "Macram\u00e9"
+      },
+      {
+        "slug": "cushion-covers",
+        "name": "Cushion covers"
+      },
+      {
+        "slug": "handmade-hats",
+        "name": "Handmade hats"
+      }
+    ]
+  },
+  {
+    "id": "home-workshop",
+    "name": "Homewares & woodwork",
+    "count": 16,
+    "items": [
+      {
+        "slug": "pottery",
+        "name": "Pottery and ceramics"
+      },
+      {
+        "slug": "handmade-mugs",
+        "name": "Handmade mugs"
+      },
+      {
+        "slug": "ceramic-planters",
+        "name": "Ceramic planters"
+      },
+      {
+        "slug": "wooden-products",
+        "name": "Wooden products"
+      },
+      {
+        "slug": "cutting-boards",
+        "name": "Cutting boards"
+      },
+      {
+        "slug": "handmade-furniture",
+        "name": "Handmade furniture"
+      },
+      {
+        "slug": "wooden-toys",
+        "name": "Wooden toys"
+      },
+      {
+        "slug": "picture-frames",
+        "name": "Picture frames"
+      },
+      {
+        "slug": "wooden-signs",
+        "name": "Wooden signs"
+      },
+      {
+        "slug": "coasters",
+        "name": "Coasters"
+      },
+      {
+        "slug": "resin-products",
+        "name": "Resin products"
+      },
+      {
+        "slug": "jesmonite-products",
+        "name": "Jesmonite products"
+      },
+      {
+        "slug": "concrete-homewares",
+        "name": "Concrete homewares"
+      },
+      {
+        "slug": "stained-glass",
+        "name": "Stained glass"
+      },
+      {
+        "slug": "wreaths",
+        "name": "Wreaths"
+      },
+      {
+        "slug": "christmas-ornaments",
+        "name": "Christmas ornaments"
+      }
+    ]
+  },
+  {
+    "id": "art-custom",
+    "name": "Art & personalised goods",
+    "count": 14,
+    "items": [
+      {
+        "slug": "paintings",
+        "name": "Original paintings"
+      },
+      {
+        "slug": "art-prints",
+        "name": "Art prints"
+      },
+      {
+        "slug": "sculptures",
+        "name": "Sculptures"
+      },
+      {
+        "slug": "greeting-cards",
+        "name": "Greeting cards"
+      },
+      {
+        "slug": "wedding-invitations",
+        "name": "Wedding invitations"
+      },
+      {
+        "slug": "stickers",
+        "name": "Stickers"
+      },
+      {
+        "slug": "notebooks",
+        "name": "Notebooks"
+      },
+      {
+        "slug": "planners",
+        "name": "Physical planners"
+      },
+      {
+        "slug": "rubber-stamps",
+        "name": "Rubber stamps"
+      },
+      {
+        "slug": "bookmarks",
+        "name": "Bookmarks"
+      },
+      {
+        "slug": "personalized-tumblers",
+        "name": "Personalised tumblers"
+      },
+      {
+        "slug": "laser-cut-products",
+        "name": "Laser-cut products"
+      },
+      {
+        "slug": "3d-printed-products",
+        "name": "3D-printed products"
+      },
+      {
+        "slug": "craft-kits",
+        "name": "Craft kits"
+      }
+    ]
+  },
+  {
+    "id": "pets-toys",
+    "name": "Pets, toys & more",
+    "count": 12,
+    "items": [
+      {
+        "slug": "dog-treats",
+        "name": "Dog treats"
+      },
+      {
+        "slug": "dog-collars",
+        "name": "Dog collars"
+      },
+      {
+        "slug": "dog-leashes",
+        "name": "Dog leashes and leads"
+      },
+      {
+        "slug": "pet-bandanas",
+        "name": "Pet bandanas"
+      },
+      {
+        "slug": "pet-beds",
+        "name": "Pet beds"
+      },
+      {
+        "slug": "pet-toys",
+        "name": "Pet toys"
+      },
+      {
+        "slug": "soft-toys",
+        "name": "Soft toys"
+      },
+      {
+        "slug": "handmade-dolls",
+        "name": "Handmade dolls"
+      },
+      {
+        "slug": "slime",
+        "name": "Slime"
+      },
+      {
+        "slug": "playdough",
+        "name": "Playdough"
+      },
+      {
+        "slug": "miniatures",
+        "name": "Miniatures"
+      },
+      {
+        "slug": "fishing-lures",
+        "name": "Handmade fishing lures"
+      }
+    ]
+  }
+]
