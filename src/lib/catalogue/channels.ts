@@ -22,12 +22,16 @@ export async function primaryStandIdForOwner(
   return stand?.id ?? null;
 }
 
+/**
+ * Stand + online for the product's stand. Online is always on: the website sells
+ * from the chosen website stand, and there is no separate "sell online" toggle.
+ */
 export async function ensureDefaultProductChannels(input: {
   productId: string;
   standId: string;
   ownerId: string;
 }) {
-  const primaryId = await primaryStandIdForOwner(input.ownerId);
+  void input.ownerId;
   const rows: {
     productId: string;
     channelType: ProductChannelType;
@@ -40,15 +44,13 @@ export async function ensureDefaultProductChannels(input: {
       standId: input.standId,
       isEnabled: true,
     },
-  ];
-  if (primaryId && primaryId === input.standId) {
-    rows.push({
+    {
       productId: input.productId,
       channelType: ProductChannelType.ONLINE,
       standId: input.standId,
       isEnabled: true,
-    });
-  }
+    },
+  ];
 
   for (const row of rows) {
     await prisma.productChannel.upsert({
@@ -63,6 +65,22 @@ export async function ensureDefaultProductChannels(input: {
       update: { isEnabled: true },
     });
   }
+}
+
+/** Heals missing ONLINE rows for live products on a stand (e.g. after publish). */
+export async function ensureOnlineChannelsForStand(standId: string) {
+  const products = await prisma.product.findMany({
+    where: { standId, isArchived: false },
+    select: { id: true, ownerId: true },
+  });
+  for (const p of products) {
+    await ensureDefaultProductChannels({
+      productId: p.id,
+      standId,
+      ownerId: p.ownerId,
+    });
+  }
+  return products.length;
 }
 
 export async function listProductsForStandCatalog(
@@ -82,7 +100,10 @@ export async function listProductsForStandCatalog(
   });
 }
 
-/** Products with ONLINE channel enabled for the owner's primary shop surface. */
+/**
+ * Website catalogue for the chosen website stand — same membership as the
+ * farm-stand catalog (legacy standId or an enabled STAND/ONLINE channel).
+ */
 export async function listProductsForOnlineShop(
   ownerId: string,
   standId: string,
@@ -90,19 +111,7 @@ export async function listProductsForOnlineShop(
 ) {
   return prisma.product.findMany({
     where: {
-      AND: [
-        { ownerId },
-        visibility,
-        {
-          channels: {
-            some: {
-              channelType: ProductChannelType.ONLINE,
-              standId,
-              isEnabled: true,
-            },
-          },
-        },
-      ],
+      AND: [{ ownerId }, visibility, productOnStandWhere(standId)],
     },
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     include: optionInclude,

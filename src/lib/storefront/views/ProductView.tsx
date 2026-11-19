@@ -1,10 +1,8 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
 import { resolveProductForStand } from "@/lib/catalogue/channels";
 import { isReservedProductSlug } from "@/lib/slug";
 import { mapPublicProduct } from "@/lib/public-product";
 import { productLiveWhere } from "@/lib/product-visibility";
-import { ProductChannelType } from "@/generated/prisma/client";
 import { loadStorefrontPage } from "@/lib/storefront/page-loader";
 import { shopPagePath } from "@/lib/storefront/paths";
 import { currentStorefrontBasePath } from "@/lib/tenancy/request-base-path";
@@ -41,10 +39,6 @@ export default async function ProductView({ slug, productSlug, categorySlug, dra
     if (categorySlug !== undefined) await redirectWithinStorefront(slug, productRelativePath(productKey), draft);
     notFound();
   }
-  const hasOnline = await prisma.productChannel.findFirst({
-    where: { productId: productRow.id, channelType: ProductChannelType.ONLINE, standId: ctx.stand.id, isEnabled: true },
-  });
-  if (!hasOnline) notFound();
 
   const mainCategory = await productMainCategory(ctx, productRow.id);
   const path = productRelativePath(productRow.slug, mainCategory?.slug);

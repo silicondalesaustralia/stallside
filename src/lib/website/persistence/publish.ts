@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { ensureOnlineChannelsForStand } from "@/lib/catalogue/channels";
+import { pickWebsiteStand } from "@/lib/storefront/website-stand";
 import { parseStorefrontIdentity, identityColumnData } from "@/lib/storefront/identity";
 import { DraftConflictError } from "./draft-store";
 import { findPublishBlockers } from "./publish-checks";
@@ -56,6 +58,17 @@ export async function publishStorefront(ownerId: string, userId?: string) {
     if (updated.count === 0) throw new DraftConflictError();
     return publication.id;
   });
+
+  const stands = await prisma.stand.findMany({
+    where: { ownerId },
+    orderBy: { createdAt: "asc" },
+    select: { id: true },
+  });
+  const websiteStand = pickWebsiteStand(stands, sf.draftConfig);
+  if (websiteStand) {
+    await ensureOnlineChannelsForStand(websiteStand.id);
+  }
+
   return { publicationId, publishedAt };
 }
 

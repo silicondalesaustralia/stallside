@@ -1,10 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { slugify, uniqueStandSlug } from "@/lib/slug";
 import { businessPageProductWhere } from "@/lib/product-visibility";
-import {
-  listProductsForOnlineShop,
-  primaryStandIdForOwner,
-} from "@/lib/catalogue/channels";
+import { listProductsForOnlineShop } from "@/lib/catalogue/channels";
+import { productOnStandWhere } from "@/lib/catalogue/product-on-stand";
 import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 import { normalizeBusinessMode } from "@/lib/business-mode";
 import { parseStorefrontConfig } from "@/lib/storefront/config";
@@ -13,7 +11,7 @@ import { resolveStorefrontBranding } from "@/lib/storefront/branding";
 import { loadOnlineFulfilmentOptions } from "@/lib/fulfilment/load-options";
 import { toShopFulfilmentOptionView } from "@/lib/fulfilment/shop-types";
 import { withMainCategorySlugs } from "@/lib/studio/product-main-category";
-import { ProductChannelType, Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import {
   SEED_OWNER_SELECT,
   buildSeededDraftConfig,
@@ -151,14 +149,7 @@ export async function loadStorefrontContext(
         products: {
           some: {
             product: {
-              isArchived: false,
-              channels: {
-                some: {
-                  channelType: ProductChannelType.ONLINE,
-                  standId: stand.id,
-                  isEnabled: true,
-                },
-              },
+              AND: [{ isArchived: false }, productOnStandWhere(stand.id)],
             },
           },
         },
@@ -174,12 +165,11 @@ export async function loadStorefrontContext(
         showOnWebsite: true,
       },
     }),
-    prisma.productChannel.count({
+    prisma.product.count({
       where: {
-        channelType: ProductChannelType.ONLINE,
-        standId: stand.id,
-        isEnabled: true,
-        product: { ownerId: storefront.ownerId, isArchived: false },
+        ownerId: storefront.ownerId,
+        isArchived: false,
+        ...productOnStandWhere(stand.id),
       },
     }),
     loadOnlineFulfilmentOptions(storefront.ownerId).then((rows) =>
