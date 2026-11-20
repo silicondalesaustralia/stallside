@@ -8,7 +8,7 @@ export type FeatureFlow = {
 
 export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
   "online-shop": {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "From catalogue to paid order.",
     nodes: [
       { label: "Add products", detail: "Photos, price, stock, variants" },
@@ -19,7 +19,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   "pre-orders": {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "Sell the bake before you make it.",
     nodes: [
       { label: "Open window", detail: "Set open and close times" },
@@ -30,7 +30,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   subscriptions: {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "Sign up once. Collect on repeat.",
     nodes: [
       { label: "Create plan", detail: "Rhythm, price, what’s in" },
@@ -41,7 +41,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   "stall-checkout": {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "Scan, choose, pay — you keep working.",
     nodes: [
       { label: "Print QR poster", detail: "A4, half or quarter" },
@@ -52,7 +52,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   bundles: {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "Set the deal once. It shows everywhere.",
     nodes: [
       { label: "Pick products", detail: "Singles you already sell" },
@@ -63,7 +63,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   payments: {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "Connect once. Money goes to you.",
     nodes: [
       { label: "Connect provider", detail: "Stripe, Square or PayPal" },
@@ -74,7 +74,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   inventory: {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "Count, sell, adjust — stay honest.",
     nodes: [
       { label: "Set stock", detail: "Starting counts or import" },
@@ -85,7 +85,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   orders: {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "Every channel, one fulfilment list.",
     nodes: [
       { label: "Sale happens", detail: "Stall, shop or subscription" },
@@ -96,7 +96,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   suppliers: {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "They add stock. You approve and settle.",
     nodes: [
       { label: "Invite supplier", detail: "Their own login" },
@@ -107,7 +107,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   calendar: {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "See the week before it hits you.",
     nodes: [
       { label: "Orders come in", detail: "Pre-orders and memberships" },
@@ -118,7 +118,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   customers: {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "Every sale builds a list you can use.",
     nodes: [
       { label: "Customer buys", detail: "Shop, stall or pre-order" },
@@ -129,7 +129,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   "email-marketing": {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "Right list. Branded send. Clear counts.",
     nodes: [
       { label: "Pick a list", detail: "Smart list or collection day" },
@@ -140,7 +140,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   social: {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "One product becomes a week of posts.",
     nodes: [
       { label: "Pick a product", detail: "Photo you already have" },
@@ -151,7 +151,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   "restock-alerts": {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "They ask once. You notify automatically.",
     nodes: [
       { label: "Item sells out", detail: "Opt-in shows on the page" },
@@ -162,7 +162,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   costing: {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "Materials in. Margin out.",
     nodes: [
       { label: "Add materials", detail: "Pack prices and units" },
@@ -173,7 +173,7 @@ export const FEATURE_FLOWS: Record<string, FeatureFlow> = {
     ],
   },
   website: {
-    eyebrow: "THE FLOW",
+    eyebrow: "PROCESS FLOW",
     heading: "Edit, connect domain, publish.",
     nodes: [
       { label: "Choose a look", detail: "Layout and colours" },

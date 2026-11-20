@@ -28,7 +28,11 @@ export default function FeaturePageView({ feature }: { feature: FeaturePage }) {
   const related = getRelatedFeatures(feature);
   const Icon = featureIcon(feature.slug);
   const logos = featureLogoStrip(feature.slug);
-  const flow = getFeatureFlow(feature.slug);
+  const flow = getFeatureFlow(feature.slug) ?? {
+    eyebrow: "PROCESS FLOW",
+    heading: `How ${feature.title.toLowerCase()} works.`,
+    nodes: feature.steps.map((step) => ({ label: step.title, detail: step.body })),
+  };
   const audience = getFeatureAudience(feature.slug);
   const faqs = getFeatureFaqs(feature.slug, feature.faqs);
 
@@ -60,8 +64,8 @@ export default function FeaturePageView({ feature }: { feature: FeaturePage }) {
         </section>
 
         <FeatureAudience labels={audience} />
+        <FeatureFlow flow={flow} />
         <FeatureBulletCards slug={feature.slug} bullets={feature.bullets} />
-        {flow ? <FeatureFlow flow={flow} /> : null}
         <FeatureLogoStrip kind={logos} />
 
         <section className={`${HOME_WRAP} grid gap-10 border-t border-[var(--line)] py-16 md:grid-cols-2 md:py-[88px]`}>
