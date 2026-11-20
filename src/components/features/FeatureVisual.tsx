@@ -1,11 +1,27 @@
 import Image from "next/image";
+import {
+  BundlesPanel,
+  CustomersPanel,
+  DashboardHomePanel,
+  InventoryPanel,
+  OrdersPanel,
+  PreordersPanel,
+  RestockPanel,
+  ShopPanel,
+  SubscriptionsPanel,
+  SuppliersPanel,
+} from "@/components/features/FeatureDashPanels";
+import { FeatureChrome } from "@/components/features/FeatureChrome";
 import HomeCalendarShot from "@/components/home/HomeCalendarShot";
 import HomeEditorShot from "@/components/home/HomeEditorShot";
 import HomeEmailShot from "@/components/home/HomeEmailShot";
+import HomePaymentTile from "@/components/home/HomePaymentTile";
+import HomeProductEditorShot from "@/components/home/HomeProductEditorShot";
 import HomeSocialCreateShot from "@/components/home/HomeSocialCreateShot";
 import HomeStandPoster from "@/components/home/HomeStandPoster";
 import { HOME_HEADING_FONT, HOME_SCREEN_CAPTION } from "@/components/home/home-styles";
-import type { FeatureVisual as VisualKind } from "@/lib/features/types";
+import { HOME_PAYMENT_METHODS, HOME_PAYMENT_PROVIDERS } from "@/lib/home-payments";
+import { resolveFeatureVisual } from "@/lib/features/visuals";
 
 function Frame({ children, caption }: { children: React.ReactNode; caption: string }) {
   return (
@@ -16,107 +32,82 @@ function Frame({ children, caption }: { children: React.ReactNode; caption: stri
   );
 }
 
-function GenericPanel({ title }: { title: string }) {
-  return (
-    <div
-      aria-hidden
-      className="overflow-hidden rounded-lg border border-[var(--line)] bg-white shadow-[0_8px_25px_#17361f16]"
-    >
-      <div className="border-b border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-[11px] font-semibold text-[var(--field)]">
-        Inside Vendl
-      </div>
-      <div className="space-y-3 p-5">
-        <p className={`${HOME_HEADING_FONT} text-2xl text-[var(--field)]`}>{title}</p>
-        <div className="h-2 w-3/4 rounded bg-[var(--wash)]" />
-        <div className="h-2 w-1/2 rounded bg-[var(--wash)]" />
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          <div className="rounded-md border border-[var(--line)] bg-[var(--wash)] p-3 text-[11px] text-[var(--muted)]">
-            Live in your dashboard
-          </div>
-          <div className="rounded-md border border-[var(--line)] bg-[var(--wash)] p-3 text-[11px] text-[var(--muted)]">
-            Works with your shop &amp; stall
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function PaymentsPanel() {
   return (
-    <div
-      aria-hidden
-      className="overflow-hidden rounded-lg border border-[var(--line)] bg-white p-5 shadow-[0_8px_25px_#17361f16]"
-    >
-      <p className="text-[11px] font-bold tracking-[0.12em] text-[var(--field)]">PAYMENT METHODS</p>
-      <ul className="mt-4 grid grid-cols-2 gap-2 text-sm text-[var(--field)] sm:grid-cols-3">
-        {["Stripe", "Square", "PayPal", "Apple Pay", "PayID", "Cash"].map((label) => (
-          <li key={label} className="rounded-md border border-[var(--line)] bg-[var(--wash)] px-3 py-2 text-center text-xs font-semibold">
-            {label}
-          </li>
+    <FeatureChrome path="/dashboard/payments" caption="Providers and pay methods">
+      <p className="mb-3 text-[11px] font-bold tracking-[0.12em] text-[var(--field)]">CONNECTED</p>
+      <ul className="flex flex-wrap gap-2">
+        {HOME_PAYMENT_PROVIDERS.map((mark) => (
+          <HomePaymentTile key={mark.label} mark={mark} />
         ))}
       </ul>
-    </div>
+      <p className="mb-3 mt-5 text-[11px] font-bold tracking-[0.12em] text-[var(--field)]">CUSTOMER METHODS</p>
+      <ul className="flex flex-wrap gap-2">
+        {HOME_PAYMENT_METHODS.slice(0, 8).map((mark) => (
+          <HomePaymentTile key={mark.label} mark={mark} />
+        ))}
+      </ul>
+    </FeatureChrome>
   );
 }
 
 function CostingPanel() {
   return (
-    <div
-      aria-hidden
-      className="overflow-hidden rounded-lg border border-[var(--line)] bg-white shadow-[0_8px_25px_#17361f16]"
-    >
-      <div className="border-b border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-[11px] font-semibold">
-        Batch costing · Rosemary focaccia
-      </div>
-      <div className="space-y-2 p-4 text-sm">
-        {[
-          ["Materials", "$11.92"],
-          ["Labour", "$30.00"],
-          ["Overhead", "$4.00"],
-          ["Per loaf + pack", "$4.74"],
-        ].map(([label, value]) => (
-          <div key={label} className="flex justify-between border-b border-[var(--line)] py-2 last:border-0">
-            <span className="text-[var(--muted)]">{label}</span>
-            <span className="font-semibold text-[var(--field)]">{value}</span>
-          </div>
-        ))}
-        <p className="pt-2 text-xs text-[var(--muted)]">Margin example · 47.7% at the priced loaf</p>
-      </div>
-    </div>
+    <FeatureChrome path="/dashboard/production" caption="Same costing maths as Vendl Pro">
+      <p className={`${HOME_HEADING_FONT} mb-3 text-lg`}>Rosemary focaccia · batch of 10</p>
+      {[
+        ["Materials (incl. waste)", "$11.92"],
+        ["Labour · 60 min", "$30.00"],
+        ["Overhead", "$4.00"],
+        ["Per loaf + pack", "$4.74"],
+      ].map(([label, value]) => (
+        <div key={label} className="flex justify-between border-b border-[var(--line)] py-2 text-sm last:border-0">
+          <span className="text-[var(--muted)]">{label}</span>
+          <span className="font-semibold text-[var(--field)]">{value}</span>
+        </div>
+      ))}
+      <p className="mt-3 rounded-md bg-[#ecfdf5] px-3 py-2 text-xs font-semibold text-[#065f46]">
+        Margin 47.7% · profit $5.01 each at priced loaf
+      </p>
+    </FeatureChrome>
   );
 }
 
 function StallPanel() {
   return (
-    <div className="relative mr-4 sm:mr-8">
-      <Image
-        src="/lp/green-valley-eggs-stallside-stand.jpg"
-        alt="Roadside honesty stand with a QR checkout poster"
-        width={819}
-        height={1024}
-        sizes="(max-width: 768px) 100vw, 480px"
-        className="h-[360px] w-full rounded-[6px_70px_6px_6px] object-cover md:h-[440px]"
-      />
-      <HomeStandPoster qrSrc={null} />
-    </div>
+    <Frame caption="Stall poster over a roadside stand">
+      <div className="relative mr-4 sm:mr-8">
+        <Image
+          src="/lp/green-valley-eggs-stallside-stand.jpg"
+          alt="Roadside honesty stand with a QR checkout poster"
+          width={819}
+          height={1024}
+          sizes="(max-width: 768px) 100vw, 480px"
+          className="h-[360px] w-full rounded-[6px_70px_6px_6px] object-cover md:h-[440px]"
+        />
+        <HomeStandPoster qrSrc={null} />
+      </div>
+    </Frame>
   );
 }
 
-export default function FeatureVisual({
-  kind,
-  title,
-}: {
-  kind: VisualKind;
-  title: string;
-}) {
+function WebsitePanel() {
+  return (
+    <Frame caption="Inside Vendl · website editor + product page">
+      <div className="relative pb-8 sm:pb-10">
+        <HomeEditorShot />
+        <HomeProductEditorShot />
+      </div>
+    </Frame>
+  );
+}
+
+export default function FeatureVisual({ slug }: { slug: string; title?: string }) {
+  const kind = resolveFeatureVisual(slug);
+
   switch (kind) {
     case "website":
-      return (
-        <Frame caption="Inside Vendl · website editor">
-          <HomeEditorShot />
-        </Frame>
-      );
+      return <WebsitePanel />;
     case "calendar":
       return (
         <Frame caption="Inside Vendl · calendar">
@@ -136,28 +127,30 @@ export default function FeatureVisual({
         </Frame>
       );
     case "stall":
-      return (
-        <Frame caption="Stall poster over a roadside stand">
-          <StallPanel />
-        </Frame>
-      );
+      return <StallPanel />;
     case "payments":
-      return (
-        <Frame caption="Providers and pay methods">
-          <PaymentsPanel />
-        </Frame>
-      );
+      return <PaymentsPanel />;
     case "costing":
-      return (
-        <Frame caption="Same costing maths as Vendl Pro">
-          <CostingPanel />
-        </Frame>
-      );
+      return <CostingPanel />;
+    case "shop":
+      return <ShopPanel />;
+    case "inventory":
+      return <InventoryPanel />;
+    case "orders":
+      return <OrdersPanel />;
+    case "customers":
+      return <CustomersPanel />;
+    case "suppliers":
+      return <SuppliersPanel />;
+    case "preorders":
+      return <PreordersPanel />;
+    case "subscriptions":
+      return <SubscriptionsPanel />;
+    case "bundles":
+      return <BundlesPanel />;
+    case "restock":
+      return <RestockPanel />;
     default:
-      return (
-        <Frame caption="Inside Vendl">
-          <GenericPanel title={title} />
-        </Frame>
-      );
+      return <DashboardHomePanel />;
   }
 }

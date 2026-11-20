@@ -10,6 +10,7 @@ import {
   HOME_TEXT_LINK,
   HOME_WRAP,
 } from "@/components/home/home-styles";
+import { featureIcon } from "@/lib/features/icons";
 import { featuresGroupedForHub } from "@/lib/features";
 
 export default function FeatureHub() {
@@ -23,7 +24,7 @@ export default function FeatureHub() {
           <p className={HOME_EYEBROW}>PRODUCT FEATURES</p>
           <h1 className={HOME_H2}>Everything in Vendl, by job.</h1>
           <p className="mt-5 max-w-[520px] text-[var(--muted)]">
-            Sell, get paid, run the books, grow customers and cost what you make — from one place.
+            Sell, get paid, run the books, grow customers and cost what you make — each with a look inside the dashboard.
           </p>
           <Link href="/signup" className={`${HOME_BUTTON} mt-8`}>
             Start free <span aria-hidden>↗</span>
@@ -37,18 +38,24 @@ export default function FeatureHub() {
           >
             <h2 className={`${HOME_H3} text-2xl md:text-3xl`}>{group.heading}</h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {group.features.map((feature) => (
-                <Link
-                  key={feature.slug}
-                  href={`/features/${feature.slug}`}
-                  className="rounded-lg border border-[var(--line)] bg-white p-5 transition hover:border-[var(--leaf)]"
-                >
-                  <span className={HOME_PLAN_TAG}>{feature.plan}</span>
-                  <h3 className={`${HOME_H3} mt-3 text-xl`}>{feature.title}</h3>
-                  <p className="mt-2 text-sm text-[var(--muted)]">{feature.menuBlurb}</p>
-                  <span className={`${HOME_TEXT_LINK} mt-4 inline-block`}>Open →</span>
-                </Link>
-              ))}
+              {group.features.map((feature) => {
+                const Icon = featureIcon(feature.slug);
+                return (
+                  <Link
+                    key={feature.slug}
+                    href={`/features/${feature.slug}`}
+                    className="rounded-xl border border-[var(--line)] bg-white p-5 shadow-[0_4px_16px_#17361f08] transition hover:border-[var(--leaf)] hover:shadow-[0_8px_24px_#17361f12]"
+                  >
+                    <span className="flex size-11 items-center justify-center rounded-lg bg-[var(--wash)] text-[var(--leaf)]">
+                      <Icon aria-hidden className="size-5" strokeWidth={1.75} />
+                    </span>
+                    <span className={`${HOME_PLAN_TAG} mt-4`}>{feature.plan}</span>
+                    <h3 className={`${HOME_H3} mt-3 text-xl`}>{feature.title}</h3>
+                    <p className="mt-2 text-sm text-[var(--muted)]">{feature.menuBlurb}</p>
+                    <span className={`${HOME_TEXT_LINK} mt-4 inline-block`}>Open →</span>
+                  </Link>
+                );
+              })}
             </div>
           </section>
         ))}

@@ -2,14 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
+import { featureIcon } from "@/lib/features/icons";
 import { FEATURE_MENU_COLUMNS } from "@/lib/features/menu";
 
-type Props = {
-  /** Prefix in-page home anchors when on /sell, etc. Unused for features. */
-  className?: string;
-};
-
-export default function FeaturesMegaMenu({ className }: Props) {
+export default function FeaturesMegaMenu({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
@@ -50,27 +46,33 @@ export default function FeaturesMegaMenu({ className }: Props) {
       <div
         id={panelId}
         hidden={!open}
-        className="absolute left-1/2 top-full z-50 w-[min(92vw,920px)] -translate-x-1/2 pt-3"
+        className="absolute left-1/2 top-full z-50 w-[min(94vw,980px)] -translate-x-1/2 pt-3"
       >
-        <div className="rounded-lg border border-[var(--line)] bg-[#faf9f5] p-5 shadow-[0_18px_50px_#17361f22]">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="rounded-xl border border-[var(--line)] bg-[#faf9f5] p-5 shadow-[0_18px_50px_#17361f22]">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURE_MENU_COLUMNS.map((column) => (
               <div key={column.heading}>
                 <p className="text-[10px] font-bold tracking-[0.14em] text-[var(--muted)]">
                   {column.heading.toUpperCase()}
                 </p>
-                <ul className="mt-2 space-y-1.5">
-                  {column.items.map((item) => (
-                    <li key={item.slug}>
-                      <Link
-                        href={`/features/${item.slug}`}
-                        className="text-sm font-semibold text-[var(--field)] hover:text-[var(--leaf)]"
-                        onClick={() => setOpen(false)}
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
+                <ul className="mt-2 space-y-1">
+                  {column.items.map((item) => {
+                    const Icon = featureIcon(item.slug);
+                    return (
+                      <li key={item.slug}>
+                        <Link
+                          href={`/features/${item.slug}`}
+                          className="flex items-center gap-2.5 rounded-md px-1.5 py-1.5 text-sm font-semibold text-[var(--field)] hover:bg-white hover:text-[var(--leaf)]"
+                          onClick={() => setOpen(false)}
+                        >
+                          <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-[var(--wash)] text-[var(--leaf)]">
+                            <Icon aria-hidden className="size-3.5" strokeWidth={1.75} />
+                          </span>
+                          {item.label}
+                        </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
@@ -79,7 +81,11 @@ export default function FeaturesMegaMenu({ className }: Props) {
             <Link href="/features" className="text-[var(--leaf)] hover:underline" onClick={() => setOpen(false)}>
               All product features →
             </Link>
-            <Link href="/#pricing" className="text-[var(--field)] hover:text-[var(--leaf)]" onClick={() => setOpen(false)}>
+            <Link
+              href="/#pricing"
+              className="text-[var(--field)] hover:text-[var(--leaf)]"
+              onClick={() => setOpen(false)}
+            >
               Compare Free &amp; Pro
             </Link>
           </div>

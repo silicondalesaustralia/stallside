@@ -8,6 +8,16 @@ export type FeatureVisual =
   | "email"
   | "social"
   | "payments"
+  | "shop"
+  | "preorders"
+  | "subscriptions"
+  | "bundles"
+  | "inventory"
+  | "orders"
+  | "customers"
+  | "suppliers"
+  | "restock"
+  | "dashboard"
   | "generic";
 
 export type FeatureStep = { title: string; body: string };
@@ -30,6 +40,7 @@ export type FeaturePage = {
   metaDescription: string;
   headline: string;
   support: string;
+  /** @deprecated Prefer FEATURE_VISUALS[slug]; kept for content compatibility. */
   visual: FeatureVisual;
   bullets: string[];
   steps: FeatureStep[];
