@@ -1,5 +1,8 @@
 import Link from "next/link";
+import FeatureAudience from "@/components/features/FeatureAudience";
 import FeatureBulletCards from "@/components/features/FeatureBulletCards";
+import FeatureFaqSection from "@/components/features/FeatureFaqSection";
+import FeatureFlow from "@/components/features/FeatureFlow";
 import FeatureLogoStrip from "@/components/features/FeatureLogoStrip";
 import FeatureVisual from "@/components/features/FeatureVisual";
 import LandingFooter from "@/components/LandingFooter";
@@ -14,6 +17,8 @@ import {
   HOME_TEXT_LINK,
   HOME_WRAP,
 } from "@/components/home/home-styles";
+import { getFeatureAudience, getFeatureFlow } from "@/lib/features/flows";
+import { getFeatureFaqs } from "@/lib/features/faqs";
 import { featureIcon } from "@/lib/features/icons";
 import { getRelatedFeatures } from "@/lib/features";
 import { featureLogoStrip } from "@/lib/features/visuals";
@@ -23,6 +28,9 @@ export default function FeaturePageView({ feature }: { feature: FeaturePage }) {
   const related = getRelatedFeatures(feature);
   const Icon = featureIcon(feature.slug);
   const logos = featureLogoStrip(feature.slug);
+  const flow = getFeatureFlow(feature.slug);
+  const audience = getFeatureAudience(feature.slug);
+  const faqs = getFeatureFaqs(feature.slug, feature.faqs);
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col bg-[#faf9f5] text-[var(--field)]">
@@ -51,13 +59,15 @@ export default function FeaturePageView({ feature }: { feature: FeaturePage }) {
           <FeatureVisual slug={feature.slug} />
         </section>
 
+        <FeatureAudience labels={audience} />
         <FeatureBulletCards slug={feature.slug} bullets={feature.bullets} />
+        {flow ? <FeatureFlow flow={flow} /> : null}
         <FeatureLogoStrip kind={logos} />
 
         <section className={`${HOME_WRAP} grid gap-10 border-t border-[var(--line)] py-16 md:grid-cols-2 md:py-[88px]`}>
           <div>
-            <p className={HOME_EYEBROW}>HOW IT WORKS</p>
-            <h2 className={HOME_H2}>Three steps to start.</h2>
+            <p className={HOME_EYEBROW}>GET STARTED</p>
+            <h2 className={HOME_H2}>Set it up in three steps.</h2>
           </div>
           <ol>
             {feature.steps.map((step, index) => (
@@ -126,18 +136,7 @@ export default function FeaturePageView({ feature }: { feature: FeaturePage }) {
           </section>
         ) : null}
 
-        <section className={`${HOME_WRAP} border-t border-[var(--line)] py-16 md:py-[88px]`}>
-          <p className={HOME_EYEBROW}>QUESTIONS</p>
-          <h2 className={`${HOME_H2} mb-8`}>A few things people ask.</h2>
-          <div className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
-            {feature.faqs.map((faq) => (
-              <details key={faq.q} className="group py-5">
-                <summary className="cursor-pointer list-none font-semibold text-[var(--field)]">{faq.q}</summary>
-                <p className="mt-3 max-w-[640px] text-sm text-[var(--muted)]">{faq.a}</p>
-              </details>
-            ))}
-          </div>
-        </section>
+        <FeatureFaqSection faqs={faqs} />
 
         {related.length ? (
           <section className={`${HOME_WRAP} border-t border-[var(--line)] py-16 md:py-[88px]`}>
