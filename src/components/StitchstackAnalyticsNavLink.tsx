@@ -1,8 +1,8 @@
-import { STITCHSTACK_APP_URL } from "@/lib/stitchstack";
+import { STITCHSTACK_ANALYTICS_HANDOFF_PATH } from "@/lib/stitchstack";
 
 const LABEL = "Stitchstack Analytics";
 
-/** Highlighted link to Stitchstack Analytics; opens in a new tab. Teal to contrast Skool violet. */
+/** Highlighted link to Stitchstack Analytics SSO; teal to contrast Skool violet. */
 export default function StitchstackAnalyticsNavLink({
   collapsed = false,
 }: {
@@ -10,9 +10,7 @@ export default function StitchstackAnalyticsNavLink({
 }) {
   return (
     <a
-      href={STITCHSTACK_APP_URL}
-      target="_blank"
-      rel="noopener noreferrer"
+      href={STITCHSTACK_ANALYTICS_HANDOFF_PATH}
       title={collapsed ? LABEL : undefined}
       data-testid="nav-stitchstack-analytics"
       className={`flex items-center rounded-lg bg-teal-600 font-bold text-white shadow-sm transition-colors hover:bg-teal-500 ${
@@ -22,15 +20,7 @@ export default function StitchstackAnalyticsNavLink({
       <svg aria-hidden viewBox="0 0 20 20" fill="currentColor" className="size-5 shrink-0">
         <path d="M2 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-6zm6-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V7zm6-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z" />
       </svg>
-      {collapsed ? null : (
-        <>
-          <span className="flex-1 truncate text-sm">{LABEL}</span>
-          <span aria-hidden className="text-sm opacity-80">
-            ↗
-          </span>
-          <span className="sr-only">(opens in a new tab)</span>
-        </>
-      )}
+      {collapsed ? null : <span className="flex-1 truncate text-sm">{LABEL}</span>}
     </a>
   );
 }
