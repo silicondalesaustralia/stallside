@@ -51,10 +51,20 @@ describe("tracking id normalisation", () => {
 });
 
 describe("tracking config", () => {
-  it("defaults when missing and drops invalid stored ids", () => {
-    const raw = { storefrontTracking: { ids: { ga4Id: "G-ABCD1234", metaPixelId: "');alert(1);//" }, consentMode: "nope" } };
+  it("defaults when missing, drops invalid ids, and strips Stitchstack-managed GA4/GSC", () => {
+    const raw = {
+      storefrontTracking: {
+        ids: {
+          ga4Id: "G-ABCD1234",
+          gscVerification: "AbC_def-1234567890xyzQWERTY",
+          gtmId: "GTM-ABC1234",
+          metaPixelId: "');alert(1);//",
+        },
+        consentMode: "nope",
+      },
+    };
     const t = extractStorefrontTracking(raw);
-    assert.deepEqual(t.ids, { ga4Id: "G-ABCD1234" });
+    assert.deepEqual(t.ids, { gtmId: "GTM-ABC1234" });
     assert.equal(t.consentMode, "eu");
     assert.deepEqual(extractStorefrontTracking(null), DEFAULT_STOREFRONT_TRACKING);
   });
@@ -115,8 +125,8 @@ describe("snippets and privacy", () => {
   it("lists cookie-setting providers once, not verification tags", () => {
     const providers = enabledPrivacyProviders({
       ...DEFAULT_STOREFRONT_TRACKING,
-      ids: { gscVerification: "AbC_def-1234567890xyzQ", ga4Id: "G-ABCD1234", metaPixelId: "123456789012345" },
+      ids: { gtmId: "GTM-ABC1234", metaPixelId: "123456789012345" },
     });
-    assert.deepEqual(providers.map((p) => p.name), ["Google Analytics", "Meta Pixel (Facebook & Instagram)"]);
+    assert.deepEqual(providers.map((p) => p.name), ["Google Tag Manager", "Meta Pixel (Facebook & Instagram)"]);
   });
 });

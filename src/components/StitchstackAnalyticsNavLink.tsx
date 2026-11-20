@@ -1,6 +1,6 @@
+import { STITCHSTACK_APP_URL } from "@/lib/stitchstack";
+
 const LABEL = "Stitchstack Analytics";
-/** Until partner SSO ships, open Stitchstack directly (same external-tab pattern as Skool). */
-const STITCHSTACK_URL = "https://stitchstack.app";
 
 /** Highlighted link to Stitchstack Analytics; opens in a new tab. Teal to contrast Skool violet. */
 export default function StitchstackAnalyticsNavLink({
@@ -10,7 +10,7 @@ export default function StitchstackAnalyticsNavLink({
 }) {
   return (
     <a
-      href={STITCHSTACK_URL}
+      href={STITCHSTACK_APP_URL}
       target="_blank"
       rel="noopener noreferrer"
       title={collapsed ? LABEL : undefined}

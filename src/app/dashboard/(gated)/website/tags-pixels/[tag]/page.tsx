@@ -23,6 +23,7 @@ export default async function TagDetailPage({
   searchParams: Promise<{ published?: string; error?: string }>;
 }) {
   const { tag } = await params;
+  if (tag === "google-analytics" || tag === "google-search-console") redirect(TAGS_PATH);
   const item = tagItemBySlug(tag);
   if (!item) notFound();
   const { owner } = await requireOwner();

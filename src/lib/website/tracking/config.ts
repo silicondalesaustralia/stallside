@@ -1,3 +1,4 @@
+import { STITCHSTACK_MANAGED_TRACKING_KEYS } from "./catalog";
 import { TRACKING_FIELD_BY_KEY } from "./fields";
 import {
   DEFAULT_STOREFRONT_TRACKING,
@@ -20,6 +21,7 @@ function readIds(raw: unknown): TrackingIds {
   const obj = asRecord(raw);
   const ids: TrackingIds = {};
   for (const key of TRACKING_ID_KEYS) {
+    if ((STITCHSTACK_MANAGED_TRACKING_KEYS as readonly string[]).includes(key)) continue;
     const value = obj[key];
     const field = TRACKING_FIELD_BY_KEY.get(key);
     if (typeof value === "string" && field?.pattern.test(value)) ids[key] = value;

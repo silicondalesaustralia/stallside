@@ -1,15 +1,26 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { TAG_ITEMS, tagItemBySlug, tagItemStatus, tagItemValue } from "./catalog";
+import {
+  STITCHSTACK_MANAGED_TRACKING_KEYS,
+  TAG_ITEMS,
+  tagItemBySlug,
+  tagItemStatus,
+  tagItemValue,
+} from "./catalog";
 import { TRACKING_ID_KEYS, DEFAULT_STOREFRONT_TRACKING, type StorefrontTracking } from "./types";
 
 const withIds = (ids: StorefrontTracking["ids"]): StorefrontTracking => ({ ...DEFAULT_STOREFRONT_TRACKING, ids });
 
 describe("tag catalog", () => {
-  it("covers every tracking ID exactly once with unique slugs", () => {
+  it("covers every editable tracking ID exactly once; GA4/GSC are Stitchstack-managed", () => {
     const keys = TAG_ITEMS.flatMap((item) => item.keys);
-    assert.deepEqual([...keys].sort(), [...TRACKING_ID_KEYS].sort());
+    assert.deepEqual(
+      [...keys, ...STITCHSTACK_MANAGED_TRACKING_KEYS].sort(),
+      [...TRACKING_ID_KEYS].sort(),
+    );
     assert.equal(new Set(TAG_ITEMS.map((i) => i.slug)).size, TAG_ITEMS.length);
+    assert.equal(tagItemBySlug("google-analytics"), undefined);
+    assert.equal(tagItemBySlug("google-search-console"), undefined);
   });
 
   it("reports live, pending, removing and off", () => {

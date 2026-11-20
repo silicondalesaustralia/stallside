@@ -188,6 +188,8 @@ Enforce entitlements **server-side** on Stitchstack routes and APIs, not only in
 
 Until SSO ships, the sidebar may open `https://stitchstack.app` directly (same external-tab pattern as Skool). Swap the href to the Vendl handoff route when the partner API is live.
 
+**Tags & Pixels (Vendl):** Meta/TikTok/ads/other platform tags stay editable on `/dashboard/website/tags-pixels`. **GA4 and GSC are removed from that page** and stripped from storefront injection so sellers use Stitchstack for those. The page notes base-level pixels vs advanced tracking on Stitchstack.
+
 Existing Vendl use of Stitchstack today is **attribution pixel / lead** (`stitchstack.app/api/attribution/script`, `StitchStackIdentity`). That is separate from this Analytics partner SSO. Do not overload that orgId/script for seller analytics accounts.
 
 ---

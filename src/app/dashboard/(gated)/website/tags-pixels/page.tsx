@@ -7,6 +7,7 @@ import { TAGS_DEBUG_PARAM } from "@/lib/website/tracking/load-live";
 import { trackingSecretsStatus } from "@/lib/website/tracking/secrets";
 import MakeLiveButton from "./MakeLiveButton";
 import TagsProUpgradeCard from "./TagsProUpgradeCard";
+import TagsStitchstackNote from "./TagsStitchstackNote";
 import TagsTable from "./TagsTable";
 import TagsValidateCard from "./TagsValidateCard";
 import { liveStatusText, loadTagsPageData } from "./tags-data";
@@ -33,11 +34,12 @@ export default async function WebsiteTagsPixelsPage({
     <main className="flex flex-col gap-5">
       <PageHeader
         title="Tags & Pixels"
-        subtitle={`Connect Google, Meta, TikTok and other tools to ${origin.replace("https://", "")}. ${liveStatusText(sitePublished, inSync)}`}
+        subtitle={`Connect Meta, TikTok, ads tags and other tools to ${origin.replace("https://", "")}. ${liveStatusText(sitePublished, inSync)}`}
         actions={<MakeLiveButton disabled={!sitePublished || inSync} />}
       />
       {sp.published ? <p className="text-sm font-medium text-[var(--ok)]">Your tags are live.</p> : null}
       <WebsiteFormError error={sp.error} fallback="Something went wrong. Please try again." />
+      <TagsStitchstackNote />
 
       {TAG_GROUP_ORDER.map((group) => (
         <TagsTable

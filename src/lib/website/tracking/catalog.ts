@@ -4,6 +4,12 @@ import type { StorefrontTracking, TrackingIdKey } from "./types";
 
 export type TagGroup = TrackingFieldGroup | "settings";
 
+/**
+ * GA4 + GSC are provisioned via Stitchstack (free for Vendl users).
+ * Kept out of Tags & Pixels and stripped from storefront injection.
+ */
+export const STITCHSTACK_MANAGED_TRACKING_KEYS = ["gscVerification", "ga4Id"] as const satisfies readonly TrackingIdKey[];
+
 /** One row on the Tags & Pixels list; `kind` decides which form its page shows. */
 export type TagItem = {
   slug: string;
@@ -23,11 +29,9 @@ const idItem = (slug: string, keys: TrackingIdKey[], summary: string, server?: S
 };
 
 export const TAG_ITEMS: TagItem[] = [
-  idItem("google-search-console", ["gscVerification"], "Verify your site with Google"),
   idItem("bing-webmaster", ["bingVerification"], "Verify your site with Bing"),
   idItem("meta-domain", ["metaDomainVerification"], "Verify your domain with Meta"),
   idItem("pinterest-domain", ["pinterestDomainVerify"], "Claim your site on Pinterest"),
-  idItem("google-analytics", ["ga4Id"], "Visitors, sales and server-side purchases", "ga4"),
   idItem("google-tag-manager", ["gtmId"], "Run your own tag container"),
   idItem("microsoft-clarity", ["clarityId"], "Heatmaps and session recordings"),
   idItem("hotjar", ["hotjarId"], "Heatmaps and session recordings"),
