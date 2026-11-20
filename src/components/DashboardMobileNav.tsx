@@ -8,6 +8,7 @@ import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
 import MobileNavLinkItem from "@/components/MobileNavLinkItem";
 import UpgradeNavLink from "@/components/UpgradeNavLink";
 import SkoolNavLink from "@/components/SkoolNavLink";
+import StitchstackAnalyticsNavLink from "@/components/StitchstackAnalyticsNavLink";
 import SupportNavLink from "@/components/SupportNavLink";
 import { dashLinkActive, mobileTabs, visibleNavGroups, WHY_PRO_PATH, type NavAccess } from "@/components/dash-nav-links";
 import {
@@ -104,6 +105,7 @@ export default function DashboardMobileNav({
               ))}
               <div className="mt-3 space-y-2 border-t border-white/10 pt-3">
                 <SkoolNavLink />
+                <StitchstackAnalyticsNavLink />
                 <SupportNavLink />
               </div>
             </nav>

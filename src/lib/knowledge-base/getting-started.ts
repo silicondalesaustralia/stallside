@@ -33,7 +33,7 @@ export const gettingStartedArticles: KnowledgeArticle[] = [
     title: "Read your Overview dashboard",
     summary:
       "Sales, orders, payment split, low stock, and your next setup step for the selected business.",
-    keywords: ["home", "overview", "stats", "sales", "chart", "next move", "skool", "community", "support", "help", "contact"],
+    keywords: ["home", "overview", "stats", "sales", "chart", "next move", "skool", "community", "stitchstack", "analytics", "ga4", "gsc", "support", "help", "contact"],
     related: ["first-stand", "manage-orders", "inventory-report"],
     ctas: [{ label: "Overview", href: "/dashboard" }],
     steps: [
@@ -46,6 +46,7 @@ export const gettingStartedArticles: KnowledgeArticle[] = [
     ],
     tips: [
       "Tap Go To Skool at the bottom of the sidebar (More on your phone) to open the Vendl community on Skool in a new tab.",
+      "Tap Stitchstack Analytics below Go To Skool to open GA4 and Search Console analytics in a new tab.",
       "Need help? Tap Contact Support at the very bottom of the sidebar (More on your phone) to send us a message.",
     ],
   },

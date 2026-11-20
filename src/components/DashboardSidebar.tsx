@@ -8,6 +8,7 @@ import SidebarNavGroup from "@/components/SidebarNavGroup";
 import SidebarNavItem from "@/components/SidebarNavItem";
 import SidebarSoonItem from "@/components/SidebarSoonItem";
 import SkoolNavLink from "@/components/SkoolNavLink";
+import StitchstackAnalyticsNavLink from "@/components/StitchstackAnalyticsNavLink";
 import SupportNavLink from "@/components/SupportNavLink";
 import UpgradeNavLink from "@/components/UpgradeNavLink";
 import { activeNavHref, visibleNavGroups, WHY_PRO_PATH, type NavAccess } from "@/components/dash-nav-links";
@@ -110,6 +111,7 @@ export default function DashboardSidebar({
           />
         )}
         <SkoolNavLink collapsed={collapsed} />
+        <StitchstackAnalyticsNavLink collapsed={collapsed} />
         <SupportNavLink collapsed={collapsed} />
       </div>
     </aside>
