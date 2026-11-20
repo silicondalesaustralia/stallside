@@ -12,6 +12,7 @@ const linkClass =
 
 const PRODUCT = [
   { href: "/sell", label: "What you make" },
+  { href: "/features", label: "Product Features" },
   { href: "/stall", label: "Stall" },
   { href: "/pre-orders", label: "Pre-orders" },
   { href: "/#pricing", label: "Pricing" },
