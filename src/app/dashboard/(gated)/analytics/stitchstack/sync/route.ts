@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { redirect } from "next/navigation";
 
-import { requireOwner } from "@/lib/session";
+import { isPlatformAdminEmail, requireOwner } from "@/lib/session";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import {
   ensureStitchstackAnalyticsAccount,
@@ -22,7 +22,8 @@ function redirectTo(request: Request, path: string) {
 /** Manual bidirectional sync: ensure pixel, push orders, pull analytics cache. */
 export async function POST(request: Request) {
   const { user, owner, impersonator } = await requireOwner();
-  if (impersonator) {
+  // Same as handoff: platform admins in login-as may sync as the seller.
+  if (impersonator && !isPlatformAdminEmail(impersonator.email)) {
     return redirectTo(request, "/dashboard?stitchstack=impersonating");
   }
   if (!isStitchstackPartnerConfigured()) {
@@ -73,6 +74,13 @@ export async function POST(request: Request) {
       } catch (installError) {
         console.error("[vendl] Stitchstack pixel install during sync failed", installError);
       }
+    }
+
+    if (impersonator) {
+      console.info("[vendl] Stitchstack sync via admin login-as", {
+        adminEmail: impersonator.email,
+        ownerId: owner.id,
+      });
     }
 
     const result = await syncStitchstackForOwner(owner.id);
