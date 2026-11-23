@@ -40,6 +40,9 @@ async function saveStoredPixel(ownerId: string, stored: StoredStitchstackPixel) 
  * Bidirectional sync for one owner:
  * Vendl → SS orders (incremental after first full push)
  * SS → Vendl pixel analytics cache (30d snapshot for dashboard)
+ *
+ * Orders push even when the storefront pixel JSON is missing — Sync now / cron
+ * must not no-op sales backfill just because analytics install is incomplete.
  */
 export async function syncStitchstackForOwner(ownerId: string): Promise<{
   upserted: number;
@@ -54,11 +57,7 @@ export async function syncStitchstackForOwner(ownerId: string): Promise<{
     select: { stitchstackPixel: true },
   });
   const stored = readStoredStitchstackPixel(storefront?.stitchstackPixel);
-  if (!stored) {
-    return { upserted: 0, analytics: false };
-  }
-
-  const since = stored.lastOrderSyncAt ? new Date(stored.lastOrderSyncAt) : null;
+  const since = stored?.lastOrderSyncAt ? new Date(stored.lastOrderSyncAt) : null;
   // Overlap window so late updates still upsert.
   const sinceWithOverlap =
     since && !Number.isNaN(since.getTime())
@@ -67,25 +66,34 @@ export async function syncStitchstackForOwner(ownerId: string): Promise<{
 
   const pushed = await pushOrdersToStitchstack(ownerId, { since: sinceWithOverlap });
 
-  const analytics = await fetchStitchstackAnalytics({
-    externalAccountId: ownerId,
-    range: "30d",
-    fromParam: "",
-    toParam: "",
-  });
+  const analytics = stored
+    ? await fetchStitchstackAnalytics({
+        externalAccountId: ownerId,
+        range: "30d",
+        fromParam: "",
+        toParam: "",
+      })
+    : null;
 
   const nowIso = new Date().toISOString();
-  const next: StoredStitchstackPixel = {
-    ...stored,
-    lastOrderSyncAt: nowIso,
-    lastAnalyticsSyncAt: analytics ? nowIso : stored.lastAnalyticsSyncAt,
-    ...(analytics
-      ? { analyticsCache: { ...analytics, fetchedAt: nowIso } }
-      : stored.analyticsCache
-        ? { analyticsCache: stored.analyticsCache }
-        : {}),
-  };
-  await saveStoredPixel(ownerId, next);
+  if (stored) {
+    const next: StoredStitchstackPixel = {
+      ...stored,
+      lastOrderSyncAt: nowIso,
+      lastAnalyticsSyncAt: analytics ? nowIso : stored.lastAnalyticsSyncAt,
+      ...(analytics
+        ? { analyticsCache: { ...analytics, fetchedAt: nowIso } }
+        : stored.analyticsCache
+          ? { analyticsCache: stored.analyticsCache }
+          : {}),
+    };
+    await saveStoredPixel(ownerId, next);
+  } else {
+    console.warn("[vendl] Stitchstack order sync completed without local pixel; analytics cache skipped", {
+      ownerId,
+      upserted: pushed.upserted,
+    });
+  }
 
   return { upserted: pushed.upserted, analytics: Boolean(analytics) };
 }
