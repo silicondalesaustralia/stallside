@@ -1,4 +1,4 @@
-import { STITCHSTACK_ANALYTICS_HANDOFF_PATH } from "@/lib/stitchstack";
+import { STITCHSTACK_ANALYTICS_HANDOFF_PATH } from "@/lib/stitchstack-constants";
 
 const LABEL = "Stitchstack Analytics";
 

@@ -1,15 +1,18 @@
 import {
+  STITCHSTACK_ANALYTICS_HANDOFF_PATH,
+  STITCHSTACK_APP_URL as STITCHSTACK_APP_URL_DEFAULT,
+} from "@/lib/stitchstack-constants";
+import {
   parseStitchstackPixelPayload,
   type StitchstackPixelConfig,
   type StitchstackPixelPayload,
-} from "@/lib/stitchstack-pixel";
+} from "@/lib/stitchstack-pixel-parse";
 
-/** Public Stitchstack app URL (fallback when partner SSO is not configured). */
+/** Public Stitchstack app URL (env override on the server). */
 export const STITCHSTACK_APP_URL =
-  process.env.STITCHSTACK_APP_URL?.trim().replace(/\/$/, "") || "https://stitchstack.app";
+  process.env.STITCHSTACK_APP_URL?.trim().replace(/\/$/, "") || STITCHSTACK_APP_URL_DEFAULT;
 
-/** Vendl server route that mints SSO and redirects into Stitchstack. */
-export const STITCHSTACK_ANALYTICS_HANDOFF_PATH = "/dashboard/analytics/stitchstack";
+export { STITCHSTACK_ANALYTICS_HANDOFF_PATH };
 
 export type StitchstackEnsureResult = {
   ok: true;

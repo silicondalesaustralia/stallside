@@ -1,4 +1,4 @@
-import { STITCHSTACK_APP_URL, STITCHSTACK_ANALYTICS_HANDOFF_PATH } from "@/lib/stitchstack";
+import { STITCHSTACK_APP_URL, STITCHSTACK_ANALYTICS_HANDOFF_PATH } from "@/lib/stitchstack-constants";
 
 /** Explains base Tags & Pixels vs Stitchstack for pixel analytics / GA4 / GSC. */
 export default function TagsStitchstackNote() {
