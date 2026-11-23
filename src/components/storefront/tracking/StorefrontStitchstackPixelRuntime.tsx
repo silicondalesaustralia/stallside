@@ -18,18 +18,20 @@ import ConsentBanner from "./ConsentBanner";
 const SCRIPT_ID = "vendl-stitchstack-pixel";
 const noopSubscribe = () => () => {};
 
-/** Consent-aware Stitchstack first-party analytics script. */
+/**
+ * Consent-gated Stitchstack pixel. Always shows its own banner when consent is
+ * required and undecided (do not suppress when Tags & Pixels are also present —
+ * that previously left Analytics with no script and no way to grant consent).
+ */
 export default function StorefrontStitchstackPixelRuntime({
   scriptSrc,
   consentMode,
   euVisitor,
-  showBanner,
   privacyHref,
 }: {
   scriptSrc: string;
   consentMode: TrackingConsentMode;
   euVisitor: boolean;
-  showBanner: boolean;
   privacyHref: string;
 }) {
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
@@ -37,7 +39,7 @@ export default function StorefrontStitchstackPixelRuntime({
   const [reopened, setReopened] = useState(false);
   const needsConsent = consentRequired(consentMode, euVisitor);
   const allowed = trackingAllowed(consentMode, euVisitor, choice);
-  const bannerOpen = showBanner && hydrated && (reopened || (needsConsent && choice === null));
+  const bannerOpen = hydrated && (reopened || (needsConsent && choice === null));
 
   useEffect(() => {
     if (!allowed) return;

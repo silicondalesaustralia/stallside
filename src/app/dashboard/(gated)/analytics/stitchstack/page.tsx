@@ -32,13 +32,22 @@ export default async function StitchstackAnalyticsHandoffPage() {
     const stand = selected
       ? await prisma.stand.findUnique({
           where: { id: selected.id },
-          select: { websiteUrl: true, slug: true, name: true },
+          select: { websiteUrl: true, slug: true, name: true, logoUrl: true },
         })
       : null;
 
     const siteUrl =
       stand?.websiteUrl?.trim() ||
       (stand?.slug ? storefrontPublicUrl(stand.slug) : null) ||
+      null;
+
+    const logoUrl =
+      (typeof owner.brandLogoUrl === "string" && owner.brandLogoUrl.startsWith("https://")
+        ? owner.brandLogoUrl.trim()
+        : null) ||
+      (typeof stand?.logoUrl === "string" && stand.logoUrl.startsWith("https://")
+        ? stand.logoUrl.trim()
+        : null) ||
       null;
 
     const email = (user.email ?? owner.contactEmail ?? "").trim();
@@ -62,6 +71,7 @@ export default async function StitchstackAnalyticsHandoffPage() {
       name: user.name ?? null,
       business_name: businessName,
       site_url: siteUrl,
+      logo_url: logoUrl,
       role: "owner",
       // Always mint as the seller identity; do not flag impersonating to Stitchstack.
       impersonating: false,

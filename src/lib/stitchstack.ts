@@ -34,6 +34,8 @@ export type StitchstackEnsureInput = {
   name?: string | null;
   business_name?: string | null;
   site_url?: string | null;
+  /** Public https logo URL for Stitchstack tenant branding. */
+  logo_url?: string | null;
   role?: "owner" | "member";
   impersonating?: boolean;
 };
