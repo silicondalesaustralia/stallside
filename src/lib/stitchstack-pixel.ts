@@ -36,15 +36,59 @@ export async function saveStorefrontStitchstackPixel(
   });
 }
 
+async function pixelFromStorefrontRaw(raw: unknown): Promise<StitchstackPixelConfig | null> {
+  const pixel = readStitchstackPixel(raw);
+  return pixel?.enabled ? pixel : null;
+}
+
 export async function loadLiveStitchstackPixel(
   slug: string,
 ): Promise<StitchstackPixelConfig | null> {
   const { prisma } = await import("@/lib/prisma");
-  const storefront = await prisma.storefront.findFirst({
-    where: { slug: slug.trim().toLowerCase(), isPublished: true },
+  const normalized = slug.trim().toLowerCase();
+  const bySlug = await prisma.storefront.findFirst({
+    where: { slug: normalized },
+    select: { stitchstackPixel: true },
+  });
+  if (bySlug) return pixelFromStorefrontRaw(bySlug.stitchstackPixel);
+
+  // Renamed subdomain: old slug kept in draftConfig.slugAliases.
+  const byAlias = await prisma.storefront.findFirst({
+    where: { draftConfig: { path: ["slugAliases"], array_contains: [normalized] } },
+    select: { stitchstackPixel: true },
+  });
+  if (byAlias) return pixelFromStorefrontRaw(byAlias.stitchstackPixel);
+
+  // Hostname / path slug can diverge from storefront.slug. Fall back via stand owner.
+  const stand = await prisma.stand.findFirst({
+    where: { slug: normalized },
+    select: { ownerId: true },
+  });
+  if (!stand) return null;
+  return loadLiveStitchstackPixelForOwner(stand.ownerId);
+}
+
+/** Farmstand `/s/{stand}` routes: resolve pixel from the stand's owner storefront. */
+export async function loadLiveStitchstackPixelForOwner(
+  ownerId: string,
+): Promise<StitchstackPixelConfig | null> {
+  const { prisma } = await import("@/lib/prisma");
+  const storefront = await prisma.storefront.findUnique({
+    where: { ownerId },
     select: { stitchstackPixel: true },
   });
   if (!storefront) return null;
-  const pixel = readStitchstackPixel(storefront.stitchstackPixel);
-  return pixel?.enabled ? pixel : null;
+  return pixelFromStorefrontRaw(storefront.stitchstackPixel);
+}
+
+export async function loadLiveStitchstackPixelForStand(
+  standSlug: string,
+): Promise<StitchstackPixelConfig | null> {
+  const { prisma } = await import("@/lib/prisma");
+  const stand = await prisma.stand.findFirst({
+    where: { slug: standSlug.trim().toLowerCase() },
+    select: { ownerId: true },
+  });
+  if (!stand) return null;
+  return loadLiveStitchstackPixelForOwner(stand.ownerId);
 }

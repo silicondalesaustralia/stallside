@@ -2,7 +2,6 @@ import { applyStorefrontRedirects } from "@/lib/studio/apply-redirects";
 import { applyPreferredOriginRedirect } from "@/lib/domains/preferred-redirect";
 import { redirectStorefrontSlugAlias } from "@/lib/storefront/slug-alias-redirect";
 import StallVisitMarker from "@/components/storefront/StallVisitMarker";
-import StorefrontStitchstackPixel from "@/components/storefront/tracking/StorefrontStitchstackPixel";
 import StorefrontTags from "@/components/storefront/tracking/StorefrontTags";
 import { storefrontTrackingMetadata } from "@/lib/website/tracking/metadata";
 import type { Metadata } from "next";
@@ -49,7 +48,6 @@ export default async function ShopSlugLayout({
     <div className="storefront-cq">
       <StallVisitMarker />
       <StorefrontTags slug={slug} />
-      <StorefrontStitchstackPixel slug={slug} />
       {children}
     </div>
   );
