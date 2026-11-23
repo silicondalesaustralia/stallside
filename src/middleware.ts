@@ -41,7 +41,12 @@ function isApexCheckoutPath(pathname: string): boolean {
   return pathname.startsWith("/checkout/") && pathname !== "/checkout/success";
 }
 
-const TENANT_SEO_FILES = new Set(["/sitemap.xml", "/robots.txt"]);
+const TENANT_SEO_FILES = new Set([
+  "/sitemap.xml",
+  "/robots.txt",
+  "/feeds/google-merchant.xml",
+  "/feeds/chatgpt-products.csv",
+]);
 
 function tenantRewritePath(slug: string, pathname: string): string | null {
   if (TENANT_SEO_FILES.has(pathname)) return `/shop/${slug}${pathname}`;
@@ -261,7 +266,7 @@ async function refreshSessionCookie(
 }
 
 export const config = {
-  // Static assets skip middleware; .txt/.xml stay in for tenant robots.txt and sitemap.xml.
+  // Static assets skip middleware; .txt/.xml/.csv stay in for tenant SEO and product feeds.
   matcher: [
     "/((?!_next/static|_next/image|.*\\.(?:png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf|otf|css|js|map|mp4|webm)$).*)",
   ],

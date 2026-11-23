@@ -32,6 +32,7 @@ export const DASH_NAV_GROUPS: DashNavGroup[] = [
       { href: "/dashboard/discounts", label: "Discounts", pro: true },
       { href: "/dashboard/communication", label: "Communications", pro: true },
       { href: "/dashboard/reviews", label: "Reviews", pro: true },
+      { href: "/dashboard/product-feeds", label: "Product Feeds" },
       { href: "/dashboard/social", label: "Social", socialKit: true },
     ],
   },

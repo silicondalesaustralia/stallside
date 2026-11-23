@@ -48,4 +48,35 @@ export const shopLayoutArticles: KnowledgeArticle[] = [
       "Hidden and archived products aren't in the list.",
     ],
   },
+  {
+    slug: "product-feeds",
+    title: "Product feeds for Google and ChatGPT",
+    summary:
+      "Copy hosted feed URLs from Marketing → Product Feeds so Google Merchant Center and ChatGPT Business Hub can list your products.",
+    keywords: [
+      "feed",
+      "google merchant",
+      "gmc",
+      "shopping",
+      "chatgpt",
+      "business hub",
+      "product feed",
+      "csv",
+      "xml",
+    ],
+    related: ["add-product", "edit-product", "product-categories"],
+    ctas: [{ label: "Product Feeds", href: "/dashboard/product-feeds" }],
+    steps: [
+      "Publish your website so the feed URLs are publicly reachable.",
+      "Open Marketing → Product Feeds in the sidebar.",
+      "Copy the Google Merchant Center URL and add it as a scheduled fetch data source in Google Merchant Center.",
+      "Copy the ChatGPT Business Hub URL and paste it as a hosted feed after you verify your business in ChatGPT Business Hub.",
+      "Keep product photos, prices and stock up to date in Products — the feeds refresh about every hour.",
+    ],
+    tips: [
+      "Only live catalogue products with a photo appear in the feeds. Hidden and archived products are left out.",
+      "Products with variants appear as one row per variant.",
+      "Fill in return policy and country on Web Studio → Google & search profile so shopping listings can show them.",
+    ],
+  },
 ];

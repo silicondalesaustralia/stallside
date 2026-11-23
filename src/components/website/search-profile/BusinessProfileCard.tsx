@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { dashCtaClass } from "@/components/DashPrimaryCta";
 import { saveBusinessProfile } from "@/app/dashboard/(gated)/website/business-profile-actions";
 import type { BusinessProfile } from "@/lib/seo/business-profile";
@@ -19,7 +20,14 @@ type Props = {
 };
 
 /** Business details › Google & search profile: feeds the schema.org markup on every page. */
-export default function BusinessProfileCard({ profile, defaultType, graph, liveUrl, isPublished, flash }: Props) {
+export default function BusinessProfileCard({
+  profile,
+  defaultType,
+  graph,
+  liveUrl,
+  isPublished,
+  flash,
+}: Props) {
   return (
     <section id="search-profile" className="space-y-4 rounded-2xl border border-[var(--line)] bg-white p-5">
       <div>
@@ -41,6 +49,13 @@ export default function BusinessProfileCard({ profile, defaultType, graph, liveU
           Save search profile
         </button>
       </form>
+      <p className="text-sm text-[var(--muted)]">
+        Need Google Shopping or ChatGPT product feeds?{" "}
+        <Link href="/dashboard/product-feeds" className="font-semibold text-[var(--field)] underline">
+          Open Product Feeds
+        </Link>
+        .
+      </p>
       <ProfileJsonLdPreview graph={graph} liveUrl={liveUrl} isPublished={isPublished} />
     </section>
   );
