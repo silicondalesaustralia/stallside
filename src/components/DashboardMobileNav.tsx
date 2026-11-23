@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import BrandLockup from "@/components/BrandLockup";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
+import StitchstackAnalyticsNavLink from "@/components/StitchstackAnalyticsNavLink";
 import {
   dashLinkActive,
   mobileTabs,
@@ -81,7 +82,8 @@ export default function DashboardMobileNav({
               tone="dark"
               needsBusiness={setupAlerts.needsBusiness}
             />
-            <nav className="mt-3 flex flex-col gap-1 border-t border-white/10 pt-3">
+            <nav className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3">
+              <StitchstackAnalyticsNavLink />
               {secondaryLinks.map((link) => {
                 const badge = setupNavBadge(
                   link.href,
