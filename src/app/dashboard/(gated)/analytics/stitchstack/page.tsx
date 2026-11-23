@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
-import { requireOwner } from "@/lib/session";
+import { isPlatformAdminEmail, requireOwner } from "@/lib/session";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import {
   STITCHSTACK_APP_URL,
@@ -12,11 +12,13 @@ import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 
 /**
  * Vendl → Stitchstack Analytics SSO entry (page so sidebar soft-nav / new-tab both work).
+ * Platform admins in login-as may open the seller's Stitchstack workspace.
  */
 export default async function StitchstackAnalyticsHandoffPage() {
   const { user, owner, impersonator } = await requireOwner();
 
-  if (impersonator) {
+  // Only block non-admin impersonation. Super-admins may SSO as the seller workspace.
+  if (impersonator && !isPlatformAdminEmail(impersonator.email)) {
     redirect("/dashboard?stitchstack=impersonating");
   }
 
@@ -43,6 +45,14 @@ export default async function StitchstackAnalyticsHandoffPage() {
       redirect("/dashboard?stitchstack=missing_email");
     }
 
+    if (impersonator) {
+      console.info("[vendl] Stitchstack Analytics SSO via admin login-as", {
+        adminEmail: impersonator.email,
+        ownerId: owner.id,
+        userId: user.id,
+      });
+    }
+
     const result = await ensureStitchstackAnalyticsAccount({
       external_account_id: owner.id,
       external_user_id: user.id,
@@ -51,6 +61,7 @@ export default async function StitchstackAnalyticsHandoffPage() {
       business_name: stand?.name ?? owner.businessName ?? "Vendl business",
       site_url: siteUrl,
       role: "owner",
+      // Always mint as the seller identity; do not flag impersonating to Stitchstack.
       impersonating: false,
     });
 
