@@ -6,7 +6,6 @@ import BrandLockup from "@/components/BrandLockup";
 import BrandMark from "@/components/BrandMark";
 import DashNavIcon from "@/components/DashNavIcon";
 import DashboardBusinessSelect from "@/components/DashboardBusinessSelect";
-import StitchstackAnalyticsNavLink from "@/components/StitchstackAnalyticsNavLink";
 import {
   dashLinkActive,
   primaryLinks,
@@ -126,8 +125,7 @@ export default function DashboardSidebar({
           />
         ))}
       </nav>
-      <div className="space-y-2 border-t border-white/10 px-2 py-3">
-        <StitchstackAnalyticsNavLink collapsed={collapsed} />
+      <div className="border-t border-white/10 px-2 py-3">
         {collapsed ? (
           <Link
             href="/dashboard/settings"
