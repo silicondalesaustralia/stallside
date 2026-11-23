@@ -44,6 +44,7 @@
     { "path": "/api/cron/media-asset-upload-cleanup", "schedule": "0 3 * * *" },
     { "path": "/api/cron/gbp-performance-sync", "schedule": "0 16 * * *" },
     { "path": "/api/cron/calendar-sync", "schedule": "45 * * * *" },
+    { "path": "/api/cron/stitchstack-sync", "schedule": "0 */12 * * *" },
     {
       "path": "/api/cron/blog-plan?tz=acdt",
       "schedule": "30 10 * * *"

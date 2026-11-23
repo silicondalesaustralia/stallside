@@ -20,10 +20,19 @@ export async function saveStorefrontStitchstackPixel(
     import("@/lib/catalogue/storefront"),
     import("@/lib/prisma"),
   ]);
+  const { readStoredStitchstackPixel } = await import("@/lib/stitchstack-sync");
   const storefront = await ensureStorefront(ownerId, businessName);
+  const existing = readStoredStitchstackPixel(storefront.stitchstackPixel);
+  // Preserve sync cache timestamps when reinstalling/refreshing the pixel script.
+  const merged = {
+    ...pixel,
+    ...(existing?.lastOrderSyncAt ? { lastOrderSyncAt: existing.lastOrderSyncAt } : {}),
+    ...(existing?.lastAnalyticsSyncAt ? { lastAnalyticsSyncAt: existing.lastAnalyticsSyncAt } : {}),
+    ...(existing?.analyticsCache ? { analyticsCache: existing.analyticsCache } : {}),
+  };
   await prisma.storefront.update({
     where: { id: storefront.id },
-    data: { stitchstackPixel: pixel },
+    data: { stitchstackPixel: merged },
   });
 }
 
