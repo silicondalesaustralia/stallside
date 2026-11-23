@@ -90,9 +90,10 @@ export default async function DashboardPage({
     select: { stitchstackPixel: true },
   });
   const stitchstackStored = readStoredStitchstackPixel(storefront?.stitchstackPixel);
-  const stitchstackConfigured = isStitchstackPartnerConfigured();
+  const stitchstackPartnerReady = isStitchstackPartnerConfigured();
+  const stitchstackConnected = Boolean(stitchstackStored);
   const stitchstackLive =
-    stitchstackConfigured && stitchstackStored
+    stitchstackPartnerReady && stitchstackConnected
       ? await fetchStitchstackAnalytics({
           externalAccountId: owner.id,
           range: window.key,
@@ -128,7 +129,8 @@ export default async function DashboardPage({
 
       <StitchstackDashboardCard
         analytics={stitchstackAnalytics}
-        configured={stitchstackConfigured}
+        partnerReady={stitchstackPartnerReady}
+        connected={stitchstackConnected}
         lastSyncedAt={
           stitchstackStored?.lastAnalyticsSyncAt ?? stitchstackStored?.lastOrderSyncAt ?? null
         }
