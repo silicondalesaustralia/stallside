@@ -1,4 +1,5 @@
 import { Prisma } from "@/generated/prisma/client";
+import type { RangeKey } from "@/lib/date-range";
 import { prisma } from "@/lib/prisma";
 import { isStitchstackPartnerConfigured } from "@/lib/stitchstack";
 import {
@@ -7,6 +8,12 @@ import {
 } from "@/lib/stitchstack-analytics";
 import { readStitchstackPixel, type StitchstackPixelConfig } from "@/lib/stitchstack-pixel-parse";
 import { pushOrdersToStitchstack } from "@/lib/stitchstack-orders-sync";
+
+export type StitchstackAnalyticsRange = {
+  range: RangeKey;
+  fromParam?: string;
+  toParam?: string;
+};
 
 export type StitchstackSyncMeta = {
   lastOrderSyncAt?: string;
@@ -39,12 +46,15 @@ async function saveStoredPixel(ownerId: string, stored: StoredStitchstackPixel) 
 /**
  * Bidirectional sync for one owner:
  * Vendl → SS orders (incremental after first full push)
- * SS → Vendl pixel analytics cache (30d snapshot for dashboard)
+ * SS → Vendl pixel analytics cache (matches dashboard date picker when provided)
  *
  * Orders push even when the storefront pixel JSON is missing — Sync now / cron
  * must not no-op sales backfill just because analytics install is incomplete.
  */
-export async function syncStitchstackForOwner(ownerId: string): Promise<{
+export async function syncStitchstackForOwner(
+  ownerId: string,
+  analyticsRange?: StitchstackAnalyticsRange,
+): Promise<{
   upserted: number;
   analytics: boolean;
 }> {
@@ -66,12 +76,13 @@ export async function syncStitchstackForOwner(ownerId: string): Promise<{
 
   const pushed = await pushOrdersToStitchstack(ownerId, { since: sinceWithOverlap });
 
+  const range = analyticsRange?.range ?? "30d";
   const analytics = stored
     ? await fetchStitchstackAnalytics({
         externalAccountId: ownerId,
-        range: "30d",
-        fromParam: "",
-        toParam: "",
+        range,
+        fromParam: analyticsRange?.fromParam ?? "",
+        toParam: analyticsRange?.toParam ?? "",
       })
     : null;
 

@@ -9,6 +9,7 @@ import {
   mergeChannelSummaries,
   type ChannelSummaries,
 } from "@/lib/order-metrics";
+import { PROFIT_COGS_CAVEAT } from "@/lib/order-profit";
 import type { ChannelSalesSeries, SeriesPoint } from "@/lib/sales-series";
 import { useChannelFilter } from "@/lib/use-channel-filter";
 
@@ -19,6 +20,8 @@ export default function SalesAnalyticsPanel({
   previousSummaries,
   chartTitle,
   ordersHref,
+  profitHref,
+  profit,
   layout = "home",
 }: {
   channels: ChannelSalesSeries;
@@ -27,6 +30,8 @@ export default function SalesAnalyticsPanel({
   previousSummaries: ChannelSummaries;
   chartTitle: string;
   ordersHref?: string;
+  profitHref?: string;
+  profit?: { currentCents: number; previousCents: number; costIncomplete: boolean };
   layout?: "home" | "orders";
 }) {
   const filter = useChannelFilter();
@@ -56,6 +61,16 @@ export default function SalesAnalyticsPanel({
         current={current.orderCount}
         previous={previous.orderCount}
       />
+      {profit ? (
+        <DashboardStat
+          label="Profit"
+          href={profitHref}
+          tip={PROFIT_COGS_CAVEAT}
+          value={formatMoney(profit.currentCents, current.currency)}
+          current={profit.currentCents}
+          previous={profit.previousCents}
+        />
+      ) : null}
       <DashboardStat
         label="Payment Method"
         href={ordersHref}
@@ -79,10 +94,12 @@ export default function SalesAnalyticsPanel({
     />
   );
 
+  const cols = profit ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3";
+
   if (layout === "orders") {
     return (
       <>
-        <section className="grid min-w-0 grid-cols-3 gap-2 sm:gap-3">{stats}</section>
+        <section className={`grid min-w-0 gap-2 sm:gap-3 ${cols}`}>{stats}</section>
         {chart}
       </>
     );
@@ -90,7 +107,7 @@ export default function SalesAnalyticsPanel({
 
   return (
     <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
-      <div className="grid min-h-[154px] min-w-0 flex-[1.15] grid-cols-3 gap-2 sm:gap-4">
+      <div className={`grid min-h-[154px] min-w-0 flex-[1.15] gap-2 sm:gap-4 ${cols}`}>
         {stats}
       </div>
       <div className="min-h-[154px] flex-1">{chart}</div>

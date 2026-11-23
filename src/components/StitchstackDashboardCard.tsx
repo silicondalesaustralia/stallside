@@ -19,11 +19,18 @@ export default function StitchstackDashboardCard({
   configured,
   lastSyncedAt,
   status,
+  rangeKey = "30d",
+  fromParam = "",
+  toParam = "",
 }: {
   analytics: (StitchstackAnalyticsSnapshot & { fetchedAt?: string }) | null;
   configured: boolean;
   lastSyncedAt?: string | null;
   status?: string;
+  /** Matches the home dashboard date picker. */
+  rangeKey?: string;
+  fromParam?: string;
+  toParam?: string;
 }) {
   const banner = statusBanner(status);
   const kpis = analytics?.kpis;
@@ -55,6 +62,9 @@ export default function StitchstackDashboardCard({
           </a>
           {configured ? (
             <form action="/dashboard/analytics/stitchstack/sync" method="post">
+              <input type="hidden" name="range" value={rangeKey} />
+              {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
+              {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
               <button
                 type="submit"
                 className="inline-flex items-center justify-center rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm font-semibold text-[var(--ink)] hover:bg-[var(--sand)]"

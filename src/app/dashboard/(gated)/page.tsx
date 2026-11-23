@@ -16,6 +16,7 @@ import { ownerHasProAccess } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { loadDashboardHomeData } from "@/lib/dashboard/home";
 import { resolveDashboardOnboardingPath } from "@/lib/dashboard-onboarding-path";
+import { fetchStitchstackAnalytics } from "@/lib/stitchstack-analytics";
 import { isStitchstackPartnerConfigured } from "@/lib/stitchstack";
 import { readStoredStitchstackPixel } from "@/lib/stitchstack-sync";
 import { prisma } from "@/lib/prisma";
@@ -69,11 +70,12 @@ export default async function DashboardPage({
     !owner.preOrdersCrossSellDismissedAt &&
     !data.hasPreOrderProduct &&
     data.soldOutTakeNow >= 1;
-  const ordersHref = `/dashboard/orders?range=${window.key}${
+  const rangeQuery =
     window.key === "custom"
-      ? `&from=${window.fromParam}&to=${window.toParam}`
-      : ""
-  }`;
+      ? `range=custom&from=${window.fromParam}&to=${window.toParam}`
+      : `range=${window.key}`;
+  const ordersHref = `/dashboard/orders?${rangeQuery}`;
+  const profitHref = `/dashboard/production/profit?${rangeQuery}`;
   const cardInterestCount = data.cardInterests.length;
   const restockN = data.restockSubscriberCount;
   const upgradeLabel =
@@ -89,6 +91,16 @@ export default async function DashboardPage({
   });
   const stitchstackStored = readStoredStitchstackPixel(storefront?.stitchstackPixel);
   const stitchstackConfigured = isStitchstackPartnerConfigured();
+  const stitchstackLive =
+    stitchstackConfigured && stitchstackStored
+      ? await fetchStitchstackAnalytics({
+          externalAccountId: owner.id,
+          range: window.key,
+          fromParam: window.fromParam,
+          toParam: window.toParam,
+        })
+      : null;
+  const stitchstackAnalytics = stitchstackLive ?? stitchstackStored?.analyticsCache ?? null;
 
   return (
     <main className="flex flex-col gap-5">
@@ -109,15 +121,20 @@ export default async function DashboardPage({
         previousSummaries={data.previousSummaries}
         chartTitle={`${window.label} vs prior`}
         ordersHref={ordersHref}
+        profitHref={profitHref}
+        profit={data.profit}
         layout="home"
       />
 
       <StitchstackDashboardCard
-        analytics={stitchstackStored?.analyticsCache ?? null}
+        analytics={stitchstackAnalytics}
         configured={stitchstackConfigured}
         lastSyncedAt={
           stitchstackStored?.lastAnalyticsSyncAt ?? stitchstackStored?.lastOrderSyncAt ?? null
         }
+        rangeKey={window.key}
+        fromParam={window.fromParam}
+        toParam={window.toParam}
         status={params.stitchstack}
       />
 

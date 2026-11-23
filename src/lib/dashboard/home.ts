@@ -4,6 +4,7 @@ import {
   COUNTED_STATUSES,
   summarizeByChannel,
 } from "@/lib/order-metrics";
+import { loadProfit } from "@/lib/production/load-profit";
 import { buildChannelSalesSeries } from "@/lib/sales-series";
 import { productDashboardWhere } from "@/lib/product-visibility";
 import type { DateWindow } from "@/lib/date-range";
@@ -131,12 +132,22 @@ export async function loadDashboardHomeData(args: {
     timeZone,
   ).all;
 
+  const [currentProfit, previousProfit] = await Promise.all([
+    loadProfit({ ownerId, standId, start: window.start, end: window.end }),
+    loadProfit({ ownerId, standId, start: window.prevStart, end: window.prevEnd }),
+  ]);
+
   return {
     products,
     currentSummaries,
     previousSummaries,
     channels,
     previousPoints,
+    profit: {
+      currentCents: currentProfit.grossProfitCents,
+      previousCents: previousProfit.grossProfitCents,
+      costIncomplete: currentProfit.products.some((row) => row.unknownCostUnits > 0),
+    },
     lowStockRows,
     hasPreOrderProduct: Boolean(hasPreOrderProduct),
     soldOutTakeNow,
