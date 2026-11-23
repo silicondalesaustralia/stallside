@@ -8,12 +8,15 @@ export default function DashboardStat({
   href,
   current,
   previous,
+  tip,
 }: {
   label: string;
   value: ReactNode;
   href?: string;
   current?: number;
   previous?: number;
+  /** Hover/focus caveat shown next to the label (e.g. COGS accuracy). */
+  tip?: string;
 }) {
   const inner = (
     <>
@@ -22,8 +25,16 @@ export default function DashboardStat({
           ↗
         </span>
       ) : null}
-      <p className="text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
-        {label}
+      <p className="flex items-center justify-center gap-1 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+        <span>{label}</span>
+        {tip ? (
+          <span
+            className="inline-flex h-4 w-4 cursor-help items-center justify-center rounded-full border border-[var(--line)] text-[10px] font-bold normal-case tracking-normal text-[var(--muted)]"
+            title={tip}
+          >
+            ?
+          </span>
+        ) : null}
       </p>
       <div className="mt-3 w-full min-w-0 overflow-hidden px-0.5 text-center font-receipt text-[clamp(0.95rem,2.6vw+0.4rem,1.65rem)] font-semibold leading-none tracking-tight tabular-nums">
         {value}

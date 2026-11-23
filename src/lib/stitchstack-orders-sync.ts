@@ -1,9 +1,10 @@
 import { PaymentStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { channelName, paymentMethodName } from "@/lib/order-export/labels";
+import { orderProfitFromParts } from "@/lib/order-profit";
 import { STITCHSTACK_APP_URL } from "@/lib/stitchstack";
 
-const BATCH = 500;
+const BATCH = 200;
 
 type SlimOrder = {
   order_id: string;
@@ -15,10 +16,27 @@ type SlimOrder = {
   payment_method: string;
   occurred_at: string;
   customer_name: string | null;
+  tax: number;
+  fees: number;
+  cogs: number;
+  profit: number;
+  cost_incomplete: boolean;
+  items: Array<{
+    line_id: string;
+    product_id: string;
+    name: string;
+    quantity: number;
+    total: number;
+    unit_cost: number | null;
+  }>;
 };
 
 function partnerApiKey(): string | null {
   return process.env.STITCHSTACK_PARTNER_API_KEY?.trim() || process.env.VENDL_PARTNER_API_KEY?.trim() || null;
+}
+
+function centsToMoney(cents: number) {
+  return Math.round(cents) / 100;
 }
 
 async function loadOrderBatch(
@@ -46,6 +64,9 @@ async function loadOrderBatch(
       id: true,
       orderNumber: true,
       totalCents: true,
+      gstCents: true,
+      platformFeeCents: true,
+      processorFeeCents: true,
       currency: true,
       paymentStatus: true,
       paymentMethod: true,
@@ -54,20 +75,62 @@ async function loadOrderBatch(
       customerName: true,
       isPreOrder: true,
       shopperSubscriptionId: true,
+      items: {
+        select: {
+          id: true,
+          productId: true,
+          productNameSnapshot: true,
+          quantity: true,
+          lineTotalCents: true,
+          supplierUnitCents: true,
+          product: { select: { costCents: true } },
+        },
+      },
     },
   });
 
-  return rows.map((row) => ({
-    order_id: row.id,
-    order_number: row.orderNumber,
-    total: Math.round(row.totalCents) / 100,
-    currency: row.currency,
-    status: row.paymentStatus.toLowerCase(),
-    channel: channelName(row).toLowerCase(),
-    payment_method: paymentMethodName(row.paymentMethod, row.localTransferMethodId).toLowerCase(),
-    occurred_at: row.createdAt.toISOString(),
-    customer_name: row.customerName?.trim() || null,
-  }));
+  return rows.map((row) => {
+    const items = row.items.map((item) => ({
+      line_id: item.id,
+      product_id: item.productId,
+      name: item.productNameSnapshot,
+      quantity: item.quantity,
+      total: centsToMoney(item.lineTotalCents),
+      unit_cost:
+        item.supplierUnitCents != null
+          ? centsToMoney(item.supplierUnitCents)
+          : item.product.costCents != null
+            ? centsToMoney(item.product.costCents)
+            : null,
+    }));
+    const profit = orderProfitFromParts({
+      totalCents: row.totalCents,
+      gstCents: row.gstCents,
+      platformFeeCents: row.platformFeeCents,
+      processorFeeCents: row.processorFeeCents,
+      items: row.items.map((item) => ({
+        quantity: item.quantity,
+        unitCostCents: item.supplierUnitCents ?? item.product.costCents,
+      })),
+    });
+    return {
+      order_id: row.id,
+      order_number: row.orderNumber,
+      total: centsToMoney(row.totalCents),
+      currency: row.currency,
+      status: row.paymentStatus.toLowerCase(),
+      channel: channelName(row).toLowerCase(),
+      payment_method: paymentMethodName(row.paymentMethod, row.localTransferMethodId).toLowerCase(),
+      occurred_at: row.createdAt.toISOString(),
+      customer_name: row.customerName?.trim() || null,
+      tax: centsToMoney(profit.gstCents),
+      fees: centsToMoney(profit.feesCents),
+      cogs: centsToMoney(profit.cogsCents),
+      profit: centsToMoney(profit.grossProfitCents),
+      cost_incomplete: profit.costIncomplete,
+      items,
+    };
+  });
 }
 
 /** Push Vendl orders to Stitchstack (full history, or incremental when `since` is set). */
