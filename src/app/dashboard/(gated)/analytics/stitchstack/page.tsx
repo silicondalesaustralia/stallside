@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { redirect } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
 import { requireOwner } from "@/lib/session";
@@ -10,31 +10,18 @@ import {
 } from "@/lib/stitchstack";
 import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 
-export const runtime = "nodejs";
-
-function appOrigin(): string {
-  return (
-    process.env.AUTH_URL?.trim().replace(/\/$/, "") ||
-    process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "") ||
-    "http://localhost:3000"
-  );
-}
-
 /**
- * Vendl → Stitchstack Analytics SSO entry.
- * Requires a Vendl owner session; redirects to a one-time Stitchstack handoff URL.
+ * Vendl → Stitchstack Analytics SSO entry (page so sidebar soft-nav / new-tab both work).
  */
-export async function GET() {
+export default async function StitchstackAnalyticsHandoffPage() {
   const { user, owner, impersonator } = await requireOwner();
-  const origin = appOrigin();
 
   if (impersonator) {
-    return NextResponse.redirect(`${origin}/dashboard?stitchstack=impersonating`);
+    redirect("/dashboard?stitchstack=impersonating");
   }
 
   if (!isStitchstackPartnerConfigured()) {
-    // Until the partner key is live, keep the previous external-tab behaviour.
-    return NextResponse.redirect(STITCHSTACK_APP_URL);
+    redirect(STITCHSTACK_APP_URL);
   }
 
   try {
@@ -51,10 +38,15 @@ export async function GET() {
       (stand?.slug ? storefrontPublicUrl(stand.slug) : null) ||
       null;
 
+    const email = (user.email ?? owner.contactEmail ?? "").trim();
+    if (!email) {
+      redirect("/dashboard?stitchstack=missing_email");
+    }
+
     const result = await ensureStitchstackAnalyticsAccount({
       external_account_id: owner.id,
       external_user_id: user.id,
-      email: user.email ?? owner.contactEmail ?? "",
+      email,
       name: user.name ?? null,
       business_name: stand?.name ?? owner.businessName ?? "Vendl business",
       site_url: siteUrl,
@@ -62,9 +54,19 @@ export async function GET() {
       impersonating: false,
     });
 
-    return NextResponse.redirect(result.handoff_url);
+    redirect(result.handoff_url);
   } catch (error: unknown) {
+    // next/navigation redirect() throws; rethrow so Next can follow it.
+    if (
+      error &&
+      typeof error === "object" &&
+      "digest" in error &&
+      typeof (error as { digest?: unknown }).digest === "string" &&
+      (error as { digest: string }).digest.startsWith("NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
     console.error("[vendl] Stitchstack Analytics handoff failed", error);
-    return NextResponse.redirect(`${origin}/dashboard?stitchstack=error`);
+    redirect("/dashboard?stitchstack=error");
   }
 }
