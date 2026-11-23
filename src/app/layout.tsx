@@ -12,6 +12,7 @@ import RedditPixel from "@/components/RedditPixel";
 import StitchStackIdentity from "@/components/StitchStackIdentity";
 import NativeShellBootstrap from "@/components/NativeShellBootstrap";
 import NavigationBusy from "@/components/NavigationBusy";
+import TenantStitchstackPixel from "@/components/storefront/tracking/TenantStitchstackPixel";
 import "./globals.css";
 import "./website-builder.css";
 import "./storefront-shop.css";
@@ -97,6 +98,10 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Seller hosts: Stitchstack pixel in <head> on every page (website, farmstand, custom domain). */}
+        {sellerHost ? <TenantStitchstackPixel /> : null}
+      </head>
       <body className="flex min-h-full flex-col font-sans">
         <AdClickCapture />
         {loadTracking ? (
