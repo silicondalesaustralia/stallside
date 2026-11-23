@@ -9,18 +9,22 @@ import DashboardNextCard from "@/components/DashboardNextCard";
 import DashboardPanels from "@/components/DashboardPanels";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import SalesAnalyticsPanel from "@/components/SalesAnalyticsPanel";
+import StitchstackDashboardCard from "@/components/StitchstackDashboardCard";
 import { resolveDateWindow } from "@/lib/date-range";
 import { resolveStandTimezone } from "@/lib/stand-timezone";
 import { ownerHasProAccess } from "@/lib/owner-trial";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import { loadDashboardHomeData } from "@/lib/dashboard/home";
 import { resolveDashboardOnboardingPath } from "@/lib/dashboard-onboarding-path";
+import { isStitchstackPartnerConfigured } from "@/lib/stitchstack";
+import { readStoredStitchstackPixel } from "@/lib/stitchstack-sync";
+import { prisma } from "@/lib/prisma";
 
 
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ range?: string; from?: string; to?: string }>;
+  searchParams: Promise<{ range?: string; from?: string; to?: string; stitchstack?: string }>;
 }) {
   const { owner, user } = await requireOwner();
   const { selected } = await resolveSelectedBusiness(owner.id);
@@ -79,6 +83,13 @@ export default async function DashboardPage({
         ? "Restock list growing"
         : null;
 
+  const storefront = await prisma.storefront.findFirst({
+    where: { ownerId: owner.id },
+    select: { stitchstackPixel: true },
+  });
+  const stitchstackStored = readStoredStitchstackPixel(storefront?.stitchstackPixel);
+  const stitchstackConfigured = isStitchstackPartnerConfigured();
+
   return (
     <main className="flex flex-col gap-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -99,6 +110,15 @@ export default async function DashboardPage({
         chartTitle={`${window.label} vs prior`}
         ordersHref={ordersHref}
         layout="home"
+      />
+
+      <StitchstackDashboardCard
+        analytics={stitchstackStored?.analyticsCache ?? null}
+        configured={stitchstackConfigured}
+        lastSyncedAt={
+          stitchstackStored?.lastAnalyticsSyncAt ?? stitchstackStored?.lastOrderSyncAt ?? null
+        }
+        status={params.stitchstack}
       />
 
       <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
