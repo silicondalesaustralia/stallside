@@ -1138,6 +1138,11 @@ model Storefront {
    */
   trackingSecrets     Json?
   /**
+   * Stitchstack first-party analytics pixel (org/site + script URL).
+   * Saved live on Analytics SSO; see src/lib/stitchstack-pixel.ts.
+   */
+  stitchstackPixel    Json?
+  /**
    * Legacy single field; prefer StorefrontDomain rows (Phase 9).
    */
   customDomain        String?

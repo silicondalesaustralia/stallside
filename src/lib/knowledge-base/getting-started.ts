@@ -46,7 +46,7 @@ export const gettingStartedArticles: KnowledgeArticle[] = [
     ],
     tips: [
       "Tap Go To Skool at the bottom of the sidebar (More on your phone) to open the Vendl community on Skool in a new tab.",
-      "Tap Stitchstack Analytics below Go To Skool to open GA4 and Search Console (Stitchstack). Website → Tags & Pixels is for other platform pixels and tags only.",
+      "Tap Stitchstack Analytics below Go To Skool to install the Stitchstack site pixel and open analytics. GA4 and Search Console are optional there. Website → Tags & Pixels is for other platform pixels and tags only.",
       "Need help? Tap Contact Support at the very bottom of the sidebar (More on your phone) to send us a message.",
     ],
   },

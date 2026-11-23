@@ -8,6 +8,7 @@ import {
   ensureStitchstackAnalyticsAccount,
   isStitchstackPartnerConfigured,
 } from "@/lib/stitchstack";
+import { saveStorefrontStitchstackPixel } from "@/lib/stitchstack-pixel";
 import { storefrontPublicUrl } from "@/lib/tenancy/public-url";
 
 /**
@@ -53,17 +54,27 @@ export default async function StitchstackAnalyticsHandoffPage() {
       });
     }
 
+    const businessName = stand?.name ?? owner.businessName ?? "Vendl business";
     const result = await ensureStitchstackAnalyticsAccount({
       external_account_id: owner.id,
       external_user_id: user.id,
       email,
       name: user.name ?? null,
-      business_name: stand?.name ?? owner.businessName ?? "Vendl business",
+      business_name: businessName,
       site_url: siteUrl,
       role: "owner",
       // Always mint as the seller identity; do not flag impersonating to Stitchstack.
       impersonating: false,
     });
+
+    // Pixel-first: install Stitchstack collector on the seller site before SSO redirect.
+    if (result.pixel) {
+      try {
+        await saveStorefrontStitchstackPixel(owner.id, businessName, result.pixel);
+      } catch (installError) {
+        console.error("[vendl] Stitchstack pixel install failed", installError);
+      }
+    }
 
     redirect(result.handoff_url);
   } catch (error: unknown) {

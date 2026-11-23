@@ -1,3 +1,9 @@
+import {
+  parseStitchstackPixelPayload,
+  type StitchstackPixelConfig,
+  type StitchstackPixelPayload,
+} from "@/lib/stitchstack-pixel";
+
 /** Public Stitchstack app URL (fallback when partner SSO is not configured). */
 export const STITCHSTACK_APP_URL =
   process.env.STITCHSTACK_APP_URL?.trim().replace(/\/$/, "") || "https://stitchstack.app";
@@ -12,6 +18,8 @@ export type StitchstackEnsureResult = {
   plan: string;
   entitlements: string[];
   handoff_url: string;
+  /** Present once Stitchstack ships pixel-first ensure; optional for backward compat. */
+  pixel?: StitchstackPixelConfig;
 };
 
 export type StitchstackEnsureError = {
@@ -41,6 +49,7 @@ export function isStitchstackPartnerConfigured(): boolean {
 
 /**
  * Server-only: provision/attach a gated Stitchstack workspace and return a one-time handoff URL.
+ * When Stitchstack returns `pixel`, it is normalised for Vendl storefront install.
  */
 export async function ensureStitchstackAnalyticsAccount(
   input: StitchstackEnsureInput,
@@ -78,9 +87,21 @@ export async function ensureStitchstackAnalyticsAccount(
     throw error;
   }
 
-  const result = body as StitchstackEnsureResult | null;
+  const result = body as (Omit<StitchstackEnsureResult, "pixel"> & {
+    pixel?: StitchstackPixelPayload;
+  }) | null;
   if (!result?.ok || typeof result.handoff_url !== "string" || !result.handoff_url.startsWith("http")) {
     throw new Error("Stitchstack ensure-account returned an invalid handoff URL.");
   }
-  return result;
+
+  const pixel = parseStitchstackPixelPayload(result.pixel);
+  return {
+    ok: true,
+    stitchstack_org_id: result.stitchstack_org_id,
+    stitchstack_user_id: result.stitchstack_user_id,
+    plan: result.plan,
+    entitlements: Array.isArray(result.entitlements) ? result.entitlements : [],
+    handoff_url: result.handoff_url,
+    ...(pixel ? { pixel } : {}),
+  };
 }

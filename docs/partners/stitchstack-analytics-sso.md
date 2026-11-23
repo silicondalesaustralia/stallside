@@ -1,6 +1,7 @@
 # Vendl × Stitchstack Analytics — partner SSO (social-kit)
 
-Vendl dashboard nav **Stitchstack Analytics** → server handoff → Stitchstack GA4/GSC (gated free).
+Vendl dashboard nav **Stitchstack Analytics** → ensure-account → **auto-install first-party pixel** → SSO handoff.  
+GA4 / GSC are optional enrichment in Stitchstack (see `stitchstack-pixel-first-onboarding.md`).
 
 ## Vendl wiring (done on `feature/social-kit`)
 
@@ -9,6 +10,8 @@ Vendl dashboard nav **Stitchstack Analytics** → server handoff → Stitchstack
 | Nav | `StitchstackAnalyticsNavLink` → `/dashboard/analytics/stitchstack` |
 | Handoff route | `GET /dashboard/analytics/stitchstack` |
 | Client | `src/lib/stitchstack.ts` → `POST {STITCHSTACK_APP_URL}/api/partners/vendl/ensure-account` |
+| Pixel persist | `src/lib/stitchstack-pixel.ts` → `Storefront.stitchstackPixel` |
+| Pixel inject | `StorefrontStitchstackPixel` on shop layout (tenant hosts, consent-aware) |
 
 ### Env (Vendl / beta)
 
@@ -33,7 +36,10 @@ If the key is unset, the route redirects to `https://stitchstack.app` (old behav
 
 ## Stitchstack side
 
-See Stitchstack repo `docs/partners/vendl-analytics-sso.md`. Requires:
+Give the Stitchstack agent: **`docs/partners/stitchstack-pixel-first-onboarding.md`**.
 
-1. Deploy partner API + migration `20261120_vendl_partner`
-2. `VENDL_PARTNER_API_KEY` on Stitchstack matching Vendl’s key
+Also their local `docs/partners/vendl-analytics-sso.md` if present. Requires:
+
+1. Deploy partner API + migration `20261120_vendl_partner` (or successor)
+2. `ensure-account` returns `pixel.script_src` (idempotent per Vendl account)
+3. `VENDL_PARTNER_API_KEY` on Stitchstack matching Vendl’s key

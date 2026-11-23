@@ -190,6 +190,8 @@ Until SSO ships, the sidebar may open `https://stitchstack.app` directly (same e
 
 **Tags & Pixels (Vendl):** Meta/TikTok/ads/other platform tags stay editable on `/dashboard/website/tags-pixels`. **GA4 and GSC are removed from that page** and stripped from storefront injection so sellers use Stitchstack for those. The page notes base-level pixels vs advanced tracking on Stitchstack.
 
+**Pixel-first (Nov 2026):** Onboarding starts by auto-installing a **per-seller Stitchstack pixel** from `ensure-account` → `pixel.script_src`. See `docs/partners/stitchstack-pixel-first-onboarding.md`. GA4/GSC remain optional enrichment inside Stitchstack.
+
 Existing Vendl use of Stitchstack today is **attribution pixel / lead** (`stitchstack.app/api/attribution/script`, `StitchStackIdentity`). That is separate from this Analytics partner SSO. Do not overload that orgId/script for seller analytics accounts.
 
 ---
