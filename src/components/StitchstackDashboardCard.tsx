@@ -3,11 +3,14 @@ import type { StitchstackAnalyticsSnapshot } from "@/lib/stitchstack-analytics";
 
 function statusBanner(flag: string | undefined) {
   if (flag === "synced") {
-    return "Synced both ways — orders pushed to Stitchstack and pixel metrics refreshed.";
+    return "Synced — Vendl orders pushed to Stitchstack and pixel metrics refreshed.";
   }
   if (flag === "error") return "Could not sync with Stitchstack. Try again in a minute.";
   if (flag === "missing_email") return "Add an email on your account before opening Analytics.";
-  if (flag === "impersonating") return "Support impersonation cannot sync Analytics.";
+  if (flag === "impersonating") {
+    // Legacy query from older builds; Sync now no longer blocks login-as.
+    return "Retry Sync now — support login-as can sync Analytics.";
+  }
   return null;
 }
 

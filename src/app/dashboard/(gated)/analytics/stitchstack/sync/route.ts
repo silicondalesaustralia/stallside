@@ -22,9 +22,7 @@ function redirectTo(request: Request, path: string) {
 /** Manual bidirectional sync: ensure pixel, push orders, pull analytics cache. */
 export async function POST(request: Request) {
   const { user, owner, impersonator } = await requireOwner();
-  if (impersonator) {
-    return redirectTo(request, "/dashboard?stitchstack=impersonating");
-  }
+  // Login-as is admin-only; allow Sync now while impersonating (seller workspace).
   if (!isStitchstackPartnerConfigured()) {
     return redirectTo(request, "/dashboard?stitchstack=error");
   }
@@ -73,6 +71,13 @@ export async function POST(request: Request) {
       } catch (installError) {
         console.error("[vendl] Stitchstack pixel install during sync failed", installError);
       }
+    }
+
+    if (impersonator) {
+      console.info("[vendl] Stitchstack sync via admin login-as", {
+        adminEmail: impersonator.email,
+        ownerId: owner.id,
+      });
     }
 
     const result = await syncStitchstackForOwner(owner.id);
