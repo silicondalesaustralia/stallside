@@ -29,7 +29,7 @@ If the key is unset, the route redirects to `https://stitchstack.app` (old behav
 | `business_name` | Selected stand name (fallback owner business name) |
 | `site_url` | Stand `websiteUrl` or public storefront URL |
 | `role` | `owner` |
-| Impersonation | Platform admins in login-as **may** SSO and **Sync now** (seller workspace). Non-admin impersonation blocked. |
+| Impersonation | Login-as (admin-only) **may** SSO and **Sync now** as the seller workspace. |
 
 ## Stitchstack side
 

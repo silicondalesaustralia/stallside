@@ -7,7 +7,10 @@ function statusBanner(flag: string | undefined) {
   }
   if (flag === "error") return "Could not sync with Stitchstack. Try again in a minute.";
   if (flag === "missing_email") return "Add an email on your account before opening Analytics.";
-  if (flag === "impersonating") return "Only platform support can sync Analytics while impersonating.";
+  if (flag === "impersonating") {
+    // Legacy query from older builds; Sync now no longer blocks login-as.
+    return "Retry Sync now — support login-as can sync Analytics.";
+  }
   return null;
 }
 

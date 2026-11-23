@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { redirect } from "next/navigation";
 
-import { isPlatformAdminEmail, requireOwner } from "@/lib/session";
+import { requireOwner } from "@/lib/session";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import {
   ensureStitchstackAnalyticsAccount,
@@ -22,10 +22,7 @@ function redirectTo(request: Request, path: string) {
 /** Manual bidirectional sync: ensure pixel, push orders, pull analytics cache. */
 export async function POST(request: Request) {
   const { user, owner, impersonator } = await requireOwner();
-  // Same as handoff: platform admins in login-as may sync as the seller.
-  if (impersonator && !isPlatformAdminEmail(impersonator.email)) {
-    return redirectTo(request, "/dashboard?stitchstack=impersonating");
-  }
+  // Login-as is admin-only; allow Sync now while impersonating (seller workspace).
   if (!isStitchstackPartnerConfigured()) {
     return redirectTo(request, "/dashboard?stitchstack=error");
   }
