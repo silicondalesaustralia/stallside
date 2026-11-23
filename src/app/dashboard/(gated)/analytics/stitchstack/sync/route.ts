@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { redirect } from "next/navigation";
 
+import type { RangeKey } from "@/lib/date-range";
+import { RANGE_PRESETS } from "@/lib/date-range";
 import { requireOwner } from "@/lib/session";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
 import {
@@ -15,8 +17,27 @@ import { prisma } from "@/lib/prisma";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
+const RANGE_KEYS = new Set<string>(RANGE_PRESETS.map((preset) => preset.key));
+
 function redirectTo(request: Request, path: string) {
   return NextResponse.redirect(new URL(path, request.url), 303);
+}
+
+function parseRangeFromForm(form: FormData): {
+  range: RangeKey;
+  fromParam: string;
+  toParam: string;
+  dashQuery: string;
+} {
+  const raw = String(form.get("range") ?? "30d").trim();
+  const range = (RANGE_KEYS.has(raw) ? raw : "30d") as RangeKey;
+  const fromParam = String(form.get("from") ?? "").trim();
+  const toParam = String(form.get("to") ?? "").trim();
+  const dashQuery =
+    range === "custom" && fromParam && toParam
+      ? `range=custom&from=${encodeURIComponent(fromParam)}&to=${encodeURIComponent(toParam)}`
+      : `range=${encodeURIComponent(range)}`;
+  return { range, fromParam, toParam, dashQuery };
 }
 
 /** Manual bidirectional sync: ensure pixel, push orders, pull analytics cache. */
@@ -26,6 +47,9 @@ export async function POST(request: Request) {
   if (!isStitchstackPartnerConfigured()) {
     return redirectTo(request, "/dashboard?stitchstack=error");
   }
+
+  const form = await request.formData().catch(() => new FormData());
+  const { range, fromParam, toParam, dashQuery } = parseRangeFromForm(form);
 
   try {
     const { selected } = await resolveSelectedBusiness(owner.id);
@@ -80,17 +104,18 @@ export async function POST(request: Request) {
       });
     }
 
-    const result = await syncStitchstackForOwner(owner.id);
+    const result = await syncStitchstackForOwner(owner.id, { range, fromParam, toParam });
     console.info("[vendl] Stitchstack manual sync complete", {
       ownerId: owner.id,
       upserted: result.upserted,
       analytics: result.analytics,
+      range,
     });
 
-    return redirectTo(request, "/dashboard?stitchstack=synced");
+    return redirectTo(request, `/dashboard?${dashQuery}&stitchstack=synced`);
   } catch (error) {
     console.error("[vendl] Stitchstack sync failed", error);
-    return redirectTo(request, "/dashboard?stitchstack=error");
+    return redirectTo(request, `/dashboard?${dashQuery}&stitchstack=error`);
   }
 }
 
