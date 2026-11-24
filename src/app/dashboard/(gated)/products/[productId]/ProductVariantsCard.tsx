@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import DashFormSection from "@/components/DashFormSection";
 import {
   buildCombinations,
   draftToPayload,
@@ -45,38 +46,41 @@ export default function ProductVariantsCard({
   }
 
   return (
-    <fieldset disabled={Boolean(blockedReason)} className="dash-card flex flex-col gap-3 p-5">
-      <legend className="px-1 text-sm font-semibold">Variants</legend>
-      <p className="text-sm text-[var(--muted)]">
-        {blockedReason ??
-          "Example: T-shirt sizes S / M / L, each with its own price, SKU and stock count. Product stock is the total of every variant. Use Add-on options above when choices share one stock pool (like flavour on a cake)."}
-      </p>
-      <VariantOptionFields options={options} onChange={setOptions} />
-      <button
-        type="button"
-        className="self-start rounded-lg border border-[var(--line)] px-3 py-2 text-sm font-semibold"
-        onClick={() => setRows(buildCombinations(options, rows, defaultPrice))}
-      >
-        {rows.length ? "Update variant list" : "Create variants"}
-      </button>
-      <VariantRowsTable rows={rows} onChange={setRows} />
-      {message ? (
-        <p
-          className={`text-sm ${
-            message === "Variants saved." ? "text-[var(--leaf-dark)]" : "text-[var(--warn)]"
-          }`}
+    <DashFormSection
+      title="Variants"
+      hint={
+        blockedReason ??
+        "Example: T-shirt sizes S / M / L, each with its own price, SKU and stock count. Product stock is the total of every variant. Use Add-on options above when choices share one stock pool (like flavour on a cake)."
+      }
+    >
+      <fieldset disabled={Boolean(blockedReason)} className="flex flex-col gap-3 disabled:opacity-60">
+        <VariantOptionFields options={options} onChange={setOptions} />
+        <button
+          type="button"
+          className="self-start rounded-lg border border-[var(--line)] px-3 py-2 text-sm font-semibold"
+          onClick={() => setRows(buildCombinations(options, rows, defaultPrice))}
         >
-          {message}
-        </p>
-      ) : null}
-      <button
-        type="button"
-        disabled={pending}
-        onClick={onSave}
-        className="rounded-lg border border-[var(--line)] px-4 py-2.5 text-sm font-semibold disabled:opacity-60"
-      >
-        {pending ? "Saving…" : "Save variants"}
-      </button>
-    </fieldset>
+          {rows.length ? "Update variant list" : "Create variants"}
+        </button>
+        <VariantRowsTable rows={rows} onChange={setRows} />
+        {message ? (
+          <p
+            className={`text-sm ${
+              message === "Variants saved." ? "text-[var(--leaf-dark)]" : "text-[var(--warn)]"
+            }`}
+          >
+            {message}
+          </p>
+        ) : null}
+        <button
+          type="button"
+          disabled={pending}
+          onClick={onSave}
+          className="rounded-lg border border-[var(--line)] px-4 py-2.5 text-sm font-semibold disabled:opacity-60"
+        >
+          {pending ? "Saving…" : "Save variants"}
+        </button>
+      </fieldset>
+    </DashFormSection>
   );
 }
