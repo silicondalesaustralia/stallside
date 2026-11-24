@@ -10,7 +10,7 @@ export const productArticles: KnowledgeArticle[] = [
     ctas: [{ label: "Add product", href: "/dashboard/products/new" }],
     steps: [
       "Open Products and tap + Add product.",
-      "Check the Stand, then enter a Product name. Add a Description and tap Choose image for a photo (JPEG, PNG, WebP or HEIC; large photos are resized for you).",
+      "Check the Business / Store Name, then enter a Product name. Add a Description and tap Choose image for a photo (JPEG, PNG, WebP or HEIC; large photos are resized for you).",
       "Enter the Price. Under Owner details you can add SKU, UPC and Cost to see your profit per item. Only you see these.",
       "Set Starting stock and a Low-stock threshold (you're alerted when stock falls to it).",
       "Tick Available for pre-order pages only if this product will be sold on a pre-order page.",

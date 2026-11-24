@@ -73,7 +73,7 @@ export default function NewProductForm({
     <form action={onSubmit} className="grid gap-5 lg:grid-cols-2">
       <DashFormSection title="Details">
         <label className="flex flex-col gap-2 text-sm">
-          <span className="font-medium">Stand</span>
+          <span className="font-medium">Business / Store Name</span>
           <select
             name="standId"
             defaultValue={defaultStandId ?? stands[0]?.id}

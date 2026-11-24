@@ -16,7 +16,7 @@ export const gettingStartedArticles: KnowledgeArticle[] = [
     steps: [
       "Tap Create a business in the sidebar (or New business on Overview). Enter a Business name, Suburb / location, Currency and Timezone, then tap Create Business.",
       "You land on your new business with an Add what you sell card. Tap Add product.",
-      "Pick the Stand, then enter a Product name, Price, Starting stock and Low-stock threshold, and tap Save product.",
+      "Pick the Business / Store Name, then enter a Product name, Price, Starting stock and Low-stock threshold, and tap Save product.",
       "Tap QR & print at the top of the business page. Under Cart mode keep Product cart, tap Save sign details, then print or tap Download PNG.",
       "Put the QR at your stall. On another phone, scan it to open your checkout page.",
       "Add the test product, choose Pay cash and tap I have paid cash.",
