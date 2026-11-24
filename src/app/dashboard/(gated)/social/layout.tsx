@@ -30,7 +30,9 @@ export default async function SocialLayout({ children }: { children: React.React
   return (
     <ToastProvider>
       <TradiesPostSocialWorkspaceProvider>
-        <SocialSubnav aside={<SocialCreditStatus summary={access.summary} />} />
+        <SocialSubnav
+          aside={<SocialCreditStatus summary={access.summary} unlimited={access.unlimitedCredits} />}
+        />
         <div data-tp-theme className="min-h-full text-tradiespost-text">
           {paywall ? <SocialCreditsPaywall view={paywall} locked /> : children}
         </div>

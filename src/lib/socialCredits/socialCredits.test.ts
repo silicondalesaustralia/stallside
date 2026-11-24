@@ -7,6 +7,7 @@ import {
   socialCreditPackName,
   socialCreditPeriodKey,
 } from './packs'
+import { hasUnlimitedSocialCredits } from './unlimited'
 import { loadSocialCreditSummary } from './ledger'
 import { socialAccessFromSummary } from './socialAccess'
 import { clipJobCreditActionId, refundUnmadeClips } from './clipJobCredits'
@@ -53,6 +54,10 @@ async function main() {
   assert.equal(socialAccessFromSummary(false, free), false)
   assert.equal(socialAccessFromSummary(true, free), true)
   assert.equal(socialAccessFromSummary(false, pro), true)
+
+  assert.equal(hasUnlimitedSocialCredits('jono@silicondales.com', 'OWNER'), true)
+  assert.equal(hasUnlimitedSocialCredits('someone@example.com', 'ADMIN'), true)
+  assert.equal(hasUnlimitedSocialCredits('someone@example.com', 'OWNER'), false)
 
   const calls: RpcCall[] = []
   await refundUnmadeClips(fakeDb(2, calls), { id: 'j1', clip_count: 5, clips_created: 3 })

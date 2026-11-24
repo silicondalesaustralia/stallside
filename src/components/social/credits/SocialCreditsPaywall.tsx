@@ -15,9 +15,11 @@ export default function SocialCreditsPaywall({ view, locked }: Props) {
         subtitle={
           locked
             ? 'Social runs on credits. Pick a pack to unlock posts, AI designs and video clips. Your connected accounts stay connected.'
-            : view.isPro
-              ? 'Pro includes 5 AI designs and 5 video clips every month. Top up any time - bought credits never expire.'
-              : 'Social stays unlocked while you have credits. Top up any time - bought credits never expire.'
+            : view.unlimitedCredits
+              ? 'Platform admin accounts have unlimited designs and video clips.'
+              : view.isPro
+                ? 'Pro includes 5 AI designs and 5 video clips every month. Top up any time - bought credits never expire.'
+                : 'Social stays unlocked while you have credits. Top up any time - bought credits never expire.'
         }
       />
       <SocialCreditsPanel view={view} />

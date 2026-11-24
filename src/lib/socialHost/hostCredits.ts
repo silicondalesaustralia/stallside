@@ -53,6 +53,7 @@ export async function hostCreditBalance(socialBusinessId: string, kind: CreditKi
   if (!ledger) return null
   const owner = await creditOwnerForSocialBusiness(socialBusinessId)
   if (!owner) return 0
+  if (owner.unlimitedCredits) return null
   const summary = await loadSocialCreditSummary(socialDb(), owner.ownerId, owner.isPro)
   return summary[ledger].available
 }
@@ -68,6 +69,7 @@ export async function hostConsumeCredits(ctx: CreditContext): Promise<void> {
   if (!ledger) return
   const owner = await creditOwnerForSocialBusiness(ctx.socialBusinessId)
   if (!owner) throw new HostCreditsExhaustedError()
+  if (owner.unlimitedCredits) return
   try {
     await consumeSocialCredits(socialDb(), {
       ownerId: owner.ownerId,

@@ -1,9 +1,10 @@
 import { prisma } from '@/lib/prisma'
 import { ownerHasProAccess } from '@/lib/owner-trial'
 import { externalAccountIdFor } from '@/lib/socialHost/provisionSocialIdentity'
+import { hasUnlimitedSocialCredits } from './unlimited'
 
 /** Credits belong to the Vendl owner, shared across all their businesses. */
-export type SocialCreditOwner = { ownerId: string; isPro: boolean }
+export type SocialCreditOwner = { ownerId: string; isPro: boolean; unlimitedCredits: boolean }
 
 export const CREDIT_OWNER_SELECT = {
   id: true,
@@ -28,9 +29,12 @@ type CreditOwnerRow = {
 }
 
 export function creditOwnerFromRow(row: CreditOwnerRow): SocialCreditOwner {
+  const email = row.user?.email
+  const role = row.user?.role
   return {
     ownerId: row.id,
-    isPro: ownerHasProAccess(row, { email: row.user?.email, role: row.user?.role }),
+    isPro: ownerHasProAccess(row, { email, role }),
+    unlimitedCredits: hasUnlimitedSocialCredits(email, role),
   }
 }
 

@@ -6,7 +6,23 @@ import { SOCIAL_CREDIT_KINDS, SOCIAL_CREDIT_LABELS } from '@/lib/socialCredits/p
 import { CREDIT_ICON } from './creditTheme'
 
 /** Credit balance + "Buy more credits", shown beside the Social tabs on every page. */
-export default function SocialCreditStatus({ summary }: { summary: SocialCreditSummary }) {
+export default function SocialCreditStatus({
+  summary,
+  unlimited = false,
+}: {
+  summary: SocialCreditSummary
+  unlimited?: boolean
+}) {
+  if (unlimited) {
+    return (
+      <div className="flex items-center gap-3 py-1.5">
+        <span className="text-sm font-bold text-tradiespost-text" title="Platform admin — unlimited social credits">
+          Unlimited credits
+        </span>
+      </div>
+    )
+  }
+
   return (
     <div className="flex items-center gap-3 py-1.5">
       <div className="hidden items-center gap-3 sm:flex" aria-label="Credit balance">
