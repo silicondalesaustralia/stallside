@@ -44,12 +44,6 @@ export default async function EntitySeoCard({
         How {ctx.pathLabel} appears in Google and when shared. Blank fields use smart defaults.
         Changes save to your website draft and go live when you publish.
       </p>
-      {variant === "social" ? (
-        <p className="mt-1 text-sm text-[var(--muted)]">
-          The search title and description come from the search engine listing above.
-        </p>
-      ) : null}
-
       {status === "saved" ? (
         <p className="mt-3 text-sm font-medium text-[var(--ok)]">
           Search &amp; social saved to your draft. Publish your website to make it live.

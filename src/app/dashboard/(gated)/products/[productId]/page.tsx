@@ -14,6 +14,7 @@ import { taxConfig } from "@/lib/tax/config";
 import { parsePriceTiers } from "@/lib/price-tiers";
 import EntitySeoCard from "@/components/website/seo/EntitySeoCard";
 import { entitySeoKey } from "@/lib/studio/seo-settings";
+import { websiteSectionEnabledFor } from "@/lib/website/access";
 import ProductEditForm from "./ProductEditForm";
 import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 import { loadProductRecipeCost } from "@/lib/production/load-product-recipe-cost";
@@ -77,6 +78,7 @@ export default async function EditProductPage({
     ? standWebsiteUrl(website, shopProductPath(website.storefrontSlug, { slug: product.slug, categorySlug: mainCategory?.slug }, false, ""))
     : `${SITE_URL}${standProductPath(product.stand.slug, product.slug)}`;
   const priceTiers = parsePriceTiers(product.priceTiers);
+  const showWebsiteSeo = websiteSectionEnabledFor(owner.id);
 
   return (
     <main className="flex flex-col gap-6">
@@ -140,31 +142,38 @@ export default async function EditProductPage({
           tax: taxConfig(owner, product.currency), recipeCost: await loadProductRecipeCost(owner.id, product.id),
         }}
         initialImageError={imageError ?? null}
-      />
-      <ProductVariantsCard
-        productId={product.id}
-        defaultPrice={(product.priceCents / 100).toFixed(2)}
-        initialOptions={variantDraftOptions(product)}
-        initialVariants={variantDraftRows(product.variants)}
-        blockedReason={
-          product.isPreOrder
-            ? "Pre-order products can't have variants yet."
-            : product._count.stockLots > 0
-              ? "Products with supplier stock can't have variants yet."
-              : null
+        showInlineSeo={!showWebsiteSeo}
+        afterSections={
+          <>
+            <ProductVariantsCard
+              productId={product.id}
+              defaultPrice={(product.priceCents / 100).toFixed(2)}
+              initialOptions={variantDraftOptions(product)}
+              initialVariants={variantDraftRows(product.variants)}
+              blockedReason={
+                product.isPreOrder
+                  ? "Pre-order products can't have variants yet."
+                  : product._count.stockLots > 0
+                    ? "Products with supplier stock can't have variants yet."
+                    : null
+              }
+            />
+            {owner.country === "AU" ? (
+              <ProductGstCard productId={product.id} gstFree={product.gstFree} tax={taxConfig(owner, product.currency)} />
+            ) : null}
+          </>
         }
       />
-      {owner.country === "AU" ? (
-        <ProductGstCard productId={product.id} gstFree={product.gstFree} tax={taxConfig(owner, product.currency)} />
+      {showWebsiteSeo ? (
+        <EntitySeoCard
+          ownerId={owner.id}
+          businessName={owner.businessName}
+          entityKey={entitySeoKey("product", product.id)}
+          returnTo={`/dashboard/products/${product.id}`}
+          status={seo}
+          variant="all"
+        />
       ) : null}
-      <EntitySeoCard
-        ownerId={owner.id}
-        businessName={owner.businessName}
-        entityKey={entitySeoKey("product", product.id)}
-        returnTo={`/dashboard/products/${product.id}`}
-        status={seo}
-        variant="social"
-      />
     </main>
   );
 }

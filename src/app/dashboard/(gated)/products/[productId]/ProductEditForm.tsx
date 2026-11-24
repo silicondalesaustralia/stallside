@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, unstable_rethrow } from "next/navigation";
-import { useRef, useState, useTransition, type FormEvent } from "react";
+import { useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { useFormDirty } from "@/components/useFormDirty";
 import ProductBasicsSection from "./ProductBasicsSection";
 import ProductPhotosCard from "./ProductPhotosCard";
@@ -21,9 +21,15 @@ import type { ProductFields } from "./product-edit-fields";
 export default function ProductEditForm({
   product,
   initialImageError,
+  showInlineSeo = true,
+  afterSections,
 }: {
   product: ProductFields;
   initialImageError?: string | null;
+  /** When false, Search & social below owns listing fields; keep product SEO values via hidden inputs. */
+  showInlineSeo?: boolean;
+  /** Variants / GST and similar cards that belong above the Save bar. */
+  afterSections?: ReactNode;
 }) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -83,7 +89,15 @@ export default function ProductEditForm({
               />
             </section>
           ) : null}
-          <ProductSeoSection product={product} />
+          {showInlineSeo ? (
+            <ProductSeoSection product={product} />
+          ) : (
+            <>
+              <input type="hidden" name="slug" defaultValue={product.slug} />
+              <input type="hidden" name="seoTitle" defaultValue={product.seoTitle ?? ""} />
+              <input type="hidden" name="seoDescription" defaultValue={product.seoDescription ?? ""} />
+            </>
+          )}
         </div>
         <aside className="flex min-w-0 flex-col gap-5">
           <ProductStatusSection product={product} />
@@ -106,6 +120,7 @@ export default function ProductEditForm({
           />
         </aside>
       </div>
+      {afterSections}
       <ProductSaveBar dirty={dirty} pending={pending} notice={notice} onDiscard={discard} />
     </form>
   );
