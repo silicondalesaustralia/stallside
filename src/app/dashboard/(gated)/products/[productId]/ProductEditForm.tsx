@@ -22,14 +22,17 @@ export default function ProductEditForm({
   product,
   initialImageError,
   showInlineSeo = true,
-  afterSections,
+  variantsSection,
+  endSections,
 }: {
   product: ProductFields;
   initialImageError?: string | null;
   /** When false, Search & social below owns listing fields; keep product SEO values via hidden inputs. */
   showInlineSeo?: boolean;
-  /** Variants / GST and similar cards that belong above the Save bar. */
-  afterSections?: ReactNode;
+  /** Variants card — rendered directly under Add-on options. */
+  variantsSection?: ReactNode;
+  /** GST and similar cards after cart upsell, above the Save bar. */
+  endSections?: ReactNode;
 }) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -72,55 +75,58 @@ export default function ProductEditForm({
 
   return (
     <form ref={formRef} onSubmit={onSubmit} className="flex flex-col gap-5">
-      <div key={resetKey} className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <div className="flex min-w-0 flex-col gap-5">
-          <ProductBasicsSection name={product.name} description={product.description} />
-          <ProductPhotosCard productId={product.id} productName={product.name} photos={product.photos} alts={product.photoAlts} />
-          <ProductPricingSection product={product} />
-          <ProductOptionsEditor initial={product.options} disabled={product.priceTiers.length > 0} />
-          {!preOrderEligible ? (
-            <section className="dash-card p-5">
-              <ProductUpsellFields
-                productId={product.id}
-                currency={product.currency}
-                products={product.siblingProducts}
-                upsellProductId={product.upsellProductId}
-                upsellPriceCents={product.upsellPriceCents}
-              />
-            </section>
-          ) : null}
-          {showInlineSeo ? (
-            <ProductSeoSection product={product} />
-          ) : (
-            <>
-              <input type="hidden" name="slug" defaultValue={product.slug} />
-              <input type="hidden" name="seoTitle" defaultValue={product.seoTitle ?? ""} />
-              <input type="hidden" name="seoDescription" defaultValue={product.seoDescription ?? ""} />
-            </>
-          )}
+      <div key={resetKey} className="flex flex-col gap-5">
+        <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+          <div className="flex min-w-0 flex-col gap-5">
+            <ProductBasicsSection name={product.name} description={product.description} />
+            <ProductPhotosCard productId={product.id} productName={product.name} photos={product.photos} alts={product.photoAlts} />
+            <ProductPricingSection product={product} />
+            {showInlineSeo ? (
+              <ProductSeoSection product={product} />
+            ) : (
+              <>
+                <input type="hidden" name="slug" defaultValue={product.slug} />
+                <input type="hidden" name="seoTitle" defaultValue={product.seoTitle ?? ""} />
+                <input type="hidden" name="seoDescription" defaultValue={product.seoDescription ?? ""} />
+              </>
+            )}
+          </div>
+          <aside className="flex min-w-0 flex-col gap-5">
+            <ProductStatusSection product={product} />
+            <ProductInventorySection product={product} />
+            <ProductFulfilmentSection
+              value={product.fulfilment}
+              standDefault={product.standFulfilmentDefault}
+              preOrderEligible={preOrderEligible}
+              shippingCents={product.shippingCents}
+              shippingMode={product.standShippingMode}
+              currency={product.currency}
+            />
+            <ProductOrganisationSection
+              categories={product.categories}
+              primaryCategoryId={product.primaryCategoryId}
+              freshnessNote={product.freshnessNote}
+              showPreOrder={product.cardTier}
+              preOrderEligible={preOrderEligible}
+              onPreOrderChange={setPreOrderEligible}
+            />
+          </aside>
         </div>
-        <aside className="flex min-w-0 flex-col gap-5">
-          <ProductStatusSection product={product} />
-          <ProductInventorySection product={product} />
-          <ProductFulfilmentSection
-            value={product.fulfilment}
-            standDefault={product.standFulfilmentDefault}
-            preOrderEligible={preOrderEligible}
-            shippingCents={product.shippingCents}
-            shippingMode={product.standShippingMode}
-            currency={product.currency}
-          />
-          <ProductOrganisationSection
-            categories={product.categories}
-            primaryCategoryId={product.primaryCategoryId}
-            freshnessNote={product.freshnessNote}
-            showPreOrder={product.cardTier}
-            preOrderEligible={preOrderEligible}
-            onPreOrderChange={setPreOrderEligible}
-          />
-        </aside>
+        <ProductOptionsEditor initial={product.options} disabled={product.priceTiers.length > 0} />
+        {variantsSection}
+        {!preOrderEligible ? (
+          <section className="dash-card p-5">
+            <ProductUpsellFields
+              productId={product.id}
+              currency={product.currency}
+              products={product.siblingProducts}
+              upsellProductId={product.upsellProductId}
+              upsellPriceCents={product.upsellPriceCents}
+            />
+          </section>
+        ) : null}
+        {endSections}
       </div>
-      {afterSections}
       <ProductSaveBar dirty={dirty} pending={pending} notice={notice} onDiscard={discard} />
     </form>
   );

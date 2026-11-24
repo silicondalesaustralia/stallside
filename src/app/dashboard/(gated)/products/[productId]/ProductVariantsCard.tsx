@@ -49,7 +49,7 @@ export default function ProductVariantsCard({
       <legend className="px-1 text-sm font-semibold">Variants</legend>
       <p className="text-sm text-[var(--muted)]">
         {blockedReason ??
-          "Sizes, colours or weights that each have their own price, SKU and stock. Product stock becomes the total of all variants."}
+          "Example: T-shirt sizes S / M / L, each with its own price, SKU and stock count. Product stock is the total of every variant. Use Add-on options above when choices share one stock pool (like flavour on a cake)."}
       </p>
       <VariantOptionFields options={options} onChange={setOptions} />
       <button

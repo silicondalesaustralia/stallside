@@ -12,7 +12,7 @@ export const upsellArticles: KnowledgeArticle[] = [
     steps: [
       "Open your business (Business switcher → Manage) and choose the Upsells tab.",
       "Under Stall cart upsell, pick a Product to offer and an optional Special upsell price, then tap Save upsells.",
-      "To offer something different with a particular product, open that product and set Cart upsell (take-now). It overrides the business default.",
+      "To offer something different with a particular product, open that product and set Cart upsell (take-now) after Add-on options and Variants. It overrides the business default.",
       "Shoppers see Get this right now at a discount in their cart and can tap Add to cart.",
       "For pre-orders, edit a pre-order page and fill in Pre-order add-on (name, price and optional percent or amount off). It uses the same collection day and payment settings as the page.",
       "Under Scarcity, tick Show “Only N left” when stock is low to nudge shoppers.",

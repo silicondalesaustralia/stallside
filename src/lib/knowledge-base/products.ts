@@ -75,8 +75,8 @@ export const productArticles: KnowledgeArticle[] = [
       "Open the product on your shop and check buyers must pick a choice before adding to cart.",
     ],
     tips: [
-      "Up to 3 groups, 12 choices each. Add-on options share the product's stock; they don't have their own counts.",
-      "For separate stock and SKU per size or colour, use Variants instead.",
+      "Example: cake Flavour (chocolate / vanilla) or Extra frosting (+$2) — one shared stock count.",
+      "Up to 3 groups, 12 choices each. For separate stock per size (S / M / L T-shirts), use Variants instead.",
       "Options and volume prices can't be on the same product. Clear one first.",
       "On pre-order pages, products with options show a Choose options button.",
     ],
@@ -95,7 +95,8 @@ export const productArticles: KnowledgeArticle[] = [
       "Open the product on your shop and check buyers pick a variant before adding to cart.",
     ],
     tips: [
-      "Variants each have their own stock. Add-on options share one stock pool — use those when you only need price extras.",
+      "Example: T-shirt S / M / L — each size has its own price, SKU and stock. Product stock is the total.",
+      "For shared-stock choices like cake flavour, use Add-on options instead.",
       "Pre-order products and products with supplier stock can't have variants yet.",
     ],
   },

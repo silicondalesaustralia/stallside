@@ -143,25 +143,25 @@ export default async function EditProductPage({
         }}
         initialImageError={imageError ?? null}
         showInlineSeo={!showWebsiteSeo}
-        afterSections={
-          <>
-            <ProductVariantsCard
-              productId={product.id}
-              defaultPrice={(product.priceCents / 100).toFixed(2)}
-              initialOptions={variantDraftOptions(product)}
-              initialVariants={variantDraftRows(product.variants)}
-              blockedReason={
-                product.isPreOrder
-                  ? "Pre-order products can't have variants yet."
-                  : product._count.stockLots > 0
-                    ? "Products with supplier stock can't have variants yet."
-                    : null
-              }
-            />
-            {owner.country === "AU" ? (
-              <ProductGstCard productId={product.id} gstFree={product.gstFree} tax={taxConfig(owner, product.currency)} />
-            ) : null}
-          </>
+        variantsSection={
+          <ProductVariantsCard
+            productId={product.id}
+            defaultPrice={(product.priceCents / 100).toFixed(2)}
+            initialOptions={variantDraftOptions(product)}
+            initialVariants={variantDraftRows(product.variants)}
+            blockedReason={
+              product.isPreOrder
+                ? "Pre-order products can't have variants yet."
+                : product._count.stockLots > 0
+                  ? "Products with supplier stock can't have variants yet."
+                  : null
+            }
+          />
+        }
+        endSections={
+          owner.country === "AU" ? (
+            <ProductGstCard productId={product.id} gstFree={product.gstFree} tax={taxConfig(owner, product.currency)} />
+          ) : null
         }
       />
       {showWebsiteSeo ? (

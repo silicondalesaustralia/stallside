@@ -42,7 +42,7 @@ export default function ProductOptionsEditor({ initial, disabled }: { initial: S
       hint={
         disabled
           ? "Clear volume prices on this product before adding options."
-          : "Extra choices (size, flavour) that share this product's stock. Not the same as Variants below, which get their own price, SKU and stock. With one option, each choice price is the full price (0 = use the product price). With several, choice prices are added on top."
+          : "Example: a cake with Flavour (chocolate / vanilla) or Extra frosting (+$2). Buyers pick a choice; stock stays one shared count. Use Variants below when each size needs its own stock."
       }
     >
       <fieldset disabled={disabled} className="flex flex-col gap-3 disabled:opacity-60">
