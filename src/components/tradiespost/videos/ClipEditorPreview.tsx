@@ -1,0 +1,47 @@
+'use client'
+
+import { LibraryBlurLayer } from '@/components/social/libraryEditor/LibraryBlurLayer'
+import type { useLibraryBlur } from '@/components/social/libraryEditor/useLibraryBlur'
+import { CaptionPreviewVideo } from './CaptionPreviewVideo'
+import { OverlayPreviewLayer } from './OverlayPreviewLayer'
+import type { useClipEditor } from './useClipEditor'
+
+type Props = {
+  ed: ReturnType<typeof useClipEditor>
+  blur: ReturnType<typeof useLibraryBlur>
+  disabled: boolean
+}
+
+/** Clip preview with captions, blur boxes and text overlays. */
+export function ClipEditorPreview({ ed, blur, disabled }: Props) {
+  const activeCue = ed.activeIndex >= 0 ? ed.cues[ed.activeIndex] : null
+  return (
+    <CaptionPreviewVideo
+      src={ed.previewUrl}
+      videoRef={ed.videoRef}
+      text={activeCue ? activeCue.text : null}
+      progress={activeCue ? (ed.time - activeCue.s) / Math.max(0.01, activeCue.e - activeCue.s) : 0}
+      settings={ed.settings}
+      onTime={ed.onTime}
+      onPlayState={ed.setPlaying}
+    >
+      <LibraryBlurLayer
+        regions={blur.regions}
+        selectedId={blur.selectedId}
+        time={ed.time}
+        disabled={disabled}
+        onSelect={blur.setSelectedId}
+        onChange={blur.update}
+      />
+      <OverlayPreviewLayer
+        overlays={ed.overlays}
+        time={ed.time}
+        selectedId={ed.selectedOverlay?.id ?? null}
+        disabled={disabled}
+        snap={ed.snap}
+        onSelect={ed.setSelectedOverlayId}
+        onChange={ed.updateOverlay}
+      />
+    </CaptionPreviewVideo>
+  )
+}

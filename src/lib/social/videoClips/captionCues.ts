@@ -1,3 +1,5 @@
+import { blurRegionsFromJson } from '@/lib/social/videoBranding/blurRegions'
+import type { VideoBlurRegion } from '@/lib/social/videoBranding/types'
 import { sanitizeAudioMutes } from './audioEdits'
 import { DEFAULT_CAPTION_SETTINGS, parseCaptionSettings, type CaptionSettings } from './captionStyles'
 import { sanitizeOverlays, type TextOverlay } from './textOverlays'
@@ -28,6 +30,8 @@ export type CaptionsDoc = {
   audioMutes?: ClipSegment[]
   /** Background music mixed into the final render. */
   music?: MusicChoice | null
+  /** Timed blur boxes in caption-free clip time. */
+  blurRegions?: VideoBlurRegion[]
 }
 
 const MAX_WORDS_PER_CUE = 4
@@ -122,5 +126,6 @@ export function parseCaptionsDoc(value: unknown): CaptionsDoc {
     speed: parseClipSpeed(raw.speed),
     audioMutes: sanitizeAudioMutes(raw.audioMutes, hasDuration ? cleanDuration : Number.MAX_SAFE_INTEGER),
     music: parseMusicChoice(raw.music),
+    blurRegions: blurRegionsFromJson(raw.blurRegions),
   }
 }

@@ -1,4 +1,6 @@
 import type { VideoBlurRegion } from '@/lib/social/videoBranding/types'
+import { scaleTimed } from '@/lib/social/videoClips/playbackSpeed'
+import { mapTimedToOutput, type ClipSegment } from '@/lib/social/videoClips/timeline'
 
 export const VIDEO_BLUR_MAX_REGIONS = 20
 export const VIDEO_BLUR_MIN_SIZE = 0.03
@@ -122,4 +124,15 @@ export function blurRegionsFromJson(raw: unknown): VideoBlurRegion[] {
     .slice(0, VIDEO_BLUR_MAX_REGIONS)
     .map(parseOne)
     .filter((r): r is VideoBlurRegion => r !== null)
+}
+
+/** Re-time blur boxes onto the edited output (cuts + speed). */
+export function mapBlurRegionsToOutput(
+  regions: VideoBlurRegion[],
+  segments: ClipSegment[] | null,
+  speed: number,
+): VideoBlurRegion[] {
+  const timed = regions.map((r) => ({ ...r, s: r.start, e: r.end }))
+  const cut = segments ? mapTimedToOutput(timed, segments) : timed
+  return scaleTimed(cut, speed).map(({ s, e, ...rest }) => ({ ...rest, start: s, end: e }))
 }

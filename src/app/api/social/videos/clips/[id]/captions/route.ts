@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { requirePaidBusinessAccess } from '@/lib/billing/requirePaidBusinessAccess'
+import { parseBlurRegionsInput } from '@/lib/social/videoBranding/blurRegions'
 import { parseCaptionsDoc, sanitizeCues } from '@/lib/social/videoClips/captionCues'
 import { parseCaptionSettings } from '@/lib/social/videoClips/captionStyles'
 import { publicSocialPostsUrl } from '@/lib/social/socialVideoStorage'
@@ -67,6 +68,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     speed: parseClipSpeed(doc.speed),
     audioMutes: doc.audioMutes ?? [],
     music: doc.music ?? null,
+    blurRegions: doc.blurRegions ?? [],
     previewUrl: publicSocialPostsUrl(doc.cleanPath ?? clip.storage_path) || null,
     rendering: await hasActiveJob(ctx, clip.id),
   })
@@ -77,15 +79,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
   if (!ctx.ok) return ctx.response
   const { id } = await context.params
 
-  let body: {
-    cues?: unknown
-    settings?: unknown
-    segments?: unknown
-    overlays?: unknown
-    speed?: unknown
-    audioMutes?: unknown
-    music?: unknown
-  }
+  let body: Record<string, unknown>
   try {
     body = await req.json()
   } catch {
@@ -102,6 +96,11 @@ export async function POST(req: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: 'Captions are already updating — try again shortly' }, { status: 409 })
   }
 
+  const blurParsed = parseBlurRegionsInput(body.blurRegions)
+  if (!blurParsed.ok) {
+    return NextResponse.json({ error: blurParsed.error }, { status: 400 })
+  }
+
   const doc = parseCaptionsDoc(clip.captions)
   const duration = cleanDurationOf(doc.cleanDuration, clip.duration_seconds)
   const segments = normalizeSegments(body.segments, duration)
@@ -116,6 +115,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     speed: parseClipSpeed(body.speed),
     audioMutes: sanitizeAudioMutes(body.audioMutes, duration),
     music: parseMusicChoice(body.music),
+    blurRegions: blurParsed.regions,
   }
 
   const { error: updateErr } = await ctx.db

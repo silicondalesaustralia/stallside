@@ -1,3 +1,4 @@
+import type { VideoBlurRegion } from '@/lib/social/videoBranding/types'
 import type { CaptionCue } from '@/lib/social/videoClips/captionCues'
 import type { CaptionSettings } from '@/lib/social/videoClips/captionStyles'
 import type { TextOverlay } from '@/lib/social/videoClips/textOverlays'
@@ -13,11 +14,15 @@ export type ClipCaptions = {
   speed: number
   audioMutes: ClipSegment[]
   music: MusicChoice | null
+  blurRegions: VideoBlurRegion[]
   previewUrl: string | null
   rendering: boolean
 }
 
-export type ClipEdit = Pick<ClipCaptions, 'cues' | 'settings' | 'segments' | 'overlays' | 'speed' | 'audioMutes' | 'music'>
+export type ClipEdit = Pick<
+  ClipCaptions,
+  'cues' | 'settings' | 'segments' | 'overlays' | 'speed' | 'audioMutes' | 'music' | 'blurRegions'
+>
 
 async function errorFrom(res: Response, fallback: string): Promise<Error> {
   const json = (await res.json().catch(() => ({}))) as { error?: string }

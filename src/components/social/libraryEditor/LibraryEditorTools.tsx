@@ -1,12 +1,12 @@
 'use client'
 
-import { Captions, Loader2, MoveHorizontal, Plus } from 'lucide-react'
+import { Captions, Loader2 } from 'lucide-react'
+import { ClipBlurTools } from '@/components/tradiespost/videos/ClipBlurTools'
 
 type Props = {
   disabled?: boolean
   canAddBlur: boolean
   onAddBlur: () => void
-  /** A blur is selected, so it can be stretched over the whole video. */
   canFillBlur: boolean
   onFillBlur: () => void
   hasTranscript: boolean
@@ -28,17 +28,13 @@ export function LibraryEditorTools(props: Props) {
       : 'Auto captions (1 credit)'
   return (
     <>
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="w-14 text-[11px] font-bold uppercase text-zinc-400">Blur</span>
-        <button type="button" onClick={props.onAddBlur} disabled={disabled || !props.canAddBlur} className={BUTTON}>
-          <Plus className="h-3.5 w-3.5" aria-hidden />
-          Add blur
-        </button>
-        <button type="button" onClick={props.onFillBlur} disabled={disabled || !props.canFillBlur} className={BUTTON}>
-          <MoveHorizontal className="h-3.5 w-3.5" aria-hidden />
-          Selected blur: full length
-        </button>
-      </div>
+      <ClipBlurTools
+        disabled={disabled}
+        canAdd={props.canAddBlur}
+        onAdd={props.onAddBlur}
+        canFill={props.canFillBlur}
+        onFill={props.onFillBlur}
+      />
       <div className="flex flex-wrap items-center gap-1.5">
         <span className="w-14 text-[11px] font-bold uppercase text-zinc-400">Auto</span>
         <button

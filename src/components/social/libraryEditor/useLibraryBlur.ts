@@ -1,13 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { VIDEO_BLUR_MAX_REGIONS, createBlurRegion } from '@/lib/social/videoBranding/blurRegions'
 import type { VideoBlurRegion } from '@/lib/social/videoBranding/types'
 
-/** Blur areas for the Library editor. Times are seconds of the original upload. */
+/** Blur areas for Library / clip editors. Times are seconds of the source (clean) video. */
 export function useLibraryBlur(initial: VideoBlurRegion[]) {
   const [regions, setRegions] = useState<VideoBlurRegion[]>(initial)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+
+  const replace = useCallback((next: VideoBlurRegion[]) => {
+    setRegions(next)
+    setSelectedId(null)
+  }, [])
 
   function add(time: number, duration: number) {
     if (regions.length >= VIDEO_BLUR_MAX_REGIONS || duration <= 0) return
@@ -35,6 +40,7 @@ export function useLibraryBlur(initial: VideoBlurRegion[]) {
     regions,
     selectedId,
     setSelectedId,
+    replace,
     add,
     update,
     remove,

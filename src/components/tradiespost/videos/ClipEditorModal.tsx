@@ -1,25 +1,33 @@
 'use client'
 
+import { useEffect } from 'react'
 import { Loader2, X } from 'lucide-react'
+import { LibraryBlurTrackRows } from '@/components/social/libraryEditor/LibraryBlurTrackRows'
+import { useLibraryBlur } from '@/components/social/libraryEditor/useLibraryBlur'
+import { SocialFontPreviewStyles } from '@/components/social/SocialFontPreviewStyles'
 import { outputDuration } from '@/lib/social/videoClips/timeline'
 import { formatVideoDuration } from '@/lib/social/libraryMediaViewModel'
-import { CaptionPreviewVideo } from './CaptionPreviewVideo'
+import { ClipBlurTools } from './ClipBlurTools'
+import { ClipEditorPreview } from './ClipEditorPreview'
 import { ClipEditorSidebar } from './ClipEditorSidebar'
 import { ClipEditorToolbar } from './ClipEditorToolbar'
 import { ClipTimeline } from './ClipTimeline'
-import { OverlayPreviewLayer } from './OverlayPreviewLayer'
 import { useClipEditor } from './useClipEditor'
-import { SocialFontPreviewStyles } from '@/components/social/SocialFontPreviewStyles'
 
 type Props = { clipId: string; clipTitle: string; onClose: () => void; onSaved: () => void }
 
 export function ClipEditorModal({ clipId, clipTitle, onClose, onSaved }: Props) {
   const ed = useClipEditor(clipId)
-  const { settings, busy } = ed
-  const activeCue = ed.activeIndex >= 0 ? ed.cues[ed.activeIndex] : null
+  const blur = useLibraryBlur([])
+  const { busy } = ed
+
+  useEffect(() => {
+    if (ed.loading) return
+    blur.replace(ed.blurRegions)
+  }, [clipId, ed.loading, ed.blurRegions, blur.replace])
 
   async function handleSave() {
-    if (!(await ed.save())) return
+    if (!(await ed.save(blur.regions))) return
     onSaved()
     onClose()
   }
@@ -39,25 +47,7 @@ export function ClipEditorModal({ clipId, clipTitle, onClose, onSaved }: Props) 
         ) : (
           <div className="grid gap-4 overflow-y-auto px-4 py-4 lg:grid-cols-[minmax(0,1fr)_300px]">
             <div className="min-w-0 space-y-3">
-              <CaptionPreviewVideo
-                src={ed.previewUrl}
-                videoRef={ed.videoRef}
-                text={activeCue ? activeCue.text : null}
-                progress={activeCue ? (ed.time - activeCue.s) / Math.max(0.01, activeCue.e - activeCue.s) : 0}
-                settings={settings}
-                onTime={ed.onTime}
-                onPlayState={ed.setPlaying}
-              >
-                <OverlayPreviewLayer
-                  overlays={ed.overlays}
-                  time={ed.time}
-                  selectedId={ed.selectedOverlay?.id ?? null}
-                  disabled={busy}
-                  snap={ed.snap}
-                  onSelect={ed.setSelectedOverlayId}
-                  onChange={ed.updateOverlay}
-                />
-              </CaptionPreviewVideo>
+              <ClipEditorPreview ed={ed} blur={blur} disabled={busy} />
               <ClipTimeline
                 duration={ed.duration}
                 time={ed.time}
@@ -75,7 +65,20 @@ export function ClipEditorModal({ clipId, clipTitle, onClose, onSaved }: Props) 
                 selectedOverlayId={ed.selectedOverlay?.id ?? null}
                 onOverlays={ed.setOverlays}
                 onSelectOverlay={ed.setSelectedOverlayId}
-              />
+              >
+                <LibraryBlurTrackRows
+                  regions={blur.regions}
+                  selectedId={blur.selectedId}
+                  duration={ed.duration}
+                  disabled={busy}
+                  onChange={blur.update}
+                  onRemove={blur.remove}
+                  onSelect={(id, seekTo) => {
+                    blur.setSelectedId(id)
+                    ed.seek(seekTo)
+                  }}
+                />
+              </ClipTimeline>
               <ClipEditorToolbar
                 time={ed.time}
                 duration={ed.duration}
@@ -88,9 +91,17 @@ export function ClipEditorModal({ clipId, clipTitle, onClose, onSaved }: Props) 
                 audioParts={ed.audioParts}
                 onAudioParts={ed.setAudioParts}
                 onAddText={ed.addOverlay}
-              />
+              >
+                <ClipBlurTools
+                  disabled={busy}
+                  canAdd={blur.canAdd}
+                  onAdd={() => blur.add(ed.time, ed.duration)}
+                  canFill={blur.hasSelection}
+                  onFill={() => blur.fillSelected(ed.duration)}
+                />
+              </ClipEditorToolbar>
               <p className="text-xs text-zinc-500">
-                Final length {formatVideoDuration(outputDuration(ed.segments) / ed.speed)}{ed.speed !== 1 ? ` at ${ed.speed}×` : ''}. Dark blocks are kept; striped areas are cut. Green is the voice — mute any section. Drag captions (yellow) and text (blue) to retime them.
+                Final length {formatVideoDuration(outputDuration(ed.segments) / ed.speed)}{ed.speed !== 1 ? ` at ${ed.speed}×` : ''}. Dark blocks are kept; striped areas are cut. Green is the voice — mute any section. Drag captions (yellow), text (blue) and blur (purple) bars to retime them; drag blur boxes on the video to place them.
               </p>
             </div>
             <ClipEditorSidebar ed={ed} />

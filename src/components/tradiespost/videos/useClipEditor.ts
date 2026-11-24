@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useToast } from '@/components/ui/Toast'
+import type { VideoBlurRegion } from '@/lib/social/videoBranding/types'
 import { audioMutesFrom, audioPartsFrom, type AudioPart } from '@/lib/social/videoClips/audioEdits'
 import type { CaptionCue } from '@/lib/social/videoClips/captionCues'
 import { DEFAULT_CAPTION_SETTINGS, type CaptionSettings } from '@/lib/social/videoClips/captionStyles'
@@ -33,6 +34,7 @@ export function useClipEditor(clipId: string, load: (id: string) => Promise<Clip
   const [speed, setSpeed] = useState(1)
   const [audioParts, setAudioParts] = useState<AudioPart[]>([])
   const [music, setMusic] = useState<MusicChoice | null>(null)
+  const [blurRegions, setBlurRegions] = useState<VideoBlurRegion[]>([])
   const playback = useClipPlayback(videoRef, segments, audioParts)
   const { time } = playback
 
@@ -48,6 +50,7 @@ export function useClipEditor(clipId: string, load: (id: string) => Promise<Clip
         setSpeed(data.speed ?? 1)
         setAudioParts(audioPartsFrom(data.audioMutes ?? [], data.durationSeconds))
         setMusic(data.music ?? null)
+        setBlurRegions(data.blurRegions ?? [])
         setDuration(data.durationSeconds)
         setPreviewUrl(data.previewUrl)
         setRendering(data.rendering)
@@ -82,12 +85,21 @@ export function useClipEditor(clipId: string, load: (id: string) => Promise<Clip
     setSelectedOverlayId(null)
   }
 
-  const edit: ClipEdit = { cues, settings, segments, overlays, speed, audioMutes: audioMutesFrom(audioParts), music }
+  const edit: ClipEdit = {
+    cues,
+    settings,
+    segments,
+    overlays,
+    speed,
+    audioMutes: audioMutesFrom(audioParts),
+    music,
+    blurRegions,
+  }
 
-  async function save(): Promise<boolean> {
+  async function save(nextBlur?: VideoBlurRegion[]): Promise<boolean> {
     setSaving(true)
     try {
-      await saveClipCaptions(clipId, edit)
+      await saveClipCaptions(clipId, { ...edit, blurRegions: nextBlur ?? blurRegions })
       toast('Updating clip — the new version will appear in a minute', 'success')
       return true
     } catch (err) {
@@ -127,6 +139,7 @@ export function useClipEditor(clipId: string, load: (id: string) => Promise<Clip
     setAudioParts,
     music,
     setMusic,
+    blurRegions,
     ...playback,
     activeIndex: cueIndexAt(cues, time),
     edit,

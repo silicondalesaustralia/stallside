@@ -8,6 +8,7 @@ import {
   outputDuration,
   type ClipSegment,
 } from '@/lib/social/videoClips/timeline'
+import { mapBlurRegionsToOutput } from '@/lib/social/videoBranding/blurRegions'
 import type { VideoBlurRegion } from '@/lib/social/videoBranding/types'
 
 /** Cuts, speed and voice mutes applied before branding (all in source time). */
@@ -20,12 +21,6 @@ export type LibraryEditPlan = {
   /** Captions and text overlays in output time, burned in last. */
   burned: Pick<CaptionsDoc, 'cues' | 'words' | 'settings' | 'overlays'>
   outputSeconds: number
-}
-
-function mapBlur(regions: VideoBlurRegion[], segments: ClipSegment[] | null, speed: number): VideoBlurRegion[] {
-  const timed = regions.map((r) => ({ ...r, s: r.start, e: r.end }))
-  const cut = segments ? mapTimedToOutput(timed, segments) : timed
-  return scaleTimed(cut, speed).map(({ s, e, ...rest }) => ({ ...rest, start: s, end: e }))
 }
 
 /**
@@ -49,7 +44,7 @@ export function planLibraryEdit(
 
   return {
     edit: edited ? { segments, speed, audioMutes } : null,
-    blurRegions: mapBlur(blurRegions, cut ? segments : null, speed),
+    blurRegions: mapBlurRegionsToOutput(blurRegions, cut ? segments : null, speed),
     burned: {
       cues: scaleTimed(captions.cues, speed),
       words: scaleTimed(captions.words, speed),

@@ -6,9 +6,10 @@ import { buildAssSubtitles } from '../../../src/lib/social/videoClips/captionAss
 import type { CaptionsDoc } from '../../../src/lib/social/videoClips/captionCues'
 import { resolveHighlightColor } from '../../../src/lib/social/videoClips/captionStyles'
 import { burnCaptionsArgs } from '../../../src/lib/social/videoClips/clipFfmpegArgs'
-import { editRenderArgs } from '../../../src/lib/social/videoClips/editFfmpegArgs'
+import { clipRenderArgs } from '../../../src/lib/social/videoClips/clipRenderFilter'
 import { fullSegments, isFullClip, mapCaptionsToOutput, mapTimedToOutput, outputDuration } from '../../../src/lib/social/videoClips/timeline'
 import { parseClipSpeed, scaleTimed } from '../../../src/lib/social/videoClips/playbackSpeed'
+import { mapBlurRegionsToOutput } from '../../../src/lib/social/videoBranding/blurRegions'
 import { workerFontsRoot } from '../../../src/lib/social/videoBranding/videoHeadlineFonts'
 import { runFfmpeg } from '../../../src/lib/social/videoBranding/runFfmpeg'
 import { probeVideoDisplay } from '../../../src/lib/social/videoBranding/processBrandingLocally'
@@ -63,7 +64,10 @@ export async function writeClipAss(input: {
 export async function renderCaptionedClip(input: {
   cleanPath: string
   workDir: string
-  captions: Pick<CaptionsDoc, 'cues' | 'words' | 'settings' | 'segments' | 'overlays' | 'speed' | 'audioMutes'>
+  captions: Pick<
+    CaptionsDoc,
+    'cues' | 'words' | 'settings' | 'segments' | 'overlays' | 'speed' | 'audioMutes' | 'blurRegions'
+  >
   brandColor: string | null
 }): Promise<{ path: string; durationSeconds: number }> {
   const { captions } = input
@@ -79,8 +83,10 @@ export async function renderCaptionedClip(input: {
     : { cues: captions.cues, words: captions.words }
   const mapped = { cues: scaleTimed(cutCaptions.cues, speed), words: scaleTimed(cutCaptions.words, speed) }
   const overlays = scaleTimed(cut ? mapTimedToOutput(captions.overlays, segments) : captions.overlays, speed)
+  const blurRegions = mapBlurRegionsToOutput(captions.blurRegions ?? [], cut ? segments : null, speed)
   const outDuration = (cut ? outputDuration(segments) : duration) / speed
-  if (!edited && !hasBurnedText({ ...captions, cues: mapped.cues, overlays })) {
+  const needsBurn = hasBurnedText({ ...captions, cues: mapped.cues, overlays })
+  if (!edited && !needsBurn && !blurRegions.length) {
     return { path: input.cleanPath, durationSeconds: duration }
   }
 
@@ -94,13 +100,34 @@ export async function renderCaptionedClip(input: {
     workDir: input.workDir,
   })
 
-  if (edited) {
+  if (edited || blurRegions.length) {
     await runFfmpeg(
-      editRenderArgs({ inputPath: input.cleanPath, outputPath, segments, hasAudio: probe.hasAudio, assPath, fontsDir, speed, audioMutes, outputSeconds: outDuration }),
+      clipRenderArgs({
+        inputPath: input.cleanPath,
+        outputPath,
+        edited,
+        segments,
+        hasAudio: probe.hasAudio,
+        assPath,
+        fontsDir,
+        speed,
+        audioMutes,
+        blurRegions,
+        frameWidth: probe.displayWidth,
+        frameHeight: probe.displayHeight,
+        outputSeconds: outDuration,
+      }),
     )
   } else if (assPath) {
     await runFfmpeg(
-      burnCaptionsArgs({ inputPath: input.cleanPath, assPath, outputPath, hasAudio: probe.hasAudio, fontsDir, durationSeconds: duration }),
+      burnCaptionsArgs({
+        inputPath: input.cleanPath,
+        assPath,
+        outputPath,
+        hasAudio: probe.hasAudio,
+        fontsDir,
+        durationSeconds: duration,
+      }),
     )
   } else {
     return { path: input.cleanPath, durationSeconds: duration }
