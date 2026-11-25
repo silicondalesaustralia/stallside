@@ -33,10 +33,11 @@ export const productArticles: KnowledgeArticle[] = [
       "Update Product name, Freshness note (for example Laid this morning), Description or photo. Tick Remove next to the photo to delete it.",
       "Change the Price, cost or Volume prices and the Low-stock threshold, then tap Save in the bar at the bottom.",
       "To change stock, go to the Stock card. Choose Increase by, Decrease by or Set exact, pick a reason (for example Restocked or Spoiled/damaged) and tap Apply stock change.",
-      "Use Search & social near the bottom for Google title, description and sharing, or Copy link under Listing to share the product's own page.",
+      "Use Search & social near the bottom for Google title, description and sharing, or Copy link under Listing to share the product's shop page.",
     ],
     tips: [
       "GST, Variants and Search & social each save on their own. The bottom Save bar saves the rest of the product.",
+      "View on site / Copy link use your shop address (yourname.vendl.app/products/… or /category/…). Old /s/… links redirect there.",
       "Changing the URL in Search & social changes the product's link.",
       "Stock changes sync to Square when inventory sync is on.",
     ],

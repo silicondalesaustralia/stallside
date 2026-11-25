@@ -2,11 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { SITE_URL } from "@/lib/legal";
-import { standProductPath } from "@/lib/stand-seo";
-import { shopProductPath } from "@/lib/storefront/paths";
 import { pickMainCategory } from "@/lib/catalogue/main-category";
-import { publishedWebsiteForStand, standWebsiteUrl } from "@/lib/storefront/stand-website";
 import { productImageList } from "@/lib/product-images";
 import { parseImageAlts } from "@/lib/product-image-alts";
 import ProductGstCard from "./ProductGstCard";
@@ -20,6 +16,7 @@ import ViewOnSiteLink from "@/components/dashboard/ViewOnSiteLink";
 import { loadProductRecipeCost } from "@/lib/production/load-product-recipe-cost";
 import { variantDraftOptions, variantDraftRows } from "@/lib/product-variants/variant-draft-load";
 import ProductVariantsCard from "./ProductVariantsCard";
+import { productPublicUrl } from "@/lib/storefront/stand-public-url";
 /** Auth-gated; never serve a cached anonymous RSC payload for Edit links. */
 export const dynamic = "force-dynamic";
 
@@ -73,10 +70,13 @@ export default async function EditProductPage({
     select: { id: true, name: true, priceCents: true },
   });
 
-  const website = await publishedWebsiteForStand(product.stand.slug);
-  const publicUrl = website
-    ? standWebsiteUrl(website, shopProductPath(website.storefrontSlug, { slug: product.slug, categorySlug: mainCategory?.slug }, false, ""))
-    : `${SITE_URL}${standProductPath(product.stand.slug, product.slug)}`;
+  const publicUrl = await productPublicUrl({
+    ownerId: owner.id,
+    businessName: owner.businessName || product.stand.name,
+    standSlug: product.stand.slug,
+    productSlug: product.slug,
+    categorySlug: mainCategory?.slug,
+  });
   const priceTiers = parsePriceTiers(product.priceTiers);
   const showWebsiteSeo = websiteSectionEnabledFor(owner.id);
 

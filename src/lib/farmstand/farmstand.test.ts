@@ -14,7 +14,7 @@ test("farmstand links", () => {
 });
 
 test("seller-host paths map to stand pages", () => {
-  assert.equal(farmstandPathFor("/", unpublished), "/s/eggs");
+  assert.equal(farmstandPathFor("/", unpublished), null);
   assert.equal(farmstandPathFor("/", published), null);
   assert.equal(farmstandPathFor("/farmstand", published), "/s/eggs");
   assert.equal(farmstandPathFor("/farmstand/c/dozens", published), "/s/eggs/c/dozens");

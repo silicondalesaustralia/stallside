@@ -12,11 +12,12 @@ export const businessSetupArticles: KnowledgeArticle[] = [
     steps: [
       "Use the Business switcher at the bottom of the sidebar (More on your phone) and tap Manage. Your business opens on the Business Details tab.",
       "Edit Business name, Suburb / location, Currency and Timezone.",
-      "Your site URL shows your free Vendl address, or your own domain once connected. Tap Connect a domain to add one.",
+      "Your store link shows your free Vendl shop address (yourname.vendl.app). Pro can connect a custom domain.",
       "Tap Save details.",
       "How shoppers pay is set on the Payments page, not here.",
     ],
     tips: [
+      "Products open at yourname.vendl.app/products/… or yourname.vendl.app/category/…. Old vendl.app/s/… links redirect there.",
       "PayID only works in AUD. Changing currency away from AUD turns PayID off.",
       "Timezone sets when pre-order windows open and close.",
       "Delete this stand permanently deletes its products, orders and history. It can't be undone.",

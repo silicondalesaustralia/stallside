@@ -52,11 +52,11 @@ async function lookupFarmstand(slug: string, requestUrl: URL): Promise<Farmstand
 /**
  * Internal `/s/{stand}/…` path for a farmstand request on a seller host, or null:
  * - `/farmstand[/{stand}]/…` is the farmstand (the owner's main stand unless a stand is named);
- * - `/` is the farmstand while the owner has no published website;
+ * - `/` is always the website/shop (not the farmstand);
  * - `/s/{stand}/…` links inside the farmstand stay on the host for the owner's own stands.
  */
 export function farmstandPathFor(pathname: string, info: FarmstandLookup): string | null {
-  if (pathname === "/") return info.isPublished ? null : `/s/${info.mainStandSlug}`;
+  if (pathname === "/") return null;
   const segments = pathname.split("/").filter(Boolean);
   if (segments[0] === "s") return segments[1] && info.standSlugs.includes(segments[1]) ? pathname : null;
   if (`/${segments[0]}` !== FARMSTAND_PATH) return null;

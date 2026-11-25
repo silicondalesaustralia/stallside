@@ -1,8 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { standPublicHome } from "@/lib/storefront/legacy-stand-redirect";
-import { businessSiteUrl } from "@/lib/storefront/business-site-url";
+import type { BusinessSiteUrl } from "@/lib/storefront/business-site-url";
+import {
+  storefrontPublicSiteForOwner,
+  storefrontPublicUrl,
+} from "@/lib/storefront/stand-public-url";
 import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import BusinessPageHeader from "./BusinessPageHeader";
 import BusinessSetupPrompt from "./BusinessSetupPrompt";
@@ -45,11 +48,18 @@ export default async function StandDetailPage({
   });
   if (!stand) notFound();
 
-  const [isPro, site, publicHome] = await Promise.all([
+  const [isPro, storeSite] = await Promise.all([
     ownerIdHasProAccess(owner.id),
-    businessSiteUrl(owner.id),
-    standPublicHome(stand.slug, stand.cartMode),
+    storefrontPublicSiteForOwner(owner.id, owner.businessName || stand.name),
   ]);
+  const url = storefrontPublicUrl(storeSite, "/");
+  const { host, pathname } = new URL(url);
+  const site: BusinessSiteUrl = {
+    url,
+    label: `${host}${pathname === "/" ? "" : pathname}`,
+    customDomain: Boolean(storeSite.primaryCustomHostname),
+    published: storeSite.published,
+  };
   return (
     <main className="flex flex-col gap-8">
       <SyncSelectedBusiness
@@ -59,8 +69,8 @@ export default async function StandDetailPage({
       <BusinessPageHeader
         standId={stand.id}
         name={stand.name}
-        publicUrl={publicHome.url}
-        publicLabel={publicHome.label}
+        publicUrl={site.url}
+        publicLabel={site.label}
       />
 
       <BusinessSetupPrompt
@@ -70,7 +80,7 @@ export default async function StandDetailPage({
 
       <BusinessSetupTabs standId={stand.id} active={tab} />
 
-      {tab === "details" ? <StandEditForm stand={stand} site={site} isPro={isPro} storeLink={publicHome} /> : null}
+      {tab === "details" ? <StandEditForm stand={stand} site={site} isPro={isPro} storeLink={site} /> : null}
       {tab === "details" ? (
         <StandSocialForm
           standId={stand.id}

@@ -8,45 +8,39 @@ const boxClass = "truncate rounded-lg border border-[var(--line)] bg-[var(--wash
 export default function StandSiteUrlField({
   site,
   isPro,
-  storeLink,
 }: {
   site: BusinessSiteUrl | null;
   isPro: boolean;
-  /** The stand's vendl.app/s/… link: free stores' only public address. */
-  storeLink: StoreLink;
+  /** @deprecated kept for call-site compatibility; shop URL comes from `site`. */
+  storeLink?: StoreLink;
 }) {
-  if (!isPro) {
-    return (
-      <div className="flex flex-col gap-2 text-sm">
-        <span className="font-medium">Your store link</span>
-        <a href={storeLink.url} target="_blank" rel="noreferrer" className={`${boxClass} text-[var(--leaf-dark)] underline`}>
-          {storeLink.label}
-        </a>
-        <span className="text-[var(--muted)]">
-          <Link href="/dashboard/settings/billing" className="font-semibold text-[var(--field)] underline">
-            Upgrade to Pro
-          </Link>{" "}
-          to claim {site ? <strong>{site.label}</strong> : "your own vendl.app address"} or connect your own domain.
-        </span>
-      </div>
-    );
-  }
   return (
     <div className="flex flex-col gap-2 text-sm">
-      <span className="font-medium">Your site URL</span>
+      <span className="font-medium">{isPro ? "Your site URL" : "Your store link"}</span>
       {site ? (
         <a href={site.url} target="_blank" rel="noreferrer" className={`${boxClass} text-[var(--leaf-dark)] underline`}>
           {site.label}
         </a>
       ) : (
-        <span className={`${boxClass} text-[var(--muted)]`}>No website yet</span>
+        <span className={`${boxClass} text-[var(--muted)]`}>No store address yet</span>
       )}
       <span className="text-[var(--muted)]">
-        {site?.customDomain ? "Your connected domain." : "Your vendl.app address."}
-        {site && !site.published ? " Not published yet." : ""}{" "}
-        <Link href="/dashboard/website/domains" className="underline">
-          {site?.customDomain ? "Manage domain" : "Connect a domain"}
-        </Link>
+        {site?.customDomain
+          ? "Your connected domain."
+          : "Your vendl.app shop address (same shape as Web Studio)."}
+        {site && !site.published && isPro ? " Website draft — publish when you're ready." : ""}{" "}
+        {isPro ? (
+          <Link href="/dashboard/website/domains" className="underline">
+            {site?.customDomain ? "Manage domain" : "Connect a domain"}
+          </Link>
+        ) : (
+          <>
+            <Link href="/dashboard/settings/billing" className="font-semibold text-[var(--field)] underline">
+              Upgrade to Pro
+            </Link>{" "}
+            to connect your own domain.
+          </>
+        )}
       </span>
     </div>
   );

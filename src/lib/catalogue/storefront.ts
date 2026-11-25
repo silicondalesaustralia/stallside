@@ -118,13 +118,15 @@ export async function loadStorefrontContext(
     options.ownerId === storefront.ownerId;
 
   if (options.draft && !isOwnerPreview) return null;
-  if (!options.draft && !storefront.isPublished) return null;
+  // Unpublished shops still serve from the draft so free subdomain links
+  // (`/{category|products}/{slug}`) work the same as a published site.
+  const liveFromDraft = !storefront.isPublished || Boolean(options.draft);
 
   const stand = pickWebsiteStand(storefront.owner.stands, storefront.draftConfig);
   if (!stand?.isActive) return null;
 
   const config = parseStorefrontConfig(
-    options.draft || !storefront.publishedConfig
+    liveFromDraft || !storefront.publishedConfig
       ? storefront.draftConfig
       : storefront.publishedConfig,
   );
