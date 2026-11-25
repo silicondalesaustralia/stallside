@@ -24,7 +24,11 @@ export default function ProductStatusSection({ product }: { product: ProductFiel
         <p className="mt-2 text-sm text-[var(--muted)]">{status.note}</p>
       </div>
       {!product.isArchived ? (
-        <ProductPublicCard publicUrl={product.publicUrl} onError={setError} />
+        <ProductPublicCard
+          publicUrl={product.publicUrl}
+          farmstandUrl={product.farmstandUrl}
+          onError={setError}
+        />
       ) : null}
       <div className="border-t border-[var(--line)] pt-3">
         <ProductLifecycleActions

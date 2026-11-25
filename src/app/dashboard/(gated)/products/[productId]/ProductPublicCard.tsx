@@ -5,9 +5,11 @@ import { useState } from "react";
 
 export default function ProductPublicCard({
   publicUrl,
+  farmstandUrl,
   onError,
 }: {
   publicUrl: string;
+  farmstandUrl: string;
   onError: (msg: string) => void;
 }) {
   const [copied, setCopied] = useState(false);
@@ -37,6 +39,13 @@ export default function ProductPublicCard({
           className="font-semibold text-[var(--leaf-dark)] underline"
         >
           Open
+        </Link>
+        <Link
+          href={farmstandUrl}
+          target="_blank"
+          className="font-semibold text-[var(--leaf-dark)] underline"
+        >
+          Open farmstand
         </Link>
       </div>
     </div>

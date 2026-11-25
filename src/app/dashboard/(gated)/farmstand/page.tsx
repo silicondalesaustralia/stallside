@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
-import { standPublicHome } from "@/lib/storefront/legacy-stand-redirect";
+import { standFarmstandUrl } from "@/lib/farmstand/resolve";
 import { businessQrHref } from "@/lib/qr/hrefs";
 import PageHeader from "@/components/dashboard/ui/PageHeader";
 import NoBusinessYet from "@/components/NoBusinessYet";
@@ -32,7 +32,9 @@ export default async function FarmstandPage() {
     prisma.stand.findUniqueOrThrow({ where: { id: selected.id }, select: { slug: true, cartMode: true } }),
     prisma.storefront.findUnique({ where: { ownerId: owner.id }, select: { isPublished: true } }),
   ]);
-  const home = await standPublicHome(stand.slug, stand.cartMode);
+  const farmstandUrl = await standFarmstandUrl(stand.slug, stand.cartMode);
+  const { host, pathname } = new URL(farmstandUrl);
+  const farmstandLabel = `${host}${pathname === "/" ? "" : pathname}`;
   const businessHref = `/dashboard/businesses/${selected.id}`;
 
   return (
@@ -42,8 +44,8 @@ export default async function FarmstandPage() {
         <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
           {selected.name} farmstand
         </h2>
-        <a href={home.url} target="_blank" rel="noreferrer" className="break-all font-receipt text-lg text-[var(--field)] hover:underline">
-          {home.label}
+        <a href={farmstandUrl} target="_blank" rel="noreferrer" className="break-all font-receipt text-lg text-[var(--field)] hover:underline">
+          {farmstandLabel}
         </a>
         <p className="text-sm text-[var(--muted)]">
           {storefront?.isPublished
@@ -53,7 +55,7 @@ export default async function FarmstandPage() {
         </p>
         <div className="flex flex-wrap items-center gap-4">
           <DashPrimaryCta href={businessQrHref(selected.id)}>Print QR poster</DashPrimaryCta>
-          <a href={home.url} target="_blank" rel="noreferrer" className={linkClass}>
+          <a href={farmstandUrl} target="_blank" rel="noreferrer" className={linkClass}>
             Open farmstand
           </a>
         </div>
