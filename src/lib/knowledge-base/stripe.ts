@@ -16,7 +16,7 @@ export const stripeArticles: KnowledgeArticle[] = [
     steps: [
       "Open Payments and tap the Stripe link to open Card / Tap & Go. Tap Connect Stripe (it says Finish Stripe setup if you started before).",
       "Complete Stripe's onboarding with your business and bank details. Your Stripe country comes from your billing region.",
-      "Back on Card / Tap & Go, tap Refresh status if it doesn't show as ready yet.",
+      "Back on Card / Tap & Go, tap Refresh status if Status isn't Connected yet.",
       "Open Payments, tick Card / Tap & Go under Checkout payments and tap Save payment options. Repeat for each business (switch with the Business switcher).",
       "Scan your QR on another phone and run a small test card sale. The money goes to your Stripe account.",
     ],
@@ -39,7 +39,7 @@ export const stripeArticles: KnowledgeArticle[] = [
       "Open Payments and tap the Stripe link.",
       "Find the Vendl fee box. Choose I'll cover the fee (the default) or Add the fee to the customer's total. It saves straight away.",
       "When added, shoppers see Subtotal, Card fee and Total at checkout, so the fee is clear.",
-      "The setting applies to Stripe and Square checkout. Cash and PayID never have a fee.",
+      "The setting applies to Stripe and Square checkout. Cash and local bank payments never have a fee.",
     ],
     tips: [
       "Card surcharges aren't allowed in Australia, so this choice is locked for Australian accounts and AUD checkouts.",

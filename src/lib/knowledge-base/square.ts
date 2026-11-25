@@ -38,13 +38,12 @@ export const squareArticles: KnowledgeArticle[] = [
     related: ["connect-square", "inventory-report", "stock-count"],
     ctas: [{ label: "Square settings", href: "/dashboard/settings/square" }],
     steps: [
-      "On the Square settings page, turn on Product / catalogue sync, and POS inventory sync for stock.",
-      "Under Products, tap Review matches to link existing Square items to the same Vendl products. Vendl suggests matches by SKU, barcode or name, but you confirm each one.",
-      "To bring items in, tap Load Square items, choose Import into (a business) and pick the items. Vendl creates them with price, SKU, stock and photo, already linked.",
-      "To push the other way, pick Vendl products that aren't in Square yet. Vendl creates them in Square, links them and sets their starting stock at your location.",
+      "On the Square settings page, under Use Square for, turn on Product / catalogue sync, and POS inventory sync for stock. Tap Save.",
+      "Under Products & stock → Review matches, link existing Square items to the same Vendl products. Vendl suggests matches by SKU, barcode or name, but you confirm each one.",
+      "Under Import from Square, tap Load Square items, choose Import into (a business) and pick the items. Vendl creates them with price, SKU, stock and photo, already linked.",
+      "Under Add Vendl products to Square, pick Vendl products that aren't in Square yet. Vendl creates them in Square, links them and sets their starting stock at your location.",
       "From then on, online sales, cash and PayID sales, manual stock changes, stock counts and production batches in Vendl update the count in Square.",
-      "When a count changes in Square (for example a sale on your Square reader at the market), Vendl updates the linked product's stock.",
-      "Sync health at the bottom of the Square page shows whether payments, inventory and catalogue sync are on, and when stock last synced.",
+      "When a count changes in Square (for example a sale on your Square reader at the market), Vendl updates the linked product's stock. Stock last synced shows under Use Square for.",
     ],
     tips: [
       "Only products priced in your Square account's currency (AUD in Australia, USD in the US) can be pushed to Square.",

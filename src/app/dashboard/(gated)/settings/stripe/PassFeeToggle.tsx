@@ -86,8 +86,8 @@ export default function PassFeeToggle({
         </p>
       )}
       <p className="text-[var(--muted)]">
-        Cash and PayID are always free. Upgrade to Pro to remove this fee
-        entirely.
+        Cash and local bank payments stay free. Upgrade to Pro to remove this
+        fee.
       </p>
     </section>
   );

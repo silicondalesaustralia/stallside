@@ -44,10 +44,10 @@ export default function SquareSubscriptionsToggle({
         />
         <span>
           Take subscription and membership payments with Square
-          <span className="block text-[var(--muted)]">
-            Shoppers&apos; cards are saved securely with Square and charged automatically each
-            period. Failed payments retry after 1, 3 and 5 days. Existing Stripe subscribers stay
-            on Stripe.
+          <span className="mt-0.5 block text-[var(--muted)]">
+            Cards are saved with Square and charged each period. Failed payments
+            retry after 1, 3 and 5 days. Existing Stripe subscribers stay on
+            Stripe.
           </span>
         </span>
       </label>

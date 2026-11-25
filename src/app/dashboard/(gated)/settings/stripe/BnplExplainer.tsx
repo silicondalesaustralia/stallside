@@ -1,4 +1,4 @@
-/** Owner explainer for Stripe Checkout payment methods. */
+/** Short notes under Stripe checkout method toggles. */
 export default function BnplExplainer({
   isPro,
   showPayTo = false,
@@ -7,30 +7,16 @@ export default function BnplExplainer({
   showPayTo?: boolean;
 }) {
   return (
-    <section className="space-y-2 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
-      <p className="font-semibold">Fees and delayed payments</p>
-      <p className="text-[var(--muted)]">
-        Toggles above write straight to Stripe. Checkout uses that same Stripe
-        config, so off means hidden on the next payment session.
+    <div className="space-y-1 text-[var(--muted)]">
+      <p>
+        Pay-later (Zip, Klarna, Afterpay) usually needs about $30+ and never
+        shows on pre-orders.
+        {showPayTo
+          ? " PayTo can take a moment to clear before the sale is marked paid."
+          : ""}{" "}
+        Providers charge higher fees than cards
+        {isPro ? "; Pro has no Vendl fee." : "; Free still adds the 2.5% Vendl fee."}
       </p>
-      <p className="text-[var(--muted)]">
-        Buy Now, Pay Later with Zip or Klarna still only shows when the order is
-        above the provider&apos;s minimum (usually around $30). Pre-orders are
-        card-only.
-      </p>
-      {showPayTo ? (
-        <p className="text-[var(--muted)]">
-          PayTo can take a moment to clear. Vendl waits for Stripe&apos;s
-          confirmation webhook before marking the sale paid and updating stock.
-        </p>
-      ) : null}
-      <p className="text-[var(--muted)]">
-        Pay-later providers charge a higher processing fee than cards, taken
-        from your payment the same way a card fee is.
-        {isPro
-          ? " On Pro there is no Vendl fee on these sales."
-          : " On Free, the Vendl 2.5% fee applies as usual."}
-      </p>
-    </section>
+    </div>
   );
 }

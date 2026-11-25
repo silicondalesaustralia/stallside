@@ -14,10 +14,8 @@ import { listConnectPaymentMethodToggles } from "@/lib/stripe-payment-method-con
 import { ensureRegionalConnectCapabilities } from "@/lib/stripe-connect-capabilities";
 import { stripeConnectCountry } from "@/lib/stripe-connect-country";
 import PassFeeToggle from "./PassFeeToggle";
-import BnplExplainer from "./BnplExplainer";
 import ConnectPaymentMethodToggles from "./ConnectPaymentMethodToggles";
 import StripeAccountStatus from "./StripeAccountStatus";
-import StripeConnectControls from "./StripeConnectControls";
 
 export default async function StripeSettingsPage({
   searchParams,
@@ -48,6 +46,7 @@ export default async function StripeSettingsPage({
   const ready = owner.stripeChargesEnabled;
   const started = Boolean(owner.stripeAccountId);
   const billingRegion = billingRegionDisplay(owner.billingCurrency);
+  const isAud = (owner.billingCurrency || "AUD").toUpperCase() === "AUD";
 
   let paymentMethods: Awaited<
     ReturnType<typeof listConnectPaymentMethodToggles>
@@ -81,7 +80,7 @@ export default async function StripeSettingsPage({
   }
 
   return (
-    <main className="flex w-full max-w-3xl flex-col gap-8">
+    <main className="flex w-full max-w-3xl flex-col gap-6">
       <p className="text-sm text-[var(--muted)]">
         <Link href="/dashboard/payments" className="underline">
           Payments
@@ -91,13 +90,12 @@ export default async function StripeSettingsPage({
         <h1 className="text-3xl font-semibold tracking-tight">
           Card / Tap &amp; Go
         </h1>
-        <p className="mt-2 text-[var(--muted)]">
-          Connect Stripe so customers can pay by card at checkout, on pre-orders,
-          and for subscription boxes — plus Tap &amp; Go and other methods enabled
-          on your Stripe account (such as PayTo or Buy Now, Pay Later). Payments
-          go to your Stripe account. This is separate from your{" "}
+        <p className="mt-2 text-sm text-[var(--muted)]">
+          Connect Stripe for card, Tap &amp; Go and other methods at checkout,
+          on pre-orders and for subscriptions. Money goes to your Stripe
+          account — separate from your{" "}
           <Link href="/dashboard/settings/billing" className="underline">
-            app subscription
+            Vendl plan
           </Link>
           .
         </p>
@@ -111,9 +109,8 @@ export default async function StripeSettingsPage({
 
       {started && !ready ? (
         <p className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-          Finish Stripe setup so charges are enabled. Until then, customers will
-          not see card at checkout, and pre-orders and subscriptions will not
-          work.
+          Finish Stripe setup so charges are enabled. Until then, card checkout,
+          pre-orders and subscriptions won&apos;t work.
         </p>
       ) : null}
 
@@ -126,10 +123,11 @@ export default async function StripeSettingsPage({
 
       <StripeAccountStatus
         accountId={owner.stripeAccountId}
-        onboardingComplete={owner.stripeOnboardingComplete}
         chargesEnabled={ready}
         payoutsEnabled={owner.stripePayoutsEnabled}
         billingRegion={billingRegion}
+        configured={configured}
+        started={started}
       />
 
       {feeApplies ? (
@@ -141,8 +139,8 @@ export default async function StripeSettingsPage({
       ) : (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
           Vendl Pro: no Vendl fee on card sales.
-          {isV2026Owner(owner) ? " Payouts are weekly (Mondays)." : ""} Standard
-          Stripe processing fees still apply.
+          {isV2026Owner(owner) ? " Payouts are weekly (Mondays)." : ""} Stripe
+          processing fees still apply.
         </p>
       )}
 
@@ -150,28 +148,18 @@ export default async function StripeSettingsPage({
         <ConnectPaymentMethodToggles
           configurationId={paymentMethods.configurationId}
           initialMethods={paymentMethods.methods}
+          isPro={!feeApplies}
+          showPayTo={isAud}
         />
       ) : ready && configured ? (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          No checkout payment methods were returned from Stripe for this
-          account yet. Try Refresh status, or manage methods in the Stripe
-          dashboard.
+          No checkout methods from Stripe yet. Try Refresh status, or manage
+          methods in the Stripe dashboard.
         </p>
       ) : null}
       {paymentMethodsError ? (
         <p className="text-sm text-red-700">{paymentMethodsError}</p>
       ) : null}
-
-      <BnplExplainer
-        isPro={!feeApplies}
-        showPayTo={(owner.billingCurrency || "AUD").toUpperCase() === "AUD"}
-      />
-
-      <StripeConnectControls
-        configured={configured}
-        ready={ready}
-        started={started}
-      />
     </main>
   );
 }

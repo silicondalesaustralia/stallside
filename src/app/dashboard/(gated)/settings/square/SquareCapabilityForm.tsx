@@ -5,6 +5,27 @@ import { updateSquareCapabilities } from "./actions";
 import { useActionStatus } from "./use-action-status";
 import ActionStatusText from "./ActionStatusText";
 
+const OPTIONS = [
+  {
+    name: "payments",
+    label: "Online Vendl payments",
+    hint: "Card checkout on your QR stall and website when Square is the product checkout provider.",
+    checkedKey: "paymentsEnabled" as const,
+  },
+  {
+    name: "inventory",
+    label: "POS inventory sync",
+    hint: "Keep stock matched both ways with your Square reader.",
+    checkedKey: "inventorySyncEnabled" as const,
+  },
+  {
+    name: "catalog",
+    label: "Product / catalogue sync",
+    hint: "Match, import and push products between Vendl and Square.",
+    checkedKey: "catalogSyncEnabled" as const,
+  },
+] as const;
+
 export default function SquareCapabilityForm({
   paymentsEnabled,
   inventorySyncEnabled,
@@ -16,6 +37,11 @@ export default function SquareCapabilityForm({
 }) {
   const [pending, start] = useTransition();
   const { status, report, fail } = useActionStatus();
+  const checked = {
+    paymentsEnabled,
+    inventorySyncEnabled,
+    catalogSyncEnabled,
+  };
 
   return (
     <form
@@ -37,30 +63,20 @@ export default function SquareCapabilityForm({
         });
       }}
     >
-      <label className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          name="payments"
-          defaultChecked={paymentsEnabled}
-        />
-        Online Vendl payments
-      </label>
-      <label className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          name="inventory"
-          defaultChecked={inventorySyncEnabled}
-        />
-        POS inventory sync
-      </label>
-      <label className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          name="catalog"
-          defaultChecked={catalogSyncEnabled}
-        />
-        Product / catalogue sync
-      </label>
+      {OPTIONS.map((opt) => (
+        <label key={opt.name} className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            name={opt.name}
+            defaultChecked={checked[opt.checkedKey]}
+            className="mt-1"
+          />
+          <span>
+            <span className="font-medium">{opt.label}</span>
+            <span className="mt-0.5 block text-[var(--muted)]">{opt.hint}</span>
+          </span>
+        </label>
+      ))}
       <button
         type="submit"
         disabled={pending}

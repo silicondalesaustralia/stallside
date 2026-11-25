@@ -5,8 +5,6 @@ import { prisma } from "@/lib/prisma";
 import {
   isSquareConnectEnabled,
   isSquareIntegrationEnabled,
-  isSquarePaymentsEnabled,
-  isSquareAppFeesEnabled,
   isSquareSubscriptionsEnabled,
   squareConnectDiagnostics,
   squareEnvironment,
@@ -66,9 +64,16 @@ export default async function SquareSettingsPage({
     conn && conn.status === "ACTIVE" && !squareConnectionMatchesBilling(conn, owner.billingCurrency),
   );
   const active = conn?.status === "ACTIVE" && !regionMismatch;
+  const statusLabel = active
+    ? "Connected"
+    : conn?.status === "NEEDS_REAUTH"
+      ? "Needs reconnection"
+      : conn
+        ? conn.status
+        : "Not connected";
 
   return (
-    <main className="flex w-full max-w-3xl flex-col gap-8">
+    <main className="flex w-full max-w-3xl flex-col gap-6">
       <p className="text-sm text-[var(--muted)]">
         <Link href="/dashboard/payments" className="underline">
           Payments
@@ -79,10 +84,13 @@ export default async function SquareSettingsPage({
           <PaymentBrandIcon brand="square" className="size-8" />
           Square
         </h1>
-        <p className="mt-2 text-[var(--muted)]">
-          Connect your existing Square account to accept Square payments on your
-          Vendl website and keep product stock in sync with Square POS. Choose
-          Stripe or Square for product checkout under Payments.
+        <p className="mt-2 text-sm text-[var(--muted)]">
+          Connect Square for card checkout on Vendl and two-way stock sync with
+          Square POS. Pick Stripe or Square as the product checkout provider on{" "}
+          <Link href="/dashboard/payments" className="underline">
+            Payments
+          </Link>
+          .
         </p>
       </div>
 
@@ -128,14 +136,12 @@ export default async function SquareSettingsPage({
 
       {params.connected === "1" ? (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm">
-          Square connected. Choose a location and enable the capabilities you
-          want.
+          Square connected. Choose a location and turn on what you need below.
         </p>
       ) : null}
       {params.disconnected === "1" ? (
         <p className="rounded-2xl border border-[var(--line)] bg-[var(--wash)] p-4 text-sm text-[var(--muted)]">
-          Square disconnected. Vendl kept last synced stock quantities. Mappings
-          were retained for history.
+          Square disconnected. Last synced stock and product links were kept.
         </p>
       ) : null}
       <SquareRegionNotice
@@ -150,30 +156,21 @@ export default async function SquareSettingsPage({
       ) : null}
 
       {enabled ? (
-        <section className="space-y-3 text-sm">
-          <h2 className="text-lg font-semibold">Connection</h2>
-          <p>
-            Status:{" "}
-            {active
-              ? "Connected"
-              : conn?.status === "NEEDS_REAUTH"
-                ? "Needs reconnection"
-                : conn
-                  ? conn.status
-                  : "Not connected"}
-          </p>
-          {conn?.merchantName ? (
+        <section className="space-y-4 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+          <div className="space-y-1">
             <p>
-              Merchant: <strong>{conn.merchantName}</strong>
+              Status: <strong>{statusLabel}</strong>
+              {conn?.merchantName ? (
+                <>
+                  {" "}
+                  · <strong>{conn.merchantName}</strong>
+                </>
+              ) : null}
             </p>
-          ) : null}
-          <p className="text-[var(--muted)]">
-            Environment: {squareEnvironment()}
-            {isSquarePaymentsEnabled() ? " · payments ready" : " · payments gated"}
-            {isSquareAppFeesEnabled()
-              ? " · app fees on"
-              : " · production app fees off"}
-          </p>
+            {squareEnvironment() === "sandbox" ? (
+              <p className="text-[var(--muted)]">Sandbox mode</p>
+            ) : null}
+          </div>
           <SquareConnectForm
             connected={Boolean(active)}
             sandbox={squareEnvironment() === "sandbox"}
@@ -183,11 +180,11 @@ export default async function SquareSettingsPage({
 
       {active && conn ? (
         <>
-          <section className="space-y-3 text-sm">
+          <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
             <h2 className="text-lg font-semibold">Location</h2>
             <p className="text-[var(--muted)]">
-              Square inventory is location-aware. Pick the primary location to
-              sync.
+              Square stock is per location. Pick the primary one to sync, and
+              map each location to a Vendl business if you use more than one.
             </p>
             <SquareLocationForm
               locations={conn.locations.map((l) => ({
@@ -201,17 +198,38 @@ export default async function SquareSettingsPage({
             />
           </section>
 
-          <section className="space-y-3 text-sm">
+          <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
             <h2 className="text-lg font-semibold">Use Square for</h2>
             <SquareCapabilityForm
               paymentsEnabled={conn.paymentsEnabled}
               inventorySyncEnabled={conn.inventorySyncEnabled}
               catalogSyncEnabled={conn.catalogSyncEnabled}
             />
+            <p className="text-[var(--muted)]">
+              Product checkout currently uses{" "}
+              <strong className="text-[var(--ink)]">
+                {owner.onlinePaymentProvider === "SQUARE" ? "Square" : "Stripe"}
+              </strong>
+              .{" "}
+              <Link href="/dashboard/payments" className="underline">
+                Change in Payments
+              </Link>
+              {conn.inventorySyncEnabled
+                ? conn.lastSyncAt
+                  ? ` · Stock last synced ${conn.lastSyncAt.toLocaleString()}`
+                  : " · Stock sync on, awaiting first update"
+                : ""}
+              {conn.lastError ? (
+                <span className="text-red-700">
+                  {" "}
+                  · Needs attention — contact support if this persists.
+                </span>
+              ) : null}
+            </p>
           </section>
 
           {isSquareSubscriptionsEnabled() ? (
-            <section className="space-y-3 text-sm">
+            <section className="space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
               <h2 className="text-lg font-semibold">Subscriptions &amp; memberships</h2>
               <SquareSubscriptionsToggle
                 enabled={conn.subscriptionsEnabled}
@@ -221,79 +239,50 @@ export default async function SquareSettingsPage({
             </section>
           ) : null}
 
-          <p className="text-sm text-[var(--muted)]">
-            Product checkout currently uses{" "}
-            <strong className="text-[var(--ink)]">
-              {owner.onlinePaymentProvider === "SQUARE" ? "Square" : "Stripe"}
-            </strong>
-            .{" "}
-            <Link href="/dashboard/payments" className="underline">
-              Change in Payments
-            </Link>
-          </p>
-
-          <section className="space-y-3 text-sm">
-            <h2 className="text-lg font-semibold">Products</h2>
-            <p className="text-[var(--muted)]">
-              {mappingCount} confirmed mapping{mappingCount === 1 ? "" : "s"}.
-              Match Square items with Vendl products — never auto-mapped from
-              fuzzy names alone.
-            </p>
-            <SquareMappingPanel catalogEnabled={conn.catalogSyncEnabled} />
-          </section>
-
-          <section className="space-y-3 text-sm">
-            <h2 className="text-lg font-semibold">Import products from Square</h2>
-            {conn.catalogSyncEnabled ? (
-              <SquareImportPanel
-                stands={squareStands}
-                currency={squareCurrency}
-                defaultStandId={
-                  squareStands.find(
-                    (s) => s.id === conn.locations.find((l) => l.isPrimary)?.standId,
-                  )?.id ?? null
-                }
-              />
-            ) : (
-              <p className="text-[var(--muted)]">
-                Turn on product / catalogue sync to import Square items.
+          <section className="space-y-6 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm">
+            <div>
+              <h2 className="text-lg font-semibold">Products &amp; stock</h2>
+              <p className="mt-1 text-[var(--muted)]">
+                {mappingCount} confirmed link{mappingCount === 1 ? "" : "s"}.
+                Match items yourself — Vendl never auto-links from fuzzy names
+                alone.
               </p>
-            )}
-          </section>
+            </div>
 
-          <section className="space-y-3 text-sm">
-            <h2 className="text-lg font-semibold">Add Vendl products to Square</h2>
-            <SquarePushSection
-              ownerId={owner.id}
-              connectionId={conn.id}
-              catalogEnabled={conn.catalogSyncEnabled}
-              stockWillSync={conn.inventorySyncEnabled && Boolean(conn.primaryLocationId)}
-              currency={squareCurrency}
-            />
-          </section>
+            <div className="space-y-3">
+              <h3 className="font-semibold">Review matches</h3>
+              <SquareMappingPanel catalogEnabled={conn.catalogSyncEnabled} />
+            </div>
 
-          <section className="space-y-2 text-sm">
-            <h2 className="text-lg font-semibold">Sync health</h2>
-            <ul className="list-inside list-disc text-[var(--muted)]">
-              <li>
-                Payments:{" "}
-                {conn.paymentsEnabled ? "Ready" : "Off"}
-              </li>
-              <li>
-                Inventory:{" "}
-                {conn.inventorySyncEnabled
-                  ? conn.lastSyncAt
-                    ? `Synced · ${conn.lastSyncAt.toLocaleString()}`
-                    : "On · awaiting first sync"
-                  : "Off"}
-              </li>
-              <li>
-                Catalogue: {conn.catalogSyncEnabled ? "On" : "Off"}
-              </li>
-            </ul>
-            {conn.lastError ? (
-              <p className="text-red-700">Needs attention — open support if this persists.</p>
-            ) : null}
+            <div className="space-y-3 border-t border-[var(--line)] pt-4">
+              <h3 className="font-semibold">Import from Square</h3>
+              {conn.catalogSyncEnabled ? (
+                <SquareImportPanel
+                  stands={squareStands}
+                  currency={squareCurrency}
+                  defaultStandId={
+                    squareStands.find(
+                      (s) => s.id === conn.locations.find((l) => l.isPrimary)?.standId,
+                    )?.id ?? null
+                  }
+                />
+              ) : (
+                <p className="text-[var(--muted)]">
+                  Turn on product / catalogue sync above to import Square items.
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-3 border-t border-[var(--line)] pt-4">
+              <h3 className="font-semibold">Add Vendl products to Square</h3>
+              <SquarePushSection
+                ownerId={owner.id}
+                connectionId={conn.id}
+                catalogEnabled={conn.catalogSyncEnabled}
+                stockWillSync={conn.inventorySyncEnabled && Boolean(conn.primaryLocationId)}
+                currency={squareCurrency}
+              />
+            </div>
           </section>
         </>
       ) : null}

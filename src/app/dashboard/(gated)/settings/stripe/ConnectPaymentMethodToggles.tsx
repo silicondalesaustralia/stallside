@@ -3,14 +3,19 @@
 import { useState, useTransition } from "react";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
 import type { ConnectPaymentMethodToggle } from "@/lib/stripe-payment-method-config";
+import BnplExplainer from "./BnplExplainer";
 import { toggleConnectPaymentMethod } from "./payment-method-actions";
 
 export default function ConnectPaymentMethodToggles({
   configurationId,
   initialMethods,
+  isPro,
+  showPayTo = false,
 }: {
   configurationId: string;
   initialMethods: ConnectPaymentMethodToggle[];
+  isPro: boolean;
+  showPayTo?: boolean;
 }) {
   const [methods, setMethods] = useState(initialMethods);
   const [error, setError] = useState<string | null>(null);
@@ -54,13 +59,8 @@ export default function ConnectPaymentMethodToggles({
       <div>
         <p className="font-semibold">Checkout payment methods</p>
         <p className="mt-1 text-[var(--muted)]">
-          Common methods for your billing region, synced with your connected
-          Stripe account. Turn a method off to hide it at customer checkout
-          (takes effect on the next Checkout session - not a tab already open).
-        </p>
-        <p className="mt-1 text-[var(--muted)]">
-          Pre-orders stay card-only. Zip / Klarna still only appear above the
-          provider&apos;s minimum (usually around $30), even when toggled on.
+          Synced with your Stripe account. Turning a method off hides it on the
+          next checkout (not a tab already open). Pre-orders stay card-only.
         </p>
       </div>
       <ul className="divide-y divide-[var(--line)]">
@@ -105,6 +105,7 @@ export default function ConnectPaymentMethodToggles({
         })}
       </ul>
       {error ? <p className="text-sm text-red-700">{error}</p> : null}
+      <BnplExplainer isPro={isPro} showPayTo={showPayTo} />
     </section>
   );
 }
