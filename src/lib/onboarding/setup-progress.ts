@@ -2,14 +2,14 @@ import { ownerIdHasProAccess } from "@/lib/owner-pro-access";
 import { prisma } from "@/lib/prisma";
 import { extractWebsiteStudio } from "@/lib/studio/storage";
 import { ownerSquareReady } from "@/lib/square/owner-ready";
+import {
+  onboardingActiveStep,
+  setupComplete,
+  type SetupProgress,
+} from "./setup-progress-state";
 
-export type SetupProgress = {
-  products: boolean;
-  website: boolean;
-  payments: boolean;
-  /** Website building is Pro-only, so Free setup can finish without it. */
-  pro: boolean;
-};
+export type { SetupProgress };
+export { onboardingActiveStep, setupComplete };
 
 type ProgressOwner = {
   id: string;
@@ -33,8 +33,4 @@ export async function loadSetupProgress(owner: ProgressOwner): Promise<SetupProg
   const payments =
     owner.stripeChargesEnabled || owner.paypalOnboardingComplete || (await ownerSquareReady(owner));
   return { products: productCount > 0, website: websiteStarted, payments, pro };
-}
-
-export function setupComplete(progress: SetupProgress): boolean {
-  return progress.products && (progress.website || !progress.pro) && progress.payments;
 }

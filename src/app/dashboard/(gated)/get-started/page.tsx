@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/session";
 import { resolveSelectedBusiness } from "@/lib/selected-business";
-import { loadSetupProgress } from "@/lib/onboarding/setup-progress";
+import { loadSetupProgress, onboardingActiveStep } from "@/lib/onboarding/setup-progress";
 import { onboardingPending } from "@/lib/onboarding/onboarding-gate";
 import { assistantEnabledFor } from "@/lib/website-ai/assistant/access";
 import { ASSISTANT_PATH } from "@/lib/website/readiness";
@@ -35,7 +35,7 @@ export default async function GetStartedPage() {
           Do these in any order. Each one is ticked off as you finish it.
         </p>
       </div>
-      <OnboardingFlow activeStep={2} />
+      <OnboardingFlow activeStep={onboardingActiveStep(progress)} />
       {gate.pending ? (
         <FounderVideoSection
           heading="A Quick Welcome From The Co-Founders"
