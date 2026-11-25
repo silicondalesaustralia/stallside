@@ -44,11 +44,15 @@ describe("rich text parsing", () => {
     assert.ok(p?.t === "p" && p.c.every((n) => n.t === "text"));
   });
 
-  it("round-trips escaped characters", () => {
+  it("round-trips escaped inline characters", () => {
     const typed = "Use *code* and [brackets] \\ here";
     assert.deepEqual(parseRichText(escapeRichText(typed)), [{ t: "p", c: [{ t: "text", v: typed }] }]);
-    assert.equal(parseRichText(escapeLineStart("- not a list"))[0]?.t, "p");
-    assert.equal(parseRichText(escapeLineStart("2024. A good year"))[0]?.t, "p");
+  });
+
+  it("recovers older saves that escaped list markers at line start", () => {
+    const blocks = parseRichText("Intro\n\\- Local\n\\- Pick up only\n\n1\\. Order\n2\\. Collect");
+    assert.deepEqual(blocks.map((b) => b.t), ["p", "ul", "ol"]);
+    assert.equal(escapeLineStart("- still escapable"), "\\- still escapable");
   });
 });
 

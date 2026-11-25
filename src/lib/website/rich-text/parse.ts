@@ -51,9 +51,19 @@ function lineRuns(lines: string[]): { kind: "ul" | "ol" | "p"; lines: string[] }
   return runs;
 }
 
+/**
+ * Older editor saves escaped paragraph lines that looked like lists (`\- item`, `1\. item`).
+ * Treat those as real list markers so existing product copy renders as bullets again.
+ */
+function recoverEscapedListMarkers(source: string): string {
+  return source
+    .replace(/^\\- /gm, "- ")
+    .replace(/^(\d+)\\([.)] )/gm, "$1$2");
+}
+
 export function parseRichText(source: string): RichBlock[] {
   const blocks: RichBlock[] = [];
-  for (const chunk of source.replace(/\r\n?/g, "\n").split(/\n{2,}/)) {
+  for (const chunk of recoverEscapedListMarkers(source.replace(/\r\n?/g, "\n")).split(/\n{2,}/)) {
     if (!chunk.trim()) continue;
     for (const run of lineRuns(chunk.replace(/^\n+|\n+$/g, "").split("\n"))) {
       if (run.kind !== "p") {

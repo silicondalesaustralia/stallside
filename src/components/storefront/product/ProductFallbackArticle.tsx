@@ -4,6 +4,7 @@ import { formatMoney, type PublicProductCard } from "@/lib/public-product";
 import SalePrice from "@/components/storefront/SalePrice";
 import ProductDetailActions from "@/app/s/[standSlug]/ProductDetailActions";
 import { ProductApprovedReviews } from "@/components/storefront/ProductApprovedReviews";
+import RichText from "@/components/studio/RichText";
 
 /** Product page when the site has no Web Studio product layout. */
 export default function ProductFallbackArticle({
@@ -55,7 +56,7 @@ export default function ProductFallbackArticle({
         <SalePrice priceCents={product.priceCents} compareAtPriceCents={product.compareAtPriceCents} currency={currency} />
       </p>
       {product.description ? (
-        <p className="mt-4 text-lg leading-relaxed text-[var(--muted)]">{product.description}</p>
+        <RichText value={product.description} className="mt-4 text-lg leading-relaxed text-[var(--muted)]" />
       ) : null}
       {product.freshnessNote ? (
         <p className="mt-2 text-[var(--leaf-dark)]">{product.freshnessNote}</p>

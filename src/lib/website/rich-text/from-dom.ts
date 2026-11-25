@@ -1,5 +1,5 @@
 import { safeHref } from "./parse";
-import { encodeHrefForMarkup, escapeLineStart, escapeRichText } from "./serialize";
+import { encodeHrefForMarkup, escapeRichText } from "./serialize";
 
 const BLOCK_TAGS = new Set(["P", "DIV", "H1", "H2", "H3", "H4", "H5", "H6", "BLOCKQUOTE", "SECTION"]);
 const BOLD_TAGS = new Set(["B", "STRONG"]);
@@ -43,13 +43,26 @@ function list(el: HTMLElement): string {
     .join("\n");
 }
 
+/**
+ * contentEditable often dumps continued list rows as plain lines ("- item" or "• item")
+ * inside a paragraph. Keep those markers so parseRichText can rebuild real lists — do not
+ * escape them to `\-`, which used to turn bullets into literal dashes on save.
+ */
+function normaliseEditorListLine(line: string): string {
+  const trimmed = line.replace(/^[•·]\s+/, "- ");
+  return trimmed;
+}
+
 /** Reads the editor's contentEditable back into the stored rich-text format. */
 export function domToRichText(root: HTMLElement): string {
   const blocks: string[] = [];
   let paragraph = "";
   const pushParagraph = () => {
-    const lines = paragraph.replace(/\n+$/, "").split("\n").map((l) => l.trimEnd());
-    if (lines.some((l) => l.trim())) blocks.push(lines.map(escapeLineStart).join("\n"));
+    const lines = paragraph
+      .replace(/\n+$/, "")
+      .split("\n")
+      .map((l) => normaliseEditorListLine(l.trimEnd()));
+    if (lines.some((l) => l.trim())) blocks.push(lines.join("\n"));
     paragraph = "";
   };
   for (const child of Array.from(root.childNodes)) {
