@@ -173,6 +173,8 @@ export function productMetadata(input: {
   standSlug: string;
   productName: string;
   productSlug: string;
+  /** Shop product URL (`/products/…` or `/{category}/…`). Prefer this over apex `/s/…`. */
+  canonicalUrl?: string;
   seoTitle?: string | null;
   seoDescription?: string | null;
   description?: string | null;
@@ -192,7 +194,9 @@ export function productMetadata(input: {
       (input.isPreOrder
         ? `Pre-order ${input.productName} from ${input.standName}.`
         : `Buy ${input.productName} from ${input.standName}.`),
-    canonical: `${SITE_URL}${standProductPath(input.standSlug, input.productSlug)}`,
+    canonical:
+      input.canonicalUrl ??
+      `${SITE_URL}${standProductPath(input.standSlug, input.productSlug)}`,
     standSlug: input.standSlug,
     siteName: input.standName,
     image: resolveStandShareImage({

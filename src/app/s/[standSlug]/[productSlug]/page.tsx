@@ -6,13 +6,14 @@ import { isReservedProductSlug } from "@/lib/slug";
 import { formatMoney, mapPublicProduct } from "@/lib/public-product";
 import { publicStandBranding } from "@/lib/public-stand-branding";
 import { standAccentStyle } from "@/lib/stand-brand";
-import { productMetadata, standCatalogPath } from "@/lib/stand-seo";
+import { standCatalogPath } from "@/lib/stand-seo";
 import { productLiveWhere } from "@/lib/product-visibility";
 import { publicVariantsInclude } from "@/lib/product-variants/public-variant";
+import { standProductPageMetadata } from "@/lib/stand-product-metadata";
+import SalePrice from "@/components/storefront/SalePrice";
 import ProductDetailActions from "../ProductDetailActions";
 import StandStoreHeader from "../StandStoreHeader";
 import { redirectStandToFarmstand } from "@/lib/storefront/legacy-stand-redirect";
-import { richTextToPlainOrNull } from "@/lib/website/rich-text/plain";
 import RichText from "@/components/studio/RichText";
 
 export async function generateMetadata({
@@ -21,36 +22,7 @@ export async function generateMetadata({
   params: Promise<{ standSlug: string; productSlug: string }>;
 }): Promise<Metadata> {
   const { standSlug, productSlug } = await params;
-  const standKey = decodeURIComponent(standSlug).trim().toLowerCase();
-  const productKey = decodeURIComponent(productSlug).trim().toLowerCase();
-  if (isReservedProductSlug(productKey)) return { title: "Product" };
-
-  const stand = await prisma.stand.findUnique({
-    where: { slug: standKey },
-    include: {
-      products: {
-        where: { slug: productKey, ...productLiveWhere },
-        take: 1,
-      },
-    },
-  });
-  const product = stand?.products[0];
-  if (!stand || !stand.isActive || !product) return { title: "Product" };
-
-  return productMetadata({
-    standName: stand.name,
-    standSlug: stand.slug,
-    productName: product.name,
-    productSlug: product.slug,
-    seoTitle: product.seoTitle,
-    seoDescription: product.seoDescription,
-    description: richTextToPlainOrNull(product.description),
-    imageUrl: product.imageUrl,
-    isPreOrder: product.isPreOrder,
-    collectionNote: product.collectionNote,
-    logoUrl: stand.logoUrl,
-    ogImageUrl: stand.ogImageUrl,
-  });
+  return standProductPageMetadata(standSlug, productSlug);
 }
 
 export default async function PublicProductPage({
@@ -134,6 +106,13 @@ export default async function PublicProductPage({
             Pre-order
           </p>
         ) : null}
+        <p className="mt-3 font-receipt text-2xl text-[var(--stand-secondary,var(--ok))]">
+          <SalePrice
+            priceCents={product.priceCents}
+            compareAtPriceCents={product.compareAtPriceCents}
+            currency={stand.currency}
+          />
+        </p>
         {product.description ? (
           <RichText value={product.description} className="mt-3 text-lg leading-snug text-[var(--muted)]" />
         ) : null}
