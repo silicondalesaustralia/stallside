@@ -34,7 +34,7 @@ export type ProductFields = {
   standName: string;
   standSlug: string;
   publicUrl: string;
-  /** Farmstand (QR) catalogue home for this business. */
+  /** Same product on the farmstand (QR) surface. */
   farmstandUrl: string;
   cardTier: boolean;
   preOrderEligible: boolean;

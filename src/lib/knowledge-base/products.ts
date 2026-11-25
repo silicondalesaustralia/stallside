@@ -37,7 +37,7 @@ export const productArticles: KnowledgeArticle[] = [
     ],
     tips: [
       "GST, Variants and Search & social each save on their own. The bottom Save bar saves the rest of the product.",
-      "View on site / Copy link / Open use your shop address (yourname.vendl.app/products/… or /category/…). Open farmstand opens the QR stall view for that business.",
+      "Under Status, Shop is your website product page (yourname.vendl.app/products/… or /category/…). Farmstand is the same product on the QR stall (…/farmstand/…).",
       "Changing the URL in Search & social changes the product's link.",
       "Stock changes sync to Square when inventory sync is on.",
     ],

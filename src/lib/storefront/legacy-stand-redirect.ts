@@ -13,18 +13,20 @@ export function legacyStandRedirectsEnabled(): boolean {
 }
 
 /**
- * Sends legacy `/s/{stand}/…` links (apex or printed QR) to the same page on the
- * owner's shop host: `{sub}.vendl.app/products/…` or `/{category}/…`, etc.
- * Pay / checkout / subscription-manage stay on the farmstand. Kill switch:
- * `LEGACY_STAND_REDIRECTS=off`.
+ * Sends legacy apex `/s/{stand}/…` links to the shop on the owner's host:
+ * `{sub}.vendl.app/products/…` or `/{category}/…`, etc.
+ * On the seller host (`/farmstand` rewrite or `/s/…`), stay on the farmstand —
+ * do not bounce catalogue/product pages to the website. Pay / checkout /
+ * subscription-manage never redirect. Kill switch: `LEGACY_STAND_REDIRECTS=off`.
  */
 export async function redirectStandToFarmstand(standSlug: string): Promise<void> {
   if (!legacyStandRedirectsEnabled()) return;
   const h = await headers();
   const pathname = h.get("x-stallside-pathname") ?? "";
   if (!pathname.startsWith("/s/")) return;
+  // Seller host: farmstand surface (including /farmstand → /s/… rewrites).
+  if (h.get("x-vendl-tenant-slug")) return;
 
-  // Already on the seller host at /s/… — still move product/catalogue links to shop paths.
   const search = h.get("x-stallside-search") ?? "";
   let destination: string | null = null;
   try {
@@ -35,10 +37,7 @@ export async function redirectStandToFarmstand(standSlug: string): Promise<void>
     if (shopPath == null) return;
     const site = await storefrontPublicSiteForStand(decodeURIComponent(standSlug));
     if (!site) return;
-    const tenant = h.get("x-vendl-tenant-slug");
-    destination = tenant
-      ? `${shopPath}${search}`
-      : `${storefrontPublicUrl(site, shopPath)}${search}`;
+    destination = `${storefrontPublicUrl(site, shopPath)}${search}`;
   } catch (err) {
     console.error("[stand-redirect] shop lookup failed; serving stand page", err);
   }

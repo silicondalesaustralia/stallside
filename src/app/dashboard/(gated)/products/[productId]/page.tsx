@@ -17,7 +17,7 @@ import { loadProductRecipeCost } from "@/lib/production/load-product-recipe-cost
 import { variantDraftOptions, variantDraftRows } from "@/lib/product-variants/variant-draft-load";
 import ProductVariantsCard from "./ProductVariantsCard";
 import { productPublicUrl } from "@/lib/storefront/stand-public-url";
-import { standFarmstandUrl } from "@/lib/farmstand/resolve";
+import { productFarmstandUrl } from "@/lib/farmstand/resolve";
 /** Auth-gated; never serve a cached anonymous RSC payload for Edit links. */
 export const dynamic = "force-dynamic";
 
@@ -39,16 +39,7 @@ export default async function EditProductPage({
   const product = await prisma.product.findFirst({
     where: { id: productId, ownerId: owner.id },
     include: {
-      stand: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          cartMode: true,
-          fulfilmentDefault: true,
-          shippingMode: true,
-        },
-      },
+      stand: { select: { id: true, name: true, slug: true, fulfilmentDefault: true, shippingMode: true } },
       optionGroups: {
         orderBy: { sortOrder: "asc" },
         include: { choices: { orderBy: { sortOrder: "asc" } } },
@@ -88,7 +79,7 @@ export default async function EditProductPage({
       productSlug: product.slug,
       categorySlug: mainCategory?.slug,
     }),
-    standFarmstandUrl(product.stand.slug, product.stand.cartMode),
+    productFarmstandUrl(product.stand.slug, product.slug),
   ]);
   const priceTiers = parsePriceTiers(product.priceTiers);
   const showWebsiteSeo = websiteSectionEnabledFor(owner.id);

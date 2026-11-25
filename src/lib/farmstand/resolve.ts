@@ -51,3 +51,13 @@ export async function standFarmstandUrl(
 ): Promise<string> {
   return withCartModePath(await standFarmstandBase(standSlug), cartMode);
 }
+
+/** Product page on the farmstand: `{sub}.vendl.app/farmstand/{product}` (or `/farmstand/{stand}/{product}`). */
+export async function productFarmstandUrl(
+  standSlug: string,
+  productSlug: string,
+): Promise<string> {
+  const base = await standFarmstandBase(standSlug);
+  const product = encodeURIComponent(productSlug.trim().toLowerCase());
+  return `${base.replace(/\/$/, "")}/${product}`;
+}

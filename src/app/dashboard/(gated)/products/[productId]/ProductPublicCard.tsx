@@ -12,41 +12,61 @@ export default function ProductPublicCard({
   farmstandUrl: string;
   onError: (msg: string) => void;
 }) {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<"shop" | "farmstand" | null>(null);
+
+  async function copy(url: string, which: "shop" | "farmstand") {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(which);
+      setTimeout(() => setCopied(null), 2000);
+    } catch {
+      onError("Could not copy link.");
+    }
+  }
 
   return (
-    <div className="text-sm">
-      <p className="break-all text-[var(--muted)]">{publicUrl}</p>
-      <div className="mt-2 flex flex-wrap gap-3">
-        <button
-          type="button"
-          className="font-semibold text-[var(--leaf-dark)] underline"
-          onClick={async () => {
-            try {
-              await navigator.clipboard.writeText(publicUrl);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 2000);
-            } catch {
-              onError("Could not copy link.");
-            }
-          }}
-        >
-          {copied ? "Copied" : "Copy link"}
-        </button>
-        <Link
-          href={publicUrl}
-          target="_blank"
-          className="font-semibold text-[var(--leaf-dark)] underline"
-        >
-          Open
-        </Link>
-        <Link
-          href={farmstandUrl}
-          target="_blank"
-          className="font-semibold text-[var(--leaf-dark)] underline"
-        >
-          Open farmstand
-        </Link>
+    <div className="flex flex-col gap-3 text-sm">
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Shop</p>
+        <p className="mt-1 break-all text-[var(--muted)]">{publicUrl}</p>
+        <div className="mt-2 flex flex-wrap gap-3">
+          <button
+            type="button"
+            className="font-semibold text-[var(--leaf-dark)] underline"
+            onClick={() => copy(publicUrl, "shop")}
+          >
+            {copied === "shop" ? "Copied" : "Copy link"}
+          </button>
+          <Link
+            href={publicUrl}
+            target="_blank"
+            className="font-semibold text-[var(--leaf-dark)] underline"
+          >
+            Open
+          </Link>
+        </div>
+      </div>
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+          Farmstand
+        </p>
+        <p className="mt-1 break-all text-[var(--muted)]">{farmstandUrl}</p>
+        <div className="mt-2 flex flex-wrap gap-3">
+          <button
+            type="button"
+            className="font-semibold text-[var(--leaf-dark)] underline"
+            onClick={() => copy(farmstandUrl, "farmstand")}
+          >
+            {copied === "farmstand" ? "Copied" : "Copy link"}
+          </button>
+          <Link
+            href={farmstandUrl}
+            target="_blank"
+            className="font-semibold text-[var(--leaf-dark)] underline"
+          >
+            Open
+          </Link>
+        </div>
       </div>
     </div>
   );
