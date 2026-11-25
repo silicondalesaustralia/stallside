@@ -24,7 +24,7 @@ export const squareArticles: KnowledgeArticle[] = [
     ],
     tips: [
       "Your Square account must be based in the same country as your Vendl billing region.",
-      "The Square checkbox on a business stays greyed out until Square is connected, payments are on and a primary location is set.",
+      "Under Checkout payments, the Square checkbox stays greyed out until Square is connected (use the Square button on Payments), payments are on and a primary location is set.",
       "To disconnect, tap Disconnect Square. Vendl keeps the last synced stock levels and your product links for history.",
     ],
   },

@@ -19,7 +19,7 @@ export const paymentArticles: KnowledgeArticle[] = [
       "Square takes card and wallet payments for the same things, and can sync products and stock both ways with your Square reader or POS. It's available in Australia and the United States.",
       "Which to pick: choose Square if you already sell with a Square reader at markets and want stock to match. Choose Stripe if you sell in the UK or Europe, or want pay-later options like Zip, Klarna and Afterpay. You can connect both.",
       "With both connected, open Payments and choose your Product checkout provider. That choice covers product checkout, pre-orders and deposits across your whole account.",
-      "On the Free plan, Vendl adds a 2.5% fee to card, Tap & Go and pay-later sales on Stripe, Square and PayPal. They also charge their own processing fees. Vendl Pro removes the Vendl fee.",
+      "On the Free plan, Vendl adds a 2.5% fee to card, Tap & Go and pay-later sales on Stripe and Square. They also charge their own processing fees. Vendl Pro removes the Vendl fee. PayPal is Pro-only and has no Vendl fee.",
       "Sales you take on your own Square reader or Square POS never have a Vendl fee.",
     ],
     tips: [

@@ -34,15 +34,12 @@ export default async function PaymentsPage() {
         paypalReady={Boolean(owner.paypalMerchantId && owner.paypalOnboardingComplete && owner.paypalPaymentsEnabled)}
         paypalConnectAvailable={isPayPalConnectAvailable()}
         cardTier={ownerHasProAccess(owner, { email: user.email, role: user.role })}
-        stripeConnected={owner.stripeChargesEnabled}
-        stripeStarted={Boolean(owner.stripeAccountId)}
-        productCount={stand._count.products}
         square={
           payments.square === null
             ? null
             : { accept: stand.acceptSquare, ready: payments.squareReady, isProvider: payments.squareIsProvider }
         }
-        overview={<PaymentsOverview owner={owner} />}
+        overview={<PaymentsOverview owner={owner} standCurrency={stand.currency} />}
       />
     </main>
   );

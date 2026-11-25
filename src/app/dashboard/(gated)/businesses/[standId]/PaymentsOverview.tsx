@@ -8,6 +8,7 @@ import {
 import { isPayPalConnectAvailable } from "@/lib/paypal";
 import { getSquareConnection } from "@/lib/square/connection";
 import { isV2026Owner } from "@/lib/fee-v2026";
+import { localTransferForCurrency } from "@/lib/local-transfer";
 import { shouldChargeVendlFee } from "@/lib/stallside-fee";
 import PaymentConnectionLinks from "./PaymentConnectionLinks";
 import PaymentProviderGuide from "./PaymentProviderGuide";
@@ -24,7 +25,13 @@ type OverviewOwner = Parameters<typeof shouldChargeVendlFee>[0] & {
 };
 
 /** Account-wide payment connections, plus the Stripe vs Square choice in Square regions. */
-export default async function PaymentsOverview({ owner }: { owner: OverviewOwner }) {
+export default async function PaymentsOverview({
+  owner,
+  standCurrency,
+}: {
+  owner: OverviewOwner;
+  standCurrency: string;
+}) {
   const squareRegion =
     isSquareIntegrationEnabled() && squareEligibleBillingCurrency(owner.billingCurrency);
   const conn = squareRegion && isSquareConnectEnabled() ? await getSquareConnection(owner.id) : null;
@@ -45,6 +52,7 @@ export default async function PaymentsOverview({ owner }: { owner: OverviewOwner
     <div className="flex flex-col gap-6">
       {squareRegion ? <PaymentProviderGuide weeklyPayouts={isV2026Owner(owner)} /> : null}
       <PaymentConnectionLinks
+        payIdAvailable={localTransferForCurrency(standCurrency)?.id === "payid"}
         stripeStatus={
           owner.stripeChargesEnabled
             ? "Connected"

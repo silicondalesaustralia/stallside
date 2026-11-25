@@ -4,7 +4,9 @@ import PaymentIconRow from "@/components/PaymentIconRow";
 import type { LocalTransferMethod } from "@/lib/local-transfer";
 import { STRIPE_CHECKOUT_BRANDS } from "@/lib/payment-brand-assets";
 import { STRIPE_CHECKOUT_METHODS_PHRASE } from "@/lib/stripe-connect-copy";
+import CheckoutPaymentRow from "./CheckoutPaymentRow";
 import StandPayPalToggle from "./StandPayPalToggle";
+import StandSquareToggle from "./StandSquareToggle";
 
 type StandPaymentTogglesProps = {
   method: LocalTransferMethod | null;
@@ -17,6 +19,7 @@ type StandPaymentTogglesProps = {
   paypalReady: boolean;
   paypalConnectAvailable: boolean;
   cardTier: boolean;
+  square: { accept: boolean; ready: boolean; isProvider: boolean } | null;
 };
 
 export default function StandPaymentToggles({
@@ -30,98 +33,98 @@ export default function StandPaymentToggles({
   paypalReady,
   paypalConnectAvailable,
   cardTier,
+  square,
 }: StandPaymentTogglesProps) {
   return (
-    <>
-      <label className="flex items-start gap-3 text-sm">
-        <input
-          type="checkbox"
+    <div className="flex flex-col divide-y divide-[var(--line)]">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+          At pickup
+        </p>
+        <CheckoutPaymentRow
           name="acceptCash"
-          defaultChecked={acceptCash}
-          className="mt-1 size-4"
+          checked={acceptCash}
+          label={
+            <>
+              <PaymentBrandIcon brand="cash" />
+              Cash
+            </>
+          }
+          hint="Customer confirms they paid cash at the stand."
         />
-        <span className="min-w-0">
-          <span className="flex flex-wrap items-center gap-2 font-medium">
-            <PaymentBrandIcon brand="cash" />
-            Cash
-          </span>
-          <span className="mt-0.5 block text-[var(--muted)]">
-            Customer confirms they paid cash at the stand.
-          </span>
-        </span>
-      </label>
+        {method?.id === "payid" ? (
+          <CheckoutPaymentRow
+            name="acceptLocalTransfer"
+            checked={acceptLocalTransfer}
+            label={
+              <>
+                <PaymentBrandIcon brand="payid" className="size-6" />
+                PayID
+              </>
+            }
+            hint="Customer pays your PayID, then confirms."
+          >
+            <input type="hidden" name="localTransferMethodId" value={method.id} />
+            <label className="ml-7 flex flex-col gap-2 text-sm">
+              <span className="font-medium">{method.aliasLabel}</span>
+              <input
+                name="localTransferAlias"
+                defaultValue={initialAlias}
+                placeholder={method.aliasPlaceholder}
+                maxLength={120}
+                className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
+              />
+              <span className="text-[var(--muted)]">{method.aliasHint}</span>
+            </label>
+          </CheckoutPaymentRow>
+        ) : null}
+      </div>
 
-      {method ? (
-        <div className="rounded-xl border border-[var(--line)] bg-[var(--wash)] p-4">
-          <label className="flex items-start gap-3 text-sm">
-            <input
-              type="checkbox"
-              name="acceptLocalTransfer"
-              defaultChecked={acceptLocalTransfer}
-              className="mt-1 size-4"
-            />
-            <span className="min-w-0">
-                <span className="flex flex-wrap items-center gap-2 font-medium">
-                  <PaymentBrandIcon brand="payid" className="size-6" />
-                  <span className="sr-only">PayID</span>
-                </span>
-              <span className="mt-0.5 block text-[var(--muted)]">
-                AUD only. Customer pays your PayID, then confirms.
-              </span>
-            </span>
-          </label>
-          <input type="hidden" name="localTransferMethodId" value={method.id} />
-          <label className="mt-3 flex flex-col gap-2 text-sm">
-            <span className="font-medium">{method.aliasLabel}</span>
-            <input
-              name="localTransferAlias"
-              defaultValue={initialAlias}
-              placeholder={method.aliasPlaceholder}
-              maxLength={120}
-              className="rounded-lg border border-[var(--line)] bg-white px-3 py-2.5"
-            />
-            <span className="text-[var(--muted)]">{method.aliasHint}</span>
-          </label>
-        </div>
-      ) : null}
-
-      <label className="flex items-start gap-3 text-sm">
-        <input
-          type="checkbox"
+      <div className="pt-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+          Card &amp; wallets
+        </p>
+        <CheckoutPaymentRow
           name="acceptCard"
-          defaultChecked={acceptCard}
+          checked={acceptCard}
           disabled={!cardReady}
-          className="mt-1 size-4 disabled:opacity-50"
-        />
-        <span className="min-w-0">
-          <span className="flex flex-wrap items-center gap-2 font-medium">
-            <PaymentIconRow brands={STRIPE_CHECKOUT_BRANDS} />
-            Card / Tap &amp; Go
-          </span>
-          <span className="mt-0.5 block text-[var(--muted)]">
-            {cardReady
+          label={
+            <>
+              <PaymentIconRow brands={STRIPE_CHECKOUT_BRANDS} />
+              Card / Tap &amp; Go
+            </>
+          }
+          hint={
+            cardReady
               ? `${STRIPE_CHECKOUT_METHODS_PHRASE}. Money to your Stripe.`
-              : "Finish Stripe setup in Payments before enabling card, pre-orders, or subscriptions."}
-          </span>
-        </span>
-      </label>
-
-      <p className="text-sm">
-        <Link
-          href="/dashboard/settings/stripe"
-          className="font-medium text-[var(--leaf-dark)] underline"
-        >
-          Manage Stripe Connect
-        </Link>
-      </p>
-
-      {paypalConnectAvailable ? (
-        <StandPayPalToggle
-          acceptPayPal={acceptPayPal}
-          paypalReady={paypalReady}
-          proAccess={cardTier}
+              : "Connect Stripe above first."
+          }
         />
-      ) : null}
-    </>
+        {square ? (
+          <StandSquareToggle
+            acceptSquare={square.accept}
+            squareReady={square.ready}
+            squareIsProvider={square.isProvider}
+          />
+        ) : null}
+        {paypalConnectAvailable ? (
+          <StandPayPalToggle
+            acceptPayPal={acceptPayPal}
+            paypalReady={paypalReady}
+            proAccess={cardTier}
+          />
+        ) : null}
+        {!cardTier && paypalConnectAvailable ? (
+          <p className="pb-1 pt-1 text-sm">
+            <Link
+              href="/dashboard/settings/billing"
+              className="font-medium text-[var(--leaf-dark)] underline"
+            >
+              Upgrade to Pro for PayPal
+            </Link>
+          </p>
+        ) : null}
+      </div>
+    </div>
   );
 }

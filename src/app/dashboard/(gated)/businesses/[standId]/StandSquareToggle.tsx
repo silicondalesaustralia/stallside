@@ -1,5 +1,5 @@
-import Link from "next/link";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
+import CheckoutPaymentRow from "./CheckoutPaymentRow";
 
 export default function StandSquareToggle({
   acceptSquare,
@@ -10,38 +10,24 @@ export default function StandSquareToggle({
   squareReady: boolean;
   squareIsProvider: boolean;
 }) {
+  const hint = !squareReady
+    ? "Connect Square above first, then turn on payments and pick a location."
+    : squareIsProvider
+      ? "Square card checkout for QR codes and your website. Money to your Square account."
+      : "Shown at checkout once Square is your product checkout provider above.";
+
   return (
-    <>
-      <label className="flex items-start gap-3 text-sm">
-        <input
-          type="checkbox"
-          name="acceptSquare"
-          defaultChecked={acceptSquare}
-          disabled={!squareReady}
-          className="mt-1 size-4 disabled:opacity-50"
-        />
-        <span className="min-w-0">
-          <span className="flex flex-wrap items-center gap-2 font-medium">
-            <PaymentBrandIcon brand="square" className="size-5" />
-            Square
-          </span>
-          <span className="mt-0.5 block text-[var(--muted)]">
-            {!squareReady
-              ? "Connect Square, turn on Square payments and pick a location before enabling."
-              : squareIsProvider
-                ? "Square card checkout for QR codes and your website. Money goes to your Square account."
-                : "Shown at checkout once Square is your product checkout provider (above)."}
-          </span>
-        </span>
-      </label>
-      <p className="text-sm">
-        <Link
-          href="/dashboard/settings/square"
-          className="font-medium text-[var(--leaf-dark)] underline"
-        >
-          Manage Square
-        </Link>
-      </p>
-    </>
+    <CheckoutPaymentRow
+      name="acceptSquare"
+      checked={acceptSquare}
+      disabled={!squareReady}
+      label={
+        <>
+          <PaymentBrandIcon brand="square" className="size-5" />
+          Square
+        </>
+      }
+      hint={hint}
+    />
   );
 }

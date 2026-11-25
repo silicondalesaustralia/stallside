@@ -1,7 +1,5 @@
-import Link from "next/link";
 import PaymentBrandIcon from "@/components/PaymentBrandIcon";
-
-const linkClass = "font-medium text-[var(--leaf-dark)] underline";
+import CheckoutPaymentRow from "./CheckoutPaymentRow";
 
 export default function StandPayPalToggle({
   acceptPayPal,
@@ -13,47 +11,27 @@ export default function StandPayPalToggle({
   proAccess: boolean;
 }) {
   const enabled = proAccess && paypalReady;
+  const hint = !proAccess
+    ? "Pro plan required."
+    : paypalReady
+      ? "Money goes straight to your PayPal. No Vendl fee."
+      : "Connect PayPal above first.";
 
   return (
-    <div
-      className={`rounded-xl border border-[var(--line)] p-4${proAccess ? "" : " bg-[var(--wash)] opacity-60"}`}
-    >
-      <label className="flex items-start gap-3 text-sm">
-        <input
-          type="checkbox"
-          name="acceptPayPal"
-          defaultChecked={enabled && acceptPayPal}
-          disabled={!enabled}
-          className="mt-1 size-4 disabled:opacity-50"
-        />
-        <span className="min-w-0">
-          <span className="flex flex-wrap items-center gap-2 font-medium">
-            <PaymentBrandIcon brand="paypal" />
-            PayPal
-            <span className="rounded-full bg-[var(--leaf)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--leaf-dark)]">
-              Pro
-            </span>
+    <CheckoutPaymentRow
+      name="acceptPayPal"
+      checked={enabled && acceptPayPal}
+      disabled={!enabled}
+      label={
+        <>
+          <PaymentBrandIcon brand="paypal" />
+          PayPal
+          <span className="rounded bg-[var(--leaf)]/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--leaf-dark)]">
+            Pro
           </span>
-          <span className="mt-0.5 block text-[var(--muted)]">
-            {!proAccess
-              ? "You must be on Pro to take PayPal payments."
-              : paypalReady
-                ? "Money goes straight to your PayPal. No Vendl fee."
-                : "Add your PayPal Merchant ID to offer PayPal at checkout."}
-          </span>
-        </span>
-      </label>
-      <p className="mt-3 text-sm">
-        {!proAccess ? (
-          <Link href="/dashboard/settings/billing" className={linkClass}>
-            Upgrade to Pro
-          </Link>
-        ) : (
-          <Link href="/dashboard/settings/paypal" className={linkClass}>
-            {paypalReady ? "Manage PayPal" : "Connect PayPal"}
-          </Link>
-        )}
-      </p>
-    </div>
+        </>
+      }
+      hint={hint}
+    />
   );
 }

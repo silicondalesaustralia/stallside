@@ -5,7 +5,6 @@ import { useState, useTransition } from "react";
 import { localTransferForCurrency } from "@/lib/local-transfer";
 import { updateStandPayments } from "../stand-payment-actions";
 import StandPaymentToggles from "./StandPaymentToggles";
-import StandSquareToggle from "./StandSquareToggle";
 
 export type StandPaymentOptionsProps = {
   standId: string;
@@ -78,7 +77,7 @@ export default function StandPaymentOptions({
     <section className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4">
       <h2 className="text-lg font-semibold">Checkout payments</h2>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        Enable or disable what customers see at checkout. Currency: {currency}.
+        What customers can choose for {currency} checkout at this business.
       </p>
 
       <form key={formKey} action={onSubmit} className="mt-4 flex flex-col gap-4">
@@ -93,14 +92,8 @@ export default function StandPaymentOptions({
           paypalReady={paypalReady}
           paypalConnectAvailable={paypalConnectAvailable}
           cardTier={cardTier}
+          square={square}
         />
-        {square ? (
-          <StandSquareToggle
-            acceptSquare={square.accept}
-            squareReady={square.ready}
-            squareIsProvider={square.isProvider}
-          />
-        ) : null}
         {message ? <p className="text-sm text-[var(--muted)]">{message}</p> : null}
         <button
           type="submit"
