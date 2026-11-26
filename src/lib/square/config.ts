@@ -1,5 +1,6 @@
 import { cleanEnvSecret } from "@/lib/env";
 import { appBaseUrl } from "@/lib/app-url";
+import { isBetaApp } from "@/lib/beta-app";
 import type { SquareRegion } from "@/lib/square/region";
 
 export type SquareEnvironment = "sandbox" | "production";
@@ -44,9 +45,18 @@ export function squareRegionHasApp(region: SquareRegion): boolean {
 }
 
 export function squareOAuthRedirectUri(): string {
+  const fallback = `${appBaseUrl()}/api/square/oauth/callback`;
   const explicit = cleanEnvSecret(process.env.SQUARE_OAUTH_REDIRECT_URI);
-  if (explicit) return explicit;
-  return `${appBaseUrl()}/api/square/oauth/callback`;
+  if (!explicit) return fallback;
+  // Beta must return to this host — main-app cookies aren't shared with beta.
+  if (isBetaApp()) {
+    try {
+      if (new URL(explicit).origin !== new URL(appBaseUrl()).origin) return fallback;
+    } catch {
+      return fallback;
+    }
+  }
+  return explicit;
 }
 
 export function isSquareIntegrationEnabled(): boolean {
