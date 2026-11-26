@@ -6,11 +6,17 @@ import DashFormSection from "@/components/DashFormSection";
 import { prepareImageFile } from "@/lib/prepare-image-file";
 import { PRODUCT_IMAGE_HINT, PRODUCT_IMAGE_MAX_BYTES } from "@/lib/image-upload-limits";
 import { PRODUCT_PHOTOS_MAX, moveGalleryImage } from "@/lib/product-images";
-import { addProductPhoto, removeProductPhoto, reorderProductPhotos } from "../product-gallery-actions";
+import {
+  addProductPhoto,
+  addProductPhotoFromLibrary,
+  removeProductPhoto,
+  reorderProductPhotos,
+} from "../product-gallery-actions";
 import type { ProductImageAlts } from "@/lib/product-image-alts";
 import ProductPhotoTile from "./ProductPhotoTile";
 import ProductPhotoAltEditor from "./ProductPhotoAltEditor";
 import ProductPhotoAddTile from "./ProductPhotoAddTile";
+import ProductMediaLibraryPicker from "./ProductMediaLibraryPicker";
 
 type Result = { ok: true } | { ok: false; error: string };
 
@@ -88,7 +94,7 @@ export default function ProductPhotosCard({
   return (
     <DashFormSection
       title="Photos"
-      hint={`The first photo is the main photo on your shop. Drag to reorder. Up to ${PRODUCT_PHOTOS_MAX} photos - changes save straight away.`}
+      hint={`First photo is the main one. Drag to reorder. Up to ${PRODUCT_PHOTOS_MAX} — saves straight away.`}
     >
       <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4">
         {order.map((url, i) => (
@@ -116,7 +122,17 @@ export default function ProductPhotosCard({
             }}
           />
         ))}
-        {free > 0 ? <ProductPhotoAddTile empty={order.length === 0} busy={pending} label={progress} onFiles={upload} /> : null}
+        {free > 0 ? (
+          <>
+            <ProductPhotoAddTile empty={order.length === 0} busy={pending} label={progress} onFiles={upload} />
+            <li>
+              <ProductMediaLibraryPicker
+                busy={pending}
+                onPick={(assetId) => run(() => addProductPhotoFromLibrary(productId, assetId))}
+              />
+            </li>
+          </>
+        ) : null}
       </ul>
       {altFor && order.includes(altFor) ? (
         <ProductPhotoAltEditor
@@ -128,7 +144,7 @@ export default function ProductPhotosCard({
           onClose={() => setAltFor(null)}
         />
       ) : null}
-      <p className="text-xs text-[var(--muted)]">{PRODUCT_IMAGE_HINT} Tap ALT on a photo to describe it for search engines and screen readers.</p>
+      <p className="text-xs text-[var(--muted)]">{PRODUCT_IMAGE_HINT} Tap ALT to describe a photo for search and screen readers.</p>
       {message ? <p role="alert" className="text-sm text-[var(--gone)]">{message}</p> : null}
     </DashFormSection>
   );

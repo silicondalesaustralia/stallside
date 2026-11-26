@@ -19,7 +19,7 @@ export default function DataSectionCard({ guide, canImport }: { guide: SectionGu
       </ul>
       <div className="flex flex-wrap gap-2">
         <a href={base} className={linkClass}>
-          Export {guide.id === "orders" ? "orders" : "CSV"}
+          {guide.id === "orders" ? "Export orders" : `Export ${guide.title.toLowerCase()}`}
         </a>
         {guide.id === "orders" ? (
           <a href="/dashboard/data/export/order-items" className={linkClass}>
@@ -28,7 +28,7 @@ export default function DataSectionCard({ guide, canImport }: { guide: SectionGu
         ) : null}
         {guide.importable ? (
           <a href={`${base}?template=1`} className={linkClass}>
-            Download template
+            Download {guide.title.toLowerCase()} template
           </a>
         ) : null}
       </div>

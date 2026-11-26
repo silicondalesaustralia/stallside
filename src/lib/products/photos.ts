@@ -51,6 +51,22 @@ export async function addOwnerProductPhoto(ownerId: string, productId: string, f
   return savePhotos(product, [...photos, url]);
 }
 
+/** Adds an existing public image URL (e.g. from the media library) as a product photo. */
+export async function addOwnerProductPhotoFromUrl(
+  ownerId: string,
+  productId: string,
+  url: string,
+): Promise<PhotoResult> {
+  const trimmed = url.trim();
+  if (!trimmed.startsWith("https://")) return { error: "That image link is not valid." };
+  const product = await ownedProduct(productId, ownerId);
+  if (!product) return { error: "Product not found." };
+  const photos = photosOf(product);
+  if (photos.includes(trimmed)) return { error: "That photo is already on this product." };
+  if (photos.length >= PRODUCT_PHOTOS_MAX) return { error: `You can add up to ${PRODUCT_PHOTOS_MAX} photos.` };
+  return savePhotos(product, [...photos, trimmed]);
+}
+
 /** Removes a photo; removing the main photo makes the next one the main photo. */
 export async function removeOwnerProductPhoto(ownerId: string, productId: string, url: string): Promise<PhotoResult> {
   const product = await ownedProduct(productId, ownerId);

@@ -26,11 +26,11 @@ export const productArticles: KnowledgeArticle[] = [
     title: "Edit a product and adjust stock",
     summary: "Change details, price and photo, add a freshness note, and add or remove stock with a reason.",
     keywords: ["edit", "stock", "restock", "adjust", "photo", "freshness", "slug", "seo"],
-    related: ["add-product", "product-lifecycle", "stock-count", "product-status"],
+    related: ["add-product", "product-lifecycle", "stock-count", "product-status", "photo-library"],
     ctas: [{ label: "Products", href: "/dashboard/products" }],
     steps: [
       "Open Products and tap a product.",
-      "Update Product name, Freshness note (for example Laid this morning), Description or photo. Tick Remove next to the photo to delete it.",
+      "Update Product name, Freshness note (for example Laid this morning), Description or photos. On Photos, tap Add photos to upload, or Library to choose a photo you already uploaded under Data management.",
       "Change the Price, cost or Volume prices and the Low-stock threshold, then tap Save in the bar at the bottom.",
       "To change stock, go to the Stock card. Choose Increase by, Decrease by or Set exact, pick a reason (for example Restocked or Spoiled/damaged) and tap Apply stock change.",
       "Use Search & social near the bottom for Google title, description and sharing, or Copy link under Listing to share the product's shop page.",
@@ -117,6 +117,24 @@ export const productArticles: KnowledgeArticle[] = [
     tips: [
       "Only the exact quantity gets the tier price. With a 2 for $9 tier, buying 3 is charged at 3 × the normal price.",
       "Volume prices don't combine with options or the first-order discount.",
+    ],
+  },
+  {
+    slug: "photo-library",
+    title: "Bulk photo library",
+    summary: "Upload many product photos at once, match them by filename, or pick from the library when editing a product.",
+    keywords: ["photo", "image", "library", "bulk", "upload", "batch", "media"],
+    related: ["edit-product", "add-product"],
+    ctas: [{ label: "Photo library", href: "/dashboard/data?tab=library" }],
+    steps: [
+      "Open Data management and tap the Photo library tab.",
+      "Tap Upload photos and choose one or many JPEG, PNG, WebP or HEIC files. Large photos are resized for you.",
+      "To link one photo, choose a product under it and tap Link — or open the product and tap Library on the Photos card.",
+      "Optional: name files like the product slug, SKU or name (for example free-range-eggs.jpg), then tap Match filenames to products.",
+    ],
+    tips: [
+      "Removing a photo from the library does not remove it from products that already use it.",
+      "On a product's Photos card you can still upload new photos, or tap Library to reuse ones you already uploaded.",
     ],
   },
 ];

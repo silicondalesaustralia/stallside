@@ -1,8 +1,10 @@
 "use server";
 
-import { requireOwnerWrite } from "@/lib/session";
+import { requireOwner, requireOwnerWrite } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 import {
   addOwnerProductPhoto,
+  addOwnerProductPhotoFromUrl,
   removeOwnerProductPhoto,
   reorderOwnerProductPhotos,
   saveOwnerProductPhotoAlt,
@@ -24,6 +26,41 @@ export async function addProductPhoto(productId: string, formData: FormData): Pr
   } catch (err) {
     console.error("[product photo add]", err);
     return { ok: false, error: err instanceof Error ? err.message : "Couldn't upload that photo." };
+  }
+}
+
+/** Adds a photo from the owner's media library (by library asset id). */
+export async function addProductPhotoFromLibrary(productId: string, assetId: string): Promise<PhotoResult> {
+  const { owner } = await requireOwnerWrite();
+  try {
+    const asset = await prisma.mediaLibraryAsset.findFirst({
+      where: { id: assetId, ownerId: owner.id },
+      select: { url: true },
+    });
+    if (!asset) return { ok: false, error: "Photo not found in your library." };
+    return toActionResult(await addOwnerProductPhotoFromUrl(owner.id, productId, asset.url));
+  } catch (err) {
+    console.error("[product photo from library]", err);
+    return { ok: false, error: err instanceof Error ? err.message : "Couldn't add that photo." };
+  }
+}
+
+/** Lists media library photos for the product editor picker. */
+export async function listProductMediaLibrary(): Promise<
+  { ok: true; assets: { id: string; url: string; fileName: string }[] } | { ok: false; error: string }
+> {
+  const { owner } = await requireOwner();
+  try {
+    const assets = await prisma.mediaLibraryAsset.findMany({
+      where: { ownerId: owner.id },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+      select: { id: true, url: true, fileName: true },
+    });
+    return { ok: true, assets };
+  } catch (err) {
+    console.error("[product media library list]", err);
+    return { ok: false, error: "Couldn't load the photo library." };
   }
 }
 

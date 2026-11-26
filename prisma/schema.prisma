@@ -522,6 +522,7 @@ model Owner {
   platformFeePercentBps         Int                          @default(200)
   stands                        Stand[]
   products                      Product[]
+  mediaLibraryAssets            MediaLibraryAsset[]
   categories                    Category[]
   qrCodes                       QrCode[]
   upsells                       Upsell[]
@@ -3753,4 +3754,18 @@ model BlogSubscriber {
   sourceSlug     String?
   unsubscribedAt DateTime?
   createdAt      DateTime  @default(now())
+}
+
+/// Owner photo library: bulk-upload then assign to products (also selectable in the product editor).
+model MediaLibraryAsset {
+  id          String   @id @default(cuid())
+  ownerId     String
+  owner       Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  url         String
+  fileName    String
+  contentType String
+  byteSize    Int
+  createdAt   DateTime @default(now())
+
+  @@index([ownerId, createdAt])
 }
